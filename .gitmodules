@@ -1,0 +1,3 @@
+[submodule "deps/k"]
+	path = deps/k
+	url = https://github.com/runtimeverification/k

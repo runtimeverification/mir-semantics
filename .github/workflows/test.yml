@@ -1,0 +1,34 @@
+name: 'Test'
+on:
+  pull_request:
+  workflow_dispatch:
+# Stop in progress workflows on the same branch and same workflow to use latest committed code
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-pr:
+    name: 'Test PR'
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: 'Fetch K tags'
+        run: cd deps/k && git fetch origin 'refs/tags/*:refs/tags/*'
+      - name: 'Set up Docker'
+        run: |
+          K_COMMIT="$(cd deps/k && git tag --points-at HEAD | cut --characters=2-)"
+          echo "K_COMMIT=${K_COMMIT}"
+          docker build . --file Dockerfile --tag runtimeverification/mir-semantics-ci --build-arg K_COMMIT="${K_COMMIT}" --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
+          docker run --name mir-semantics-ci --rm --detach --workdir /home/user/checkout --user user:user --interactive --volume "$(pwd):/home/user/checkout" runtimeverification/mir-semantics-ci:latest sleep infinity
+      - name: 'Build'
+        run: docker exec mir-semantics-ci /bin/bash -c 'echo build'
+      - name: 'Test'
+        run: docker exec mir-semantics-ci /bin/bash -c 'echo test'
+      - name: 'Tear down Docker'
+        if: always()
+        run: |
+          docker stop mir-semantics-ci || true && docker rm mir-semantics-ci || true
