@@ -22,8 +22,10 @@ jobs:
         run: |
           K_COMMIT="$(cd deps/k && git tag --points-at HEAD | cut --characters=2-)"
           echo "K_COMMIT=${K_COMMIT}"
-          docker build . --file Dockerfile --tag runtimeverification/mir-semantics-ci --build-arg K_COMMIT="${K_COMMIT}" --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
-          docker run --name mir-semantics-ci --rm --detach --workdir /home/user/checkout --user user:user --interactive --volume "$(pwd):/home/user/checkout" runtimeverification/mir-semantics-ci:latest sleep infinity
+
+          docker build --pull --file Dockerfile --tag dockerhub-runtimeverification.com/build/mir-semantics-ci:${K_COMMIT} --build-arg K_COMMIT="${K_COMMIT}" .
+          
+          docker run --name mir-semantics-ci --rm -it --detach --workdir /opt/workspace --user $(id -u):$(id -g) -v ${HOME}:${HOME} -v "$(pwd):/opt/workspace" -v "/etc/passwd:/etc/passwd:ro" -v "/etc/group:/etc/group:ro" dockerhub-runtimeverification.com/build/mir-semantics-ci:${K_COMMIT}
       - name: 'Build'
         run: docker exec mir-semantics-ci /bin/bash -c 'echo build'
       - name: 'Test'
