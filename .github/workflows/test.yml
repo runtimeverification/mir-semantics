@@ -2,35 +2,26 @@ name: 'Test'
 on:
   pull_request:
   workflow_dispatch:
-# Stop in progress workflows on the same branch and same workflow to use latest committed code
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   test-pr:
-    name: 'Test PR'
-    runs-on: [self-hosted, linux]
+    name: 'Build and Test kmir'
+    runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: 'Fetch K tags'
-        run: cd deps/k && git fetch origin 'refs/tags/*:refs/tags/*'
+          fetch-depth: 0
       - name: 'Set up Docker'
-        run: |
-          K_COMMIT="$(cd deps/k && git tag --points-at HEAD | cut --characters=2-)"
-          echo "K_COMMIT=${K_COMMIT}"
-
-          docker build --pull --file Dockerfile --tag dockerhub-runtimeverification.com/build/mir-semantics-ci:${K_COMMIT} --build-arg K_COMMIT="${K_COMMIT}" .
-          
-          docker run --name mir-semantics-ci --rm -it --detach --workdir /opt/workspace --user $(id -u):$(id -g) -v ${HOME}:${HOME} -v "$(pwd):/opt/workspace" -v "/etc/passwd:/etc/passwd:ro" -v "/etc/group:/etc/group:ro" dockerhub-runtimeverification.com/build/mir-semantics-ci:${K_COMMIT}
-      - name: 'Build'
-        run: docker exec mir-semantics-ci /bin/bash -c 'echo build'
-      - name: 'Test'
-        run: docker exec mir-semantics-ci /bin/bash -c 'echo test'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-semantics-ci-kmir-${{ github.sha }}
+      - name: 'Build and test kmir'
+        run: docker exec --user user mir-semantics-ci-kmir-${GITHUB_SHA} make -C ./kmir all
       - name: 'Tear down Docker'
         if: always()
-        run: |
-          docker stop mir-semantics-ci || true && docker rm mir-semantics-ci || true
+        run: docker stop --time 0 mir-semantics-ci-kmir-${GITHUB_SHA}
