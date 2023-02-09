@@ -16,9 +16,19 @@ jobs:
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-semantics-ci-kmir-${{ github.sha }}
-      - name: 'Build and test kmir'
-        run: docker exec --user user mir-semantics-ci-kmir-${GITHUB_SHA} make -C ./kmir all
+          container-name: mir-semantics-ci-${{ github.sha }}
+      - name: 'Install dependencies'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} poetry -C kmir install
+      - name: 'Check code quality'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir check
+      - name: 'Run unit tests'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-unit
+      - name: 'Build LLVM semantics'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir kbuild-llvm
+      - name: 'Build Haskell semantics'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir kbuild-haskell
+      - name: 'Run integration tests'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-ci-kmir-${GITHUB_SHA}
+        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
