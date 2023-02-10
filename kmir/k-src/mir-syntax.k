@@ -43,7 +43,7 @@ module MIR-SYNTAX
                       | CallLike
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
-  // TODO: Test that this is a FunctionPath not a FunctionPathComponent.
+
   syntax CallLike ::= FunctionPath "(" ArgumentList ")"
 
   syntax LValue ::= VariableName
