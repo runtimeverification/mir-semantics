@@ -1,0 +1,4 @@
+bazel-*
+*-kompiled
+kompile-tool/k
+tmp

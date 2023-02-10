@@ -1,0 +1,27 @@
+fn main(_1: usize, _3: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    _2 = Not(_1);
+
+    _2 = Ne(_1, _3);
+    _2 = Lt(_1, _3);
+    _2 = Le(_1, _3);
+    _2 = Eq(_1, _3);
+    _2 = Gt(_1, _3);
+    _2 = Ge(_1, _3);
+
+    _2 = Neg(_1);
+    _2 = Rem(_1, _3);
+    _2 = CheckedMul(_1, _3);
+    _2 = Div(_1, _3);
+    _2 = CheckedAdd(_1, _3);
+    _2 = CheckedSub(_1, _3);
+
+    _2 = BitAnd(_1, _3);
+    _2 = CheckedShl(_1, _3);
+    _2 = CheckedShr(_1, _3);
+    _2 = BitXor(_1, _3);
+    _2 = BitOr(_1, _3);
+    return;
+  }
+}

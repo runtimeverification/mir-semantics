@@ -1,0 +1,14 @@
+fn main() -> () {
+  let _1: usize;
+  scope 1 {
+    debug hello => _1;
+    let _2: usize;
+    scope 2 {
+      debug world => _2;
+    }
+  }
+
+  bb0: {
+    return;
+  }
+}

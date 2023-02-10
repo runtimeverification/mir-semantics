@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    _2 = const MAX as usize (IntToInt);
+    _2 = const usize::MAX as f32 (IntToFloat);
+    return;
+  }
+}
