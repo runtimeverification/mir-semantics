@@ -1,0 +1,14 @@
+[project]
+name = "mir-semantics"
+version = "0.1.0"
+source = "k-src"
+
+[targets.llvm]
+backend = "llvm"
+main-file = "mir.k"
+syntax-module = "MIR"
+
+[targets.haskell]
+backend = "haskell"
+main-file = "mir.k"
+syntax-module = "MIR"
