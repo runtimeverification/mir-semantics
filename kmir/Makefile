@@ -60,3 +60,10 @@ black: poetry-install
 
 check-black: poetry-install
 	$(POETRY_RUN) black --check src
+
+
+# Kompilation
+
+kbuild-%:
+	$(POETRY_RUN) kbuild kompile $*
+.PHONY: kbuild-*
