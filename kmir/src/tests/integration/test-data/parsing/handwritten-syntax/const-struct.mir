@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    _2 = const ParseFloatError {{ kind: FloatErrorKind::Empty }};
+    _2 = const AllowStruct(true);
+    return;
+  }
+}
