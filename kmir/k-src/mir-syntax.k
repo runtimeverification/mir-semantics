@@ -44,7 +44,14 @@ module MIR-SYNTAX
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
 
-  syntax CallLike ::= FunctionPath "(" ArgumentList ")"
+  syntax CallLike ::= CallFunctionPath "(" ArgumentList ")"
+
+  // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
+  syntax CallFunctionPath ::= FunctionPath
+                            | FunctionPath GenericArguments
+
+  syntax GenericArguments ::= "<" GenericArgumentList ">"
+  syntax GenericArgumentList ::= List{Type, ","}
 
   syntax LValue ::= VariableName
                   | "(" "*" LValue ")"
