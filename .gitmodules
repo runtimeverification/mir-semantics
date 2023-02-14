@@ -1,0 +1,3 @@
+[submodule "kmir/src/tests/integration/test-data/compiletest-rs"]
+	path = kmir/src/tests/integration/test-data/compiletest-rs
+	url = git@github.com:runtimeverification/mir-semantics-compiletest.git
