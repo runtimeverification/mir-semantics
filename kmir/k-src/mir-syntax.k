@@ -177,9 +177,13 @@ module MIR-SYNTAX
                         | TraitObjectTypeOneBound
                         | TypePath
                         | TupleType
+                        | NeverType
   
+  // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
+  // https://doc.rust-lang.org/reference/types/trait-object.html
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
+  // https://doc.rust-lang.org/reference/paths.html#paths-in-types
   syntax TypePath ::= "::" TypePathList
                     | TypePathList
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
@@ -187,6 +191,8 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
                       | "(" Type "," TypeList ")"
+  // https://doc.rust-lang.org/reference/types/never.html
+  syntax NeverType ::= "!"
 
   // TODO: Finish implementing the sorts below.
 
