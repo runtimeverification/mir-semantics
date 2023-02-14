@@ -170,16 +170,21 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
-  syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
+  syntax Type ::= "(" ")" | "usize" | "f32"
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
                         | TraitObjectTypeOneBound
+                        | TypePath
   
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
+  syntax TypePath ::= "::" TypePathList
+                    | TypePathList
+  syntax TypePathList ::= NeList{TypePathSegment, "::"}
 
   // TODO: Finish implementing the sorts below.
 
+  syntax TypePathSegment ::= Identifier
   syntax TraitBound ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax ReferenceType ::= "&" Type
