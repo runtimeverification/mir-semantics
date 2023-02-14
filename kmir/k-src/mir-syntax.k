@@ -173,8 +173,10 @@ module MIR-SYNTAX
   syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
+                        | TraitObjectTypeOneBound
   
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
+  syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
 
   // TODO: Finish implementing the sorts below.
 
