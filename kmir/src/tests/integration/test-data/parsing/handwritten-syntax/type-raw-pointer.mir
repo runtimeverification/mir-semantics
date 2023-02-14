@@ -1,0 +1,4 @@
+fn main() -> () {
+  let _1: *mut usize;
+  let _2: *const usize;
+}

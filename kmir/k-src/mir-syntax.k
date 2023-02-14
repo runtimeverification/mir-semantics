@@ -170,7 +170,6 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
-  syntax Type ::= "usize" | "f32"
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
@@ -178,6 +177,7 @@ module MIR-SYNTAX
                         | TypePath
                         | TupleType
                         | NeverType
+                        | RawPointerType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -193,6 +193,9 @@ module MIR-SYNTAX
                       | "(" Type "," TypeList ")"
   // https://doc.rust-lang.org/reference/types/never.html
   syntax NeverType ::= "!"
+  // https://doc.rust-lang.org/reference/types/pointer.html#raw-pointers-const-and-mut
+  syntax RawPointerType ::= "*" "mut" TypeNoBounds
+                          | "*" "const" TypeNoBounds
 
   // TODO: Finish implementing the sorts below.
 
