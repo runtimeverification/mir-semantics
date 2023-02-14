@@ -167,10 +167,13 @@ module MIR-SYNTAX
   syntax FileLineColumnStartLiteral ::= r"\\/.+:[0-9]+:[0-9]+:"  [token]
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 
+  // https://doc.rust-lang.org/reference/types.html#type-expressions
+  syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
+  syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
+
   // TODO: Finish implementing the sorts below.
 
   syntax TerminatorDestination ::= BB
-  syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
   syntax ReferenceType ::= "&" Type
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
 
