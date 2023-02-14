@@ -52,6 +52,7 @@ module MIR-SYNTAX
 
   syntax GenericArguments ::= "<" GenericArgumentList ">"
   syntax GenericArgumentList ::= List{Type, ","}
+  syntax ArgumentList ::= List{BasicRValue, ","}
 
   syntax LValue ::= VariableName
                   | "(" "*" LValue ")"
@@ -168,7 +169,6 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
-  syntax ArgumentList ::= ""
   syntax TerminatorDestination ::= BB
   syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
   syntax ReferenceType ::= "&" Type
