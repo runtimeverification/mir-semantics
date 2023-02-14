@@ -21,5 +21,9 @@ def test_handwritten_syntax(haskell_dir: Path, input_path: Path) -> None:
     pass
 
     kprint._kast(
-        definition_dir=haskell_dir, input_file=input_path, input=KAstInput.PROGRAM, output=KAstOutput.KORE, sort='Mir'
+        definition_dir=haskell_dir,
+        input_file=input_path,
+        input=KAstInput.PROGRAM,
+        output=KAstOutput.KORE,
+        sort='Mir',
     )
