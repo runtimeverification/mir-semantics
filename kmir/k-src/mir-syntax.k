@@ -169,10 +169,16 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
+                | TypeNoBounds
   syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
+
+  syntax TypeNoBounds ::= ImplTraitTypeOneBound
+  
+  syntax ImplTraitTypeOneBound ::= "impl" TraitBound
 
   // TODO: Finish implementing the sorts below.
 
+  syntax TraitBound ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax ReferenceType ::= "&" Type
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
