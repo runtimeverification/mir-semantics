@@ -170,17 +170,23 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
-  syntax Type ::= "(" ")" | "usize" | "f32"
+  syntax Type ::= "usize" | "f32"
+  syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
                         | TraitObjectTypeOneBound
                         | TypePath
+                        | TupleType
   
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
   syntax TypePath ::= "::" TypePathList
                     | TypePathList
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
+
+  // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
+  syntax TupleType  ::= "(" ")"
+                      | "(" Type "," TypeList ")"
 
   // TODO: Finish implementing the sorts below.
 
