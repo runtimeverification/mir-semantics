@@ -179,6 +179,7 @@ module MIR-SYNTAX
                         | NeverType
                         | RawPointerType
                         | ReferenceType
+                        | ArrayType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -205,6 +206,9 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/trait-bounds.html
   syntax Lifetime ::= "'" Identifier
+
+  // https://doc.rust-lang.org/reference/types/array.html
+  syntax ArrayType ::= "[" Type ";" Int "]"
 
   // TODO: Finish implementing the sorts below.
 
