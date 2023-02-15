@@ -180,6 +180,7 @@ module MIR-SYNTAX
                         | RawPointerType
                         | ReferenceType
                         | ArrayType
+                        | SliceType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -209,6 +210,8 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/types/array.html
   syntax ArrayType ::= "[" Type ";" Int "]"
+  // https://doc.rust-lang.org/reference/types/slice.html
+  syntax SliceType ::= "[" Type "]"
 
   // TODO: Finish implementing the sorts below.
 
