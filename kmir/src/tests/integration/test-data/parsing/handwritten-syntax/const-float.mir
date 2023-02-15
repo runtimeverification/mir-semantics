@@ -1,0 +1,14 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  let mut _3: usize;
+  bb0: {
+    _2 = const 12.13f32;
+    _2 = const 12f32;
+    _2 = const 1.13E+20f32;
+    _2 = const -12.13f32;
+    _2 = const 1.13E-20f32;
+
+    _3 = const 12.13f64;
+    return;
+  }
+}
