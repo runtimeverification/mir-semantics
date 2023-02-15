@@ -171,6 +171,7 @@ module MIR-SYNTAX
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
                 | ImplTraitTypeReduced
+                | TraitObjectTypeReduced
 
   syntax TypeList ::= List{Type, ","}
 
@@ -249,6 +250,11 @@ module MIR-SYNTAX
   // This is an attempt to solve this issue.
   syntax ImplTraitType ::= ImplTraitTypeOneBound | ImplTraitTypeReduced
   syntax ImplTraitTypeReduced ::= "impl" TypeParamBoundsReduced
+  // https://doc.rust-lang.org/reference/types/trait-object.html
+  // TraitObjectType has a similar conflict as ImplTraitType, solved in the
+  // same way.
+  syntax TraitObjectType::= TraitObjectTypeOneBound | TraitObjectTypeReduced
+  syntax TraitObjectTypeReduced ::= "dyn" TypeParamBoundsReduced
   // https://doc.rust-lang.org/reference/trait-bounds.html
   syntax TypeParamBounds ::= ImplTraitTypeOneBound | TypeParamBoundsReduced
   syntax TypeParamBoundsReduced ::= Lifetime
@@ -259,6 +265,7 @@ module MIR-SYNTAX
                       | "(" TraitBoundInner ")"
   syntax TraitBoundInner  ::= "?" MaybeForLifetimes TypePath
                             | MaybeForLifetimes TypePath
+
 
   // TODO: Finish implementing the sorts below.
 
