@@ -200,6 +200,12 @@ module MIR-SYNTAX
   syntax TypePath ::= "::" TypePathList
                     | TypePathList
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
+  syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
+                            | PathIdentSegment "::" PathIdentSegmentSuffix
+  syntax PathIdentSegmentSuffix ::= ""
+                                  | GenericArgs
+                                  // TypePathFn is likely not used in mir
+  syntax PathIdentSegment ::= Identifier | "$crate"
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
@@ -291,7 +297,9 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
-  syntax TypePathSegment ::= Identifier
+  syntax GenericArgs ::= "<" GenericArgsList ">"
+  syntax GenericArgsList ::= "" | Identifier
+
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
