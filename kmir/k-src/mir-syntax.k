@@ -178,6 +178,7 @@ module MIR-SYNTAX
                         | TupleType
                         | NeverType
                         | RawPointerType
+                        | ReferenceType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -196,13 +197,20 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types/pointer.html#raw-pointers-const-and-mut
   syntax RawPointerType ::= "*" "mut" TypeNoBounds
                           | "*" "const" TypeNoBounds
+  // https://doc.rust-lang.org/reference/types/pointer.html#shared-references-
+  syntax ReferenceType  ::= "&" TypeNoBounds
+                          | "&" Lifetime TypeNoBounds
+                          | "&" "mut" TypeNoBounds
+                          | "&" Lifetime "mut" TypeNoBounds
+
+  // https://doc.rust-lang.org/reference/trait-bounds.html
+  syntax Lifetime ::= "'" Identifier
 
   // TODO: Finish implementing the sorts below.
 
   syntax TypePathSegment ::= Identifier
   syntax TraitBound ::= Identifier
   syntax TerminatorDestination ::= BB
-  syntax ReferenceType ::= "&" Type
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
 
   syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
