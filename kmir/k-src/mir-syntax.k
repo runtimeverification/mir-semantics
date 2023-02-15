@@ -48,10 +48,8 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
   syntax CallFunctionPath ::= FunctionPath
-                            | FunctionPath GenericArguments
+                            | FunctionPath GenericArgs
 
-  syntax GenericArguments ::= "<" GenericArgumentList ">"
-  syntax GenericArgumentList ::= List{Type, ","}
   syntax ArgumentList ::= List{BasicRValue, ","}
 
   syntax LValue ::= VariableName
@@ -206,6 +204,17 @@ module MIR-SYNTAX
                                   | GenericArgs
                                   // TypePathFn is likely not used in mir
   syntax PathIdentSegment ::= Identifier | "$crate"
+  syntax GenericArgs ::= "<" GenericArgsList ">"
+  syntax GenericArgsList ::= List{GenericArg, ","}
+  syntax GenericArg ::= Lifetime
+                      | Type
+                      | GenericArgsConst
+                      | GenericArgsBinding
+  syntax GenericArgsConst ::= LiteralExpression
+                            | "-" LiteralExpression
+                            // BlockExpression is likely not used in mir
+                            // SimplePathSegmentReduced is not actually needed, it's covered by Type
+  syntax GenericArgsBinding ::= Identifier "=" Type
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
@@ -297,9 +306,9 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
-  syntax GenericArgs ::= "<" GenericArgsList ">"
-  syntax GenericArgsList ::= "" | Identifier
-
+  syntax SimplePathSegment ::= Identifier | SimplePathSegmentReduced
+  syntax SimplePathSegmentReduced ::= "$crate"
+  syntax LiteralExpression ::= Int | Bool
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
