@@ -104,6 +104,7 @@ module MIR-SYNTAX
                           | FloatLiteral
                           | CharLiteral
                           | StringLiteral
+                          | ByteLiteral
                           | ByteStringLiteral
                           | Bool
                           | EnumGenericArgumentOrConstConstant
@@ -161,6 +162,7 @@ module MIR-SYNTAX
   syntax HexLiteral ::= r"0x[0-9a-fA-F]+"  [token]
   syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
   syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
+  syntax ByteLiteral ::= r"b[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
   
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
@@ -304,11 +306,19 @@ module MIR-SYNTAX
   // It is likely that Mir does not use the full syntax for MaybeNamedParam
   syntax MaybeNamedParam ::= Type
 
+  // https://doc.rust-lang.org/reference/expressions/literal-expr.html
+  syntax LiteralExpression  ::= CharLiteral
+                              | StringLiteral
+                              // RawStringLiteral is unlikely to be used in mir
+                              | ByteLiteral
+                              | ByteStringLiteral
+                              // RawByteStringLiteral is unlikely to be used in mir
+                              | UnsignedLiteral | Int
+                              | FloatLiteral
+                              | Bool
+
   // TODO: Finish implementing the sorts below.
 
-  syntax SimplePathSegment ::= Identifier | SimplePathSegmentReduced
-  syntax SimplePathSegmentReduced ::= "$crate"
-  syntax LiteralExpression ::= Int | Bool
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral

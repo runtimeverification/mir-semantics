@@ -1,0 +1,11 @@
+fn main() -> () {
+  let _1: stuff<'a'>::usize;
+  let _2: stuff<"a">::usize;
+
+  let _3: stuff<b'a'>::usize;
+  let _4: stuff<b"a">::usize;
+
+  let _5: stuff<2>::usize;
+  let _6: stuff<1.0f64>::usize;
+  let _7: stuff<true>::usize;
+}
