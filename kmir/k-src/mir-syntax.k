@@ -183,6 +183,7 @@ module MIR-SYNTAX
                         | SliceType
                         // Probably not used in mir: InferredType
                         | QualifiedPathInType
+                        | BareFunctionType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -219,13 +220,34 @@ module MIR-SYNTAX
   syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
   syntax QualifiedPathType  ::= "<" Type ">"
                               | "<" Type "as" TypePath ">"
+  // https://doc.rust-lang.org/reference/types/function-pointer.html
+  syntax BareFunctionType ::= MaybeForLifetimes FunctionTypeQualifiers
+                              "fn" "(" FunctionParametersMaybeNamedVariadic ")"
+                              MaybeBareFunctionReturnType
+  syntax FunctionTypeQualifiers ::= "" | "unsafe" | "extern" Abi | "unsafe" "extern" Abi
+  syntax FunctionParametersMaybeNamedVariadic ::= MaybeNamedFunctionParameters
+                                                // Not seen in mir: MaybeNamedFunctionParametersVariadic
+                                                // TODO: Try to generate this
+  syntax MaybeNamedFunctionParameters ::= List {MaybeNamedParam, ","}
+  syntax BareFunctionReturnType ::= "->" TypeNoBounds
+  syntax MaybeBareFunctionReturnType ::= "" | BareFunctionReturnType
+  // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
+  syntax ForLifetimes ::= "for" GenericParams
+  syntax MaybeForLifetimes ::= "" | ForLifetimes
+
+  // https://doc.rust-lang.org/reference/items/generics.html
+  syntax GenericParams ::= "<" GenericParamList ">"
+  syntax GenericParamList ::= List{GenericParam, ","}
 
   // TODO: Finish implementing the sorts below.
 
+  syntax MaybeNamedParam ::= Type
+  syntax GenericParam ::= Identifier
   syntax TypePathSegment ::= Identifier
   syntax TraitBound ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
+  syntax Abi ::= StringLiteral
 
   syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax VariableName ::= Identifier
