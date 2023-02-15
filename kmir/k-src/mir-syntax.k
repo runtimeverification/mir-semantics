@@ -216,7 +216,11 @@ module MIR-SYNTAX
                           | "&" Lifetime "mut" TypeNoBounds
 
   // https://doc.rust-lang.org/reference/trait-bounds.html
+  // TODO: Make this a token.
+  // TODO: There are various lifetime-related tokens that I combined into a
+  // single one. Consider actually using multiple token types.
   syntax Lifetime ::= "'" Identifier
+  syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
   syntax ArrayType ::= "[" Type ";" Int "]"
@@ -261,20 +265,32 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/trait-bounds.html
   syntax TypeParamBounds ::= ImplTraitTypeOneBound | TypeParamBoundsReduced
   syntax TypeParamBoundsReduced ::= Lifetime
-                                  | TypeParamBound "+" TypeParamBounds
-  syntax TypeParamBounds ::= NeList{TypeParamBound, "+"}
+                                  | TypeParamBound "+" TypeParamBoundsList
+  syntax TypeParamBoundsReduced2  ::= ImplTraitTypeOneBound
+                                    | TypeParamBound "+" TypeParamBoundsList
+  syntax TypeParamBoundsList ::= NeList{TypeParamBound, "+"}
   syntax TypeParamBound ::= Lifetime | TraitBound
   syntax TraitBound ::= TraitBoundInner
                       | "(" TraitBoundInner ")"
   syntax TraitBoundInner  ::= "?" MaybeForLifetimes TypePath
                             | MaybeForLifetimes TypePath
 
-  // It ls likely that Mir does not use the full syntax for MaybeNamedParam
+  // https://doc.rust-lang.org/reference/items/generics.html
+  // OuterAttributes are likely not used for GenericParam in mir.
+  syntax GenericParam ::= LifetimeParam
+                        | TypeParam
+                        // ConstParam is likely not used in mir.
+  syntax LifetimeParam  ::= Lifetime
+                          | Lifetime ":" LifetimeBounds
+  syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
+  syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
+  syntax MaybeEqualsType ::= "" | "=" Type
+
+  // It is likely that Mir does not use the full syntax for MaybeNamedParam
   syntax MaybeNamedParam ::= Type
 
   // TODO: Finish implementing the sorts below.
 
-  syntax GenericParam ::= Identifier
   syntax TypePathSegment ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
