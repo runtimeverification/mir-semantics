@@ -181,6 +181,8 @@ module MIR-SYNTAX
                         | ReferenceType
                         | ArrayType
                         | SliceType
+                        // Probably not used in mir: InferredType
+                        | QualifiedPathInType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -212,6 +214,11 @@ module MIR-SYNTAX
   syntax ArrayType ::= "[" Type ";" Int "]"
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
+  // https://doc.rust-lang.org/reference/paths.html#qualified-paths
+  syntax QualifiedPathInType ::= QualifiedPathType
+  syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
+  syntax QualifiedPathType  ::= "<" Type ">"
+                              | "<" Type "as" TypePath ">"
 
   // TODO: Finish implementing the sorts below.
 
