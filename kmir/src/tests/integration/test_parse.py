@@ -1,19 +1,13 @@
 from pathlib import Path
 
 import pytest
-from pyk.ktool import kprint
-from pyk.ktool.kprint import KAstInput, KAstOutput
+
+from kmir import KMIR
 
 HANDWRITTEN_SYNTAX_DIR = Path(__file__).parent / 'test-data' / 'parsing' / 'handwritten-syntax'
 HANDWRITTEN_SYNTAX_FILES = list(HANDWRITTEN_SYNTAX_DIR.glob('*.mir'))
 
 
 @pytest.mark.parametrize('input_path', HANDWRITTEN_SYNTAX_FILES, ids=[str(f.name) for f in HANDWRITTEN_SYNTAX_FILES])
-def test_handwritten_syntax(haskell_dir: Path, input_path: Path) -> None:
-    kprint._kast(
-        definition_dir=haskell_dir,
-        input_file=input_path,
-        input=KAstInput.PROGRAM,
-        output=KAstOutput.KORE,
-        sort='Mir',
-    )
+def test_handwritten_syntax(kmir: KMIR, input_path: Path) -> None:
+    kmir.parse_program(input_path)
