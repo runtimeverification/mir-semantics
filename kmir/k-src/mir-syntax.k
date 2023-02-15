@@ -152,7 +152,7 @@ module MIR-SYNTAX
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
-  syntax PathLocation ::= "<impl" "at" FileLineColumnStartLiteral LineColumnEndLiteral ">"
+  syntax PathLocation ::= "<impl" "at" FilePosition ">"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -164,6 +164,8 @@ module MIR-SYNTAX
   syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
   syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
+  
+  syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
   syntax FileLineColumnStartLiteral ::= r"\\/.+:[0-9]+:[0-9]+:"  [token]
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 
@@ -172,6 +174,7 @@ module MIR-SYNTAX
                 | TypeNoBounds
                 | ImplTraitTypeReduced
                 | TraitObjectTypeReduced
+                | MirOnlyType
 
   syntax TypeList ::= List{Type, ","}
 
@@ -266,19 +269,28 @@ module MIR-SYNTAX
   syntax TraitBoundInner  ::= "?" MaybeForLifetimes TypePath
                             | MaybeForLifetimes TypePath
 
+  // It ls likely that Mir does not use the full syntax for MaybeNamedParam
+  syntax MaybeNamedParam ::= Type
 
   // TODO: Finish implementing the sorts below.
 
-  syntax MaybeNamedParam ::= Type
   syntax GenericParam ::= Identifier
   syntax TypePathSegment ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
+  syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
   syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax VariableName ::= Identifier
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
   syntax BB ::= Identifier
+
+  // TODO: This grammar needs a preprocessing step that removes comments and
+  // the textual representation at the end of memory dump lines, e.g. the
+  // │ ........ part here:
+  // alloc1 (static: RAND_SOURCE, size: 8, align: 8) {
+  //   00 00 00 00 00 00 00 00                         │ ........
+  // }
 endmodule
