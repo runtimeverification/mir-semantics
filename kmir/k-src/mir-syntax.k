@@ -170,6 +170,8 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
+                | ImplTraitTypeReduced
+
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
@@ -184,6 +186,7 @@ module MIR-SYNTAX
                         // Probably not used in mir: InferredType
                         | QualifiedPathInType
                         | BareFunctionType
+                        // Probably not used im mir: MacroInvocation
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -239,12 +242,29 @@ module MIR-SYNTAX
   syntax GenericParams ::= "<" GenericParamList ">"
   syntax GenericParamList ::= List{GenericParam, ","}
 
+  // https://doc.rust-lang.org/reference/types/impl-trait.html
+  // There is a parse conflict between
+  // Type -> TypeNoBounds -> ImplTraitTypeOneBound -> impl TraitBound
+  // and Type -> TypeParamBounds -> impl TypeParamBound -> impl TraitBound
+  // This is an attempt to solve this issue.
+  syntax ImplTraitType ::= ImplTraitTypeOneBound | ImplTraitTypeReduced
+  syntax ImplTraitTypeReduced ::= "impl" TypeParamBoundsReduced
+  // https://doc.rust-lang.org/reference/trait-bounds.html
+  syntax TypeParamBounds ::= ImplTraitTypeOneBound | TypeParamBoundsReduced
+  syntax TypeParamBoundsReduced ::= Lifetime
+                                  | TypeParamBound "+" TypeParamBounds
+  syntax TypeParamBounds ::= NeList{TypeParamBound, "+"}
+  syntax TypeParamBound ::= Lifetime | TraitBound
+  syntax TraitBound ::= TraitBoundInner
+                      | "(" TraitBoundInner ")"
+  syntax TraitBoundInner  ::= "?" MaybeForLifetimes TypePath
+                            | MaybeForLifetimes TypePath
+
   // TODO: Finish implementing the sorts below.
 
   syntax MaybeNamedParam ::= Type
   syntax GenericParam ::= Identifier
   syntax TypePathSegment ::= Identifier
-  syntax TraitBound ::= Identifier
   syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
