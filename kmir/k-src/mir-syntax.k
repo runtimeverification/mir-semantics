@@ -4,7 +4,7 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant
+  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -236,7 +236,7 @@ module MIR-SYNTAX
   // TODO: Make this a token.
   // TODO: There are various lifetime-related tokens that I combined into a
   // single one. Consider actually using multiple token types.
-  syntax Lifetime ::= "'" Identifier
+  syntax Lifetime ::= "'" Identifier | "'static"
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
@@ -317,6 +317,15 @@ module MIR-SYNTAX
                               | FloatLiteral
                               | Bool
 
+  syntax DataAlloc ::= Identifier "(" MaybeStatic "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
+  syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
+  syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
+  syntax MaybeStatic ::= "" | "static" ":" Identifier ","
+  syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
+  syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
+  syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
+
   // TODO: Finish implementing the sorts below.
 
   syntax TerminatorDestination ::= BB
@@ -336,4 +345,8 @@ module MIR-SYNTAX
   // alloc1 (static: RAND_SOURCE, size: 8, align: 8) {
   //   00 00 00 00 00 00 00 00                         │ ........
   // }
+  // It should also replace │ by |.
+  // For clarity, here are the (VSC) regular expressions for cleaning memory dumps:
+  // Replace ^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1
+  // Replace ^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1|$2
 endmodule
