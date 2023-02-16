@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  bb0: {
+    goto -> bb1;
+  }
+  bb1: {
+    return;
+  }
+}
