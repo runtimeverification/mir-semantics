@@ -1,2 +1,7 @@
+fn path::to::<impl at home/user/.cargo/registry/src/github.com-1ecc6299db9ec823/num-traits-0.2.14/src/cast.rs:369:9: 369:32>::main() -> () {
+}
+
+
 fn path::to::<impl at /home/user/.cargo/registry/src/github.com-1ecc6299db9ec823/num-traits-0.2.14/src/cast.rs:369:9: 369:32>::main() -> () {
 }
+
