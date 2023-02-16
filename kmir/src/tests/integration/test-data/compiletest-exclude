@@ -19,7 +19,6 @@ array-slice-vec/huge-largest-array.mir
 array-slice-vec/issue-15730.mir
 array-slice-vec/issue-18425.mir
 array-slice-vec/ivec-pass-by-value.mir
-array-slice-vec/mut-vstore-expr.mir
 array-slice-vec/mutability-inherits-through-fixed-length-vec.mir
 array-slice-vec/mutable-alias-vec.mir
 array-slice-vec/nested-vec-1.mir
@@ -80,7 +79,6 @@ assocciated-consts/mismatched_impl_ty_1.mir
 assocciated-consts/mismatched_impl_ty_2.mir
 assocciated-consts/mismatched_impl_ty_3.mir
 associated-inherent-types/normalize-projection-0.mir
-associated-inherent-types/normalize-projection-1.mir
 associated-inherent-types/struct-generics.mir
 associated-item/associated-item-two-bounds.mir
 associated-item/issue-105449.mir
@@ -88,7 +86,6 @@ associated-type-bounds/assoc-type-bound-through-where-clause.mir
 associated-type-bounds/associated-item-through-where-clause.mir
 associated-type-bounds/dyn-impl-trait-type.mir
 associated-type-bounds/dyn-rpit-and-let.mir
-associated-type-bounds/entails-sized-object-safety.mir
 associated-type-bounds/enum-bounds.mir
 associated-type-bounds/issue-61752.mir
 associated-type-bounds/issue-70292.mir
@@ -192,7 +189,6 @@ associated-types/issue-71113.mir
 associated-types/issue-82079.mir
 associated-types/issue-88856.mir
 associated-types/issue-91069.mir
-associated-types/issue-91231.mir
 associated-types/issue-91234.mir
 associated-types/normalization-generality-2.mir
 associated-types/normalization-generality.mir
@@ -631,8 +627,6 @@ coherence/coherence-negative-inherent.mir
 coherence/coherence-rfc447-constrained.mir
 coherence/coherence-subtyping.mir
 coherence/coherence-where-clause.mir
-coherence/issue-99663-2.mir
-coherence/issue-99663.mir
 command/command-argv0.mir
 command/command-create-pidfd.mir
 command/command-current-dir.mir
@@ -642,9 +636,7 @@ command/command-setgroups.mir
 command/command-uid-gid.mir
 command/issue-10626.mir
 complex.mir
-const-generics/apit-with-const-param.mir
 const-generics/arg-in-pat-1.mir
-const-generics/arg-in-pat-2.mir
 const-generics/arg-in-pat-3.mir
 const-generics/array-impls/alloc-traits-impls-length-32.mir
 const-generics/array-impls/alloc-traits-impls-length-33.mir
@@ -669,7 +661,6 @@ const-generics/const-fn-with-const-param.mir
 const-generics/const-generic-type_name.mir
 const-generics/const-param-after-const-literal-arg.mir
 const-generics/const_trait_fn-issue-88433.mir
-const-generics/defaults/complex-unord-param.mir
 const-generics/defaults/const-default.mir
 const-generics/defaults/const-param-as-default-value.mir
 const-generics/defaults/const-param-in-ty-defaults.mir
@@ -954,7 +945,6 @@ consts/const-unsafe-fn.mir
 consts/const-validation-fail-55455.mir
 consts/const-variant-count.mir
 consts/const-vec-of-fns.mir
-consts/const-vec-syntax.mir
 consts/const-vecs-and-slices.mir
 consts/const.mir
 consts/const_cmp_type_id.mir
@@ -1177,7 +1167,6 @@ destructuring-assignment/tuple_destructure.mir
 destructuring-assignment/tuple_struct_destructure.mir
 destructuring-assignment/warn-unused-duplication.mir
 diverging-fallback-method-chain.mir
-diverging-fallback-option.mir
 double-ref.mir
 drop-bounds/drop-bounds-impl-drop.mir
 drop/drop-if-let-binding.mir
@@ -1225,7 +1214,6 @@ dyn-keyword/dyn-2015-idents-in-decl-macros-unlinted.mir
 dyn-keyword/dyn-2015-idents-in-macros-unlinted.mir
 dyn-keyword/dyn-2015-no-warnings-without-lints.mir
 dyn-keyword/dyn-2021-edition-error.mir
-dyn-keyword/issue-56327-dyn-trait-in-macro-is-okay.mir
 dyn-star/box.mir
 dyn-star/check-size-at-cast-polymorphic.mir
 dyn-star/const.mir
@@ -1304,7 +1292,6 @@ ext-expand-inner-exprs.mir
 extern/extern-compare-with-return-type.mir
 extern/extern-methods.mir
 extern/extern-prelude-core.mir
-extern/extern-prelude-no-speculative.mir
 extern/extern-prelude-std.mir
 extern/extern-rust.mir
 extern/extern-types-manual-sync-send.mir
@@ -1313,7 +1300,6 @@ extern/extern-types-size_of_val.mir
 extern/extern-types-thin-pointer.mir
 extern/extern-types-trait-impl.mir
 extern/extern-vectorcall.mir
-extern/issue-10025.mir
 extern/issue-13655.mir
 extern/issue-64655-allow-unwind-when-calling-panic-directly.mir
 extern/issue-64655-extern-rust-must-allow-unwind.mir
@@ -1359,7 +1345,6 @@ for-loop-while/liveness-move-in-loop.mir
 for-loop-while/long-while.mir
 for-loop-while/loop-break-cont.mir
 for-loop-while/loop-break-value.mir
-for-loop-while/loop-diverges.mir
 for-loop-while/loop-label-shadowing.mir
 for-loop-while/loop-no-reinit-needed-post-bot.mir
 for-loop-while/loop-scope.mir
@@ -1525,7 +1510,6 @@ global-scope.mir
 half-open-range-patterns/half-open-range-pats-semantics.mir
 half-open-range-patterns/pat-tuple-4.mir
 half-open-range-patterns/range_pat_interactions0.mir
-half-open-range-patterns/slice_pattern_syntax_problem2.mir
 hashmap/hashmap-capacity-overflow.mir
 hashmap/hashmap-memory.mir
 hashmap/hello_world/main.mir
@@ -1548,7 +1532,6 @@ higher-rank-trait-bounds/issue-102899.mir
 higher-rank-trait-bounds/issue-36139-normalize-closure-sig.mir
 higher-rank-trait-bounds/issue-42114.mir
 higher-rank-trait-bounds/issue-43623.mir
-higher-rank-trait-bounds/issue-57639.mir
 higher-rank-trait-bounds/issue-60283.mir
 higher-rank-trait-bounds/issue-88446.mir
 higher-rank-trait-bounds/issue-90177.mir
@@ -1568,7 +1551,6 @@ higher-rank-trait-bounds/normalize-under-binder/issue-89436.mir
 higher-rank-trait-bounds/normalize-under-binder/issue-90612.mir
 higher-rank-trait-bounds/normalize-under-binder/issue-90638.mir
 higher-rank-trait-bounds/normalize-under-binder/issue-90875.mir
-hr-subtype/hr-subtype.mir
 hr-subtype/placeholder-pattern.mir
 hr-subtype/return-static.mir
 hygiene/assoc_ty_bindings.mir
@@ -1613,7 +1595,6 @@ impl-trait/closure-calling-parent-fn.mir
 impl-trait/closure-in-impl-trait-arg.mir
 impl-trait/closure-in-impl-trait.mir
 impl-trait/deduce-signature-from-supertrait.mir
-impl-trait/deprecated_annotation.mir
 impl-trait/divergence.mir
 impl-trait/dyn-trait-elided-two-inputs-assoc.mir
 impl-trait/dyn-trait-elided-two-inputs-param.mir
@@ -1638,7 +1619,6 @@ impl-trait/in-trait/reveal.mir
 impl-trait/in-trait/specialization-substs-remap.mir
 impl-trait/in-trait/success.mir
 impl-trait/in-trait/where-clause.mir
-impl-trait/issue-100187.mir
 impl-trait/issue-103599.mir
 impl-trait/issue-46959.mir
 impl-trait/issue-49556.mir
@@ -1657,7 +1637,6 @@ impl-trait/issues/issue-53457.mir
 impl-trait/issues/issue-55608-captures-empty-region.mir
 impl-trait/issues/issue-57464-unexpected-regions.mir
 impl-trait/issues/issue-65581.mir
-impl-trait/issues/issue-77987.mir
 impl-trait/issues/issue-86201.mir
 impl-trait/issues/issue-89312.mir
 impl-trait/issues/issue-93788.mir
@@ -1673,18 +1652,13 @@ impl-trait/needs_least_region_or_bound.mir
 impl-trait/nested-return-type.mir
 impl-trait/nested-return-type2-tait.mir
 impl-trait/nested-return-type2.mir
-impl-trait/nested-return-type3-tait.mir
-impl-trait/nested-return-type3.mir
 impl-trait/nested-rpit-with-anonymous-lifetimes.mir
 impl-trait/nesting.mir
-impl-trait/private_unused.mir
 impl-trait/projection.mir
 impl-trait/question_mark.mir
-impl-trait/recursive-impl-trait-type-direct.mir
 impl-trait/recursive-type-alias-impl-trait-declaration.mir
 impl-trait/region-escape-via-bound-contravariant-closure.mir
 impl-trait/region-escape-via-bound-contravariant.mir
-impl-trait/return-position-impl-trait-minimal.mir
 impl-trait/rpit-assoc-pair-with-lifetime.mir
 impl-trait/trait_resolution.mir
 impl-trait/type-alias-generic-param.mir
@@ -1784,7 +1758,6 @@ lifetimes/bare-trait-object-borrowck.mir
 lifetimes/bare-trait-object.mir
 lifetimes/elided-lifetime-in-param-pat.mir
 lifetimes/elided-lifetime-in-path-in-impl-Fn.mir
-lifetimes/elided-lifetime-in-path-in-pat.mir
 lifetimes/elided-lifetime-in-path-in-type-relative-expression.mir
 lifetimes/issue-54378.mir
 lifetimes/issue-67498.mir
@@ -1800,13 +1773,11 @@ log-poly.mir
 logging-only-prints-once.mir
 loops/for-each-loop-panic.mir
 loops/loop-break-unsize.mir
-macros/assert-as-macro.mir
 macros/assert-eq-macro-msg.mir
 macros/assert-eq-macro-panic.mir
 macros/assert-eq-macro-success.mir
 macros/assert-eq-macro-unsized.mir
 macros/assert-format-lazy.mir
-macros/assert-macro-explicit.mir
 macros/assert-macro-fmt.mir
 macros/assert-macro-owned.mir
 macros/assert-macro-static.mir
@@ -1855,7 +1826,6 @@ macros/macro-delimiter-significance.mir
 macros/macro-doc-raw-str-hashes.mir
 macros/macro-first-set.mir
 macros/macro-interpolation.mir
-macros/macro-invocation-in-count-expr-fixed-array-type.mir
 macros/macro-lifetime-used-with-bound.mir
 macros/macro-lifetime-used-with-static.mir
 macros/macro-lifetime.mir
@@ -1897,12 +1867,9 @@ macros/try-macro.mir
 macros/type-macros-hlist.mir
 macros/type-macros-simple.mir
 macros/typeck-macro-interaction-issue-8852.mir
-macros/unimplemented-macro-panic.mir
 macros/unreachable-fmt-msg.mir
 macros/unreachable-format-arg.mir
-macros/unreachable-macro-panic.mir
 macros/unreachable-static-msg.mir
-macros/unreachable.mir
 match/const_non_normal_zst_ref_pattern.mir
 match/expr-match-panic-fn.mir
 match/expr-match-panic.mir
@@ -1974,7 +1941,6 @@ mir/mir-inlining/no-trait-method-issue-40473.mir
 mir/mir-inlining/var-debuginfo-issue-67586.mir
 mir/mir-typeck-normalize-fn-sig.mir
 mir/mir_adt_construction.mir
-mir/mir_ascription_coercion.mir
 mir/mir_assign_eval_order.mir
 mir/mir_augmented_assignments.mir
 mir/mir_autoderef.mir
@@ -1995,7 +1961,6 @@ mir/mir_codegen_critical_edge.mir
 mir/mir_codegen_spike1.mir
 mir/mir_codegen_switch.mir
 mir/mir_codegen_switchint.mir
-mir/mir_coercion_casts.mir
 mir/mir_coercions.mir
 mir/mir_constval_adts.mir
 mir/mir_drop_order.mir
@@ -2041,7 +2006,6 @@ moves/move-scalar.mir
 moves/moves-based-on-type-capture-clause.mir
 multibyte.mir
 mut-function-arguments.mir
-mut/no-mut-lint-for-desugared-mut.mir
 mutual-recursion-group.mir
 nested-class.mir
 never-type/adjust_never.mir
@@ -2056,7 +2020,6 @@ never-type/issue-44402.mir
 never-type/issue-5500-1.mir
 never-type/never-assign-dead-code.mir
 never-type/never-associated-type.mir
-never-type/never-result.mir
 never-type/never-type-arg.mir
 never-type/never-type-rvalues.mir
 never-type/never_coercions.mir
@@ -2092,7 +2055,6 @@ numbers-arithmetic/i32-sub.mir
 numbers-arithmetic/i8-incr.mir
 numbers-arithmetic/int-abs-overflow.mir
 numbers-arithmetic/integer-literal-radix.mir
-numbers-arithmetic/integer-literal-suffix-inference-2.mir
 numbers-arithmetic/integer-literal-suffix-inference-3.mir
 numbers-arithmetic/integer-literal-suffix-inference.mir
 numbers-arithmetic/issue-8460.mir
@@ -2220,7 +2182,6 @@ pattern/issue-8351-1.mir
 pattern/issue-8351-2.mir
 pattern/issue-88074-pat-range-type-inference.mir
 pattern/move-ref-patterns/borrowck-move-ref-pattern-pass.mir
-pattern/move-ref-patterns/by-move-sub-pat-unreachable.mir
 pattern/move-ref-patterns/issue-53840.mir
 pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.mir
 pattern/move-ref-patterns/move-ref-patterns-dynamic-semantics.mir
@@ -2280,10 +2241,6 @@ rfcs/issue-99876.mir
 rfcs/rfc-1014.mir
 rfcs/rfc-1789-as-cell/from-mut.mir
 rfcs/rfc-1937-termination-trait/termination-trait-for-box-dyn-error.mir
-rfcs/rfc-1937-termination-trait/termination-trait-for-exitcode.mir
-rfcs/rfc-1937-termination-trait/termination-trait-for-impl-termination.mir
-rfcs/rfc-1937-termination-trait/termination-trait-for-result-box-error_ok.mir
-rfcs/rfc-1937-termination-trait/termination-trait-for-result.mir
 rfcs/rfc-1937-termination-trait/termination-trait-for-str.mir
 rfcs/rfc-2005-default-binding-mode/box.mir
 rfcs/rfc-2005-default-binding-mode/constref.mir
@@ -2430,7 +2387,6 @@ struct-enums/enum-discrim-manual-sizing.mir
 struct-enums/enum-discrim-range-overflow.mir
 struct-enums/enum-discrim-width-stuff.mir
 struct-enums/enum-disr-val-pretty.mir
-struct-enums/enum-export-inheritance.mir
 struct-enums/enum-layout-optimization.mir
 struct-enums/enum-non-c-like-repr-c-and-int.mir
 struct-enums/enum-non-c-like-repr-c.mir
@@ -2441,15 +2397,12 @@ struct-enums/enum-nullable-simplifycfg-misopt.mir
 struct-enums/enum-univariant-repr.mir
 struct-enums/enum-variants.mir
 struct-enums/enum-vec-initializer.mir
-struct-enums/export-abstract-tag.mir
-struct-enums/export-tag-variant.mir
 struct-enums/expr-if-struct.mir
 struct-enums/expr-match-struct.mir
 struct-enums/field-destruction-order.mir
 struct-enums/functional-struct-upd.mir
 struct-enums/issue-1701.mir
 struct-enums/issue-38002.mir
-struct-enums/issue-50731.mir
 struct-enums/ivec-tag.mir
 struct-enums/module-qualified-struct-destructure.mir
 struct-enums/multiple-reprs.mir
@@ -2495,7 +2448,6 @@ struct-enums/tag-align-dyn-variants.mir
 struct-enums/tag-align-shape.mir
 struct-enums/tag-align-u64.mir
 struct-enums/tag-disr-val-shape.mir
-struct-enums/tag-exports.mir
 struct-enums/tag-in-block.mir
 struct-enums/tag-variant-disr-val.mir
 struct-enums/tag.mir
@@ -2546,7 +2498,7 @@ traits/alias/import.mir
 traits/alias/issue-60021-assoc-method-resolve.mir
 traits/alias/issue-60755.mir
 traits/alias/issue-72415-assoc-const-resolve.mir
-traits/alias/issue-75983.mir
+traits/alias/object-wf.mir
 traits/alias/object.mir
 traits/alias/syntax.mir
 traits/alignment-gep-tup-like-1.mir
@@ -2579,7 +2531,6 @@ traits/impl-evaluation-order.mir
 traits/impl-implicit-trait.mir
 traits/impl-inherent-prefer-over-trait.mir
 traits/impl-object-overlap-issue-23853.mir
-traits/impl_trait_as_trait_return_position.mir
 traits/infer-from-object-issue-26952.mir
 traits/inherent-method-order.mir
 traits/inheritance/auto.mir
@@ -2613,7 +2564,6 @@ traits/issue-18412.mir
 traits/issue-22019.mir
 traits/issue-22110.mir
 traits/issue-22655.mir
-traits/issue-23003-overflow.mir
 traits/issue-23003.mir
 traits/issue-23825.mir
 traits/issue-24010.mir
@@ -2627,7 +2577,6 @@ traits/issue-6128.mir
 traits/issue-6334.mir
 traits/issue-70944.mir
 traits/issue-72455.mir
-traits/issue-82830.mir
 traits/issue-90195-2.mir
 traits/issue-90195.mir
 traits/issue-92292.mir
@@ -2685,7 +2634,6 @@ try-trait/yeet-for-option.mir
 try-trait/yeet-for-result.mir
 tuple-index.mir
 tuple/builtin.mir
-tuple/index-float.mir
 tuple/nested-index.mir
 tuple/one-tuple.mir
 tuple/tup.mir
@@ -2781,7 +2729,6 @@ unused-move.mir
 unwind-no-uwtable.mir
 unwind-unique.mir
 use-keyword-2.mir
-use.mir
 utf8_idents.mir
 variance-intersection-of-ref-and-opt-ref.mir
 variance-iterators-in-libcore.mir
