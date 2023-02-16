@@ -2,7 +2,6 @@
 
 import re
 import sys
-from pathlib import Path
 
 LINE_COMMENT_REGEXP = re.compile(r'^((?:[^/"]|/[^/"]|/?"(?:[^\\"]|\\.)*")*)//.*$')
 HEX_CLEANUP_SUFFIX = re.compile(r'^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
