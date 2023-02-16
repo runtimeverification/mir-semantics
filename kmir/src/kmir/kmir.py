@@ -9,6 +9,7 @@ from typing import Union, final
 from pyk.cli_utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast
+from pyk.ktool.krun import KRunOutput, _krun
 
 
 @final
@@ -42,3 +43,20 @@ class KMIR:
             raise ValueError("Couldn't parse program") from err
 
         return KInner.from_dict(json.loads(proc_res.stdout)['term'])
+
+    def run_program(self, program_file: Union[str, Path], check: bool = True) -> KInner:
+        program_file = Path(program_file)
+        check_file_path(program_file)
+
+        try:
+            proc_res = _krun(
+                input_file=program_file,
+                definition_dir=self.llvm_dir,
+                output=KRunOutput.NONE,
+                check=check,
+                pipe_stderr=True,
+            )
+        except CalledProcessError as err:
+            raise err
+
+        return proc_res
