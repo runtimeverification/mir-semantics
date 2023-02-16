@@ -35,7 +35,7 @@ def preprocess(input_file: str, output_file: str) -> None:
                 g.write('\n')
 
 
-def main(args) -> None:
+def main(args: list[str]) -> None:
     # print(remove_comments('Hello World'))
     # print(remove_comments('Hello // World'))
     # print(remove_comments('Hello "// World"'))
