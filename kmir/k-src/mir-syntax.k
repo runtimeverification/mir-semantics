@@ -163,8 +163,10 @@ module MIR-SYNTAX
 
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
+                                  | PathClosure
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
   syntax PathLocation ::= "<impl" "at" FilePosition ">"
+  syntax PathClosure ::= "{" "closure" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -187,7 +189,6 @@ module MIR-SYNTAX
                 | TypeNoBounds
                 | ImplTraitTypeReduced
                 | TraitObjectTypeReduced
-                | MirOnlyType
 
   syntax TypeList ::= List{Type, ","}
 
@@ -204,6 +205,7 @@ module MIR-SYNTAX
                         | QualifiedPathInType
                         | BareFunctionType
                         // Probably not used im mir: MacroInvocation
+                        | MirOnlyType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
