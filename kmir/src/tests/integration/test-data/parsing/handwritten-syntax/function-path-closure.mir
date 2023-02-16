@@ -1,0 +1,5 @@
+fn main::{closure#0}(_1: usize) -> usize {
+  bb0: {
+      return;
+  }
+}
