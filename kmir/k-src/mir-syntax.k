@@ -132,6 +132,7 @@ module MIR-SYNTAX
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
   syntax StructConstant ::= Type "{" "{" StructFieldConstantList "}" "}"
+                          | Type "{" StructFieldConstantList "}"
   syntax StructFieldConstant ::= StructFieldName ":" ConstantValue
   syntax StructFieldConstantList ::= List{StructFieldConstant, ","}
 
