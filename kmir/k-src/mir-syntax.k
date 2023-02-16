@@ -12,11 +12,14 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= FunctionPath "::" FunctionForConstantName ":" Type "="
-  syntax FunctionForConstantName  ::= "{" "constant" "#" Int "}"  // anonymous
-                                    | Identifier
+  syntax FunctionForConstantSignature ::= PathFunctionConstant ":" Type "="
 
-  syntax FunctionBody ::= BindingList ScopeList BasicBlockList
+  // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
+  syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
+  syntax PathFunctionConstantSegment  ::= PathExprSegment
+                                        | "{" "constant" "#" Int "}"  // anonymous
+
+  syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut VariableName ":" Type ";"
   syntax BindingList ::= List{Binding, ""}
   syntax OptMut ::= "mut" | ""
@@ -44,11 +47,20 @@ module MIR-SYNTAX
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
 
-  syntax CallLike ::= CallFunctionPath "(" ArgumentList ")"
+  // https://doc.rust-lang.org/reference/expressions/call-expr.html
+  syntax CallLike ::= PathExpression "(" ArgumentList ")"
 
+  // https://doc.rust-lang.org/reference/expressions/path-expr.html
+  syntax PathExpression ::= PathInExpression | QualifiedPathInExpression
   // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
-  syntax CallFunctionPath ::= FunctionPath
-                            | FunctionPath GenericArgs
+  syntax PathInExpression ::= "::" ExpressionPathList
+                            | ExpressionPathList
+  syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
+  syntax PathExprSegment  ::= PathIdentSegment
+                            | PathIdentSegment "::" GenericArgs
+                            | PathLocation  // Mir-only thing.
+  // https://doc.rust-lang.org/reference/paths.html#qualified-paths
+  syntax QualifiedPathInExpression ::= QualifiedPathType "::" ExpressionPathList
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
@@ -120,6 +132,7 @@ module MIR-SYNTAX
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
   syntax StructConstant ::= Type "{" "{" StructFieldConstantList "}" "}"
+                          | Type "{" StructFieldConstantList "}"
   syntax StructFieldConstant ::= StructFieldName ":" ConstantValue
   syntax StructFieldConstantList ::= List{StructFieldConstant, ","}
 
@@ -150,8 +163,10 @@ module MIR-SYNTAX
 
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
+                                  | PathClosure
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
   syntax PathLocation ::= "<impl" "at" FilePosition ">"
+  syntax PathClosure ::= "{" "closure" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -166,7 +181,7 @@ module MIR-SYNTAX
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
 
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
-  syntax FileLineColumnStartLiteral ::= r"\\/.+:[0-9]+:[0-9]+:"  [token]
+  syntax FileLineColumnStartLiteral ::= r"[^@ ]+:[0-9]+:[0-9]+:"  [token]
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 
   // https://doc.rust-lang.org/reference/types.html#type-expressions
@@ -174,7 +189,6 @@ module MIR-SYNTAX
                 | TypeNoBounds
                 | ImplTraitTypeReduced
                 | TraitObjectTypeReduced
-                | MirOnlyType
 
   syntax TypeList ::= List{Type, ","}
 
@@ -191,6 +205,7 @@ module MIR-SYNTAX
                         | QualifiedPathInType
                         | BareFunctionType
                         // Probably not used im mir: MacroInvocation
+                        | MirOnlyType
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound

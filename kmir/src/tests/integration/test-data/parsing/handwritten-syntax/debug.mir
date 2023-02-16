@@ -1,0 +1,6 @@
+fn main() -> () {
+  debug my_var_name => _1;
+  debug my_other_var => _2;
+  let _1: usize;
+  let mut _2: usize;
+}
