@@ -12,9 +12,12 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= FunctionPath "::" FunctionForConstantName ":" Type "="
-  syntax FunctionForConstantName  ::= "{" "constant" "#" Int "}"  // anonymous
-                                    | Identifier
+  syntax FunctionForConstantSignature ::= PathFunctionConstant ":" Type "="
+
+  // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
+  syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
+  syntax PathFunctionConstantSegment  ::= PathExprSegment
+                                        | "{" "constant" "#" Int "}"  // anonymous
 
   syntax FunctionBody ::= BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut VariableName ":" Type ";"
@@ -44,11 +47,20 @@ module MIR-SYNTAX
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
 
-  syntax CallLike ::= CallFunctionPath "(" ArgumentList ")"
+  // https://doc.rust-lang.org/reference/expressions/call-expr.html
+  syntax CallLike ::= PathExpression "(" ArgumentList ")"
 
+  // https://doc.rust-lang.org/reference/expressions/path-expr.html
+  syntax PathExpression ::= PathInExpression | QualifiedPathInExpression
   // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
-  syntax CallFunctionPath ::= FunctionPath
-                            | FunctionPath GenericArgs
+  syntax PathInExpression ::= "::" ExpressionPathList
+                            | ExpressionPathList
+  syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
+  syntax PathExprSegment  ::= PathIdentSegment
+                            | PathIdentSegment "::" GenericArgs
+                            | PathLocation  // Mir-only thing.
+  // https://doc.rust-lang.org/reference/paths.html#qualified-paths
+  syntax QualifiedPathInExpression ::= QualifiedPathType "::" ExpressionPathList
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
