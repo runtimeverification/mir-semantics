@@ -1,0 +1,11 @@
+fn main() -> () {
+  let _1: stuff<>::usize;
+  let _2: stuff<usize>::usize;
+  let _3: stuff<usize, usize>::usize;
+  let _4: stuff<'static>::usize;
+  let _5: stuff<path::Type>::usize;
+  let _6: stuff<true>::usize;
+  let _7: stuff<2>::usize;
+  let _8: stuff<$crate>::usize;
+  let _9: stuff<name=Type>::usize;
+}

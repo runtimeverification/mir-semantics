@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    _2 = const {alloc1: &usize};
+    _2 = const {transmute(0x0000000000000000): usize};
+    return;
+  }
+}
