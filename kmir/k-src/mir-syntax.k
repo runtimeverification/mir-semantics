@@ -19,7 +19,7 @@ module MIR-SYNTAX
   syntax PathFunctionConstantSegment  ::= PathExprSegment
                                         | "{" "constant" "#" Int "}"  // anonymous
 
-  syntax FunctionBody ::= BindingList ScopeList BasicBlockList
+  syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut VariableName ":" Type ";"
   syntax BindingList ::= List{Binding, ""}
   syntax OptMut ::= "mut" | ""
