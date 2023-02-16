@@ -1,0 +1,12 @@
+fn main() -> () {
+  let _1: fn();
+  let _2: for <usize> fn();
+  let _2: for <usize, usize> fn();
+  let _3: unsafe fn();
+  let _4: extern "C" fn();
+  let _5: unsafe extern "C" fn();
+  let _6: for <usize> unsafe fn();
+  let _7: fn(usize);
+  let _8: fn(usize, usize);
+  let _9: fn() -> usize;
+}

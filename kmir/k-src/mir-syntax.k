@@ -4,7 +4,7 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant
+  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -43,8 +43,14 @@ module MIR-SYNTAX
                       | CallLike
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
-  // TODO: Test that this is a FunctionPath not a FunctionPathComponent.
-  syntax CallLike ::= FunctionPath "(" ArgumentList ")"
+
+  syntax CallLike ::= CallFunctionPath "(" ArgumentList ")"
+
+  // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
+  syntax CallFunctionPath ::= FunctionPath
+                            | FunctionPath GenericArgs
+
+  syntax ArgumentList ::= List{BasicRValue, ","}
 
   syntax LValue ::= VariableName
                   | "(" "*" LValue ")"
@@ -98,6 +104,7 @@ module MIR-SYNTAX
                           | FloatLiteral
                           | CharLiteral
                           | StringLiteral
+                          | ByteLiteral
                           | ByteStringLiteral
                           | Bool
                           | EnumGenericArgumentOrConstConstant
@@ -144,7 +151,7 @@ module MIR-SYNTAX
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
-  syntax PathLocation ::= "<impl" "at" FileLineColumnStartLiteral LineColumnEndLiteral ">"
+  syntax PathLocation ::= "<impl" "at" FilePosition ">"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -155,21 +162,191 @@ module MIR-SYNTAX
   syntax HexLiteral ::= r"0x[0-9a-fA-F]+"  [token]
   syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
   syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
+  syntax ByteLiteral ::= r"b[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
+
+  syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
   syntax FileLineColumnStartLiteral ::= r"\\/.+:[0-9]+:[0-9]+:"  [token]
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 
+  // https://doc.rust-lang.org/reference/types.html#type-expressions
+  syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
+                | TypeNoBounds
+                | ImplTraitTypeReduced
+                | TraitObjectTypeReduced
+                | MirOnlyType
+
+  syntax TypeList ::= List{Type, ","}
+
+  syntax TypeNoBounds ::= ImplTraitTypeOneBound
+                        | TraitObjectTypeOneBound
+                        | TypePath
+                        | TupleType
+                        | NeverType
+                        | RawPointerType
+                        | ReferenceType
+                        | ArrayType
+                        | SliceType
+                        // Probably not used in mir: InferredType
+                        | QualifiedPathInType
+                        | BareFunctionType
+                        // Probably not used im mir: MacroInvocation
+  
+  // https://doc.rust-lang.org/reference/types/impl-trait.html
+  syntax ImplTraitTypeOneBound ::= "impl" TraitBound
+  // https://doc.rust-lang.org/reference/types/trait-object.html
+  syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
+  // https://doc.rust-lang.org/reference/paths.html#paths-in-types
+  syntax TypePath ::= "::" TypePathList
+                    | TypePathList
+  syntax TypePathList ::= NeList{TypePathSegment, "::"}
+  syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
+                            | PathIdentSegment "::" PathIdentSegmentSuffix
+  syntax PathIdentSegmentSuffix ::= ""
+                                  | GenericArgs
+                                  // TypePathFn is likely not used in mir
+  syntax PathIdentSegment ::= Identifier | "$crate"
+  syntax GenericArgs ::= "<" GenericArgsList ">"
+  syntax GenericArgsList ::= List{GenericArg, ","}
+  syntax GenericArg ::= Lifetime
+                      | Type
+                      | GenericArgsConst
+                      | GenericArgsBinding
+  syntax GenericArgsConst ::= LiteralExpression
+                            | "-" LiteralExpression
+                            // BlockExpression is likely not used in mir
+                            // SimplePathSegmentReduced is not actually needed, it's covered by Type
+  syntax GenericArgsBinding ::= Identifier "=" Type
+
+  // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
+  syntax TupleType  ::= "(" ")"
+                      | "(" Type "," TypeList ")"
+  // https://doc.rust-lang.org/reference/types/never.html
+  syntax NeverType ::= "!"
+  // https://doc.rust-lang.org/reference/types/pointer.html#raw-pointers-const-and-mut
+  syntax RawPointerType ::= "*" "mut" TypeNoBounds
+                          | "*" "const" TypeNoBounds
+  // https://doc.rust-lang.org/reference/types/pointer.html#shared-references-
+  syntax ReferenceType  ::= "&" TypeNoBounds
+                          | "&" Lifetime TypeNoBounds
+                          | "&" "mut" TypeNoBounds
+                          | "&" Lifetime "mut" TypeNoBounds
+
+  // https://doc.rust-lang.org/reference/trait-bounds.html
+  // TODO: Make this a token.
+  // TODO: There are various lifetime-related tokens that I combined into a
+  // single one. Consider actually using multiple token types.
+  syntax Lifetime ::= "'" Identifier | "'static"
+  syntax LifetimeBounds ::= List{Lifetime, "+"}
+
+  // https://doc.rust-lang.org/reference/types/array.html
+  syntax ArrayType ::= "[" Type ";" Int "]"
+  // https://doc.rust-lang.org/reference/types/slice.html
+  syntax SliceType ::= "[" Type "]"
+  // https://doc.rust-lang.org/reference/paths.html#qualified-paths
+  syntax QualifiedPathInType ::= QualifiedPathType
+  syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
+  syntax QualifiedPathType  ::= "<" Type ">"
+                              | "<" Type "as" TypePath ">"
+  // https://doc.rust-lang.org/reference/types/function-pointer.html
+  syntax BareFunctionType ::= MaybeForLifetimes FunctionTypeQualifiers
+                              "fn" "(" FunctionParametersMaybeNamedVariadic ")"
+                              MaybeBareFunctionReturnType
+  syntax FunctionTypeQualifiers ::= "" | "unsafe" | "extern" Abi | "unsafe" "extern" Abi
+  syntax FunctionParametersMaybeNamedVariadic ::= MaybeNamedFunctionParameters
+                                                // Not seen in mir: MaybeNamedFunctionParametersVariadic
+                                                // TODO: Try to generate this
+  syntax MaybeNamedFunctionParameters ::= List {MaybeNamedParam, ","}
+  syntax BareFunctionReturnType ::= "->" TypeNoBounds
+  syntax MaybeBareFunctionReturnType ::= "" | BareFunctionReturnType
+  // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
+  syntax ForLifetimes ::= "for" GenericParams
+  syntax MaybeForLifetimes ::= "" | ForLifetimes
+
+  // https://doc.rust-lang.org/reference/items/generics.html
+  syntax GenericParams ::= "<" GenericParamList ">"
+  syntax GenericParamList ::= List{GenericParam, ","}
+
+  // https://doc.rust-lang.org/reference/types/impl-trait.html
+  // There is a parse conflict between
+  // Type -> TypeNoBounds -> ImplTraitTypeOneBound -> impl TraitBound
+  // and Type -> TypeParamBounds -> impl TypeParamBound -> impl TraitBound
+  // This is an attempt to solve this issue.
+  syntax ImplTraitType ::= ImplTraitTypeOneBound | ImplTraitTypeReduced
+  syntax ImplTraitTypeReduced ::= "impl" TypeParamBoundsReduced
+  // https://doc.rust-lang.org/reference/types/trait-object.html
+  // TraitObjectType has a similar conflict as ImplTraitType, solved in the
+  // same way.
+  syntax TraitObjectType::= TraitObjectTypeOneBound | TraitObjectTypeReduced
+  syntax TraitObjectTypeReduced ::= "dyn" TypeParamBoundsReduced
+  // https://doc.rust-lang.org/reference/trait-bounds.html
+  syntax TypeParamBounds ::= ImplTraitTypeOneBound | TypeParamBoundsReduced
+  syntax TypeParamBoundsReduced ::= Lifetime
+                                  | TypeParamBound "+" TypeParamBoundsList
+  syntax TypeParamBoundsReduced2  ::= ImplTraitTypeOneBound
+                                    | TypeParamBound "+" TypeParamBoundsList
+  syntax TypeParamBoundsList ::= NeList{TypeParamBound, "+"}
+  syntax TypeParamBound ::= Lifetime | TraitBound
+  syntax TraitBound ::= TraitBoundInner
+                      | "(" TraitBoundInner ")"
+  syntax TraitBoundInner  ::= "?" MaybeForLifetimes TypePath
+                            | MaybeForLifetimes TypePath
+
+  // https://doc.rust-lang.org/reference/items/generics.html
+  // OuterAttributes are likely not used for GenericParam in mir.
+  syntax GenericParam ::= LifetimeParam
+                        | TypeParam
+                        // ConstParam is likely not used in mir.
+  syntax LifetimeParam  ::= Lifetime
+                          | Lifetime ":" LifetimeBounds
+  syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
+  syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
+  syntax MaybeEqualsType ::= "" | "=" Type
+
+  // It is likely that Mir does not use the full syntax for MaybeNamedParam
+  syntax MaybeNamedParam ::= Type
+
+  // https://doc.rust-lang.org/reference/expressions/literal-expr.html
+  syntax LiteralExpression  ::= CharLiteral
+                              | StringLiteral
+                              // RawStringLiteral is unlikely to be used in mir
+                              | ByteLiteral
+                              | ByteStringLiteral
+                              // RawByteStringLiteral is unlikely to be used in mir
+                              | UnsignedLiteral | Int
+                              | FloatLiteral
+                              | Bool
+
+  syntax DataAlloc ::= Identifier "(" MaybeStatic "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
+  syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
+  syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
+  syntax MaybeStatic ::= "" | "static" ":" Identifier ","
+  syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
+  syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
+  syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
+
   // TODO: Finish implementing the sorts below.
 
-  syntax ArgumentList ::= ""
   syntax TerminatorDestination ::= BB
-  syntax Type ::= "(" ")" | "usize" | "f32" | Identifier
-  syntax ReferenceType ::= "&" Type
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
+  syntax Abi ::= StringLiteral
+  syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
   syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax VariableName ::= Identifier
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
   syntax BB ::= Identifier
+
+  // TODO: This grammar needs a preprocessing step that removes comments and
+  // the textual representation at the end of memory dump lines, e.g. the
+  // │ ........ part here:
+  // alloc1 (static: RAND_SOURCE, size: 8, align: 8) {
+  //   00 00 00 00 00 00 00 00                         │ ........
+  // }
+  // It should also replace │ by |.
+  // For clarity, here are the (VSC) regular expressions for cleaning memory dumps:
+  // Replace ^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1
+  // Replace ^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1|$2
 endmodule

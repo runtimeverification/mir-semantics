@@ -1,0 +1,11 @@
+fn main() -> () {
+  let _1: stuff::usize;
+  let _1: super::usize;
+  let _1: self::usize;
+  let _1: Self::usize;
+  let _1: crate::usize;
+  let _1: $crate::usize;
+  let _1: stuff::::usize;
+  let _1: stuff<usize>::usize;
+  let _1: stuff::<usize>::usize;
+}

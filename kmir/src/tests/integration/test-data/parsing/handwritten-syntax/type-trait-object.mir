@@ -1,0 +1,12 @@
+fn main() -> () {
+  let _1: dyn Type;
+  let _2: dyn for <usize> Type;
+  let _3: dyn ? Type;
+  let _4: dyn ? for <usize> Type;
+  let _5: dyn (Type);
+  let _6: dyn (for <usize> Type);
+  let _7: dyn (? Type);
+  let _8: dyn (? for <usize> Type);
+  let _9: dyn 'a;
+  let _10: dyn 'a + Type;
+}

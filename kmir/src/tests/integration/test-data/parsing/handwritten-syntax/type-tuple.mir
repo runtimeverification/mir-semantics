@@ -1,0 +1,5 @@
+fn main() -> () {
+  let _1: ();
+  let _2: (usize, );
+  let _2: (usize, usize);
+}

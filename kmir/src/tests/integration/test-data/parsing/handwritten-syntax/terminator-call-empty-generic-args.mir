@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  bb0: {
+    path::function_name<>();
+  }
+  bb1: {
+    return;
+  }
+}
