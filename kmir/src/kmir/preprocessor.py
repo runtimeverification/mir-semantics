@@ -2,6 +2,7 @@
 
 import re
 import sys
+import typing
 
 LINE_COMMENT_REGEXP = re.compile(r'^((?:[^/"]|/[^/"]|/?"(?:[^\\"]|\\.)*")*)//.*$')
 HEX_CLEANUP_SUFFIX = re.compile(r'^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
@@ -35,7 +36,7 @@ def preprocess(input_file: str, output_file: str) -> None:
                 g.write('\n')
 
 
-def main(args: list[str]) -> None:
+def main(args: typing.List[str]) -> None:
     # print(remove_comments('Hello World'))
     # print(remove_comments('Hello // World'))
     # print(remove_comments('Hello "// World"'))
