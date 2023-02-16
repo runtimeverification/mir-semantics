@@ -26,7 +26,7 @@ def cleanup_hex_dump(line: str) -> str:
     return m.group(1)
 
 
-def preprocess(input_file: Path, output_file: Path) -> None:
+def preprocess(input_file: str, output_file: str) -> None:
     with open(input_file, 'r') as f:
         with open(output_file, 'w') as g:
             for line in f:
@@ -36,7 +36,7 @@ def preprocess(input_file: Path, output_file: Path) -> None:
                 g.write('\n')
 
 
-def main(args):
+def main(args) -> None:
     # print(remove_comments('Hello World'))
     # print(remove_comments('Hello // World'))
     # print(remove_comments('Hello "// World"'))
