@@ -57,4 +57,4 @@ do
   echo -e "${NO_COLOR}"
 done
 
-cat $failed_file | sed 's$^.*/compiletest-rs/$$' > $compiletest_file
+cat $failed_file | sed 's$^.*/compiletest-rs/ui/$$' | sort > $compiletest_file
