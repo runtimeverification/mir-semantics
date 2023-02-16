@@ -1,0 +1,5 @@
+fn main() -> () {
+  let _1: & '_ usize;
+  let _2: & 'static usize;
+  let _3: & 'stuff123 mut usize;
+}
