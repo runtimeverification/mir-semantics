@@ -12,7 +12,8 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= PathFunctionConstant ":" Type "="
+  syntax FunctionForConstantSignature ::= MaybeStatic PathFunctionConstant ":" Type "="
+  syntax MaybeStatic ::= "" | "static"
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
@@ -343,11 +344,11 @@ module MIR-SYNTAX
                               | FloatLiteral
                               | Bool
 
-  syntax DataAlloc ::= Identifier "(" MaybeStatic "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
-  syntax MaybeStatic ::= "" | "static" ":" Identifier ","
+  syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
   syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
