@@ -114,6 +114,7 @@ module MIR-SYNTAX
                   | "Len" "(" LValue ")"
                   | StructRValue
                   | TupleRValue
+                  | ConstructorEnum
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
   syntax StructRValue ::= Type "{" StructRValueFieldList "}"
@@ -175,6 +176,8 @@ module MIR-SYNTAX
   // }
   syntax EnumGenericArgumentOrConstConstant ::= Type "::" Identifier
                                               | Identifier
+
+  syntax ConstructorEnum ::= PathExpression "::" Identifier
 
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
