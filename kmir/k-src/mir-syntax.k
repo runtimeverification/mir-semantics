@@ -107,9 +107,13 @@ module MIR-SYNTAX
                   | "Not" "(" BasicRValue ")"
 
                   | "Len" "(" LValue ")"
-
-
+                  | StructRValue
   syntax BasicRValueList ::= List{BasicRValue, ","}
+
+  syntax StructRValue ::= Type "{" StructRValueFieldList "}"
+  syntax StructRValueField ::= StructFieldName ":" BasicRValue
+  syntax StructRValueFieldList ::= List{StructRValueField, ","}
+
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 
   syntax Constant ::= "const" ConstantValue
