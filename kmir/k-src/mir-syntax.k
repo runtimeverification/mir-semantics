@@ -39,6 +39,7 @@ module MIR-SYNTAX
   syntax StatementList ::= List {TerminatedStatement, ""}
 
   syntax Terminator ::= "return"
+                      | "unreachable"
                       | "goto" "->" BB
                       // TODO: Can this happen for things other than panics?
                       | LValue "=" CallLike
