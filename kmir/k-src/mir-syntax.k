@@ -358,6 +358,9 @@ module MIR-SYNTAX
   syntax OtherwiseCase ::= "otherwise" ":" BB
   syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
 
+  syntax BB ::= BBName MaybeBBCleanup
+  syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
+
   // TODO: Finish implementing the sorts below.
 
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
@@ -368,7 +371,7 @@ module MIR-SYNTAX
   syntax VariableName ::= Identifier
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
-  syntax BB ::= Identifier
+  syntax BBName ::= Identifier
 
   // TODO: This grammar needs a preprocessing step that removes comments and
   // the textual representation at the end of memory dump lines, e.g. the
