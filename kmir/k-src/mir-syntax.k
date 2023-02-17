@@ -341,11 +341,12 @@ module MIR-SYNTAX
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
-  syntax TerminatorDestination ::= BB | SwitchIntCases
+  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
   syntax IntCaseList ::= NeList{IntCase, ","}
   syntax IntCase ::= Int ":" BB
   syntax OtherwiseCase ::= "otherwise" ":" BB
+  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
 
   // TODO: Finish implementing the sorts below.
 
