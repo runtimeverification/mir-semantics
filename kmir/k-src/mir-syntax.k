@@ -40,6 +40,7 @@ module MIR-SYNTAX
 
   syntax Terminator ::= "return"
                       | "unreachable"
+                      | "resume"
                       | "goto" "->" BB
                       // TODO: Can this happen for things other than panics?
                       | LValue "=" CallLike
