@@ -53,9 +53,9 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
   syntax Callable ::= PathExpression | "move" VariableName
-  // TODO: This accepts assert(!_=,). Decide if this should be fixed or not.
-  syntax AssertCall ::= assert(AssertArgument, ArgumentList)
-  syntax AssertArgument ::= BasicRValue | "!" BasicRValue
+  syntax AssertCall ::= assert(AssertArgumentList)
+  syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
+  syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression | QualifiedPathInExpression

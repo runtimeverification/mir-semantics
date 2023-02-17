@@ -5,4 +5,7 @@ fn main(_1: usize) -> () {
   bb1: {
     assert(move _4, _2);
   }
+  bb1: {
+    assert(move _4, "Hello");
+  }
 }
