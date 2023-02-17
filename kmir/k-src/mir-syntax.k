@@ -108,11 +108,15 @@ module MIR-SYNTAX
 
                   | "Len" "(" LValue ")"
                   | StructRValue
+                  | TupleRValue
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
   syntax StructRValue ::= Type "{" StructRValueFieldList "}"
   syntax StructRValueField ::= StructFieldName ":" BasicRValue
   syntax StructRValueFieldList ::= List{StructRValueField, ","}
+
+  syntax TupleRValue  ::= "(" ")"
+                        | "(" BasicRValue "," BasicRValueList ")"
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 
