@@ -1,8 +1,10 @@
+import tempfile
 from pathlib import Path
 
 import pytest
 
 from kmir import KMIR
+from kmir.preprocessor import preprocess
 
 TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
@@ -34,4 +36,6 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path) -> None:
     if test_id in COMPILETEST_EXCLUDE:
         pytest.skip()
 
-    kmir.parse_program(input_path)
+    with tempfile.NamedTemporaryFile() as tmp:
+        preprocess(str(input_path), tmp.name)
+        kmir.parse_program(Path(tmp.name))
