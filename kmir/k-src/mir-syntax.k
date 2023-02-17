@@ -341,9 +341,14 @@ module MIR-SYNTAX
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
+  syntax TerminatorDestination ::= BB | SwitchIntCases
+  syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
+  syntax IntCaseList ::= NeList{IntCase, ","}
+  syntax IntCase ::= Int ":" BB
+  syntax OtherwiseCase ::= "otherwise" ":" BB
+
   // TODO: Finish implementing the sorts below.
 
-  syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
