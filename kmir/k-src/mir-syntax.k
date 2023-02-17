@@ -48,7 +48,8 @@ module MIR-SYNTAX
                       | CallLike "->" TerminatorDestination
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
-  syntax CallLike ::= PathExpression "(" ArgumentList ")"
+  syntax CallLike ::= Callable "(" ArgumentList ")"
+  syntax Callable ::= PathExpression | "move" VariableName
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression | QualifiedPathInExpression
