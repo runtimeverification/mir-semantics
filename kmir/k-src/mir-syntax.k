@@ -237,7 +237,7 @@ module MIR-SYNTAX
                             | PathIdentSegment "::" PathIdentSegmentSuffix
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                  // TypePathFn is likely not used in mir
+                                  | TypePathFn
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -250,6 +250,8 @@ module MIR-SYNTAX
                             // BlockExpression is likely not used in mir
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
+  syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
+  syntax MaybeResultType ::= "" | "->" Type
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
