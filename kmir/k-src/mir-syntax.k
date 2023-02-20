@@ -91,6 +91,7 @@ module MIR-SYNTAX
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
+                  | "[" BasicRValue ";" Int "]"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
                   // TODO: The confusion between `PathExpression "as" Type`
