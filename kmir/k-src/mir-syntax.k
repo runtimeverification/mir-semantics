@@ -353,12 +353,13 @@ module MIR-SYNTAX
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
-  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination
+  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
   syntax IntCaseList ::= NeList{IntCase, ","}
   syntax IntCase ::= Int ":" BB
   syntax OtherwiseCase ::= "otherwise" ":" BB
   syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
+  syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
 
   syntax BB ::= BBName MaybeBBCleanup
   syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
