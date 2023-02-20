@@ -2,9 +2,19 @@ from pathlib import Path
 
 import pytest
 from pyk.kbuild import KBuild, Package
-from pytest import TempPathFactory
+from pytest import Config, Parser, TempPathFactory
 
 from kmir import KMIR
+
+
+def pytest_addoption(parser: Parser) -> None:
+    print(parser)
+    parser.addoption('--no-skip', action='store_true', default=False, help='do not skip tests')
+
+
+@pytest.fixture(scope='session')
+def allow_skip(pytestconfig: Config) -> bool:
+    return not pytestconfig.getoption('no_skip')
 
 
 @pytest.fixture(scope='session')
