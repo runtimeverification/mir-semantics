@@ -72,27 +72,34 @@ module MIR-SYNTAX
   syntax ArgumentList ::= List{BasicRValue, ","}
 
   syntax LValue ::= VariableName
-                  | "(" "*" LValue ")"
-                  | "(" LValue "." Int ":" Type ")"
-                  | LValue "[" LValue "]"
-                  | "(" VariableName "as" Type ")"
+                  | LValueNoVariable
+  syntax LValueNoVariable ::= "(" "*" LValue ")"
+                            | "(" LValue "." Int ":" Type ")"
+                            | LValue "[" LValue "]"
+                            | "(" VariableName "as" Type ")"
 
-  syntax BasicRValue  ::= LValue
-                        | "move" LValue
-                        | Constant
+  syntax BasicRValue  ::= VariableName
+                        | BasicRValueNoVariable
+  syntax BasicRValueNoVariable  ::=  LValueNoVariable
+                                  | "move" LValue
+                                  | Constant
 
-  syntax RValue ::= BasicRValue
+  syntax RValue ::= BasicRValueNoVariable  [avoid]
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
+                  // TODO: The confusion between `PathExpression "as" Type`
+                  // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
+                  // fairly ugly, it's unclear how to properly disambiguate here.
+                  | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
                   | discriminant(LValue)
                   | "&" PtrModifiers LValue
 
                   | StructRValue
                   | TupleRValue
-                  | ConstructorEnum
+                  | PathExpression
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
   // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
@@ -357,11 +364,16 @@ module MIR-SYNTAX
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
-  syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
-  syntax VariableName ::= Identifier
+  syntax VariableToken ::= r"_[0-9]+"  [token(2)]
+  syntax BBToken ::= r"bb[0-9]+"  [token(2)]
+  syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
+
+  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+
+  syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
-  syntax BBName ::= Identifier
+  syntax BBName ::= BBToken
 
   // TODO: This grammar needs a preprocessing step that removes comments and
   // the textual representation at the end of memory dump lines, e.g. the
