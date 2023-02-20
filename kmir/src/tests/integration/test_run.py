@@ -44,10 +44,10 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path) -> None:
         assert run_result.returncode != 0
 
     stdout_path = input_path.parent / (input_path.stem + '.run.stdout')
-    check_result("stdout", stdout_path, run_result.stdout)
+    check_result('stdout', stdout_path, run_result.stdout)
 
     stderr_path = input_path.parent / (input_path.stem + '.run.stderr')
-    check_result("stderr", stderr_path, run_result.stderr)
+    check_result('stderr', stderr_path, run_result.stderr)
 
 
 def check_result(name: str, expected_path: Path, result: bytes) -> None:
@@ -59,7 +59,7 @@ def check_result(name: str, expected_path: Path, result: bytes) -> None:
         return
 
     diff_args = ['diff', str(expected_path), '-']
-    diff_result = run_process(diff_args, input=result, check=False)
+    diff_result = run_process(diff_args, input=str(result), check=False)
 
     if diff_result.returncode != 0:
         raise ValueError('Invalid output in {}:\n{}'.format(name, str(diff_result.stdout)))

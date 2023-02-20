@@ -3,7 +3,7 @@ __all__ = ['KMIR']
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from subprocess import CalledProcessError
+from subprocess import CalledProcessError, CompletedProcess
 from typing import Union, final
 
 from pyk.cli_utils import check_dir_path, check_file_path
@@ -44,7 +44,7 @@ class KMIR:
 
         return KInner.from_dict(json.loads(proc_res.stdout)['term'])
 
-    def run_program(self, program_file: Union[str, Path], check: bool = True) -> KInner:
+    def run_program(self, program_file: Union[str, Path], check: bool = True) -> CompletedProcess:
         program_file = Path(program_file)
         check_file_path(program_file)
 
