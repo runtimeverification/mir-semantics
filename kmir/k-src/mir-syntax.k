@@ -69,8 +69,11 @@ module MIR-SYNTAX
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
+                            | SliceImpl  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
+
+  syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
