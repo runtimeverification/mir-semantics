@@ -345,7 +345,9 @@ module MIR-SYNTAX
   syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
-  syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
+  syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
+  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
+  syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
   syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
   syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
@@ -372,7 +374,7 @@ module MIR-SYNTAX
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
 
-  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+  syntax Identifier ::= IdentifierToken | VariableToken | BBToken | DoubleHexDigitNoIntLetter
 
   syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
