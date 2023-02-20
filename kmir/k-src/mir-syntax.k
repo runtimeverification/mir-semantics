@@ -12,7 +12,8 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= PathFunctionConstant ":" Type "="
+  syntax FunctionForConstantSignature ::= MaybeStatic PathFunctionConstant ":" Type "="
+  syntax MaybeStatic ::= "" | "static"
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
@@ -39,6 +40,8 @@ module MIR-SYNTAX
   syntax StatementList ::= List {TerminatedStatement, ""}
 
   syntax Terminator ::= "return"
+                      | "unreachable"
+                      | "resume"
                       | "goto" "->" BB
                       // TODO: Can this happen for things other than panics?
                       | LValue "=" CallLike
@@ -48,7 +51,11 @@ module MIR-SYNTAX
                       | CallLike "->" TerminatorDestination
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
-  syntax CallLike ::= PathExpression "(" ArgumentList ")"
+  syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
+  syntax Callable ::= PathExpression | "move" VariableName
+  syntax AssertCall ::= assert(AssertArgumentList)
+  syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
+  syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression | QualifiedPathInExpression
@@ -105,9 +112,18 @@ module MIR-SYNTAX
                   | "Not" "(" BasicRValue ")"
 
                   | "Len" "(" LValue ")"
-
-
+                  | StructRValue
+                  | TupleRValue
+                  | ConstructorEnum
   syntax BasicRValueList ::= List{BasicRValue, ","}
+
+  syntax StructRValue ::= Type "{" StructRValueFieldList "}"
+  syntax StructRValueField ::= StructFieldName ":" BasicRValue
+  syntax StructRValueFieldList ::= List{StructRValueField, ","}
+
+  syntax TupleRValue  ::= "(" ")"
+                        | "(" BasicRValue "," BasicRValueList ")"
+
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 
   syntax Constant ::= "const" ConstantValue
@@ -160,6 +176,8 @@ module MIR-SYNTAX
   // }
   syntax EnumGenericArgumentOrConstConstant ::= Type "::" Identifier
                                               | Identifier
+
+  syntax ConstructorEnum ::= PathExpression "::" Identifier
 
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
@@ -219,7 +237,7 @@ module MIR-SYNTAX
                             | PathIdentSegment "::" PathIdentSegmentSuffix
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                  // TypePathFn is likely not used in mir
+                                  | TypePathFn
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -232,6 +250,8 @@ module MIR-SYNTAX
                             // BlockExpression is likely not used in mir
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
+  syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
+  syntax MaybeResultType ::= "" | "->" Type
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
@@ -332,18 +352,27 @@ module MIR-SYNTAX
                               | FloatLiteral
                               | Bool
 
-  syntax DataAlloc ::= Identifier "(" MaybeStatic "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
-  syntax MaybeStatic ::= "" | "static" ":" Identifier ","
+  syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
   syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
+  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination
+  syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
+  syntax IntCaseList ::= NeList{IntCase, ","}
+  syntax IntCase ::= Int ":" BB
+  syntax OtherwiseCase ::= "otherwise" ":" BB
+  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
+
+  syntax BB ::= BBName MaybeBBCleanup
+  syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
+
   // TODO: Finish implementing the sorts below.
 
-  syntax TerminatorDestination ::= BB
   syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
@@ -352,7 +381,7 @@ module MIR-SYNTAX
   syntax VariableName ::= Identifier
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
-  syntax BB ::= Identifier
+  syntax BBName ::= Identifier
 
   // TODO: This grammar needs a preprocessing step that removes comments and
   // the textual representation at the end of memory dump lines, e.g. the
