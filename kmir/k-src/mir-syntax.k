@@ -117,7 +117,10 @@ module MIR-SYNTAX
                   | ConstructorEnum
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
+  // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
+  // or "TypePath"?
   syntax StructRValue ::= Type "{" StructRValueFieldList "}"
+                        | Type "(" BasicRValueList ")"
   syntax StructRValueField ::= StructFieldName ":" BasicRValue
   syntax StructRValueFieldList ::= List{StructRValueField, ","}
 
