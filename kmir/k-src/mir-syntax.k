@@ -67,7 +67,7 @@ module MIR-SYNTAX
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
-  syntax QualifiedPathInExpression ::= QualifiedPathType "::" ExpressionPathList
+  syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
@@ -186,7 +186,7 @@ module MIR-SYNTAX
                                   | PathLocation
                                   | PathClosure
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
-  syntax PathLocation ::= "<impl" "at" FilePosition ">"
+  syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
