@@ -89,29 +89,6 @@ module MIR-SYNTAX
                   | "[" BasicRValueList "]"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"
 
-                  | "Neg" "(" BasicRValue ")"
-                  | "CheckedMul" "(" BasicRValue "," BasicRValue ")"
-                  | "Div" "(" BasicRValue "," BasicRValue ")"
-                  | "Rem" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedAdd" "(" LValue "," LValue ")"
-                  | "CheckedSub" "(" BasicRValue "," BasicRValue ")"
-
-                  | "BitAnd" "(" BasicRValue "," BasicRValue ")"
-                  | "BitOr" "(" BasicRValue "," BasicRValue ")"
-                  | "BitXor" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedShl" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedShr" "(" BasicRValue "," BasicRValue ")"
-
-                  | "Eq" "(" BasicRValue "," BasicRValue ")"
-                  | "Ne" "(" BasicRValue "," BasicRValue ")"
-                  | "Gt" "(" BasicRValue "," BasicRValue ")"
-                  | "Ge" "(" BasicRValue "," BasicRValue ")"
-                  | "Lt" "(" BasicRValue "," BasicRValue ")"
-                  | "Le" "(" BasicRValue "," BasicRValue ")"
-
-                  | "Not" "(" BasicRValue ")"
-
-                  | "Len" "(" LValue ")"
                   | StructRValue
                   | TupleRValue
                   | ConstructorEnum
