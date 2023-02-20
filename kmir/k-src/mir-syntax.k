@@ -117,7 +117,6 @@ module MIR-SYNTAX
                           | ByteStringLiteral
                           | Bool
                           | EnumGenericArgumentOrConstConstant
-                          | EnumGenericConstCastConstant
                           | TupleConstant
                           | StructConstant
                           | StructParenthesisConstant
@@ -138,8 +137,6 @@ module MIR-SYNTAX
 
   syntax StructParenthesisConstant ::= Type "(" ConstantValueList ")"
 
-  syntax EnumGenericConstCastConstant ::= EnumGenericArgumentOrConstConstant "as" Type "(" ConstCastKind ")"
-  syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   // Usually enums look like this:
   // _42 = core::panicking::AssertKind::Eq
   // but sometimes like this:
@@ -355,7 +352,8 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
-  syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
+  syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
+  syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
