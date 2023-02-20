@@ -4,7 +4,7 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc
+  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc | FunctionForPromoted
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -14,6 +14,9 @@ module MIR-SYNTAX
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
   syntax FunctionForConstantSignature ::= MaybeStatic PathFunctionConstant ":" Type "="
   syntax MaybeStatic ::= "" | "static"
+
+  syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
+  syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
