@@ -78,16 +78,17 @@ module MIR-SYNTAX
                   | "(" VariableName "as" Type ")"
 
   syntax BasicRValue  ::= LValue
-                        | discriminant(LValue)
                         | "move" LValue
-                        | "&" PtrModifiers LValue
                         | Constant
 
   syntax RValue ::= BasicRValue
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | BasicRValue "as" Type "(" RValueTODO1 ")"
+                  | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
+                  | PathExpression "as" Type
+                  | discriminant(LValue)
+                  | "&" PtrModifiers LValue
 
                   | StructRValue
                   | TupleRValue
