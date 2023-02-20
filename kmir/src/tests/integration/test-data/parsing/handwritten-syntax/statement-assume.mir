@@ -1,0 +1,7 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    assume(_2);
+    return;
+  }
+}

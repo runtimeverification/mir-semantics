@@ -39,6 +39,7 @@ module MIR-SYNTAX
 
   syntax Statement  ::= LValue "=" RValue
                       | "discriminant" "(" VariableName ")" "=" Int
+                      | assume(LValue)
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
