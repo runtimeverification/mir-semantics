@@ -79,7 +79,7 @@ module MIR-SYNTAX
   syntax LValueNoVariable ::= "(" "*" LValue ")"
                             | "(" LValue "." Int ":" Type ")"
                             | LValue "[" LValue "]"
-                            | "(" VariableName "as" Type ")"
+                            | "(" LValue "as" Type ")"
 
   syntax BasicRValue  ::= VariableName
                         | BasicRValueNoVariable
