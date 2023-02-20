@@ -140,7 +140,7 @@ module MIR-SYNTAX
                           | Bool
                           | EnumGenericArgumentOrConstConstant
                           | EnumGenericConstCastConstant
-                          | EmptyTuple
+                          | TupleConstant
                           | StructConstant
                           | StructParenthesisConstant
                           | AllocConstant
@@ -150,14 +150,15 @@ module MIR-SYNTAX
   syntax AllocConstant ::= "{" Identifier ":" ReferenceType "}"
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
+  syntax TupleConstant  ::= "(" ")"
+                          | "(" ConstantValue "," ConstantValueList ")"
+
   syntax StructConstant ::= Type "{" "{" StructFieldConstantList "}" "}"
                           | Type "{" StructFieldConstantList "}"
   syntax StructFieldConstant ::= StructFieldName ":" ConstantValue
   syntax StructFieldConstantList ::= List{StructFieldConstant, ","}
 
   syntax StructParenthesisConstant ::= Type "(" ConstantValueList ")"
-
-  syntax EmptyTuple ::= "(" ")"
 
   syntax EnumGenericConstCastConstant ::= EnumGenericArgumentOrConstConstant "as" Type "(" ConstCastKind ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
