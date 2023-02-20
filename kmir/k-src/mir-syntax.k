@@ -57,7 +57,7 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
   syntax Callable ::= PathExpression | "move" VariableName
-  syntax AssertCall ::= assert(AssertArgumentList)
+  syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
@@ -102,7 +102,6 @@ module MIR-SYNTAX
                   // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
                   // fairly ugly, it's unclear how to properly disambiguate here.
                   | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
-                  | discriminant(LValue)
                   | "&" PtrModifiers LValue
 
                   | StructRValue
@@ -370,6 +369,12 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
+  // TODO: Allow assert as a normal identifier.
+  syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
+                        | "unreachable" | "resume" | "goto"
+                        | "transmute" | "closure" | "size" | "align"
+                        | "otherwise" | "unwind" | "success" | "cleanup"
+                        | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
@@ -379,7 +384,8 @@ module MIR-SYNTAX
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
 
-  syntax Identifier ::= IdentifierToken | VariableToken | BBToken | DoubleHexDigitNoIntLetter
+  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+                      | DoubleHexDigitNoIntLetter | OtherTokens
 
   syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
