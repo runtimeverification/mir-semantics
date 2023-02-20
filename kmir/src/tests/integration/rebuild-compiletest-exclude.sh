@@ -45,7 +45,7 @@ for f in $(find $compiletest_root -name '*.mir')
 do
   echo -n "Parsing $f ..."
   $root/kmir/src/kmir/preprocessor.py $f $work_dir/tmp.mir
-  kast --output KORE $work_dir/tmp.mir > /dev/null
+  kast --output KORE --sort Mir $work_dir/tmp.mir > /dev/null
   if [[ $? -eq 0 ]]
   then
     echo -e -n "${GREEN}PASSED"
