@@ -1,0 +1,4 @@
+fn main() -> () {
+  let _1: Fn(usize);
+  let _2: Fn(usize) -> usize;
+}

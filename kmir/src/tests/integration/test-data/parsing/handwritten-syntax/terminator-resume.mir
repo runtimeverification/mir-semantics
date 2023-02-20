@@ -1,0 +1,5 @@
+fn main(_1: usize) -> () {
+  bb0: {
+    resume;
+  }
+}
