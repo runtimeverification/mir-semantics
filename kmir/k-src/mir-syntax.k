@@ -12,8 +12,8 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= MaybeStatic PathFunctionConstant ":" Type "="
-  syntax MaybeStatic ::= "" | "static"
+  syntax FunctionForConstantSignature ::= MaybeStaticConst PathFunctionConstant ":" Type "="
+  syntax MaybeStaticConst ::= "" | "static" | "const"
 
   syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
