@@ -1,10 +1,8 @@
-import tempfile
 from pathlib import Path
 
 import pytest
 
 from kmir import KMIR
-from kmir.preprocessor import preprocess
 
 TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
@@ -38,10 +36,18 @@ COMPILETEST_TEST_DATA = tuple(
     COMPILETEST_TEST_DATA,
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
-def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, allow_skip: bool) -> None:
+def test_compiletest(
+    kmir: KMIR,
+    test_id: str,
+    input_path: Path,
+    tmp_path: Path,
+    allow_skip: bool,
+) -> None:
     if allow_skip and test_id in COMPILETEST_EXCLUDE:
         pytest.skip()
 
-    with tempfile.NamedTemporaryFile() as tmp:
-        preprocess(str(input_path), tmp.name)
-        kmir.parse_program(Path(tmp.name))
+    # Given
+    temp_file = tmp_path / 'preprocessed.mir'
+
+    # When
+    kmir.parse_program(input_path, temp_file=temp_file)
