@@ -28,7 +28,7 @@ module MIR-SYNTAX
   syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
-  syntax Debug ::= "debug" UserVariableName "=>" VariableName ";"
+  syntax Debug ::= "debug" UserVariableName "=>" LValue ";"
   syntax DebugList ::= List{Debug, ""}
 
   syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
