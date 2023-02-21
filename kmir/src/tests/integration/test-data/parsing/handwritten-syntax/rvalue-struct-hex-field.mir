@@ -1,8 +1,7 @@
 fn main(_1: usize) -> () {
   let mut _2: usize;
   bb0: {
-    _2 = const true;
-    _2 = const false;
+    _2 = path::Type::<'static>{f1:_1};
     return;
   }
 }

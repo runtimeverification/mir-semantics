@@ -4,7 +4,7 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc
+  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc | FunctionForPromoted
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -12,8 +12,11 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= MaybeStatic PathFunctionConstant ":" Type "="
-  syntax MaybeStatic ::= "" | "static"
+  syntax FunctionForConstantSignature ::= MaybeStaticConst PathFunctionConstant ":" Type "="
+  syntax MaybeStaticConst ::= "" | "static" | "const"
+
+  syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
+  syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
@@ -28,7 +31,7 @@ module MIR-SYNTAX
   syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
-  syntax Debug ::= "debug" UserVariableName "=>" VariableName ";"
+  syntax Debug ::= "debug" UserVariableName "=>" LValue ";"
   syntax DebugList ::= List{Debug, ""}
 
   syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
@@ -36,6 +39,7 @@ module MIR-SYNTAX
 
   syntax Statement  ::= LValue "=" RValue
                       | "discriminant" "(" VariableName ")" "=" Int
+                      | assume(LValue)
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
@@ -53,7 +57,7 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
   syntax Callable ::= PathExpression | "move" VariableName
-  syntax AssertCall ::= assert(AssertArgumentList)
+  syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
@@ -66,58 +70,49 @@ module MIR-SYNTAX
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
+                            | SliceImpl  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
-  syntax QualifiedPathInExpression ::= QualifiedPathType "::" ExpressionPathList
+  syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
+
+  syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
   syntax LValue ::= VariableName
-                  | "(" "*" LValue ")"
-                  | "(" LValue "." Int ":" Type ")"
-                  | LValue "[" LValue "]"
-                  | "(" VariableName "as" Type ")"
+                  | LValueNoVariable
+  syntax LValueNoVariable ::= "(" "*" LValue ")"
+                            | "(" LValue "." Int ":" Type ")"
+                            | LValue "[" LValue "]"
+                            | "(" LValue "as" Type ")"
 
-  syntax BasicRValue  ::= LValue
-                        | discriminant(LValue)
-                        | "move" LValue
-                        | "&" PtrModifiers LValue
-                        | Constant
+  syntax BasicRValue  ::= VariableName
+                        | BasicRValueNoVariable
+  syntax BasicRValueNoVariable  ::=  LValueNoVariable
+                                  | "move" LValue
+                                  | Constant
 
-  syntax RValue ::= BasicRValue
+  syntax RValue ::= BasicRValueNoVariable  [avoid]
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | BasicRValue "as" Type "(" RValueTODO1 ")"
+                  | "[" BasicRValue ";" Int "]"
+                  | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
+                  | PathExpression "as" Type
+                  // TODO: The confusion between `PathExpression "as" Type`
+                  // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
+                  // fairly ugly, it's unclear how to properly disambiguate here.
+                  | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
+                  | "&" PtrModifiers LValue
 
-                  | "Neg" "(" BasicRValue ")"
-                  | "CheckedMul" "(" BasicRValue "," BasicRValue ")"
-                  | "Div" "(" BasicRValue "," BasicRValue ")"
-                  | "Rem" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedAdd" "(" LValue "," LValue ")"
-                  | "CheckedSub" "(" BasicRValue "," BasicRValue ")"
-
-                  | "BitAnd" "(" BasicRValue "," BasicRValue ")"
-                  | "BitOr" "(" BasicRValue "," BasicRValue ")"
-                  | "BitXor" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedShl" "(" BasicRValue "," BasicRValue ")"
-                  | "CheckedShr" "(" BasicRValue "," BasicRValue ")"
-
-                  | "Eq" "(" BasicRValue "," BasicRValue ")"
-                  | "Ne" "(" BasicRValue "," BasicRValue ")"
-                  | "Gt" "(" BasicRValue "," BasicRValue ")"
-                  | "Ge" "(" BasicRValue "," BasicRValue ")"
-                  | "Lt" "(" BasicRValue "," BasicRValue ")"
-                  | "Le" "(" BasicRValue "," BasicRValue ")"
-
-                  | "Not" "(" BasicRValue ")"
-
-                  | "Len" "(" LValue ")"
                   | StructRValue
                   | TupleRValue
-                  | ConstructorEnum
+                  | PathExpression
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
+  // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
+  // or "TypePath"?
   syntax StructRValue ::= Type "{" StructRValueFieldList "}"
+                        | Type "(" BasicRValueList ")"
   syntax StructRValueField ::= StructFieldName ":" BasicRValue
   syntax StructRValueFieldList ::= List{StructRValueField, ","}
 
@@ -136,8 +131,7 @@ module MIR-SYNTAX
                           | ByteStringLiteral
                           | Bool
                           | EnumGenericArgumentOrConstConstant
-                          | EnumGenericConstCastConstant
-                          | EmptyTuple
+                          | TupleConstant
                           | StructConstant
                           | StructParenthesisConstant
                           | AllocConstant
@@ -147,6 +141,9 @@ module MIR-SYNTAX
   syntax AllocConstant ::= "{" Identifier ":" ReferenceType "}"
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
+  syntax TupleConstant  ::= "(" ")"
+                          | "(" ConstantValue "," ConstantValueList ")"
+
   syntax StructConstant ::= Type "{" "{" StructFieldConstantList "}" "}"
                           | Type "{" StructFieldConstantList "}"
   syntax StructFieldConstant ::= StructFieldName ":" ConstantValue
@@ -154,10 +151,6 @@ module MIR-SYNTAX
 
   syntax StructParenthesisConstant ::= Type "(" ConstantValueList ")"
 
-  syntax EmptyTuple ::= "(" ")"
-
-  syntax EnumGenericConstCastConstant ::= EnumGenericArgumentOrConstConstant "as" Type "(" ConstCastKind ")"
-  syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   // Usually enums look like this:
   // _42 = core::panicking::AssertKind::Eq
   // but sometimes like this:
@@ -183,7 +176,7 @@ module MIR-SYNTAX
                                   | PathLocation
                                   | PathClosure
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
-  syntax PathLocation ::= "<impl" "at" FilePosition ">"
+  syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
@@ -355,33 +348,49 @@ module MIR-SYNTAX
   syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
-  syntax DoubleHexDigitNoInt ::= r"[0-9][a-fA-F]|[a-fA-F][0-9a-fA-F]" [token]
+  syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
+  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
+  syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
   syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
   syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
-  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination
+  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
   syntax IntCaseList ::= NeList{IntCase, ","}
   syntax IntCase ::= Int ":" BB
   syntax OtherwiseCase ::= "otherwise" ":" BB
   syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
+  syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
 
   syntax BB ::= BBName MaybeBBCleanup
   syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
 
   // TODO: Finish implementing the sorts below.
 
-  syntax RValueTODO1 ::= Identifier | Identifier "(" RValueTODO1 ")"
+  // TODO: Allow assert as a normal identifier.
+  syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
+                        | "unreachable" | "resume" | "goto"
+                        | "transmute" | "closure" | "size" | "align"
+                        | "otherwise" | "unwind" | "success" | "cleanup"
+                        | ConstCastKind
+  syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
+  syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
-  syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
-  syntax VariableName ::= Identifier
+  syntax VariableToken ::= r"_[0-9]+"  [token(2)]
+  syntax BBToken ::= r"bb[0-9]+"  [token(2)]
+  syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
+
+  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+                      | DoubleHexDigitNoIntLetter | OtherTokens
+
+  syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
-  syntax BBName ::= Identifier
+  syntax BBName ::= BBToken
 
   // TODO: This grammar needs a preprocessing step that removes comments and
   // the textual representation at the end of memory dump lines, e.g. the

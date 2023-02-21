@@ -31,6 +31,13 @@ test-unit: poetry-install
 test-integration: poetry-install
 	$(POETRY_RUN) pytest src/tests/integration --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
+compiletest-exclude:
+	$(eval TMP := $(shell mktemp))
+	$(POETRY_RUN) pytest src/tests/integration --no-skip -k test_compiletest --numprocesses=4 --verbose $(TEST_ARGS) 2>&1 | tee $(TMP)
+	grep ^FAILED $(TMP) | grep -oP '(?<=\[).*(?=\])' | sort > src/tests/integration/test-data/compiletest-exclude
+	rm $(TMP)
+.PHONY: compiletest-exclude
+
 
 # Checks and formatting
 
