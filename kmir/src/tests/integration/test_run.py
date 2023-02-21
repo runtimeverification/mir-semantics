@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-from pyk.cli_utils import run_process
 
 from kmir import KMIR
 
@@ -44,22 +43,19 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path) -> None:
         assert run_result.returncode
 
     stdout_path = input_path.parent / (input_path.stem + '.run.stdout')
-    check_result('stdout', stdout_path, run_result.stdout)
+    check_output('stdout', stdout_path, run_result.stdout)
 
     stderr_path = input_path.parent / (input_path.stem + '.run.stderr')
-    check_result('stderr', stderr_path, run_result.stderr)
+    check_output('stderr', stderr_path, run_result.stderr)
 
 
-def check_result(name: str, expected_path: Path, result: bytes) -> None:
+def check_output(name: str, expected_path: Path, output: bytes) -> None:
     """
-    Compare 'result' and the file at 'expexted_path' using diff
+    Compare 'output' and the file at 'expexted_path'.
+    If 'expexted_path' is not a file, 'output' must be empty.
     """
     if not expected_path.is_file():
-        assert not result, f 'Unexpected output in {name}'
+        assert not output, f'Unexpected output in {name}'
         return
 
-    diff_args = ['diff', str(expected_path), '-']
-    diff_result = run_process(diff_args, input=str(result), check=False)
-
-    if diff_result.returncode:
-        raise ValueError(f'Invalid output in {name}:\n{diff_result.stdout}')
+    assert output == expected_path.read_text()
