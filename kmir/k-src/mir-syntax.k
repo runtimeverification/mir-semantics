@@ -8,7 +8,7 @@ module MIR-SYNTAX
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
-  syntax Parameter ::= VariableName ":" Type
+  syntax Parameter ::= Local ":" Type
   syntax ParameterList ::= List{Parameter, ","}
 
   syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
@@ -24,7 +24,7 @@ module MIR-SYNTAX
                                         | "{" "constant" "#" Int "}"  // anonymous
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
-  syntax Binding ::= "let" OptMut VariableName ":" Type ";"
+  syntax Binding ::= "let" OptMut Local ":" Type ";"
   syntax BindingList ::= List{Binding, ""}
   syntax OptMut ::= "mut" | ""
 
@@ -38,7 +38,7 @@ module MIR-SYNTAX
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
   syntax Statement  ::= LValue "=" RValue
-                      | "discriminant" "(" VariableName ")" "=" Int
+                      | "discriminant" "(" Local ")" "=" Int
                       | assume(LValue)
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
@@ -56,7 +56,7 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
-  syntax Callable ::= PathExpression | "move" VariableName
+  syntax Callable ::= PathExpression | "move" Local
   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
@@ -78,14 +78,14 @@ module MIR-SYNTAX
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
-  syntax LValue ::= VariableName
+  syntax LValue ::= Local
                   | LValueNoVariable
   syntax LValueNoVariable ::= "(" "*" LValue ")"
                             | "(" LValue "." Int ":" Type ")"
                             | LValue "[" LValue "]"
                             | "(" LValue "as" Type ")"
 
-  syntax BasicRValue  ::= VariableName
+  syntax BasicRValue  ::= Local
                         | BasicRValueNoVariable
   syntax BasicRValueNoVariable  ::=  LValueNoVariable
                                   | "move" LValue
@@ -370,6 +370,12 @@ module MIR-SYNTAX
   syntax BB ::= BBName MaybeBBCleanup
   syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
 
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L650
+  syntax Local ::= LocalToken
+
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L650
+  syntax LocalToken ::= r"_[0-9]+"  [token(2)]
+
   // TODO: Finish implementing the sorts below.
 
   // TODO: Allow assert as a normal identifier.
@@ -384,14 +390,12 @@ module MIR-SYNTAX
   syntax Abi ::= StringLiteral
   syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
 
-  syntax VariableToken ::= r"_[0-9]+"  [token(2)]
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
 
-  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+  syntax Identifier ::= IdentifierToken | LocalToken | BBToken
                       | DoubleHexDigitNoIntLetter | OtherTokens
 
-  syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
   syntax BBName ::= BBToken
