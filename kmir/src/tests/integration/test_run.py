@@ -39,9 +39,9 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path) -> None:
     run_result = kmir.run_program(input_path, check=False)
 
     if input_path in COMPILETEST_RUN_PASS:
-        assert run_result.returncode == 0
+        assert not run_result.returncode
     elif input_path in COMPILETEST_RUN_FAIL:
-        assert run_result.returncode != 0
+        assert run_result.returncode
 
     stdout_path = input_path.parent / (input_path.stem + '.run.stdout')
     check_result('stdout', stdout_path, run_result.stdout)
@@ -55,11 +55,11 @@ def check_result(name: str, expected_path: Path, result: bytes) -> None:
     Compare 'result' and the file at 'expexted_path' using diff
     """
     if not expected_path.is_file():
-        assert len(result) == 0, 'Unexpected output in {}'.format(str)
+        assert not result, f 'Unexpected output in {name}'
         return
 
     diff_args = ['diff', str(expected_path), '-']
     diff_result = run_process(diff_args, input=str(result), check=False)
 
-    if diff_result.returncode != 0:
-        raise ValueError('Invalid output in {}:\n{}'.format(name, str(diff_result.stdout)))
+    if diff_result.returncode:
+        raise ValueError(f'Invalid output in {name}:\n{diff_result.stdout}')
