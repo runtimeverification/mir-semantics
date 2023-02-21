@@ -103,6 +103,9 @@ module MIR-SYNTAX
                   // fairly ugly, it's unclear how to properly disambiguate here.
                   | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
                   | "&" PtrModifiers LValue
+                  // TODO: I don't need all branches of LValueNoVariable,
+                  // consider restricting this.
+                  | "deref_copy" LValueNoVariable
 
                   | StructRValue
                   | TupleRValue
@@ -374,6 +377,7 @@ module MIR-SYNTAX
                         | "unreachable" | "resume" | "goto"
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
+                        | "deref_copy"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
