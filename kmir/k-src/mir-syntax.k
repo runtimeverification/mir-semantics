@@ -47,6 +47,8 @@ module MIR-SYNTAX
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L532
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/terminator.rs#L300
   syntax Terminator ::= "return"
                       | "unreachable"
                       | "resume"
@@ -75,12 +77,21 @@ module MIR-SYNTAX
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
                             | SliceImpl  // Mir-only thing.
+                            | GenericArgWithName  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
   syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
 
-  syntax ArgumentList ::= List{BasicRValue, ","}
+  // TODO: In practice, this is probably a list of a rather restricted vesion
+  // of RValue, close to BasicRValue. Consider restricting the sort.
+  syntax ArgumentList ::= List{RValue, ","}
+
+  // TODO: This is probably somewhat broken. We should figure out the actual
+  // syntax for this. See
+  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
+  // for some rust code that produces this.
+  syntax GenericArgWithName ::= "<" Type "{" Identifier "}" ">"
 
   // Place:
   // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
