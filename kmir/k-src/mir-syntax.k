@@ -406,6 +406,7 @@ module MIR-SYNTAX
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
                         | "deref_copy" | "StorageLive" | "StorageDead"
+                        | "debug"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
