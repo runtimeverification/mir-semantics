@@ -366,12 +366,14 @@ module MIR-SYNTAX
 
   syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
+  syntax DataAllocElement ::= AllocReferenceToken | DoubleHexDigit
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
+  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
   syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
-  syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
+  syntax DataAllocDataShortLine ::= List{DataAllocElement, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 

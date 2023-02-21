@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 from argparse import ArgumentParser
 from fileinput import FileInput
@@ -6,7 +8,7 @@ from pathlib import Path
 from pyk.cli_utils import check_file_path
 
 LINE_COMMENT_REGEXP = re.compile(r'^((?:[^/"]|/[^/"]|/?"(?:[^\\"]|\\.)*")*)//.*$')
-HEX_CLEANUP_SUFFIX = re.compile(r'^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
+HEX_CLEANUP_SUFFIX = re.compile(r'^(\s*(?: ([0-9a-fA-F][0-9a-fA-F]|#\(-*alloc[0-9]+-*\)#))+)\s+│.*$')
 HEX_CLEANUP_SEPARATOR = re.compile(r'^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
 
 
@@ -30,6 +32,7 @@ def remove_comments(line: str) -> str:
 
 
 def cleanup_hex_dump(line: str) -> str:
+    line = line.replace('╾', '#(').replace('─', '-').replace('╼', ')#')
     m = HEX_CLEANUP_SUFFIX.match(line)
     if not m:
         m = HEX_CLEANUP_SEPARATOR.match(line)
