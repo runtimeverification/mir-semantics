@@ -31,15 +31,15 @@ module MIR-SYNTAX
   syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
-  syntax Debug ::= "debug" UserVariableName "=>" LValue ";"
+  syntax Debug ::= "debug" UserVariableName "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
   syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
-  syntax Statement  ::= LValue "=" RValue
+  syntax Statement  ::= Place "=" RValue
                       | "discriminant" "(" Local ")" "=" Int
-                      | assume(LValue)
+                      | assume(Place)
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
@@ -48,8 +48,8 @@ module MIR-SYNTAX
                       | "resume"
                       | "goto" "->" BB
                       // TODO: Can this happen for things other than panics?
-                      | LValue "=" CallLike
-                      | LValue "=" CallLike "->" TerminatorDestination
+                      | Place "=" CallLike
+                      | Place "=" CallLike "->" TerminatorDestination
                       | CallLike
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
@@ -78,17 +78,33 @@ module MIR-SYNTAX
 
   syntax ArgumentList ::= List{BasicRValue, ","}
 
-  syntax LValue ::= Local
-                  | LValueNoVariable
-  syntax LValueNoVariable ::= "(" "*" LValue ")"
-                            | "(" LValue "." Int ":" Type ")"
-                            | LValue "[" LValue "]"
-                            | "(" LValue "as" Type ")"
+  // Place:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
+  // Place serialization:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/mod.rs#L1697
+  syntax Place  ::= Local
+                  | NonTerminalPlace
+  // PlaceElem is ProjectionElem:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L981
+  // ProjectionElem:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
+  syntax NonTerminalPlace ::= "(" "*" Place ")"  // Deref
+                            | "(" Place "." Int ":" Type ")"  // Field
+                            | Place "[" Local "]"  // Index
+                            // | "(" Place "as" Type ")"  // OpaqueCast
+                            | "(" Place "as" Type ")"  // Downcast(Some(..), ..)
+                            // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
+                            // | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
+                            // | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
+                            // | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
+                            // | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
+                            // | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
+                            // | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
 
   syntax BasicRValue  ::= Local
                         | BasicRValueNoVariable
-  syntax BasicRValueNoVariable  ::=  LValueNoVariable
-                                  | "move" LValue
+  syntax BasicRValueNoVariable  ::=  NonTerminalPlace
+                                  | "move" Place
                                   | Constant
 
   syntax RValue ::= BasicRValueNoVariable  [avoid]
@@ -102,10 +118,10 @@ module MIR-SYNTAX
                   // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
                   // fairly ugly, it's unclear how to properly disambiguate here.
                   | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
-                  | "&" PtrModifiers LValue
-                  // TODO: I don't need all branches of LValueNoVariable,
+                  | "&" PtrModifiers Place
+                  // TODO: I don't need all branches of NonTerminalPlace,
                   // consider restricting this.
-                  | "deref_copy" LValueNoVariable
+                  | "deref_copy" NonTerminalPlace
 
                   | StructRValue
                   | TupleRValue
