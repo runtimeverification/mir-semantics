@@ -1,0 +1,7 @@
+fn main(_1: usize) -> () {
+  let _2: usize;
+  bb0: {
+    _2 = A(_1);
+    return;
+  }
+}
