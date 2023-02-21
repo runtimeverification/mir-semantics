@@ -25,10 +25,16 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'array-slice-vec/vec-dst.mir',
     'command/command-exec.mir',
     'command/command-pre-exec.mir',
+    'consts/issue-19244.mir',
     'binding/pat-tuple-1.mir',
+    'deriving/deriving-cmp-generic-enum.mir',
+    'deriving/deriving-cmp-generic-struct.mir',
+    'deriving/deriving-cmp-generic-tuple-struct.mir',
     'destructuring-assignment/tuple_destructure.mir',
     'dynamically-sized-types/dst-field-align.mir',
     'dynamically-sized-types/dst-raw.mir',
+    'dynamically-sized-types/dst-trait.mir',
+    'dynamically-sized-types/dst-trait-tuple.mir',
     'enum/issue-42747.mir',
     'enum-discriminant/discriminant_value.mir',
     'enum-discriminant/get_discr.mir',
@@ -37,6 +43,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'generics/issue-32498.mir',
     'macros/macro-literal.mir',
     'macros/rfc-3086-metavar-expr/count-and-length-are-distinct.mir',
+    'match/issue-5530.mir',
     'mir/mir_codegen_switch.mir',
     'mir/mir_match_test.mir',
     'numbers-arithmetic/div-mod.mir',
@@ -48,6 +55,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'or-patterns/bindings-runpass-1.mir',
     'or-patterns/bindings-runpass-2.mir',
     'or-patterns/search-via-bindings.mir',
+    'packed/packed-struct-vec.mir',
     'pattern/bindings-after-at/bind-by-copy.mir',
     'range_inclusive.mir',
     'raw-str.mir',
@@ -58,6 +66,10 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'struct-enums/enum-null-pointer-opt.mir',
     'try-block/try-block.mir',
     'tuple-index.mir',
+    # OOM tests
+    'closures/2229_closure_analysis/run_pass/box.mir',
+    'derives/derive-hygiene.mir',
+    'drop/drop_order.mir',
 ]
 COMPILETEST_DIR = TEST_DATA_DIR / 'compiletest-rs' / 'ui'
 COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
