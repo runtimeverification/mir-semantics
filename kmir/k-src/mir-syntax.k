@@ -130,6 +130,7 @@ module MIR-SYNTAX
                   | StructRValue
                   | TupleRValue
                   | PathExpression
+                  | ClosureRValue
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
   // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
@@ -141,6 +142,9 @@ module MIR-SYNTAX
 
   syntax TupleRValue  ::= "(" ")"
                         | "(" BasicRValue "," BasicRValueList ")"
+
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L2108
+  syntax ClosureRValue ::= "[" "closure" "@" FilePosition "]"
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 
