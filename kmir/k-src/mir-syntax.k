@@ -368,15 +368,18 @@ module MIR-SYNTAX
                               | FloatLiteral
                               | Bool
 
-  syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L725
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L806
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L848
+  syntax DataAlloc ::= Identifier "(" MaybeStaticPath "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
-  syntax DataAllocElement ::= AllocReferenceToken | DoubleHexDigit
+  syntax DataAllocElement ::= AllocReferenceToken | DoubleHexDigit | "__"
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
   syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
-  syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
+  syntax MaybeStaticPath ::= "" | "static" ":" FunctionPath ","
   syntax DataAllocDataShortLine ::= List{DataAllocElement, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
@@ -406,7 +409,7 @@ module MIR-SYNTAX
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
                         | "deref_copy" | "StorageLive" | "StorageDead"
-                        | "debug"
+                        | "debug" | "__"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
