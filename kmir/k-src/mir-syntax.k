@@ -40,6 +40,10 @@ module MIR-SYNTAX
   syntax Statement  ::= Place "=" RValue
                       | "discriminant" "(" Local ")" "=" Int
                       | assume(Place)
+                      // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L311
+                      | "StorageLive" "(" Local ")"
+                      // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L314
+                      | "StorageDead" "(" Local ")"
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
@@ -396,12 +400,12 @@ module MIR-SYNTAX
 
   // TODO: Finish implementing the sorts below.
 
-  // TODO: Allow assert as a normal identifier.
+  // TODO: Allow assert and assume as normal identifiers.
   syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
                         | "unreachable" | "resume" | "goto"
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
-                        | "deref_copy"
+                        | "deref_copy" | "StorageLive" | "StorageDead"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
