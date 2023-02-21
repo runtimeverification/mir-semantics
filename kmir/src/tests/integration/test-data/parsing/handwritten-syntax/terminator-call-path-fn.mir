@@ -1,0 +1,5 @@
+fn main() -> () {
+  bb0: {
+    _1 = <impl Fn(usize) -> usize as Fn<(usize, )>>::call(_2, _3) -> bb2;
+  }
+}

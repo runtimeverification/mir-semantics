@@ -1,12 +1,25 @@
-#!/usr/bin/env python3
-
 import re
-import sys
-import typing
+from argparse import ArgumentParser
+from fileinput import FileInput
+from pathlib import Path
+
+from pyk.cli_utils import check_file_path
 
 LINE_COMMENT_REGEXP = re.compile(r'^((?:[^/"]|/[^/"]|/?"(?:[^\\"]|\\.)*")*)//.*$')
 HEX_CLEANUP_SUFFIX = re.compile(r'^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
 HEX_CLEANUP_SEPARATOR = re.compile(r'^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$')
+
+
+def preprocess(program_text: str) -> str:
+    return '\n'.join(process_line(line) for line in program_text.splitlines())
+
+
+def process_line(line: str) -> str:
+    line = line.rstrip()
+    line = remove_comments(line)
+    line = cleanup_hex_dump(line)
+    line = line.rstrip()
+    return line
 
 
 def remove_comments(line: str) -> str:
@@ -26,32 +39,19 @@ def cleanup_hex_dump(line: str) -> str:
     return m.group(1)
 
 
-def preprocess(input_file: str, output_file: str) -> None:
-    with open(input_file, 'r') as f:
-        with open(output_file, 'w') as g:
-            for line in f:
-                line = remove_comments(line.rstrip())
-                line = cleanup_hex_dump(line)
-                g.write(line.rstrip())
-                g.write('\n')
+def main() -> None:
+    parser = ArgumentParser(description='KMIR preprocessor')
+    parser.add_argument('file', metavar='FILE', nargs='?', default='-', help='input file')
+    args = parser.parse_args()
 
+    input_file = Path(args.file) if args.file != '-' else None
+    if input_file:
+        check_file_path(input_file)
 
-def main(args: typing.List[str]) -> None:
-    # print(remove_comments('Hello World'))
-    # print(remove_comments('Hello // World'))
-    # print(remove_comments('Hello "// World"'))
-    # print(remove_comments('Hello "\\"// World"'))
-    # print(remove_comments('Hello "// World" // Here'))
-    # print(cleanup_hex_dump('Hello world'))
-    # print(cleanup_hex_dump('  00 00 00 00 00 00 00 00                         │ ........'))
-    # print(cleanup_hex_dump('  0x00 │ 00 00 00 00 00 00 00 00                         │ ........'))
-    if len(args) != 2:
-        print('Usage: preprocessor.py input-file output-file')
-        sys.exit(1)
-    input_file = args[0]
-    output_file = args[1]
-    preprocess(input_file, output_file)
+    with FileInput(input_file) as f:
+        for line in f:
+            print(process_line(line))
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

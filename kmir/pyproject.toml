@@ -28,6 +28,9 @@ pytest = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 
+[tool.poetry.scripts]
+kmir-preprocess = "kmir.preprocessor:main"
+
 [tool.isort]
 profile = "black"
 line_length = 120
