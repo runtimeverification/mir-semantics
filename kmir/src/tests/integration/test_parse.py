@@ -38,8 +38,8 @@ COMPILETEST_TEST_DATA = tuple(
     COMPILETEST_TEST_DATA,
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
-def test_compiletest(kmir: KMIR, test_id: str, input_path: Path) -> None:
-    if test_id in COMPILETEST_EXCLUDE:
+def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, allow_skip: bool) -> None:
+    if allow_skip and test_id in COMPILETEST_EXCLUDE:
         pytest.skip()
 
     with tempfile.NamedTemporaryFile() as tmp:
