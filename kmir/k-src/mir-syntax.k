@@ -4,25 +4,25 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc | FunctionForPromoted
+  syntax MirComponent ::= Function | FunctionForData | DataAlloc | FunctionForPromoted
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
   syntax Parameter ::= Local ":" Type
   syntax ParameterList ::= List{Parameter, ","}
 
-  syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= MaybeStaticConst PathFunctionConstant ":" Type "="
-  syntax MaybeStaticConst ::= "" | "static" | "const"
+  syntax FunctionForData ::= FunctionForDataSignature "{" FunctionBody "}"
+  syntax FunctionForDataSignature ::= MaybeStaticConstMut PathFunctionData ":" Type "="
+  syntax MaybeStaticConstMut ::= "" | "static" | "const" | "static" "mut"
 
   syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
-  syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
-  // TODO: Consider merging PathFunctionConstantSegment with FunctionPathComponent
-  syntax PathFunctionConstantSegment  ::= FunctionPathComponent
-                                        | "{" "constant" "#" Int "}"  // anonymous
+  syntax PathFunctionData ::= NeList{PathFunctionDataSegment, "::"}
+  // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
+  syntax PathFunctionDataSegment  ::= FunctionPathComponent
+                                    | "{" "constant" "#" Int "}"  // anonymous
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
