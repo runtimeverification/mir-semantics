@@ -37,13 +37,22 @@ module MIR-SYNTAX
   syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
   syntax Statement  ::= Place "=" RValue
+                      // FakeRead does not seem to be used
                       | "discriminant" "(" Local ")" "=" Int
-                      | assume(Place)
-                      // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L311
+                      | "Deinit" "(" Place ")"
                       | "StorageLive" "(" Local ")"
-                      // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L314
                       | "StorageDead" "(" Local ")"
+                      // Retag does not seem to be used
+                      // AscribeUserType does not seem to be used
+                      // Coverage does not seem to be used
+                      | NonDivergingIntrinsic
+                      | "ConstEvalCounter"
+                      // Nop does not seem to be used
+  syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
+                                  | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
@@ -427,7 +436,8 @@ module MIR-SYNTAX
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
                         | "deref_copy" | "StorageLive" | "StorageDead"
-                        | "debug" | "__"
+                        | "debug" | "__" | "assume" | "copy_nonoverlapping"
+                        | "dst" | "src" | "count"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
