@@ -66,19 +66,14 @@ class KMIR:
         temp_file = Path(temp_file)
         return preprocess_and_parse(program_file, temp_file)
 
-    def run_program(self, program_file: Union[str, Path], check: bool = True) -> CompletedProcess:
+    def run_program(self, program_file: Union[str, Path], *, check: bool = True) -> CompletedProcess:
         program_file = Path(program_file)
         check_file_path(program_file)
 
-        try:
-            proc_res = _krun(
-                input_file=program_file,
-                definition_dir=self.llvm_dir,
-                output=KRunOutput.NONE,
-                check=check,
-                pipe_stderr=True,
-            )
-        except CalledProcessError as err:
-            raise err
-
-        return proc_res
+        return _krun(
+            input_file=program_file,
+            definition_dir=self.llvm_dir,
+            output=KRunOutput.NONE,
+            check=check,
+            pipe_stderr=True,
+        )
