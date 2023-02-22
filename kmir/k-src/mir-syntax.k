@@ -188,6 +188,7 @@ module MIR-SYNTAX
                           | StructParenthesisConstant
                           | AllocConstant
                           | TransmuteConstant
+                          | LiteralAsConstant
   syntax ConstantValueList ::= List{ConstantValue, ","}
 
   syntax AllocConstant ::= "{" Identifier ":" Type "}"
@@ -202,6 +203,8 @@ module MIR-SYNTAX
   syntax StructFieldConstantList ::= List{StructFieldConstant, ","}
 
   syntax StructParenthesisConstant ::= Type "(" ConstantValueList ")"
+
+  syntax LiteralAsConstant ::= "{" Literal "as" Type "}"
 
   // Usually enums look like this:
   // _42 = core::panicking::AssertKind::Eq
@@ -242,6 +245,15 @@ module MIR-SYNTAX
   syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteLiteral ::= r"b[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-9a-fA-F][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
+
+  syntax Literal  ::= UnsignedLiteral
+                    | SignedLiteral
+                    | FloatLiteral
+                    | HexLiteral
+                    | StringLiteral
+                    | CharLiteral
+                    | ByteLiteral
+                    | ByteStringLiteral
 
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
   syntax FileLineColumnStartLiteral ::= r"[^@ ]+:[0-9]+:[0-9]+:"  [token]
