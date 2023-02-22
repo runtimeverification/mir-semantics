@@ -236,12 +236,15 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
-                | ImplTraitTypeReduced
                 | TraitObjectTypeReduced
 
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
+                        // In the Rust syntax, ImplTraitTypeReduced is a direct
+                        // child of type. For some reason, mir allows `&impl A+B`
+                        // so it needs to be a child of TypeNoBounds
+                        | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
                         | TupleType
