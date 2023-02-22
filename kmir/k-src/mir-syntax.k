@@ -136,7 +136,7 @@ module MIR-SYNTAX
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | "[" BasicRValue ";" Int "]"
+                  | "[" BasicRValue ";" ArrayLen "]"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
                   // TODO: The confusion between `PathExpression "as" Type`
@@ -335,7 +335,8 @@ module MIR-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" Int "]"
+  syntax ArrayType ::= "[" Type ";" ArrayLen "]"
+  syntax ArrayLen ::= Int | PathExpression
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
