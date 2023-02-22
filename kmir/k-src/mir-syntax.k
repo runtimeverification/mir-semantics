@@ -190,7 +190,7 @@ module MIR-SYNTAX
                           | TransmuteConstant
   syntax ConstantValueList ::= List{ConstantValue, ","}
 
-  syntax AllocConstant ::= "{" Identifier ":" ReferenceType "}"
+  syntax AllocConstant ::= "{" Identifier ":" Type "}"
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
   syntax TupleConstant  ::= "(" ")"
