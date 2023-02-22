@@ -4,21 +4,7 @@ import pytest
 
 from kmir import KMIR
 
-TEST_DATA_DIR = Path(__file__).parent / 'test-data'
-
-
-COMPILETEST_DIR = TEST_DATA_DIR / 'compiletest-rs' / 'ui'
-COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
-COMPILETEST_EXCLUDE_FILE = TEST_DATA_DIR / 'compiletest-exclude'
-COMPILETEST_EXCLUDE = set(COMPILETEST_EXCLUDE_FILE.read_text().splitlines())
-COMPILETEST_TEST_DATA = tuple(
-    (str(input_path.relative_to(COMPILETEST_DIR)), input_path) for input_path in COMPILETEST_FILES
-)
-
-COMPILETEST_RUN_PASS_FILE = TEST_DATA_DIR / 'compiletest-run-pass'
-COMPILETEST_RUN_PASS = set(COMPILETEST_RUN_PASS_FILE.read_text().splitlines())
-COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail'
-COMPILETEST_RUN_FAIL = set(COMPILETEST_RUN_FAIL_FILE.read_text().splitlines())
+from .utils import COMPILETEST_EXCLUDE, COMPILETEST_RUN_FAIL, COMPILETEST_RUN_PASS, COMPILETEST_TEST_DATA
 
 
 @pytest.mark.parametrize(
