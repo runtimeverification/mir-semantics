@@ -20,7 +20,8 @@ module MIR-SYNTAX
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
-  syntax PathFunctionConstantSegment  ::= PathExprSegment
+  // TODO: Consider merging PathFunctionConstantSegment with FunctionPathComponent
+  syntax PathFunctionConstantSegment  ::= FunctionPathComponent
                                         | "{" "constant" "#" Int "}"  // anonymous
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
