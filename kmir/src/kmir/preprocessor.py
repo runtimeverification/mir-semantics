@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pyk.cli_utils import check_file_path
 
-ALLOC_REFERENCE = r'#\(-*alloc[0-9]+-*\)#'
+ALLOC_REFERENCE = r'#\(-*alloc[0-9]+(?:\+0x[0-9a-fA-F]+)?-*\)#'
 BYTE_VALUE = '[0-9a-fA-F][0-9a-fA-F]'
 UNINITIALIZED_BYTE = '__'
 ALLOC_ITEM = '|'.join([ALLOC_REFERENCE, BYTE_VALUE, UNINITIALIZED_BYTE])

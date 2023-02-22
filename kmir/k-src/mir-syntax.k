@@ -408,7 +408,7 @@ module MIR-SYNTAX
   syntax DataAllocElement ::= AllocReferenceToken | DoubleHexDigit | "__"
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
-  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+-*\\)#"  [token]
+  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
   syntax MaybeStaticPath ::= "" | "static" ":" FunctionPath ","
