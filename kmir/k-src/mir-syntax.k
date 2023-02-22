@@ -295,6 +295,7 @@ module MIR-SYNTAX
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
+                            | "{" "opaque" "#" Int "}"
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
                                   | TypePathFn
@@ -455,12 +456,12 @@ module MIR-SYNTAX
                         | "otherwise" | "unwind" | "success" | "cleanup"
                         | "deref_copy" | "StorageLive" | "StorageDead"
                         | "debug" | "__" | "assume" | "copy_nonoverlapping"
-                        | "dst" | "src" | "count"
+                        | "dst" | "src" | "count" | "opaque"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
-  syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
+  syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
 
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]

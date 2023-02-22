@@ -22,7 +22,10 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     # uses a lot of memory.
     'pattern/usefulness/issue-88747.mir',
     # Other tests with stack overflows.
+    'array-slice-vec/estr-slice.mir',
+    'array-slice-vec/evec-slice.mir',
     'array-slice-vec/vec-dst.mir',
+    'associated-type-bounds/union-bounds.mir',
     'command/command-exec.mir',
     'command/command-pre-exec.mir',
     'consts/issue-19244.mir',
