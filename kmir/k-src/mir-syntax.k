@@ -119,8 +119,8 @@ module MIR-SYNTAX
                             // | "(" Place "as" Type ")"  // OpaqueCast
                             | "(" Place "as" Type ")"  // Downcast(Some(..), ..)
                             // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
-                            // | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
-                            // | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
+                            | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
+                            | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
                             // | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
                             // | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
                             // | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
