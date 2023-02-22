@@ -4,8 +4,6 @@ array-slice-vec/byte-literals.mir
 array-slice-vec/check-static-mut-slices.mir
 array-slice-vec/check-static-slice.mir
 array-slice-vec/destructure-array-1.mir
-array-slice-vec/estr-slice.mir
-array-slice-vec/evec-slice.mir
 array-slice-vec/ivec-pass-by-value.mir
 array-slice-vec/nested-vec-1.mir
 array-slice-vec/nested-vec-2.mir
@@ -19,7 +17,6 @@ array-slice-vec/slice-panic-2.mir
 array-slice-vec/subslice-patterns-const-eval-match.mir
 array-slice-vec/subslice-patterns-const-eval.mir
 array-slice-vec/variance-vec-covariant.mir
-array-slice-vec/vec-dst.mir
 array-slice-vec/vec-late-init.mir
 array-slice-vec/vec-macro-no-std.mir
 array-slice-vec/vec-macro-rvalue-scope.mir
@@ -32,13 +29,10 @@ array-slice-vec/vec-overrun.mir
 array-slice-vec/vec-tail-matching.mir
 assocciated-consts/issue-88599-ref-self.mir
 assocciated-consts/mismatched_impl_ty_1.mir
-assocciated-consts/mismatched_impl_ty_2.mir
-assocciated-consts/mismatched_impl_ty_3.mir
 associated-type-bounds/dyn-impl-trait-type.mir
 associated-type-bounds/dyn-rpit-and-let.mir
 associated-type-bounds/rpit.mir
 associated-type-bounds/trait-alias-impl-trait.mir
-associated-type-bounds/union-bounds.mir
 associated-types/associated-types-binding-in-trait.mir
 associated-types/associated-types-doubleendediterator-object.mir
 associated-types/associated-types-enum-field-named.mir
@@ -48,7 +42,6 @@ associated-types/associated-types-iterator-binding.mir
 associated-types/associated-types-project-from-type-param-via-bound-in-where.mir
 associated-types/issue-47139-1.mir
 associated-types/issue-47139-2.mir
-associated-types/issue-64848.mir
 async-await/argument-patterns.mir
 async-await/async-assoc-fn-anon-lifetimes.mir
 async-await/async-fn-elided-impl-lifetime-parameter.mir
@@ -133,7 +126,6 @@ augmented-assignments-rpass.mir
 autoref-autoderef/auto-ref-sliceable.mir
 autoref-autoderef/deref-into-array.mir
 backtrace.mir
-bare-fn-implements-fn-mut.mir
 binding/expr-match-generic-unique1.mir
 binding/expr-match-generic-unique2.mir
 binding/expr-match-panic.mir
@@ -143,7 +135,6 @@ binding/match-byte-array-patterns.mir
 binding/match-larger-const.mir
 binding/match-vec-alternatives.mir
 binding/match-vec-rvalue.mir
-binding/mut-in-ident-patterns.mir
 binding/order-drop-with-match.mir
 binding/pat-tuple-1.mir
 binding/zero_sized_subslice_match.mir
@@ -161,7 +152,6 @@ borrowck/borrowck-slice-pattern-element-loan-slice-no-overlap.mir
 borrowck/borrowck-unsafe-static-mutable-borrows.mir
 borrowck/fsu-moves-and-copies.mir
 borrowck/issue-29166.mir
-borrowck/issue-80772.mir
 borrowck/two-phase-baseline.mir
 box/large-allocator-ice.mir
 cast/cast-rfc0401.mir
@@ -177,13 +167,9 @@ closures/2229_closure_analysis/optimization/edge_case_run_pass.mir
 closures/2229_closure_analysis/run_pass/by_value.mir
 closures/2229_closure_analysis/run_pass/issue-88372.mir
 closures/2229_closure_analysis/run_pass/issue-88431.mir
-closures/closure_promotion.mir
 closures/deeply-nested_closures.mir
-closures/issue-41366.mir
 closures/issue-42463.mir
-closures/issue-48109.mir
 closures/old-closure-arg.mir
-closures/old-closure-fn-coerce.mir
 closures/old-closure-iter-1.mir
 closures/old-closure-iter-2.mir
 closures/thir-unsafeck-issue-85871.mir
@@ -298,7 +284,6 @@ consts/chained-constants-stackoverflow.mir
 consts/closure-structural-match-issue-90013.mir
 consts/const-address-of.mir
 consts/const-adt-align-mismatch.mir
-consts/const-big-enum.mir
 consts/const-binops.mir
 consts/const-block-item-macro-codegen.mir
 consts/const-block-item.mir
@@ -312,17 +297,6 @@ consts/const_constructor/const-construct-call.mir
 consts/const_constructor/const_constructor_qpath.mir
 consts/const_discriminant.mir
 consts/const-endianess.mir
-consts/const-enum-byref.mir
-consts/const-enum-byref-self.mir
-consts/const-enum-struct2.mir
-consts/const-enum-structlike.mir
-consts/const-enum-struct.mir
-consts/const-enum-tuple2.mir
-consts/const-enum-tuple.mir
-consts/const-enum-tuplestruct2.mir
-consts/const-enum-tuplestruct.mir
-consts/const-enum-vec-ptr.mir
-consts/const-enum-vector.mir
 consts/const-eval/double_check2.mir
 consts/const-eval/double_check.mir
 consts/const-eval/duration_conversion.mir
@@ -337,7 +311,6 @@ consts/const-eval/issue-55541.mir
 consts/const-eval/issue-70804-fn-subtyping.mir
 consts/const-eval/issue-91827-extern-types.mir
 consts/const-eval/nrvo.mir
-consts/const-eval/promote-static.mir
 consts/const-eval/simd/insert_extract.mir
 consts/const-eval/strlen.mir
 consts/const-eval/valid-const.mir
@@ -407,7 +380,6 @@ consts/issue-21721.mir
 consts/issue-27890.mir
 consts/issue-29927-1.mir
 consts/issue-29927.mir
-consts/issue-37222.mir
 consts/issue-46553.mir
 consts/issue-47789.mir
 consts/issue-58435-ice-with-assoc-const.mir
@@ -419,14 +391,12 @@ consts/issue-73976-monomorphic.mir
 consts/issue-77062-large-zst-array.mir
 consts/issue-79137-monomorphic.mir
 consts/issue-88071.mir
-consts/issue-89088.mir
 consts/issue-90762.mir
 consts/issue-94371.mir
 consts/issue-96169.mir
 consts/locals-in-const-fn.mir
 consts/match-const-fn-structs.mir
 consts/min_const_fn/allow_const_fn_ptr_run_pass.mir
-consts/min_const_fn/cast_fn.mir
 consts/min_const_fn/min_const_fn_libstd.mir
 consts/min_const_fn/min_const_fn_unsafe_ok.mir
 consts/miri_unleashed/slice_eq.mir
@@ -500,7 +470,6 @@ extern/extern-types-size_of_val.mir
 extern/issue-64655-allow-unwind-when-calling-panic-directly.mir
 extern/issue-64655-extern-rust-must-allow-unwind.mir
 fmt/format-args-capture.mir
-fn/fun-call-variants.mir
 fn/issue-3904.mir
 for-loop-while/auto-loop.mir
 for-loop-while/break.mir
@@ -518,7 +487,6 @@ function-pointer/issue-102289.mir
 function-pointer/sized-ret-with-binder.mir
 functions-closures/closure-to-fn-coercion.mir
 functions-closures/fn-bare-assign.mir
-functions-closures/fn-bare-coerce-to-block.mir
 functions-closures/fn-item-type-zero-sized.mir
 functions-closures/return-from-closure.mir
 generator/addassign-yield.mir
@@ -599,7 +567,6 @@ impl-trait/example-calendar.mir
 impl-trait/example-st.mir
 impl-trait/impl_fn_associativity.mir
 impl-trait/in-trait/opaque-in-impl.mir
-impl-trait/issue-49579.mir
 impl-trait/issue-49685.mir
 impl-trait/issues/issue-104815.mir
 impl-trait/lifetimes2.mir
@@ -624,7 +591,6 @@ iterators/issue-58952-filter-type-length.mir
 lazy-type-alias-impl-trait/branches2.mir
 lazy-type-alias-impl-trait/lifetime_inference.mir
 let-else/const-fn.mir
-let-else/let-else-bindings.mir
 let-else/let-else-drop-order.mir
 let-else/let-else-non-copy.mir
 let-else/let-else-temporary-lifetime.mir
@@ -636,7 +602,6 @@ log-poly.mir
 macros/assert-eq-macro-unsized.mir
 macros/assert-ne-macro-unsized.mir
 macros/html-literals.mir
-macros/issue-26322.mir
 macros/issue-95533.mir
 macros/issue-98466.mir
 macros/issue-99265.mir
@@ -647,7 +612,6 @@ macros/rfc-3086-metavar-expr/count-and-length-are-distinct.mir
 macros/rfc-3086-metavar-expr/macro-expansion.mir
 match/const_non_normal_zst_ref_pattern.mir
 match/issue-46920-byte-array-patterns.mir
-match/issue-84434.mir
 methods/method-mut-self-modifies-mut-slice-lvalue.mir
 methods/method-self-arg.mir
 methods/method-self-arg-trait.mir
@@ -674,7 +638,6 @@ mir/mir_match_test.mir
 mir/mir_misc_casts.mir
 mir/mir_raw_fat_ptr.mir
 mir/validate/needs-reveal-all.mir
-monomorphize-abi-alignment.mir
 moves/move-arg-2.mir
 moves/move-arg-2-unique.mir
 never-type/return-never-coerce.mir
@@ -758,7 +721,6 @@ statics/static-impl.mir
 statics/static-recursive.mir
 std-backtrace.mir
 stdio-is-blocking.mir
-stdlib-unit-tests/builtin-clone.mir
 stdlib-unit-tests/issue-21058.mir
 stdlib-unit-tests/minmax-stability-issue-23687.mir
 stdlib-unit-tests/raw-fat-ptr.mir
@@ -767,7 +729,6 @@ str/str-escape.mir
 struct-ctor-mangling.mir
 struct-enums/align-struct.mir
 struct-enums/class-poly-methods.mir
-struct-enums/codegen-tag-static-padding.mir
 struct-enums/enum-discrim-width-stuff.mir
 struct-enums/enum-non-c-like-repr-c-and-int.mir
 struct-enums/enum-non-c-like-repr-c.mir
@@ -781,25 +742,6 @@ struct-enums/struct-order-of-eval-3.mir
 struct-enums/struct-order-of-eval-4.mir
 struct-enums/type-sizes.mir
 tail-cps.mir
-test-attrs/decl-macro-test.mir
-test-attrs/issue-16597.mir
-test-attrs/issue-20823.mir
-test-attrs/issue-36768.mir
-test-attrs/issue-52557.mir
-test-attrs/issue-53675-a-test-called-panic.mir
-test-attrs/run-unexported-tests.mir
-test-attrs/test-filter-multiple.mir
-test-attrs/test-fn-signature-verification-for-explicit-return-type.mir
-test-attrs/test-panic-abort.mir
-test-attrs/test-panic-abort-nocapture.mir
-test-attrs/test-panic-while-printing.mir
-test-attrs/test-passed.mir
-test-attrs/test-passed-wasm.mir
-test-attrs/test-runner-hides-buried-main.mir
-test-attrs/test-should-fail-good-message.mir
-test-attrs/test-should-panic-attr.mir
-test-attrs/test-type.mir
-test-attrs/test-vs-cfg-test.mir
 traits/alias/bounds.mir
 traits/alias/object.mir
 traits/assignability-trait.mir
@@ -816,7 +758,6 @@ traits/parameterized-with-bounds.mir
 traits/principal-less-objects.mir
 traits/privacy.mir
 traits/to-str.mir
-traits/with-dst.mir
 trivial_casts-rpass.mir
 try-block/try-block.mir
 try-operator.mir
@@ -833,7 +774,6 @@ unique/unique-create.mir
 unique/unique-drop-complex.mir
 unique/unique-in-vec-copy.mir
 unique/unique-in-vec.mir
-unnamed_argument_mode.mir
 unsafe/issue-87414-query-cycle.mir
 unwind-unique.mir
 utf8_idents.mir
