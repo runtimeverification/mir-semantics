@@ -30,8 +30,8 @@ make test-integration
 The folder `kmir/src/tests/integration/test-data/parsing/` contains the manually written test cases for inidividual MIR constructs and simple MIR programs.
 
 ### The `compiletest-rs` test cases
-In the submodule [`compiletest-rs`](https://github.com/runtimeverification/mir-semantics-compiletest/tree/9251b00e38504a6f1279b0ca9f81b90b4964080d) 
-contains the emitted MIR programs from `rustc`'s `ui` test cases. This suit of test cases would help us to achieve the best coverage of MIR syntax.
+Submodule [`compiletest-rs`](https://github.com/runtimeverification/mir-semantics-compiletest/tree/9251b00e38504a6f1279b0ca9f81b90b4964080d) 
+contains MIR programs emitted from `rustc`'s `ui` test cases. This test suite ensures comprehensive test coverage of MIR syntax.
 
 ### Test result interpretation
 Running of these test cases are integrated to CI's integration test. 
