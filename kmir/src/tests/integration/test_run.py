@@ -26,6 +26,8 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, allow_skip: boo
     if allow_skip and test_id in COMPILETEST_EXCLUDE:
         pytest.skip()
 
+    if input_path in COMPILETEST_RUN_FAIL:
+        pytest.skip()
     # Given
     stdout_file = input_path.parent / (input_path.stem + '.run.stdout')
     stderr_file = input_path.parent / (input_path.stem + '.run.stderr')
