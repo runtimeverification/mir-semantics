@@ -4,59 +4,75 @@ module MIR-SYNTAX
   imports INT
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForConstant | DataAlloc | FunctionForPromoted
+  syntax MirComponent ::= Function | FunctionForData | DataAlloc | FunctionForPromoted
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
-  syntax Parameter ::= VariableName ":" Type
+  syntax Parameter ::= Local ":" Type
   syntax ParameterList ::= List{Parameter, ","}
 
-  syntax FunctionForConstant ::= FunctionForConstantSignature "{" FunctionBody "}"
-  syntax FunctionForConstantSignature ::= MaybeStaticConst PathFunctionConstant ":" Type "="
-  syntax MaybeStaticConst ::= "" | "static" | "const"
+  syntax FunctionForData ::= FunctionForDataSignature "{" FunctionBody "}"
+  syntax FunctionForDataSignature ::= MaybeStaticConstMut PathFunctionData ":" Type "="
+  syntax MaybeStaticConstMut ::= "" | "static" | "const" | "static" "mut"
 
   syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
-  syntax PathFunctionConstant ::= NeList{PathFunctionConstantSegment, "::"}
-  syntax PathFunctionConstantSegment  ::= PathExprSegment
-                                        | "{" "constant" "#" Int "}"  // anonymous
+  syntax PathFunctionData ::= NeList{PathFunctionDataSegment, "::"}
+  // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
+  syntax PathFunctionDataSegment  ::= FunctionPathComponent
+                                    | "{" "constant" "#" Int "}"  // anonymous
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
-  syntax Binding ::= "let" OptMut VariableName ":" Type ";"
+  syntax Binding ::= "let" OptMut Local ":" Type ";"
   syntax BindingList ::= List{Binding, ""}
   syntax OptMut ::= "mut" | ""
 
   syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
-  syntax Debug ::= "debug" UserVariableName "=>" LValue ";"
+  syntax Debug ::= "debug" UserVariableName "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
   syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
-  syntax Statement  ::= LValue "=" RValue
-                      | "discriminant" "(" VariableName ")" "=" Int
-                      | assume(LValue)
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
+  syntax Statement  ::= Place "=" RValue
+                      // FakeRead does not seem to be used
+                      | "discriminant" "(" Local ")" "=" Int
+                      | "Deinit" "(" Place ")"
+                      | "StorageLive" "(" Local ")"
+                      | "StorageDead" "(" Local ")"
+                      // Retag does not seem to be used
+                      // AscribeUserType does not seem to be used
+                      // Coverage does not seem to be used
+                      | NonDivergingIntrinsic
+                      | "ConstEvalCounter"
+                      // Nop does not seem to be used
+  syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
+                                  | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
 
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L532
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/terminator.rs#L300
   syntax Terminator ::= "return"
                       | "unreachable"
                       | "resume"
                       | "goto" "->" BB
                       // TODO: Can this happen for things other than panics?
-                      | LValue "=" CallLike
-                      | LValue "=" CallLike "->" TerminatorDestination
+                      | Place "=" CallLike
+                      | Place "=" CallLike "->" TerminatorDestination
                       | CallLike
                       // I only found examples of this for assert and switchInt
                       | CallLike "->" TerminatorDestination
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
-  syntax Callable ::= PathExpression | "move" VariableName
+  syntax Callable ::= PathExpression | "move" Local
   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
@@ -71,42 +87,75 @@ module MIR-SYNTAX
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
                             | SliceImpl  // Mir-only thing.
+                            | GenericArgWithName  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
   syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
 
-  syntax ArgumentList ::= List{BasicRValue, ","}
+  // TODO: In practice, this is probably a list of a rather restricted vesion
+  // of RValue, close to BasicRValue. Consider restricting the sort.
+  syntax ArgumentList ::= List{RValue, ","}
 
-  syntax LValue ::= VariableName
-                  | LValueNoVariable
-  syntax LValueNoVariable ::= "(" "*" LValue ")"
-                            | "(" LValue "." Int ":" Type ")"
-                            | LValue "[" LValue "]"
-                            | "(" LValue "as" Type ")"
+  // TODO: This is probably somewhat broken. We should figure out the actual
+  // syntax for this. See
+  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
+  // for some rust code that produces this.
+  syntax GenericArgWithName ::= "<" Type "{" Identifier "}" ">"
 
-  syntax BasicRValue  ::= VariableName
+  // Place:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
+  // Place serialization:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/mod.rs#L1697
+  syntax Place  ::= Local
+                  | NonTerminalPlace
+  // PlaceElem is ProjectionElem:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L981
+  // ProjectionElem:
+  // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
+  syntax NonTerminalPlace ::= "(" "*" Place ")"  // Deref
+                            | "(" Place "." Int ":" Type ")"  // Field
+                            | Place "[" Local "]"  // Index
+                            // | "(" Place "as" Type ")"  // OpaqueCast
+                            | "(" Place "as" Type ")"  // Downcast(Some(..), ..)
+                            // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
+                            | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
+                            | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
+                            // | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
+                            // | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
+                            // | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
+                            // | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
+
+  syntax BasicRValue  ::= Local
                         | BasicRValueNoVariable
-  syntax BasicRValueNoVariable  ::=  LValueNoVariable
-                                  | "move" LValue
+  syntax BasicRValueNoVariable  ::=  NonTerminalPlace
+                                  | "move" Place
                                   | Constant
 
   syntax RValue ::= BasicRValueNoVariable  [avoid]
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | "[" BasicRValue ";" Int "]"
+                  | "[" BasicRValue ";" ArrayLen "]"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
                   // TODO: The confusion between `PathExpression "as" Type`
                   // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
                   // fairly ugly, it's unclear how to properly disambiguate here.
                   | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
-                  | "&" PtrModifiers LValue
+                  | "&" PtrModifiers Place
+                  // TODO: I don't need all branches of NonTerminalPlace,
+                  // consider restricting this.
+                  | "deref_copy" NonTerminalPlace
+                  // TODO: ShallowInitBox may conflict with actual structs.
+                  // Currently structs can't be named like that. We should allow
+                  // that and disambiguate.
+                  | "ShallowInitBox" "(" BasicRValue "," Type ")"
 
                   | StructRValue
                   | TupleRValue
                   | PathExpression
+                  | ClosureRValue
   syntax BasicRValueList ::= List{BasicRValue, ","}
 
   // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
@@ -118,6 +167,9 @@ module MIR-SYNTAX
 
   syntax TupleRValue  ::= "(" ")"
                         | "(" BasicRValue "," BasicRValueList ")"
+
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L2108
+  syntax ClosureRValue ::= "[" "closure" "@" FilePosition "]"
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 
@@ -136,9 +188,10 @@ module MIR-SYNTAX
                           | StructParenthesisConstant
                           | AllocConstant
                           | TransmuteConstant
+                          | LiteralAsConstant
   syntax ConstantValueList ::= List{ConstantValue, ","}
 
-  syntax AllocConstant ::= "{" Identifier ":" ReferenceType "}"
+  syntax AllocConstant ::= "{" Identifier ":" Type "}"
   syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
 
   syntax TupleConstant  ::= "(" ")"
@@ -150,6 +203,8 @@ module MIR-SYNTAX
   syntax StructFieldConstantList ::= List{StructFieldConstant, ","}
 
   syntax StructParenthesisConstant ::= Type "(" ConstantValueList ")"
+
+  syntax LiteralAsConstant ::= "{" Literal "as" Type "}"
 
   // Usually enums look like this:
   // _42 = core::panicking::AssertKind::Eq
@@ -189,7 +244,16 @@ module MIR-SYNTAX
   syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
   syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteLiteral ::= r"b[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
-  syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
+  syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-9a-fA-F][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
+
+  syntax Literal  ::= UnsignedLiteral
+                    | SignedLiteral
+                    | FloatLiteral
+                    | HexLiteral
+                    | StringLiteral
+                    | CharLiteral
+                    | ByteLiteral
+                    | ByteStringLiteral
 
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
   syntax FileLineColumnStartLiteral ::= r"[^@ ]+:[0-9]+:[0-9]+:"  [token]
@@ -198,12 +262,15 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types.html#type-expressions
   syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
-                | ImplTraitTypeReduced
                 | TraitObjectTypeReduced
 
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
+                        // In the Rust syntax, ImplTraitTypeReduced is a direct
+                        // child of type. For some reason, mir allows `&impl A+B`
+                        // so it needs to be a child of TypeNoBounds
+                        | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
                         | TupleType
@@ -228,6 +295,7 @@ module MIR-SYNTAX
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
+                            | "{" "opaque" "#" Int "}"
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
                                   | TypePathFn
@@ -268,7 +336,8 @@ module MIR-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" Int "]"
+  syntax ArrayType ::= "[" Type ";" ArrayLen "]"
+  syntax ArrayLen ::= Int | PathExpression
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
@@ -345,14 +414,19 @@ module MIR-SYNTAX
                               | FloatLiteral
                               | Bool
 
-  syntax DataAlloc ::= Identifier "(" MaybeStaticIdentifier "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L725
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L806
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L848
+  syntax DataAlloc ::= Identifier "(" MaybeStaticPath "size" ":" Int "," "align" ":" Int ")" "{" DataAllocData "}"
   syntax DataAllocData ::= DataAllocDataShortLine | DataAllocDataLines
+  syntax DataAllocElement ::= AllocReferenceToken | DoubleHexDigit | "__"
   syntax DoubleHexDigit ::= Int | DoubleHexDigitNoInt
   syntax DoubleHexDigitNoInt ::= DoubleHexDigitNoIntLetter | DoubleHexDigitNoIntDigit
+  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
-  syntax MaybeStaticIdentifier ::= "" | "static" ":" Identifier ","
-  syntax DataAllocDataShortLine ::= List{DoubleHexDigit, ""}
+  syntax MaybeStaticPath ::= "" | "static" ":" FunctionPath ","
+  syntax DataAllocDataShortLine ::= List{DataAllocElement, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
@@ -367,27 +441,34 @@ module MIR-SYNTAX
   syntax BB ::= BBName MaybeBBCleanup
   syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
 
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L650
+  syntax Local ::= LocalToken
+
+  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L650
+  syntax LocalToken ::= r"_[0-9]+"  [token(2)]
+
   // TODO: Finish implementing the sorts below.
 
-  // TODO: Allow assert as a normal identifier.
+  // TODO: Allow assert and assume as normal identifiers.
   syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
                         | "unreachable" | "resume" | "goto"
                         | "transmute" | "closure" | "size" | "align"
                         | "otherwise" | "unwind" | "success" | "cleanup"
+                        | "deref_copy" | "StorageLive" | "StorageDead"
+                        | "debug" | "__" | "assume" | "copy_nonoverlapping"
+                        | "dst" | "src" | "count" | "opaque"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
-  syntax MirOnlyType ::= "[" "closure" "@" FilePosition "]"
+  syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
 
-  syntax VariableToken ::= r"_[0-9]+"  [token(2)]
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
 
-  syntax Identifier ::= IdentifierToken | VariableToken | BBToken
+  syntax Identifier ::= IdentifierToken | LocalToken | BBToken
                       | DoubleHexDigitNoIntLetter | OtherTokens
 
-  syntax VariableName ::= VariableToken
   syntax UserVariableName ::= Identifier
   syntax StructFieldName ::= Identifier
   syntax BBName ::= BBToken
