@@ -28,6 +28,7 @@ fn main(_1: usize) -> () {
     _2 = const b"One-letter escapes:\0";
     _2 = const b"One-letter escapes:\"";
     _2 = const b"One-letter escapes:\'";
+    _2 = const b"Extended code escapes:\xf0";
     _2 = const b"Code escapes: \x7C";
     _2 = const b"#![no_std]\n";
     _2 = const b'_';

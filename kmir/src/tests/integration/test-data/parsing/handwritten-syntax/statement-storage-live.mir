@@ -1,0 +1,6 @@
+fn main(_1: usize) -> () {
+  bb0: {
+    StorageLive(_1);
+    return;
+  }
+}

@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  let _2: usize;
+  bb0: {
+    Deinit(_2);
+    Deinit((_1.1: usize));
+    return;
+  }
+}
