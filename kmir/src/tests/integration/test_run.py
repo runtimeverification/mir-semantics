@@ -43,5 +43,3 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, allow_skip: boo
 
     # elif input_path in COMPILETEST_RUN_FAIL:
     #    assert run_result.returncode
-
-

@@ -3,7 +3,7 @@ from pathlib import Path
 TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
 
-HANDWRITTEN_SYNTAX_DIR = TEST_DATA_DIR / 'parsing' 
+HANDWRITTEN_SYNTAX_DIR = TEST_DATA_DIR / 'parsing'
 HANDWRITTEN_SYNTAX_FILES = tuple(HANDWRITTEN_SYNTAX_DIR.glob('*.mir'))
 
 
@@ -65,7 +65,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'derives/derive-hygiene.mir',
     'drop/drop_order.mir',
     # timeout tests
-    'oom_unwind.mir'
+    'oom_unwind.mir',
 ]
 COMPILETEST_DIR = TEST_DATA_DIR / 'compiletest-rs' / 'ui'
 COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
