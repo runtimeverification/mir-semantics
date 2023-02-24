@@ -3,6 +3,12 @@ fn main(_1: usize) -> () {
     path::function_name::<fn() -> usize {a}>(a) -> bb1;
   }
   bb1: {
+    _2 = map::<fn(usize) -> usize {<T as A>::stuff}>() -> bb1;
+  }
+  bb2: {
+    _2 = map::<usize, fn(usize) -> usize {<T as A>::stuff}>() -> bb3;
+  }
+  bb3: {
     return;
   }
 }

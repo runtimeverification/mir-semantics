@@ -84,10 +84,9 @@ module MIR-SYNTAX
                             | ExpressionPathList
   syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
   syntax PathExprSegment  ::= PathIdentSegment
-                            | PathIdentSegment "::" GenericArgs
+                            | PathIdentSegment "::" GenericArgsWithName  // GenericArgsWithName is Mir-only.
                             | PathLocation  // Mir-only thing.
                             | SliceImpl  // Mir-only thing.
-                            | GenericArgWithName  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
@@ -97,11 +96,13 @@ module MIR-SYNTAX
   // of RValue, close to BasicRValue. Consider restricting the sort.
   syntax ArgumentList ::= List{RValue, ","}
 
-  // TODO: This is probably somewhat broken. We should figure out the actual
-  // syntax for this. See
+  // See
   // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
   // for some rust code that produces this.
-  syntax GenericArgWithName ::= "<" Type "{" Identifier "}" ">"
+  syntax GenericArgsWithName ::= "<" GenericArgsWithNameList ">"
+  syntax GenericArgsWithNameList ::= List{GenericArgWithName, ","}
+  syntax GenericArgWithName ::= Type "{" PathExpression "}"
+                              | GenericArg
 
   // Place:
   // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
