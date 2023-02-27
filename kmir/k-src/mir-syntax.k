@@ -284,6 +284,7 @@ module MIR-SYNTAX
                         | BareFunctionType
                         // Probably not used im mir: MacroInvocation
                         | MirOnlyType
+                        | FunctionType  // Disambiguation attempt
   
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -298,7 +299,7 @@ module MIR-SYNTAX
                             | "{" "opaque" "#" Int "}"
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                  | TypePathFn
+                                //  | TypePathFn
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -312,8 +313,10 @@ module MIR-SYNTAX
                             // BlockExpression is likely not used in mir
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
-  syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
+  // syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
   syntax MaybeResultType ::= "" | "->" Type
+
+  syntax FunctionType ::= TypePathList "(" TypeList ")" MaybeResultType
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
@@ -471,6 +474,7 @@ module MIR-SYNTAX
                         | "scope" | "size" | "src" | "success"
                         | "unreachable" | "unwind"
                         | "transmute"
+                        | "variant"
                         | "__"
                         | ConstCastKind
                         // TODO: These tokens seem to be needed when running
