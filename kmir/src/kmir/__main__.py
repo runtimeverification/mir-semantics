@@ -26,11 +26,11 @@ def exec_parse(
     output: str = 'kast',
     **kwargs: Any,
 ) -> None:
-    input = KAstInput[input.upper()]
-    output = KAstOutput[output.upper()]
+    kast_input = KAstInput[input.upper()]
+    kast_output = KAstOutput[output.upper()]
 
     kmir = KMIR(definition_dir, definition_dir)
-    proc_res = kmir.parse_program_raw(input_file, input=input, output=output)
+    proc_res = kmir.parse_program_raw(input_file, input=kast_input, output=kast_output)
 
     if output != KAstOutput.NONE:
         print(proc_res.stdout)
