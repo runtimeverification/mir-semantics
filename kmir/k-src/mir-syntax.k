@@ -311,6 +311,7 @@ module MIR-SYNTAX
                       | Type
                       | GenericArgsConst
                       | GenericArgsBinding
+                      | PathExpression "+" PathExpression
   syntax GenericArgsConst ::= LiteralExpression
                             | "-" LiteralExpression
                             // BlockExpression is likely not used in mir
