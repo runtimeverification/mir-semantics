@@ -1,9 +1,3 @@
-array-slice-vec/vec-matching-fold.mir
-array-slice-vec/vec-matching-legal-tail-element-borrow.mir
-array-slice-vec/vec-matching.mir
-array-slice-vec/vec-tail-matching.mir
-async-await/argument-patterns.mir
-async-await/async-assoc-fn-anon-lifetimes.mir
 async-await/async-fn-elided-impl-lifetime-parameter.mir
 async-await/async-fn-size-moved-locals.mir
 async-await/async-fn-size-uninit-locals.mir
@@ -82,9 +76,6 @@ async-await/return-ty-raw-ptr-coercion.mir
 async-await/return-ty-unsize-coercion.mir
 async-await/send-bound-async-closure.mir
 async-await/unreachable-lint.mir
-augmented-assignments-rpass.mir
-autoref-autoderef/deref-into-array.mir
-binding/irrefutable-slice-patterns.mir
 binding/match-larger-const.mir
 binding/zero_sized_subslice_match.mir
 borrowck/borrowck-closures-slice-patterns-ok.mir
