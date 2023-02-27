@@ -24,6 +24,7 @@ module MIR-SYNTAX
   // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
   syntax PathFunctionDataSegment  ::= FunctionPathComponent
                                     | "{" "constant" "#" Int "}"  // anonymous
+                                    | Int
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
