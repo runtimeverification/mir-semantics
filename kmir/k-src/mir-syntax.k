@@ -1,7 +1,8 @@
 // (very) loosely based on https://rust-lang.github.io/rfcs/1211-mir.html
 
 module MIR-SYNTAX
-  imports INT
+  imports BOOL
+  imports UNSIGNED-INT-SYNTAX
 
   syntax Mir ::= List{MirComponent, ""}
   syntax MirComponent ::= Function | FunctionForData | DataAlloc | FunctionForPromoted
@@ -122,10 +123,10 @@ module MIR-SYNTAX
                             // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
                             | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
                             | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
-                            // | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
-                            // | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
-                            // | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
-                            // | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
+                            | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
+                            | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
+                            | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
+                            | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
 
   syntax BasicRValue  ::= Local
                         | BasicRValueNoVariable
