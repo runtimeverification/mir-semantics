@@ -93,7 +93,7 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
-  syntax TypeImplSegment ::= "<" "impl" Type ">"
+  syntax TypeImplSegment  ::= "<" "impl" NonPathImplementableType ">"
 
   // TODO: In practice, this is probably a list of a rather restricted vesion
   // of RValue, close to BasicRValue. Consider restricting the sort.
@@ -284,8 +284,16 @@ module MIR-SYNTAX
                         | BareFunctionType
                         // Probably not used im mir: MacroInvocation
                         | MirOnlyType
-                        | FunctionType  // Disambiguation attempt
   
+  syntax NonPathImplementableType ::= TupleType
+                                    | NeverType
+                                    | RawPointerType
+                                    | ReferenceType
+                                    | ArrayType
+                                    | SliceType
+                                    // Probably not used in mir: InferredType
+                                    | BareFunctionType
+
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
   // https://doc.rust-lang.org/reference/types/trait-object.html
@@ -299,7 +307,7 @@ module MIR-SYNTAX
                             | "{" "opaque" "#" Int "}"
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                //  | TypePathFn
+                                 | TypePathFn
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -313,10 +321,8 @@ module MIR-SYNTAX
                             // BlockExpression is likely not used in mir
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
-  // syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
+  syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
   syntax MaybeResultType ::= "" | "->" Type
-
-  syntax FunctionType ::= TypePathList "(" TypeList ")" MaybeResultType
 
   // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
   syntax TupleType  ::= "(" ")"
