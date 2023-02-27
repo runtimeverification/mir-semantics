@@ -144,10 +144,11 @@ module MIR-SYNTAX
                   // TODO: I don't need all branches of NonTerminalPlace,
                   // consider restricting this.
                   | "deref_copy" NonTerminalPlace
-                  // TODO: ShallowInitBox may conflict with actual structs.
+                  // TODO: ShallowInitBox and SizeOf may conflict with actual structs.
                   // Currently structs can't be named like that. We should allow
                   // that and disambiguate.
                   | "ShallowInitBox" "(" BasicRValue "," Type ")"
+                  | "SizeOf" "(" Type ")"
 
                   | StructRValue
                   | TupleRValue
