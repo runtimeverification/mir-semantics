@@ -1,3 +1,4 @@
 fn main() -> () {
   let _1: [async fn body@path/to/file.rs:1:10: 20:30];
+  let _1: [async block@path/to/file.rs:1:10: 20:30];
 }

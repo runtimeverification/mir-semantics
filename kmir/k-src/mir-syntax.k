@@ -121,7 +121,7 @@ module MIR-SYNTAX
                             | Place "[" Local "]"  // Index
                             // | "(" Place "as" Type ")"  // OpaqueCast
                             | "(" Place "as" Type ")"  // Downcast(Some(..), ..)
-                            // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
+                            | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
                             | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
                             | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
                             | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
@@ -342,7 +342,7 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/types/array.html
   syntax ArrayType ::= "[" Type ";" ArrayLen "]"
-  syntax ArrayLen ::= Int | PathExpression
+  syntax ArrayLen ::= Int | PathExpression | PathExpression "+" PathExpression
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
@@ -475,6 +475,7 @@ module MIR-SYNTAX
   syntax Abi ::= StringLiteral
   syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
                         | "[" "async" "fn" "body" "@" FilePosition "]"
+                        | "[" "async" "block" "@" FilePosition "]"
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
 
