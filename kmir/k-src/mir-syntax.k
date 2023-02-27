@@ -457,7 +457,7 @@ module MIR-SYNTAX
                         | "cleanup" | "closure" | "constant"
                         | "copy_nonoverlapping" | "count"
                         | "debug" | "deref_copy" | "discriminant" | "dst"
-                        | "goto"
+                        | "generator" | "goto"
                         | "opaque" | "otherwise"
                         | "promoted"
                         | "resume"
@@ -472,6 +472,8 @@ module MIR-SYNTAX
   syntax Abi ::= StringLiteral
   syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
                         | "[" "async" "fn" "body" "@" FilePosition "]"
+                        | "[" MaybeStatic "generator" "@" FilePosition "]"
+  syntax MaybeStatic ::= "" | "static"
 
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
