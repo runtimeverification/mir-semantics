@@ -31,27 +31,24 @@ class KMIR:
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
 
-    def parse_program(
+    def parse_program_raw(
         self,
         program_file: Union[str, Path],
         *,
+        input: KAstInput,
+        output: KAstOutput,
         temp_file: Optional[Union[str, Path]] = None,
-    ) -> KInner:
-        def parse(program_file: Path) -> KInner:
-            try:
-                proc_res = _kast(
-                    definition_dir=self.llvm_dir,
-                    input_file=program_file,
-                    input=KAstInput.PROGRAM,
-                    output=KAstOutput.JSON,
-                    sort='Mir',
-                )
-            except CalledProcessError as err:
-                raise ValueError("Couldn't parse program") from err
+    ) -> CompletedProcess:
+        def parse(program_file: Path) -> CompletedProcess:
+            return _kast(
+                definition_dir=self.llvm_dir,
+                input_file=program_file,
+                input=input,
+                output=output,
+                sort='Mir',
+            )
 
-            return KInner.from_dict(json.loads(proc_res.stdout)['term'])
-
-        def preprocess_and_parse(program_file: Path, temp_file: Path) -> KInner:
+        def preprocess_and_parse(program_file: Path, temp_file: Path) -> CompletedProcess:
             temp_file.write_text(preprocess(program_file.read_text()))
             return parse(temp_file)
 
@@ -65,6 +62,24 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_parse(program_file, temp_file)
+
+    def parse_program(
+        self,
+        program_file: Union[str, Path],
+        *,
+        temp_file: Optional[Union[str, Path]] = None,
+    ) -> KInner:
+        try:
+            proc_res = self.parse_program_raw(
+                program_file=program_file,
+                input=KAstInput.PROGRAM,
+                output=KAstOutput.JSON,
+                temp_file=temp_file,
+            )
+        except CalledProcessError as err:
+            raise ValueError("Couldn't parse program") from err
+
+        return KInner.from_dict(json.loads(proc_res.stdout)['term'])
 
     def run_program(
         self,
