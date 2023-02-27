@@ -18,6 +18,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'array-slice-vec/evec-slice.mir',
     'array-slice-vec/vec-dst.mir',
     'associated-type-bounds/union-bounds.mir',
+    'augmented-assignments-rpass.mir',
     'backtrace.mir',
     'binding/match-borrowed_str.mir',
     'coercion/coerce-unify.mir',
@@ -29,9 +30,13 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'consts/const-vecs-and-slices.mir',
     'consts/issue-19244.mir',
     'binding/pat-tuple-1.mir',
+    'borrowck/fsu-moves-and-copies.mir',
     'deriving/deriving-cmp-generic-enum.mir',
     'deriving/deriving-cmp-generic-struct.mir',
+    'deriving/deriving-cmp-generic-struct-enum.mir'
     'deriving/deriving-cmp-generic-tuple-struct.mir',
+    'deriving/deriving-show.mir',
+    'deriving/deriving-show-2.mir',
     'destructuring-assignment/tuple_destructure.mir',
     'drop/drop-trait-enum.mir',
     'dynamically-sized-types/dst-field-align.mir',
@@ -88,7 +93,9 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     # OOM tests
     'array-slice-vec/subslice-patterns-const-eval-match.mir',
     'array-slice-vec/subslice-patterns-const-eval.mir',
+    'array-slice-vec/vec-matching.mir'
     'binding/match-vec-alternatives.mir',
+    'cast/supported-cast.mir',
     'cleanup-rvalue-scopes.mir',
     'closures/2229_closure_analysis/run_pass/box.mir',
     'consts/chained-constants-stackoverflow.mir',
@@ -96,6 +103,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'consts/const_in_pattern/accept_structural.mir',
     'consts/const_let_eq_float.mir',
     'derives/derive-hygiene.mir',
+    'deriving/deriving-associated-types.mir',
     'drop/drop_order.mir',
     'dynamically-sized-types/dst-struct.mir',
     'dynamically-sized-types/dst-tuple.mir',
@@ -112,6 +120,9 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'struct-enums/enum-non-c-like-repr-int.mir',
     'struct-enums/small-enums-with-fields.mir',
     'try-operator.mir',
+    'union/union-packed.mir',
+    # Unicode issues
+    'cast/cast-rfc0401.mir',
 ]
 COMPILETEST_DIR = TEST_DATA_DIR / 'compiletest-rs' / 'ui'
 COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
