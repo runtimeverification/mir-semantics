@@ -40,13 +40,17 @@ class KMIR:
         temp_file: Optional[Union[str, Path]] = None,
     ) -> CompletedProcess:
         def parse(program_file: Path) -> CompletedProcess:
-            return _kast(
-                definition_dir=self.llvm_dir,
-                input_file=program_file,
-                input=input,
-                output=output,
-                sort='Mir',
-            )
+            try:
+                proc_res = _kast(
+                    definition_dir=self.llvm_dir,
+                    input_file=program_file,
+                    input=input,
+                    output=output,
+                    sort='Mir',
+                )
+            except CalledProcessError as err:
+                raise ValueError("Couldn't parse program") from err
+            return proc_res
 
         def preprocess_and_parse(program_file: Path, temp_file: Path) -> CompletedProcess:
             temp_file.write_text(preprocess(program_file.read_text()))
@@ -69,15 +73,12 @@ class KMIR:
         *,
         temp_file: Optional[Union[str, Path]] = None,
     ) -> KInner:
-        try:
-            proc_res = self.parse_program_raw(
-                program_file=program_file,
-                input=KAstInput.PROGRAM,
-                output=KAstOutput.JSON,
-                temp_file=temp_file,
-            )
-        except CalledProcessError as err:
-            raise ValueError("Couldn't parse program") from err
+        proc_res = self.parse_program_raw(
+            program_file=program_file,
+            input=KAstInput.PROGRAM,
+            output=KAstOutput.JSON,
+            temp_file=temp_file,
+        )
 
         return KInner.from_dict(json.loads(proc_res.stdout)['term'])
 
