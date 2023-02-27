@@ -89,11 +89,11 @@ module MIR-SYNTAX
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
-                            | SliceImpl  // Mir-only thing.
+                            | TypeImplSegment  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
-  syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
+  syntax TypeImplSegment ::= "<" "impl" Type ">"
 
   // TODO: In practice, this is probably a list of a rather restricted vesion
   // of RValue, close to BasicRValue. Consider restricting the sort.
