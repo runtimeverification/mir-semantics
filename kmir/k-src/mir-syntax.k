@@ -139,6 +139,8 @@ module MIR-SYNTAX
                   // or only move items.
                   | "[" BasicRValueList "]"
                   | "[" BasicRValue ";" ArrayLen "]"
+                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
+                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" StructRValueFieldList "}"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
                   // TODO: The confusion between `PathExpression "as" Type`

@@ -1,0 +1,8 @@
+fn main(_1: usize) -> () {
+  let mut _2: usize;
+  bb0: {
+    _2 = [generator@path/to/file.rs:1:10: 20:30 (#0)];
+    _2 = [generator@path/to/file.rs:1:10: 20:30 (#0)] {x:_1, y:_2};
+    return;
+  }
+}
