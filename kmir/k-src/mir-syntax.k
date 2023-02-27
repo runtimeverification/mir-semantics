@@ -43,7 +43,7 @@ module MIR-SYNTAX
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
   syntax Statement  ::= Place "=" RValue
                       // FakeRead does not seem to be used
-                      | "discriminant" "(" Local ")" "=" Int
+                      | "discriminant" "(" Place ")" "=" Int
                       | "Deinit" "(" Place ")"
                       | "StorageLive" "(" Local ")"
                       | "StorageDead" "(" Local ")"
