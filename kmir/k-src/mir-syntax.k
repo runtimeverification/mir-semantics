@@ -149,6 +149,7 @@ module MIR-SYNTAX
                   // that and disambiguate.
                   | "ShallowInitBox" "(" BasicRValue "," Type ")"
                   | "SizeOf" "(" Type ")"
+                  | "AlignOf" "(" Type ")"
 
                   | StructRValue
                   | TupleRValue
