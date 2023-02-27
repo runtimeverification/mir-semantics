@@ -471,6 +471,9 @@ module MIR-SYNTAX
                         | "transmute"
                         | "__"
                         | ConstCastKind
+                        // TODO: These tokens seem to be needed when running
+                        // on github. I'm not sure why, looks like a K issue:
+                        | "keys" | "values"
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
