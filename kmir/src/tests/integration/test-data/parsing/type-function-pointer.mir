@@ -9,4 +9,5 @@ fn main() -> () {
   let _7: fn(usize);
   let _8: fn(usize, usize);
   let _9: fn() -> usize;
+  let _9: fn() -> usize {f};
 }

@@ -86,7 +86,7 @@ module MIR-SYNTAX
                             | ExpressionPathList
   syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
   syntax PathExprSegment  ::= PathIdentSegment
-                            | PathIdentSegment "::" GenericArgsWithName  // GenericArgsWithName is Mir-only.
+                            | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
                             | SliceImpl  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
@@ -97,14 +97,6 @@ module MIR-SYNTAX
   // TODO: In practice, this is probably a list of a rather restricted vesion
   // of RValue, close to BasicRValue. Consider restricting the sort.
   syntax ArgumentList ::= List{RValue, ","}
-
-  // See
-  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
-  // for some rust code that produces this.
-  syntax GenericArgsWithName ::= "<" GenericArgsWithNameList ">"
-  syntax GenericArgsWithNameList ::= List{GenericArgWithName, ","}
-  syntax GenericArgWithName ::= Type "{" PathExpression "}"
-                              | GenericArg
 
   // Place:
   // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
@@ -355,6 +347,7 @@ module MIR-SYNTAX
   syntax BareFunctionType ::= MaybeForLifetimes FunctionTypeQualifiers
                               "fn" "(" FunctionParametersMaybeNamedVariadic ")"
                               MaybeBareFunctionReturnType
+                              MaybeCurlyBraceTypeAnnotation
   syntax FunctionTypeQualifiers ::= "" | "unsafe" | "extern" Abi | "unsafe" "extern" Abi
   syntax FunctionParametersMaybeNamedVariadic ::= MaybeNamedFunctionParameters
                                                 // Not seen in mir: MaybeNamedFunctionParametersVariadic
@@ -362,6 +355,10 @@ module MIR-SYNTAX
   syntax MaybeNamedFunctionParameters ::= List {MaybeNamedParam, ","}
   syntax BareFunctionReturnType ::= "->" TypeNoBounds
   syntax MaybeBareFunctionReturnType ::= "" | BareFunctionReturnType
+  // See
+  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
+  // for some rust code that produces this.
+  syntax MaybeCurlyBraceTypeAnnotation ::= "" | "{" PathExpression "}"
   // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
   syntax ForLifetimes ::= "for" GenericParams
   syntax MaybeForLifetimes ::= "" | ForLifetimes
