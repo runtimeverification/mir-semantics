@@ -452,18 +452,26 @@ module MIR-SYNTAX
   // TODO: Finish implementing the sorts below.
 
   // TODO: Allow assert and assume as normal identifiers.
-  syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
-                        | "unreachable" | "resume" | "goto"
-                        | "transmute" | "closure" | "size" | "align"
-                        | "otherwise" | "unwind" | "success" | "cleanup"
-                        | "deref_copy" | "StorageLive" | "StorageDead"
-                        | "debug" | "__" | "assume" | "copy_nonoverlapping"
-                        | "dst" | "src" | "count" | "opaque"
+  syntax OtherTokens  ::= "align" | "assume"
+                        | "body"
+                        | "cleanup" | "closure" | "constant"
+                        | "copy_nonoverlapping" | "count"
+                        | "debug" | "deref_copy" | "discriminant" | "dst"
+                        | "goto"
+                        | "opaque" | "otherwise"
+                        | "promoted"
+                        | "resume"
+                        | "StorageLive" | "StorageDead"
+                        | "scope" | "size" | "src" | "success"
+                        | "unreachable" | "unwind"
+                        | "transmute"
+                        | "__"
                         | ConstCastKind
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
+                        | "[" "async" "fn" "body" "@" FilePosition "]"
 
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
