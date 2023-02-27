@@ -5,7 +5,8 @@ module MIR-SYNTAX
   imports UNSIGNED-INT-SYNTAX
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForData | DataAlloc | FunctionForPromoted
+  syntax MirComponent ::= Function | FunctionForData | FunctionForPromoted
+                        | DataAlloc | FunctionAlloc
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -434,6 +435,8 @@ module MIR-SYNTAX
   syntax DataAllocDataShortLine ::= List{DataAllocElement, ""}
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
+
+  syntax FunctionAlloc ::= Identifier "(" "fn" ":" PathExpression "-" "shim" ")" 
 
   syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
