@@ -241,11 +241,16 @@ module MIR-SYNTAX
   // e.g., ExpressionWithBlock
   // https://doc.rust-lang.org/reference/expressions.html
   syntax RustExpression ::= ExpressionWithoutBlock
+                          | ExpressionWithBlock
 
   syntax ExpressionWithoutBlock ::= LiteralExpression
                                   | PathExpression
                                   | OperatorExpression
                                   | "(" ExpressionWithoutBlock ")"  [bracket]  // GroupedExpression
+  syntax ExpressionWithBlock ::= BlockExpression
+
+  // https://doc.rust-lang.org/reference/expressions/block-expr.html
+  syntax BlockExpression ::= "{" ExpressionWithoutBlock "}"
   // https://doc.rust-lang.org/reference/expressions/literal-expr.html
   syntax LiteralExpression  ::= CharLiteral
                               | StringLiteral
@@ -382,7 +387,7 @@ module MIR-SYNTAX
                       | PathExpression "+" PathExpression
   syntax GenericArgsConst ::= LiteralExpression
                             | "-" LiteralExpression
-                            // BlockExpression is likely not used in mir
+                            | BlockExpression
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
   syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
