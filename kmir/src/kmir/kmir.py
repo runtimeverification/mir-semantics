@@ -3,13 +3,14 @@ __all__ = ['KMIR']
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from subprocess import CalledProcessError
+from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Optional, Union, final
 
 from pyk.cli_utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast
+from pyk.ktool.krun import KRunOutput, _krun
 
 from .preprocessor import preprocess
 
@@ -64,3 +65,34 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_parse(program_file, temp_file)
+
+    def run_program(
+        self,
+        program_file: Union[str, Path],
+        *,
+        check: bool = True,
+        temp_file: Optional[Union[str, Path]] = None,
+    ) -> CompletedProcess:
+        def run(program_file: Path) -> CompletedProcess:
+            return _krun(
+                input_file=program_file,
+                definition_dir=self.llvm_dir,
+                output=KRunOutput.NONE,
+                check=check,
+                pipe_stderr=True,
+            )
+
+        def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
+            temp_file.write_text(preprocess(program_file.read_text()))
+            return run(temp_file)
+
+        program_file = Path(program_file)
+        check_file_path(program_file)
+
+        if temp_file is None:
+            with NamedTemporaryFile(mode='w') as f:
+                temp_file = Path(f.name)
+                return preprocess_and_run(program_file, temp_file)
+
+        temp_file = Path(temp_file)
+        return preprocess_and_run(program_file, temp_file)
