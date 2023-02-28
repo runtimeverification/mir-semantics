@@ -128,7 +128,7 @@ module MIR-SYNTAX
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | "[" BasicRValue ";" ArrayLen "]"
+                  | "[" BasicRValue ";" RustExpression "]"
                   | "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
                   | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" StructRValueFieldList "}"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
@@ -236,6 +236,57 @@ module MIR-SYNTAX
   syntax PathClosure ::= "{" "closure" "#" Int "}"
   syntax PathConstant ::= "{" "constant" "#" Int "}"
   syntax PathOpaque ::= "{" "opaque" "#" Int "}"
+
+  // TODO: Figure out if we need full expression syntax. We probably don't need,
+  // e.g., ExpressionWithBlock
+  // https://doc.rust-lang.org/reference/expressions.html
+  syntax RustExpression ::= ExpressionWithoutBlock
+
+  syntax ExpressionWithoutBlock ::= LiteralExpression
+                                  | PathExpression
+                                  | OperatorExpression
+                                  | "(" ExpressionWithoutBlock ")"  [bracket]  // GroupedExpression
+  // https://doc.rust-lang.org/reference/expressions/literal-expr.html
+  syntax LiteralExpression  ::= CharLiteral
+                              | StringLiteral
+                              | ByteLiteral
+                              | ByteStringLiteral
+                              | Int
+                              | Bool
+  // https://doc.rust-lang.org/reference/expressions/operator-expr.html
+  syntax OperatorExpression ::= BorrowExpression
+                              | DereferenceExpression
+                              | NegationExpression
+                              | ArithmeticOrLogicalExpression
+                              | ComparisonExpression
+                              | LazyBooleanExpression
+                              | TypeCastExpression
+  syntax BorrowExpression ::= "&" RustExpression
+                            | "&" "mut" RustExpression
+                            | "&&" RustExpression
+                            | "&&" "mut" RustExpression
+  syntax DereferenceExpression ::= "*" RustExpression
+  syntax NegationExpression ::= "-" RustExpression
+                              | "!" RustExpression
+  syntax ArithmeticOrLogicalExpression  ::= RustExpression "+" RustExpression
+                                          | RustExpression "-" RustExpression
+                                          | RustExpression "*" RustExpression
+                                          | RustExpression "/" RustExpression
+                                          | RustExpression "%" RustExpression
+                                          | RustExpression "&" RustExpression
+                                          | RustExpression "|" RustExpression
+                                          | RustExpression "^" RustExpression
+                                          // | RustExpression "<<" RustExpression
+                                          // | RustExpression ">>" RustExpression
+  syntax ComparisonExpression ::= RustExpression "==" RustExpression
+                                | RustExpression "!=" RustExpression
+                                | RustExpression ">" RustExpression
+                                | RustExpression "<" RustExpression
+                                | RustExpression ">=" RustExpression
+                                | RustExpression "<=" RustExpression
+  syntax LazyBooleanExpression  ::= RustExpression "||" RustExpression
+                                  | RustExpression "&&" RustExpression
+  syntax TypeCastExpression ::= RustExpression "as" TypeNoBounds
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -359,13 +410,8 @@ module MIR-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" ArrayLen "]"
-  // TODO: Figure out if we need full expressions for the array length.
-  // https://doc.rust-lang.org/reference/expressions.html
-  syntax ArrayLen ::= Int
-                    | PathExpression
-                    | ArrayLen "+" ArrayLen
-                    | ArrayLen "as" TypeNoBounds
+  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
