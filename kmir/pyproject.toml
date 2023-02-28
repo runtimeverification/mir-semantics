@@ -29,6 +29,7 @@ pytest-mock = "*"
 pytest-xdist = "*"
 
 [tool.poetry.scripts]
+kmir = "kmir.__main__:main"
 kmir-preprocess = "kmir.preprocessor:main"
 
 [tool.isort]
