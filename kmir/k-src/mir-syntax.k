@@ -292,15 +292,31 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types/trait-object.html
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
   // https://doc.rust-lang.org/reference/paths.html#paths-in-types
-  syntax TypePath ::= "::" TypePathList
-                    | TypePathList
+  syntax TypePath ::= "::" TypePathList "::" TypePathEndSegment
+                    | TypePathList "::" TypePathEndSegment
+                    | "::" TypePathEndSegment
+                    | TypePathEndSegment
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
                             | "{" "opaque" "#" Int "}"
+  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
+                              | PathIdentSegment "::" PathIdentSegmentEndSuffix
+                              | "{" "opaque" "#" Int "}"
+  // In the Rust documentation, TypePathFn is included in PathIdentSegmentSuffix.
+  // However, that generates a parse ambiguity:
+  // a::b() -> c::d
+  // can be parsed either as a path with three elements:
+  // a::(b() -> c)::d
+  // or as a path with two elements:
+  // a::(b() -> (c::d))
+  // TODO: Figure out if this needs disambiguation at runtime, or
+  // if having the TypePathFn part at the end is good enough.
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                 | TypePathFn
+  syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
+                                      | TypePathFn
+
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
