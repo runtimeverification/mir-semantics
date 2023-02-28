@@ -1,6 +1,7 @@
 __all__ = ['KMIR']
 
 import json
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
@@ -20,16 +21,21 @@ from .preprocessor import preprocess
 class KMIR:
     llvm_dir: Path
     haskell_dir: Path
+    mir_parser: Path
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path]):
+    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], mir_parser: Union[str, Path]):
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
+
+        mir_parser = Path(mir_parser)
+        check_file_path(mir_parser)
 
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
+        object.__setattr__(self, 'mir_parser', mir_parser)
 
     def parse_program_raw(
         self,
@@ -41,13 +47,18 @@ class KMIR:
     ) -> CompletedProcess:
         def parse(program_file: Path) -> CompletedProcess:
             try:
-                proc_res = _kast(
-                    definition_dir=self.llvm_dir,
-                    input_file=program_file,
-                    input=input,
-                    output=output,
-                    sort='Mir',
-                )
+                if output == KAstOutput.KORE:
+                    command = [str(self.mir_parser)] + [str(program_file)]
+                    proc_res = subprocess.run(command, stdout=subprocess.PIPE, check=True, text=True)
+                else:
+                    proc_res = _kast(
+                        definition_dir=self.llvm_dir,
+                        input_file=program_file,
+                        input=input,
+                        output=output,
+                        sort='Mir',
+                        profile=True,
+                    )
             except CalledProcessError as err:
                 raise ValueError("Couldn't parse program") from err
             return proc_res

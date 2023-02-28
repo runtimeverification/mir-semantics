@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
-from typing import Any
+from pathlib import Path
+from typing import Any, Optional
 
 from pyk.cli_utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -24,12 +25,16 @@ def exec_parse(
     definition_dir: str,
     input: str = 'program',
     output: str = 'kast',
+    mir_parser: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
     kast_input = KAstInput[input.upper()]
     kast_output = KAstOutput[output.upper()]
 
-    kmir = KMIR(definition_dir, definition_dir)
+    if not mir_parser:
+        mir_parser = Path(definition_dir) / 'parser_Mir_MIR-SYNTAX'
+
+    kmir = KMIR(definition_dir, definition_dir, mir_parser)
     proc_res = kmir.parse_program_raw(input_file, input=kast_input, output=kast_output)
 
     if output != KAstOutput.NONE:

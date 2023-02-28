@@ -74,3 +74,12 @@ check-black: poetry-install
 kbuild-%:
 	$(POETRY_RUN) kbuild kompile $*
 .PHONY: kbuild-*
+
+# generate fast Bison parser
+bison-parser: kbuild-llvm
+	@$(eval KMIR_LLVM_DEFINITION_DIR := $(shell poetry run kbuild which llvm))
+	kast --definition $(KMIR_LLVM_DEFINITION_DIR) \
+             --gen-glr-parser                         \
+             --module MIR-SYNTAX                      \
+             --sort Mir                               \
+             $(KMIR_DEFINITION_DIR)/parser_Mir_MIR-SYNTAX

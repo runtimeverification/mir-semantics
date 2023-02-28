@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pyk.ktool.kprint import KAstInput, KAstOutput
 
 from kmir import KMIR
 
@@ -9,7 +10,7 @@ from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, HANDWRITTEN_SYNTA
 
 @pytest.mark.parametrize('input_path', HANDWRITTEN_SYNTAX_FILES, ids=[str(f.name) for f in HANDWRITTEN_SYNTAX_FILES])
 def test_handwritten_syntax(kmir: KMIR, input_path: Path) -> None:
-    kmir.parse_program(input_path)
+    kmir.parse_program_raw(input_path, input=KAstInput.PROGRAM, output=KAstOutput.KORE)
 
 
 @pytest.mark.parametrize(
