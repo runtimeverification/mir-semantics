@@ -24,7 +24,6 @@ module MIR-SYNTAX
   syntax PathFunctionData ::= NeList{PathFunctionDataSegment, "::"}
   // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
   syntax PathFunctionDataSegment  ::= FunctionPathComponent
-                                    | "{" "constant" "#" Int "}"  // anonymous
                                     | Int
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
@@ -230,9 +229,11 @@ module MIR-SYNTAX
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
                                   | PathClosure
+                                  | PathConstant
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
   syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
+  syntax PathConstant ::= "{" "constant" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
