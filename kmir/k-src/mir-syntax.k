@@ -21,10 +21,7 @@ module MIR-SYNTAX
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
-  syntax PathFunctionData ::= NeList{PathFunctionDataSegment, "::"}
-  // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
-  syntax PathFunctionDataSegment  ::= FunctionPathComponent
-                                    | Int
+  syntax PathFunctionData ::= NeList{FunctionPathComponent, "::"}
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
@@ -230,6 +227,9 @@ module MIR-SYNTAX
                                   | PathLocation
                                   | PathClosure
                                   | PathConstant
+                                  | Int
+  // TODO: Figure out if FunctionPath is always non-empty. If so, merge with
+  // PathFunctionData
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
   syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
