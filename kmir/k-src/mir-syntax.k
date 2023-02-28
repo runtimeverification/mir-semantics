@@ -245,10 +245,56 @@ module MIR-SYNTAX
 
   syntax ExpressionWithoutBlock ::= LiteralExpression
                                   | PathExpression
-                                  | OperatorExpression
+                                  // CallExpression
+                                  // https://doc.rust-lang.org/reference/expressions/call-expr.html
+                                  | RustExpression "(" RustExpressionList ")"
+                                  // FieldExpression
+                                  // https://doc.rust-lang.org/reference/expressions/field-expr.html
+                                  | RustExpression "." Identifier
+                                  // OperatorExpression
+                                  // https://doc.rust-lang.org/reference/expressions/operator-expr.html
+                                  // TypeCastExpression
+                                  > RustExpression "as" TypeNoBounds
+                                  // BorrowExpression
+                                  > "&" RustExpression
+                                  | "&" "mut" RustExpression
+                                  | "&&" RustExpression
+                                  | "&&" "mut" RustExpression
+                                  // DereferenceExpression
+                                  | "*" RustExpression
+                                  // NegationExpression
+                                  | "-" RustExpression
+                                  | "!" RustExpression
+                                  // ArithmeticOrLogicalExpression
+                                  > left:
+                                    RustExpression "*" RustExpression
+                                  | RustExpression "/" RustExpression
+                                  | RustExpression "%" RustExpression
+                                  > left:
+                                    RustExpression "+" RustExpression
+                                  | RustExpression "-" RustExpression
+                                  > left:
+                                    RustExpression "<" "<" RustExpression
+                                  | RustExpression ">" ">" RustExpression
+                                  > left:
+                                    RustExpression "&" RustExpression
+                                  > left:
+                                    RustExpression "|" RustExpression
+                                  > left:
+                                    RustExpression "^" RustExpression
+                                  // ComparisonExpression
+                                  > left:
+                                    RustExpression "==" RustExpression
+                                  | RustExpression "!=" RustExpression
+                                  | RustExpression ">" RustExpression
+                                  | RustExpression "<" RustExpression
+                                  | RustExpression ">=" RustExpression
+                                  | RustExpression "<=" RustExpression
+                                  // LazyBooleanExpression
+                                  > left:
+                                    RustExpression "||" RustExpression
+                                  | RustExpression "&&" RustExpression
                                   | GroupedExpression
-                                  | CallExpression
-                                  | FieldExpression
   syntax ExpressionWithBlock ::= BlockExpression
 
   // https://doc.rust-lang.org/reference/expressions/block-expr.html
@@ -260,48 +306,10 @@ module MIR-SYNTAX
                               | ByteStringLiteral
                               | Int
                               | Bool
-  // https://doc.rust-lang.org/reference/expressions/operator-expr.html
-  syntax OperatorExpression ::= BorrowExpression
-                              | DereferenceExpression
-                              | NegationExpression
-                              | ArithmeticOrLogicalExpression
-                              | ComparisonExpression
-                              | LazyBooleanExpression
-                              | TypeCastExpression
-  syntax BorrowExpression ::= "&" RustExpression
-                            | "&" "mut" RustExpression
-                            | "&&" RustExpression
-                            | "&&" "mut" RustExpression
-  syntax DereferenceExpression ::= "*" RustExpression
-  syntax NegationExpression ::= "-" RustExpression
-                              | "!" RustExpression
-  syntax ArithmeticOrLogicalExpression  ::= RustExpression "+" RustExpression
-                                          | RustExpression "-" RustExpression
-                                          | RustExpression "*" RustExpression
-                                          | RustExpression "/" RustExpression
-                                          | RustExpression "%" RustExpression
-                                          | RustExpression "&" RustExpression
-                                          | RustExpression "|" RustExpression
-                                          | RustExpression "^" RustExpression
-                                          // | RustExpression "<<" RustExpression
-                                          // | RustExpression ">>" RustExpression
-  syntax ComparisonExpression ::= RustExpression "==" RustExpression
-                                | RustExpression "!=" RustExpression
-                                | RustExpression ">" RustExpression
-                                | RustExpression "<" RustExpression
-                                | RustExpression ">=" RustExpression
-                                | RustExpression "<=" RustExpression
-  syntax LazyBooleanExpression  ::= RustExpression "||" RustExpression
-                                  | RustExpression "&&" RustExpression
-  syntax TypeCastExpression ::= RustExpression "as" TypeNoBounds
 
   // https://doc.rust-lang.org/reference/expressions/grouped-expr.html
   syntax GroupedExpression ::= "(" RustExpression ")"
-  // https://doc.rust-lang.org/reference/expressions/call-expr.html
-  syntax CallExpression ::= RustExpression "(" RustExpressionList ")"
   syntax RustExpressionList ::= List{RustExpression, ","}
-  // https://doc.rust-lang.org/reference/expressions/field-expr.html
-  syntax FieldExpression ::= RustExpression "." Identifier
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
