@@ -1,2 +1,5 @@
 fn main(_1: [usize; A], _2: [usize; B], _3: [usize; A + B]) -> () {
 }
+
+fn f(_1: [usize; A as usize]) -> () {
+}

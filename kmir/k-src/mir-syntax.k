@@ -360,7 +360,12 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/types/array.html
   syntax ArrayType ::= "[" Type ";" ArrayLen "]"
-  syntax ArrayLen ::= Int | PathExpression | PathExpression "+" PathExpression
+  // TODO: Figure out if we need full expressions for the array length.
+  // https://doc.rust-lang.org/reference/expressions.html
+  syntax ArrayLen ::= Int
+                    | PathExpression
+                    | ArrayLen "+" ArrayLen
+                    | ArrayLen "as" TypeNoBounds
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
