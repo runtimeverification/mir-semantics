@@ -227,6 +227,7 @@ module MIR-SYNTAX
                                   | PathLocation
                                   | PathClosure
                                   | PathConstant
+                                  | PathOpaque
                                   | Int
   // TODO: Figure out if FunctionPath is always non-empty. If so, merge with
   // PathFunctionData
@@ -234,6 +235,7 @@ module MIR-SYNTAX
   syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
   syntax PathConstant ::= "{" "constant" "#" Int "}"
+  syntax PathOpaque ::= "{" "opaque" "#" Int "}"
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -301,10 +303,10 @@ module MIR-SYNTAX
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
-                            | "{" "opaque" "#" Int "}"
+                            | PathOpaque
   syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
                               | PathIdentSegment "::" PathIdentSegmentEndSuffix
-                              | "{" "opaque" "#" Int "}"
+                              | PathOpaque
   // In the Rust documentation, TypePathFn is included in PathIdentSegmentSuffix.
   // However, that generates a parse ambiguity:
   // a::b() -> c::d
