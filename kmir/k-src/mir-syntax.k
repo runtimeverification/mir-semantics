@@ -347,6 +347,14 @@ module MIR-SYNTAX
                                     | NeverType
                                     | RawPointerType
                                     | ReferenceType
+                                    // TODO: DoubleReferenceType should be removed.
+                                    // This exists only because a type like
+                                    // &&usize, which should probably be parsed as
+                                    // &(&usize), fails to parse because
+                                    // K identifies "&&" as a single token.
+                                    // One option would be to replace all "&&"
+                                    // tokens with "&" "&".
+                                    | DoubleReferenceType
                                     | ArrayType
                                     | SliceType
                                     | BareFunctionType
@@ -410,6 +418,10 @@ module MIR-SYNTAX
                           | "&" Lifetime TypeNoBounds
                           | "&" "mut" TypeNoBounds
                           | "&" Lifetime "mut" TypeNoBounds
+  syntax DoubleReferenceType  ::= "&&" TypeNoBounds
+                                | "&&" Lifetime TypeNoBounds
+                                | "&&" "mut" TypeNoBounds
+                                | "&&" Lifetime "mut" TypeNoBounds
 
   // https://doc.rust-lang.org/reference/trait-bounds.html
   // TODO: Make this a token.
