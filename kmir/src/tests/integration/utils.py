@@ -33,7 +33,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'borrowck/fsu-moves-and-copies.mir',
     'deriving/deriving-cmp-generic-enum.mir',
     'deriving/deriving-cmp-generic-struct.mir',
-    'deriving/deriving-cmp-generic-struct-enum.mir'
+    'deriving/deriving-cmp-generic-struct-enum.mir',
     'deriving/deriving-cmp-generic-tuple-struct.mir',
     'deriving/deriving-show.mir',
     'deriving/deriving-show-2.mir',
@@ -93,8 +93,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     # OOM tests
     'array-slice-vec/subslice-patterns-const-eval-match.mir',
     'array-slice-vec/subslice-patterns-const-eval.mir',
-    'array-slice-vec/vec-matching.mir'
-    'binding/match-vec-alternatives.mir',
+    'array-slice-vec/vec-matching.mir' 'binding/match-vec-alternatives.mir',
     'cast/supported-cast.mir',
     'cleanup-rvalue-scopes.mir',
     'closures/2229_closure_analysis/run_pass/box.mir',

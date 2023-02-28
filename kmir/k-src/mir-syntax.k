@@ -273,15 +273,9 @@ module MIR-SYNTAX
                         | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
-                        | TupleType
-                        | NeverType
-                        | RawPointerType
-                        | ReferenceType
-                        | ArrayType
-                        | SliceType
+                        | NonPathImplementableType
                         // Probably not used in mir: InferredType
                         | QualifiedPathInType
-                        | BareFunctionType
                         // Probably not used im mir: MacroInvocation
                         | MirOnlyType
   
@@ -291,7 +285,6 @@ module MIR-SYNTAX
                                     | ReferenceType
                                     | ArrayType
                                     | SliceType
-                                    // Probably not used in mir: InferredType
                                     | BareFunctionType
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
