@@ -247,6 +247,7 @@ module MIR-SYNTAX
                                   | PathExpression
                                   | OperatorExpression
                                   | "(" ExpressionWithoutBlock ")"  [bracket]  // GroupedExpression
+                                  | CallExpression
   syntax ExpressionWithBlock ::= BlockExpression
 
   // https://doc.rust-lang.org/reference/expressions/block-expr.html
@@ -292,6 +293,9 @@ module MIR-SYNTAX
   syntax LazyBooleanExpression  ::= RustExpression "||" RustExpression
                                   | RustExpression "&&" RustExpression
   syntax TypeCastExpression ::= RustExpression "as" TypeNoBounds
+  // https://doc.rust-lang.org/reference/expressions/call-expr.html
+  syntax CallExpression ::= RustExpression "(" RustExpressionList ")"
+  syntax RustExpressionList ::= List{RustExpression, ","}
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
