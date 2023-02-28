@@ -246,12 +246,12 @@ module MIR-SYNTAX
   syntax ExpressionWithoutBlock ::= LiteralExpression
                                   | PathExpression
                                   | OperatorExpression
-                                  | "(" ExpressionWithoutBlock ")"  [bracket]  // GroupedExpression
+                                  | GroupedExpression
                                   | CallExpression
   syntax ExpressionWithBlock ::= BlockExpression
 
   // https://doc.rust-lang.org/reference/expressions/block-expr.html
-  syntax BlockExpression ::= "{" ExpressionWithoutBlock "}"
+  syntax BlockExpression ::= "{" RustExpression "}"
   // https://doc.rust-lang.org/reference/expressions/literal-expr.html
   syntax LiteralExpression  ::= CharLiteral
                               | StringLiteral
@@ -293,6 +293,9 @@ module MIR-SYNTAX
   syntax LazyBooleanExpression  ::= RustExpression "||" RustExpression
                                   | RustExpression "&&" RustExpression
   syntax TypeCastExpression ::= RustExpression "as" TypeNoBounds
+
+  // https://doc.rust-lang.org/reference/expressions/grouped-expr.html
+  syntax GroupedExpression ::= "(" RustExpression ")"
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallExpression ::= RustExpression "(" RustExpressionList ")"
   syntax RustExpressionList ::= List{RustExpression, ","}

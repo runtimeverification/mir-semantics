@@ -9,3 +9,6 @@ fn f(_1: [usize; (A + B) as usize]) -> () {
 
 fn f(_1: [usize; size_of::<T>()]) -> () {
 }
+
+fn f(_1: [usize; {{4}}]) -> () {
+}
