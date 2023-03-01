@@ -1,17 +1,22 @@
 from pathlib import Path
-from subprocess import CalledProcessError
 
 import pytest
-from pyk.cli_utils import run_process
+from pyk.cli_utils import check_file_path, dir_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
 
 from kmir import KMIR
+from kmir.pyk_utils import generate_mir_bison_parser
 
 
 def pytest_addoption(parser: Parser) -> None:
-    print(parser)
     parser.addoption('--no-skip', action='store_true', default=False, help='do not skip tests')
+    parser.addoption(
+        '--kbuild-dir',
+        dest='kbuild_dir',
+        type=dir_path,
+        help='Exisiting kbuild cache directory. Example: `~/.kbuild`. Note: tests will fail of it is invalid. Call `kbuild kompile` to populate it.',
+    )
 
 
 @pytest.fixture(scope='session')
@@ -20,8 +25,13 @@ def allow_skip(pytestconfig: Config) -> bool:
 
 
 @pytest.fixture(scope='session')
-def kbuild(tmp_path_factory: TempPathFactory) -> KBuild:
-    return KBuild(tmp_path_factory.mktemp('kbuild'))
+def kbuild(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> KBuild:
+    kbuild_dir = pytestconfig.getoption('kbuild_dir')
+    if not kbuild_dir:
+        return KBuild(tmp_path_factory.mktemp('kbuild'))
+    else:
+        assert isinstance(kbuild_dir, Path)
+        return KBuild(kbuild_dir)
 
 
 @pytest.fixture(scope='session')
@@ -30,29 +40,30 @@ def package() -> Package:
 
 
 @pytest.fixture(scope='session')
-def llvm_dir(kbuild: KBuild, package: Package) -> Path:
-    return kbuild.kompile(package, 'llvm')
+def llvm_dir(pytestconfig: Config, kbuild: KBuild, package: Package) -> Path:
+    if pytestconfig.getoption('kbuild_dir'):
+        return kbuild.definition_dir(package, 'llvm')
+    else:
+        return kbuild.kompile(package, 'llvm')
 
 
 @pytest.fixture(scope='session')
-def haskell_dir(kbuild: KBuild, package: Package) -> Path:
-    return kbuild.kompile(package, 'haskell')
+def haskell_dir(pytestconfig: Config, kbuild: KBuild, package: Package) -> Path:
+    if pytestconfig.getoption('kbuild_dir'):
+        return kbuild.definition_dir(package, 'haskell')
+    else:
+        return kbuild.kompile(package, 'haskell')
 
 
 @pytest.fixture(scope='session')
 def mir_parser(llvm_dir: Path) -> Path:
     path_to_mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
     try:
-        kast_command = ['kast']
-        kast_command += ['--definition', str(llvm_dir)]
-        kast_command += ['--module', 'MIR-SYNTAX']
-        kast_command += ['--sort', 'Mir']
-        kast_command += ['--gen-glr-parser']
-        kast_command += [str(path_to_mir_parser)]
-        run_process(kast_command)
-        return path_to_mir_parser
-    except CalledProcessError as err:
-        raise ValueError("Couldn't generate Bison parser") from err
+        check_file_path(path_to_mir_parser)
+    except ValueError:
+        # generate the parser if it does not exist
+        path_to_mir_parser = generate_mir_bison_parser(llvm_dir, path_to_mir_parser)
+    return path_to_mir_parser
 
 
 @pytest.fixture(scope='session')
