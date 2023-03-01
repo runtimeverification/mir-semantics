@@ -1,12 +1,11 @@
 from pathlib import Path
 
 import pytest
-from pyk.cli_utils import check_file_path, dir_path
+from pyk.cli_utils import dir_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
 
 from kmir import KMIR
-from kmir.pyk_utils import generate_mir_bison_parser
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -56,16 +55,5 @@ def haskell_dir(pytestconfig: Config, kbuild: KBuild, package: Package) -> Path:
 
 
 @pytest.fixture(scope='session')
-def mir_parser(llvm_dir: Path) -> Path:
-    path_to_mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
-    try:
-        check_file_path(path_to_mir_parser)
-    except ValueError:
-        # generate the parser if it does not exist
-        path_to_mir_parser = generate_mir_bison_parser(llvm_dir, path_to_mir_parser)
-    return path_to_mir_parser
-
-
-@pytest.fixture(scope='session')
-def kmir(llvm_dir: Path, haskell_dir: Path, mir_parser: Path) -> KMIR:
-    return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir, mir_parser=mir_parser)
+def kmir(llvm_dir: Path, haskell_dir: Path) -> KMIR:
+    return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)

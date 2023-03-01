@@ -23,13 +23,13 @@ POETRY_RUN := poetry run
 
 # Tests
 
-test: test-unit test-integration-parse
+test: test-unit test-integration
 
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-parse: poetry-install
-	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+test-integration: poetry-install
+	$(POETRY_RUN) pytest src/tests/integration --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
 compiletest-exclude:
 	$(eval TMP := $(shell mktemp))
@@ -75,11 +75,3 @@ kbuild-%:
 	$(POETRY_RUN) kbuild kompile $*
 .PHONY: kbuild-*
 
-# generate fast Bison parser
-bison-parser: kbuild-llvm
-	@$(eval KMIR_LLVM_DEFINITION_DIR := $(shell poetry run kbuild which llvm))
-	kast --definition $(KMIR_LLVM_DEFINITION_DIR) \
-             --gen-glr-parser                         \
-             --module MIR-SYNTAX                      \
-             --sort Mir                               \
-             $(KMIR_DEFINITION_DIR)/parser_Mir_MIR-SYNTAX

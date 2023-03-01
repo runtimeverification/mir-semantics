@@ -13,6 +13,8 @@ from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast
 from pyk.ktool.krun import KRunOutput, _krun
 
+from kmir.pyk_utils import generate_mir_bison_parser
+
 from .preprocessor import preprocess
 
 
@@ -23,12 +25,15 @@ class KMIR:
     haskell_dir: Path
     mir_parser: Path
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], mir_parser: Union[str, Path]):
+    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path]):
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
-        mir_parser = Path(mir_parser)
-        check_file_path(mir_parser)
+        mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
+        try:
+            check_file_path(mir_parser)
+        except ValueError:
+            mir_parser = generate_mir_bison_parser(llvm_dir, mir_parser)
 
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
