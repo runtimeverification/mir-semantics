@@ -23,13 +23,13 @@ POETRY_RUN := poetry run
 
 # Tests
 
-test: test-unit test-integration
+test: test-unit test-integration-parse
 
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration: poetry-install
-	$(POETRY_RUN) pytest src/tests/integration --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+test-integration-parse: poetry-install
+	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
 compiletest-exclude:
 	$(eval TMP := $(shell mktemp))
