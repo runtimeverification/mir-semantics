@@ -14,6 +14,9 @@ fn main(_1: usize) -> () {
   bb3: {
     <usize as Path>::function_name();
   }
+  bb1: {
+    path::function_name::<A + B>();
+  }
   bb4: {
     return;
   }

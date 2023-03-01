@@ -1,8 +1,7 @@
 fn main(_1: usize) -> () {
   let mut _2: usize;
   bb0: {
-    discriminant(_2) = 1;
-    discriminant((*_2)) = 1;
+    ((_2 as variant#7).1: usize) = _1;
     return;
   }
 }
