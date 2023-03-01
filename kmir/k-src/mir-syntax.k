@@ -1,10 +1,12 @@
 // (very) loosely based on https://rust-lang.github.io/rfcs/1211-mir.html
 
 module MIR-SYNTAX
-  imports INT
+  imports BOOL
+  imports UNSIGNED-INT-SYNTAX
 
   syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function | FunctionForData | DataAlloc | FunctionForPromoted
+  syntax MirComponent ::= Function | FunctionForData | FunctionForPromoted
+                        | DataAlloc | FunctionAlloc
 
   syntax Function ::= FunctionSignature "{" FunctionBody "}"
   syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
@@ -23,6 +25,7 @@ module MIR-SYNTAX
   // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
   syntax PathFunctionDataSegment  ::= FunctionPathComponent
                                     | "{" "constant" "#" Int "}"  // anonymous
+                                    | Int
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
@@ -42,7 +45,7 @@ module MIR-SYNTAX
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
   syntax Statement  ::= Place "=" RValue
                       // FakeRead does not seem to be used
-                      | "discriminant" "(" Local ")" "=" Int
+                      | "discriminant" "(" Place ")" "=" Int
                       | "Deinit" "(" Place ")"
                       | "StorageLive" "(" Local ")"
                       | "StorageDead" "(" Local ")"
@@ -86,22 +89,15 @@ module MIR-SYNTAX
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // Mir-only thing.
-                            | SliceImpl  // Mir-only thing.
-                            | GenericArgWithName  // Mir-only thing.
+                            | TypeImplSegment  // Mir-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
-  syntax SliceImpl ::= "<" "impl" "[" Type "]" ">"
+  syntax TypeImplSegment  ::= "<" "impl" NonPathImplementableType ">"
 
   // TODO: In practice, this is probably a list of a rather restricted vesion
   // of RValue, close to BasicRValue. Consider restricting the sort.
   syntax ArgumentList ::= List{RValue, ","}
-
-  // TODO: This is probably somewhat broken. We should figure out the actual
-  // syntax for this. See
-  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
-  // for some rust code that produces this.
-  syntax GenericArgWithName ::= "<" Type "{" Identifier "}" ">"
 
   // Place:
   // https://github.com/rust-lang/rust/blob/master/compiler/rustc_middle/src/mir/syntax.rs#L826
@@ -118,13 +114,13 @@ module MIR-SYNTAX
                             | Place "[" Local "]"  // Index
                             // | "(" Place "as" Type ")"  // OpaqueCast
                             | "(" Place "as" Type ")"  // Downcast(Some(..), ..)
-                            // | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
+                            | "(" Place "as" "variant" "#" Int ")"  // Downcast(None, ..)
                             | Place "[" Int "of" Int "]"  // ConstantIndex { from_end: false }
                             | Place "[" "-" Int "of" Int "]"  // ConstantIndex { from_end: true }
-                            // | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
-                            // | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
-                            // | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
-                            // | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
+                            | Place "[" Int ":" "]"  // Subslice{to: 0, from_end: true}
+                            | Place "[" ":" "-" Int "]"  // Subslice{from: 0, from_end: true}
+                            | Place "[" Int ":" "-" Int "]"  // Subslice{from_end: true}
+                            | Place "[" Int ".." Int "]"  // Subslice{from_end: false}
 
   syntax BasicRValue  ::= Local
                         | BasicRValueNoVariable
@@ -137,6 +133,8 @@ module MIR-SYNTAX
                   // or only move items.
                   | "[" BasicRValueList "]"
                   | "[" BasicRValue ";" ArrayLen "]"
+                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
+                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" StructRValueFieldList "}"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
                   | PathExpression "as" Type
                   // TODO: The confusion between `PathExpression "as" Type`
@@ -147,10 +145,12 @@ module MIR-SYNTAX
                   // TODO: I don't need all branches of NonTerminalPlace,
                   // consider restricting this.
                   | "deref_copy" NonTerminalPlace
-                  // TODO: ShallowInitBox may conflict with actual structs.
+                  // TODO: ShallowInitBox and SizeOf may conflict with actual structs.
                   // Currently structs can't be named like that. We should allow
                   // that and disambiguate.
                   | "ShallowInitBox" "(" BasicRValue "," Type ")"
+                  | "SizeOf" "(" Type ")"
+                  | "AlignOf" "(" Type ")"
 
                   | StructRValue
                   | TupleRValue
@@ -273,18 +273,20 @@ module MIR-SYNTAX
                         | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
-                        | TupleType
-                        | NeverType
-                        | RawPointerType
-                        | ReferenceType
-                        | ArrayType
-                        | SliceType
+                        | NonPathImplementableType
                         // Probably not used in mir: InferredType
                         | QualifiedPathInType
-                        | BareFunctionType
                         // Probably not used im mir: MacroInvocation
                         | MirOnlyType
   
+  syntax NonPathImplementableType ::= TupleType
+                                    | NeverType
+                                    | RawPointerType
+                                    | ReferenceType
+                                    | ArrayType
+                                    | SliceType
+                                    | BareFunctionType
+
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
   // https://doc.rust-lang.org/reference/types/trait-object.html
@@ -298,7 +300,7 @@ module MIR-SYNTAX
                             | "{" "opaque" "#" Int "}"
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                  | TypePathFn
+                                 | TypePathFn
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -306,6 +308,7 @@ module MIR-SYNTAX
                       | Type
                       | GenericArgsConst
                       | GenericArgsBinding
+                      | PathExpression "+" PathExpression
   syntax GenericArgsConst ::= LiteralExpression
                             | "-" LiteralExpression
                             // BlockExpression is likely not used in mir
@@ -337,7 +340,7 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/types/array.html
   syntax ArrayType ::= "[" Type ";" ArrayLen "]"
-  syntax ArrayLen ::= Int | PathExpression
+  syntax ArrayLen ::= Int | PathExpression | PathExpression "+" PathExpression
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
@@ -349,6 +352,7 @@ module MIR-SYNTAX
   syntax BareFunctionType ::= MaybeForLifetimes FunctionTypeQualifiers
                               "fn" "(" FunctionParametersMaybeNamedVariadic ")"
                               MaybeBareFunctionReturnType
+                              MaybeCurlyBraceTypeAnnotation
   syntax FunctionTypeQualifiers ::= "" | "unsafe" | "extern" Abi | "unsafe" "extern" Abi
   syntax FunctionParametersMaybeNamedVariadic ::= MaybeNamedFunctionParameters
                                                 // Not seen in mir: MaybeNamedFunctionParametersVariadic
@@ -356,6 +360,10 @@ module MIR-SYNTAX
   syntax MaybeNamedFunctionParameters ::= List {MaybeNamedParam, ","}
   syntax BareFunctionReturnType ::= "->" TypeNoBounds
   syntax MaybeBareFunctionReturnType ::= "" | BareFunctionReturnType
+  // See
+  // kmir/src/tests/integration/test-data/compiletest-rs/ui/closures/old-closure-fn-coerce.cs
+  // for some rust code that produces this.
+  syntax MaybeCurlyBraceTypeAnnotation ::= "" | "{" PathExpression "}"
   // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
   syntax ForLifetimes ::= "for" GenericParams
   syntax MaybeForLifetimes ::= "" | ForLifetimes
@@ -430,6 +438,8 @@ module MIR-SYNTAX
   syntax DataAllocDataLine ::= HexLiteral "|" DataAllocDataShortLine
   syntax DataAllocDataLines ::= NeList {DataAllocDataLine, ""}
 
+  syntax FunctionAlloc ::= Identifier "(" "fn" ":" PathExpression "-" "shim" ")" 
+
   syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
   syntax IntCaseList ::= NeList{IntCase, ","}
@@ -450,18 +460,33 @@ module MIR-SYNTAX
   // TODO: Finish implementing the sorts below.
 
   // TODO: Allow assert and assume as normal identifiers.
-  syntax OtherTokens  ::= "promoted" | "constant" | "scope" | "discriminant"
-                        | "unreachable" | "resume" | "goto"
-                        | "transmute" | "closure" | "size" | "align"
-                        | "otherwise" | "unwind" | "success" | "cleanup"
-                        | "deref_copy" | "StorageLive" | "StorageDead"
-                        | "debug" | "__" | "assume" | "copy_nonoverlapping"
-                        | "dst" | "src" | "count" | "opaque"
+  syntax OtherTokens  ::= "align" | "assume"
+                        | "body"
+                        | "cleanup" | "closure" | "constant"
+                        | "copy_nonoverlapping" | "count"
+                        | "debug" | "deref_copy" | "discriminant" | "dst"
+                        | "generator" | "goto"
+                        | "opaque" | "otherwise"
+                        | "promoted"
+                        | "resume"
+                        | "StorageLive" | "StorageDead"
+                        | "scope" | "size" | "src" | "success"
+                        | "unreachable" | "unwind"
+                        | "transmute"
+                        | "variant"
+                        | "__"
                         | ConstCastKind
+                        // TODO: These tokens seem to be needed when running
+                        // on github. I'm not sure why, looks like a K issue:
+                        | "keys" | "values"
   syntax RValueTODO1 ::= ConstCastKind | Identifier | Identifier "(" RValueTODO1 ")"
   syntax ConstCastKind ::= "IntToInt" | "IntToFloat"
   syntax Abi ::= StringLiteral
   syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
+                        | "[" "async" "fn" "body" "@" FilePosition "]"
+                        | "[" "async" "block" "@" FilePosition "]"
+                        | "[" MaybeStatic "generator" "@" FilePosition "]"
+  syntax MaybeStatic ::= "" | "static"
 
   syntax BBToken ::= r"bb[0-9]+"  [token(2)]
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]

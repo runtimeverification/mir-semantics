@@ -1,0 +1,8 @@
+fn main() -> () {
+  bb0: {
+    _1 = path::<impl [A]>::call(_2, _3) -> bb1;
+  }
+  bb1: {
+    _1 = path::<impl *const i32>::call(_2, _3) -> bb2;
+  }
+}

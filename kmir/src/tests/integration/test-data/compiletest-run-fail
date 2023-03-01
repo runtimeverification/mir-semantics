@@ -5,6 +5,7 @@ associated-types/issue-48010.mir
 async-await/issues/issue-65419/issue-65419-async-fn-resume-after-completion.mir
 async-await/issues/issue-65419/issue-65419-async-fn-resume-after-panic.mir
 async-await/issues/issue-65419/issue-65419-generator-resume-after-completion.mir
+binding/match-vec-alternatives.mir
 binop/binop-fail-3.mir
 binop/binop-panic.mir
 borrowck/borrowck-local-borrow.mir
@@ -25,6 +26,8 @@ const_prop/inline_spans_lint_attribute.mir
 const_prop/inline_spans.mir
 consts/array-literal-index-oob.mir
 consts/const-eval/issue-84957-const-str-as-bytes.mir
+consts/const-pattern-not-const-evaluable.mir
+consts/const-pattern-variant.mir
 consts/ice-zst-static-access.mir
 consts/issue-62045.mir
 consts/issue-66342.mir
@@ -53,6 +56,7 @@ impl-trait/dyn-trait-elided-two-inputs-ref-param.mir
 impl-trait/issues/issue-55608-captures-empty-region.mir
 iterators/iter-step-overflow-ndebug.mir
 iterators/iter-sum-overflow-ndebug.mir
+let-else/let-else-temporary-lifetime.mir
 loops/for-each-loop-panic.mir
 macros/assert-as-macro.mir
 macros/assert-eq-macro-msg.mir
