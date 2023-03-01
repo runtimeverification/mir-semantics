@@ -62,7 +62,6 @@ class KMIR:
                         input=input,
                         output=output,
                         sort='Mir',
-                        profile=True,
                     )
             except CalledProcessError as err:
                 raise ValueError("Couldn't parse program") from err
