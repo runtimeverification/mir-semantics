@@ -112,7 +112,7 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     'deriving/issue-58319.mir',
     'drop/drop_order.mir',
     'drop/dropck_legal_cycles.mir',
-    'drop/dynamic-drop.mir'
+    'drop/dynamic-drop.mir',
     'dynamically-sized-types/dst-struct.mir',
     'dynamically-sized-types/dst-tuple.mir',
     'enum-discriminant/niche.mir',
