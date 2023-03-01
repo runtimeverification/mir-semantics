@@ -18,7 +18,7 @@ KMIR defines MIR semantics formally in K and enables the scalable testing and ve
     $ docker build . --build-arg K_COMMIT=5.5.97 --tag mir-semantics:5.5.97
     $ docker run --rm -it -u user -w $(pwd) -v $(pwd):$(pwd):ro mir-semantics:5.5.97 make -C kmir test-integration
     ```
-    - Install K according to [K Insallation Guide](https://github.com/runtimeverification/k) and other prerequisits following the [instructions](https://github.com/runtimeverification/mir-semantics/tree/master/kmir).
+    - Install K according to [K Installation Guide](https://github.com/runtimeverification/k) and other prerequisits following the [instructions](https://github.com/runtimeverification/mir-semantics/tree/master/kmir).
 
 ## Test Interpretation
 Running of these test cases are integrated to our CI. 
