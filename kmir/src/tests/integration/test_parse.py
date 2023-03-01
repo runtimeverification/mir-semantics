@@ -32,4 +32,4 @@ def test_compiletest(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # When
-    kmir.parse_program(input_path, temp_file=temp_file)
+    kmir.parse_program_raw(input_path, temp_file=temp_file, input=KAstInput.PROGRAM, output=KAstOutput.KORE)
