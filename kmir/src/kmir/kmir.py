@@ -102,6 +102,7 @@ class KMIR:
         self,
         program_file: Union[str, Path],
         *,
+        output: KRunOutput = KRunOutput.NONE,
         check: bool = True,
         temp_file: Optional[Union[str, Path]] = None,
     ) -> CompletedProcess:
@@ -109,9 +110,10 @@ class KMIR:
             return _krun(
                 input_file=program_file,
                 definition_dir=self.llvm_dir,
-                output=KRunOutput.NONE,
+                output=output,
                 check=check,
                 pipe_stderr=True,
+                pmap={'PGM': str(self.mir_parser)},
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
