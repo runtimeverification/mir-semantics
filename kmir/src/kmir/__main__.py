@@ -90,18 +90,18 @@ def create_argument_parser() -> ArgumentParser:
 
     # Run
     run_subparser = command_parser.add_parser('run', help='Run a MIR program')
-    parse_subparser.add_argument(
+    run_subparser.add_argument(
         'input_file',
         type=file_path,
         help='Path to .mir file',
     )
-    parse_subparser.add_argument(
+    run_subparser.add_argument(
         '--definition-dir',
         dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
-    parse_subparser.add_argument(
+    run_subparser.add_argument(
         '--output',
         dest='output',
         type=str,

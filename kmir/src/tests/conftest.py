@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 from pyk.cli_utils import dir_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
-from filelock import FileLock
 
 from kmir import KMIR
 
@@ -35,7 +35,7 @@ def kbuild_dir(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> Path:
 
 
 @pytest.fixture(scope='session')
-def kbuild(kbuild_dir) -> KBuild:
+def kbuild(kbuild_dir: Path) -> KBuild:
     return KBuild(kbuild_dir)
 
 
