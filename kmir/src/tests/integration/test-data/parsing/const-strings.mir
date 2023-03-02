@@ -9,7 +9,7 @@ fn main(_1: usize) -> () {
     _2 = const "One-letter escapes:\0";
     _2 = const "One-letter escapes:\"";
     _2 = const "One-letter escapes:\'";
-    _2 = const "Code escapes: \x7C \u00007c";
+    _2 = const "Code escapes: \x7C \u00007c \u{7c}";
     _2 = const '_';
     _2 = const '\n';
     _2 = const '\r';
@@ -20,6 +20,7 @@ fn main(_1: usize) -> () {
     _2 = const '\'';
     _2 = const '\x7C';
     _2 = const '\u00007c';
+    _2 = const '\u{7c}';
     _2 = const b"AHasher";
     _2 = const b"One-letter escapes:\n";
     _2 = const b"One-letter escapes:\r";
