@@ -3,3 +3,6 @@ path::to::{constant#0}: usize = {
 
 path::{closure#0}::{constant#0}: usize = {
 }
+
+path::{opaque#0}::{constant#0}: usize = {
+}
