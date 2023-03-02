@@ -21,11 +21,7 @@ module MIR-SYNTAX
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 
   // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
-  syntax PathFunctionData ::= NeList{PathFunctionDataSegment, "::"}
-  // TODO: Consider merging PathFunctionDataSegment with FunctionPathComponent
-  syntax PathFunctionDataSegment  ::= FunctionPathComponent
-                                    | "{" "constant" "#" Int "}"  // anonymous
-                                    | Int
+  syntax PathFunctionData ::= NeList{FunctionPathComponent, "::"}
 
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
@@ -132,7 +128,7 @@ module MIR-SYNTAX
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
-                  | "[" BasicRValue ";" ArrayLen "]"
+                  | "[" BasicRValue ";" RustExpression "]"
                   | "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
                   | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" StructRValueFieldList "}"
                   | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
@@ -230,9 +226,90 @@ module MIR-SYNTAX
   syntax FunctionPathComponent  ::= Identifier
                                   | PathLocation
                                   | PathClosure
+                                  | PathConstant
+                                  | PathOpaque
+                                  | Int
+  // TODO: Figure out if FunctionPath is always non-empty. If so, merge with
+  // PathFunctionData
   syntax FunctionPath ::= List{FunctionPathComponent, "::"}
   syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
   syntax PathClosure ::= "{" "closure" "#" Int "}"
+  syntax PathConstant ::= "{" "constant" "#" Int "}"
+  syntax PathOpaque ::= "{" "opaque" "#" Int "}"
+
+  // TODO: Figure out if we need full expression syntax. We probably don't need,
+  // e.g., ExpressionWithBlock
+  // https://doc.rust-lang.org/reference/expressions.html
+  syntax RustExpression ::= ExpressionWithoutBlock
+                          | ExpressionWithBlock
+
+  syntax ExpressionWithoutBlock ::= LiteralExpression
+                                  | PathExpression
+                                  // CallExpression
+                                  // https://doc.rust-lang.org/reference/expressions/call-expr.html
+                                  | RustExpression "(" RustExpressionList ")"
+                                  // FieldExpression
+                                  // https://doc.rust-lang.org/reference/expressions/field-expr.html
+                                  | RustExpression "." Identifier
+                                  // OperatorExpression
+                                  // https://doc.rust-lang.org/reference/expressions/operator-expr.html
+                                  // TypeCastExpression
+                                  > RustExpression "as" TypeNoBounds
+                                  // BorrowExpression
+                                  > "&" RustExpression
+                                  | "&" "mut" RustExpression
+                                  | "&&" RustExpression
+                                  | "&&" "mut" RustExpression
+                                  // DereferenceExpression
+                                  | "*" RustExpression
+                                  // NegationExpression
+                                  | "-" RustExpression
+                                  | "!" RustExpression
+                                  // ArithmeticOrLogicalExpression
+                                  > left:
+                                    RustExpression "*" RustExpression
+                                  | RustExpression "/" RustExpression
+                                  | RustExpression "%" RustExpression
+                                  > left:
+                                    RustExpression "+" RustExpression
+                                  | RustExpression "-" RustExpression
+                                  > left:
+                                    RustExpression "<" "<" RustExpression
+                                  | RustExpression ">" ">" RustExpression
+                                  > left:
+                                    RustExpression "&" RustExpression
+                                  > left:
+                                    RustExpression "|" RustExpression
+                                  > left:
+                                    RustExpression "^" RustExpression
+                                  // ComparisonExpression
+                                  > left:
+                                    RustExpression "==" RustExpression
+                                  | RustExpression "!=" RustExpression
+                                  | RustExpression ">" RustExpression
+                                  | RustExpression "<" RustExpression
+                                  | RustExpression ">=" RustExpression
+                                  | RustExpression "<=" RustExpression
+                                  // LazyBooleanExpression
+                                  > left:
+                                    RustExpression "||" RustExpression
+                                  | RustExpression "&&" RustExpression
+                                  | GroupedExpression
+  syntax ExpressionWithBlock ::= BlockExpression
+
+  // https://doc.rust-lang.org/reference/expressions/block-expr.html
+  syntax BlockExpression ::= "{" RustExpression "}"
+  // https://doc.rust-lang.org/reference/expressions/literal-expr.html
+  syntax LiteralExpression  ::= CharLiteral
+                              | StringLiteral
+                              | ByteLiteral
+                              | ByteStringLiteral
+                              | Int
+                              | Bool
+
+  // https://doc.rust-lang.org/reference/expressions/grouped-expr.html
+  syntax GroupedExpression ::= "(" RustExpression ")"
+  syntax RustExpressionList ::= List{RustExpression, ","}
 
   // Simplified forms of the Rust literals, since MIR does not seem to use the
   // full range.
@@ -241,8 +318,9 @@ module MIR-SYNTAX
   syntax SignedLiteral ::= r"[-]?[0-9]+_(isize|i8|i16|i32|i64|i128)" [token]
   syntax FloatLiteral ::= r"-?[0-9]+(.[0-9]+)?((E|e)(\\+|-)?[0-9]+)?(f32|f64)" [token]
   syntax HexLiteral ::= r"0x[0-9a-fA-F]+"  [token]
-  syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
-  syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
+  syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u\\{[0-9a-fA-F]+\\}|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token]
+  syntax CharLiteral ::= r"[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u\\{[0-9a-fA-F]+\\}|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
+  // TODO: Unicode escapes should probably not be a part of ByteLiteral.
   syntax ByteLiteral ::= r"b[']([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)[']"  [token]
   syntax ByteStringLiteral ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-9a-fA-F][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
 
@@ -283,6 +361,14 @@ module MIR-SYNTAX
                                     | NeverType
                                     | RawPointerType
                                     | ReferenceType
+                                    // TODO: DoubleReferenceType should be removed.
+                                    // This exists only because a type like
+                                    // &&usize, which should probably be parsed as
+                                    // &(&usize), fails to parse because
+                                    // K identifies "&&" as a single token.
+                                    // One option would be to replace all "&&"
+                                    // tokens with "&" "&".
+                                    | DoubleReferenceType
                                     | ArrayType
                                     | SliceType
                                     | BareFunctionType
@@ -292,15 +378,31 @@ module MIR-SYNTAX
   // https://doc.rust-lang.org/reference/types/trait-object.html
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
   // https://doc.rust-lang.org/reference/paths.html#paths-in-types
-  syntax TypePath ::= "::" TypePathList
-                    | TypePathList
+  syntax TypePath ::= "::" TypePathList "::" TypePathEndSegment
+                    | TypePathList "::" TypePathEndSegment
+                    | "::" TypePathEndSegment
+                    | TypePathEndSegment
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
-                            | "{" "opaque" "#" Int "}"
+                            | PathOpaque
+  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
+                              | PathIdentSegment "::" PathIdentSegmentEndSuffix
+                              | PathOpaque
+  // In the Rust documentation, TypePathFn is included in PathIdentSegmentSuffix.
+  // However, that generates a parse ambiguity:
+  // a::b() -> c::d
+  // can be parsed either as a path with three elements:
+  // a::(b() -> c)::d
+  // or as a path with two elements:
+  // a::(b() -> (c::d))
+  // TODO: Figure out if this needs disambiguation at runtime, or
+  // if having the TypePathFn part at the end is good enough.
   syntax PathIdentSegmentSuffix ::= ""
                                   | GenericArgs
-                                 | TypePathFn
+  syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
+                                      | TypePathFn
+
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -311,7 +413,7 @@ module MIR-SYNTAX
                       | PathExpression "+" PathExpression
   syntax GenericArgsConst ::= LiteralExpression
                             | "-" LiteralExpression
-                            // BlockExpression is likely not used in mir
+                            | BlockExpression
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
   syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
@@ -330,6 +432,10 @@ module MIR-SYNTAX
                           | "&" Lifetime TypeNoBounds
                           | "&" "mut" TypeNoBounds
                           | "&" Lifetime "mut" TypeNoBounds
+  syntax DoubleReferenceType  ::= "&&" TypeNoBounds
+                                | "&&" Lifetime TypeNoBounds
+                                | "&&" "mut" TypeNoBounds
+                                | "&&" Lifetime "mut" TypeNoBounds
 
   // https://doc.rust-lang.org/reference/trait-bounds.html
   // TODO: Make this a token.
@@ -339,8 +445,8 @@ module MIR-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" ArrayLen "]"
-  syntax ArrayLen ::= Int | PathExpression | PathExpression "+" PathExpression
+  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
