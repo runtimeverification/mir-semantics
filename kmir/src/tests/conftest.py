@@ -39,19 +39,13 @@ def package() -> Package:
 
 
 @pytest.fixture(scope='session')
-def llvm_dir(pytestconfig: Config, kbuild: KBuild, package: Package) -> Path:
-    if pytestconfig.getoption('kbuild_dir'):
-        return kbuild.definition_dir(package, 'llvm')
-    else:
-        return kbuild.kompile(package, 'llvm')
+def llvm_dir(kbuild: KBuild, package: Package) -> Path:
+    return kbuild.kompile(package, 'llvm')
 
 
 @pytest.fixture(scope='session')
-def haskell_dir(pytestconfig: Config, kbuild: KBuild, package: Package) -> Path:
-    if pytestconfig.getoption('kbuild_dir'):
-        return kbuild.definition_dir(package, 'haskell')
-    else:
-        return kbuild.kompile(package, 'haskell')
+def haskell_dir(kbuild: KBuild, package: Package) -> Path:
+    return kbuild.kompile(package, 'haskell')
 
 
 @pytest.fixture(scope='session')
