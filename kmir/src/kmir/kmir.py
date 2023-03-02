@@ -10,10 +10,8 @@ from typing import Optional, Union, final
 
 from pyk.cli_utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
-from pyk.ktool.kprint import KAstInput, KAstOutput, _kast
+from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
 from pyk.ktool.krun import KRunOutput, _krun
-
-from kmir.pyk_utils import generate_mir_bison_parser
 
 from .preprocessor import preprocess
 
@@ -31,7 +29,7 @@ class KMIR:
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
         if not mir_parser.is_file():
-            mir_parser = generate_mir_bison_parser(llvm_dir, mir_parser)
+            mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
 
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
