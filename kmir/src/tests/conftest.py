@@ -4,6 +4,7 @@ import pytest
 from pyk.cli_utils import dir_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
+from filelock import FileLock
 
 from kmir import KMIR
 
@@ -24,13 +25,18 @@ def allow_skip(pytestconfig: Config) -> bool:
 
 
 @pytest.fixture(scope='session')
-def kbuild(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> KBuild:
-    kbuild_dir = pytestconfig.getoption('kbuild_dir')
-    if not kbuild_dir:
-        return KBuild(tmp_path_factory.mktemp('kbuild'))
+def kbuild_dir(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> Path:
+    existing_kbuild_dir = pytestconfig.getoption('kbuild_dir')
+    if not existing_kbuild_dir:
+        return tmp_path_factory.mktemp('kbuild')
     else:
-        assert isinstance(kbuild_dir, Path)
-        return KBuild(kbuild_dir)
+        assert isinstance(existing_kbuild_dir, Path)
+        return existing_kbuild_dir
+
+
+@pytest.fixture(scope='session')
+def kbuild(kbuild_dir) -> KBuild:
+    return KBuild(kbuild_dir)
 
 
 @pytest.fixture(scope='session')
@@ -49,5 +55,6 @@ def haskell_dir(kbuild: KBuild, package: Package) -> Path:
 
 
 @pytest.fixture(scope='session')
-def kmir(llvm_dir: Path, haskell_dir: Path) -> KMIR:
-    return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)
+def kmir(kbuild: KBuild, llvm_dir: Path, haskell_dir: Path) -> KMIR:
+    with FileLock(str(kbuild.kbuild_dir) + '.lock'):
+        return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)
