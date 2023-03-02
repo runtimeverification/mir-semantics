@@ -56,7 +56,7 @@ class KMIR:
                 else:
                     proc_res = _kast(
                         definition_dir=self.llvm_dir,
-                        input_file=program_file,
+                        file=program_file,
                         input=input,
                         output=output,
                         sort='Mir',
