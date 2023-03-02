@@ -89,7 +89,7 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Run
-    parse_subparser = command_parser.add_parser('run', help='Run a MIR program')
+    run_subparser = command_parser.add_parser('run', help='Run a MIR program')
     parse_subparser.add_argument(
         'input_file',
         type=file_path,
