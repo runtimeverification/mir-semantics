@@ -30,9 +30,7 @@ class KMIR:
         check_dir_path(llvm_dir)
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
-        try:
-            check_file_path(mir_parser)
-        except ValueError:
+        if not mir_parser.is_file():
             mir_parser = generate_mir_bison_parser(llvm_dir, mir_parser)
 
         haskell_dir = Path(haskell_dir)
