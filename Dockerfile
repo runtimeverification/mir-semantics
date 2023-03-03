@@ -1,5 +1,6 @@
+ARG K_DISTRO=jammy
 ARG K_COMMIT
-FROM runtimeverificationinc/kframework-k:ubuntu-focal-${K_COMMIT}
+FROM runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_COMMIT}
 
 RUN    apt-get update        \
     && apt-get upgrade --yes \

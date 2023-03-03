@@ -11,6 +11,8 @@ COMPILETEST_PERMANENT_EXCLUDE = [
     # This crashes with a stack overflow when parsing the json,
     # but passes with sys.setrecursionlimit(40000). However, that
     # uses a lot of memory.
+    #
+    # With the Bison GLR parser, it throws 'memory exhausted'
     'pattern/usefulness/issue-88747.mir',
     # Other tests with stack overflows.
     'array-slice-vec/byte-literals.mir',

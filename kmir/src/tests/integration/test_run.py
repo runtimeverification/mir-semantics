@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pyk.ktool.krun import KRunOutput
 
 from kmir import KMIR
 
@@ -64,7 +65,7 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path,
 
     # Then
     if test_id not in COMPILETEST_RUN_FAIL:
-        run_result = kmir.run_program(input_path, check=False, temp_file=temp_file)
+        run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
         assert not run_result.returncode
         # TODO uncomment these lines when the semantics is implemented
         # assert run_result.stdout == expected_stdout

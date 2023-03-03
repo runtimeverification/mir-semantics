@@ -1,6 +1,7 @@
 __all__ = ['KMIR']
 
 import json
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
@@ -9,7 +10,7 @@ from typing import Optional, Union, final
 
 from pyk.cli_utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
-from pyk.ktool.kprint import KAstInput, KAstOutput, _kast
+from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
 from pyk.ktool.krun import KRunOutput, _krun
 
 from .preprocessor import preprocess
@@ -20,16 +21,22 @@ from .preprocessor import preprocess
 class KMIR:
     llvm_dir: Path
     haskell_dir: Path
+    mir_parser: Path
 
     def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path]):
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
+
+        mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
+        if not mir_parser.is_file():
+            mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
 
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
+        object.__setattr__(self, 'mir_parser', mir_parser)
 
     def parse_program_raw(
         self,
@@ -41,13 +48,17 @@ class KMIR:
     ) -> CompletedProcess:
         def parse(program_file: Path) -> CompletedProcess:
             try:
-                proc_res = _kast(
-                    definition_dir=self.llvm_dir,
-                    file=program_file,
-                    input=input,
-                    output=output,
-                    sort='Mir',
-                )
+                if output == KAstOutput.KORE:
+                    command = [str(self.mir_parser)] + [str(program_file)]
+                    proc_res = subprocess.run(command, stdout=subprocess.PIPE, check=True, text=True)
+                else:
+                    proc_res = _kast(
+                        definition_dir=self.llvm_dir,
+                        file=program_file,
+                        input=input,
+                        output=output,
+                        sort='Mir',
+                    )
             except CalledProcessError as err:
                 raise ValueError("Couldn't parse program") from err
             return proc_res
@@ -86,6 +97,7 @@ class KMIR:
         self,
         program_file: Union[str, Path],
         *,
+        output: KRunOutput = KRunOutput.NONE,
         check: bool = True,
         temp_file: Optional[Union[str, Path]] = None,
     ) -> CompletedProcess:
@@ -93,9 +105,10 @@ class KMIR:
             return _krun(
                 input_file=program_file,
                 definition_dir=self.llvm_dir,
-                output=KRunOutput.NONE,
+                output=output,
                 check=check,
                 pipe_stderr=True,
+                pmap={'PGM': str(self.mir_parser)},
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:

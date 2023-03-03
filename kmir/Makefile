@@ -38,6 +38,13 @@ compiletest-exclude:
 	rm $(TMP)
 .PHONY: compiletest-exclude
 
+compiletest-run-fail:
+	$(eval TMP := $(shell mktemp))
+	$(POETRY_RUN) pytest src/tests/integration --no-skip -k test_run --numprocesses=4 --verbose $(TEST_ARGS) 2>&1 | tee $(TMP)
+	grep ^FAILED $(TMP) | grep -oP '(?<=\[).*(?=\])' | sort > src/tests/integration/test-data/compiletest-run-fail
+	rm $(TMP)
+.PHONY: compiletest-exclude
+
 
 # Checks and formatting
 
@@ -74,3 +81,4 @@ check-black: poetry-install
 kbuild-%:
 	$(POETRY_RUN) kbuild kompile $*
 .PHONY: kbuild-*
+

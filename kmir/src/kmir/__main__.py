@@ -3,6 +3,7 @@ from typing import Any
 
 from pyk.cli_utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
+from pyk.ktool.krun import KRunOutput
 
 from .kmir import KMIR
 
@@ -36,6 +37,21 @@ def exec_parse(
         print(proc_res.stdout)
 
 
+def exec_run(
+    input_file: str,
+    definition_dir: str,
+    output: str = 'none',
+    **kwargs: Any,
+) -> None:
+    krun_output = KRunOutput[output.upper()]
+
+    kmir = KMIR(definition_dir, definition_dir)
+    proc_res = kmir.run_program(input_file, output=krun_output)
+
+    if output != KAstOutput.NONE:
+        print(proc_res.stdout)
+
+
 def create_argument_parser() -> ArgumentParser:
     parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
@@ -63,6 +79,29 @@ def create_argument_parser() -> ArgumentParser:
         required=False,
     )
     parse_subparser.add_argument(
+        '--output',
+        dest='output',
+        type=str,
+        default='kast',
+        help='Output mode',
+        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
+        required=False,
+    )
+
+    # Run
+    run_subparser = command_parser.add_parser('run', help='Run a MIR program')
+    run_subparser.add_argument(
+        'input_file',
+        type=file_path,
+        help='Path to .mir file',
+    )
+    run_subparser.add_argument(
+        '--definition-dir',
+        dest='definition_dir',
+        type=dir_path,
+        help='Path to LLVM definition to use.',
+    )
+    run_subparser.add_argument(
         '--output',
         dest='output',
         type=str,
