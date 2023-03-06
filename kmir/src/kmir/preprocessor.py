@@ -14,7 +14,6 @@ ALLOC_ITEM = '|'.join([ALLOC_REFERENCE, BYTE_VALUE, UNINITIALIZED_BYTE])
 ALLOC_VALUE = r'(\s*(?: (' + ALLOC_ITEM + '))+)'
 ALLOC_SUFFIX = r'\s+│.*$'
 
-LINE_COMMENT_REGEXP = re.compile(r'^((?:[^/"]|/[^/"]|/?"(?:[^\\"]|\\.)*")*)//.*$')
 HEX_CLEANUP_SUFFIX = re.compile(r'^' + ALLOC_VALUE + ALLOC_SUFFIX)
 HEX_CLEANUP_SEPARATOR = re.compile(r'^(\s+0x[0-9a-fA-F]+\s+)│' + ALLOC_VALUE + ALLOC_SUFFIX)
 
@@ -25,17 +24,9 @@ def preprocess(program_text: str) -> str:
 
 def process_line(line: str) -> str:
     line = line.rstrip()
-    line = remove_comments(line)
     line = cleanup_hex_dump(line)
     line = line.rstrip()
     return line
-
-
-def remove_comments(line: str) -> str:
-    m = LINE_COMMENT_REGEXP.match(line)
-    if not m:
-        return line
-    return m.group(1)
 
 
 def cleanup_hex_dump(line: str) -> str:

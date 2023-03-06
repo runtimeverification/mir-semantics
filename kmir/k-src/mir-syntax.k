@@ -615,3 +615,12 @@ module MIR-SYNTAX
   // Replace ^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1
   // Replace ^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1|$2
 endmodule
+
+module MIR-PARSER-SYNTAX
+  imports MIR-SYNTAX
+
+  // Declaring regular expressions of sort `#Layout` infroms the K lexer to drop these tokens.
+  syntax #Layout  ::= r"(\\/\\/[^\\n\\r]*)" // single-line comments
+                    | r"([\\ \\n\\r\\t])"   // whitespace
+
+endmodule
