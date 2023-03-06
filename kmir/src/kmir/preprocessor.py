@@ -23,9 +23,7 @@ def preprocess(program_text: str) -> str:
 
 
 def process_line(line: str) -> str:
-    line = line.rstrip()
     line = cleanup_hex_dump(line)
-    line = line.rstrip()
     return line
 
 
