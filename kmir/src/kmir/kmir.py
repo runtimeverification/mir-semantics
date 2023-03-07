@@ -27,9 +27,9 @@ class KMIR:
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
-        mir_parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
+        mir_parser = llvm_dir / 'parser_Mir_MIR-PARSER-SYNTAX'
         if not mir_parser.is_file():
-            mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
+            mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
