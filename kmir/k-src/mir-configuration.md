@@ -98,9 +98,11 @@ module MIR-BASIC-BLOCKS
 
 ```k
   configuration
-    <basicBlocks multiplicity="*" type="Map">
-        <bbName> "bb0":String </bbName>
+    <basicBlocks>
+      <basicBlock multiplicity="*" type="Map">
+        <bbName> 0:Int </bbName>
         <bbBody> BBBottom:BasicBlockBody </bbBody>
+      </basicBlock>
     </basicBlocks>
 
   syntax BasicBlockBody ::= "BBBottom" [macro]
