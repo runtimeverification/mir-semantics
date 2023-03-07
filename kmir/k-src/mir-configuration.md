@@ -30,7 +30,6 @@ Locals
 module MIR-LOCALS
     imports INT
     imports BOOL
-    imports RUST-STD
     imports MIR-SYNTAX
 ```
 
@@ -44,9 +43,10 @@ We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `
         <localDecl multiplicity="*" type="Map">
             <index> 0:Int </index>
             <mutability>  Not:Mutability </mutability>
-            <localInfo>   None:LocalInfo </localInfo>
             <internal>    false          </internal>
             <ty>          ():Type          </ty>
+// It looks like we don't actually care about these fileds:
+//            <localInfo>   None:LocalInfo </localInfo>
 //            <userTy>      ():Type          </userTy>    // we probably don't need userTy because we won't do typeckecing
 //            <isBlockTail> false          </isBlockTail>
 //            <sourceInfo>  false          </sourceInfo>

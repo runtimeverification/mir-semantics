@@ -49,7 +49,6 @@ The function's return value is a special binding at location `0`:
          (.Bag => <localDecl>
                     <index>       0:Int </index>
                     <mutability>  Mut:Mutability   </mutability>
-                    <localInfo>   None:LocalInfo   </localInfo>
                     <internal>    false            </internal>
                     <ty>          TYPE:Type        </ty>
                   </localDecl>
@@ -73,7 +72,6 @@ TODO: initialize `Mutability` basing in syntax, for now it's just declared as `N
          (.Bag => <localDecl>
                     <index>       Local2Int(LOCAL) </index>
                     <mutability>  Not:Mutability   </mutability>
-                    <localInfo>   None:LocalInfo   </localInfo>
                     <internal>    false            </internal>
                     <ty>          TYPE:Type        </ty>
                   </localDecl>
