@@ -5,10 +5,10 @@ source = "k-src"
 
 [targets.llvm]
 backend = "llvm"
-main-file = "mir.k"
+main-file = "mir.md"
 syntax-module = "MIR"
 
 [targets.haskell]
 backend = "haskell"
-main-file = "mir.k"
+main-file = "mir.md"
 syntax-module = "MIR"
