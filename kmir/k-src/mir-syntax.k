@@ -34,7 +34,8 @@ module MIR-SYNTAX
   syntax Debug ::= "debug" UserVariableName "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
-  syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
+  syntax BasicBlock ::= BB ":" BasicBlockBody
+  syntax BasicBlockBody ::= "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
