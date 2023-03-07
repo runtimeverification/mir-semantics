@@ -6,9 +6,9 @@ source = "k-src"
 [targets.llvm]
 backend = "llvm"
 main-file = "mir.md"
-syntax-module = "MIR"
+syntax-module = "MIR-PARSER-SYNTAX"
 
 [targets.haskell]
 backend = "haskell"
 main-file = "mir.md"
-syntax-module = "MIR"
+syntax-module = "MIR-PARSER-SYNTAX"
