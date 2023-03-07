@@ -14,7 +14,7 @@ We use several hooks which convert between token and string representations:
   syntax String ::= StringLiteral2Sring(StringLiteral) [function, total, hook(STRING.token2string)]
   syntax StringLiteral ::= String2SringLiteral(String) [function, total, hook(STRING.string2token)]
 
-  syntax String ::= Local2String(Local) [function, total, hook(STRING.token2string)]
+  syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
 ```
 
 Additionally, we need functions that convert between syntactic and semantics representations of several types:
@@ -22,7 +22,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ```k
   syntax Int ::= Local2Int(Local) [function, total]
   //-----------------------------------------------
-  rule Local2Int(LOCAL) => #let STR = Local2String(LOCAL) #in String2Int(substrString(STR, 1, lengthString(STR)))
+  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR)))
 ```
 
 ```k
