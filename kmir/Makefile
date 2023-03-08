@@ -40,7 +40,7 @@ compiletest-exclude:
 
 compiletest-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
-              --no-skip                                                               \
+            --no-skip                                                               \
             -k test_compiletest                                                     \
             --report-file src/tests/integration/test-data/compiletest-run-fail.json \
             $(TEST_ARGS)                                                            \

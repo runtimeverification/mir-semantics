@@ -167,5 +167,5 @@ COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
 COMPILETEST_EXCLUDE_FILE = TEST_DATA_DIR / 'compiletest-exclude'
 COMPILETEST_EXCLUDE = set(COMPILETEST_EXCLUDE_FILE.read_text().splitlines() + COMPILETEST_PERMANENT_EXCLUDE)
 COMPILETEST_TEST_DATA = tuple(
-    (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in COMPILETEST_FILES
+    (str(input_path.relative_to(COMPILETEST_DIR)), input_path) for input_path in COMPILETEST_FILES
 )
