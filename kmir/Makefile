@@ -45,6 +45,13 @@ compiletest-run-fail:
 	rm $(TMP)
 .PHONY: compiletest-exclude
 
+handwritten-run-fail:
+	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+            -k test_handwritten                                                     \
+            --report-file src/tests/integration/test-data/handwritten-run-fail.json \
+            $(TEST_ARGS)                                                            \
+            2>&1 | tee $(TMP)
+.PHONY: handwritten-test-run
 
 # Checks and formatting
 

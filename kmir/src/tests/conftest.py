@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import Optional
+from _pytest.config import Notset
 
 import pytest
 from filelock import FileLock
-from pyk.cli_utils import dir_path
+from pyk.cli_utils import dir_path, file_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
 
@@ -16,6 +18,12 @@ def pytest_addoption(parser: Parser) -> None:
         dest='kbuild_dir',
         type=dir_path,
         help='Exisiting kbuild cache directory. Example: `~/.kbuild`. Note: tests will fail of it is invalid. Call `kbuild kompile` to populate it.',
+    )
+    parser.addoption(
+        '--report-file',
+        dest='report_file',
+        type=file_path,
+        help='File to report test failures.',
     )
 
 
@@ -32,6 +40,18 @@ def kbuild_dir(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> Path:
     else:
         assert isinstance(existing_kbuild_dir, Path)
         return existing_kbuild_dir
+
+
+@pytest.fixture(scope='session')
+def report_file(pytestconfig: Config) -> Optional[Path]:
+    report_file_path = pytestconfig.getoption('report_file')
+    if isinstance(report_file_path, Notset):
+        return None
+    else:
+        if report_file_path.exists():
+            report_file_path.unlink()
+        report_file_path.touch()
+        return report_file_path
 
 
 @pytest.fixture(scope='session')

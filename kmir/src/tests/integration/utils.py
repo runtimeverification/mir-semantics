@@ -5,6 +5,9 @@ TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
 HANDWRITTEN_SYNTAX_DIR = TEST_DATA_DIR / 'parsing'
 HANDWRITTEN_SYNTAX_FILES = tuple(HANDWRITTEN_SYNTAX_DIR.glob('*.mir'))
+HANDWRITTEN_TEST_DATA = tuple(
+    (str(input_path.relative_to(HANDWRITTEN_SYNTAX_DIR)), input_path) for input_path in HANDWRITTEN_SYNTAX_FILES
+)
 
 
 COMPILETEST_PERMANENT_EXCLUDE = [

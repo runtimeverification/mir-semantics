@@ -57,7 +57,7 @@ def exec_run(
         print(std_out)
         print(std_err)
         print(msg)
-        exit(exit_code)
+        exit(int(exit_code))
 
 
 def create_argument_parser() -> ArgumentParser:

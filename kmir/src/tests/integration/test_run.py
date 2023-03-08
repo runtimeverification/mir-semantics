@@ -1,11 +1,15 @@
+import json
 from pathlib import Path
+from typing import Optional
+import re
 
 import pytest
 from pyk.ktool.krun import KRunOutput
+from pyk.kore.parser import KoreParser
 
 from kmir import KMIR
 
-from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, TEST_DATA_DIR
+from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, TEST_DATA_DIR, HANDWRITTEN_TEST_DATA
 
 COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail'
 COMPILETEST_RUN_FAIL = set(COMPILETEST_RUN_FAIL_FILE.read_text().splitlines())
@@ -39,6 +43,40 @@ COMPILETEST_RUN_EXCLUDE = {
 
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
+    HANDWRITTEN_TEST_DATA,
+    ids=[test_id for test_id, *_ in HANDWRITTEN_TEST_DATA],
+)
+def test_handwritten(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, report_file: Optional[Path]) -> None:
+    """
+    1. Execute the program and grab the output in stdout and stderr
+    2. Check the return code w.r.t. run-pass/run-fail condition
+    3. Write to JSON report file if return code is non-zero
+    """
+
+    # Given
+    temp_file = tmp_path / 'preprocessed.mir'
+
+    # Then
+    run_result = kmir.run_program(input_path, output=KRunOutput.PRETTY, check=False, temp_file=temp_file)
+    if report_file and run_result.returncode:
+        k_cell = re.search(r'<k>(.*)</k>', run_result.stdout.replace('\n', ''))
+        with report_file.open('a') as f:
+            f.write(
+                json.dumps(
+                    {
+                        'file': input_path.name,
+                        'returncode': run_result.returncode,
+                        'kcell': k_cell.group() if k_cell else None,
+                    },
+                    indent=2,
+                )
+            )
+            f.write(',\n')
+    assert not run_result.returncode
+
+
+@pytest.mark.parametrize(
+    ('test_id', 'input_path'),
     COMPILETEST_TEST_DATA,
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
@@ -58,7 +96,7 @@ def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path,
     temp_file = tmp_path / 'preprocessed.mir'
 
     # TODO uncomment these lines when the semantics is implemented
-    # stdout_file = input_path.parent / (input_path.stem + '.run.stdout')
+    # stdout_file = input_path.parent / (input_path.stem + '.run.stdout')q
     # stderr_file = input_path.parent / (input_path.stem + '.run.stderr')
     # expected_stdout = stdout_file.read_text() if stdout_file.exists() else ''
     # expected_stderr = stderr_file.read_text() if stderr_file.exists() else ''
