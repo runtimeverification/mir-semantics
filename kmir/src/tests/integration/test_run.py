@@ -11,8 +11,10 @@ from kmir import KMIR
 
 from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, TEST_DATA_DIR, HANDWRITTEN_TEST_DATA
 
-COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail'
-COMPILETEST_RUN_FAIL = set(COMPILETEST_RUN_FAIL_FILE.read_text().splitlines())
+COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail.json'
+COMPILETEST_RUN_FAIL = set(
+    test['file'] for test in json.loads('[' + COMPILETEST_RUN_FAIL_FILE.read_text().rstrip('\n').rstrip(',') + ']')
+)
 
 COMPILETEST_RUN_EXCLUDE = {
     # macos only
@@ -64,7 +66,7 @@ def test_handwritten(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path,
             f.write(
                 json.dumps(
                     {
-                        'file': input_path.name,
+                        'file': str(input_path.relative_to(TEST_DATA_DIR)),
                         'returncode': run_result.returncode,
                         'kcell': k_cell.group() if k_cell else None,
                     },
@@ -80,34 +82,36 @@ def test_handwritten(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path,
     COMPILETEST_TEST_DATA,
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
-def test_compiletest(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool) -> None:
+def test_compiletest(
+    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
     2. Check the return code w.r.t. run-pass/run-fail condition
     3. Compare the output with the expected output
     """
-    if allow_skip and (test_id in COMPILETEST_EXCLUDE or test_id in COMPILETEST_RUN_EXCLUDE):
-        pytest.skip()
-
-    if test_id in COMPILETEST_RUN_FAIL:
+    if allow_skip and (
+        test_id in COMPILETEST_EXCLUDE or test_id in COMPILETEST_RUN_EXCLUDE or test_id in COMPILETEST_RUN_FAIL
+    ):
         pytest.skip()
 
     # Given
     temp_file = tmp_path / 'preprocessed.mir'
 
-    # TODO uncomment these lines when the semantics is implemented
-    # stdout_file = input_path.parent / (input_path.stem + '.run.stdout')q
-    # stderr_file = input_path.parent / (input_path.stem + '.run.stderr')
-    # expected_stdout = stdout_file.read_text() if stdout_file.exists() else ''
-    # expected_stderr = stderr_file.read_text() if stderr_file.exists() else ''
-
     # Then
-    if test_id not in COMPILETEST_RUN_FAIL:
-        run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
-        assert not run_result.returncode
-        # TODO uncomment these lines when the semantics is implemented
-        # assert run_result.stdout == expected_stdout
-        # assert run_result.stderr == expected_stderr
-
-    # elif test_id in COMPILETEST_RUN_FAIL:
-    #    assert run_result.returncode
+    run_result = kmir.run_program(input_path, output=KRunOutput.PRETTY, check=False, temp_file=temp_file)
+    if report_file and run_result.returncode:
+        k_cell = re.search(r'<k>(.*)</k>', run_result.stdout.replace('\n', ''))
+        with report_file.open('a') as f:
+            f.write(
+                json.dumps(
+                    {
+                        'file': str(input_path.relative_to(TEST_DATA_DIR)),
+                        'returncode': run_result.returncode,
+                        'kcell': k_cell.group() if k_cell else None,
+                    },
+                    indent=2,
+                )
+            )
+            f.write(',\n')
+    assert not run_result.returncode

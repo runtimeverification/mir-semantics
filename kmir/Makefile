@@ -39,11 +39,13 @@ compiletest-exclude:
 .PHONY: compiletest-exclude
 
 compiletest-run-fail:
-	$(eval TMP := $(shell mktemp))
-	$(POETRY_RUN) pytest src/tests/integration --no-skip -k test_run --numprocesses=4 --verbose $(TEST_ARGS) 2>&1 | tee $(TMP)
-	grep ^FAILED $(TMP) | grep -oP '(?<=\[).*(?=\])' | sort > src/tests/integration/test-data/compiletest-run-fail
-	rm $(TMP)
-.PHONY: compiletest-exclude
+	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+              --no-skip                                                               \
+            -k test_compiletest                                                     \
+            --report-file src/tests/integration/test-data/compiletest-run-fail.json \
+            $(TEST_ARGS)                                                            \
+            2>&1 | tee $(TMP)
+.PHONY: compiletest-run-fail
 
 handwritten-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \

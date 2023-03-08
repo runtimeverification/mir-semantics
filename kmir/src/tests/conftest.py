@@ -47,11 +47,12 @@ def report_file(pytestconfig: Config) -> Optional[Path]:
     report_file_path = pytestconfig.getoption('report_file')
     if isinstance(report_file_path, Notset):
         return None
-    else:
-        if report_file_path.exists():
-            report_file_path.unlink()
-        report_file_path.touch()
-        return report_file_path
+    if not report_file_path:
+        return None
+    if report_file_path.exists():
+        report_file_path.unlink()
+    report_file_path.touch()
+    return report_file_path
 
 
 @pytest.fixture(scope='session')

@@ -1,120 +1,120 @@
 {
-  "file": "data-alloc-multiline.mir",
+  "file": "parsing/data-alloc-multiline.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 (  size : 27 , align : 1 ) { 0x00 | 70  65  72  66  6f  72  6d  5f  61  73  79  6e  63  5f  63  61  .DataAllocDataShortLine  0x10 | 6c  6c  5f  63  61  6c  6c  62  61  63  6b  .DataAllocDataShortLine  .DataAllocDataLines }  .Mir ~> .  </k>"
 },
 {
-  "file": "data-alloc-reference.mir",
+  "file": "parsing/data-alloc-reference.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 (  size : 16 , align : 8 ) { #(-------alloc2--------)#  77  5  0  0  0  0  0  0  .DataAllocDataShortLine }  alloc1 (  size : 16 , align : 8 ) { #(-------alloc2+0x10--------)#  77  5  0  0  0  0  0  0  .DataAllocDataShortLine }  .Mir ~> .  </k>"
 },
 {
-  "file": "data-alloc-static.mir",
+  "file": "parsing/data-alloc-static.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 ( static : RAND_SOURCE :: .FunctionPath , size : 8 , align : 8 ) { 0  0  0  0  0  0  0  0  .DataAllocDataShortLine }  alloc1 ( static : path :: RAND_SOURCE :: .FunctionPath , size : 8 , align : 8 ) { 0  0  0  0  0  0  0  0  .DataAllocDataShortLine }  .Mir ~> .  </k>"
 },
 {
-  "file": "data-alloc-uninitialized.mir",
+  "file": "parsing/data-alloc-uninitialized.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 ( static : RAND_SOURCE :: .FunctionPath , size : 8 , align : 8 ) { 0  0  0  0  0  __  __  __  .DataAllocDataShortLine }  .Mir ~> .  </k>"
 },
 {
-  "file": "data-alloc.mir",
+  "file": "parsing/data-alloc.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 (  size : 8 , align : 8 ) { 0  0  0  0  0  0  0  0  .DataAllocDataShortLine }  .Mir ~> .  </k>"
 },
 {
-  "file": "function-for-constant-const.mir",
+  "file": "parsing/function-for-constant-const.mir",
   "returncode": 4,
   "kcell": "<k>    const CONSTANT :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "function-for-constant-named.mir",
+  "file": "parsing/function-for-constant-named.mir",
   "returncode": 4,
   "kcell": "<k>     path :: to :: CONSTANT :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "function-for-constant-static.mir",
+  "file": "parsing/function-for-constant-static.mir",
   "returncode": 4,
   "kcell": "<k>    static CONSTANT :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "function-for-mutable.mir",
+  "file": "parsing/function-for-mutable.mir",
   "returncode": 4,
   "kcell": "<k>    static mut CONSTANT :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "generic-param-lifetime.mir",
+  "file": "parsing/generic-param-lifetime.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _2 ) ~> .  </k>"
 },
 {
-  "file": "generic-param-type.mir",
+  "file": "parsing/generic-param-type.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _1 ) ~> .  </k>"
 },
 {
-  "file": "promoted-definition.mir",
+  "file": "parsing/promoted-definition.mir",
   "returncode": 4,
   "kcell": "<k>    promoted [ 0 ] in main :: .FunctionPath : usize  = { .DebugList .BindingList .ScopeList bb0  : { .StatementList return ; }  .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "type-path-segment.mir",
+  "file": "parsing/type-path-segment.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _1 ) ~> .  </k>"
 },
 {
-  "file": "type-qualified-path.mir",
+  "file": "parsing/type-qualified-path.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _1 ) ~> .  </k>"
 },
 {
-  "file": "type-tuple.mir",
+  "file": "parsing/type-tuple.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _2 ) ~> .  </k>"
 },
 {
-  "file": "data-alloc-shim.mir",
+  "file": "parsing/data-alloc-shim.mir",
   "returncode": 4,
   "kcell": "<k>    alloc1 ( fn : < [ closure @ path/to/file.rs:1:10: 1:20 ] as FnOnce < ( * const ( ) , .TypeList ) , .GenericArgsList > > :: call_once :: .ExpressionPathList - shim )  .Mir ~> .  </k>"
 },
 {
-  "file": "function-for-constant-path-int.mir",
+  "file": "parsing/function-for-constant-path-int.mir",
   "returncode": 4,
   "kcell": "<k>     path :: to :: 0 :: { constant # 0 } :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "terminator-call-function-path.mir",
+  "file": "parsing/terminator-call-function-path.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBasicBlock , bb3  ) ~> .  </k>"
 },
 {
-  "file": "type-async.mir",
+  "file": "parsing/type-async.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _1 ) ~> .  </k>"
 },
 {
-  "file": "type-function-pointer.mir",
+  "file": "parsing/type-function-pointer.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBinding , _2 ) ~> .  </k>"
 },
 {
-  "file": "function-for-constant-anonymous.mir",
+  "file": "parsing/function-for-constant-anonymous.mir",
   "returncode": 4,
   "kcell": "<k>     path :: to :: { constant # 0 } :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }   path :: { closure # 0 } :: { constant # 0 } :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }   path :: { opaque # 0 } :: { constant # 0 } :: .PathFunctionData : usize  = { .DebugList .BindingList .ScopeList .BasicBlockList }  .Mir ~> .  </k>"
 },
 {
-  "file": "rust-expression-precedence.mir",
+  "file": "parsing/rust-expression-precedence.mir",
   "returncode": 134,
   "kcell": null
 },
 {
-  "file": "terminator-call-generic-args.mir",
+  "file": "parsing/terminator-call-generic-args.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( main :: .FunctionPath , DuplicateBasicBlock , bb0  ) ~> .  </k>"
 },
 {
-  "file": "type-array-expr.mir",
+  "file": "parsing/type-array-expr.mir",
   "returncode": 1,
   "kcell": "<k>    #internalPanic ( f :: .FunctionPath , DuplicateFunction , f :: .FunctionPath ) ~> .  </k>"
 },
