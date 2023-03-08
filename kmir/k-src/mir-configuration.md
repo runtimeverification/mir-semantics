@@ -17,8 +17,13 @@ module MIR-CONFIGURATION
 
   configuration
     <mir>
-      <localDecls/>
-      <basicBlocks/>
+      <functions>
+        <function multiplicity="*" type="Map">
+          <path> String2IdentifierToken("dummy"):FunctionPath </path>
+          <localDecls/>
+          <basicBlocks/>
+        </function>
+      </functions>
     </mir>
 endmodule
 ```

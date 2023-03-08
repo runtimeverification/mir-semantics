@@ -18,6 +18,8 @@ We use several hooks which convert between token and string representations:
   syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
 
   syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
+
+  syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
 ```
 
 Additionally, we need functions that convert between syntactic and semantics representations of several types:

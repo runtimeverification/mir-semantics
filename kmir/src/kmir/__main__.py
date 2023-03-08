@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from typing import Any
+import re
 
 from pyk.cli_utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -46,10 +47,17 @@ def exec_run(
     krun_output = KRunOutput[output.upper()]
 
     kmir = KMIR(definition_dir, definition_dir)
-    proc_res = kmir.run_program(input_file, output=krun_output)
-
-    if output != KAstOutput.NONE:
-        print(proc_res.stdout)
+    try:
+        proc_res = kmir.run_program(input_file, output=krun_output)
+        if output != KAstOutput.NONE:
+            print(proc_res.stdout)
+    except RuntimeError as err:
+        std_out, std_err, msg = err.args
+        exit_code = re.findall(r'\d+', std_out)[0]
+        print(std_out)
+        print(std_err)
+        print(msg)
+        exit(exit_code)
 
 
 def create_argument_parser() -> ArgumentParser:
