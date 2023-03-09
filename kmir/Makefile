@@ -1,6 +1,8 @@
 .PHONY: default all clean build install \
         poetry-install                  \
         test test-unit test-integration \
+        test-integration-parse          \
+        test-integration-run            \
         format isort autoflake black    \
         check check-isort check-autoflake check-black check-flake8 check-mypy
 
@@ -28,18 +30,27 @@ test: test-unit test-integration
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration: poetry-install
-	$(POETRY_RUN) pytest src/tests/integration --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+test-integration: test-integration-parse test-integration-run
 
-compiletest-exclude:
-	$(eval TMP := $(shell mktemp))
-	$(POETRY_RUN) pytest src/tests/integration --no-skip -k test_compiletest --numprocesses=4 --verbose $(TEST_ARGS) 2>&1 | tee $(TMP)
-	grep ^FAILED $(TMP) | grep -oP '(?<=\[).*(?=\])' | sort > src/tests/integration/test-data/compiletest-exclude
-	rm $(TMP)
-.PHONY: compiletest-exclude
+test-integration-parse: poetry-install
+	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+
+test-integration-run: poetry-install
+	$(POETRY_RUN) pytest src/tests/integration/test_run.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+
+## Produce *-fail.tsv files by running the tests with --no-skip and no parallelism
+compiletest-parse-fail:
+	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                     \
+            --tb=line                                                                \
+            --no-skip                                                                \
+            -k test_compiletest                                                      \
+            --report-file src/tests/integration/test-data/compiletest-parse-fail.tsv \
+            $(TEST_ARGS)
+.PHONY: compiletest-parse-fail
 
 compiletest-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+            --tb=line                                                               \
             --no-skip                                                               \
             -k test_compiletest                                                     \
             --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \

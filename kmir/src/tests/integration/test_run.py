@@ -7,7 +7,7 @@ from pyk.ktool.krun import KRunOutput
 
 from kmir import KMIR
 
-from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, HANDWRITTEN_TEST_DATA, TEST_DATA_DIR
+from .utils import COMPILETEST_PARSE_FAIL, COMPILETEST_TEST_DATA, HANDWRITTEN_TEST_DATA, TEST_DATA_DIR
 
 HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
 HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
@@ -84,7 +84,7 @@ def test_compiletest(
     3. Compare the output with the expected output
     """
     if allow_skip and (
-        test_id in COMPILETEST_EXCLUDE or test_id in COMPILETEST_RUN_EXCLUDE or test_id in COMPILETEST_RUN_FAIL
+        test_id in COMPILETEST_PARSE_FAIL or test_id in COMPILETEST_RUN_EXCLUDE or test_id in COMPILETEST_RUN_FAIL
     ):
         pytest.skip()
 
