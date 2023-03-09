@@ -42,17 +42,17 @@ compiletest-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
             --no-skip                                                               \
             -k test_compiletest                                                     \
-            --report-file src/tests/integration/test-data/compiletest-run-fail.json \
-            $(TEST_ARGS)                                                            \
-            2>&1 | tee $(TMP)
+            --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
+            $(TEST_ARGS)
 .PHONY: compiletest-run-fail
 
 handwritten-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+            --tb=line                                                               \
+            --no-skip                                                               \
             -k test_handwritten                                                     \
-            --report-file src/tests/integration/test-data/handwritten-run-fail.json \
-            $(TEST_ARGS)                                                            \
-            2>&1 | tee $(TMP)
+            --report-file src/tests/integration/test-data/handwritten-run-fail.tsv  \
+            $(TEST_ARGS)
 .PHONY: handwritten-test-run
 
 # Checks and formatting

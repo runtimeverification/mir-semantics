@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Optional
 import re
+from filelock import FileLock
 
 import pytest
 from pyk.ktool.krun import KRunOutput
@@ -11,10 +12,11 @@ from kmir import KMIR
 
 from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, TEST_DATA_DIR, HANDWRITTEN_TEST_DATA
 
-COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail.json'
-COMPILETEST_RUN_FAIL = set(
-    test['file'] for test in json.loads('[' + COMPILETEST_RUN_FAIL_FILE.read_text().rstrip('\n').rstrip(',') + ']')
-)
+HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
+HANDWRITTEN_RUN_FAIL = set(test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines())
+
+COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail.tsv'
+COMPILETEST_RUN_FAIL = set(test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines())
 
 COMPILETEST_RUN_EXCLUDE = {
     # macos only
@@ -48,32 +50,26 @@ COMPILETEST_RUN_EXCLUDE = {
     HANDWRITTEN_TEST_DATA,
     ids=[test_id for test_id, *_ in HANDWRITTEN_TEST_DATA],
 )
-def test_handwritten(kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, report_file: Optional[Path]) -> None:
+def test_handwritten(
+    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
     2. Check the return code w.r.t. run-pass/run-fail condition
     3. Write to JSON report file if return code is non-zero
     """
+    if allow_skip and (test_id in HANDWRITTEN_RUN_FAIL):
+        pytest.skip()
 
     # Given
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.PRETTY, check=False, temp_file=temp_file)
+    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
     if report_file and run_result.returncode:
-        k_cell = re.search(r'<k>(.*)</k>', run_result.stdout.replace('\n', ''))
-        with report_file.open('a') as f:
-            f.write(
-                json.dumps(
-                    {
-                        'file': str(input_path.relative_to(TEST_DATA_DIR)),
-                        'returncode': run_result.returncode,
-                        'kcell': k_cell.group() if k_cell else None,
-                    },
-                    indent=2,
-                )
-            )
-            f.write(',\n')
+        with FileLock(f'{report_file.name}.lock', timeout=1):
+            with report_file.open('a') as f:
+                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
     assert not run_result.returncode
 
 
@@ -99,19 +95,10 @@ def test_compiletest(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.PRETTY, check=False, temp_file=temp_file)
+    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
     if report_file and run_result.returncode:
-        k_cell = re.search(r'<k>(.*)</k>', run_result.stdout.replace('\n', ''))
-        with report_file.open('a') as f:
-            f.write(
-                json.dumps(
-                    {
-                        'file': str(input_path.relative_to(TEST_DATA_DIR)),
-                        'returncode': run_result.returncode,
-                        'kcell': k_cell.group() if k_cell else None,
-                    },
-                    indent=2,
-                )
-            )
-            f.write(',\n')
+        lock = FileLock(f'{report_file.name}.lock')
+        with lock:
+            with report_file.open('a') as f:
+                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
     assert not run_result.returncode
