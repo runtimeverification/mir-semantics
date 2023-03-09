@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Optional
-from _pytest.config import Notset
 
 import pytest
-from filelock import FileLock
+from _pytest.config import Notset
 from pyk.cli_utils import dir_path, file_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory

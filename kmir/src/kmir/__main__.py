@@ -1,6 +1,6 @@
+import re
 from argparse import ArgumentParser
 from typing import Any
-import re
 
 from pyk.cli_utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput

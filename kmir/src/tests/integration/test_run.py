@@ -1,22 +1,19 @@
-import json
 from pathlib import Path
 from typing import Optional
-import re
-from filelock import FileLock
 
 import pytest
+from filelock import FileLock
 from pyk.ktool.krun import KRunOutput
-from pyk.kore.parser import KoreParser
 
 from kmir import KMIR
 
-from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, TEST_DATA_DIR, HANDWRITTEN_TEST_DATA
+from .utils import COMPILETEST_EXCLUDE, COMPILETEST_TEST_DATA, HANDWRITTEN_TEST_DATA, TEST_DATA_DIR
 
 HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
-HANDWRITTEN_RUN_FAIL = set(test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines())
+HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
 
 COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail.tsv'
-COMPILETEST_RUN_FAIL = set(test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines())
+COMPILETEST_RUN_FAIL = {test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines()}
 
 COMPILETEST_RUN_EXCLUDE = {
     # macos only
