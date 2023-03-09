@@ -24,7 +24,7 @@ KMIR defines MIR semantics formally in K and enables the scalable testing and ve
 Running of these test cases are integrated to our CI. 
 - Parsing test cases
 
-    The folder `kmir/src/tests/integration/test-data/parsing/` contains the manually written test cases for inidividual MIR constructs and simple MIR programs.
+    The folder `kmir/src/tests/integration/test-data/handwritten/` contains the manually written test cases for inidividual MIR constructs and simple MIR programs.
 
 - The `compiletest-rs` test cases
 
