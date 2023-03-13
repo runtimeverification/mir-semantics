@@ -17,7 +17,6 @@ module MIR
     <mir/>
 ```
 
-
 Interpreter initialization
 --------------------------
 
@@ -25,37 +24,37 @@ Interpreter initialization
 
 ```k
   rule <k> (fn PATH:FunctionPath (PARAMS:ParameterList) -> RETURN_TYPE:Type { BODY:FunctionBody }):Function REST
-        => #initFunction(PATH, PARAMS, BODY, RETURN_TYPE) ~> REST ...
+        => #initFunction(Fn(PATH), PARAMS, BODY, RETURN_TYPE) ~> REST ...
        </k>
 
-  syntax MirSimulation ::= #initFunction(FunctionPath, ParameterList, FunctionBody, Type)
-  //-------------------------------------------------------------------------------------
-  rule <k> #initFunction(PATH:FunctionPath,
+  syntax MirSimulation ::= #initFunction(FunctionLikeKey, ParameterList, FunctionBody, Type)
+  //----------------------------------------------------------------------------------------
+  rule <k> #initFunction(FN_KEY:FunctionLikeKey,
                          _PARAMS:ParameterList,
                          _DEBUGS:DebugList _BINDINGS:BindingList _SCOPES:ScopeList _BLOCKS:BasicBlockList,
                          _RETURN_TYPE:Type)
-        => #internalPanic(PATH, DuplicateFunction, PATH)
+        => #internalPanic(FN_KEY, DuplicateFunction, FN_KEY)
         ...
        </k>
        <functions>
          <function>
-           <path> PATH </path>
+           <fnKey> FN_KEY </fnKey>
            ...
          </function>
          ...
        </functions>
-  rule <k> #initFunction(PATH:FunctionPath,
+  rule <k> #initFunction(FN_KEY:FunctionLikeKey,
                          _PARAMS:ParameterList,
                          _DEBUGS:DebugList BINDINGS:BindingList _SCOPES:ScopeList BLOCKS:BasicBlockList,
                          RETURN_TYPE:Type)
-        => #initBindings(PATH, BINDINGS)
-        ~> #initBasicBlocks(PATH, BLOCKS)
-        ~> #initReturnValue(PATH, RETURN_TYPE)
+        => #initBindings(FN_KEY, BINDINGS)
+        ~> #initBasicBlocks(FN_KEY, BLOCKS)
+        ~> #initReturnValue(FN_KEY, RETURN_TYPE)
         ...
        </k>
        <functions>
          (.Bag => <function>
-                    <path> PATH </path>
+                    <fnKey> FN_KEY </fnKey>
                     ...
                   </function>
          )
@@ -70,14 +69,14 @@ The function's return value is a special binding at location `0`.
 TODO: how do we initialize it? For now, we initialize it if it's missing or don't touch it if it was initialized in `#initBindings`.
 
 ```k
-  syntax MirSimulation ::= #initReturnValue(FunctionPath, Type)
+  syntax MirSimulation ::= #initReturnValue(FunctionLikeKey, Type)
   //-----------------------------------------------------------
-  rule <k> #initReturnValue(PATH:FunctionPath, _TYPE:Type)
+  rule <k> #initReturnValue(FN_KEY:FunctionLikeKey, _TYPE:Type)
         => .K
         ...
        </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <localDecls>
            <localDecl>
              <index>      KEY                         </index>
@@ -87,9 +86,9 @@ TODO: how do we initialize it? For now, we initialize it if it's missing or don'
          </localDecls>
          ...
        </function> requires KEY ==Int 0
-  rule <k> #initReturnValue(PATH:FunctionPath, TYPE:Type) => .K ... </k>
+  rule <k> #initReturnValue(FN_KEY:FunctionLikeKey, TYPE:Type) => .K ... </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <localDecls>
            (.Bag => <localDecl>
                       <index>       0:Int </index>
@@ -112,15 +111,15 @@ TODO: initialize `Mutability` basing in syntax, for now it's just declared as `N
 TODO: figure out how to deal with duplicate bindings. For now, we panic.
 
 ```k
-  syntax MirSimulation ::= #initBindings(FunctionPath, BindingList)
+  syntax MirSimulation ::= #initBindings(FunctionLikeKey, BindingList)
   //---------------------------------------------------------------
-  rule <k> #initBindings(_PATH, .BindingList)               => .K ... </k>
-  rule <k> #initBindings(PATH, (let _MUT:OptMut LOCAL:Local : _TYPE:Type ;):Binding _REST:BindingList)
-        => #internalPanic(PATH, DuplicateBinding, LOCAL)
+  rule <k> #initBindings(_FN_KEY, .BindingList)               => .K ... </k>
+  rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : _TYPE:Type ;):Binding _REST:BindingList)
+        => #internalPanic(FN_KEY, DuplicateBinding, LOCAL)
         ...
        </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <localDecls>
            <localDecl>
              <index>      KEY              </index>
@@ -130,9 +129,9 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          </localDecls>
          ...
        </function> requires KEY ==Int Local2Int(LOCAL)
-  rule <k> #initBindings(PATH, (let _MUT:OptMut LOCAL:Local : TYPE:Type ;):Binding REST:BindingList) => #initBindings(PATH, REST) ... </k>
+  rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : TYPE:Type ;):Binding REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <localDecls>
            (.Bag => <localDecl>
                       <index>       Local2Int(LOCAL) </index>
@@ -150,15 +149,15 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
 #### Basic blocks declaration
 
 ```k
-  syntax MirSimulation ::= #initBasicBlocks(FunctionPath, BasicBlockList)
+  syntax MirSimulation ::= #initBasicBlocks(FunctionLikeKey, BasicBlockList)
   //-------------------------------------------------------
-  rule <k> #initBasicBlocks(_PATH, .BasicBlockList)               => .K ... </k>
-  rule <k> #initBasicBlocks(PATH, ((NAME:BBName CLEANUP:MaybeBBCleanup):BB : _BODY:BasicBlockBody):BasicBlock _REST:BasicBlockList)
-        => #internalPanic(PATH, DuplicateBasicBlock, (NAME:BBName CLEANUP:MaybeBBCleanup))
+  rule <k> #initBasicBlocks(_FN_KEY, .BasicBlockList)               => .K ... </k>
+  rule <k> #initBasicBlocks(FN_KEY, ((NAME:BBName CLEANUP:MaybeBBCleanup):BB : _BODY:BasicBlockBody):BasicBlock _REST:BasicBlockList)
+        => #internalPanic(FN_KEY, DuplicateBasicBlock, (NAME:BBName CLEANUP:MaybeBBCleanup))
         ...
        </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <basicBlocks>
            <basicBlock>
              <bbName> KEY </bbName>
@@ -168,10 +167,10 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          </basicBlocks>
          ...
        </function> requires KEY ==Int BBName2Int(NAME)
-  rule <k> #initBasicBlocks(PATH, ((NAME:BBName _:MaybeBBCleanup):BB : BODY:BasicBlockBody):BasicBlock REST:BasicBlockList)
-        => #initBasicBlocks(PATH, REST) ... </k>
+  rule <k> #initBasicBlocks(FN_KEY, ((NAME:BBName _:MaybeBBCleanup):BB : BODY:BasicBlockBody):BasicBlock REST:BasicBlockList)
+        => #initBasicBlocks(FN_KEY, REST) ... </k>
        <function>
-         <path> PATH </path>
+         <fnKey> FN_KEY </fnKey>
          <basicBlocks>
            (.Bag => <basicBlock>
                       <bbName> BBName2Int(NAME) </bbName>
@@ -203,9 +202,9 @@ TODO: design better success indication
 ### Internal panic
 
 ```k
-  syntax KItem ::= #internalPanic(FunctionPath, InternalPanic, KItem)
+  syntax KItem ::= #internalPanic(FunctionLikeKey, InternalPanic, KItem)
   //-----------------------------------------------------------------
-  rule <k> #internalPanic(_PATH, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
+  rule <k> #internalPanic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
        <returncode> _ => 1 </returncode>
 ```
 

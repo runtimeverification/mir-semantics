@@ -12,19 +12,51 @@ These modules declares the necessary domain sorts to represent the Mir locals at
 ```k
 module MIR-CONFIGURATION
   imports MIR-SYNTAX
-  imports MIR-LOCALS
-  imports MIR-BASIC-BLOCKS
+  imports MIR-FUNCTIONS
 
   configuration
     <mir>
-      <functions>
-        <function multiplicity="*" type="Map">
-          <path> String2IdentifierToken("dummy"):FunctionPath </path>
-          <localDecls/>
-          <basicBlocks/>
-        </function>
-      </functions>
+      <functions/>
     </mir>
+endmodule
+```
+
+Functions
+---------
+
+```k
+module MIR-FUNCTIONS
+  imports MIR-SYNTAX
+  imports MIR-LOCALS
+  imports MIR-BASIC-BLOCKS
+
+```
+
+Runtime representation of Mir's *function-like* entities. A *function-like* is one of the following:
+* a normal function declaration, i.e. the `Function` syntax sort;
+* a data declaration, i.e. the `FunctionForData` syntax sort;
+* a promoted declaration, i.e. the `FunctionForPromoted` syntax sort.
+
+
+```k
+  syntax FunctionLikeKey ::= Fn(FunctionPath)
+                           | Promoted(Int, FunctionPath)
+```
+
+It looks like we can consider all these *normal functions* in the execution semantics.
+
+```k
+  configuration
+    <functions>
+      <function multiplicity="*" type="Map">
+        <fnKey> Fn(String2IdentifierToken("dummy"):FunctionPath) </fnKey>
+        <localDecls/>
+        <basicBlocks/>
+      </function>
+    </functions>
+```
+
+```k
 endmodule
 ```
 
@@ -118,11 +150,3 @@ module MIR-BASIC-BLOCKS
 ```k
 endmodule
 ```
-
-
-Functions
----------
-
-```k
-```
-
