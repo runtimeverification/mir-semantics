@@ -7,6 +7,8 @@ module PANICS
   syntax InternalPanic ::= "DuplicateBinding"
                          | "DuplicateFunction"
                          | "DuplicateBasicBlock"
+                         | "MissingBasicBlock"
+                         | "NotImplemented"
 
 endmodule
 ```

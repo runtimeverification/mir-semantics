@@ -16,6 +16,10 @@ module MIR-CONFIGURATION
 
   configuration
     <mir>
+      <env>
+        <currentFnKey> Fn(String2IdentifierToken("dummy"):FunctionPath) </currentFnKey>
+        <currentBasicBlock> 0:Int </currentBasicBlock>
+      </env>
       <functions/>
     </mir>
 endmodule
@@ -40,7 +44,7 @@ Runtime representation of Mir's *function-like* entities. A *function-like* is o
 
 ```k
   syntax FunctionLikeKey ::= Fn(FunctionPath)
-                           | Promoted(Int, FunctionPath)
+                           | Promoted(FunctionPath, Int)
 ```
 
 It looks like we can consider all these *normal functions* in the execution semantics.
@@ -81,7 +85,8 @@ We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `
             <index> 0:Int </index>
             <mutability>  Not:Mutability </mutability>
             <internal>    false          </internal>
-            <ty>          ():Type          </ty>
+            <ty>          ():Type        </ty>
+            <value>       .K             </value> // TODO: needs a sepcific runtime value sort
 // It looks like we don't actually care about these fileds:
 //            <localInfo>   None:LocalInfo </localInfo>
 //            <userTy>      ():Type          </userTy>    // we probably don't need userTy because we won't do typeckecing
