@@ -6,7 +6,7 @@ from pyk.cli_utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
 from pyk.ktool.krun import KRunOutput
 
-from .kmir import KMIR
+from .kmir import KMIR, KMIRCONSTEVAL
 
 
 def main() -> None:
@@ -49,6 +49,28 @@ def exec_run(
     kmir = KMIR(definition_dir, definition_dir)
     try:
         proc_res = kmir.run_program(input_file, output=krun_output)
+        if output != KAstOutput.NONE:
+            print(proc_res.stdout)
+    except RuntimeError as err:
+        std_out, std_err, msg = err.args
+        exit_code = re.findall(r'\d+', std_out)[0]
+        print(std_out)
+        print(std_err)
+        print(msg)
+        exit(int(exit_code))
+
+
+def exec_consteval(
+    expression: str,
+    definition_dir: str,
+    output: str = 'none',
+    **kwargs: Any,
+) -> None:
+    krun_output = KRunOutput[output.upper()]
+
+    kmir_consteval = KMIRCONSTEVAL(definition_dir)
+    try:
+        proc_res = kmir_consteval.eval_rvalue(expression, output=krun_output)
         if output != KAstOutput.NONE:
             print(proc_res.stdout)
     except RuntimeError as err:
@@ -114,6 +136,29 @@ def create_argument_parser() -> ArgumentParser:
         dest='output',
         type=str,
         default='kast',
+        help='Output mode',
+        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
+        required=False,
+    )
+
+    # consteval
+    consteval_subparser = command_parser.add_parser('consteval', help='Evaluete a MIR RValue')
+    consteval_subparser.add_argument(
+        'expression',
+        type=str,
+        help='MIR RValue to evalutate',
+    )
+    consteval_subparser.add_argument(
+        '--definition-dir',
+        dest='definition_dir',
+        type=dir_path,
+        help='Path to LLVM definition to use.',
+    )
+    consteval_subparser.add_argument(
+        '--output',
+        dest='output',
+        type=str,
+        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,

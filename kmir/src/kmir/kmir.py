@@ -125,3 +125,49 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_run(program_file, temp_file)
+
+
+@final
+@dataclass(frozen=True)
+class KMIRCONSTEVAL:
+    """
+    Interface for the KMIR-CONSTEVAL module, which provides a standalone constant evaluator
+    """
+
+    llvm_dir: Path
+    mir_rvalue_parser: Path
+
+    def __init__(self, llvm_dir: Union[str, Path]):
+        llvm_dir = Path(llvm_dir)
+        check_dir_path(llvm_dir)
+
+        mir_rvalue_parser = llvm_dir / 'parser_RValue_MIR-PARSER-SYNTAX'
+        if not mir_rvalue_parser.is_file():
+            mir_rvalue_parser = gen_glr_parser(
+                mir_rvalue_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='RValue'
+            )
+
+        object.__setattr__(self, 'llvm_dir', llvm_dir)
+        object.__setattr__(self, 'mir_rvalue_parser', mir_rvalue_parser)
+
+    def eval_rvalue(
+        self,
+        rvalue: str,
+        *,
+        output: KRunOutput = KRunOutput.NONE,
+        check: bool = True,
+    ) -> CompletedProcess:
+        def run(program_file: Path) -> CompletedProcess:
+            return _krun(
+                input_file=program_file,
+                definition_dir=self.llvm_dir,
+                output=output,
+                check=check,
+                pipe_stderr=True,
+                pmap={'PGM': str(self.mir_rvalue_parser)},
+            )
+
+        with NamedTemporaryFile(mode='w') as f:
+            temp_file = Path(f.name)
+            temp_file.write_text(rvalue)
+            return run(temp_file)

@@ -12,3 +12,9 @@ syntax-module = "MIR-PARSER-SYNTAX"
 backend = "haskell"
 main-file = "mir.md"
 syntax-module = "MIR-PARSER-SYNTAX"
+
+[targets.consteval-llvm]
+backend = "llvm"
+main-file = "mir-rvalue-eval.md"
+main-module = "KMIR-CONSTEVAL"
+syntax-module = "MIR-PARSER-SYNTAX"
