@@ -9,6 +9,7 @@ module PANICS
                          | "DuplicateBasicBlock"
                          | "MissingBasicBlock"
                          | "NotImplemented"
+                         | "RValueEvalError"
 
 endmodule
 ```

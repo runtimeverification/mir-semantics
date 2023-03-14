@@ -125,7 +125,8 @@ module MIR-SYNTAX
                                   | "move" Place
                                   | Constant
 
-  syntax RValue ::= BasicRValueNoVariable  [avoid]
+  syntax RValue ::= Local [prefer]
+                  | BasicRValueNoVariable
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"

@@ -1,5 +1,6 @@
 ```k
 require "mir-configuration.md"
+require "mir-rvalue-eval.md"
 require "panics.md"
 ```
 
@@ -9,6 +10,7 @@ Mir execution operational semantics
 ```k
 module MIR
   imports MIR-CONFIGURATION
+  imports MIR-RVALUE-EVAL
   imports PANICS
 
   configuration
@@ -116,7 +118,7 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
                       <mutability>  Not:Mutability   </mutability>
                       <internal>    false            </internal>
                       <ty>          TYPE:Type        </ty>
-                      <value>       .K               </value>
+                      <value>       0:MIRValue       </value> //TODO: initialize with Type? or None?
                     </localDecl>
            )
            ...
@@ -242,17 +244,19 @@ or panics if the function-like or the block is missing:
          <fnKey> FN_KEY </fnKey>
          <localDecl>
            <index> INDEX  </index>
-           <value> _ => RVALUE </value>
+           <value> _ => fromInterpResult(evalRValue(RVALUE)) </value>
            ...
          </localDecl>
          ...
        </function>
     requires INDEX ==Int Local2Int(PLACE)
-  rule <k> #executeStatement(PLACE:NonTerminalPlace = RVALUE)
-        => #internalPanic(FN_KEY, NotImplemented, #executeStatement(PLACE = RVALUE))
+     andBool isRValueResult(evalRValue(RVALUE))
+  rule <k> #executeStatement(PLACE:Local = RVALUE)
+        => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
         ...
        </k>
        <currentFnKey> FN_KEY </currentFnKey>
+    requires notBool isRValueResult(evalRValue(RVALUE))
 ```
 
 #### Terminators

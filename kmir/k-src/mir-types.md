@@ -26,6 +26,11 @@ Result of interpretation (inspired by [InterpResult](https://github.com/rust-lan
 ```k
   syntax InterpResult ::= RValueResult
                         | InterpError
+
+  syntax RValueResult ::= fromInterpResult(InterpResult) [function]
+  //---------------------------------------------------------------
+  rule fromInterpResult(VALUE:RValueResult) => VALUE
+  rule fromInterpResult(_ERROR:InterpError) => "Error: fromInterpResult --- InterpError encoutered" [owise]
 ```
 
 The values of `RValueResult` sort represent the evaluation result of the syntactic `RValue`:

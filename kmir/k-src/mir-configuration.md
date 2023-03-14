@@ -72,6 +72,7 @@ module MIR-LOCALS
     imports INT
     imports BOOL
     imports MIR-SYNTAX
+    imports MIR-TYPES
 ```
 
 We declare a runtime configuration to represent the [`LocalDecls`](https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L72) array and it's item type [`LocalDecl`](https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L756).
@@ -86,7 +87,7 @@ We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `
             <mutability>  Not:Mutability </mutability>
             <internal>    false          </internal>
             <ty>          ():Type        </ty>
-            <value>       .K             </value> // TODO: needs a sepcific runtime value sort
+            <value>       0:RValueResult </value>
 // It looks like we don't actually care about these fileds:
 //            <localInfo>   None:LocalInfo </localInfo>
 //            <userTy>      ():Type          </userTy>    // we probably don't need userTy because we won't do typeckecing
