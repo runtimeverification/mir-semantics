@@ -32,8 +32,13 @@ The values of `RValueResult` sort represent the evaluation result of the syntact
 TODO: add more domain sorts
 
 ```k
-  syntax RValueResult ::= Int
-                        | String
+  syntax MIRValue ::= Int
+                    | String
+
+  syntax RValueResult ::= MIRValue
+                        | MIRValueNeList
+
+  syntax MIRValueNeList ::= MIRValue | MIRValue MIRValueNeList
 ```
 
 The `InteprError` sort represent the errors that may occur while interpreting an `RValue` into `RValueResult` (inspired by [InterpError](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_middle/src/mir/interpret/error.rs#L480)):

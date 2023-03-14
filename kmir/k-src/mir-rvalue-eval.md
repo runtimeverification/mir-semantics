@@ -18,19 +18,39 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax InterpResult ::= evalRValue(RValue) [function]
   //---------------------------------------------------
-  rule evalRValue(const VALUE:ConstantValue)          => evalConstantValue(VALUE)
-  rule evalRValue(RVALUE)                             => Unsupported(RVALUE) [owise]
+  rule evalRValue(VALUE:BasicRValueNoVariable) => evalBasicRValue(VALUE)
+  rule evalRValue([ RVALUES:BasicRValueList ]) => evalBasicRValueList(RVALUES)
+  rule evalRValue(RVALUE)                      => Unsupported(RVALUE) [owise]
+```
+
+```k
+  syntax MIRValue ::= evalBasicRValue(BasicRValue) [function]
+  //---------------------------------------------------------
+  rule evalBasicRValue(VALUE:Local)               => "Error: evalBasicRValue --- Local is not implemented"
+  rule evalBasicRValue(VALUE:NonTerminalPlace)    => "Error: evalBasicRValue --- NonTerminalPlace is not implemented"
+  rule evalBasicRValue(move PLACE:Place)          => "Error: evalBasicRValue --- move Place is not implemented"
+  rule evalBasicRValue(const VALUE:ConstantValue) => evalConstantValue(VALUE)
+
+  syntax MIRValue ::= evalBasicRValueList(BasicRValueList) [function]
+                    | evalBasicRValueListImpl(BasicRValueList, MIRValueNeList) [function]
+  //-------------------------------------------------------------------------------------
+  rule evalBasicRValueList(.BasicRValueList) => "Error: evalBasicRValueList --- RValueList must not be empty"
+  rule evalBasicRValueList(VALUE:BasicRValue , REST:BasicRValueList) => evalBasicRValueListImpl(REST, evalBasicRValue(VALUE))
+  rule evalBasicRValueListImpl(.BasicRValueList, RESULT) => RESULT
+  rule evalBasicRValueListImpl((VALUE:BasicRValue , REST:BasicRValueList):BasicRValueList, RESULT) =>
+       evalBasicRValueListImpl(REST:BasicRValueList:BasicRValueList, evalBasicRValue(VALUE) RESULT)
 ```
 
 Constant evaluation.
+//TODO: implement other cases.
 
 ```k
-  syntax InterpResult ::= evalConstantValue(ConstantValue) [function]
-  //-----------------------------------------------------------------
+  syntax MIRValue ::= evalConstantValue(ConstantValue) [function]
+  //-------------------------------------------------------------
   rule evalConstantValue(VALUE:UnsignedLiteral) => UnsignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:SignedLiteral)   => SignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
-  rule evalConstantValue(VALUE)                 => Unsupported(VALUE) [owise]
+  rule evalConstantValue(_VALUE)                => "Error: evalConstantValue --- unsupported RValue" [owise]
 ```
 
 ```k
