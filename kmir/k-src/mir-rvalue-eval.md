@@ -51,7 +51,8 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:UnsignedLiteral) => UnsignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:SignedLiteral)   => SignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
-  rule evalConstantValue(_VALUE)                => "Error: evalConstantValue --- unsupported RValue" [owise]
+  rule evalConstantValue(( ))                   => Unit
+//  rule evalConstantValue(_VALUE)                => "Error: evalConstantValue --- unsupported RValue" [owise]
 ```
 
 ### `Local` evaluation

@@ -39,6 +39,7 @@ TODO: add more domain sorts
 ```k
   syntax MIRValue ::= Int
                     | String
+                    | "Unit"
 
   syntax RValueResult ::= MIRValue
                         | MIRValueNeList

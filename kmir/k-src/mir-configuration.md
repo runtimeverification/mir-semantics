@@ -14,13 +14,20 @@ module MIR-CONFIGURATION
   imports MIR-SYNTAX
   imports MIR-FUNCTIONS
 
+  syntax MirSimulatorPhase ::= "Initialization"
+                             | "Execution"
+                             | "Finalization"
+
   configuration
     <mir>
-      <env>
+      <simulator>
         <currentFnKey> Fn(String2IdentifierToken("dummy"):FunctionPath) </currentFnKey>
         <currentBasicBlock> 0:Int </currentBasicBlock>
-      </env>
-      <functions/>
+        <phase> Initialization:MirSimulatorPhase </phase>
+      </simulator>
+      <data>
+        <functions/>
+      </data>
     </mir>
 endmodule
 ```

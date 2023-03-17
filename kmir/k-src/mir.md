@@ -12,6 +12,7 @@ module MIR
   imports MIR-CONFIGURATION
   imports MIR-RVALUE-EVAL
   imports PANICS
+  imports K-EQUAL
 
   configuration
     <k> $PGM:Mir </k>
@@ -170,6 +171,7 @@ Execution
 
 ```k
   rule <k> .Mir => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath)) ... </k>
+       <phase> Initialization => Execution </phase>
 ```
 
 ```k
@@ -264,25 +266,51 @@ or panics if the function-like or the block is missing:
 ```k
   syntax MirSimulation ::= #executeTerminator(Terminator)
   //-----------------------------------------------------
+  rule <k> #executeTerminator(return)
+        => #return(FN_KEY, RETURN_VALUE)
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
+       <function>
+         <fnKey> FN_KEY </fnKey>
+         <localDecl>
+           <index> 0  </index>
+           <value> RETURN_VALUE </value>
+           ...
+         </localDecl>
+         ...
+       </function>
+  rule <k> #executeTerminator(TERMIANTOR:Terminator)
+        => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey> [owise]
 ```
 
 Interpreter finalization
 ------------------------
 
+```k
+  syntax MirSimulation ::= #return(FunctionLikeKey, RValueResult)
+  //-------------------------------------------------------------
+```
+
 ### Success
 
-At the moment, we consider the execution successful if the `<k>` cell contains
-
-TODO: design better success indication
+Execution finishes successfully if the `main` function returns `Unit`.
+TODO: support other types that implement the `Termination` trait.
 
 ```k
+  rule <k> #return(FUNCTION_KEY, Unit) => .K ... </k>
+       <returncode> _ => 0 </returncode>
+    requires FUNCTION_KEY ==K Fn(String2IdentifierToken("main"))
 ```
 
 ### Internal panic
 
 ```k
   syntax KItem ::= #internalPanic(FunctionLikeKey, InternalPanic, KItem)
-  //-----------------------------------------------------------------
+  //--------------------------------------------------------------------
   rule <k> #internalPanic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
        <returncode> _ => 1 </returncode>
 ```
