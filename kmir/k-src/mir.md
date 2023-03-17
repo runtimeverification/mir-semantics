@@ -253,6 +253,24 @@ or panics if the function-like or the block is missing:
        </function>
     requires INDEX ==Int Local2Int(PLACE)
      andBool isRValueResult(evalRValue(RVALUE))
+  rule <k> #executeStatement(PLACE:Local = (OPERATION((X:RValue, Y:RValue, .ArgumentList):ArgumentList)):CallLike)
+        => .K
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
+       <function>
+         <fnKey> FN_KEY </fnKey>
+         <localDecl>
+           <index> INDEX  </index>
+           <value> _ => {evalRValue(X)}:>Int >Int {evalRValue(Y)}:>Int </value>
+           ...
+         </localDecl>
+         ...
+       </function>
+    requires INDEX ==Int Local2Int(PLACE)
+     andBool isInt(evalRValue(X))
+     andBool isInt(evalRValue(Y))
+     andBool OPERATION ==K String2IdentifierToken("Gt"):Callable
   rule <k> #executeStatement(PLACE:Local = RVALUE)
         => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
         ...
@@ -280,6 +298,11 @@ or panics if the function-like or the block is missing:
          </localDecl>
          ...
        </function>
+  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB):TerminatorDestination)
+        => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
   rule <k> #executeTerminator(TERMIANTOR:Terminator)
         => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
         ...
@@ -287,13 +310,78 @@ or panics if the function-like or the block is missing:
        <currentFnKey> FN_KEY </currentFnKey> [owise]
 ```
 
-Interpreter finalization
-------------------------
-
+* `return`
 ```k
   syntax MirSimulation ::= #return(FunctionLikeKey, RValueResult)
-  //-------------------------------------------------------------
 ```
+The `return` terminator's semantics is defined in the [Interpreter finalization]() section.
+
+* `assert`
+
+The `#assert` production will be eliminated from the `<k>` cell if the assertion succeeds, or leave
+a `#panic` (or `#internalPanic`) production otherwise.
+
+```k
+  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgumentList)
+  //-------------------------------------------------------------------
+```
+
+Positive assertion succeeds if the argument evaluates to true, but fails if either:
+* argument evaluates to false --- assertion error
+* argument is not boolean --- internal type error --- should be impossible with real Mir.
+
+```k
+  rule <k> #assert(FN_KEY, (ASSERTION:BasicRValue) , .AssertArgumentList)
+        => .K
+        ...
+       </k>
+   requires isBool(evalBasicRValue(ASSERTION))
+    andBool evalBasicRValue(ASSERTION) ==K true
+  rule <k> #assert(FN_KEY, (ASSERTION:BasicRValue) , .AssertArgumentList)
+        => #panic(FN_KEY, AssertionViolation, ASSERTION)
+        ...
+       </k>
+   requires isBool(evalBasicRValue(ASSERTION))
+    andBool evalBasicRValue(ASSERTION) ==K false
+  rule <k> #assert(FN_KEY, (ASSERTION:BasicRValue) , .AssertArgumentList)
+        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION))
+        ...
+       </k>
+   requires notBool isBool(evalBasicRValue(ASSERTION))
+```
+
+Negative assertions are similar to positive ones but need special treatment for error reporting.
+TODO: maybe we should unify positive and negative assertions.
+
+```k
+  rule <k> #assert(FN_KEY, (! ASSERTION:BasicRValue)  , .AssertArgumentList)
+        => .K
+        ...
+       </k>
+   requires isBool(evalBasicRValue(ASSERTION))
+    andBool evalBasicRValue(ASSERTION) ==K false
+  rule <k> #assert(FN_KEY, (! ASSERTION:BasicRValue) , .AssertArgumentList)
+        => #panic(FN_KEY, AssertionViolation, (! ASSERTION))
+        ...
+       </k>
+   requires isBool(evalBasicRValue(ASSERTION))
+    andBool evalBasicRValue(ASSERTION) ==K true
+  rule <k> #assert(FN_KEY, (! ASSERTION:BasicRValue) , .AssertArgumentList)
+        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION))
+        ...
+       </k>
+   requires notBool isBool(evalBasicRValue(ASSERTION))
+```
+
+```k
+  rule <k> #assert(FN_KEY, ARGS)
+        => #internalPanic(FN_KEY, NotImplemented, assert(ARGS))
+        ...
+       </k> [owise]
+```
+
+Interpreter finalization
+------------------------
 
 ### Success
 
@@ -302,17 +390,31 @@ TODO: support other types that implement the `Termination` trait.
 
 ```k
   rule <k> #return(FUNCTION_KEY, Unit) => .K ... </k>
+       <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
     requires FUNCTION_KEY ==K Fn(String2IdentifierToken("main"))
 ```
 
 ### Internal panic
 
+These are internal panics that are specific to KMIR.
+
 ```k
   syntax KItem ::= #internalPanic(FunctionLikeKey, InternalPanic, KItem)
   //--------------------------------------------------------------------
   rule <k> #internalPanic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
        <returncode> _ => 1 </returncode>
+```
+
+### Regular panic
+
+These panics are not specific to KMIR and caused by program-level reasons, i.e. assertion violations.
+
+```k
+  syntax KItem ::= #panic(FunctionLikeKey, Panic, KItem)
+  //----------------------------------------------------
+  rule <k> #panic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
+       <returncode> _ => 2 </returncode>
 ```
 
 ```k

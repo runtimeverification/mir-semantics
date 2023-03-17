@@ -41,6 +41,8 @@ module MIR-SYNTAX
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
   syntax Statement  ::= Place "=" RValue
+                      // looks like this is needed for arithmetics, i.e. CheckedAdd and others
+                      | Place "=" CallLike
                       // FakeRead does not seem to be used
                       | "discriminant" "(" Place ")" "=" Int
                       | "Deinit" "(" Place ")"
@@ -63,8 +65,8 @@ module MIR-SYNTAX
                       | "unreachable"
                       | "resume"
                       | "goto" "->" BB
-                      // TODO: Can this happen for things other than panics?
-                      | Place "=" CallLike
+//                      // TODO: Can this happen for things other than panics?
+//                      | Place "=" CallLike
                       | Place "=" CallLike "->" TerminatorDestination
                       | CallLike
                       // I only found examples of this for assert and switchInt
@@ -72,7 +74,8 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
-  syntax Callable ::= PathExpression | "move" Local
+  syntax Callable ::= PathExpression
+//                   | "move" Local
   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}

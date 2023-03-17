@@ -40,6 +40,7 @@ TODO: add more domain sorts
   syntax MIRValue ::= Int
                     | String
                     | "Unit"
+                    | Bool
 
   syntax RValueResult ::= MIRValue
                         | MIRValueNeList

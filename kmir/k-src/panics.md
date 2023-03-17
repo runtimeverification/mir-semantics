@@ -10,6 +10,9 @@ module PANICS
                          | "MissingBasicBlock"
                          | "NotImplemented"
                          | "RValueEvalError"
+                         | "TypeError"
+
+  syntax Panic ::= "AssertionViolation"
 
 endmodule
 ```

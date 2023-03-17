@@ -28,9 +28,9 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   syntax MIRValue ::= evalBasicRValue(BasicRValue) [function]
   //---------------------------------------------------------
   rule evalBasicRValue(VALUE:Local)               => evalLocal(VALUE)
-  rule evalBasicRValue(VALUE:NonTerminalPlace)    => "Error: evalBasicRValue --- NonTerminalPlace is not implemented"
-  rule evalBasicRValue(move PLACE:Place)          => "Error: evalBasicRValue --- move Place is not implemented"
   rule evalBasicRValue(const VALUE:ConstantValue) => evalConstantValue(VALUE)
+//  rule evalBasicRValue(VALUE:NonTerminalPlace)    => "Error: evalBasicRValue --- NonTerminalPlace is not implemented"
+//  rule evalBasicRValue(move PLACE:Place)          => "Error: evalBasicRValue --- move Place is not implemented"
 
   syntax MIRValue ::= evalBasicRValueList(BasicRValueList) [function]
                     | evalBasicRValueListImpl(BasicRValueList, MIRValueNeList) [function]
@@ -52,6 +52,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:SignedLiteral)   => SignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
+  rule evalConstantValue(VALUE:Bool)            => VALUE
 //  rule evalConstantValue(_VALUE)                => "Error: evalConstantValue --- unsupported RValue" [owise]
 ```
 
