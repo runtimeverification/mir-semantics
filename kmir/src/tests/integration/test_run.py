@@ -7,7 +7,7 @@ from pyk.ktool.krun import KRunOutput
 
 from kmir import KMIR
 
-from .utils import COMPILETEST_PARSE_FAIL, COMPILETEST_TEST_DATA, HANDWRITTEN_TEST_DATA, TEST_DATA_DIR
+from .utils import COMPILETEST_PARSE_FAIL, COMPILETEST_TEST_DATA, HANDWRITTEN_EXECUTE_TEST_DATA, TEST_DATA_DIR
 
 HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
 HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
@@ -44,8 +44,8 @@ COMPILETEST_RUN_EXCLUDE = {
 
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
-    HANDWRITTEN_TEST_DATA,
-    ids=[test_id for test_id, *_ in HANDWRITTEN_TEST_DATA],
+    HANDWRITTEN_EXECUTE_TEST_DATA,
+    ids=[test_id for test_id, *_ in HANDWRITTEN_EXECUTE_TEST_DATA],
 )
 def test_handwritten(
     kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]

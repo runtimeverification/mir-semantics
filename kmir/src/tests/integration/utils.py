@@ -3,10 +3,18 @@ from pathlib import Path
 TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
 
-HANDWRITTEN_SYNTAX_DIR = TEST_DATA_DIR / 'handwritten'
-HANDWRITTEN_SYNTAX_FILES = tuple(HANDWRITTEN_SYNTAX_DIR.glob('*.mir'))
-HANDWRITTEN_TEST_DATA = tuple(
-    (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in HANDWRITTEN_SYNTAX_FILES
+# Mir files that were written by hand to test *PARSING*. May not be valid for execution.
+HANDWRITTEN_PARSE_DIR = TEST_DATA_DIR / 'handwritten-mir' / 'parsing'
+HANDWRITTEN_PARSE_FILES = tuple(HANDWRITTEN_PARSE_DIR.glob('*.mir'))
+HANDWRITTEN_PARSE_TEST_DATA = tuple(
+    (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in HANDWRITTEN_PARSE_FILES
+)
+
+# Mir files that were written by hand to test *EXECUTION*.
+HANDWRITTEN_EXECUTE_DIR = TEST_DATA_DIR / 'handwritten-mir' / 'execution'
+HANDWRITTEN_EXECUTE_FILES = tuple(HANDWRITTEN_EXECUTE_DIR.glob('*.mir'))
+HANDWRITTEN_EXECUTE_TEST_DATA = tuple(
+    (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in HANDWRITTEN_EXECUTE_FILES
 )
 
 
