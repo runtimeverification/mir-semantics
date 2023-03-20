@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Optional
 
 import pytest
-from filelock import FileLock
-from pyk.cli_utils import dir_path
+from _pytest.config import Notset
+from pyk.cli_utils import dir_path, file_path
 from pyk.kbuild import KBuild, Package
 from pytest import Config, Parser, TempPathFactory
 
@@ -16,6 +17,12 @@ def pytest_addoption(parser: Parser) -> None:
         dest='kbuild_dir',
         type=dir_path,
         help='Exisiting kbuild cache directory. Example: `~/.kbuild`. Note: tests will fail of it is invalid. Call `kbuild kompile` to populate it.',
+    )
+    parser.addoption(
+        '--report-file',
+        dest='report_file',
+        type=file_path,
+        help='File to report test failures.',
     )
 
 
@@ -32,6 +39,19 @@ def kbuild_dir(pytestconfig: Config, tmp_path_factory: TempPathFactory) -> Path:
     else:
         assert isinstance(existing_kbuild_dir, Path)
         return existing_kbuild_dir
+
+
+@pytest.fixture(scope='session')
+def report_file(pytestconfig: Config) -> Optional[Path]:
+    report_file_path = pytestconfig.getoption('report_file')
+    if isinstance(report_file_path, Notset):
+        return None
+    if not report_file_path:
+        return None
+    if report_file_path.exists():
+        report_file_path.unlink()
+    report_file_path.touch()
+    return report_file_path
 
 
 @pytest.fixture(scope='session')
@@ -55,6 +75,5 @@ def haskell_dir(kbuild: KBuild, package: Package) -> Path:
 
 
 @pytest.fixture(scope='session')
-def kmir(kbuild: KBuild, llvm_dir: Path, haskell_dir: Path) -> KMIR:
-    with FileLock(str(kbuild.kbuild_dir) + '.lock'):
-        return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)
+def kmir(llvm_dir: Path, haskell_dir: Path) -> KMIR:
+    return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)
