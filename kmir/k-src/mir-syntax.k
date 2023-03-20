@@ -34,7 +34,8 @@ module MIR-SYNTAX
   syntax Debug ::= "debug" UserVariableName "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
-  syntax BasicBlock ::= BB ":" "{" StatementList Terminator ";" "}"
+  syntax BasicBlock ::= BB ":" BasicBlockBody
+  syntax BasicBlockBody ::= "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
@@ -62,7 +63,7 @@ module MIR-SYNTAX
                       | "unreachable"
                       | "resume"
                       | "goto" "->" BB
-                      // TODO: Can this happen for things other than panics?
+//                      // TODO: Can this happen for things other than panics?
                       | Place "=" CallLike
                       | Place "=" CallLike "->" TerminatorDestination
                       | CallLike
@@ -71,7 +72,8 @@ module MIR-SYNTAX
 
   // https://doc.rust-lang.org/reference/expressions/call-expr.html
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
-  syntax Callable ::= PathExpression | "move" Local
+  syntax Callable ::= PathExpression
+                   | "move" Local
   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= BasicRValue | "!" BasicRValue | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
@@ -124,7 +126,8 @@ module MIR-SYNTAX
                                   | "move" Place
                                   | Constant
 
-  syntax RValue ::= BasicRValueNoVariable  [avoid]
+  syntax RValue ::= Local [prefer]
+                  | BasicRValueNoVariable
                   // It seems that, in practice, this list contains only const
                   // or only move items.
                   | "[" BasicRValueList "]"
