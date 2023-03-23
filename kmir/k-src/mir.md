@@ -253,30 +253,30 @@ or panics if the function-like or the block is missing:
        </function>
     requires INDEX ==Int Local2Int(PLACE)
      andBool isRValueResult(evalRValue(RVALUE))
-  rule <k> #executeStatement(PLACE:Local = (OPERATION((X:RValue, Y:RValue, .ArgumentList):ArgumentList)):CallLike)
-        => .K
-        ...
-       </k>
-       <currentFnKey> FN_KEY </currentFnKey>
-       <function>
-         <fnKey> FN_KEY </fnKey>
-         <localDecl>
-           <index> INDEX  </index>
-           <value> _ => {evalRValue(X)}:>Int >Int {evalRValue(Y)}:>Int </value>
-           ...
-         </localDecl>
-         ...
-       </function>
-    requires INDEX ==Int Local2Int(PLACE)
-     andBool isInt(evalRValue(X))
-     andBool isInt(evalRValue(Y))
-     andBool OPERATION ==K String2IdentifierToken("Gt"):Callable
-  rule <k> #executeStatement(PLACE:Local = RVALUE)
-        => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
-        ...
-       </k>
-       <currentFnKey> FN_KEY </currentFnKey>
-    requires notBool isRValueResult(evalRValue(RVALUE))
+//  rule <k> #executeStatement(PLACE:Local = (OPERATION((X:RValue, Y:RValue, .ArgumentList):ArgumentList)):CallLike)
+//        => .K
+//        ...
+//       </k>
+//       <currentFnKey> FN_KEY </currentFnKey>
+//       <function>
+//         <fnKey> FN_KEY </fnKey>
+//         <localDecl>
+//           <index> INDEX  </index>
+//           <value> _ => {evalRValue(X)}:>Int >Int {evalRValue(Y)}:>Int </value>
+//           ...
+//         </localDecl>
+//         ...
+//       </function>
+//    requires INDEX ==Int Local2Int(PLACE)
+//     andBool isInt(evalRValue(X))
+//     andBool isInt(evalRValue(Y))
+//     andBool OPERATION ==K String2IdentifierToken("Gt"):Callable
+//  rule <k> #executeStatement(PLACE:Local = RVALUE)
+//        => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
+//        ...
+//       </k>
+//       <currentFnKey> FN_KEY </currentFnKey>
+//    requires notBool isRValueResult(evalRValue(RVALUE))
 ```
 
 #### Terminators
@@ -331,7 +331,7 @@ Positive assertion succeeds if the argument evaluates to true, but fails if eith
 * argument is not boolean --- internal type error --- should be impossible with real Mir.
 
 ```k
-  rule <k> #assert(FN_KEY, (ASSERTION:BasicRValue) , .AssertArgumentList)
+  rule <k> #assert(_FN_KEY, (ASSERTION:BasicRValue) , .AssertArgumentList)
         => .K
         ...
        </k>
@@ -354,7 +354,7 @@ Negative assertions are similar to positive ones but need special treatment for 
 TODO: maybe we should unify positive and negative assertions.
 
 ```k
-  rule <k> #assert(FN_KEY, (! ASSERTION:BasicRValue)  , .AssertArgumentList)
+  rule <k> #assert(_FN_KEY, (! ASSERTION:BasicRValue)  , .AssertArgumentList)
         => .K
         ...
        </k>
