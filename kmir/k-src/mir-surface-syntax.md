@@ -1,9 +1,12 @@
-// (very) loosely based on https://rust-lang.github.io/rfcs/1211-mir.html
+(very) loosely based on https://rust-lang.github.io/rfcs/1211-mir.html
 
-module MIR-SYNTAX
+```k
+module MIR-SURFACE-SYNTAX
   imports BOOL
   imports UNSIGNED-INT-SYNTAX
+```
 
+```k
   syntax Mir ::= List{MirComponent, ""}
   syntax MirComponent ::= Function | FunctionForData | FunctionForPromoted
                         | DataAlloc | FunctionAlloc
@@ -617,13 +620,19 @@ module MIR-SYNTAX
   // For clarity, here are the (VSC) regular expressions for cleaning memory dumps:
   // Replace ^(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1
   // Replace ^(\s+0x[0-9a-fA-F]+\s+)│(\s*(?: [0-9a-fA-F][0-9a-fA-F])+)\s+│.*$ with $1|$2
-endmodule
+```
 
-module MIR-PARSER-SYNTAX
-  imports MIR-SYNTAX
+```k
+endmodule
+```
+
+```k
+module MIR-SURFACE-PARSER-SYNTAX
+  imports MIR-SURFACE-SYNTAX
 
   // Declaring regular expressions of sort `#Layout` infroms the K lexer to drop these tokens.
   syntax #Layout  ::= r"(\\/\\/[^\\n\\r]*)" // single-line comments
                     | r"([\\ \\n\\r\\t])"   // whitespace
 
 endmodule
+```

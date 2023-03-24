@@ -1,4 +1,4 @@
-require "mir-syntax.k"
+require "mir-syntax.md"
 
 module MIR
   imports MIR-SYNTAX
