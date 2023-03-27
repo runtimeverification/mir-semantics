@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from subprocess import CalledProcessError
 from typing import Any
 
 from pyk.cli_utils import dir_path, file_path
