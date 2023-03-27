@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from subprocess import CalledProcessError
 from typing import Any
 
 from pyk.cli_utils import dir_path, file_path
@@ -41,15 +42,25 @@ def exec_run(
     input_file: str,
     definition_dir: str,
     output: str = 'none',
+    ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
     krun_output = KRunOutput[output.upper()]
 
     kmir = KMIR(definition_dir, definition_dir)
-    proc_res = kmir.run_program(input_file, output=krun_output)
 
-    if output != KAstOutput.NONE:
-        print(proc_res.stdout)
+    try:
+        proc_res = kmir.run_program(input_file, output=krun_output)
+        if output != KAstOutput.NONE:
+            print(proc_res.stdout)
+    except RuntimeError as err:
+        if ignore_return_code:
+            msg, stdout, stderr = err.args
+            print(stdout)
+            print(stderr)
+            print(msg)
+        else:
+            raise
 
 
 def create_argument_parser() -> ArgumentParser:
@@ -109,6 +120,12 @@ def create_argument_parser() -> ArgumentParser:
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,
+    )
+    run_subparser.add_argument(
+        '--ignore-return-code',
+        action='store_true',
+        default=False,
+        help='Ignore return code of krun, alwasys return 0 (use for debugging only)',
     )
 
     return parser
