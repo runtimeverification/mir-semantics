@@ -1,5 +1,6 @@
 ```k
 require "mir-configuration.md"
+require "mir-rvalue-eval.md"
 require "panics.md"
 ```
 
@@ -20,14 +21,21 @@ The `MIR` module is the main module of the concrete execution semantics to be us
 module MIR
   imports MIR-CONFIGURATION
   imports MIR-INITIALIZATION
+  imports MIR-EXECUTION
   imports MIR-FINALIZATION
 
   syntax KItem ::= #initialized()
 
   rule <k> .Mir => #initialized() ... </k>
        <phase> Initialization </phase>
-       <returncode> _ => 0 </returncode>
 
+  rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath)) ... </k>
+       <phase> Initialization => Execution </phase>
+
+  rule <k> #return(FUNCTION_KEY, Unit) => .K ... </k>
+       <phase> Execution => Finalization </phase>
+       <returncode> _ => 0 </returncode>
+    requires FUNCTION_KEY ==K Fn(String2IdentifierToken("main"))
 endmodule
 ```
 
@@ -214,7 +222,220 @@ Execution
 
 ```k
 module MIR-EXECUTION
+  imports MIR-SYNTAX
+  imports MIR-TYPES
+  imports MIR-RVALUE-EVAL
+  imports PANICS
+  imports K-EQUAL
+```
 
+```k
+  syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey)
+  //------------------------------------------------------------
+  rule <k> #executeFunctionLike(FN_KEY)
+        => #executeBasicBlock(FN_KEY, 0)
+        ...
+       </k>
+       <currentFnKey> _ => FN_KEY </currentFnKey>
+```
+
+### Single basic block execution
+
+The following rule executes a specific basic block (refereed by index) in a function-like,
+or panics if the function-like or the block is missing:
+
+```k
+  syntax MirSimulation ::= #executeBasicBlock(FunctionLikeKey, Int)
+  //---------------------------------------------------------------
+  rule <k> #executeBasicBlock(FN_KEY, INDEX)
+        => #executeStatements(STATEMENTS)
+        ~> #executeTerminator(TERMINATOR)
+        ...
+       </k>
+       <currentBasicBlock> _ => INDEX </currentBasicBlock>
+       <function>
+         <fnKey> FN_KEY </fnKey>
+         <basicBlocks>
+           <basicBlock>
+             <bbName> INDEX </bbName>
+             <bbBody> {STATEMENTS:StatementList TERMINATOR:Terminator ;}:BasicBlockBody </bbBody>
+           </basicBlock>
+           ...
+         </basicBlocks>
+         ...
+       </function>
+  rule <k> #executeBasicBlock(FN_KEY, INDEX)
+        => #internalPanic(FN_KEY, MissingBasicBlock, INDEX)
+        ...
+       </k> [owise]
+```
+
+### Statements and terminators execution
+
+#### Statements
+
+```k
+  syntax MirSimulation ::= #executeStatements(StatementList)
+                         | #executeStatement(Statement)
+  //--------------------------------------------------------
+  rule <k> #executeStatements(FIRST; REST)
+        => #executeStatement(FIRST)
+        ~> #executeStatements(REST)
+        ...
+       </k>
+  rule <k> #executeStatements(.StatementList)
+        => .K
+        ...
+       </k>
+```
+
+##### Assignment
+
+```k
+  rule <k> #executeStatement(PLACE:Local = RVALUE)
+        => .K
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
+       <function>
+         <fnKey> FN_KEY </fnKey>
+         <localDecl>
+           <index> INDEX  </index>
+           <value> _ => fromInterpResult(evalRValue(RVALUE)) </value>
+           ...
+         </localDecl>
+         ...
+       </function>
+    requires INDEX ==Int Local2Int(PLACE)
+     andBool isRValueResult(evalRValue(RVALUE))
+//  rule <k> #executeStatement(PLACE:Local = (OPERATION((X:RValue, Y:RValue, .ArgumentList):ArgumentList)):CallLike)
+//        => .K
+//        ...
+//       </k>
+//       <currentFnKey> FN_KEY </currentFnKey>
+//       <function>
+//         <fnKey> FN_KEY </fnKey>
+//         <localDecl>
+//           <index> INDEX  </index>
+//           <value> _ => {evalRValue(X)}:>Int >Int {evalRValue(Y)}:>Int </value>
+//           ...
+//         </localDecl>
+//         ...
+//       </function>
+//    requires INDEX ==Int Local2Int(PLACE)
+//     andBool isInt(evalRValue(X))
+//     andBool isInt(evalRValue(Y))
+//     andBool OPERATION ==K String2IdentifierToken("Gt"):Callable
+//  rule <k> #executeStatement(PLACE:Local = RVALUE)
+//        => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
+//        ...
+//       </k>
+//       <currentFnKey> FN_KEY </currentFnKey>
+//    requires notBool isRValueResult(evalRValue(RVALUE))
+```
+
+#### Terminators
+
+```k
+  syntax MirSimulation ::= #executeTerminator(Terminator)
+  //-----------------------------------------------------
+  rule <k> #executeTerminator(return)
+        => #return(FN_KEY, RETURN_VALUE)
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
+       <function>
+         <fnKey> FN_KEY </fnKey>
+         <localDecl>
+           <index> 0  </index>
+           <value> RETURN_VALUE </value>
+           ...
+         </localDecl>
+         ...
+       </function>
+  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB):TerminatorDestination)
+        => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey>
+  rule <k> #executeTerminator(TERMIANTOR:Terminator)
+        => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
+        ...
+       </k>
+       <currentFnKey> FN_KEY </currentFnKey> [owise]
+```
+
+* `return`
+```k
+  syntax MirSimulation ::= #return(FunctionLikeKey, RValueResult)
+```
+The `return` terminator's semantics is defined in the [Interpreter finalization]() section.
+
+* `assert`
+
+The `#assert` production will be eliminated from the `<k>` cell if the assertion succeeds, or leave
+a `#panic` (or `#internalPanic`) production otherwise.
+
+```k
+  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgumentList)
+  //-------------------------------------------------------------------
+```
+
+Positive assertion succeeds if the argument evaluates to true, but fails if either:
+* argument evaluates to false --- assertion error
+* argument is not boolean --- internal type error --- should be impossible with real Mir.
+
+```k
+  rule <k> #assert(_FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+        => .K
+        ...
+       </k>
+   requires isBool(evalOperand(ASSERTION))
+    andBool evalOperand(ASSERTION) ==K true
+  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+        => #panic(FN_KEY, AssertionViolation, ASSERTION)
+        ...
+       </k>
+   requires isBool(evalOperand(ASSERTION))
+    andBool evalOperand(ASSERTION) ==K false
+  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION))
+        ...
+       </k>
+   requires notBool isBool(evalOperand(ASSERTION))
+```
+
+Negative assertions are similar to positive ones but need special treatment for error reporting.
+TODO: maybe we should unify positive and negative assertions.
+
+```k
+  rule <k> #assert(_FN_KEY, (! ASSERTION:Operand)  , .AssertArgumentList)
+        => .K
+        ...
+       </k>
+   requires isBool(evalOperand(ASSERTION))
+    andBool evalOperand(ASSERTION) ==K false
+  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
+        => #panic(FN_KEY, AssertionViolation, (! ASSERTION))
+        ...
+       </k>
+   requires isBool(evalOperand(ASSERTION))
+    andBool evalOperand(ASSERTION) ==K true
+  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
+        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION))
+        ...
+       </k>
+   requires notBool isBool(evalOperand(ASSERTION))
+```
+
+```k
+  rule <k> #assert(FN_KEY, ARGS)
+        => #internalPanic(FN_KEY, NotImplemented, assert(ARGS))
+        ...
+       </k> [owise]
+```
+
+```k
 endmodule
 ```
 

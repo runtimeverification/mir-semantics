@@ -3,10 +3,9 @@ fn main() -> () {
     let mut _1: bool;
     let mut _2: usize;
 
-
     bb0: {
-        _2 = const 42_usize;
-        _1 = Gt(_2, const 0_usize);
+        _2 = const 43_usize;
+        _1 = Gt(_2, const 42_usize);
         assert (_1) -> bb1;
     }
 
