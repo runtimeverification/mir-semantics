@@ -109,39 +109,6 @@ module MIR-RVALUE-SYNTAX
 
   syntax OperandList ::= List{Operand, ","}
 
-//  syntax RValue ::= Local [prefer]
-//                  | BasicRValueNoVariable
-//                  // It seems that, in practice, this list contains only const
-//                  // or only move items.
-//                  | "[" BasicRValueList "]"
-//                  | "[" BasicRValue ";" RustExpression "]"
-//                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
-//                  | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" StructRValueFieldList "}"
-//                  | BasicRValue "as" Type "(" RValueTODO1 ")"  [avoid]
-//                  | PathExpression "as" Type
-//                  // TODO: The confusion between `PathExpression "as" Type`
-//                  // and `PathExpression "as" Type "(" RValueTODO1 ")"` is
-//                  // fairly ugly, it's unclear how to properly disambiguate here.
-//                  | PathExpression "as" Type "(" RValueTODO1 ")" [avoid]
-//                  | "&" PtrModifiers Place
-//                  // TODO: I don't need all branches of NonTerminalPlace,
-//                  // consider restricting this.
-//                  | "deref_copy" NonTerminalPlace
-//                  // TODO: ShallowInitBox and SizeOf may conflict with actual structs.
-//                  // Currently structs can't be named like that. We should allow
-//                  // that and disambiguate.
-//                  | "ShallowInitBox" "(" BasicRValue "," Type ")"
-//                  | "SizeOf" "(" Type ")"
-//                  | "AlignOf" "(" Type ")"
-//
-//                  | StructRValue
-//                  | TupleRValue
-//                  | PathExpression
-//                  | ClosureRValue
-
-  // TODO: Is "Type" the proper non-terminal here, or is it "ExpressionPath"
-  // or "TypePath"?
-
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 ```
 
