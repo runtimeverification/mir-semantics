@@ -128,50 +128,27 @@ endmodule
 module MIR-AMBIGUITIES
   imports MIR-SYNTAX
   imports MIR-LEXER-SYNTAX
+  imports MIR-BUILTINS-SYNTAX
   imports K-AMBIGUITIES
 
-  syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
+//  syntax Bool ::= isNullaryOpName(Identifier) [function, total]
+//  //---------------------------------------------------------------------
+//  rule isNullaryOpName(OP_NAME)  => true
+//    requires IdentifierToken2String(OP_NAME) ==String "SizeOf"
+//      orBool IdentifierToken2String(OP_NAME) ==String "AlignOf"
+//  rule isNullaryOpName(_)       => false [owise]
 
-  syntax Bool ::= isNullaryOpName(Identifier) [function, total]
-  //---------------------------------------------------------------------
-  rule isNullaryOpName(OP_NAME)  => true
-    requires IdentifierToken2String(OP_NAME) ==String "SizeOf"
-      orBool IdentifierToken2String(OP_NAME) ==String "AlignOf"
-  rule isNullaryOpName(_)       => false [owise]
-
-  syntax Bool ::= isUnaryOpName(Identifier) [function, total]
-  //-------------------------------------------------------------------
-  rule isUnaryOpName(OP_NAME)  => true
-    requires IdentifierToken2String(OP_NAME) ==String "Not"
-      orBool IdentifierToken2String(OP_NAME) ==String "Neg"
-  rule isUnaryOpName(_)       => false [owise]
+//  syntax Bool ::= isUnaryOpName(Identifier) [function, total]
+//  //-------------------------------------------------------------------
+//  rule isUnaryOpName(OP_NAME)  => true
+//    requires IdentifierToken2String(OP_NAME) ==String "Not"
+//      orBool IdentifierToken2String(OP_NAME) ==String "Neg"
+//  rule isUnaryOpName(_)       => false [owise]
 
 //  syntax Bool ::= isBinaryOp(RValue) [function, total]
 //  //--------------------------------------------------
 //  rule isBinaryOp(NAME(LHS:Operand, RHS:Operand)) => isBinaryOpName(NAME)
 //  rule isBinaryOp(_)                              => false [owise]
-
-  syntax Bool ::= isBinaryOpName(Identifier) [function, total]
-  //--------------------------------------------------------------------
-  rule isBinaryOpName(OP_NAME)  => true
-    requires IdentifierToken2String(OP_NAME) ==String "Add"
-      orBool IdentifierToken2String(OP_NAME) ==String "Sub"
-      orBool IdentifierToken2String(OP_NAME) ==String "Mul"
-      orBool IdentifierToken2String(OP_NAME) ==String "Div"
-      orBool IdentifierToken2String(OP_NAME) ==String "Rem"
-      orBool IdentifierToken2String(OP_NAME) ==String "BitXor"
-      orBool IdentifierToken2String(OP_NAME) ==String "BitAnd"
-      orBool IdentifierToken2String(OP_NAME) ==String "BitOr"
-      orBool IdentifierToken2String(OP_NAME) ==String "Shl"
-      orBool IdentifierToken2String(OP_NAME) ==String "Shr"
-      orBool IdentifierToken2String(OP_NAME) ==String "Eq"
-      orBool IdentifierToken2String(OP_NAME) ==String "Lt"
-      orBool IdentifierToken2String(OP_NAME) ==String "Le"
-      orBool IdentifierToken2String(OP_NAME) ==String "Ne"
-      orBool IdentifierToken2String(OP_NAME) ==String "Ge"
-      orBool IdentifierToken2String(OP_NAME) ==String "Gt"
-      orBool IdentifierToken2String(OP_NAME) ==String "Offset"
-  rule isBinaryOpName(_)       => false [owise]
 
   syntax BasicBlockBody ::= disambiguateBasicBlockBody(BasicBlockBody) [function]
   //-----------------------------------------------------------------------------
@@ -195,11 +172,11 @@ module MIR-AMBIGUITIES
   syntax RValue ::= disambiguateRValue(RValue) [function]
   //-----------------------------------------------------
   rule disambiguateRValue(
-        amb((NAME:Identifier (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
-            (NAME:Identifier (AGR_1:Operand, ARG_2:Operand))::BinaryOp
+        amb((NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
+            (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp
           )) =>
-         (NAME::Identifier (AGR_1:Operand, ARG_2:Operand))::BinaryOp
-    requires isBinaryOpName(NAME)
+         (NAME::IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp
+    requires isBinOp(IdentifierToken2String(NAME))
   rule disambiguateRValue(X) => X [owise]
 
 endmodule

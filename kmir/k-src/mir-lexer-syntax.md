@@ -1,5 +1,6 @@
 ```k
 module MIR-LEXER-SYNTAX
+  imports STRING
 ```
 
 This module defined the necessary `token` productions.
@@ -9,7 +10,9 @@ This module defined the necessary `token` productions.
                       | LocalToken
                       | BBToken
                       | DoubleHexDigitNoIntLetter
-                      | OtherTokens
+//                      | OtherTokens
+
+  syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
 ```
 
 ```k

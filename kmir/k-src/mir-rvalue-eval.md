@@ -1,5 +1,6 @@
 ```k
 require "mir-syntax.md"
+require "mir-rvalue-syntax.md"
 require "mir-configuration.md"
 require "mir-types.md"
 ```
@@ -7,6 +8,7 @@ require "mir-types.md"
 ```k
 module MIR-RVALUE-EVAL
   imports MIR-SYNTAX
+  imports MIR-BUILTINS-SYNTAX
   imports MIR-TYPES
   imports MIR-CONFIGURATION
 ```
@@ -19,27 +21,50 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax InterpResult ::= evalRValue(RValue) [function]
   //---------------------------------------------------
-  rule evalRValue(VALUE:Operand)           => evalOperand(VALUE)
-  rule evalRValue(OP_NAME:Identifier (LHS:Operand, RHS:Operand):BinaryOp) => {evalOperand(LHS)}:>Int >Int {evalOperand(RHS)}:>Int
-  rule evalRValue(RVALUE)                  => Unsupported(RVALUE) [owise]
+  rule evalRValue(VALUE:Operand)   => evalOperand(VALUE)
+  rule evalRValue(BIN_OP:BinaryOp) => evalBinaryOp(BIN_OP)
+  rule evalRValue(RVALUE)          => Unsupported(RVALUE) [owise]
 ```
+
+### `Operand` evaluation
 
 ```k
   syntax MIRValue ::= evalOperand(Operand) [function]
-  //---------------------------------------------------------
-  rule evalOperand(VALUE:Local)               => evalLocal(VALUE)
-  rule evalOperand(const VALUE:ConstantValue) => evalConstantValue(VALUE)
-//  rule evalOperand(VALUE:NonTerminalPlace)    => "Error: evalOperand --- NonTerminalPlace is not implemented"
-//  rule evalOperand(move PLACE:Place)          => "Error: evalOperand --- move Place is not implemented"
+  //-------------------------------------------------
+  rule evalOperand(const VALUE:ConstantValue)     => evalConstantValue(VALUE)
+  rule evalOperand(LOCAL:Local)                   => evalLocal(LOCAL)
+  rule evalOperand(move LOCAL:Local)              => evalLocal(LOCAL)
+//  rule evalOperand(VALUE:NonTerminalPlace)      => "Error: evalOperand --- NonTerminalPlace is not implemented"
+//  rule evalOperand(move VALUE:NonTerminalPlace) => "Error: evalOperand --- NonTerminalPlace is not implemented"
+```
 
-  syntax MIRValue ::= evalOperandList(OperandList) [function]
-                    | evalOperandListImpl(OperandList, MIRValueNeList) [function]
-  //-----------------------------------------------------------------------------
-  rule evalOperandList(.OperandList) => "Error: evalOperandList --- RValueList must not be empty"
-  rule evalOperandList(VALUE:Operand , REST:OperandList) => evalOperandListImpl(REST, evalOperand(VALUE))
-  rule evalOperandListImpl(.OperandList, RESULT) => RESULT
-  rule evalOperandListImpl((VALUE:Operand , REST:OperandList):OperandList, RESULT) =>
-       evalOperandListImpl(REST:OperandList:OperandList, evalOperand(VALUE) RESULT)
+### `BinaryOp` evaluation
+
+```k
+  syntax MIRValue ::= evalBinaryOp(BinaryOp) [function]
+  //---------------------------------------------------
+  rule evalBinaryOp(NAME:IdentifierToken (X:Operand, Y:Operand)) =>
+       evalBinaryOpImpl(String2BinaryOpName(IdentifierToken2String(NAME)), X, Y)
+
+  syntax MIRValue ::= evalBinaryOpImpl(BinaryOpName, Operand, Operand) [function]
+  //-----------------------------------------------------------------------
+  rule evalBinaryOpImpl(Add, X, Y)    => {evalOperand(X)}:>Int +Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Sub, X, Y)    => {evalOperand(X)}:>Int -Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Mul, X, Y)    => {evalOperand(X)}:>Int *Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Div, X, Y)    => {evalOperand(X)}:>Int /Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Rem, X, Y)    => {evalOperand(X)}:>Int %Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(BitXor, X, Y) => {evalOperand(X)}:>Int xorInt {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(BitOr, X, Y)  => {evalOperand(X)}:>Int |Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(BitAnd, X, Y) => {evalOperand(X)}:>Int &Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Shl, X, Y)    => {evalOperand(X)}:>Int <<Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Shr, X, Y)    => {evalOperand(X)}:>Int >>Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Eq, X, Y)     => {evalOperand(X)}:>Int ==Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Lt, X, Y)     => {evalOperand(X)}:>Int <Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Le, X, Y)     => {evalOperand(X)}:>Int <=Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Ne, X, Y)     => {evalOperand(X)}:>Int =/=Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Ge, X, Y)     => {evalOperand(X)}:>Int >=Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(Gt, X, Y)     => {evalOperand(X)}:>Int >Int {evalOperand(Y)}:>Int
+  // rule evalBinaryOpImpl("Offset", X, Y) => "not implemented"
 ```
 
 ### Constant evaluation.
@@ -53,7 +78,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
   rule evalConstantValue(VALUE:Bool)            => VALUE
-//  rule evalConstantValue(_VALUE)                => "Error: evalConstantValue --- unsupported RValue" [owise]
+//  rule evalConstantValue(_VALUE)              => "Error: evalConstantValue --- unsupported ConstantValue" [owise]
 ```
 
 ### `Local` evaluation

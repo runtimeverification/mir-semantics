@@ -157,3 +157,73 @@ module MIR-CONSTANT-SYNTAX
 endmodule
 ```
 
+### Build-in operations
+
+```k
+module MIR-BUILTINS-SYNTAX
+  imports BOOL
+  imports STRING
+
+  syntax MirBuiltInToken ::= NullaryOpName
+                           | UnaryOpName
+                           | BinaryOpName
+                           | CheckedBinaryOpName
+
+  syntax MirBuiltInToken ::= String2MirBuiltInToken(MirBuiltInToken) [function, hook(STRING.token2string)]
+
+  syntax NullaryOpName ::= "SizeOf"  [token]
+                         | "AlignOf" [token]
+
+  syntax UnaryOpName ::= "Not" [token]
+                       | "Neg" [token]
+
+  syntax BinaryOpName ::= String2BinaryOpName(String) [function, hook(STRING.string2token)]
+
+  syntax BinaryOpName ::= "Add"    [token]
+                        | "Sub"    [token]
+                        | "Mul"    [token]
+                        | "Div"    [token]
+                        | "Rem"    [token]
+                        | "BitXor" [token]
+                        | "BitAnd" [token]
+                        | "BitOr"  [token]
+                        | "Shl"    [token]
+                        | "Shr"    [token]
+                        | "Eq"     [token]
+                        | "Lt"     [token]
+                        | "Le"     [token]
+                        | "Ne"     [token]
+                        | "Ge"     [token]
+                        | "Gt"     [token]
+                        | "Offset" [token]
+
+  syntax Bool ::= isBinOp(String) [function, total]
+  //--------------------------------------------------------------------
+  rule isBinOp(OP_NAME)  => true
+    requires OP_NAME ==String "Add"
+      orBool OP_NAME ==String "Sub"
+      orBool OP_NAME ==String "Mul"
+      orBool OP_NAME ==String "Div"
+      orBool OP_NAME ==String "Rem"
+      orBool OP_NAME ==String "BitXor"
+      orBool OP_NAME ==String "BitAnd"
+      orBool OP_NAME ==String "BitOr"
+      orBool OP_NAME ==String "Shl"
+      orBool OP_NAME ==String "Shr"
+      orBool OP_NAME ==String "Eq"
+      orBool OP_NAME ==String "Lt"
+      orBool OP_NAME ==String "Le"
+      orBool OP_NAME ==String "Ne"
+      orBool OP_NAME ==String "Ge"
+      orBool OP_NAME ==String "Gt"
+      orBool OP_NAME ==String "Offset"
+  rule isBinOp(_)       => false [owise]
+
+  syntax CheckedBinaryOpName ::= "CheckedAdd"
+                               | "CheckedSub"
+                               | "CheckedMul"
+                               | "CheckedShl"
+                               | "CheckedShr"
+
+endmodule
+```
