@@ -1,21 +1,21 @@
 fn main(_1: usize) -> () {
   bb0: {
-    ::function_name();
+    _0 = ::function_name();
   }
   bb1: {
-    path::function_name();
+    _0 = path::function_name();
   }
   bb2: {
-    $crate::function_name();
+    _0 = $crate::function_name();
   }
   bb3: {
-    path::<>::function_name();
+    _0 = path::<>::function_name();
   }
   bb3: {
-    <usize as Path>::function_name();
+    _0 = <usize as Path>::function_name();
   }
   bb1: {
-    path::function_name::<A + B>();
+    _0 = path::function_name::<A + B>();
   }
   bb4: {
     return;

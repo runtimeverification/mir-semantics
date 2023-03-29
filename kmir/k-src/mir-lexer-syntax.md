@@ -1,6 +1,5 @@
 ```k
 module MIR-LEXER-SYNTAX
-  imports STRING
 ```
 
 This module defined the necessary `token` productions.

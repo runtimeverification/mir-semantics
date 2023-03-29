@@ -2,7 +2,7 @@
 require "mir-lexer-syntax.md"
 
 module MIR-TYPE-SYNTAX
-  imports BOOL
+  imports BOOL-SYNTAX
   imports UNSIGNED-INT-SYNTAX
   imports MIR-LEXER-SYNTAX
 ```
@@ -48,20 +48,26 @@ This file is scary. Defines type information.
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
+
   // https://doc.rust-lang.org/reference/types/trait-object.html
   syntax TraitObjectTypeOneBound ::= "dyn" TraitBound
+
   // https://doc.rust-lang.org/reference/paths.html#paths-in-types
   syntax TypePath ::= "::" TypePathList "::" TypePathEndSegment
                     | TypePathList "::" TypePathEndSegment
                     | "::" TypePathEndSegment
                     | TypePathEndSegment
+
   syntax TypePathList ::= NeList{TypePathSegment, "::"}
+
   syntax TypePathSegment  ::= PathIdentSegment PathIdentSegmentSuffix
                             | PathIdentSegment "::" PathIdentSegmentSuffix
                             | PathOpaque
+
   syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
                               | PathIdentSegment "::" PathIdentSegmentEndSuffix
                               | PathOpaque
+
   // In the Rust documentation, TypePathFn is included in PathIdentSegmentSuffix.
   // However, that generates a parse ambiguity:
   // a::b() -> c::d

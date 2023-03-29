@@ -7,7 +7,6 @@ requires "mir-place-syntax.md"
 module MIR-RVALUE-SYNTAX
   imports BOOL
   imports UNSIGNED-INT-SYNTAX
-  imports STRING
   imports MIR-TYPE-SYNTAX
   imports MIR-PLACE-SYNTAX
   imports MIR-CONSTANT-SYNTAX

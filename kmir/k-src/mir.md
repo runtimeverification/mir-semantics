@@ -412,7 +412,7 @@ or panics if the function-like or the block is missing:
          </localDecl>
          ...
        </function>
-  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB):TerminatorDestination)
+  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB))
         => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
         ...
        </k>

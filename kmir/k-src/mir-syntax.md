@@ -6,7 +6,6 @@ require "mir-place-syntax.md"
 require "mir-rvalue-syntax.md"
 
 module MIR-SYNTAX
-  imports BOOL
   imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
   imports MIR-PLACE-SYNTAX
@@ -65,9 +64,9 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
 
 ### Statements and Terminators
 
+Statements occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
+
 ```k
-  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L242
-  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L1432
   syntax Statement  ::= Assign
                       // FakeRead does not seem to be used
                       | "discriminant" "(" Place ")" "=" Int
@@ -85,32 +84,71 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
                                   | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
   syntax TerminatedStatement ::= Statement ";"
   syntax StatementList ::= List {TerminatedStatement, ""}
+```
 
-  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/syntax.rs#L532
-  // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/terminator.rs#L300
-  syntax Terminator ::= "return"
-                      | "unreachable"
-                      | "resume"
-                      | "goto" "->" BB
-//                      // TODO: Can this happen for things other than panics?
-                      | Place "=" CallLike
-                      | Place "=" CallLike "->" TerminatorDestination
-                      | CallLike
-                      // I only found examples of this for assert and switchInt
-                      | CallLike "->" TerminatorDestination
+Terminators occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
 
-  // https://doc.rust-lang.org/reference/expressions/call-expr.html
-  syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
+```k
+  syntax Terminator ::= Goto
+                      | SwitchInt
+                      | Resume
+                      | Abort
+                      | Return
+                      | Unreachable
+                      | Call
+                      | Assert
+                      | Yield
+                      | GeneratorDrop
+                      | FalseEdge
+                      | InlineAsm
+
+
+  syntax Goto ::= "goto" "->" BB
+  syntax SwitchInt ::= "switchInt" "(" Operand ")" "->" "[" SwitchTargets "," "otherwise" ":" BB "]"
+  syntax Resume ::= "resume"
+  syntax Abort ::= "abort"
+  syntax Return ::= "return"
+  syntax Unreachable ::= "unreachable"
+```
+
+The `Call` sort intentionally lumps together several constructs that occur in Mir emitted by `compiletest-rs`:
+* actual function calls
+* panics
+* [Drop](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html#variant.Drop)
+* [FalseUnwind](See https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html#variant.FalseUnwind)
+* TODO: what else?
+
+These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` module for the disambiguation pass.
+
+```k
+  syntax Call ::= Place "=" CallableCall "->" BB
+                // TODO: this seem to corespon to panics
+                | Place "=" CallableCall
+                // these two seem to correspond to Drop
+                | CallableCall "->" BB
+                | CallableCall "->" "[" "return" ":" BB "," "unwind" ":" BB "]"
+                // TODO: this seem to correspond to FalseUnwind
+                | Place "=" CallableCall "->" "[" "return" ":" BB "," "unwind" ":" BB "]"
+
+  syntax Assert ::= AssertCall "->" BB
+  syntax Yield
+  syntax GeneratorDrop
+  syntax FalseEdge
+  syntax InlineAsm
+
+  // https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/terminator/struct.SwitchTargets.html
+  syntax SwitchTargets ::= List{SwitchTarget, ","}
+  syntax SwitchTarget ::= Int ":" BB
+
+  syntax CallableCall ::= Callable "(" ArgumentList ")"
   syntax Callable ::= PathExpression
-                   | "move" Local
+                    | "move" Local
+
   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= Operand | "!" Operand | StringLiteral
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
   syntax ArgumentList ::= List{Operand, ","}
-```
-
-```k
 ```
 
 ```k
