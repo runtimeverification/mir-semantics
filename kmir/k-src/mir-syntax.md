@@ -131,6 +131,7 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
                 | Place "=" CallableCall "->" "[" "return" ":" BB "," "unwind" ":" BB "]"
 
   syntax Assert ::= AssertCall "->" BB
+                  | AssertCall "->" "[" "success" ":" BB "," "unwind" ":" BB "]"
   syntax Yield
   syntax GeneratorDrop
   syntax FalseEdge
