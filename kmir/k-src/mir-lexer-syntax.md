@@ -9,7 +9,9 @@ This module defined the necessary `token` productions.
                       | LocalToken
                       | BBToken
                       | DoubleHexDigitNoIntLetter
-//                      | OtherTokens
+                      | Whitelisted
+
+  syntax Whitelisted ::= "transmute" | "unwind" | "count"
 
   syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
 ```
@@ -44,28 +46,6 @@ Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/toke
   syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
-```
-
-```k
-  // TODO: Allow assert and assume as normal identifiers.
-  syntax OtherTokens  ::= "align" | "assume"
-                        | "body"
-                        | "cleanup" | "closure" | "constant"
-                        | "copy_nonoverlapping" | "count"
-                        | "debug" | "deref_copy" | "discriminant" | "dst"
-                        | "generator" | "goto"
-                        | "opaque" | "otherwise"
-                        | "promoted"
-                        | "resume"
-                        | "StorageLive" | "StorageDead"
-                        | "scope" | "size" | "src" | "success"
-                        | "unreachable" | "unwind"
-                        | "transmute"
-                        | "variant"
-                        | "__"
-                        // TODO: These tokens seem to be needed when running
-                        // on github. I'm not sure why, looks like a K issue:
-                        | "keys" | "values"
 ```
 
 ```k

@@ -322,14 +322,6 @@ This file is scary. Defines type information.
 
   syntax FunctionAlloc ::= Identifier "(" "fn" ":" PathExpression "-" "shim" ")" 
 
-  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
-  syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
-  syntax IntCaseList ::= NeList{IntCase, ","}
-  syntax IntCase ::= Int ":" BB
-  syntax OtherwiseCase ::= "otherwise" ":" BB
-  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
-  syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
-
   syntax BB ::= BBName MaybeBBCleanup
   syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
 

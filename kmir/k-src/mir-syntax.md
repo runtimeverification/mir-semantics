@@ -96,7 +96,6 @@ Terminators occur at the end of a basic block and always transfer control outsid
                       | Return
                       | Unreachable
                       | Call
-                      | Assert
                       | Yield
                       | GeneratorDrop
                       | FalseEdge
@@ -121,17 +120,11 @@ The `Call` sort intentionally lumps together several constructs that occur in Mi
 These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` module for the disambiguation pass.
 
 ```k
-  syntax Call ::= Place "=" CallableCall "->" BB
-                // TODO: this seem to corespon to panics
-                | Place "=" CallableCall
-                // these two seem to correspond to Drop
-                | CallableCall "->" BB
-                | CallableCall "->" "[" "return" ":" BB "," "unwind" ":" BB "]"
-                // TODO: this seem to correspond to FalseUnwind
-                | Place "=" CallableCall "->" "[" "return" ":" BB "," "unwind" ":" BB "]"
+  syntax Call ::= Place "=" CallLike "->" TerminatorDestination
+                | CallLike "->" TerminatorDestination
+                // seems to be needed for panics
+                | Place "=" CallLike [avoid]
 
-  syntax Assert ::= AssertCall "->" BB
-                  | AssertCall "->" "[" "success" ":" BB "," "unwind" ":" BB "]"
   syntax Yield
   syntax GeneratorDrop
   syntax FalseEdge
@@ -141,7 +134,8 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
   syntax SwitchTargets ::= List{SwitchTarget, ","}
   syntax SwitchTarget ::= Int ":" BB
 
-  syntax CallableCall ::= Callable "(" ArgumentList ")"
+  syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
+
   syntax Callable ::= PathExpression
                     | "move" Local
 
@@ -150,6 +144,14 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
   syntax ArgumentList ::= List{Operand, ","}
+
+  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
+  syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
+  syntax IntCaseList ::= NeList{IntCase, ","}
+  syntax IntCase ::= Int ":" BB
+  syntax OtherwiseCase ::= "otherwise" ":" BB
+  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
+  syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
 ```
 
 ```k
