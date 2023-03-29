@@ -87,11 +87,17 @@ module MIR-INITIALIZATION
 ```
 
 
-The tree rules above invoke the following internal initializer rule:
+The rule below is the generic function-like initializar rule invoked by the three rules above.
 
 ```k
   syntax MirSimulation ::= #initFunctionLike(FunctionLikeKey, ParameterList, FunctionBody, Type)
   //--------------------------------------------------------------------------------------------
+```
+
+The first case is the failure when such function-like already exists (it should be impossible in a valid compiler-generated Mir):
+
+```k
+
   rule <k> #initFunctionLike(FN_KEY:FunctionLikeKey,
                          _PARAMS:ParameterList,
                          _DEBUGS:DebugList _BINDINGS:BindingList _SCOPES:ScopeList _BLOCKS:BasicBlockList,
@@ -106,11 +112,21 @@ The tree rules above invoke the following internal initializer rule:
          </function>
          ...
        </functions>
+```
+
+The success case does the following:
+* add a new `<function>` cell
+* Collect the bindings from three sources:
+  - the normal function bindings, i.e. `BINDINGS:BindingList`;
+  - function arguments, i.e. `PARAMS:ParameterList`. See the "Function parameters processing" section below;
+  - the user-defined variables that live in scopes, i.e. `SCOPES:ScopeList`. See the "Scopes processing" section below.
+
+```k
   rule <k> #initFunctionLike(FN_KEY:FunctionLikeKey,
-                         _PARAMS:ParameterList,
-                         _DEBUGS:DebugList BINDINGS:BindingList _SCOPES:ScopeList BLOCKS:BasicBlockList,
+                         PARAMS:ParameterList,
+                         _DEBUGS:DebugList BINDINGS:BindingList SCOPES:ScopeList BLOCKS:BasicBlockList,
                          _RETURN_TYPE:Type)
-        => #initBindings(FN_KEY, BINDINGS)
+        => #initBindings(FN_KEY, BINDINGS +BindingList (parametersToBindings(PARAMS) +BindingList collectBindings(SCOPES)))
         ~> #initBasicBlocks(FN_KEY, BLOCKS)
         ...
        </k>
@@ -124,6 +140,49 @@ The tree rules above invoke the following internal initializer rule:
        </functions> [owise]
 ```
 
+#### Function arguments processing
+
+Function arguments need to be converted to `Binding`s to be inserted in the `<localDecls>` of a `<function>`.
+For now, we convert them into immutable variables, but that may need to be changed in future.
+
+```k
+  syntax BindingList ::= parametersToBindings(ParameterList) [function]
+  //-------------------------------------------------------------------
+  rule parametersToBindings(.ParameterList) => .BindingList
+  rule parametersToBindings(((LOCAL:Local : TYPE:Type) , REST):ParameterList) => ((let LOCAL : TYPE ;):Binding parametersToBindings(REST))
+
+
+```
+
+#### Scopes processing
+
+The scopes are a part of a function body that tracks the Rust-level user-defined local variables. i.e. named variables.
+It is likely that we do not care about variables scoping withing a function, but we still need to process the scope declarations, because
+**scopes contain local declarations for user variables**. We need to traverse the scopes, collect these variables, and append them to the
+bindings list of the function.
+
+```k
+  syntax BindingList ::= collectBindings(ScopeList) [function]
+                       | collectBindingsImpl(ScopeList, BindingList) [function]
+  //---------------------------------------------------------------------------
+  rule collectBindings(SL:ScopeList) => collectBindingsImpl(SL, .BindingList)
+
+  rule collectBindingsImpl(.ScopeList, COLLECTED_BINDINGS) => COLLECTED_BINDINGS
+  rule collectBindingsImpl(
+       (scope _SCOPE_ID { _DL:DebugList BL:BindingList NESTED_SCOPES:ScopeList }):Scope OTHER_SCOPES:ScopeList,
+       COLLECTED_BINDINGS) => collectBindingsImpl(NESTED_SCOPES, BL) +BindingList collectBindingsImpl(OTHER_SCOPES, COLLECTED_BINDINGS)
+```
+
+Concatenate two `BindingList`s:
+
+```k
+  syntax BindingList ::= BindingList "+BindingList" BindingList [function, total]
+  //-----------------------------------------------------------------------------
+  rule .BindingList +BindingList .BindingList => .BindingList
+  rule BL +BindingList .BindingList => BL
+  rule .BindingList +BindingList BL => BL
+  rule (X XS) +BindingList (Y YS) => X Y (XS +BindingList YS)
+```
 
 #### Bindings declaration
 
@@ -135,7 +194,7 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
 
 ```k
   syntax MirSimulation ::= #initBindings(FunctionLikeKey, BindingList)
-  //---------------------------------------------------------------
+  //------------------------------------------------------------------
   rule <k> #initBindings(_FN_KEY, .BindingList)               => .K ... </k>
   rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : _TYPE:Type ;):Binding _REST:BindingList)
         => #internalPanic(FN_KEY, DuplicateBinding, LOCAL)

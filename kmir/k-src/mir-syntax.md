@@ -29,18 +29,7 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 ```
 
-```k
-  syntax FunctionForData ::= FunctionForDataSignature "{" FunctionBody "}"
-  syntax FunctionForDataSignature ::= MaybeStaticConstMut PathFunctionData ":" Type "="
-  syntax MaybeStaticConstMut ::= "" | "static" | "const" | "static" "mut"
-  // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
-  syntax PathFunctionData ::= NeList{FunctionPathComponent, "::"}
-```
-
-```k
-  syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
-  syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
-```
+The `FunctionBody` sort represents a single Mir function. Based on [`rustc::mir::Body`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Body.html).
 
 ```k
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
@@ -57,6 +46,21 @@ module MIR-SYNTAX
   syntax BasicBlock ::= BB ":" BasicBlockBody
   syntax BasicBlockBody ::= "{" StatementList Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
+```
+
+The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
+
+```k
+  syntax FunctionForData ::= FunctionForDataSignature "{" FunctionBody "}"
+  syntax FunctionForDataSignature ::= MaybeStaticConstMut PathFunctionData ":" Type "="
+  syntax MaybeStaticConstMut ::= "" | "static" | "const" | "static" "mut"
+  // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
+  syntax PathFunctionData ::= NeList{FunctionPathComponent, "::"}
+```
+
+```k
+  syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
+  syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 ```
 
 ### Statements and Terminators
