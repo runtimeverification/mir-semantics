@@ -12,6 +12,7 @@ These modules declares the necessary domain sorts to represent the Mir locals at
 module MIR-CONFIGURATION
   imports MIR-SYNTAX
   imports MIR-FUNCTIONS
+  imports LIST
 
   syntax MirSimulatorPhase ::= "Initialization"
                              | "Execution"
@@ -22,7 +23,7 @@ module MIR-CONFIGURATION
     <returncode exit=""> 4 </returncode>     // the simulator exit code
     <mir>
       <simulator>
-        <currentFnKey> Fn(String2IdentifierToken("dummy"):FunctionPath) </currentFnKey>
+        <callStack> .List </callStack> // List{FunctionPath}
         <currentBasicBlock> 0:Int </currentBasicBlock>
         <phase> Initialization:MirSimulatorPhase </phase>
       </simulator>

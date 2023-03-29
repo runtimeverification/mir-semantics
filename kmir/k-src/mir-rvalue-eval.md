@@ -89,7 +89,7 @@ Locals only makes sense withing a function-like, hence we evaluate them as a con
   syntax MIRValue ::= evalLocal(Local) [function]
   //---------------------------------------------
   rule [[ evalLocal(LOCAL) => VALUE ]]
-    <currentFnKey> FN_KEY </currentFnKey>
+    <callStack> ListItem(FN_KEY) ... </callStack>
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
@@ -141,9 +141,9 @@ module KMIR-CONSTEVAL
   rule <k> #initDefaultMir() => .K ... </k>
        <mir> _ =>
          <env>
-           <currentFnKey>
-             Fn(String2IdentifierToken("dummy"):FunctionPath)
-           </currentFnKey>
+           <callStack>
+             ListItem(Fn(String2IdentifierToken("dummy"):FunctionPath))
+           </callStack>
            <currentBasicBlock>
              0
            </currentBasicBlock>

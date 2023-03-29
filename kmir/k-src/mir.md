@@ -295,7 +295,7 @@ module MIR-EXECUTION
         => #executeBasicBlock(FN_KEY, 0)
         ...
        </k>
-       <currentFnKey> _ => FN_KEY </currentFnKey>
+       <callStack> STACK => ListItem(FN_KEY) STACK </callStack>
 ```
 
 ### Single basic block execution
@@ -355,7 +355,7 @@ or panics if the function-like or the block is missing:
         => .K
         ...
        </k>
-       <currentFnKey> FN_KEY </currentFnKey>
+       <callStack> ListItem(FN_KEY) ... </callStack>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
@@ -371,7 +371,7 @@ or panics if the function-like or the block is missing:
 //        => .K
 //        ...
 //       </k>
-//       <currentFnKey> FN_KEY </currentFnKey>
+//       <callStack> FN_KEY </callStack>
 //       <function>
 //         <fnKey> FN_KEY </fnKey>
 //         <localDecl>
@@ -389,7 +389,7 @@ or panics if the function-like or the block is missing:
 //        => #internalPanic(FN_KEY, RValueEvalError, evalRValue(RVALUE))
 //        ...
 //       </k>
-//       <currentFnKey> FN_KEY </currentFnKey>
+//       <callStack> FN_KEY </callStack>
 //    requires notBool isRValueResult(evalRValue(RVALUE))
 ```
 
@@ -402,7 +402,7 @@ or panics if the function-like or the block is missing:
         => #return(FN_KEY, RETURN_VALUE)
         ...
        </k>
-       <currentFnKey> FN_KEY </currentFnKey>
+       <callStack> ListItem(FN_KEY) ... </callStack>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
@@ -416,12 +416,12 @@ or panics if the function-like or the block is missing:
         => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
         ...
        </k>
-       <currentFnKey> FN_KEY </currentFnKey>
+       <callStack> ListItem(FN_KEY) ... </callStack>
   rule <k> #executeTerminator(TERMIANTOR:Terminator)
         => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
         ...
        </k>
-       <currentFnKey> FN_KEY </currentFnKey> [owise]
+       <callStack> ListItem(FN_KEY) ... </callStack> [owise]
 ```
 
 * `return`
