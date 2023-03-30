@@ -42,7 +42,6 @@ module MIR-FUNCTIONS
   imports MIR-SYNTAX
   imports MIR-LOCALS
   imports MIR-BASIC-BLOCKS
-
 ```
 
 Runtime representation of Mir's *function-like* entities. A *function-like* is one of the following:

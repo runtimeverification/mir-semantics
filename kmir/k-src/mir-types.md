@@ -1,5 +1,6 @@
 ```k
 require "mir-syntax.md"
+require "mir-type-syntax.md"
 ```
 
 ```k
@@ -17,6 +18,8 @@ module MIR-RVALUE
   imports INT
   imports STRING
   imports BYTES
+  imports MIR-TYPE-SYNTAX
+  imports MIR-LEXER-SYNTAX
 
   syntax KItem ::= RValueResult
 ```
@@ -41,6 +44,8 @@ TODO: add more domain sorts
                     | String
                     | "Unit"
                     | Bool
+                    | "Never"
+                    | "UNIMPLEMENTED"
 
   syntax RValueResult ::= MIRValue
                         | MIRValueNeList
@@ -54,8 +59,44 @@ The `InteprError` sort represent the errors that may occur while interpreting an
   syntax InterpError ::= Unsupported(KItem)
 ```
 
+A best-effort default value inference function, for locals initialization.
+**ATTENTIAON** this function will return `UNIMPLEMENTED` for types that are not handled.
 
 ```k
+  syntax MIRValue ::= defaultMIRValue(Type) [function]
+  //--------------------------------------------------
+  rule defaultMIRValue(( ):TupleType) => Unit
+  rule defaultMIRValue(USIZE_TYPE)    => 0     requires IdentifierToken2String(USIZE_TYPE) ==String "usize"
+  rule defaultMIRValue(BOOL_TYPE)     => false requires IdentifierToken2String(BOOL_TYPE)  ==String "bool"
+  rule defaultMIRValue(!)             => Never
+//  rule defaultMIRValue(_:Type)      => UNIMPLEMENTED [owise]
+```
+
+
+```k
+endmodule
+```
+
+Internal sort casts
+-------------------
+
+```k
+module MIR-SORT-CASTS
+  imports MIR-TYPE-SYNTAX
+  imports MIR-RVALUE
+
+
+  syntax Int ::= castMIRValueToInt(MIRValue) [function]
+  //---------------------------------------------------
+  rule castMIRValueToInt(X:Int) => X
+  rule castMIRValueToInt(true:Bool) => 1
+  rule castMIRValueToInt(false:Bool) => 0
+
+  syntax FunctionPath ::= toFunctionPath(PathInExpression) [function]
+  //-----------------------------------------------------------------
+  rule toFunctionPath(.ExpressionPathList) => .FunctionPath
+  rule toFunctionPath(NAME:Identifier :: .ExpressionPathList) => NAME :: .FunctionPath
+
 endmodule
 ```
 
@@ -94,6 +135,10 @@ Additionally, we need functions that convert between syntactic and semantics rep
   syntax Int ::= Local2Int(Local) [function, total]
   //-----------------------------------------------
   rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR)))
+
+  syntax Local ::= Int2Local(Int) [function, total]
+  //-----------------------------------------------
+  rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
 
   syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------

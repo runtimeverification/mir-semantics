@@ -173,6 +173,8 @@ module MIR-BUILTINS-SYNTAX
   syntax NullaryOpName ::= "SizeOf"  [token]
                          | "AlignOf" [token]
 
+  syntax UnaryOpName ::= String2UnaryOpName(String) [function, hook(STRING.string2token)]
+
   syntax UnaryOpName ::= "Not" [token]
                        | "Neg" [token]
 
@@ -196,8 +198,15 @@ module MIR-BUILTINS-SYNTAX
                         | "Gt"     [token]
                         | "Offset" [token]
 
+  syntax Bool ::= isUnOp(String) [function, total]
+  //----------------------------------------------
+  rule isUnOp(OP_NAME)  => true
+    requires OP_NAME ==String "Not"
+      orBool OP_NAME ==String "Neg"
+  rule isUnOp(_)       => false [owise]
+
   syntax Bool ::= isBinOp(String) [function, total]
-  //--------------------------------------------------------------------
+  //-----------------------------------------------
   rule isBinOp(OP_NAME)  => true
     requires OP_NAME ==String "Add"
       orBool OP_NAME ==String "Sub"

@@ -14,6 +14,7 @@ This module defined the necessary `token` productions.
   syntax Whitelisted ::= "transmute" | "unwind" | "count"
 
   syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
+  syntax IdentifierToken ::= StringIdentifierToken(String) [function, hook(STRING.string2token)]
 ```
 
 ```k

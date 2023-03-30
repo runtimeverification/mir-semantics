@@ -19,51 +19,66 @@ module MIR-RVALUE-EVAL
 Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval_rvalue_into_place](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_const_eval/src/interpret/step.rs#L148).
 
 ```k
-  syntax InterpResult ::= evalRValue(RValue) [function]
-  //---------------------------------------------------
-  rule evalRValue(VALUE:Operand)   => evalOperand(VALUE)
-  rule evalRValue(BIN_OP:BinaryOp) => evalBinaryOp(BIN_OP)
-  rule evalRValue(RVALUE)          => Unsupported(RVALUE) [owise]
+  syntax InterpResult ::= evalRValue(FunctionLikeKey, RValue) [function]
+  //--------------------------------------------------------------------
+  rule evalRValue(FN_KEY, VALUE:Operand)   => evalOperand(FN_KEY, VALUE)
+  rule evalRValue(FN_KEY, UN_OP:UnaryOp)   => evalUnaryOp(FN_KEY, UN_OP)
+  rule evalRValue(FN_KEY, BIN_OP:BinaryOp) => evalBinaryOp(FN_KEY, BIN_OP)
+  rule evalRValue(_FN_KEY, RVALUE)         => Unsupported(RVALUE) [owise]
 ```
 
 ### `Operand` evaluation
 
 ```k
-  syntax MIRValue ::= evalOperand(Operand) [function]
-  //-------------------------------------------------
-  rule evalOperand(const VALUE:ConstantValue)     => evalConstantValue(VALUE)
-  rule evalOperand(LOCAL:Local)                   => evalLocal(LOCAL)
-  rule evalOperand(move LOCAL:Local)              => evalLocal(LOCAL)
+  syntax MIRValue ::= evalOperand(FunctionLikeKey, Operand) [function]
+  //------------------------------------------------------------------
+  rule evalOperand(_, const VALUE:ConstantValue)     => evalConstantValue(VALUE)
+  rule evalOperand(FN_KEY, LOCAL:Local)                   => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(FN_KEY, move LOCAL:Local)              => evalLocal(FN_KEY, LOCAL)
 //  rule evalOperand(VALUE:NonTerminalPlace)      => "Error: evalOperand --- NonTerminalPlace is not implemented"
 //  rule evalOperand(move VALUE:NonTerminalPlace) => "Error: evalOperand --- NonTerminalPlace is not implemented"
+```
+
+### `UnaryOp` evaluation
+
+```k
+  syntax MIRValue ::= evalUnaryOp(FunctionLikeKey, UnaryOp) [function]
+  //---------------------------------------------------
+  rule evalUnaryOp(FN_KEY, NAME:IdentifierToken (X:Operand)) =>
+       evalUnaryOpImpl(FN_KEY, String2UnaryOpName(IdentifierToken2String(NAME)), X)
+
+  syntax MIRValue ::= evalUnaryOpImpl(FunctionLikeKey, UnaryOpName, Operand) [function]
+  //------------------------------------------------------------------
+  rule evalUnaryOpImpl(FN_KEY, Not, X)    => notBool {evalOperand(FN_KEY, X)}:>Bool
+  rule evalUnaryOpImpl(FN_KEY, Neg, X)    => 0 -Int {evalOperand(FN_KEY, X)}:>Int
 ```
 
 ### `BinaryOp` evaluation
 
 ```k
-  syntax MIRValue ::= evalBinaryOp(BinaryOp) [function]
+  syntax MIRValue ::= evalBinaryOp(FunctionLikeKey, BinaryOp) [function]
   //---------------------------------------------------
-  rule evalBinaryOp(NAME:IdentifierToken (X:Operand, Y:Operand)) =>
-       evalBinaryOpImpl(String2BinaryOpName(IdentifierToken2String(NAME)), X, Y)
+  rule evalBinaryOp(FN_KEY, NAME:IdentifierToken (X:Operand, Y:Operand)) =>
+       evalBinaryOpImpl(FN_KEY, String2BinaryOpName(IdentifierToken2String(NAME)), X, Y)
 
-  syntax MIRValue ::= evalBinaryOpImpl(BinaryOpName, Operand, Operand) [function]
+  syntax MIRValue ::= evalBinaryOpImpl(FunctionLikeKey, BinaryOpName, Operand, Operand) [function]
   //-----------------------------------------------------------------------
-  rule evalBinaryOpImpl(Add, X, Y)    => {evalOperand(X)}:>Int +Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Sub, X, Y)    => {evalOperand(X)}:>Int -Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Mul, X, Y)    => {evalOperand(X)}:>Int *Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Div, X, Y)    => {evalOperand(X)}:>Int /Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Rem, X, Y)    => {evalOperand(X)}:>Int %Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(BitXor, X, Y) => {evalOperand(X)}:>Int xorInt {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(BitOr, X, Y)  => {evalOperand(X)}:>Int |Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(BitAnd, X, Y) => {evalOperand(X)}:>Int &Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Shl, X, Y)    => {evalOperand(X)}:>Int <<Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Shr, X, Y)    => {evalOperand(X)}:>Int >>Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Eq, X, Y)     => {evalOperand(X)}:>Int ==Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Lt, X, Y)     => {evalOperand(X)}:>Int <Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Le, X, Y)     => {evalOperand(X)}:>Int <=Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Ne, X, Y)     => {evalOperand(X)}:>Int =/=Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Ge, X, Y)     => {evalOperand(X)}:>Int >=Int {evalOperand(Y)}:>Int
-  rule evalBinaryOpImpl(Gt, X, Y)     => {evalOperand(X)}:>Int >Int {evalOperand(Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Add, X, Y)    => {evalOperand(FN_KEY, X)}:>Int +Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Sub, X, Y)    => {evalOperand(FN_KEY, X)}:>Int -Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Mul, X, Y)    => {evalOperand(FN_KEY, X)}:>Int *Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Div, X, Y)    => {evalOperand(FN_KEY, X)}:>Int /Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Rem, X, Y)    => {evalOperand(FN_KEY, X)}:>Int %Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, BitXor, X, Y) => {evalOperand(FN_KEY, X)}:>Int xorInt {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, BitOr, X, Y)  => {evalOperand(FN_KEY, X)}:>Int |Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, BitAnd, X, Y) => {evalOperand(FN_KEY, X)}:>Int &Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Shl, X, Y)    => {evalOperand(FN_KEY, X)}:>Int <<Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Shr, X, Y)    => {evalOperand(FN_KEY, X)}:>Int >>Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Eq, X, Y)     => {evalOperand(FN_KEY, X)}:>Int ==Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Lt, X, Y)     => {evalOperand(FN_KEY, X)}:>Int <Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Le, X, Y)     => {evalOperand(FN_KEY, X)}:>Int <=Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Ne, X, Y)     => {evalOperand(FN_KEY, X)}:>Int =/=Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Ge, X, Y)     => {evalOperand(FN_KEY, X)}:>Int >=Int {evalOperand(FN_KEY, Y)}:>Int
+  rule evalBinaryOpImpl(FN_KEY, Gt, X, Y)     => {evalOperand(FN_KEY, X)}:>Int >Int {evalOperand(FN_KEY, Y)}:>Int
   // rule evalBinaryOpImpl("Offset", X, Y) => "not implemented"
 ```
 
@@ -83,13 +98,12 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 
 ### `Local` evaluation
 
-Locals only makes sense withing a function-like, hence we evaluate them as a contextual function that grabs the current function from the global configuration:
+Locals only makes sense withing a function-like, hence we evaluate them as a contextual function that grabs the necessary values from the function-like's environment:
 
 ```k
-  syntax MIRValue ::= evalLocal(Local) [function]
-  //---------------------------------------------
-  rule [[ evalLocal(LOCAL) => VALUE ]]
-    <callStack> ListItem(FN_KEY) ... </callStack>
+  syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]
+  //--------------------------------------------------------------
+  rule [[ evalLocal(FN_KEY, LOCAL) => VALUE ]]
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
