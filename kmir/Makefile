@@ -66,6 +66,11 @@ handwritten-run-fail:
             $(TEST_ARGS)
 .PHONY: handwritten-test-run
 
+## compile the handwritten Rust integration tests to Mir
+compile-handwritten-rust:
+	make -C src/tests/integration/test-data/handwritten-rust
+.PHONY: compile-handwritten-rust
+
 # Checks and formatting
 
 format: autoflake isort black
