@@ -24,7 +24,7 @@ def exec_parse(
     input_file: str,
     definition_dir: str,
     input: str = 'program',
-    output: str = 'kast',
+    output: str = 'kore',
     **kwargs: Any,
 ) -> None:
     kast_input = KAstInput[input.upper()]
@@ -92,7 +92,7 @@ def create_argument_parser() -> ArgumentParser:
         '--output',
         dest='output',
         type=str,
-        default='kast',
+        default='kore',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,
