@@ -8,11 +8,12 @@ clean:
 
 RUSTC:=rustc
 RUST_SOURCES=$(wildcard *.rs)
+RUSTC_OPTIONS=-C overflow-checks=off
 
 mir: $(RUST_SOURCES:%.rs=%.mir)
 %.mir : %.rs
-	$(RUSTC) --emit mir $< -o $@
+	$(RUSTC) --emit mir $(RUSTC_OPTIONS) $< -o $@
 
 executables: $(RUST_SOURCES:%.rs=%.out)
 %.out : %.rs
-	$(RUSTC) $< -o $@
+	$(RUSTC) $(RUSTC_OPTIONS) $< -o $@
