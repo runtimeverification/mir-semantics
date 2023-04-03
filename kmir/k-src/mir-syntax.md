@@ -1,10 +1,15 @@
-(very) loosely based on https://rust-lang.github.io/rfcs/1211-mir.html
+```k
+require "mir-types.md"
+require "mir-place-syntax.md"
+require "mir-rvalue.md"
+```
+
+Mir syntax
+----------
+
+These modules defined the syntax of Mir programs. See "mir-types.md" for the syntax of types.
 
 ```k
-require "mir-type-syntax.md"
-require "mir-place-syntax.md"
-require "mir-rvalue-syntax.md"
-
 module MIR-SYNTAX
   imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
@@ -62,9 +67,9 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 ```
 
-### Statements and Terminators
+### [Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) and [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html)
 
-Statements occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
+[Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
 
 ```k
   syntax Statement  ::= Assign
@@ -86,7 +91,7 @@ Statements occur within a basic block. They are executed in sequence and never t
   syntax StatementList ::= List {TerminatedStatement, ""}
 ```
 
-Terminators occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
+[Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html) occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
 
 ```k
   syntax Terminator ::= Goto
@@ -169,32 +174,21 @@ module MIR-PARSER-SYNTAX
 endmodule
 ```
 
+Mir syntax disambiguation
+-------------------------
+
+Some of Mir constructs are ambiguous as parsing time. The `MIR-AMBIGUITIES` module contains rewrite rules that disambiguate these constructs.
+These rules are applied at `Initialization` phase, see the `MIR` module in "mir.md" for more information on when these rules are used.
+
 ```k
 module MIR-AMBIGUITIES
   imports MIR-SYNTAX
   imports MIR-LEXER-SYNTAX
   imports MIR-BUILTINS-SYNTAX
   imports K-AMBIGUITIES
+```
 
-//  syntax Bool ::= isNullaryOpName(Identifier) [function, total]
-//  //---------------------------------------------------------------------
-//  rule isNullaryOpName(OP_NAME)  => true
-//    requires IdentifierToken2String(OP_NAME) ==String "SizeOf"
-//      orBool IdentifierToken2String(OP_NAME) ==String "AlignOf"
-//  rule isNullaryOpName(_)       => false [owise]
-
-//  syntax Bool ::= isUnaryOpName(Identifier) [function, total]
-//  //-------------------------------------------------------------------
-//  rule isUnaryOpName(OP_NAME)  => true
-//    requires IdentifierToken2String(OP_NAME) ==String "Not"
-//      orBool IdentifierToken2String(OP_NAME) ==String "Neg"
-//  rule isUnaryOpName(_)       => false [owise]
-
-//  syntax Bool ::= isBinaryOp(RValue) [function, total]
-//  //--------------------------------------------------
-//  rule isBinaryOp(NAME(LHS:Operand, RHS:Operand)) => isBinaryOpName(NAME)
-//  rule isBinaryOp(_)                              => false [owise]
-
+```k
   syntax BasicBlockBody ::= disambiguateBasicBlockBody(BasicBlockBody) [function]
   //-----------------------------------------------------------------------------
   rule disambiguateBasicBlockBody({ STATEMENTS:StatementList TERMINATOR:Terminator ; }:BasicBlockBody) =>
@@ -213,7 +207,13 @@ module MIR-AMBIGUITIES
   syntax Terminator ::= disambiguateTerminator(Terminator) [function]
   //-----------------------------------------------------------------
   rule disambiguateTerminator(T) => T
+```
 
+The actual disambiguation starts here: we need to distinguish certain rvalues:
+* enum constructors
+* primitive unary and binary operations
+
+```k
   syntax RValue ::= disambiguateRValue(RValue) [function]
   //-----------------------------------------------------
   rule disambiguateRValue(
@@ -229,6 +229,8 @@ module MIR-AMBIGUITIES
          (NAME::IdentifierToken (AGR_1:Operand))::UnaryOp
     requires isUnOp(IdentifierToken2String(NAME))
   rule disambiguateRValue(X) => X [owise]
+```
 
+```k
 endmodule
 ```

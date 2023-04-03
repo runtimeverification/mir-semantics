@@ -1,6 +1,6 @@
 ```k
 require "mir-configuration.md"
-require "mir-rvalue-eval.md"
+require "mir-rvalue.md"
 require "panics.md"
 ```
 
@@ -17,6 +17,8 @@ The `MIR` module is the main module of the concrete execution semantics to be us
 * `MIR-EXECUTION` defines the execution rules for function, basic blocks, statements and expressions. NOT IMPLEMENTED.
 * `MIR-FINALIZATION` defines the successful and panicking interpreter finalization rules.
 
+The rules included in the top-level `MIR` module are related to starting and finishing execution.
+
 ```k
 module MIR
   imports MIR-CONFIGURATION
@@ -25,13 +27,21 @@ module MIR
   imports MIR-FINALIZATION
 
   syntax KItem ::= #initialized()
+```
 
+The presence of the empty program, `.Mir`, on the `<k>` cell indicates that the initialization phase of the semantics is finished, and we can start the execution phase.
+
+```k
   rule <k> .Mir => #initialized() ... </k>
        <phase> Initialization </phase>
-
   rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath), .ArgumentList) ... </k>
        <phase> Initialization => Execution </phase>
+```
 
+The `#return` rule is triggered by the `return` terminator. We need to give it different treatment if we currently execute the `main` function.
+If we are, then we stop execution and enter the finalization phase. Otherwise, if we're not currently in `main`, we return control to the caller function.
+
+```k
   rule <k> #return(FUNCTION_KEY, Unit) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) => .List </callStack>
        <phase> Execution => Finalization </phase>
@@ -44,7 +54,7 @@ module MIR
 endmodule
 ```
 
-`MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future.
+`MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since the `amb` productions seem to not be supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
 
 ```k
 module MIR-SYMBOLIC
@@ -59,8 +69,6 @@ Interpreter initialization
 The `MIR-INITIALIZATION` module defines rules that construct the initial runtime configuration based on the parsed MIR program abstract syntax tree.
 Note that this modules imports the `MIR-AMBIGUITIES` which defines how to reserve parsing ambiguities, hence the `MIR-INITIALIZATION` cannot be used
 with the Haskell backend at the moment.
-
-TODO: consult the C semantics team on how to use the Haskell backend in presence of parsing ambiguities.
 
 ```k
 module MIR-INITIALIZATION
@@ -90,7 +98,6 @@ module MIR-INITIALIZATION
 ```k
     // TODO
 ```
-
 
 The rule below is the generic function-like initializar rule invoked by the three rules above.
 
@@ -289,7 +296,7 @@ module MIR-EXECUTION
   imports MIR-SYNTAX
   imports MIR-TYPES
   imports MIR-SORT-CASTS
-  imports MIR-RVALUE-EVAL
+  imports MIR-RVALUE
   imports PANICS
   imports K-EQUAL
 ```
