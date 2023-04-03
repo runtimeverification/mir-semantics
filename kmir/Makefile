@@ -14,7 +14,7 @@ clean:
 	rm -rf dist .mypy_cache
 	find -type d -name __pycache__ -prune -exec rm -rf {} \;
 
-build:
+build: kbuild-llvm kbuild-haskell
 	poetry build
 
 poetry-install:
