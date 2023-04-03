@@ -426,6 +426,11 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
+  rule <k> #executeTerminator(goto -> ((NEXT:BBName _):BB))
+        => #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
+        ...
+       </k>
+       <callStack> ListItem(FN_KEY) ... </callStack>
   rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
         => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
         ~> #transferLocal(Fn(toFunctionPath(OTHER_FN_NAME)), Int2Local(0), FN_KEY, DEST_LOCAL)
