@@ -12,3 +12,5 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python3 - --v
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && useradd -m -u $USER_ID -s /bin/sh -g user user
+
+COPY --chown=user:user . /home/user
