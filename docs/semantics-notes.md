@@ -1,6 +1,6 @@
 We recommend reading through the [MIR construction](https://rustc-dev-guide.rust-lang.org/mir/construction.html) section of the `rustc` dev guide. It provides a good insight on what some Mir constructs mean.
 
-Another useful resource if the `rustc` dev guide [Glossary](https://rustc-dev-guide.rust-lang.org/appendix/glossary.html).
+Another useful resource is the `rustc` dev guide [Glossary](https://rustc-dev-guide.rust-lang.org/appendix/glossary.html).
 
 We keep an assortment of notes we see relevant to the sematnics below:
 
