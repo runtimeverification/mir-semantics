@@ -7,7 +7,7 @@ We keep an assortment of notes we see relevant to the sematnics below:
 Note on `_0`
 -----------
 
-It looks line the location `_0` is generated automatically and we do not need the sematics to generate it.
+`_0` is a compiler generated and reserved variable for return value. We do not need the sematics to generate it.
 Rather, we should fail with a meaningful error if it's missing.
 
 Macros
