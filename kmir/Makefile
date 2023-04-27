@@ -14,7 +14,7 @@ clean:
 	rm -rf dist .mypy_cache
 	find -type d -name __pycache__ -prune -exec rm -rf {} \;
 
-build:
+build: kbuild-llvm kbuild-haskell
 	poetry build
 
 poetry-install:
@@ -65,6 +65,11 @@ handwritten-run-fail:
             --report-file src/tests/integration/test-data/handwritten-run-fail.tsv  \
             $(TEST_ARGS)
 .PHONY: handwritten-test-run
+
+## compile the handwritten Rust integration tests to Mir
+compile-handwritten-rust:
+	make -C src/tests/integration/test-data/handwritten-rust
+.PHONY: compile-handwritten-rust
 
 # Checks and formatting
 
