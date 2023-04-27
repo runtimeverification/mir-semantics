@@ -1,6 +1,6 @@
 fn main(_1: usize) -> () {
   bb0: {
-    assert(!move _4, _2) -> bb3;
+    switchInt(move _6) -> [1: bb1, 2: bb1, otherwise: bb3];
   }
   bb1: {
     assert(move _4, _2) -> bb3;

@@ -6,12 +6,13 @@ require "mir-types.md"
 Mir interpreter configuration
 =============================
 
-These modules declares the necessary domain sorts to represent the Mir locals at runtime. The sort declarations are derived from the `rustc` types and are accompanied by permalinks to the respective `rustc` source code locations.
+These modules declares the necessary domain sorts to represent the Mir locals at runtime. The sort declarations are derived from the `rustc` types and are accompanied by permalinks to the respective `rustc` documentation pages.
 
 ```k
 module MIR-CONFIGURATION
   imports MIR-SYNTAX
   imports MIR-FUNCTIONS
+  imports LIST
 
   syntax MirSimulatorPhase ::= "Initialization"
                              | "Execution"
@@ -22,7 +23,7 @@ module MIR-CONFIGURATION
     <returncode exit=""> 4 </returncode>     // the simulator exit code
     <mir>
       <simulator>
-        <currentFnKey> Fn(String2IdentifierToken("dummy"):FunctionPath) </currentFnKey>
+        <callStack> .List </callStack> // List{FunctionPath}
         <currentBasicBlock> 0:Int </currentBasicBlock>
         <phase> Initialization:MirSimulatorPhase </phase>
       </simulator>
@@ -41,7 +42,6 @@ module MIR-FUNCTIONS
   imports MIR-SYNTAX
   imports MIR-LOCALS
   imports MIR-BASIC-BLOCKS
-
 ```
 
 Runtime representation of Mir's *function-like* entities. A *function-like* is one of the following:
@@ -83,7 +83,7 @@ module MIR-LOCALS
     imports MIR-TYPES
 ```
 
-We declare a runtime configuration to represent the [`LocalDecls`](https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L72) array and it's item type [`LocalDecl`](https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#L756).
+We declare a runtime configuration to represent [`LocalDecl`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.LocalDecl.html) --- a variable declaration within a function-like.
 
 We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `LocalDecl` come directly from the Rust `struct` declaration. We declare custom sorts to represent the filed values as necessary.
 
@@ -124,7 +124,7 @@ We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `
 ### [LocalInfo](https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/mod.rs#LL887-L905C2)
 
 ```k
-  syntax DefId ::= Int // TODO: what's that? https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/src/tools/rust-analyzer/crates/hir-ty/src/interner.rs#L63
+  syntax DefId ::= Int
 
   syntax LocalInfo ::= "User"                 // User(ClearCrossCrate<BindingForm<'tcx>>)
                      | "StaticRef" DefId Bool // StaticRef { def_id: DefId, is_thread_local: bool }

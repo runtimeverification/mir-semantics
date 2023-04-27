@@ -1,0 +1,68 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: usize, _2: usize) -> bool {
+    debug x => _1;                       // in scope 0 at const-arithm-simple.rs:1:9: 1:10
+    debug y => _2;                       // in scope 0 at const-arithm-simple.rs:1:19: 1:20
+    let mut _0: bool;                    // return place in scope 0 at const-arithm-simple.rs:1:31: 1:35
+    let mut _3: usize;                   // in scope 0 at const-arithm-simple.rs:2:12: 2:13
+    let mut _4: usize;                   // in scope 0 at const-arithm-simple.rs:2:16: 2:17
+
+    bb0: {
+        _3 = _1;                         // scope 0 at const-arithm-simple.rs:2:12: 2:13
+        _4 = _2;                         // scope 0 at const-arithm-simple.rs:2:16: 2:17
+        _0 = Gt(move _3, move _4);       // scope 0 at const-arithm-simple.rs:2:12: 2:17
+        return;                          // scope 0 at const-arithm-simple.rs:3:2: 3:2
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();                      // return place in scope 0 at const-arithm-simple.rs:6:11: 6:11
+    let _1: usize;                       // in scope 0 at const-arithm-simple.rs:7:7: 7:8
+    let mut _4: usize;                   // in scope 0 at const-arithm-simple.rs:9:21: 9:22
+    let mut _5: usize;                   // in scope 0 at const-arithm-simple.rs:9:24: 9:25
+    let mut _6: bool;                    // in scope 0 at const-arithm-simple.rs:10:3: 10:13
+    let mut _7: bool;                    // in scope 0 at const-arithm-simple.rs:10:11: 10:12
+    let mut _8: !;                       // in scope 0 at const-arithm-simple.rs:10:3: 10:13
+    scope 1 {
+        debug x => _1;                   // in scope 1 at const-arithm-simple.rs:7:7: 7:8
+        let _2: usize;                   // in scope 1 at const-arithm-simple.rs:8:7: 8:8
+        scope 2 {
+            debug y => _2;               // in scope 2 at const-arithm-simple.rs:8:7: 8:8
+            let _3: bool;                // in scope 2 at const-arithm-simple.rs:9:7: 9:8
+            scope 3 {
+                debug z => _3;           // in scope 3 at const-arithm-simple.rs:9:7: 9:8
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 42_usize;             // scope 0 at const-arithm-simple.rs:7:17: 7:19
+        _2 = const 0_usize;              // scope 1 at const-arithm-simple.rs:8:17: 8:18
+        _4 = const 42_usize;             // scope 2 at const-arithm-simple.rs:9:21: 9:22
+        _5 = const 0_usize;              // scope 2 at const-arithm-simple.rs:9:24: 9:25
+        _3 = test(move _4, move _5) -> bb1; // scope 2 at const-arithm-simple.rs:9:16: 9:26
+                                         // mir::Constant
+                                         // + span: const-arithm-simple.rs:9:16: 9:20
+                                         // + literal: Const { ty: fn(usize, usize) -> bool {test}, val: Value(<ZST>) }
+    }
+
+    bb1: {
+        _7 = _3;                         // scope 3 at const-arithm-simple.rs:10:11: 10:12
+        _6 = Not(move _7);               // scope 3 at const-arithm-simple.rs:10:3: 10:13
+        switchInt(move _6) -> [0: bb3, otherwise: bb2]; // scope 3 at const-arithm-simple.rs:10:3: 10:13
+    }
+
+    bb2: {
+        _8 = core::panicking::panic(const "assertion failed: z"); // scope 3 at const-arithm-simple.rs:10:3: 10:13
+                                         // mir::Constant
+                                         // + span: const-arithm-simple.rs:10:3: 10:13
+                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
+                                         // mir::Constant
+                                         // + span: no-location
+                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+    }
+
+    bb3: {
+        return;                          // scope 0 at const-arithm-simple.rs:12:2: 12:2
+    }
+}

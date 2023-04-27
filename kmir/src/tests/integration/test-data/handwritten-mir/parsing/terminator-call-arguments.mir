@@ -1,6 +1,6 @@
 fn main(_1: usize) -> () {
   bb0: {
-    function_name(const 1_usize, move _4);
+    _0 = function_name(const 1_usize, move _4);
   }
   bb1: {
     return;

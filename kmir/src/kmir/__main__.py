@@ -59,7 +59,11 @@ def exec_run(
             print(stderr)
             print(msg)
         else:
-            raise
+            msg, stdout, stderr = err.args
+            print(stdout)
+            print(stderr)
+            print(msg)
+            exit(1)
 
 
 def create_argument_parser() -> ArgumentParser:

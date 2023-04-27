@@ -1,6 +1,8 @@
 ```k
-require "mir-type-syntax.md"
+require "mir-types.md"
+```
 
+```k
 module MIR-PLACE-SYNTAX
   imports BOOL
   imports UNSIGNED-INT-SYNTAX

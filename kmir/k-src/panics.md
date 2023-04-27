@@ -15,6 +15,7 @@ module PANICS
                          | "TypeError"
 
   syntax Panic ::= "AssertionViolation"
+                 | "PanicCall"
 
   syntax KItem ::= #internalPanic(FunctionLikeKey, InternalPanic, KItem)
 
