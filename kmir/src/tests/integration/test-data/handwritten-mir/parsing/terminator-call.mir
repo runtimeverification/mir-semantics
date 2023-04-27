@@ -1,6 +1,6 @@
 fn main(_1: usize) -> () {
   bb0: {
-    function_name();
+    _0 = function_name();
   }
   bb1: {
     return;

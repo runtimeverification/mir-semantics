@@ -13,8 +13,12 @@ HANDWRITTEN_PARSE_TEST_DATA = tuple(
 # Mir files that were written by hand to test *EXECUTION*.
 HANDWRITTEN_EXECUTE_DIR = TEST_DATA_DIR / 'handwritten-mir' / 'execution'
 HANDWRITTEN_EXECUTE_FILES = tuple(HANDWRITTEN_EXECUTE_DIR.glob('*.mir'))
+# Mir files compiler from handwritten Rust examples
+HANDWRITTEN_RUST_DIR = TEST_DATA_DIR / 'handwritten-rust'
+HANDWRITTEN_RUST_EXECUTE_FILES = tuple(HANDWRITTEN_RUST_DIR.glob('*.mir'))
 HANDWRITTEN_EXECUTE_TEST_DATA = tuple(
-    (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in HANDWRITTEN_EXECUTE_FILES
+    (str(input_path.relative_to(TEST_DATA_DIR)), input_path)
+    for input_path in HANDWRITTEN_EXECUTE_FILES + HANDWRITTEN_RUST_EXECUTE_FILES
 )
 
 
