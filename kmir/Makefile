@@ -35,9 +35,6 @@ test-integration: test-integration-parse test-integration-run
 test-integration-parse: poetry-install
 	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-run: poetry-install
-	$(POETRY_RUN) pytest src/tests/integration/test_run.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
-
 ## Produce *-fail.tsv files by running the tests with --no-skip and no parallelism
 compiletest-parse-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                     \
@@ -47,24 +44,6 @@ compiletest-parse-fail:
             --report-file src/tests/integration/test-data/compiletest-parse-fail.tsv \
             $(TEST_ARGS)
 .PHONY: compiletest-parse-fail
-
-compiletest-run-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
-            --tb=line                                                               \
-            --no-skip                                                               \
-            -k test_compiletest                                                     \
-            --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
-            $(TEST_ARGS)
-.PHONY: compiletest-run-fail
-
-handwritten-run-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
-            --tb=line                                                               \
-            --no-skip                                                               \
-            -k test_handwritten                                                     \
-            --report-file src/tests/integration/test-data/handwritten-run-fail.tsv  \
-            $(TEST_ARGS)
-.PHONY: handwritten-test-run
 
 # Checks and formatting
 
