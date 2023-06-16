@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from typing import Any
 
-from pyk.cli_utils import dir_path, file_path
+from pyk.cli.utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
 from pyk.ktool.krun import KRunOutput
 
