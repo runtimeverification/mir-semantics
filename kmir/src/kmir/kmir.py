@@ -8,7 +8,7 @@ from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Optional, Union, final
 
-from pyk.cli_utils import check_dir_path, check_file_path
+from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
 from pyk.ktool.krun import KRunOutput, _krun
