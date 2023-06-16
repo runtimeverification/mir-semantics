@@ -236,14 +236,14 @@ dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit", "pytest",
 
 [[package]]
 name = "flake8-comprehensions"
-version = "3.12.0"
+version = "3.13.0"
 description = "A flake8 plugin to help you write better list/set/dict comprehensions."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "flake8_comprehensions-3.12.0-py3-none-any.whl", hash = "sha256:013234637ec7dfcb7cd2900578fb53c512f81db909cefe371c019232695c362d"},
-    {file = "flake8_comprehensions-3.12.0.tar.gz", hash = "sha256:419ef1a6e8de929203791a5e8ff5e3906caeba13eb3290eebdbf88a9078d502e"},
+    {file = "flake8_comprehensions-3.13.0-py3-none-any.whl", hash = "sha256:cc0d6dbb336ff4e9cdf4eb605a3f719ea59261f2d6ba52034871a173c40e1f60"},
+    {file = "flake8_comprehensions-3.13.0.tar.gz", hash = "sha256:83cf98e816c9e23360f36aaf47de59a5b21437fdff8a056c46e2ad49f81861bf"},
 ]
 
 [package.dependencies]
@@ -619,7 +619,7 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyk"
-version = "0.1.332"
+version = "0.1.335"
 description = ""
 category = "main"
 optional = false
@@ -640,8 +640,8 @@ tomli = "^2.0.1"
 [package.source]
 type = "git"
 url = "https://github.com/runtimeverification/pyk.git"
-reference = "v0.1.332"
-resolved_reference = "400fc7e5ad13d786e1bcd461b85f2d67a5b31e26"
+reference = "v0.1.335"
+resolved_reference = "9720f2c5ea0192b5cc544acf52537ba0f02f6486"
 
 [[package]]
 name = "pyperclip"
@@ -822,4 +822,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "eef5761f1e6838c28d60e8996d47640a57806289c2d02263e01931e32a59b750"
+content-hash = "47769752d6a9892062294098f5e15d5aab3ffab19e461733dd04bb0af575b34a"
