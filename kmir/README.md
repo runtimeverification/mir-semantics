@@ -2,14 +2,14 @@
 
 `kmir` is a Python package and CLI tool that leverages the [`pyk`](https://github.com/runtimeverification/pyk) library to provide a Python interface for the K semantics. While the K semantics can be also used directly, the `kmir` tool makes it more accessible for people not familiar with K. See the `kmir/README.md` for instruction on how to use `kmir` and the available CLI commands.
 
-## Installation
+## Build `kmir`
 
 Prerequsites: `python 3.8.*`, `pip >= 20.0.2`, `poetry >= 1.3.2`.
 
-We use the `poetry` tool to manage Python virtual environments. To create an environment and install the `kmir` tool via `poetry`, execute:
+We use the `poetry` tool to manage Python virtual environments. This step will create an environment and install the `kmir` tool via `poetry`, executing
 
-```
-poetry install
+```bash
+make build
 ```
 
 When working on the code, we suggest calling `kmir` via Poetry's `poetry run` command. This ensures that you are calling the up-to-date `kmir` script since `poetry` will track the changes to the source code. For example:
@@ -18,16 +18,17 @@ When working on the code, we suggest calling `kmir` via Poetry's `poetry run` co
 poetry run kmir --help
 ```
 
-Alternative, you can spawn a one-off shell that will allow you to interact with `kmir` directly using `poetry shell`:
+Alternative, you can spawn a one-off shell that will allow you to interact with `kmir` directly by executing the command
 
 ```bash
+poetry shell
 kmir --help
 ```
 
 In case you are sure you want a global installation of `kmir`, it's possible with `pip`:
 
 ```bash
-poetry build
+make build
 pip install dist/*.whl
 ```
 
@@ -39,17 +40,17 @@ The current version of `kmir` provides two commands:
 
 ### Examples
 
-We assume that you've run `poetryn install && poetry shell` in the `kmir/` directory and thus the `kmir` executable is available.
+We assume that you've run `poetry  install && poetry shell` in the `kmir/` directory and thus the `kmir` executable is available.
 
 At the moment, the `kmir parse` command is essentially a syntax-checker for Mir files. To parse a Mir file, for example one of the handwritten examples, run:
 
-```
+```bash
 kmir parse --definition-dir $(kbuild which llvm) src/tests/integration/test-data/handwritten-mir/execution/assert-true.mir
 ```
 
 The output of this command is going to look intimidating, but it is, in fact, just a K-friendly representation of the programs abstract-syntax tree. `kmir parse` can *unparse* this representation to make it look more like the original Mir source (note the `--output pretty` at the end):
 
-```
+```bash
 kmir parse --definition-dir $(kbuild which llvm) src/tests/integration/test-data/handwritten-mir/execution/assert-true.mir --output pretty
 ```
 
@@ -74,6 +75,7 @@ Use `make` to run common tasks (see the [Makefile](Makefile) for a complete list
 * `make check`: Check code style
 * `make format`: Format code
 * `make test-unit`: Run unit tests
+* `make test-integration`: Run integration tests
 
 For interactive use, spawn a shell with `poetry shell` (after `poetry install`), then run an interpreter.
 
