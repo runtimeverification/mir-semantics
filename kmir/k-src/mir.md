@@ -4,7 +4,7 @@ require "mir-rvalue.md"
 require "panics.md"
 ```
 
-Mir execution operational semantics
+MIR executable operational semantics
 ===================================
 
 Top-level modules
@@ -106,7 +106,7 @@ The rule below is the generic function-like initializar rule invoked by the thre
   //--------------------------------------------------------------------------------------------
 ```
 
-The first case is the failure when such function-like already exists (it should be impossible in a valid compiler-generated Mir):
+The first case is the failure when such function-like already exists (it should be impossible in a valid compiler-generated MIR):
 
 ```k
 
@@ -561,7 +561,7 @@ a `#panic` (or `#internalPanic`) production otherwise.
 
 Positive assertion succeeds if the argument evaluates to true, but fails if either:
 * argument evaluates to false --- assertion error
-* argument is not boolean --- internal type error --- should be impossible with real Mir.
+* argument is not boolean --- internal type error --- should be impossible with real MIR.
 
 ```k
   rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)

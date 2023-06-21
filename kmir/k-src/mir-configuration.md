@@ -3,10 +3,10 @@ require "mir-syntax.md"
 require "mir-types.md"
 ```
 
-Mir interpreter configuration
+MIR interpreter configuration
 =============================
 
-These modules declares the necessary domain sorts to represent the Mir locals at runtime. The sort declarations are derived from the `rustc` types and are accompanied by permalinks to the respective `rustc` documentation pages.
+These modules declares the necessary domain sorts to represent the MIR locals at runtime. The sort declarations are derived from the `rustc` types and are accompanied by permalinks to the respective `rustc` documentation pages.
 
 ```k
 module MIR-CONFIGURATION
@@ -44,7 +44,7 @@ module MIR-FUNCTIONS
   imports MIR-BASIC-BLOCKS
 ```
 
-Runtime representation of Mir's *function-like* entities. A *function-like* is one of the following:
+Runtime representation of MIR's *function-like* entities. A *function-like* is one of the following:
 * a normal function declaration, i.e. the `Function` syntax sort;
 * a data declaration, i.e. the `FunctionForData` syntax sort;
 * a promoted declaration, i.e. the `FunctionForPromoted` syntax sort.

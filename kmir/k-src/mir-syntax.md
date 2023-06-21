@@ -4,10 +4,10 @@ require "mir-place-syntax.md"
 require "mir-rvalue.md"
 ```
 
-Mir syntax
+MIR syntax
 ----------
 
-These modules defined the syntax of Mir programs. See "mir-types.md" for the syntax of types.
+These modules defined the syntax of MIR programs. See "mir-types.md" for the syntax of types.
 
 ```k
 module MIR-SYNTAX
@@ -33,7 +33,7 @@ module MIR-SYNTAX
   syntax ParameterList ::= List{Parameter, ","}
 ```
 
-The `FunctionBody` sort represents a single Mir function. Based on [`rustc::mir::Body`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Body.html).
+The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir::Body`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Body.html).
 
 ```k
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
@@ -58,7 +58,7 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax FunctionForData ::= FunctionForDataSignature "{" FunctionBody "}"
   syntax FunctionForDataSignature ::= MaybeStaticConstMut PathFunctionData ":" Type "="
   syntax MaybeStaticConstMut ::= "" | "static" | "const" | "static" "mut"
-  // Mir-only, most likely, inspired from PathExpression, FunctionPath and similar.
+  // MIR-only, most likely, inspired from PathExpression, FunctionPath and similar.
   syntax PathFunctionData ::= NeList{FunctionPathComponent, "::"}
 ```
 
@@ -115,7 +115,7 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax Unreachable ::= "unreachable"
 ```
 
-The `Call` sort intentionally lumps together several constructs that occur in Mir emitted by `compiletest-rs`:
+The `Call` sort intentionally lumps together several constructs that occur in MIR emitted by `compiletest-rs`:
 * actual function calls
 * panics
 * [Drop](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html#variant.Drop)
@@ -174,10 +174,10 @@ module MIR-PARSER-SYNTAX
 endmodule
 ```
 
-Mir syntax disambiguation
+MIR syntax disambiguation
 -------------------------
 
-Some of Mir constructs are ambiguous as parsing time. The `MIR-AMBIGUITIES` module contains rewrite rules that disambiguate these constructs.
+Some of MIR constructs are ambiguous as parsing time. The `MIR-AMBIGUITIES` module contains rewrite rules that disambiguate these constructs.
 These rules are applied at `Initialization` phase, see the `MIR` module in "mir.md" for more information on when these rules are used.
 
 ```k

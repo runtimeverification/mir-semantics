@@ -2,7 +2,7 @@
 require "mir-lexer-syntax.md"
 ```
 
-Syntax of Mir types
+Syntax of MIR types
 -------------------
 
 ```k
@@ -22,15 +22,15 @@ module MIR-TYPE-SYNTAX
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
                         // In the Rust syntax, ImplTraitTypeReduced is a direct
-                        // child of type. For some reason, mir allows `&impl A+B`
+                        // child of type. For some reason, MIR allows `&impl A+B`
                         // so it needs to be a child of TypeNoBounds
                         | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
                         | NonPathImplementableType
-                        // Probably not used in mir: InferredType
+                        // Probably not used in MIR: InferredType
                         | QualifiedPathInType
-                        // Probably not used im mir: MacroInvocation
+                        // Probably not used im MIR: MacroInvocation
                         | MirOnlyType
 
   syntax NonPathImplementableType ::= TupleType
@@ -143,7 +143,7 @@ module MIR-TYPE-SYNTAX
                               MaybeCurlyBraceTypeAnnotation
   syntax FunctionTypeQualifiers ::= "" | "unsafe" | "extern" Abi | "unsafe" "extern" Abi
   syntax FunctionParametersMaybeNamedVariadic ::= MaybeNamedFunctionParameters
-                                                // Not seen in mir: MaybeNamedFunctionParametersVariadic
+                                                // Not seen in MIR: MaybeNamedFunctionParametersVariadic
                                                 // TODO: Try to generate this
   syntax MaybeNamedFunctionParameters ::= List {MaybeNamedParam, ","}
   syntax BareFunctionReturnType ::= "->" TypeNoBounds
@@ -186,17 +186,17 @@ module MIR-TYPE-SYNTAX
                             | MaybeForLifetimes TypePath
 
   // https://doc.rust-lang.org/reference/items/generics.html
-  // OuterAttributes are likely not used for GenericParam in mir.
+  // OuterAttributes are likely not used for GenericParam in MIR.
   syntax GenericParam ::= LifetimeParam
                         | TypeParam
-                        // ConstParam is likely not used in mir.
+                        // ConstParam is likely not used in MIR.
   syntax LifetimeParam  ::= Lifetime
                           | Lifetime ":" LifetimeBounds
   syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
   syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
   syntax MaybeEqualsType ::= "" | "=" Type
 
-  // It is likely that Mir does not use the full syntax for MaybeNamedParam
+  // It is likely that MIR does not use the full syntax for MaybeNamedParam
   syntax MaybeNamedParam ::= Type
 
   syntax Abi ::= StringLiteral
@@ -301,10 +301,10 @@ module MIR-TYPE-SYNTAX
   // https://doc.rust-lang.org/reference/expressions/literal-expr.html
   syntax LiteralExpression  ::= CharLiteral
                               | StringLiteral
-                              // RawStringLiteral is unlikely to be used in mir
+                              // RawStringLiteral is unlikely to be used in MIR
                               | ByteLiteral
                               | ByteStringLiteral
-                              // RawByteStringLiteral is unlikely to be used in mir
+                              // RawByteStringLiteral is unlikely to be used in MIR
                               | UnsignedLiteral | Int
                               | FloatLiteral
                               | Bool
@@ -347,8 +347,8 @@ module MIR-TYPE-SYNTAX
   syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
-                            | PathLocation  // Mir-only thing.
-                            | TypeImplSegment  // Mir-only thing.
+                            | PathLocation  // MIR-only thing.
+                            | TypeImplSegment  // MIR-only thing.
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
@@ -374,7 +374,7 @@ module MIR-TYPE-SYNTAX
 endmodule
 ```
 
-Semantics of Mir types
+Semantics of MIR types
 ----------------------
 
 ```k
@@ -398,7 +398,7 @@ module MIR-VALUE
   syntax KItem ::= RValueResult
 ```
 
-Result of interpretation (inspired by [InterpResult](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_middle/src/mir/interpret/error.rs#L496), either a `RValueResult` or an `InterpError`:
+Result of interpretation (inspired by [InterpResult](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_middle/src/mir/interpret/error.rs#L496)), either a `RValueResult` or an `InterpError`:
 
 ```k
   syntax InterpResult ::= RValueResult
