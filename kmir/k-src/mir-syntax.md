@@ -48,7 +48,7 @@ The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir:
   syntax DebugList ::= List{Debug, ""}
 
   syntax BasicBlock ::= BB ":" BasicBlockBody
-  syntax BasicBlockBody ::= "{" StatementList Terminator ";" "}"
+  syntax BasicBlockBody ::= "{" Statements Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 ```
 
@@ -72,7 +72,7 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
 [Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
 
 ```k
-  syntax Statement  ::= Assign
+  syntax StatementKind  ::= Assign
                       // FakeRead does not seem to be used
                       | "discriminant" "(" Place ")" "=" Int
                       | "Deinit" "(" Place ")"
@@ -87,8 +87,8 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax Assign ::= Place "=" RValue
   syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
                                   | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
-  syntax TerminatedStatement ::= Statement ";"
-  syntax StatementList ::= List {TerminatedStatement, ""}
+  syntax Statement ::= StatementKind ";"
+  syntax Statements ::= List {Statement, ""}
 ```
 
 [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html) occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
@@ -191,15 +191,15 @@ module MIR-AMBIGUITIES
 ```k
   syntax BasicBlockBody ::= disambiguateBasicBlockBody(BasicBlockBody) [function]
   //-----------------------------------------------------------------------------
-  rule disambiguateBasicBlockBody({ STATEMENTS:StatementList TERMINATOR:Terminator ; }:BasicBlockBody) =>
-       ({ disambiguateStatementList(STATEMENTS) disambiguateTerminator(TERMINATOR) ; })
+  rule disambiguateBasicBlockBody({ STATEMENTS:Statements TERMINATOR:Terminator ; }:BasicBlockBody) =>
+       ({ disambiguateStatements(STATEMENTS) disambiguateTerminator(TERMINATOR) ; })
 
-  syntax StatementList ::= disambiguateStatementList(StatementList) [function]
+  syntax Statements ::= disambiguateStatements(Statements) [function]
   //--------------------------------------------------------------------------
-  rule disambiguateStatementList(.StatementList) => .StatementList
-  rule disambiguateStatementList(X ; XS) => disambiguateStatement(X) ; disambiguateStatementList(XS)
+  rule disambiguateStatements(.Statements) => .Statements
+  rule disambiguateStatements(X ; XS) => disambiguateStatement(X) ; disambiguateStatements(XS)
 
-  syntax Statement ::= disambiguateStatement(Statement) [function]
+  syntax StatementKind ::= disambiguateStatement(StatementKind) [function]
   //--------------------------------------------------------------
   rule disambiguateStatement((PLACE:Place = VALUE:RValue):Assign) => (PLACE:Place = disambiguateRValue(VALUE:RValue)):Assign
   rule disambiguateStatement(S) => S [owise]

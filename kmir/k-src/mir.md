@@ -357,7 +357,7 @@ or panics if the function-like or the block is missing:
          <basicBlocks>
            <basicBlock>
              <bbName> INDEX </bbName>
-             <bbBody> {STATEMENTS:StatementList TERMINATOR:Terminator ;}:BasicBlockBody </bbBody>
+             <bbBody> {STATEMENTS:Statements TERMINATOR:Terminator ;}:BasicBlockBody </bbBody>
            </basicBlock>
            ...
          </basicBlocks>
@@ -374,15 +374,15 @@ or panics if the function-like or the block is missing:
 #### Statements
 
 ```k
-  syntax MirSimulation ::= #executeStatements(StatementList)
-                         | #executeStatement(Statement)
+  syntax MirSimulation ::= #executeStatements(Statements)
+                         | #executeStatement(StatementKind)
   //--------------------------------------------------------
   rule <k> #executeStatements(FIRST; REST)
         => #executeStatement(FIRST)
         ~> #executeStatements(REST)
         ...
        </k>
-  rule <k> #executeStatements(.StatementList)
+  rule <k> #executeStatements(.Statements)
         => .K
         ...
        </k>
