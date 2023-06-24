@@ -38,7 +38,7 @@ To work on KMIR, the following software is needed:
 
 - The K Framework. See the [K Installation Guide](https://github.com/runtimeverification/k).
 - The `poetry` tool to build and manage the Python code. See the [Poetry Installation Guide](https://python-poetry.org/docs/#installation).
-- Optionally, the `rustc` Rust compiler to compiler Rust code to Mir. See the [Rust Installation Guide](https://doc.rust-lang.org/book/ch01-01-installation.html)
+- Optionally, the `rustc` Rust compiler to compiler Rust code to MIR. See the [Rust Installation Guide](https://doc.rust-lang.org/book/ch01-01-installation.html)
 
 The KMIR project comprises two major components:
 - The K Semantics of MIR, which defines an operational semantics of MIR as rewrite rules in the K Framework. See the `kmir/k-src` for the K files.
