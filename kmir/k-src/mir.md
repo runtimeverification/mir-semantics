@@ -4,7 +4,7 @@ require "mir-rvalue.md"
 require "panics.md"
 ```
 
-Mir execution operational semantics
+MIR executable operational semantics
 ===================================
 
 Top-level modules
@@ -106,7 +106,7 @@ The rule below is the generic function-like initializar rule invoked by the thre
   //--------------------------------------------------------------------------------------------
 ```
 
-The first case is the failure when such function-like already exists (it should be impossible in a valid compiler-generated Mir):
+The first case is the failure when such function-like already exists (it should be impossible in a valid compiler-generated MIR):
 
 ```k
 
@@ -357,7 +357,7 @@ or panics if the function-like or the block is missing:
          <basicBlocks>
            <basicBlock>
              <bbName> INDEX </bbName>
-             <bbBody> {STATEMENTS:StatementList TERMINATOR:Terminator ;}:BasicBlockBody </bbBody>
+             <bbBody> {STATEMENTS:Statements TERMINATOR:Terminator ;}:BasicBlockBody </bbBody>
            </basicBlock>
            ...
          </basicBlocks>
@@ -374,15 +374,15 @@ or panics if the function-like or the block is missing:
 #### Statements
 
 ```k
-  syntax MirSimulation ::= #executeStatements(StatementList)
-                         | #executeStatement(Statement)
+  syntax MirSimulation ::= #executeStatements(Statements)
+                         | #executeStatement(StatementKind)
   //--------------------------------------------------------
   rule <k> #executeStatements(FIRST; REST)
         => #executeStatement(FIRST)
         ~> #executeStatements(REST)
         ...
        </k>
-  rule <k> #executeStatements(.StatementList)
+  rule <k> #executeStatements(.Statements)
         => .K
         ...
        </k>
@@ -561,7 +561,7 @@ a `#panic` (or `#internalPanic`) production otherwise.
 
 Positive assertion succeeds if the argument evaluates to true, but fails if either:
 * argument evaluates to false --- assertion error
-* argument is not boolean --- internal type error --- should be impossible with real Mir.
+* argument is not boolean --- internal type error --- should be impossible with real MIR.
 
 ```k
   rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
