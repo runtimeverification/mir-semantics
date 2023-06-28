@@ -30,7 +30,7 @@ Operands are leafs, i.e. the "basic components" of rvalues: either a loading of 
 
 ### [`RValue`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.Rvalue.html)
 
-The various kinds of rvalues that can appear in MIR.
+The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1d3a07dd73beb2873d74a8a0458d05f/compiler/rustc_middle/src/mir/syntax.rs#L1082) that can appear in MIR.
 
 ```k
   syntax RValue ::= Use
@@ -40,9 +40,10 @@ The various kinds of rvalues that can appear in MIR.
                   | AddressOf
                   | Len
                   | Cast
+                  | BinaryOp
+                  | CheckedBinaryOp
                   | NullaryOp
                   | UnaryOp
-                  | BinaryOp
                   | Discriminant
                   | Aggregate
                   | ShallowInitBox
@@ -77,11 +78,13 @@ The various kinds of rvalues that can appear in MIR.
 
   syntax Unsafety ::= "Unsafe" | "Normal"
 
+  syntax BinaryOp ::= Identifier "(" Operand "," Operand ")"
+
+  syntax CheckedBinaryOp ::= Identifier "(" Operand "," Operand ")"
+
   syntax NullaryOp ::= Identifier "(" Type ")"
 
   syntax UnaryOp ::= Identifier "(" Operand ")"
-
-  syntax BinaryOp ::= Identifier "(" Operand "," Operand ")"
 
   syntax Discriminant ::= "discriminant" "(" Place ")"
 
@@ -217,6 +220,14 @@ module MIR-BUILTINS-SYNTAX
                         | "Ge"     [token]
                         | "Gt"     [token]
                         | "Offset" [token]
+  
+  syntax CheckedBinaryOpName ::= String2CheckedBinaryOpName(String) [function, hook(STRING.string2token)]
+
+  syntax CheckedBinaryOpName ::= "CheckedAdd"
+                               | "CheckedSub"
+                               | "CheckedMul"
+                               | "CheckedShl"
+                               | "CheckedShr"
 
   syntax Bool ::= isUnOp(String) [function, total]
   //----------------------------------------------
@@ -247,11 +258,15 @@ module MIR-BUILTINS-SYNTAX
       orBool OP_NAME ==String "Offset"
   rule isBinOp(_)       => false [owise]
 
-  syntax CheckedBinaryOpName ::= "CheckedAdd"
-                               | "CheckedSub"
-                               | "CheckedMul"
-                               | "CheckedShl"
-                               | "CheckedShr"
+syntax Bool ::= isCheckedBinOp(String) [function, total]
+//-----------------------------------------------
+rule isCheckedBinOp(OP_NAME) => true
+  requires OP_NAME ==String "CheckedAdd"
+    orBool OP_NAME ==String "CheckedSub"
+    orBool OP_NAME ==String "CheckedMul"
+    orBool OP_NAME ==String "CheckedShl"
+    orBool OP_NAME ==String "CheckedShr"
+rule isCheckedBinOp(_)       => false [owise]
 
 endmodule
 ```
@@ -275,6 +290,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, VALUE:Operand)   => evalOperand(FN_KEY, VALUE)
   rule evalRValue(FN_KEY, UN_OP:UnaryOp)   => evalUnaryOp(FN_KEY, UN_OP)
   rule evalRValue(FN_KEY, BIN_OP:BinaryOp) => evalBinaryOp(FN_KEY, BIN_OP)
+  //TODO: checkedBinOp should be implemented with AssertKind
   rule evalRValue(_FN_KEY, RVALUE)         => Unsupported(RVALUE) [owise]
 ```
 
