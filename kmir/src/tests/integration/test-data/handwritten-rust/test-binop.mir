@@ -1,174 +1,111 @@
 // WARNING: This output format is intended for human consumers only
 // and is subject to change without notice. Knock yourself out.
 fn test_binop(_1: usize, _2: usize) -> () {
-    debug x => _1;                       // in scope 0 at test-binop.rs:1:15: 1:16
-    debug y => _2;                       // in scope 0 at test-binop.rs:1:24: 1:25
-    let mut _0: ();                      // return place in scope 0 at test-binop.rs:1:36: 1:38
-    let mut _3: bool;                    // in scope 0 at test-binop.rs:2:5: 2:23
-    let mut _4: bool;                    // in scope 0 at test-binop.rs:2:13: 2:22
-    let mut _5: usize;                   // in scope 0 at test-binop.rs:2:13: 2:18
-    let mut _6: usize;                   // in scope 0 at test-binop.rs:2:13: 2:14
-    let mut _7: usize;                   // in scope 0 at test-binop.rs:2:17: 2:18
-    let mut _8: usize;                   // in scope 0 at test-binop.rs:2:21: 2:22
-    let mut _9: !;                       // in scope 0 at test-binop.rs:2:5: 2:23
-    let mut _10: bool;                   // in scope 0 at test-binop.rs:3:5: 3:25
-    let mut _11: bool;                   // in scope 0 at test-binop.rs:3:13: 3:24
-    let mut _12: usize;                  // in scope 0 at test-binop.rs:3:13: 3:18
-    let mut _13: usize;                  // in scope 0 at test-binop.rs:3:13: 3:14
-    let mut _14: usize;                  // in scope 0 at test-binop.rs:3:17: 3:18
-    let mut _15: !;                      // in scope 0 at test-binop.rs:3:5: 3:25
-    let mut _16: bool;                   // in scope 0 at test-binop.rs:4:5: 4:28
-    let mut _17: bool;                   // in scope 0 at test-binop.rs:4:13: 4:27
-    let mut _18: usize;                  // in scope 0 at test-binop.rs:4:13: 4:18
-    let mut _19: usize;                  // in scope 0 at test-binop.rs:4:13: 4:14
-    let mut _20: usize;                  // in scope 0 at test-binop.rs:4:17: 4:18
-    let mut _21: usize;                  // in scope 0 at test-binop.rs:4:22: 4:27
-    let mut _22: usize;                  // in scope 0 at test-binop.rs:4:22: 4:23
-    let mut _23: usize;                  // in scope 0 at test-binop.rs:4:26: 4:27
-    let mut _24: !;                      // in scope 0 at test-binop.rs:4:5: 4:28
-    let mut _25: bool;                   // in scope 0 at test-binop.rs:5:5: 5:25
-    let mut _26: bool;                   // in scope 0 at test-binop.rs:5:13: 5:24
-    let mut _27: usize;                  // in scope 0 at test-binop.rs:5:13: 5:18
-    let mut _28: usize;                  // in scope 0 at test-binop.rs:5:13: 5:14
-    let mut _29: usize;                  // in scope 0 at test-binop.rs:5:17: 5:18
-    let mut _30: !;                      // in scope 0 at test-binop.rs:5:5: 5:25
-    let mut _31: bool;                   // in scope 0 at test-binop.rs:6:5: 6:25
-    let mut _32: bool;                   // in scope 0 at test-binop.rs:6:13: 6:24
-    let mut _33: usize;                  // in scope 0 at test-binop.rs:6:13: 6:18
-    let mut _34: usize;                  // in scope 0 at test-binop.rs:6:13: 6:14
-    let mut _35: usize;                  // in scope 0 at test-binop.rs:6:17: 6:18
-    let mut _36: !;                      // in scope 0 at test-binop.rs:6:5: 6:25
+    debug x => _1;
+    debug y => _2;
+    let mut _0: ();
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: usize;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: usize;
+    let mut _10: !;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: !;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: usize;
+    let mut _19: !;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: usize;
+    let mut _23: !;
 
     bb0: {
-        _6 = _1;                         // scope 0 at test-binop.rs:2:13: 2:14
-        _7 = _2;                         // scope 0 at test-binop.rs:2:17: 2:18
-        _5 = Add(move _6, move _7);      // scope 0 at test-binop.rs:2:13: 2:18
-        _8 = _1;                         // scope 0 at test-binop.rs:2:21: 2:22
-        _4 = Gt(move _5, move _8);       // scope 0 at test-binop.rs:2:13: 2:22
-        _3 = Not(move _4);               // scope 0 at test-binop.rs:2:5: 2:23
-        switchInt(move _3) -> [0: bb2, otherwise: bb1]; // scope 0 at test-binop.rs:2:5: 2:23
+        _5 = Add(_1, _2);
+        _4 = Gt(move _5, _1);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
     }
 
     bb1: {
-        _9 = core::panicking::panic(const "assertion failed: x + y > x"); // scope 0 at test-binop.rs:2:5: 2:23
-                                         // mir::Constant
-                                         // + span: test-binop.rs:2:5: 2:23
-                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
-                                         // mir::Constant
-                                         // + span: no-location
-                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+        _6 = core::panicking::panic(const "assertion failed: x + y > x");
     }
 
     bb2: {
-        _13 = _1;                        // scope 0 at test-binop.rs:3:13: 3:14
-        _14 = _2;                        // scope 0 at test-binop.rs:3:17: 3:18
-        _12 = Add(move _13, move _14);   // scope 0 at test-binop.rs:3:13: 3:18
-        _11 = Eq(move _12, const 52_usize); // scope 0 at test-binop.rs:3:13: 3:24
-        _10 = Not(move _11);             // scope 0 at test-binop.rs:3:5: 3:25
-        switchInt(move _10) -> [0: bb4, otherwise: bb3]; // scope 0 at test-binop.rs:3:5: 3:25
+        _9 = Add(_1, _2);
+        _8 = Eq(move _9, const 52_usize);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb4, otherwise: bb3];
     }
 
     bb3: {
-        _15 = core::panicking::panic(const "assertion failed: x + y == 52"); // scope 0 at test-binop.rs:3:5: 3:25
-                                         // mir::Constant
-                                         // + span: test-binop.rs:3:5: 3:25
-                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
-                                         // mir::Constant
-                                         // + span: no-location
-                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+        _10 = core::panicking::panic(const "assertion failed: x + y == 52");
     }
 
     bb4: {
-        _19 = _1;                        // scope 0 at test-binop.rs:4:13: 4:14
-        _20 = _2;                        // scope 0 at test-binop.rs:4:17: 4:18
-        _18 = Add(move _19, move _20);   // scope 0 at test-binop.rs:4:13: 4:18
-        _22 = _2;                        // scope 0 at test-binop.rs:4:22: 4:23
-        _23 = _1;                        // scope 0 at test-binop.rs:4:26: 4:27
-        _21 = Add(move _22, move _23);   // scope 0 at test-binop.rs:4:22: 4:27
-        _17 = Eq(move _18, move _21);    // scope 0 at test-binop.rs:4:13: 4:27
-        _16 = Not(move _17);             // scope 0 at test-binop.rs:4:5: 4:28
-        switchInt(move _16) -> [0: bb6, otherwise: bb5]; // scope 0 at test-binop.rs:4:5: 4:28
+        _13 = Add(_1, _2);
+        _14 = Add(_2, _1);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb6, otherwise: bb5];
     }
 
     bb5: {
-        _24 = core::panicking::panic(const "assertion failed: x + y == y + x"); // scope 0 at test-binop.rs:4:5: 4:28
-                                         // mir::Constant
-                                         // + span: test-binop.rs:4:5: 4:28
-                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
-                                         // mir::Constant
-                                         // + span: no-location
-                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+        _15 = core::panicking::panic(const "assertion failed: x + y == y + x");
     }
 
     bb6: {
-        _28 = _1;                        // scope 0 at test-binop.rs:5:13: 5:14
-        _29 = _2;                        // scope 0 at test-binop.rs:5:17: 5:18
-        _27 = Add(move _28, move _29);   // scope 0 at test-binop.rs:5:13: 5:18
-        _26 = Eq(move _27, const 52_usize); // scope 0 at test-binop.rs:5:13: 5:24
-        _25 = Not(move _26);             // scope 0 at test-binop.rs:5:5: 5:25
-        switchInt(move _25) -> [0: bb8, otherwise: bb7]; // scope 0 at test-binop.rs:5:5: 5:25
+        _18 = Add(_1, _2);
+        _17 = Eq(move _18, const 52_usize);
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb8, otherwise: bb7];
     }
 
     bb7: {
-        _30 = core::panicking::panic(const "assertion failed: x + y == 52"); // scope 0 at test-binop.rs:5:5: 5:25
-                                         // mir::Constant
-                                         // + span: test-binop.rs:5:5: 5:25
-                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
-                                         // mir::Constant
-                                         // + span: no-location
-                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+        _19 = core::panicking::panic(const "assertion failed: x + y == 52");
     }
 
     bb8: {
-        _34 = _1;                        // scope 0 at test-binop.rs:6:13: 6:14
-        _35 = _2;                        // scope 0 at test-binop.rs:6:17: 6:18
-        _33 = Sub(move _34, move _35);   // scope 0 at test-binop.rs:6:13: 6:18
-        _32 = Eq(move _33, const 32_usize); // scope 0 at test-binop.rs:6:13: 6:24
-        _31 = Not(move _32);             // scope 0 at test-binop.rs:6:5: 6:25
-        switchInt(move _31) -> [0: bb10, otherwise: bb9]; // scope 0 at test-binop.rs:6:5: 6:25
+        _22 = Sub(_1, _2);
+        _21 = Eq(move _22, const 32_usize);
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb10, otherwise: bb9];
     }
 
     bb9: {
-        _36 = core::panicking::panic(const "assertion failed: x - y == 32"); // scope 0 at test-binop.rs:6:5: 6:25
-                                         // mir::Constant
-                                         // + span: test-binop.rs:6:5: 6:25
-                                         // + literal: Const { ty: fn(&'static str) -> ! {core::panicking::panic}, val: Value(<ZST>) }
-                                         // mir::Constant
-                                         // + span: no-location
-                                         // + literal: Const { ty: &str, val: Value(Slice(..)) }
+        _23 = core::panicking::panic(const "assertion failed: x - y == 32");
     }
 
     bb10: {
-        return;                          // scope 0 at test-binop.rs:8:2: 8:2
+        return;
     }
 }
 
 fn main() -> () {
-    let mut _0: ();                      // return place in scope 0 at test-binop.rs:11:11: 11:11
-    let _1: usize;                       // in scope 0 at test-binop.rs:12:7: 12:8
-    let _3: ();                          // in scope 0 at test-binop.rs:14:3: 14:19
-    let mut _4: usize;                   // in scope 0 at test-binop.rs:14:14: 14:15
-    let mut _5: usize;                   // in scope 0 at test-binop.rs:14:17: 14:18
+    let mut _0: ();
+    let _1: usize;
+    let _3: ();
     scope 1 {
-        debug x => _1;                   // in scope 1 at test-binop.rs:12:7: 12:8
-        let _2: usize;                   // in scope 1 at test-binop.rs:13:7: 13:8
+        debug x => _1;
+        let _2: usize;
         scope 2 {
-            debug y => _2;               // in scope 2 at test-binop.rs:13:7: 13:8
+            debug y => _2;
         }
     }
 
     bb0: {
-        _1 = const 42_usize;             // scope 0 at test-binop.rs:12:11: 12:13
-        _2 = const 10_usize;             // scope 1 at test-binop.rs:13:11: 13:13
-        _4 = const 42_usize;             // scope 2 at test-binop.rs:14:14: 14:15
-        _5 = const 10_usize;             // scope 2 at test-binop.rs:14:17: 14:18
-        _3 = test_binop(move _4, move _5) -> bb1; // scope 2 at test-binop.rs:14:3: 14:19
-                                         // mir::Constant
-                                         // + span: test-binop.rs:14:3: 14:13
-                                         // + literal: Const { ty: fn(usize, usize) {test_binop}, val: Value(<ZST>) }
+        _1 = const 42_usize;
+        _2 = const 10_usize;
+        _3 = test_binop(_1, _2) -> bb1;
     }
 
     bb1: {
-        return;                          // scope 0 at test-binop.rs:16:2: 16:2
+        return;
     }
 }

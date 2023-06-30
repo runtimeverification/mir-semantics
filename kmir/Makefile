@@ -1,3 +1,5 @@
+POETRY_RUN := poetry run
+
 .PHONY: default all clean build install \
         poetry-install                  \
         test test-unit test-integration \
@@ -12,15 +14,13 @@ all: check test
 
 clean:
 	rm -rf dist .mypy_cache
-	find -type d -name __pycache__ -prune -exec rm -rf {} \;
+	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 build: poetry-install kbuild-llvm kbuild-haskell
 	poetry build
 
 poetry-install:
 	poetry install
-
-POETRY_RUN := poetry run
 
 
 # Tests

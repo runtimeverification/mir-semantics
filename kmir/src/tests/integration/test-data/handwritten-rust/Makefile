@@ -8,7 +8,7 @@ clean:
 
 RUSTC:=rustc
 RUST_SOURCES=$(wildcard *.rs)
-RUSTC_OPTIONS=-C overflow-checks=off
+RUSTC_OPTIONS=-C overflow-checks=off -Zmir-enable-passes=-ConstDebugInfo,-PromoteTemps
 
 mir: $(RUST_SOURCES:%.rs=%.mir)
 %.mir : %.rs
