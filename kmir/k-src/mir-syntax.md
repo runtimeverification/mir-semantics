@@ -217,23 +217,24 @@ The actual disambiguation starts here: we need to distinguish certain rvalues:
   syntax RValue ::= disambiguateRValue(RValue) [function]
   //-----------------------------------------------------
   rule disambiguateRValue(
-        amb(
-          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
-          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp
- )) =>    (NAME::IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp
+        amb((NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
+          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp 
+          )) =>    
+          (NAME::IdentifierToken (AGR_1:Operand, ARG_2:Operand))::BinaryOp
     requires isBinOp(IdentifierToken2String(NAME))
   
   rule disambiguateRValue(
-        amb(
-          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
-          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand))::CheckedBinaryOp
-  )) =>   (NAME::IdentifierToken (AGR_1:Operand, ARG_2:Operand))::CheckedBinaryOp
+        amb((NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand, .OperandList))::EnumConstructor,
+          (NAME:IdentifierToken (AGR_1:Operand, ARG_2:Operand))::CheckedBinaryOp 
+          )) =>   
+          (NAME::IdentifierToken (AGR_1:Operand, ARG_2:Operand))::CheckedBinaryOp
      requires isCheckedBinOp(IdentifierToken2String(NAME))
 
   rule disambiguateRValue(
         amb((NAME:IdentifierToken (AGR_1:Operand, .OperandList))::EnumConstructor,
-            (NAME:IdentifierToken (AGR_1:Operand))::UnaryOp
-  )) =>     (NAME::IdentifierToken (AGR_1:Operand))::UnaryOp
+          (NAME:IdentifierToken (AGR_1:Operand))::UnaryOp 
+          )) =>     
+          (NAME::IdentifierToken (AGR_1:Operand))::UnaryOp
      requires isUnOp(IdentifierToken2String(NAME))
      
   rule disambiguateRValue(X) => X [owise]

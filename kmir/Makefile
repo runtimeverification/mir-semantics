@@ -13,6 +13,7 @@ default: check test-unit
 all: check test
 
 clean:
+	$(POETRY_RUN) kbuild clean
 	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
