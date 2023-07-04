@@ -13,7 +13,7 @@ default: check test-unit
 all: check test
 
 clean:
-	rm -rf dist .mypy_cache
+	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 build: poetry-install kbuild-llvm kbuild-haskell
