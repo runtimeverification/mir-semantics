@@ -14,6 +14,7 @@ all: check test
 
 .PHONY: clean
 clean:
+	$(POETRY_RUN) kbuild clean
 	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
@@ -60,6 +61,15 @@ compiletest-run-fail:
             --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
             $(TEST_ARGS)
 .PHONY: compiletest-run-fail
+
+handwritten-parse-fail:
+	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                    \
+            --tb=line                                                                 \
+            --no-skip                                                                 \
+            -k test_handwritten_syntax                                                \
+            --report-file src/tests/integration/test-data/handwritten-parse-fail.tsv  \
+            $(TEST_ARGS)
+.PHONY: handwritten-test-parse
 
 handwritten-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
