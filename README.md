@@ -43,14 +43,3 @@ To work on KMIR, the following software is needed:
 The KMIR project comprises two major components:
 - The K Semantics of MIR, which defines an operational semantics of MIR as rewrite rules in the K Framework. See the `kmir/k-src` for the K files.
 - The `kmir` command-line tool and Python library. `kmir` is a Python package that leverages the [`pyk`](https://github.com/runtimeverification/pyk) library to provide a Python interface for the K semantics. While the K semantics can be also used directly, the `kmir` tool makes it more accessible for people not familiar with K. See the `kmir/README.md` for instruction on how to use `kmir` and the available CLI commands.
-
-## KMIR Integration Test Suite
-
-- Parsing test cases
-    The folder `kmir/src/tests/integration/test-data/parsing/` contains the manually written test cases for inidividual MIR constructs and simple MIR programs.
-- The `compiletest-rs` test cases Submodule [`compiletest-rs`](https://github.com/runtimeverification/mir-semantics-compiletest/tree/9251b00e38504a6f1279b0ca9f81b90b4964080d) contains MIR programs emitted from `rustc`'s `ui` test cases. This test suite ensures comprehensive test coverage of MIR syntax.
-
-- Test result interpretation
-    - The `PASS` indicates a successful parsing;
-    - The `SKIP` incicates a test cases failed parsing right now. (Goals for next milestone)
-    - Executing these test cases should aslo return a `SKIP` result, since evaluation rules for MIR in K is not implemented yet.
