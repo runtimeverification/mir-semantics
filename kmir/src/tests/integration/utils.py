@@ -8,8 +8,7 @@ HANDWRITTEN_PARSE_DIR = TEST_DATA_DIR / 'handwritten-mir' / 'parsing'
 HANDWRITTEN_PARSE_FILES = tuple(HANDWRITTEN_PARSE_DIR.glob('*.mir'))
 HANDWRITTEN_PARSE_FAIL_FILE = TEST_DATA_DIR / 'handwritten-parse-fail.tsv'
 HANDWRITTEN_PARSE_FAIL = {
-    str(input_path.split('\t')[0])
-    for input_path in HANDWRITTEN_PARSE_FAIL_FILE.read_text().splitlines()
+    str(input_path.split('\t')[0]) for input_path in HANDWRITTEN_PARSE_FAIL_FILE.read_text().splitlines()
 }
 HANDWRITTEN_PARSE_TEST_DATA = tuple(
     (str(input_path.relative_to(TEST_DATA_DIR)), input_path) for input_path in HANDWRITTEN_PARSE_FILES
