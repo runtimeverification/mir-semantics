@@ -27,9 +27,6 @@ poetry-install:
 	poetry install
 
 # Tests
-
-TEST_ARGS :=
-
 test: test-unit test-integration
 
 test-unit: poetry-install
