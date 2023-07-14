@@ -52,6 +52,7 @@ compiletest-parse-fail:
 
 compiletest-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+            --timeout=30                                                            \
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_compiletest                                                     \
