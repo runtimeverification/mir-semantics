@@ -36,6 +36,27 @@
         "type": "github"
       }
     },
+    "nix-github-actions": {
+      "inputs": {
+        "nixpkgs": [
+          "poetry2nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1688870561,
+        "narHash": "sha256-4UYkifnPEw1nAzqqPOTL2MvWtm3sNGw1UTYTalkTcGY=",
+        "owner": "nix-community",
+        "repo": "nix-github-actions",
+        "rev": "165b1650b753316aa7f1787f3005a8d2da0f5301",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-github-actions",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1685573264,
@@ -53,30 +74,32 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1689319211,
-        "narHash": "sha256-fAaIUfPFzjzz7VIbSytQS2PuIj6YD2Kt/K4cz9QbhUs=",
+        "lastModified": 1680609323,
+        "narHash": "sha256-Od7WQbOLmlY/bQwkIzIMy/zs7mAplawReZcHzHtXbPc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "34601f69c9630990e402b6069bfed172a9057aec",
+        "rev": "45dc78cb0a93fc84eaa1fea85bda28865eab1a44",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
+        "rev": "45dc78cb0a93fc84eaa1fea85bda28865eab1a44",
         "type": "github"
       }
     },
     "poetry2nix": {
       "inputs": {
         "flake-utils": "flake-utils_2",
+        "nix-github-actions": "nix-github-actions",
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1689310035,
-        "narHash": "sha256-ktzKWB5yPT2U8Rz/KUa8+9DkiDizTkfj+nAmIKu1OMM=",
+        "lastModified": 1689319775,
+        "narHash": "sha256-fcWUOeyREIDHg8NEY0/JFnXsfVOp0XffyaAt/6jGplc=",
         "owner": "nix-community",
         "repo": "poetry2nix",
-        "rev": "406b840ca58052398af245a5936c219eb27ceab0",
+        "rev": "5a98828919afab11e00862b37e40beed9dcc8207",
         "type": "github"
       },
       "original": {
