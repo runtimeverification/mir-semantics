@@ -1,3 +1,5 @@
+POETRY_RUN := poetry run
+
 .PHONY: default all clean build install \
         poetry-install                  \
         test test-unit test-integration \
@@ -10,21 +12,21 @@ default: check test-unit
 
 all: check test
 
+.PHONY: clean
 clean:
-	rm -rf dist .mypy_cache
-	find -type d -name __pycache__ -prune -exec rm -rf {} \;
+	$(POETRY_RUN) kbuild clean
+	rm -rf dist .mypy_cache .pytest_cache
+	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
+.PHONY: build
 build: poetry-install kbuild-llvm kbuild-haskell
 	poetry build
 
+.PHONY: poetry-install
 poetry-install:
 	poetry install
 
-POETRY_RUN := poetry run
-
-
 # Tests
-
 test: test-unit test-integration
 
 test-unit: poetry-install
@@ -50,12 +52,22 @@ compiletest-parse-fail:
 
 compiletest-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+            --timeout=30                                                            \
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_compiletest                                                     \
             --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
             $(TEST_ARGS)
 .PHONY: compiletest-run-fail
+
+handwritten-parse-fail:
+	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                    \
+            --tb=line                                                                 \
+            --no-skip                                                                 \
+            -k test_handwritten_syntax                                                \
+            --report-file src/tests/integration/test-data/handwritten-parse-fail.tsv  \
+            $(TEST_ARGS)
+.PHONY: handwritten-test-parse
 
 handwritten-run-fail:
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \

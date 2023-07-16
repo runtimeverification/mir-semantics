@@ -100,21 +100,21 @@ Working on the semantics (targeting the LLVM backend) roughly comprises the foll
    This time, do not include the `--kbuild-dir` option to re-kompile everything in a temporary directory.
 
 ### Get MIR files from rust programs
-At MIR level, it will go through multiple passes of optimization until the final file ready for code gen. The Rust compiler provides ways to output the MIR file when compiling a rust program. 
+At MIR level, it will go through multiple passes of optimization until the final file ready for code gen. The Rust compiler provides ways to output the MIR file for a rust program. 
 1. The [`emit`](https://doc.rust-lang.org/rustc/command-line-arguments.html#--emit-specifies-the-types-of-output-files-to-generate) option (enabled for `stable` and `nightly` versions):
    ```
    rustc prog.rs --emit mir
    ```
-> Note that the even for the stable versions, the emitted MIR could be difference for the same program. The optimisation passes could be changed. For example, version 1.67 has `ConstProp` optimization, but version 1.70 removed it.
+> Note that even for the stable versions, the emitted MIR could be different for the same program. The optimization passes could be changed. For example, version 1.67 has `ConstProp` optimization, but version 1.70 removed it.
 
 2. The [`dump`](https://rustc-dev-guide.rust-lang.org/mir/debugging.html) option (only enabled at `nightly` versions)
    ```
-   rustc prog.rs -Zdump-mir= 'func & runtime-optimised' -Zdump-mir-dir=./ -Zmir-opt-level=0
+   rustc prog.rs -Zdump-mir= 'func & runtime-optimized' -Zdump-mir-dir=./ -Zmir-opt-level=0
    ```
 Here a few of the `-Z` flags are used to filter the expected MIR file, e.g.,
-1. `-Zdump-mir= 'func & runtime-optimised'` filters the MIR files related to function contain the name `func` and is the MIR output after `runtime=optimised` pass.
-2. `-Zdump-mir-dir=./` specifies the output directry which is the current directory in this case.
-3. `-Zmir-opt-level=0` specifies the [optimization level](https://github.com/rust-lang/compiler-team/issues/319) where `0` applies some optimization passes, less then `emit` option.
+1. `-Zdump-mir= 'func & runtime-optimized'` filters the MIR files related to function contain the name `func` and is the MIR output after `runtime-optimized` pass.
+2. `-Zdump-mir-dir=./` specifies the output directory.
+3. `-Zmir-opt-level=0` specifies the [optimization level](https://github.com/rust-lang/compiler-team/issues/319) where `0` applies some optimization passes, less then the `emit` option.
 
 ### Executing MIR programs with `kmir`
 
