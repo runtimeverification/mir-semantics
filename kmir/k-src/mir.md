@@ -74,7 +74,7 @@ with the Haskell backend at the moment.
 module MIR-INITIALIZATION
   imports MIR-CONFIGURATION
   imports PANICS
-  imports MIR-AMBIGUITIES
+  //imports MIR-AMBIGUITIES
 ```
 
 ### Function definition processing
@@ -273,7 +273,7 @@ This rule panics if it encounters a duplicate block.
          <basicBlocks>
            (.Bag => <basicBlock>
                       <bbName> BBName2Int(NAME) </bbName>
-                      <bbBody> disambiguateBasicBlockBody(BODY) </bbBody>
+                      <bbBody> BODY</bbBody>
                     </basicBlock>
            )
            ...
