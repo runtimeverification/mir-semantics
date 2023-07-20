@@ -48,7 +48,7 @@ def exec_run(
     **kwargs: Any,
 ) -> None:
     krun_output = KRunOutput[output.upper()]
-    br = BugReport(Path(input_file).with_suffix('.bug_report')) if bug_report else None
+    br = BugReport(Path(input_file).with_suffix('.bug_report.tar')) if bug_report else None
     kmir = KMIR(definition_dir, definition_dir, bug_report=br)
 
     try:
