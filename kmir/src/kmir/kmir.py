@@ -112,7 +112,7 @@ class KMIR:
                 check=check,
                 pipe_stderr=True,
                 pmap={'PGM': str(self.mir_parser)},
-                bug_report=self.bug_report
+                bug_report=self.bug_report,
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
