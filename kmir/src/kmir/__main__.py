@@ -1,9 +1,11 @@
 from argparse import ArgumentParser
+from pathlib import Path
 from typing import Any
 
 from pyk.cli.utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
 from pyk.ktool.krun import KRunOutput
+from pyk.utils import BugReport
 
 from .kmir import KMIR
 
@@ -41,12 +43,13 @@ def exec_run(
     input_file: str,
     definition_dir: str,
     output: str = 'none',
+    bug_report: bool = False,
     ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
     krun_output = KRunOutput[output.upper()]
-
-    kmir = KMIR(definition_dir, definition_dir)
+    br = BugReport(Path(input_file).with_suffix('.bug_report.tar')) if bug_report else None
+    kmir = KMIR(definition_dir, definition_dir, bug_report=br)
 
     try:
         proc_res = kmir.run_program(input_file, output=krun_output)
@@ -129,6 +132,12 @@ def create_argument_parser() -> ArgumentParser:
         action='store_true',
         default=False,
         help='Ignore return code of krun, alwasys return 0 (use for debugging only)',
+    )
+    run_subparser.add_argument(
+        '--bug-report',
+        action='store_true',
+        default=False,
+        help='Generate a haskell-backend bug report for the execution',
     )
 
     return parser

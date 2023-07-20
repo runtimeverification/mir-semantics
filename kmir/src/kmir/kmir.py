@@ -12,6 +12,7 @@ from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
 from pyk.ktool.krun import KRunOutput, _krun
+from pyk.utils import BugReport
 
 from .preprocessor import preprocess
 
@@ -22,8 +23,9 @@ class KMIR:
     llvm_dir: Path
     haskell_dir: Path
     mir_parser: Path
+    bug_report: BugReport | None
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path]):
+    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], bug_report: BugReport | None = None):
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
@@ -37,6 +39,7 @@ class KMIR:
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
         object.__setattr__(self, 'mir_parser', mir_parser)
+        object.__setattr__(self, 'bug_report', bug_report)
 
     def parse_program_raw(
         self,
@@ -109,6 +112,7 @@ class KMIR:
                 check=check,
                 pipe_stderr=True,
                 pmap={'PGM': str(self.mir_parser)},
+                bug_report=self.bug_report,
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
