@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 from pyk.cli.utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
