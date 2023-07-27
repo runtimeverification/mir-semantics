@@ -77,12 +77,33 @@ The various kinds of rvalues that can appear in MIR.
 
   syntax Unsafety ::= "Unsafe" | "Normal"
 
-  syntax NullaryOp ::= Identifier "(" Type ")"
+  syntax NullaryOp ::= NullaryOpName "(" Type ")"
+  syntax NullaryOpName ::= "SizeOf"  [token]
+                         | "AlignOf" [token]  
 
-  syntax UnaryOp ::= Identifier "(" Operand ")"
+  syntax UnaryOp ::= UnaryOpName "(" Operand ")"
+  syntax UnaryOpName ::= "Not" [token]
+                       | "Neg" [token]
 
-  syntax BinaryOp ::= Identifier "(" Operand "," Operand ")"
-
+  syntax BinaryOp ::= BinaryOpName "(" Operand "," Operand ")"
+  syntax BinaryOpName ::= "Add"    [token]
+                        | "Sub"    [token]
+                        | "Mul"    [token]
+                        | "Div"    [token]
+                        | "Rem"    [token]
+                        | "BitXor" [token]
+                        | "BitAnd" [token]
+                        | "BitOr"  [token]
+                        | "Shl"    [token]
+                        | "Shr"    [token]
+                        | "Eq"     [token]
+                        | "Lt"     [token]
+                        | "Le"     [token]
+                        | "Ne"     [token]
+                        | "Ge"     [token]
+                        | "Gt"     [token]
+                        | "Offset" [token]
+                        
   syntax Discriminant ::= "discriminant" "(" Place ")"
 
   syntax CopyForDeref ::= "deref_copy" NonTerminalPlace
@@ -176,93 +197,12 @@ TODO: these sorts may need refactoring to closer match the `rustc` implementatio
 endmodule
 ```
 
-### Build-in operations
-
-```k
-module MIR-BUILTINS-SYNTAX
-  imports BOOL
-  imports STRING
-
-  syntax MirBuiltInToken ::= NullaryOpName
-                           | UnaryOpName
-                           | BinaryOpName
-                           | CheckedBinaryOpName
-
-  syntax MirBuiltInToken ::= String2MirBuiltInToken(MirBuiltInToken) [function, hook(STRING.token2string)]
-
-  syntax NullaryOpName ::= "SizeOf"  [token]
-                         | "AlignOf" [token]
-
-  syntax UnaryOpName ::= String2UnaryOpName(String) [function, hook(STRING.string2token)]
-
-  syntax UnaryOpName ::= "Not" [token]
-                       | "Neg" [token]
-
-  syntax BinaryOpName ::= String2BinaryOpName(String) [function, hook(STRING.string2token)]
-
-  syntax BinaryOpName ::= "Add"    [token]
-                        | "Sub"    [token]
-                        | "Mul"    [token]
-                        | "Div"    [token]
-                        | "Rem"    [token]
-                        | "BitXor" [token]
-                        | "BitAnd" [token]
-                        | "BitOr"  [token]
-                        | "Shl"    [token]
-                        | "Shr"    [token]
-                        | "Eq"     [token]
-                        | "Lt"     [token]
-                        | "Le"     [token]
-                        | "Ne"     [token]
-                        | "Ge"     [token]
-                        | "Gt"     [token]
-                        | "Offset" [token]
-
-  syntax Bool ::= isUnOp(String) [function, total]
-  //----------------------------------------------
-  rule isUnOp(OP_NAME)  => true
-    requires OP_NAME ==String "Not"
-      orBool OP_NAME ==String "Neg"
-  rule isUnOp(_)       => false [owise]
-
-  syntax Bool ::= isBinOp(String) [function, total]
-  //-----------------------------------------------
-  rule isBinOp(OP_NAME)  => true
-    requires OP_NAME ==String "Add"
-      orBool OP_NAME ==String "Sub"
-      orBool OP_NAME ==String "Mul"
-      orBool OP_NAME ==String "Div"
-      orBool OP_NAME ==String "Rem"
-      orBool OP_NAME ==String "BitXor"
-      orBool OP_NAME ==String "BitAnd"
-      orBool OP_NAME ==String "BitOr"
-      orBool OP_NAME ==String "Shl"
-      orBool OP_NAME ==String "Shr"
-      orBool OP_NAME ==String "Eq"
-      orBool OP_NAME ==String "Lt"
-      orBool OP_NAME ==String "Le"
-      orBool OP_NAME ==String "Ne"
-      orBool OP_NAME ==String "Ge"
-      orBool OP_NAME ==String "Gt"
-      orBool OP_NAME ==String "Offset"
-  rule isBinOp(_)       => false [owise]
-
-  syntax CheckedBinaryOpName ::= "CheckedAdd"
-                               | "CheckedSub"
-                               | "CheckedMul"
-                               | "CheckedShl"
-                               | "CheckedShr"
-
-endmodule
-```
-
 Evaluation of rvalues
 ---------------------
 
 ```k
 module MIR-RVALUE
   imports MIR-RVALUE-SYNTAX
-  imports MIR-BUILTINS-SYNTAX
   imports MIR-TYPES
   imports MIR-CONFIGURATION
 ```
@@ -293,8 +233,8 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalUnaryOp(FunctionLikeKey, UnaryOp) [function]
   //------------------------------------------------------------------
-  rule evalUnaryOp(FN_KEY, NAME:IdentifierToken (X:Operand)) =>
-       evalUnaryOpImpl(FN_KEY, String2UnaryOpName(IdentifierToken2String(NAME)), X)
+  rule evalUnaryOp(FN_KEY, NAME:UnaryOpName (X:Operand)) =>
+       evalUnaryOpImpl(FN_KEY, NAME, X)
 
   syntax MIRValue ::= evalUnaryOpImpl(FunctionLikeKey, UnaryOpName, Operand) [function]
   //-----------------------------------------------------------------------------------
@@ -307,8 +247,8 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalBinaryOp(FunctionLikeKey, BinaryOp) [function]
   //--------------------------------------------------------------------
-  rule evalBinaryOp(FN_KEY, NAME:IdentifierToken (X:Operand, Y:Operand)) =>
-       evalBinaryOpImpl(FN_KEY, String2BinaryOpName(IdentifierToken2String(NAME)), X, Y)
+  rule evalBinaryOp(FN_KEY, NAME:BinaryOpName (X:Operand, Y:Operand)) =>
+       evalBinaryOpImpl(FN_KEY, NAME, X, Y)
 
   syntax MIRValue ::= evalBinaryOpImpl(FunctionLikeKey, BinaryOpName, Operand, Operand) [function]
   //-----------------------------------------------------------------------
@@ -328,7 +268,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalBinaryOpImpl(FN_KEY, Ne, X, Y)     => {evalOperand(FN_KEY, X)}:>Int =/=Int {evalOperand(FN_KEY, Y)}:>Int
   rule evalBinaryOpImpl(FN_KEY, Ge, X, Y)     => {evalOperand(FN_KEY, X)}:>Int >=Int {evalOperand(FN_KEY, Y)}:>Int
   rule evalBinaryOpImpl(FN_KEY, Gt, X, Y)     => {evalOperand(FN_KEY, X)}:>Int >Int {evalOperand(FN_KEY, Y)}:>Int
-  // rule evalBinaryOpImpl("Offset", X, Y) => "not implemented"
+  // rule evalBinaryOpImpl(FN_KEY, _, X, Y) => "not supported" [owise]
 ```
 
 ### Constant evaluation.

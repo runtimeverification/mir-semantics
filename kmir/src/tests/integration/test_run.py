@@ -29,6 +29,7 @@ COMPILETEST_RUN_EXCLUDE = {
     'iterators/iter-count-overflow-ndebug.mir',
     'iterators/iter-position-overflow-debug.mir',
     'iterators/iter-position-overflow-ndebug.mir',
+    'compiletest-rs/ui/consts/promote_evaluation_unused_result.mir',
     # requires special run flags
     'test-attrs/test-filter-multiple.mir',
     # requires environment variables when running
