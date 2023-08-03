@@ -110,7 +110,7 @@ class KMIR:
                 input_file=program_file,
                 definition_dir=self.llvm_dir,
                 output=output,
-                check=check,
+                check=check if depth is None else False,
                 pipe_stderr=True,
                 pmap={'PGM': str(self.mir_parser)},
                 bug_report=self.bug_report,
