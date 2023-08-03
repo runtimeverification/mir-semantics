@@ -100,6 +100,7 @@ class KMIR:
         self,
         program_file: Union[str, Path],
         *,
+        depth: int | None = None,
         output: KRunOutput = KRunOutput.NONE,
         check: bool = True,
         temp_file: Optional[Union[str, Path]] = None,
@@ -109,10 +110,11 @@ class KMIR:
                 input_file=program_file,
                 definition_dir=self.llvm_dir,
                 output=output,
-                check=check,
+                check=check if depth is None else False,
                 pipe_stderr=True,
                 pmap={'PGM': str(self.mir_parser)},
                 bug_report=self.bug_report,
+                depth=depth,
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
