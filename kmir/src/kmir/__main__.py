@@ -43,6 +43,7 @@ def exec_run(
     input_file: str,
     definition_dir: str,
     output: str = 'none',
+    max_depth: int | None = None,
     bug_report: bool = False,
     ignore_return_code: bool = False,
     **kwargs: Any,
@@ -52,7 +53,7 @@ def exec_run(
     kmir = KMIR(definition_dir, definition_dir, bug_report=br)
 
     try:
-        proc_res = kmir.run_program(input_file, output=krun_output)
+        proc_res = kmir.run_program(input_file, output=krun_output, depth=max_depth)
         if output != KAstOutput.NONE:
             print(proc_res.stdout)
     except RuntimeError as err:
@@ -138,6 +139,12 @@ def create_argument_parser() -> ArgumentParser:
         action='store_true',
         default=False,
         help='Generate a haskell-backend bug report for the execution',
+    )
+    run_subparser.add_argument(
+        '--max-depth',
+        default=None,
+        type=int,
+        help='Stop execution after `max-depth` rewrite steps',
     )
 
     return parser
