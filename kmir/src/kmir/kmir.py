@@ -143,9 +143,11 @@ class KMIR:
         *,
         kompiled_dir: Path | None = None,
         output: KProveOutput = KProveOutput.NONE,
+        depth: int | None = None,
     ) -> CompletedProcess:
         return _kprove(
             spec_file=spec_file,
             kompiled_dir=kompiled_dir,
             output=output,
+            depth=depth,
         )

@@ -45,7 +45,7 @@ def exec_run(
     input_file: str,
     definition_dir: str,
     output: str = 'none',
-    max_depth: int | None = None,
+    depth: int | None = None,
     bug_report: bool = False,
     ignore_return_code: bool = False,
     **kwargs: Any,
@@ -55,7 +55,7 @@ def exec_run(
     kmir = KMIR(definition_dir, definition_dir, bug_report=br)
 
     try:
-        proc_res = kmir.run_program(input_file, output=krun_output, depth=max_depth)
+        proc_res = kmir.run_program(input_file, output=krun_output, depth=depth)
         if output != KAstOutput.NONE:
             print(proc_res.stdout)
     except RuntimeError as err:
@@ -79,6 +79,7 @@ def exec_prove(
     output: str = 'none',
     bug_report: bool = False,
     use_kprove_object: bool = False,
+    depth: int | None = None,
     **kwargs: Any,
 ) -> None:
     kprove_output = KProveOutput[output.upper()]
@@ -95,7 +96,7 @@ def exec_prove(
             raise ValueError(f'No claims found in file {spec_file}')
 
         print('Proving with kprove object', flush=True)
-        out = kmir.kprove.prove(Path(spec_file))
+        out = kmir.kprove.prove(Path(spec_file), depth=depth)
         print('Proving completed', flush=True)
 
         if is_top(out):
@@ -105,7 +106,7 @@ def exec_prove(
             print('Proof FAILED')
     else:
         print('Proving program with _kprove', flush=True)
-        proc_res = kmir.prove_program(spec_file_path, kompiled_dir=Path(haskell_dir), output=kprove_output)
+        proc_res = kmir.prove_program(spec_file_path, kompiled_dir=Path(haskell_dir), output=kprove_output, depth=depth)
         print('Completed proving', flush=True)
         if output != KAstOutput.NONE:
             print(proc_res.stdout)
@@ -182,10 +183,10 @@ def create_argument_parser() -> ArgumentParser:
         help='Generate a haskell-backend bug report for the execution',
     )
     run_subparser.add_argument(
-        '--max-depth',
+        '--depth',
         default=None,
         type=int,
-        help='Stop execution after `max-depth` rewrite steps',
+        help='Stop execution after `depth` rewrite steps',
     )
 
     # Prove
@@ -228,6 +229,12 @@ def create_argument_parser() -> ArgumentParser:
         action='store_true',
         default=False,
         help='FOR DEVELOPMENT ONLY. To use _kprove directly or use KProve object',
+    )
+    prove_subparser.add_argument(
+        '--depth',
+        default=None,
+        type=int,
+        help='Stop execution after `depth` rewrite steps',
     )
 
     return parser
