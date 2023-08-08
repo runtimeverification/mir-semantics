@@ -78,36 +78,47 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
 
   syntax Unsafety ::= "Unsafe" | "Normal"
 
-  syntax BinaryOp ::= Identifier "(" Operand "," Operand ")"
+  // TODO: AddUnChecked
+  syntax BinaryOp ::= BinOp "(" Operand "," Operand ")"
+  syntax BinOp ::= "Add"          [token]
+                 | "AddUnchecked" [token]
+                 | "Sub"          [token]
+                 | "SubUnchecked" [token]
+                 | "Mul"          [token]
+                 | "MulUnchecked" [token]
+                 | "Div"          [token]
+                 | "Rem"          [token]
+                 | "BitXor"       [token]
+                 | "BitAnd"       [token]
+                 | "BitOr"        [token]
+                 | "Shl"          [token]
+                 | "ShlUnchecked" [token]
+                 | "Shr"          [token]
+                 | "ShrUnchecked" [token]
+                 | "Eq"           [token]
+                 | "Lt"           [token]
+                 | "Le"           [token]
+                 | "Ne"           [token]
+                 | "Ge"           [token]
+                 | "Gt"           [token]
+                 | "Offset"       [token]
+// CheckedBinaryOp is the same as BinaryOp except additional overflow checking. https://github.com/rust-lang/rust/blob/f88a8b71cebb730cbd5058c45ebcae1d4d9be377/compiler/rustc_middle/src/mir/syntax.rs#L1178
+// Need to locate the pretty print source code to understand what checked options are allowed
+  syntax CheckedBinaryOp ::= CheckedBinOp "(" Operand "," Operand ")"
+  syntax CheckedBinOp ::= "CheckedAdd" [token]
+                        | "CheckedSub" [token]
+                        | "CheckedMul" [token]
+                        | "CheckedShl" [token]
+                        | "CheckedShr" [token]
+                              
+  syntax NullaryOp ::= NullOp "(" Type ")" //TODO:type?
+  syntax NullOp ::= "SizeOf"   [token]
+                  | "AlignOf"  [token]  
+                  | "Offsetof" [tokrn] //OffsetOf(Vec<FieldIdx>) type FieldIdx = usize;
 
-  syntax CheckedBinaryOp ::= Identifier "(" Operand "," Operand ")"
-
-  syntax NullaryOp ::= NullaryOpName "(" Type ")"
-  syntax NullaryOpName ::= "SizeOf"  [token]
-                         | "AlignOf" [token]  
-
-  syntax UnaryOp ::= UnaryOpName "(" Operand ")"
-  syntax UnaryOpName ::= "Not" [token]
-                       | "Neg" [token]
-
-  syntax BinaryOp ::= BinaryOpName "(" Operand "," Operand ")"
-  syntax BinaryOpName ::= "Add"    [token]
-                        | "Sub"    [token]
-                        | "Mul"    [token]
-                        | "Div"    [token]
-                        | "Rem"    [token]
-                        | "BitXor" [token]
-                        | "BitAnd" [token]
-                        | "BitOr"  [token]
-                        | "Shl"    [token]
-                        | "Shr"    [token]
-                        | "Eq"     [token]
-                        | "Lt"     [token]
-                        | "Le"     [token]
-                        | "Ne"     [token]
-                        | "Ge"     [token]
-                        | "Gt"     [token]
-                        | "Offset" [token]
+  syntax UnaryOp ::= UnOp "(" Operand ")"
+  syntax UnOp ::= "Not" [token]
+                | "Neg" [token]
                         
   syntax Discriminant ::= "discriminant" "(" Place ")"
 
