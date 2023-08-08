@@ -96,7 +96,8 @@ def exec_prove(
             raise ValueError(f'No claims found in file {spec_file}')
 
         print('Proving with kprove object', flush=True)
-        out = kmir.kprove.prove(Path(spec_file), depth=depth)
+        args = ['--debug']  # --verbose was crashing
+        out = kmir.kprove.prove(Path(spec_file), args=args, depth=depth)
         print('Proving completed', flush=True)
 
         if is_top(out):

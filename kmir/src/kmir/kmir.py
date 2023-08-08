@@ -150,4 +150,5 @@ class KMIR:
             kompiled_dir=kompiled_dir,
             output=output,
             depth=depth,
+            args=['--verbose', '--debug'],
         )
