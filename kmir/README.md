@@ -137,3 +137,14 @@ poetry run kmir run --definition-dir $KMIR_DEFINITION --output pretty src/tests/
 
 
 To reduce this friction a little, we provide a simple `bash` script [`doit.sh`](doit.sh) that encapsulates the common `kmir` calls.
+
+### Proving MIR claims
+
+Use the following commands from the `kmir` directory to manually prove `k` specification files for MIR.
+```
+poetry run kmir prove --definition-dir $(poetry run kbuild which llvm) --haskell-dir $(poetry run kbuild which haskell) --spec-file src/tests/proofs/simple-spec.k --output pretty
+```
+TODO DEVELOPMENT: Can also add flag: (see exec_prove in __main__.py)
+```
+--use-kprove-object
+```

@@ -11,6 +11,7 @@ from typing import Optional, Union, final
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
+from pyk.ktool.kprove import KProve, KProveOutput, _kprove
 from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
@@ -24,6 +25,7 @@ class KMIR:
     haskell_dir: Path
     mir_parser: Path
     bug_report: BugReport | None
+    kprove: KProve | None
 
     def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], bug_report: BugReport | None = None):
         llvm_dir = Path(llvm_dir)
@@ -36,10 +38,13 @@ class KMIR:
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
+        kprove = KProve(haskell_dir)
+
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
         object.__setattr__(self, 'mir_parser', mir_parser)
         object.__setattr__(self, 'bug_report', bug_report)
+        object.__setattr__(self, 'kprove', kprove)
 
     def parse_program_raw(
         self,
@@ -131,3 +136,16 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_run(program_file, temp_file)
+
+    def prove_program(
+        self,
+        spec_file: Path,
+        *,
+        kompiled_dir: Path | None = None,
+        output: KProveOutput = KProveOutput.NONE,
+    ) -> CompletedProcess:
+        return _kprove(
+            spec_file=spec_file,
+            kompiled_dir=kompiled_dir,
+            output=output,
+        )
