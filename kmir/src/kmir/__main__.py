@@ -1,15 +1,21 @@
+import sys
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any
 
 from pyk.cli.utils import dir_path, file_path
+from pyk.kast.outer import KApply, KClaim, KRewrite
+from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
-from pyk.ktool.kprove import KProveOutput
+from pyk.ktool.kprove import KProve, KProveOutput
 from pyk.ktool.krun import KRunOutput
-from pyk.prelude.ml import is_top
+from pyk.proof import APRProof
+from pyk.proof.equality import EqualityProof
+from pyk.proof.proof import Proof
 from pyk.utils import BugReport
 
 from .kmir import KMIR
+from .utils import ensure_ksequence_on_k_cell, kmir_prove, legacy_explore, print_failure_info
 
 
 def main() -> None:
@@ -80,31 +86,95 @@ def exec_prove(
     bug_report: bool = False,
     use_kprove_object: bool = False,
     depth: int | None = None,
+    smt_timeout: int | None = None,
+    smt_retry_limit: int | None = None,
+    trace_rewrites: bool = False,
     **kwargs: Any,
 ) -> None:
+    # TODO: workers
     kprove_output = KProveOutput[output.upper()]
     spec_file_path = Path(spec_file)
     br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
     kmir = KMIR(definition_dir, haskell_dir, bug_report=br)
 
     if use_kprove_object:
+        kprove: KProve
         if kmir.kprove is None:
             raise ValueError('Cannot use KProve object when it is None')
+        else:
+            kprove = kmir.kprove
 
-        claims = kmir.kprove.get_claims(Path(spec_file))
+        print('Extracting claims from file', flush=True)
+        claims = kprove.get_claims(Path(spec_file))
         if not claims:
             raise ValueError(f'No claims found in file {spec_file}')
 
-        print('Proving with kprove object', flush=True)
-        args = ['--debug']  # --verbose was crashing
-        out = kmir.kprove.prove(Path(spec_file), args=args, depth=depth)
-        print('Proving completed', flush=True)
+        def is_functional(claim: KClaim) -> bool:
+            claim_lhs = claim.body
+            if type(claim_lhs) is KRewrite:
+                claim_lhs = claim_lhs.lhs
+            return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
 
-        if is_top(out):
-            print('Proof PASSED')
-        else:
-            print(out)
-            print('Proof FAILED')
+        def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
+            with legacy_explore(
+                kprove,
+                id=claim.label,
+                bug_report=br,
+                smt_timeout=smt_timeout,
+                smt_retry_limit=smt_retry_limit,
+                trace_rewrites=trace_rewrites,
+            ) as kcfg_explore:
+                # TODO: save directory
+                # TODO: LOGGER
+                # TODO: simplfy_init
+                proof_problem: Proof
+                if is_functional(claim):
+                    proof_problem = EqualityProof.from_claim(claim, kprove.definition)
+                else:
+                    print(f'Converting claim to KCFG: {claim.label}', flush=True)
+                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+
+                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+
+                    print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
+                    new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
+
+                    kcfg.replace_node(init_node_id, new_init)
+                    kcfg.replace_node(target_node_id, new_target)
+
+                    proof_problem = APRProof(claim.label, kcfg, init_node_id, target_node_id, {})  # Fails
+
+                passed = kmir_prove(
+                    kprove,
+                    proof_problem,
+                    kcfg_explore,
+                    max_depth=depth,
+                )
+                if not passed:
+                    failure_log = print_failure_info(proof_problem, kcfg_explore)
+
+                return passed, failure_log
+
+        results: list[tuple[bool, list[str] | None]] = []
+        for claim in claims:
+            results.append(_init_and_run_proof(claim))
+
+        failed = 0
+        for claim, r in zip(claims, results, strict=True):
+            passed, failure_log = r
+            if passed:
+                print(f'PROOF PASSED: {claim.label}')
+            else:
+                failed += 1
+                print(f'PROOF FAILED: {claim.label}')
+                if failure_log is not None:
+                    for line in failure_log:
+                        print(line)
+
+        if failed:
+            sys.exit(failed)
+
     else:
         print('Proving program with _kprove', flush=True)
         proc_res = kmir.prove_program(spec_file_path, kompiled_dir=Path(haskell_dir), output=kprove_output, depth=depth)
@@ -236,6 +306,26 @@ def create_argument_parser() -> ArgumentParser:
         default=None,
         type=int,
         help='Stop execution after `depth` rewrite steps',
+    )
+    prove_subparser.add_argument(
+        '--smt-timeout',
+        dest='smt_timeout',
+        type=int,
+        default=125,
+        help='Timeout in ms to use for SMT queries',
+    )
+    prove_subparser.add_argument(
+        '--smt-retry-limit',
+        dest='smt_retry_limit',
+        type=int,
+        default=4,
+        help='Number of times to retry SMT queries with scaling timeouts.',
+    )
+    prove_subparser.add_argument(
+        '--trace-rewrites',
+        default=False,
+        action='store_true',
+        help='Log traces of all simplification and rewrite rule applications.',
     )
 
     return parser
