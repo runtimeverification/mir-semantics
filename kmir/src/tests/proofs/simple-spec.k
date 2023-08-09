@@ -5,10 +5,27 @@ module VERIFICATION
     imports BASIC-K
     imports MIR-SYMBOLIC
 
+    // LocalTokens will have parsing error if they are not enumerated here 
+    syntax LocalToken ::= "_1" [token]
+    syntax LocalToken ::= "_2" [token]
+    syntax LocalToken ::= "_3" [token]
+    syntax LocalToken ::= "_4" [token]
 endmodule
 
 module SIMPLE-SPEC
     imports VERIFICATION
+
+    claim <k> #executeStatement(_3 = const 5_usize) => .K ...</k>
+          <callStack> ListItem(FN_KEY) ... </callStack>
+          <function>
+            <fnKey> FN_KEY </fnKey>
+              <localDecl> 
+                <index> 3 </index>
+                <value> _ => 5 </value>
+                ...
+              </localDecl>
+              ...
+          </function>
 
     claim <k> #executeStatement(PLACE:Local = const 5_usize) => .K ...</k>
           <callStack> ListItem(FN_KEY) ... </callStack>
@@ -35,4 +52,5 @@ module SIMPLE-SPEC
               ...
           </function>
     requires INDEX ==Int Local2Int(PLACE)
+
 endmodule
