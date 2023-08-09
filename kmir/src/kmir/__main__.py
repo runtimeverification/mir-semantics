@@ -7,7 +7,7 @@ from pyk.cli.utils import dir_path, file_path
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
-from pyk.ktool.kprove import KProve, KProveOutput
+from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRunOutput
 from pyk.proof import APRProof
 from pyk.proof.equality import EqualityProof
@@ -82,9 +82,7 @@ def exec_prove(
     definition_dir: str,
     haskell_dir: str,
     spec_file: str,
-    output: str = 'none',
     bug_report: bool = False,
-    use_kprove_object: bool = False,
     depth: int | None = None,
     smt_timeout: int | None = None,
     smt_retry_limit: int | None = None,
@@ -92,95 +90,86 @@ def exec_prove(
     **kwargs: Any,
 ) -> None:
     # TODO: workers
-    kprove_output = KProveOutput[output.upper()]
     spec_file_path = Path(spec_file)
     br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
     kmir = KMIR(definition_dir, haskell_dir, bug_report=br)
 
-    if use_kprove_object:
-        kprove: KProve
-        if kmir.kprove is None:
-            raise ValueError('Cannot use KProve object when it is None')
-        else:
-            kprove = kmir.kprove
-
-        print('Extracting claims from file', flush=True)
-        claims = kprove.get_claims(Path(spec_file))
-        if not claims:
-            raise ValueError(f'No claims found in file {spec_file}')
-
-        def is_functional(claim: KClaim) -> bool:
-            claim_lhs = claim.body
-            if type(claim_lhs) is KRewrite:
-                claim_lhs = claim_lhs.lhs
-            return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
-
-        def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
-            with legacy_explore(
-                kprove,
-                id=claim.label,
-                bug_report=br,
-                smt_timeout=smt_timeout,
-                smt_retry_limit=smt_retry_limit,
-                trace_rewrites=trace_rewrites,
-            ) as kcfg_explore:
-                # TODO: save directory
-                # TODO: LOGGER
-                # TODO: simplfy_init
-                proof_problem: Proof
-                if is_functional(claim):
-                    proof_problem = EqualityProof.from_claim(claim, kprove.definition)
-                else:
-                    print(f'Converting claim to KCFG: {claim.label}', flush=True)
-                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
-
-                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
-                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
-
-                    print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
-                    new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
-
-                    kcfg.replace_node(init_node_id, new_init)
-                    kcfg.replace_node(target_node_id, new_target)
-
-                    proof_problem = APRProof(claim.label, kcfg, init_node_id, target_node_id, {})  # Fails
-
-                passed = kmir_prove(
-                    kprove,
-                    proof_problem,
-                    kcfg_explore,
-                    max_depth=depth,
-                )
-                if not passed:
-                    failure_log = print_failure_info(proof_problem, kcfg_explore)
-
-                return passed, failure_log
-
-        results: list[tuple[bool, list[str] | None]] = []
-        for claim in claims:
-            results.append(_init_and_run_proof(claim))
-
-        failed = 0
-        for claim, r in zip(claims, results, strict=True):
-            passed, failure_log = r
-            if passed:
-                print(f'PROOF PASSED: {claim.label}')
-            else:
-                failed += 1
-                print(f'PROOF FAILED: {claim.label}')
-                if failure_log is not None:
-                    for line in failure_log:
-                        print(line)
-
-        if failed:
-            sys.exit(failed)
-
+    kprove: KProve
+    if kmir.kprove is None:
+        raise ValueError('Cannot use KProve object when it is None')
     else:
-        print('Proving program with _kprove', flush=True)
-        proc_res = kmir.prove_program(spec_file_path, kompiled_dir=Path(haskell_dir), output=kprove_output, depth=depth)
-        print('Completed proving', flush=True)
-        if output != KAstOutput.NONE:
-            print(proc_res.stdout)
+        kprove = kmir.kprove
+
+    print('Extracting claims from file', flush=True)
+    claims = kprove.get_claims(Path(spec_file))
+    if not claims:
+        raise ValueError(f'No claims found in file {spec_file}')
+
+    def is_functional(claim: KClaim) -> bool:
+        claim_lhs = claim.body
+        if type(claim_lhs) is KRewrite:
+            claim_lhs = claim_lhs.lhs
+        return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
+
+    def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
+        with legacy_explore(
+            kprove,
+            id=claim.label,
+            bug_report=br,
+            smt_timeout=smt_timeout,
+            smt_retry_limit=smt_retry_limit,
+            trace_rewrites=trace_rewrites,
+        ) as kcfg_explore:
+            # TODO: save directory
+            # TODO: LOGGER
+            # TODO: simplfy_init
+            proof_problem: Proof
+            if is_functional(claim):
+                proof_problem = EqualityProof.from_claim(claim, kprove.definition)
+            else:
+                print(f'Converting claim to KCFG: {claim.label}', flush=True)
+                kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+
+                new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+                new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+
+                print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
+                new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
+
+                kcfg.replace_node(init_node_id, new_init)
+                kcfg.replace_node(target_node_id, new_target)
+
+                proof_problem = APRProof(claim.label, kcfg, init_node_id, target_node_id, {})  # Fails
+
+            passed = kmir_prove(
+                kprove,
+                proof_problem,
+                kcfg_explore,
+                max_depth=depth,
+            )
+            if not passed:
+                failure_log = print_failure_info(proof_problem, kcfg_explore)
+
+            return passed, failure_log
+
+    results: list[tuple[bool, list[str] | None]] = []
+    for claim in claims:
+        results.append(_init_and_run_proof(claim))
+
+    failed = 0
+    for claim, r in zip(claims, results, strict=True):
+        passed, failure_log = r
+        if passed:
+            print(f'PROOF PASSED: {claim.label}')
+        else:
+            failed += 1
+            print(f'PROOF FAILED: {claim.label}')
+            if failure_log is not None:
+                for line in failure_log:
+                    print(line)
+
+    if failed:
+        sys.exit(failed)
 
 
 def create_argument_parser() -> ArgumentParser:
@@ -285,21 +274,6 @@ def create_argument_parser() -> ArgumentParser:
         action='store_true',
         default=False,
         help='Generate a haskell-backend bug report for the execution',
-    )
-    prove_subparser.add_argument(
-        '--output',
-        dest='output',
-        type=str,
-        default='kast',
-        help='Output mode',
-        choices=['pretty', 'program', 'KAST', 'binary', 'json', 'latex', 'kore', 'none'],
-        required=False,
-    )
-    prove_subparser.add_argument(
-        '--use-kprove-object',
-        action='store_true',
-        default=False,
-        help='FOR DEVELOPMENT ONLY. To use _kprove directly or use KProve object',
     )
     prove_subparser.add_argument(
         '--depth',

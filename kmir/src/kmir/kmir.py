@@ -11,7 +11,7 @@ from typing import Optional, Union, final
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
-from pyk.ktool.kprove import KProve, KProveOutput, _kprove
+from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
@@ -136,19 +136,3 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_run(program_file, temp_file)
-
-    def prove_program(
-        self,
-        spec_file: Path,
-        *,
-        kompiled_dir: Path | None = None,
-        output: KProveOutput = KProveOutput.NONE,
-        depth: int | None = None,
-    ) -> CompletedProcess:
-        return _kprove(
-            spec_file=spec_file,
-            kompiled_dir=kompiled_dir,
-            output=output,
-            depth=depth,
-            args=['--verbose', '--debug'],
-        )
