@@ -30,13 +30,11 @@ Operands are leafs, i.e. the "basic components" of rvalues: either a loading of 
 
 ### [`RValue`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.Rvalue.html)
 
-The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1d3a07dd73beb2873d74a8a0458d05f/compiler/rustc_middle/src/mir/syntax.rs#L1082) that can appear in MIR.
-
 ```k
   syntax RValue ::= Use
                   | Repeat
                   | Ref
-//                  | ThreadLocalRef
+//                  | ThreadLocalRef 
                   | AddressOf
                   | Len
                   | Cast
@@ -52,23 +50,37 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
   syntax Use    ::= Operand
 
   syntax Repeat ::= "[" Operand ";" Constant "]"
-                  | "[" Operand ";" RustExpression "]" [avoid]
-  syntax Ref // TODO: define
+  //                | "[" Operand ";" RustExpression "]" [avoid]
+  
+  syntax Ref ::= "&" Region Place
+               | "&" Region BorrowKind Place
+  syntax Region //TODO: to be defined: https://github.com/rust-lang/rust/blob/e3590fccfbdb6284bded9b70eca2e72b0c57e070/compiler/rustc_middle/src/mir/mod.rs#L2081
+
+  syntax BorrowKind ::= "shallow" | "mut"
 
   // this seems to be responsible for function pointer assignmetn, e.g. `_1 = fn_name`
 //  syntax ThreadLocalRef ::= PathExpression
 
-  syntax AddressOf ::= "&" PtrModifiers Place
+  syntax AddressOf ::= "&raw" Mutability Place
+  syntax Mutability ::= "mut" | "const" 
+  //TODO:in rustc_ast, Not < Mut, why there is an order
 
   syntax Len ::= "Len" "(" Place ")"
 
-  // TODO: this needs additional productions
-  syntax Cast ::= Operand "as" Type
-                | Operand "as" Type  "(" PointerCastArg ")"
-                | PathExpression "as" Type
-                | PathExpression "as" Type "(" PointerCastArg ")"
+  syntax Cast ::= Operand "as" Type "(" CastKind ")"
+  syntax CastKind ::= "PointerExposeAddress" //TODO: figure out the syntax here.
+                    | "PointerFromExposeAddress"
+                    | "Pointer" "(" PointerCast ")"
+                    | "DynStar"
+                    | "IntToInt" 
+                    | "FloatToInt"
+                    | "FloatToFloat"
+                    | "IntToFloat"
+                    | "PtrToPtr"
+                    | "FnPtrToPtr"
+                    | "Transmute" // MIR is well-formed if the input and output types have different sizes, but running a transmute between differently-sized types is UB.
 
-  syntax PointerCastArg ::= "Pointer" "(" PointerCast ")"
+//TODO: Need locate the exact definition, starting point CastKind: https://github.com/rust-lang/rust/blob/f88a8b71cebb730cbd5058c45ebcae1d4d9be377/compiler/rustc_middle/src/mir/syntax.rs#L1231
   syntax PointerCast ::= "ReifyFnPointer"
                        | "UnsafeFnPointer"
                        | "ClosureFnPointer" "(" Unsafety ")"
@@ -78,7 +90,6 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
 
   syntax Unsafety ::= "Unsafe" | "Normal"
 
-  // TODO: AddUnChecked
   syntax BinaryOp ::= BinOp "(" Operand "," Operand ")"
   syntax BinOp ::= "Add"          [token]
                  | "AddUnchecked" [token]
@@ -102,19 +113,19 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
                  | "Ge"           [token]
                  | "Gt"           [token]
                  | "Offset"       [token]
+
 // CheckedBinaryOp is the same as BinaryOp except additional overflow checking. https://github.com/rust-lang/rust/blob/f88a8b71cebb730cbd5058c45ebcae1d4d9be377/compiler/rustc_middle/src/mir/syntax.rs#L1178
-// Need to locate the pretty print source code to understand what checked options are allowed
-  syntax CheckedBinaryOp ::= CheckedBinOp "(" Operand "," Operand ")"
-  syntax CheckedBinOp ::= "CheckedAdd" [token]
-                        | "CheckedSub" [token]
-                        | "CheckedMul" [token]
-                        | "CheckedShl" [token]
-                        | "CheckedShr" [token]
+  syntax CheckedBinaryOp ::= "Checked" BinOp "(" Operand "," Operand ")"
                               
-  syntax NullaryOp ::= NullOp "(" Type ")" //TODO:type?
+  syntax NullaryOp ::= NullOp "(" Type ")"
+                     | NullOpOffset "(" Type ")" Fields
   syntax NullOp ::= "SizeOf"   [token]
                   | "AlignOf"  [token]  
-                  | "Offsetof" [tokrn] //OffsetOf(Vec<FieldIdx>) type FieldIdx = usize;
+  syntax NullOpOffset ::= "OffsetOf" [token]
+
+  syntax FieldIdx
+  syntax Fields ::= List{FieldIdx, ","} //TODO: define the Feilds
+
 
   syntax UnaryOp ::= UnOp "(" Operand ")"
   syntax UnOp ::= "Not" [token]
@@ -122,20 +133,25 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
                         
   syntax Discriminant ::= "discriminant" "(" Place ")"
 
-  syntax CopyForDeref ::= "deref_copy" NonTerminalPlace
+  syntax CopyForDeref ::= "deref_copy" Place// NonTerminalPlace "deref_copy {place:#?}"
 
-  syntax Aggregate ::= Array
+//TODO: Need further refactoring
+  syntax Aggregate ::= AggregateKind
+  syntax AggregateKind ::= Array
                      | Tuple
                      | Adt
                      | Closure
                      | Generator
 
+  syntax OperandList ::= List{Operand, ","}
+
+//Array is defined: IndexVec<FieldIdx, Operand>, hook to K-Array?
   syntax Array ::= "[" "]"
                  | "[" Operand "]"
                  | "[" Operand "," OperandList "]"
 
   syntax Tuple  ::= "(" ")"
-                  | "(" Operand "," OperandList ")"
+                  | "(" Operand "," OperandList ")" //TODO:(Operand, Operand)?
 
   syntax Adt ::= StructConstructor
                | EnumConstructor
@@ -150,16 +166,12 @@ The various kinds of [rvalues](https://github.com/rust-lang/rust/blob/6b46c996e1
   syntax AdtField ::= AdtFieldName ":" Operand
   syntax AdtFieldList ::= List{AdtField, ","}
 
-  syntax Closure ::= "[" "closure" "@" FilePosition "]"
+  syntax Closure ::= "[" "closure" "@" FilePosition "]" //FilePosition should be function path or defid
 
   syntax Generator ::= "[" "generator" "@" FilePosition "(" "#" Int ")" "]"
                      | "[" "generator" "@" FilePosition "(" "#" Int ")" "]" "{" AdtFieldList "}"
 
   syntax ShallowInitBox ::= "ShallowInitBox" "(" Operand "," Type ")"
-
-  syntax OperandList ::= List{Operand, ","}
-
-  syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
 ```
 
 ```k
@@ -250,10 +262,10 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalUnaryOp(FunctionLikeKey, UnaryOp) [function]
   //------------------------------------------------------------------
-  rule evalUnaryOp(FN_KEY, NAME:UnaryOpName (X:Operand)) =>
+  rule evalUnaryOp(FN_KEY, NAME:UnOp (X:Operand)) =>
        evalUnaryOpImpl(FN_KEY, NAME, X)
 
-  syntax MIRValue ::= evalUnaryOpImpl(FunctionLikeKey, UnaryOpName, Operand) [function]
+  syntax MIRValue ::= evalUnaryOpImpl(FunctionLikeKey, UnOp, Operand) [function]
   //-----------------------------------------------------------------------------------
   rule evalUnaryOpImpl(FN_KEY, Not, X)    => notBool {evalOperand(FN_KEY, X)}:>Bool
   rule evalUnaryOpImpl(FN_KEY, Neg, X)    => 0 -Int {evalOperand(FN_KEY, X)}:>Int
@@ -264,10 +276,10 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalBinaryOp(FunctionLikeKey, BinaryOp) [function]
   //--------------------------------------------------------------------
-  rule evalBinaryOp(FN_KEY, NAME:BinaryOpName (X:Operand, Y:Operand)) =>
+  rule evalBinaryOp(FN_KEY, NAME:BinOp (X:Operand, Y:Operand)) =>
        evalBinaryOpImpl(FN_KEY, NAME, X, Y)
 
-  syntax MIRValue ::= evalBinaryOpImpl(FunctionLikeKey, BinaryOpName, Operand, Operand) [function]
+  syntax MIRValue ::= evalBinaryOpImpl(FunctionLikeKey, BinOp, Operand, Operand) [function]
   //-----------------------------------------------------------------------
   rule evalBinaryOpImpl(FN_KEY, Add, X, Y)    => {evalOperand(FN_KEY, X)}:>Int +Int {evalOperand(FN_KEY, Y)}:>Int
   rule evalBinaryOpImpl(FN_KEY, Sub, X, Y)    => {evalOperand(FN_KEY, X)}:>Int -Int {evalOperand(FN_KEY, Y)}:>Int
