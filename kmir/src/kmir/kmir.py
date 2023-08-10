@@ -27,7 +27,13 @@ class KMIR:
     bug_report: BugReport | None
     kprove: KProve | None
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], bug_report: BugReport | None = None):
+    def __init__(
+        self,
+        llvm_dir: Union[str, Path],
+        haskell_dir: Union[str, Path],
+        bug_report: BugReport | None = None,
+        use_directory: Path | None = None,
+    ):
         llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
@@ -38,7 +44,7 @@ class KMIR:
         haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
-        kprove = KProve(haskell_dir)
+        kprove = KProve(haskell_dir, use_directory=use_directory)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)

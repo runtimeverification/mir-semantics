@@ -83,6 +83,8 @@ def exec_prove(
     haskell_dir: str,
     spec_file: str,
     bug_report: bool = False,
+    save_directory: Path | None = None,
+    reinit: bool = False,
     depth: int | None = None,
     smt_timeout: int | None = None,
     smt_retry_limit: int | None = None,
@@ -90,9 +92,11 @@ def exec_prove(
     **kwargs: Any,
 ) -> None:
     # TODO: workers
+    # TODO: md_selector doesn't work
     spec_file_path = Path(spec_file)
+
     br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
-    kmir = KMIR(definition_dir, haskell_dir, bug_report=br)
+    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory, bug_report=br)
 
     kprove: KProve
     if kmir.kprove is None:
@@ -120,26 +124,38 @@ def exec_prove(
             smt_retry_limit=smt_retry_limit,
             trace_rewrites=trace_rewrites,
         ) as kcfg_explore:
-            # TODO: save directory
             # TODO: LOGGER
             # TODO: simplfy_init
             proof_problem: Proof
             if is_functional(claim):
-                proof_problem = EqualityProof.from_claim(claim, kprove.definition)
+                if (
+                    save_directory is not None
+                    and not reinit
+                    and EqualityProof.proof_exists(claim.label, save_directory)
+                ):
+                    proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
+                else:
+                    proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
             else:
-                print(f'Converting claim to KCFG: {claim.label}', flush=True)
-                kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+                if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
+                    proof_problem = APRProof.read_proof_data(save_directory, claim.label)
 
-                new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
-                new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+                else:
+                    print(f'Converting claim to KCFG: {claim.label}', flush=True)
+                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
 
-                print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
-                new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
+                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
-                kcfg.replace_node(init_node_id, new_init)
-                kcfg.replace_node(target_node_id, new_target)
+                    print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
+                    new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
 
-                proof_problem = APRProof(claim.label, kcfg, init_node_id, target_node_id, {})  # Fails
+                    kcfg.replace_node(init_node_id, new_init)
+                    kcfg.replace_node(target_node_id, new_target)
+
+                    proof_problem = APRProof(
+                        claim.label, kcfg, init_node_id, target_node_id, {}, proof_dir=save_directory
+                    )  # Fails
 
             passed = kmir_prove(
                 kprove,
@@ -300,6 +316,18 @@ def create_argument_parser() -> ArgumentParser:
         default=False,
         action='store_true',
         help='Log traces of all simplification and rewrite rule applications.',
+    )
+    prove_subparser.add_argument(
+        '--save-directory',
+        dest='save_directory',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
+    )
+    prove_subparser.add_argument(
+        '--reinit',
+        action='store_true',
+        default=False,
+        help='Reinit a proof.S',
     )
 
     return parser
