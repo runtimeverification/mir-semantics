@@ -325,8 +325,8 @@ module MIR-TYPE-SYNTAX
 
   syntax FunctionAlloc ::= Identifier "(" "fn" ":" PathExpression "-" "shim" ")" 
 
-  syntax BB ::= BBName MaybeBBCleanup
-  syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
+  //syntax BB ::= BBName MaybeBBCleanup
+  //syntax MaybeBBCleanup ::= "" | "(" "cleanup" ")"
 
   syntax MirOnlyType  ::= "[" "closure" "@" FilePosition "]"
                         | "[" "async" "fn" "body" "@" FilePosition "]"
@@ -334,9 +334,9 @@ module MIR-TYPE-SYNTAX
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
 
-  syntax UserVariableName ::= Identifier
+  syntax UserVar ::= Identifier
   syntax AdtFieldName ::= Identifier
-  syntax BBName ::= BBToken
+//  syntax BBName ::= BBToken
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression
@@ -491,7 +491,7 @@ We use several hooks which convert between token and string representations:
   syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
   syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
 
-  syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
+  //syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
 
   syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
 
@@ -513,9 +513,9 @@ Additionally, we need functions that convert between syntactic and semantics rep
   //-----------------------------------------------
   rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
 
-  syntax Int ::= BBName2Int(BBName) [function, total]
+  //syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------
-  rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
+  //rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
 ```
 
 ### Literals

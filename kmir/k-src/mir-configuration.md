@@ -151,8 +151,8 @@ module MIR-BASIC-BLOCKS
   configuration
     <basicBlocks>
       <basicBlock multiplicity="*" type="Map">
-        <bbName> 0:Int </bbName>
-        <bbBody> BBBottom:BasicBlockBody </bbBody>
+        <bbId> 0:Int </bbId>
+        <bbBody> BBBottom:BasicBlockData </bbBody>
       </basicBlock>
     </basicBlocks>
 

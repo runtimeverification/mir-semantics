@@ -6,8 +6,7 @@ require "mir-rvalue.md"
 
 MIR syntax
 ----------
-
-These modules defined the syntax of MIR programs. See "mir-types.md" for the syntax of types.
+This module is designed to parse the exported MIR of a rust program from `rustc` into `KItem`s accepted by K framework. It is a decompilation process from [string format MIR to strcutured MIR in K.
 
 ```k
 module MIR-SYNTAX
@@ -18,8 +17,8 @@ module MIR-SYNTAX
 ```
 
 ```k
-  syntax Mir ::= List{MirComponent, ""}
-  syntax MirComponent ::= Function
+  syntax Mir ::= List{CrateItem, ""}
+  syntax CrateItem ::= Function
                         | FunctionForData
                         | FunctionForPromoted
                         | DataAlloc
@@ -27,8 +26,8 @@ module MIR-SYNTAX
 ```
 
 ```k
-  syntax Function ::= FunctionSignature "{" FunctionBody "}"
-  syntax FunctionSignature ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
+  syntax Function ::= FnSig "{" FunctionBody "}"
+  syntax FnSig ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
   syntax Parameter ::= Local ":" Type
   syntax ParameterList ::= List{Parameter, ","}
 ```
@@ -36,20 +35,23 @@ module MIR-SYNTAX
 The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir::Body`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Body.html).
 
 ```k
-  syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
-  syntax Binding ::= "let" OptMut Local ":" Type ";"
-  syntax BindingList ::= List{Binding, ""}
-  syntax OptMut ::= "mut" | ""
+  syntax FunctionBody ::= DebugList LocalDecls ScopeList BasicBlocks
+  syntax Binding ::= "let" MutPrefix Local ":" Type
+  // Temporaries and the return place are always mutable.
+  // a binding declared by the user, a temporary inserted by the compiler, a function argument, or the return place
+  // a binding declared by the user, a function argument will be recorded as a localdecl, the others will be a map from place to value
+  syntax LocalDecls ::= List{Binding, ";"}
 
   syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
-  syntax Debug ::= "debug" UserVariableName "=>" Place ";"
+  syntax Debug ::= "debug" UserVar "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
-  syntax BasicBlock ::= BB ":" BasicBlockBody
-  syntax BasicBlockBody ::= "{" Statements Terminator ";" "}"
-  syntax BasicBlockList ::= List {BasicBlock, ""}
+  syntax BasicBlock ::= BBIndex ":" BasicBlockData
+  syntax BBIndex ::= "bb" Int
+  syntax BasicBlockData ::= "{" Statements Terminator ";" "}"
+  syntax BasicBlocks ::= List {BasicBlock, ""} //IndexVec
 ```
 
 The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
@@ -87,8 +89,8 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax Assign ::= Place "=" RValue
   syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
                                   | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
-  syntax Statement ::= StatementKind ";"
-  syntax Statements ::= List {Statement, ""}
+  syntax Statement ::= StatementKind
+  syntax Statements ::= List {Statement, ";"}
 ```
 
 [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html) occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
@@ -107,7 +109,7 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
                       | InlineAsm
 
 
-  syntax Goto ::= "goto" "->" BB
+  syntax Goto ::= "goto" "->" BBIndex
   syntax SwitchInt ::= "switchInt" "(" Operand ")" "->" "[" SwitchTargets "," "otherwise" ":" BB "]"
   syntax Resume ::= "resume"
   syntax Abort ::= "abort"
@@ -137,7 +139,7 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
 
   // https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/terminator/struct.SwitchTargets.html
   syntax SwitchTargets ::= List{SwitchTarget, ","}
-  syntax SwitchTarget ::= Int ":" BB
+  syntax SwitchTarget ::= Int ":" BBIndex
 
   syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
 
@@ -150,13 +152,13 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
 
   syntax ArgumentList ::= List{Operand, ","}
 
-  syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
+  syntax TerminatorDestination ::= BBIndex | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
   syntax IntCaseList ::= NeList{IntCase, ","}
-  syntax IntCase ::= Int ":" BB
-  syntax OtherwiseCase ::= "otherwise" ":" BB
-  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
-  syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
+  syntax IntCase ::= Int ":" BBIndex
+  syntax OtherwiseCase ::= "otherwise" ":" BBIndex
+  syntax CallDestination ::= "[" "return" ":" BBIndex "," "unwind" ":" BBIndex "]"
+  syntax AssertDestination ::= "[" "success" ":" BBIndex "," "unwind" ":" BBIndex "]"
 ```
 
 ```k

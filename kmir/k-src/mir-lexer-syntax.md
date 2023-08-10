@@ -7,11 +7,12 @@ This module defined the necessary `token` productions.
 ```k
   syntax Identifier ::= IdentifierToken
                       | LocalToken
-                      | BBToken
+//                      | BBToken
                       | DoubleHexDigitNoIntLetter
-                      | Whitelisted
+//                      | Whitelisted
 
-  syntax Whitelisted ::= "transmute" | "unwind" | "count"
+//TODO: maybe duplicate with CastKind transmute
+//  syntax Whitelisted ::= "transmute" | "unwind" | "count"
 
   syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
   syntax IdentifierToken ::= StringIdentifierToken(String) [function, hook(STRING.string2token)]
@@ -20,7 +21,7 @@ This module defined the necessary `token` productions.
 ```k
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax LocalToken      ::= r"_[0-9]+"  [token(2)]
-  syntax BBToken         ::= r"bb[0-9]+" [token(2)]
+//  syntax BBToken         ::= r"bb[0-9]+" [token(2)]
 ```
 
 Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/tokens.html#literals), since MIR does not seem to use the full range:

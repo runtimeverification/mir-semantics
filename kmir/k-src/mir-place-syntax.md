@@ -8,6 +8,15 @@ module MIR-PLACE-SYNTAX
   imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
 ```
+```k
+  syntax Mutability ::= Not | Mut
+  syntax Mutability ::= MutPrefixToMutability(MutPrefix) [function]
+
+  syntax MutPrefix ::= "" | "not" 
+  
+  rule MutPrefixToMutability("") => Not
+  rule MutPrefixToMutability("mut") => Mut
+```
 
 ### [Place](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/syntax/struct.Place.html)
 
