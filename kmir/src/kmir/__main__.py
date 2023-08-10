@@ -1,7 +1,8 @@
+import logging
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 from pyk.cli.utils import dir_path, file_path
 from pyk.kast.outer import KApply, KClaim, KRewrite
@@ -17,10 +18,14 @@ from pyk.utils import BugReport
 from .kmir import KMIR
 from .utils import ensure_ksequence_on_k_cell, kmir_prove, legacy_explore, print_failure_info
 
+_LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
 
 def main() -> None:
     parser = create_argument_parser()
     args = parser.parse_args()
+    logging.basicConfig(level=_loglevel(args), format=_LOG_FORMAT)
 
     executor_name = 'exec_' + args.command.lower().replace('-', '_')
     if executor_name not in globals():
@@ -104,7 +109,7 @@ def exec_prove(
     else:
         kprove = kmir.kprove
 
-    print('Extracting claims from file', flush=True)
+    _LOGGER.info('Extracting claims from file')
     claims = kprove.get_claims(Path(spec_file))
     if not claims:
         raise ValueError(f'No claims found in file {spec_file}')
@@ -124,7 +129,6 @@ def exec_prove(
             smt_retry_limit=smt_retry_limit,
             trace_rewrites=trace_rewrites,
         ) as kcfg_explore:
-            # TODO: LOGGER
             # TODO: simplfy_init
             proof_problem: Proof
             if is_functional(claim):
@@ -141,13 +145,13 @@ def exec_prove(
                     proof_problem = APRProof.read_proof_data(save_directory, claim.label)
 
                 else:
-                    print(f'Converting claim to KCFG: {claim.label}', flush=True)
+                    _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
                     kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
 
                     new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
                     new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
-                    print(f'Computing definedness constraint for initial node: {claim.label}', flush=True)
+                    _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
                     new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
 
                     kcfg.replace_node(init_node_id, new_init)
@@ -155,7 +159,7 @@ def exec_prove(
 
                     proof_problem = APRProof(
                         claim.label, kcfg, init_node_id, target_node_id, {}, proof_dir=save_directory
-                    )  # Fails
+                    )
 
             passed = kmir_prove(
                 kprove,
@@ -331,6 +335,10 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     return parser
+
+
+def _loglevel(args: Namespace) -> int:
+    return logging.DEBUG  # TODO: HARDCODED FOR DEVELOPMENT
 
 
 if __name__ == '__main__':

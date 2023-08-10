@@ -1,6 +1,8 @@
+import logging
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Final
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KInner, Subst
@@ -15,6 +17,8 @@ from pyk.proof import APRBMCProof, APRBMCProver, APRProof, APRProver
 from pyk.proof.equality import EqualityProof, EqualityProver
 from pyk.proof.proof import Proof, ProofStatus
 from pyk.utils import BugReport
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 def kmir_prove(
@@ -49,35 +53,35 @@ def kmir_prove(
             assert isinstance(proof, APRProof)
             failure_nodes = proof.failing
             if len(failure_nodes) == 0:
-                print(f'Proof passed: {proof.id}', flush=True)
+                _LOGGER.info(f'Proof passed: {proof.id}')
                 return True
             else:
-                print(f'Proof failed: {proof.id}', flush=True)
+                _LOGGER.error(f'Proof failed: {proof.id}')
                 return False
         elif type(prover) is EqualityProver:
             prover.advance_proof()
             if prover.proof.status == ProofStatus.PASSED:
-                print(f'Proof passed: {prover.proof.id}', flush=True)
+                _LOGGER.info(f'Proof passed: {prover.proof.id}')
                 return True
             if prover.proof.status == ProofStatus.FAILED:
-                print(f'Proof failed: {prover.proof.id}', flush=True)
+                _LOGGER.error(f'Proof failed: {prover.proof.id}')
                 if type(proof) is EqualityProof:
-                    print(proof.pretty(kprove))
+                    _LOGGER.info(proof.pretty(kprove))
                 return False
             if prover.proof.status == ProofStatus.PENDING:
-                print(f'Proof pending: {prover.proof.id}', flush=True)
+                _LOGGER.info(f'Proof pending: {prover.proof.id}')
                 return False
         return False
 
     except Exception as e:
-        print(f'Proof crashed: {proof.id}\n{e}', flush=True)
+        _LOGGER.error(f'Proof crashed: {proof.id}\n{e}')
         return False
     failure_nodes = proof.pending + proof.failing
     if len(failure_nodes) == 0:
-        print(f'Proof passed: {proof.id}', flush=True)
+        _LOGGER.info(f'Proof passed: {proof.id}')
         return True
     else:
-        print(f'Proof failed: {proof.id}', flush=True)
+        _LOGGER.error(f'Proof failed: {proof.id}')
         return False
 
 
@@ -125,7 +129,7 @@ def legacy_explore(
 def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:
     k_cell = cterm.cell('K_CELL')
     if type(k_cell) is not KSequence:
-        print('Introducing artificial KSequence on <k> cell.', flush=True)
+        _LOGGER.info('Introducing artificial KSequence on <k> cell.')
         return CTerm.from_kast(set_cell(cterm.kast, 'K_CELL', KSequence([k_cell])))
     return cterm
 
