@@ -3,7 +3,7 @@ require "mir-types.md"
 ```
 
 ```k
-module MIR-PLACE-SYNTAX
+module MIR-PLACE
   imports BOOL
   imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
