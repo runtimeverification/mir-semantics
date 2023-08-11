@@ -462,6 +462,21 @@
         "type": "github"
       }
     },
+    "flake-utils_6": {
+      "locked": {
+        "lastModified": 1678901627,
+        "narHash": "sha256-U02riOqrKKzwjsxc/400XnElV+UtPUQWpANPlyazjH0=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "93a2b84fc4b70d9e089d029deacc3583435c2ed6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "fmt-src": {
       "flake": false,
       "locked": {
@@ -1518,6 +1533,29 @@
         "type": "github"
       }
     },
+    "poetry2nix_2": {
+      "inputs": {
+        "flake-utils": "flake-utils_6",
+        "nixpkgs": [
+          "pyk",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1680067032,
+        "narHash": "sha256-RF07f1iZkJOdSbv+1myXdvgCxUsUjHdHBF7CEX3rnag=",
+        "owner": "nix-community",
+        "repo": "poetry2nix",
+        "rev": "39c356df8277758138829c7b3694e58fe8d4afa2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "master",
+        "repo": "poetry2nix",
+        "type": "github"
+      }
+    },
     "pybind11-src": {
       "flake": false,
       "locked": {
@@ -1532,6 +1570,33 @@
         "owner": "pybind",
         "repo": "pybind11",
         "rev": "0ba639d6177659c5dc2955ac06ad7b5b0d22e05c",
+        "type": "github"
+      }
+    },
+    "pyk": {
+      "inputs": {
+        "flake-utils": [
+          "k-framework",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "k-framework",
+          "nixpkgs"
+        ],
+        "poetry2nix": "poetry2nix_2"
+      },
+      "locked": {
+        "lastModified": 1691190205,
+        "narHash": "sha256-O3JSeqQWgr9n/p7K10VyAMlpFYJAEj6aZKhPPNZEc48=",
+        "owner": "runtimeverification",
+        "repo": "pyk",
+        "rev": "12a1f1f152d02934363793146aa8e5e905a931f1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "runtimeverification",
+        "ref": "v0.1.401",
+        "repo": "pyk",
         "type": "github"
       }
     },
@@ -1561,6 +1626,7 @@
         "k-framework": "k-framework",
         "nixpkgs": "nixpkgs_7",
         "poetry2nix": "poetry2nix",
+        "pyk": "pyk",
         "rv-utils": "rv-utils_2"
       }
     },
