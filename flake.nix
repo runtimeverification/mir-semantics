@@ -47,6 +47,24 @@
             checkGroups = [ ];
           };
         })
+      (final: prev: {
+          mir-semantics = prev.stdenv.mkDerivation {
+              pname = "mir-semantics";
+              projectDir = "./kmir";
+              version = self.rev or "dirty";
+              buildInputs = with prev; [
+                kmir
+                poetry
+              ];
+              nativeBuildInputs = [ prev.makeWrapper ]; 
+
+            buildPhase = ''
+              make build
+            '';
+          };
+        })
+        # TODO: build llvm definition
+        # TODO: build haskell definition
       ];
     in flake-utils.lib.eachSystem [
       "x86_64-linux"
@@ -61,7 +79,7 @@
         };
       in {
         packages = rec {
-          inherit (pkgs) kmir;
+          inherit (pkgs) kmir mir-semantics;
           default = kmir;
           #  = pkgs..pyk;
         };
