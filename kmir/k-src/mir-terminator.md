@@ -1,9 +1,13 @@
-"require mir-identifiers.md"
+```k
+require "mir-identifiers.md"
+require "mir-assert.md"
+```
 ## [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html) occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
 
 ```k
 module MIR-TERMINATOR-SYNTAX
   import MIR-IDENTIFIERS
+  import MIR-ASSERT-SYNTAX
 
   syntax Terminator ::= "goto" "->" BBId //TerminatorKind::Goto
                       | "switchInt" "(" Operand ")" "->" "[" SwitchTargets "," OwTarget "]" //Terminator::SwitchInt{Operand, SwitchTargets}
@@ -14,13 +18,13 @@ module MIR-TERMINATOR-SYNTAX
                       | Place "=" "yield" "(" Operand ")" "->" BBId //TerminatorKind::Yield, Yield { resume: t, drop: Some(ref u), .. } unwind() is always None.
                       | Place "=" "yield" "(" Operand ")" // TerminatorKind::Yield, Yield { resume: t, drop: None, .. }, unwind() is always None.
                       | "unreachale" //TerminatorKind::Unreachale, &[]                     
-                      | "drop" Place "->" DropSuccessor// TerminatorKind::Drop                                      
-                      | Place "=" Operand "(" ArgList ")" "->" Successor //TerminatorKind::Call, Case 3_1 and Case 3_3
+                      | "drop" Place "->" DropSuccessor//TerminatorKind::Drop                                      
+                      | Place "=" Operand "(" ArgList ")" "->" CallSuccessor //TerminatorKind::Call, Case 3_1 and Case 3_3
                       | Place "=" Operand "(" ArgList ")" //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
-                      | "assert" "(" "!" Operand "," AssertKind ")" "->" Successor//Terminator::Assert not 
-                      | "assert" "(" Operand "," AssertKind ")" "->" Successor //Terminator::Assert expected
+                      | "assert" "(" "!" Operand "," AssertKind ")" "->" AssertSuccessor//Terminator::Assert not 
+                      | "assert" "(" Operand "," AssertKind ")" "->" AssertSuccessor //Terminator::Assert expected
                       | "falseEdge" "->" BBId      //FalseEdge { real_target, ref imaginary_target } and unwind() on TerminatorKind::FalseEdge { .. } => None, -> (1, None) => BBId
-                      | "falseUnwind" "->" Successor  //TerminatorKind::FalseUnwind
+                      | "falseUnwind" "->" FalseUnwindSuccessor  //TerminatorKind::FalseUnwind
 //                      | "asm!({}, )" //TODO:https://github.com/rust-lang/rust/blob/e81522aa0e0bef810c8e8298128a652339c992c3/compiler/rustc_middle/src/mir/terminator.rs#L340
 
   // https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/terminator/struct.SwitchTargets.html
@@ -30,27 +34,22 @@ module MIR-TERMINATOR-SYNTAX
 
   syntax ArgList ::= List{Operand, ","} //https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L650
 
-  syntax AssertKind
-
   //UnwindAction::Cleanup(BBId) is specially handled as case 1.
   syntax UnwindAction ::= "unwind continue"     //UnwindAction::Continue
                         | "unwind unreachable"  //UnwindAction::Unreachale
                         | "unwind terminate"    //UnwindAction::Terminate
-
-  syntax Successor ::= BBId //(1, None) => "->" BasicBlock where unwind():: Some(UnwindAction::Cleanup(_)) => None
-                     | "[" "0" ":" BBId "," UnwindAction "]" //(1, UnwindAction)) => "->" [label(Drop), UnwindAction] require UnwindAction != CleanUp(_)
                      
-  // syntax DropSuccessor ::= BBId // Case 2_1: Drop { target: t, unwind: UnwindAction::Cleanup(ref u), .. } | (1, None) => BasicBlock where unwind():: Some(UnwindAction::Cleanup(_)) => None
-  //                        ｜ "[" "0" ":" BBId "," UnwindAction "]" // case 2_2: Drop { target: t, unwind: _, .. } |  (1, Some(unwind)) => [label(Drop), UnwindAction] require unwind != CleanUp(_)
+  syntax DropSuccessor ::= BBId // Case 2_1: Drop { target: t, unwind: UnwindAction::Cleanup(ref u), .. } | (1, None) => BBId where unwind():: Some(UnwindAction::Cleanup(_)) => None
+                         | "[" "return" ":" BBId "," UnwindAction "]" // case 2_2: Drop { target: t, unwind: _, .. } |  (1, Some(unwind)) => "[return:" BBId, UnwindAction "]" require unwind != CleanUp(_)
   
-  // syntax CallSuccessor ::= BBId //Case 3_1: Call { target: Some(ref mut t), unwind: UnwindAction::Cleanup(ref mut u), .. } -> (1, None) => BBId
-  //                        | "[" "0" ":" BBId "," UnwindAction "]" //Case 3_3: Call { target: Some(ref mut t), unwind: _, .. } -> (1, UnwindAction) => require UnwindAction != CleanUp(BBId)
+  syntax CallSuccessor ::= BBId //Case 3_1: Call { target: Some(ref mut t), unwind: UnwindAction::Cleanup(ref mut u), .. } -> (1, None) => BBId
+                         | "[" "return" ":" BBId "," UnwindAction "]" //Case 3_3: Call { target: Some(ref mut t), unwind: _, .. } -> (1, UnwindAction) => [return:" BBId "," UnwindAction "]" require UnwindAction != CleanUp(BBId)
 
-  // syntax AssertSuccessor ::= BBId//Case 2_1: Assert { target: t, unwind: UnwindAction::Cleanup(ref u), .. } -> (1, None) => BBId
-  //                          | "[ 0:" BBId "," UnwindAction "]" // Case 2_2: Assert { target: t, unwind: _, .. } -> (1, UnwindAction) => "[ 0:" BBId "," UnwindAction "]" require UnwindAction != CleanUp
+  syntax AssertSuccessor ::= BBId//Case 2_1: Assert { target: t, unwind: UnwindAction::Cleanup(ref u), .. } -> (1, None) => BBId
+                           | "[" "success:" BBId "," UnwindAction "]" // Case 2_2: Assert { target: t, unwind: _, .. } -> (1, UnwindAction) => "[ success:" BBId "," UnwindAction "]" require UnwindAction != CleanUp
 
-  // syntax FalseUnwind ::=    //Case 2_1: FalseUnwind { real_target: t, unwind: UnwindAction::Cleanup(ref u) } -> (1, None)
-  //                           //Case 2_2: FalseUnwind { real_target: t, unwind: _ } -> (1, UnwindAction) => requires unwind != CleanUp(_)
+  syntax FalseUnwindSuccessor ::= BBId  //Case 2_1: FalseUnwind { real_target: t, unwind: UnwindAction::Cleanup(ref u) } -> (1, None) => BBId
+                       | "[" "real" ":" BBId "," UnwindAction "]"     //Case 2_2: FalseUnwind { real_target: t, unwind: _ } -> (1, UnwindAction) => "[real :" BBId "," UnwindAction "]" requires unwind != CleanUp(_)
 
 endmodule
 ```
