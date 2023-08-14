@@ -1,5 +1,5 @@
 ```k
-require "mir-lexer-syntax.md"
+require "mir-identifiers.md"
 ```
 
 Syntax of MIR types
@@ -9,7 +9,7 @@ Syntax of MIR types
 module MIR-TYPE-SYNTAX
   imports BOOL-SYNTAX
   imports UNSIGNED-INT-SYNTAX
-  imports MIR-LEXER-SYNTAX
+  imports MIR-IDENTIFIERS
 ```
 
 ```k
@@ -95,7 +95,7 @@ module MIR-TYPE-SYNTAX
                       | PathExpression "+" PathExpression
   syntax GenericArgsConst ::= LiteralExpression
                             | "-" LiteralExpression
-                            | BlockExpression
+                            //| BlockExpression
                             // SimplePathSegmentReduced is not actually needed, it's covered by Type
   syntax GenericArgsBinding ::= Identifier "=" Type
   syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
@@ -126,8 +126,7 @@ module MIR-TYPE-SYNTAX
   syntax Lifetime ::= "'" Identifier | "'static"
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
-  // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+  syntax ArrayType ::= "[" Type ";" Int "]" // Int is the size of the array, is it usize?
 
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
@@ -215,80 +214,6 @@ module MIR-TYPE-SYNTAX
   syntax PathConstant ::= "{" "constant" "#" Int "}"
   syntax PathOpaque ::= "{" "opaque" "#" Int "}"
 
-  // TODO: Figure out if we need full expression syntax. We probably don't need,
-  // e.g., ExpressionWithBlock
-  // https://doc.rust-lang.org/reference/expressions.html
-  syntax RustExpression ::= ExpressionWithoutBlock
-                          | ExpressionWithBlock
-
-  syntax ExpressionWithoutBlock ::= LiteralExpression
-                                  | PathExpression
-                                  // CallExpression
-                                  // https://doc.rust-lang.org/reference/expressions/call-expr.html
-                                  | RustExpression "(" RustExpressionList ")"
-                                  // FieldExpression
-                                  // https://doc.rust-lang.org/reference/expressions/field-expr.html
-                                  | RustExpression "." Identifier
-                                  // OperatorExpression
-                                  // https://doc.rust-lang.org/reference/expressions/operator-expr.html
-                                  // TypeCastExpression
-                                  > RustExpression "as" TypeNoBounds
-                                  // BorrowExpression
-                                  > "&" RustExpression
-                                  | "&" "mut" RustExpression
-                                  | "&&" RustExpression
-                                  | "&&" "mut" RustExpression
-                                  // DereferenceExpression
-                                  | "*" RustExpression
-                                  // NegationExpression
-                                  | "-" RustExpression
-                                  | "!" RustExpression
-                                  // ArithmeticOrLogicalExpression
-                                  > left:
-                                    RustExpression "*" RustExpression
-                                  | RustExpression "/" RustExpression
-                                  | RustExpression "%" RustExpression
-                                  > left:
-                                    RustExpression "+" RustExpression
-                                  | RustExpression "-" RustExpression
-                                  > left:
-                                    RustExpression "<" "<" RustExpression
-                                  | RustExpression ">" ">" RustExpression
-                                  > left:
-                                    RustExpression "&" RustExpression
-                                  > left:
-                                    RustExpression "|" RustExpression
-                                  > left:
-                                    RustExpression "^" RustExpression
-                                  // ComparisonExpression
-                                  > left:
-                                    RustExpression "==" RustExpression
-                                  | RustExpression "!=" RustExpression
-                                  | RustExpression ">" RustExpression
-                                  | RustExpression "<" RustExpression
-                                  | RustExpression ">=" RustExpression
-                                  | RustExpression "<=" RustExpression
-                                  // LazyBooleanExpression
-                                  > left:
-                                    RustExpression "||" RustExpression
-                                  | RustExpression "&&" RustExpression
-                                  | GroupedExpression
-  syntax ExpressionWithBlock ::= BlockExpression
-
-  // https://doc.rust-lang.org/reference/expressions/block-expr.html
-  syntax BlockExpression ::= "{" RustExpression "}"
-  // https://doc.rust-lang.org/reference/expressions/literal-expr.html
-  syntax LiteralExpression  ::= CharLiteral
-                              | StringLiteral
-                              | ByteLiteral
-                              | ByteStringLiteral
-                              | Int
-                              | Bool
-
-  // https://doc.rust-lang.org/reference/expressions/grouped-expr.html
-  syntax GroupedExpression ::= "(" RustExpression ")"
-  syntax RustExpressionList ::= List{RustExpression, ","}
-
   syntax Literal  ::= UnsignedLiteral
                     | SignedLiteral
                     | FloatLiteral
@@ -299,14 +224,8 @@ module MIR-TYPE-SYNTAX
                     | ByteStringLiteral
 
   // https://doc.rust-lang.org/reference/expressions/literal-expr.html
-  syntax LiteralExpression  ::= CharLiteral
-                              | StringLiteral
-                              // RawStringLiteral is unlikely to be used in MIR
-                              | ByteLiteral
-                              | ByteStringLiteral
-                              // RawByteStringLiteral is unlikely to be used in MIR
-                              | UnsignedLiteral | Int
-                              | FloatLiteral
+  syntax LiteralExpression  ::= Literal
+                              | Int
                               | Bool
 
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L725
@@ -333,10 +252,6 @@ module MIR-TYPE-SYNTAX
                         | "[" "async" "block" "@" FilePosition "]"
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
-
-  syntax UserVar ::= Identifier
-  syntax AdtFieldName ::= Identifier
-//  syntax BBName ::= BBToken
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression
@@ -491,7 +406,7 @@ We use several hooks which convert between token and string representations:
   syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
   syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
 
-  //syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
+  syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
 
   syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
 
@@ -513,9 +428,9 @@ Additionally, we need functions that convert between syntactic and semantics rep
   //-----------------------------------------------
   rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
 
-  //syntax Int ::= BBName2Int(BBName) [function, total]
+  syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------
-  //rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
+  rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
 ```
 
 ### Literals

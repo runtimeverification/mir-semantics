@@ -9,6 +9,8 @@ Operands are leafs, i.e. the "basic components" of rvalues: either a loading of 
 ```k
 module MIR-OPERAND-SYNTAX
   imports MIR-PLACE
+  imports MIR-CONSTANT-SYNTAX
+
   syntax Operand ::= Place
                    | "move" Place
                    | Constant

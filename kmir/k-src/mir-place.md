@@ -1,34 +1,23 @@
 ```k
 require "mir-types.md"
+require "mir-identifiers.md"
 ```
 
 ```k
 module MIR-PLACE
   imports BOOL
   imports UNSIGNED-INT-SYNTAX
+  imports MIR-IDENTIFIERS
   imports MIR-TYPE-SYNTAX
 ```
-```k
-  syntax Mutability ::= Not | Mut
-  syntax Mutability ::= MutPrefixToMutability(MutPrefix) [function]
-
-  syntax MutPrefix ::= "" | "not" 
-  
-  rule MutPrefixToMutability("") => Not
-  rule MutPrefixToMutability("mut") => Mut
-```
+//syntax Mutability ::= Not | Mut
 
 ### [Place](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/syntax/struct.Place.html)
-
 A `Place` is either a `Local`, i.e. a "variable" or a non-terminal place, which represents a projection of some sort:
 
 ```k
   syntax Place  ::= Local
                   | NonTerminalPlace
-```
-
-```k
-  syntax Local ::= LocalToken
 ```
 
 ```k

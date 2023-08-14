@@ -28,7 +28,7 @@ module MIR-SYNTAX
 ```k
   syntax Function ::= FnSig "{" FunctionBody "}"
   syntax FnSig ::= "fn" FunctionPath "(" ParameterList ")" "->" Type
-  syntax Parameter ::= Local ":" Type
+  syntax Parameter ::= "" | Local ":" Type
   syntax ParameterList ::= List{Parameter, ","}
 ```
 
@@ -37,12 +37,18 @@ The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir:
 ```k
   syntax FunctionBody ::= DebugList LocalDecls ScopeList BasicBlocks
   syntax Binding ::= "let" MutPrefix Local ":" Type
+  syntax MutPrefix ::= "" | "not" 
+  
+/*   syntax Mutability ::= MutPrefixToMutability(MutPrefix) [function]
+  rule MutPrefixToMutability("") => Not
+  rule MutPrefixToMutability("mut") => Mut */
+
   // Temporaries and the return place are always mutable.
   // a binding declared by the user, a temporary inserted by the compiler, a function argument, or the return place
   // a binding declared by the user, a function argument will be recorded as a localdecl, the others will be a map from place to value
   syntax LocalDecls ::= List{Binding, ";"}
 
-  syntax Scope ::= "scope" Int "{" DebugList BindingList ScopeList "}"
+  syntax Scope ::= "scope" Int "{" DebugList LocalDecls ScopeList "}"
   syntax ScopeList ::= List{Scope, ""}
 
   syntax Debug ::= "debug" UserVar "=>" Place ";"
