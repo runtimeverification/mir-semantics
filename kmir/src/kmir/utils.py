@@ -1,11 +1,13 @@
-import os
 from pathlib import Path
 
 
+def get_py_root() -> Path:
+    return Path(__file__).parent.parent.parent
+
+
 def default_def(llvm: bool) -> Path:
-    cwd = os.getcwd()
     ext = 'llvm.def' if llvm else 'haskell.def'
-    path = cwd + '/' + ext
+    path = get_py_root() / ext
 
     try:
         with open(path, 'r+') as def_file:
