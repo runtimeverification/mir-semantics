@@ -35,9 +35,9 @@ Primitive types (in literal format) used in MIR.
 ```
 
 ```k
-  syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
-  syntax FileLineColumnStartLiteral ::= r"[^@ ]+:[0-9]+:[0-9]+:"  [token]
-  syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
+  syntax FilePosition ::= FileName ":" CodePosition ":" CodePosition //Format FileName:StartLine:StartColumn:EndLine:EndColumn. similar as code region in Coverage. Considered duplicate. 
+  syntax FileName ::= r"[^@ ]+"
+  syntax CodePosition ::= r"[0-9]+:[0-9]+:"  [token]
 ```
 
 ```k
