@@ -15,6 +15,7 @@ from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
 from .preprocessor import preprocess
+from .utils import default_def
 
 
 @final
@@ -25,15 +26,20 @@ class KMIR:
     mir_parser: Path
     bug_report: BugReport | None
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], bug_report: BugReport | None = None):
-        llvm_dir = Path(llvm_dir)
+    def __init__(
+        self,
+        llvm_dir: Union[str, Path] | None,
+        haskell_dir: Union[str, Path] | None,
+        bug_report: BugReport | None = None,
+    ):
+        llvm_dir = Path(llvm_dir) if llvm_dir is not None else default_def(llvm=True)
         check_dir_path(llvm_dir)
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-PARSER-SYNTAX'
         if not mir_parser.is_file():
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
-        haskell_dir = Path(haskell_dir)
+        haskell_dir = Path(haskell_dir) if haskell_dir is not None else default_def(llvm=False)
         check_dir_path(haskell_dir)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)

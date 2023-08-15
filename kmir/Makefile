@@ -15,7 +15,7 @@ all: check test
 .PHONY: clean
 clean:
 	$(POETRY_RUN) kbuild clean
-	rm -rf dist .mypy_cache .pytest_cache
+	rm -rf dist .mypy_cache .pytest_cache haskell.def llvm.def
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 .PHONY: build
@@ -116,6 +116,7 @@ check-black: poetry-install
 # Kompilation
 
 kbuild-%:
-	$(POETRY_RUN) kbuild kompile $*
+	$(POETRY_RUN) kbuild kompile $* > $*.def; cat $*.def
+
 .PHONY: kbuild-*
 

@@ -1,2 +1,4 @@
 /dist/
 __pycache__/
+llvm.def
+haskell.def
