@@ -34,6 +34,18 @@ Primitive types (in literal format) used in MIR.
   syntax ByteStringLiteral  ::= r"b[\\\"]([^\\\"\\\\\\n\\r\\t]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-9a-fA-F][0-9a-fA-F]|\\\\\\n)*[\\\"]"  [token]
 ```
 
+## Variances
+
+Types such as structs, tuples and unions, which has fields (indexed by `VariantIdx`).
+
+- [`VariantIdx`](https://github.com/rust-lang/rust/blob/ffaa32b7b646c208f20c827655bb98ff9868852e/compiler/rustc_abi/src/lib.rs#L1493) used in abi is an index of type u32, so the index must not exceed u32::MAX. You can also customize things like the Debug impl, what traits are derived, and so forth via the macro.
+- [`FieldIdx`](https://github.com/rust-lang/rust/blob/d7e751006cb3691d1384b74196a9cb45447acfa8/compiler/rustc_abi/src/lib.rs#L1119) is the index of a field in a Variant
+```k
+
+  syntax VariantIdx ::= Int //u32
+  syntax FieldIdx ::= Int   //u32
+```
+
 ```k
   syntax FilePosition ::= FileName ":" CodePosition ":" CodePosition //Format FileName:StartLine:StartColumn:EndLine:EndColumn. similar as code region in Coverage. Considered duplicate. 
   syntax FileName ::= r"[^@ ]+"

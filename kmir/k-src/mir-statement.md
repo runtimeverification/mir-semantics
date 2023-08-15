@@ -39,9 +39,6 @@ module MIR-STATEMENT-SYNTAX
                            | "[2phase]"    //RetagKind::TwoPhase
                            | "[raw]"       //RetagKind::Raw
 
-  // TODO:The following should move to type sorts.
-  syntax VariantIdx ::= Int //Used in abi for structs, tuples, unions etc. https://github.com/rust-lang/rust/blob/ffaa32b7b646c208f20c827655bb98ff9868852e/compiler/rustc_abi/src/lib.rs#L1493 The index uses a u32, so the index must not exceed u32::MAX. You can also customize things like the Debug impl, what traits are derived, and so forth via the macro.
-  
   // https://github.com/rust-lang/rust/blob/ffaa32b7b646c208f20c827655bb98ff9868852e/compiler/rustc_type_ir/src/lib.rs#L785
   syntax Variance ::= "+" //Variance::Covariant 
                     | "-" //Variance::Contravariant
