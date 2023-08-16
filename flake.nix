@@ -49,22 +49,38 @@
         })
       (final: prev: {
           mir-semantics = prev.stdenv.mkDerivation {
-              pname = "mir-semantics";
-              projectDir = "./kmir";
-              version = self.rev or "dirty";
-              buildInputs = with prev; [
-                kmir
-                poetry
-              ];
-              nativeBuildInputs = [ prev.makeWrapper ]; 
+            pname = "mir-semantics";
+            version = self.rev or "dirty";
+            buildInputs = with prev; [
+              k-framework.packages.${prev.system}.k
+              kmir
+            ];
+            nativeBuildInputs = [ prev.makeWrapper ]; 
 
+            src = ./kmir;
+            
+            # kmir init $(kbuild which llvm) is to populate $out/lib/llvm
+            # with parser_Mir_MIR-PARSER-SYNTAX from gen_glr_parser 
+            # before nix directory becomes read only
             buildPhase = ''
-              make build
+              export KBUILD_DIR=".kbuild"
+              make kbuild-llvm POETRY_RUN=
+              make kbuild-haskell POETRY_RUN=
+              kmir init $(kbuild which llvm)
+            '';
+
+            installPhase = ''
+              mkdir -p $out/lib/
+              cp -r $(kbuild which llvm) $out/lib/
+              cp -r $(kbuild which haskell) $out/lib/ 
+
+              mkdir -p $out/bin/
+
+              makeWrapper ${prev.kmir}/bin/kmir $out/bin/kmir \
+                --set KMIR_LLVM_DIR "../lib/llvm" --set KMIR_HASKELL_DIR "../lib/haskell" --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
             '';
           };
         })
-        # TODO: build llvm definition
-        # TODO: build haskell definition
       ];
     in flake-utils.lib.eachSystem [
       "x86_64-linux"
@@ -80,7 +96,8 @@
       in {
         packages = rec {
           inherit (pkgs) kmir mir-semantics;
-          default = kmir;
+          # default = kmir;
+          default = mir-semantics;
           #  = pkgs..pyk;
         };
       }) // {
