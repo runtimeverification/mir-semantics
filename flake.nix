@@ -64,8 +64,7 @@
             # before nix directory becomes read only
             buildPhase = ''
               export KBUILD_DIR=".kbuild"
-              make kbuild-llvm POETRY_RUN=
-              make kbuild-haskell POETRY_RUN=
+              make build-backends POETRY_RUN=
               kmir init $(kbuild which llvm)
             '';
 
