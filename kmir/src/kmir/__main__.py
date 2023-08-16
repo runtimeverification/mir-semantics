@@ -22,6 +22,10 @@ def main() -> None:
     execute(**vars(args))
 
 
+def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
+    return KMIR(llvm_dir, llvm_dir)
+
+
 def exec_parse(
     input_file: str,
     definition_dir: str,
@@ -73,6 +77,14 @@ def exec_run(
 def create_argument_parser() -> ArgumentParser:
     parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
+
+    # Init
+    init_subparser = command_parser.add_parser('init', help='Initialises a KMIR object')
+    init_subparser.add_argument(
+        'llvm_dir',
+        type=dir_path,
+        help='Path to the llvm definition',
+    )
 
     # Parse
     parse_subparser = command_parser.add_parser('parse', help='Parse a MIR file')
