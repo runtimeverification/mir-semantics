@@ -1,4 +1,9 @@
 POETRY_RUN := poetry run
+KMIR_LLVM_DEF = $(kbuild which llvm) 
+KMIR_HASKELL_DEF = $(kbuild which haskell) 
+
+export KMIR_LLVM_DEF
+export KMIR_HASKELL_DEF
 
 .PHONY: default all clean build install \
         poetry-install                  \
@@ -117,6 +122,9 @@ check-black: poetry-install
 
 kbuild-%:
 	$(POETRY_RUN) kbuild kompile $* > $*.def; cat $*.def
+
+kwhich-%:
+	$(POETRY_RUN) kbuild which $*
 
 .PHONY: kbuild-*
 

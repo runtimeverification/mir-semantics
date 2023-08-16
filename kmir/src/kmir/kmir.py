@@ -1,6 +1,7 @@
 __all__ = ['KMIR']
 
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -8,6 +9,7 @@ from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Optional, Union, final
 
+from dotenv import load_dotenv
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
@@ -15,7 +17,6 @@ from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
 from .preprocessor import preprocess
-from .utils import default_def
 
 
 @final
@@ -32,14 +33,33 @@ class KMIR:
         haskell_dir: Union[str, Path] | None,
         bug_report: BugReport | None = None,
     ):
-        llvm_dir = Path(llvm_dir) if llvm_dir is not None else default_def(llvm=True)
+        if llvm_dir is None or haskell_dir is None:
+            load_dotenv()
+
+        if llvm_dir is None:
+            env_llvm_def = os.getenv('LLVM_DEF')
+            if env_llvm_def:
+                llvm_dir = Path(env_llvm_def)
+            else:
+                raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or LLVM_DEF')
+        else:
+            llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-PARSER-SYNTAX'
         if not mir_parser.is_file():
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
-        haskell_dir = Path(haskell_dir) if haskell_dir is not None else default_def(llvm=False)
+        if haskell_dir is None:
+            env_haskell_def = os.getenv('HASKELL_DEF')
+            if env_haskell_def:
+                haskell_dir = Path(env_haskell_def)
+            else:
+                raise RuntimeError(
+                    'Cannot find KMIR haskell definition, please specify --definition-dir, or haskell_DEF'
+                )
+        else:
+            haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)

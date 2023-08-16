@@ -15,6 +15,7 @@ python = "^3.10"
 filelock = "3.9.0"
 pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "v0.1.405" }
 pytest-timeout = "2.1.0"
+python-dotenv = "1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
@@ -29,6 +30,7 @@ pep8-naming = "*"
 pytest = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
+python-dotenv = "*"
 
 [tool.poetry.scripts]
 kmir = "kmir.__main__:main"
