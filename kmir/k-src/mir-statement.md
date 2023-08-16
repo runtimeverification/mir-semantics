@@ -39,13 +39,16 @@ module MIR-STATEMENT-SYNTAX
                            | "[2phase]"    //RetagKind::TwoPhase
                            | "[raw]"       //RetagKind::Raw
 
+  //TODO: should move to type or abi
   // https://github.com/rust-lang/rust/blob/ffaa32b7b646c208f20c827655bb98ff9868852e/compiler/rustc_type_ir/src/lib.rs#L785
   syntax Variance ::= "+" //Variance::Covariant 
                     | "-" //Variance::Contravariant
                     | "o" //Variance::Invariant
                     | "*" //Variance::Bivariant
 
-  syntax UserTypeProjection //TODO: depend on Place::PorjectElem
+  //TODO: should move to Type.
+  syntax UserTypeProjection ::= "UserType" "(" Int ")" // UserTypeProjection.base:UserTypeAnnotationIndex, u32
+                              | List{ProjectionElem, ","} // UserTypeProjection.projs: Vec<ProjectionKind>. Not sure which separator should it be, guessed "," since the implementation type is a Vec.
 
   syntax NonDivergingIntrinsic ::= "assume" "(" Operand ")" // NonDivergingIntrinsic::Assume
                                  | "copy_nonoverlapping" "(" "dst =" Operand "," "src =" Operand "," "count =" Operand ")"
