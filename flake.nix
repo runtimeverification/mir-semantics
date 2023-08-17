@@ -74,9 +74,6 @@
               cp -r $(kbuild which haskell) $out/lib/ 
 
               mkdir -p $out/bin/
-
-              makeWrapper ${prev.kmir}/bin/kmir $out/bin/kmir \
-                --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
             '';
           };
         })
@@ -85,7 +82,7 @@
           kmir = prev.kmir.overrideAttrs (oldAttrs: {
             buildInputs = oldAttrs.buildInputs or [] ++ [ prev.python310 prev.makeWrapper ];
             postInstall = oldAttrs.postInstall or "" + ''
-              wrapProgram $out/bin/kmir --set KMIR_LLVM_DIR ${(toString prev.mir-semantics) + "/lib/llvm"} --set KMIR_HASKELL_DIR ${(toString prev.mir-semantics) + "/lib/haskell"}
+              wrapProgram $out/bin/kmir --set KMIR_LLVM_DIR ${(toString prev.mir-semantics) + "/lib/llvm"} --set KMIR_HASKELL_DIR ${(toString prev.mir-semantics) + "/lib/haskell"} --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
             '';
           });
         })
