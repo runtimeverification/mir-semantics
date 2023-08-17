@@ -53,9 +53,9 @@ class KMIR:
             if env_haskell_dir:
                 haskell_dir = Path(env_haskell_dir)
             else:
-                raise RuntimeError(
-                    'Cannot find KMIR HASKELL definition, please specify --definition-dir, or KMIR_HASKELL_DIR'
-                )
+                # Haskell dir doesn't exist, but it not needed for current functionality
+                print('WARN: Haskell defintion could not be found')
+                haskell_dir = llvm_dir  # Just to pass type checking for now
         else:
             haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
