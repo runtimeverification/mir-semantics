@@ -30,14 +30,16 @@ class KMIR:
         self,
         llvm_dir: Union[str, Path] | None,
         haskell_dir: Union[str, Path] | None,
-        bug_report: BugReport | None = None
+        bug_report: BugReport | None = None,
     ):
         if llvm_dir is None:
             env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
             if env_llvm_dir:
                 llvm_dir = Path(env_llvm_dir)
             else:
-                raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+                raise RuntimeError(
+                    'Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR'
+                )
         else:
             llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
@@ -52,7 +54,8 @@ class KMIR:
                 haskell_dir = Path(env_haskell_dir)
             else:
                 raise RuntimeError(
-                    'Cannot find KMIR HASKELL definition, please specify --definition-dir, or KMIR_HASKELL_DIR')
+                    'Cannot find KMIR HASKELL definition, please specify --definition-dir, or KMIR_HASKELL_DIR'
+                )
         else:
             haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
