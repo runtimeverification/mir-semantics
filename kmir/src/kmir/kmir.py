@@ -1,6 +1,7 @@
 __all__ = ['KMIR']
 
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,15 +26,35 @@ class KMIR:
     mir_parser: Path
     bug_report: BugReport | None
 
-    def __init__(self, llvm_dir: Union[str, Path], haskell_dir: Union[str, Path], bug_report: BugReport | None = None):
-        llvm_dir = Path(llvm_dir)
+    def __init__(
+        self,
+        llvm_dir: Union[str, Path] | None,
+        haskell_dir: Union[str, Path] | None,
+        bug_report: BugReport | None = None
+    ):
+        if llvm_dir is None:
+            env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
+            if env_llvm_dir:
+                llvm_dir = Path(env_llvm_dir)
+            else:
+                raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+        else:
+            llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-PARSER-SYNTAX'
         if not mir_parser.is_file():
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
-        haskell_dir = Path(haskell_dir)
+        if haskell_dir is None:
+            env_haskell_dir = os.getenv('KMIR_HASKELL_DIR')
+            if env_haskell_dir:
+                haskell_dir = Path(env_haskell_dir)
+            else:
+                raise RuntimeError(
+                    'Cannot find KMIR HASKELL definition, please specify --definition-dir, or KMIR_HASKELL_DIR')
+        else:
+            haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)

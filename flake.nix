@@ -76,9 +76,18 @@
               mkdir -p $out/bin/
 
               makeWrapper ${prev.kmir}/bin/kmir $out/bin/kmir \
-                --set KMIR_LLVM_DIR "../lib/llvm" --set KMIR_HASKELL_DIR "../lib/haskell" --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
+                --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
             '';
           };
+        })
+        # Now mir-semantics is built, wrap kmir with LLVM and HASKELL defs
+        (final: prev: {
+          kmir = prev.kmir.overrideAttrs (oldAttrs: {
+            buildInputs = oldAttrs.buildInputs or [] ++ [ prev.python310 prev.makeWrapper ];
+            postInstall = oldAttrs.postInstall or "" + ''
+              wrapProgram $out/bin/kmir --set KMIR_LLVM_DIR ${(toString prev.mir-semantics) + "/lib/llvm"} --set KMIR_HASKELL_DIR ${(toString prev.mir-semantics) + "/lib/haskell"}
+            '';
+          });
         })
       ];
     in flake-utils.lib.eachSystem [
@@ -95,8 +104,8 @@
       in {
         packages = rec {
           inherit (pkgs) kmir mir-semantics;
-          # default = kmir;
-          default = mir-semantics;
+          default = kmir;
+          # default = mir-semantics;
           #  = pkgs..pyk;
         };
       }) // {
