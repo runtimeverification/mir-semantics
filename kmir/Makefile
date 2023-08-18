@@ -18,8 +18,11 @@ clean:
 	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
+.PHONY: build-backends
+build-backends: kbuild-llvm kbuild-haskell
+
 .PHONY: build
-build: poetry-install kbuild-llvm kbuild-haskell
+build: poetry-install build-backends
 	poetry build
 
 .PHONY: poetry-install
