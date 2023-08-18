@@ -35,13 +35,14 @@ class KMIR:
     ):
         if llvm_dir is None or haskell_dir is None:
             load_dotenv()
-
         if llvm_dir is None:
-            env_llvm_def = os.getenv('LLVM_DEF')
-            if env_llvm_def:
-                llvm_dir = Path(env_llvm_def)
+            env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
+            if env_llvm_dir:
+                llvm_dir = Path(env_llvm_dir)
             else:
-                raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or LLVM_DEF')
+                raise RuntimeError(
+                    'Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR'
+                )
         else:
             llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
@@ -51,13 +52,13 @@ class KMIR:
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
         if haskell_dir is None:
-            env_haskell_def = os.getenv('HASKELL_DEF')
-            if env_haskell_def:
-                haskell_dir = Path(env_haskell_def)
+            env_haskell_dir = os.getenv('KMIR_HASKELL_DIR')
+            if env_haskell_dir:
+                haskell_dir = Path(env_haskell_dir)
             else:
-                raise RuntimeError(
-                    'Cannot find KMIR haskell definition, please specify --definition-dir, or haskell_DEF'
-                )
+                # Haskell dir doesn't exist, but it not needed for current functionality
+                print('WARN: Haskell defintion could not be found')
+                haskell_dir = llvm_dir  # Just to pass type checking for now
         else:
             haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
