@@ -32,9 +32,8 @@ jobs:
           git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
       - name: 'Update Nix flake inputs'
         run: |
-          cd kmir
           nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
           git add flake.nix flake.lock
-          git commit -m 'kmir/flake.{nix,lock}: update Nix derivations' || true
+          git commit -m 'flake.{nix,lock}: update Nix derivations' || true
       - name: 'Push updates'
         run: git push
