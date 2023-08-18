@@ -1,9 +1,4 @@
 POETRY_RUN := poetry run
-KMIR_LLVM_DEF = $(kbuild which llvm) 
-KMIR_HASKELL_DEF = $(kbuild which haskell) 
-
-export KMIR_LLVM_DEF
-export KMIR_HASKELL_DEF
 
 .PHONY: default all clean build install \
         poetry-install                  \
@@ -20,7 +15,7 @@ all: check test
 .PHONY: clean
 clean:
 	$(POETRY_RUN) kbuild clean
-	rm -rf dist .mypy_cache .pytest_cache haskell.def llvm.def
+	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 .PHONY: build-backends
@@ -124,7 +119,7 @@ check-black: poetry-install
 # Kompilation
 
 kbuild-%:
-	$(POETRY_RUN) kbuild kompile $* > $*.def; cat $*.def
+	$(POETRY_RUN) kbuild kompile $*
 
 kwhich-%:
 	$(POETRY_RUN) kbuild which $*

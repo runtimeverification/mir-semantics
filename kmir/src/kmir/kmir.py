@@ -9,7 +9,6 @@ from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Optional, Union, final
 
-from dotenv import load_dotenv
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
@@ -33,8 +32,6 @@ class KMIR:
         haskell_dir: Union[str, Path] | None,
         bug_report: BugReport | None = None,
     ):
-        if llvm_dir is None or haskell_dir is None:
-            load_dotenv()
         if llvm_dir is None:
             env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
             if env_llvm_dir:
