@@ -17,7 +17,9 @@ module MIR-SYNTAX
 ```
 
 ```k
-  syntax Mir ::= List{CrateItem, ""}
+  syntax Mir ::= UserTypeAnnotations
+               | List{CrateItem, ""}
+  
   syntax CrateItem ::= Function
                         | FunctionForData
                         | FunctionForPromoted

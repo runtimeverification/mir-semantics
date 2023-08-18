@@ -5,8 +5,6 @@ require "mir-identifiers.md"
 
 ```k
 module MIR-PLACE
-  imports BOOL
-  imports UNSIGNED-INT-SYNTAX
   imports MIR-IDENTIFIERS
   imports MIR-TYPE-SYNTAX
 ```
@@ -36,11 +34,6 @@ Quote from RustDoc: "Places roughly correspond to a “location in memory.” Pl
 #### [ProjectionElem](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/syntax/enum.ProjectionElem.html)
 
 ```k
-  syntax OpaqueCast ::= "(" Local "as" Type ")"            // ProjectionElem::OpaqueCast(ty)
-
-  syntax Downcast ::= "(" Local "as" String ")"            // ProjectionElem::Downcast(Some(name:Symbol), _index: VarantIdx)
-                    | "(" Local "as" "variant" "#" VariantIdx ")" // ProjectionElem::Downcast(None, index: VariantIdx)
-
   syntax Deref ::= "(" "*" Local ")"                       // ProjectionElem::Deref
 
   syntax Field ::= "(" Local "." FieldIdx ":" Type ")"     // ProjectionElem::Field(field, ty)
@@ -55,6 +48,10 @@ Quote from RustDoc: "Places roughly correspond to a “location in memory.” Pl
                     | Local "[" Int ":" "-" Int "]"        // ProjectionElem::Subslice { from:u64, to:u64, from_end: true }
                     | Local "[" Int ".." Int "]"           // ProjectionElem::Subslice { from, to, from_end: false }
 
+  syntax Downcast ::= "(" Local "as" String ")"            // ProjectionElem::Downcast(Some(name:Symbol), _index: VarantIdx)
+                    | "(" Local "as" "variant" "#" VariantIdx ")" // ProjectionElem::Downcast(None, index: VariantIdx)
+
+  syntax OpaqueCast ::= "(" Local "as" Type ")"            // ProjectionElem::OpaqueCast(ty)
 ```
 
 ```k

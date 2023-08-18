@@ -4,22 +4,119 @@ require "mir-identifiers.md"
 
 Syntax of MIR types
 -------------------
+# [Stable MIR Types](https://github.com/rust-lang/rust/blob/master/compiler/rustc_smir/src/stable_mir/ty.rs)
 
 ```k
 module MIR-TYPE-SYNTAX
-  imports BOOL-SYNTAX
-  imports UNSIGNED-INT-SYNTAX
   imports MIR-IDENTIFIERS
+
+  syntax Type ::= RigidTy       //stable_mir::Ty::TyKind::RigidTy(RigidTy)
+                | Alias         //stable_mir::Ty::TyKind::Alias(AliasKind, AliasTy)
+                | Param         //stable_mir::Ty::TyKind::Param(ParamTy)
+                | Bound         //stable_mir::Ty::TyKind::Bound(usize, BoundTy)
+
+```
+The following `TyKind` are defined in `rust_type_ir` but not used in [Stable mir TyKind](https://github.com/rust-lang/rust/blob/f3b4c6746aa0e278797ae52e2c16fdef04136e3a/compiler/rustc_smir/src/rustc_smir/mod.rs#L1097).
+- TypeKind::GeneratorWitness(g:BinderLIstTy), printed as "GeneratorWitness" "(" BinderListTy ")" 
+- TypeKind::GeneratorWitnessMIR(d:DefId, s:GenericArgsRef) printed as "GeneratorWitnessMIR" "(" DefId "," GenericArgsRef")" 
+- TyKind::Placeholder(PlaceholderType)
+- TyKind::Infer(InferTy)
+- TyKind::Error(ErrorGaranteed)
+
+```k
+  syntax RigidTy ::= "bool"     //TypeKind::Bool
+                   |  "char"    //TypeKind::Char
+                   | IntTy      //TypeKind::Int(IntTy)
+                   | UintTy     //TypeKind::Uint(UintTy)
+                   | FloatTy    //TypeKind::Float(FloatTy)
+                   | "adt" "(" AdtDef "," GenericArgs ")"  //TypeKind::Adt(AdtDef, GenericArgs), AdtDef= DefId
+                   | "Foreign" "(" DefId ")" //TypeKind::Foreign(ForeignDef), ForeignDef = DefId
+                   | "str"      //TypeKind::Str
+                   | "[" Type ";" Int "]" //TypeKind::Array(t:Ty, c:Const)
+                   | "[" Type "]"//TypeKind::Slice(t:ty) 
+                   | "*" TypeMut Type //TypeKind::RawPtr(Ty, Mutability)
+                   | "&" Region " " RefMut " " Type // TypeKind::Ref(r:Region, t:Type, m:Mutability)
+                   | "FnDef" "(" DefId "," GenericArgsRef ")" // TypeKind::FnDef(d:FnDef, s:GenericArgs). FnDef = DefId
+                   | "["  "]" // TypeKind::FnPtr(s:PolyFnSig) should have a signature like "fn() -> i32"
+                   | DynStr ListBinderExistentialPredicate "+" Region //TypeKind::Dynamic(Vec<Binder<ExistentialPredicate>>, Region, DynKind)
+                   | "Closure" "(" DefId "," GenericArgsRef ")" //TypeKind::Closure(ClosureDef, GenericArgs), ClosureDef = DefId
+                   | "Generator" "(" DefId "," GenericArgsRef "," Movbl  ")" //TypeKind::Generator(GeneratorDef, GenericArgs, Movability)
+                   | "!" //TypeKind::Never
+                   | TupleTy //TypeKind::(Vec<Ty>), TODO: Oversimplied, needs to check the other possibilities
+
+    syntax IntTy ::= "isize"
+                   | "i8"
+                   | "i16" 
+                   | "i32"
+                   | "i64"
+                   | "i128"
+
+  syntax UintTy ::= "usize"  
+                  | "u8"
+                  | "u16"
+                  | "u32"
+                  | "u64"
+                  | "u128"
+
+  syntax FloatTy ::= "f32"
+                   | "f64"
+
+  syntax AdtDef //TODO:
+
+  syntax GenericArgs //TODO:
+
+  syntax TypeMut ::= "mut"   //TypeAndMut.Mutability = Mut
+                   | "const" //TypeAndMut.Mutability = Not
+
+  syntax Region //TODO
+
+  syntax RefMut ::= "mut" //Mutability = Mut
+                  | ""    //Mutability = Not
+
+  syntax DynStr ::= "dyn"   //DynKind::Dyn 
+                | "dyn*"  //DynKind::DynStar
+                
+  syntax ListBinderExistentialPredicate //TODO
+
+  //Used the pretty print from ast::Movability, https://github.com/rust-lang/rust/blob/b531630f4255216fce1400c45976e04f1ab35a84/compiler/rustc_ast_pretty/src/pprust/state/expr.rs#L667
+  syntax Movbl ::= "static" //Movability = Static, May contain self reference
+                 | ""       //Movability = Movable, must not contain self reference
+
+  syntax TupleTy ::= "(" ")"
+                   | "(" Type ",)"
+                   | "(" Type "," Type ")"//TODO: Not sure why the implementation should have  "(" Type "," Type ")" TypeList ")" 
+```
+
+# The [`Alias`](https://github.com/rust-lang/rust/blob/c5833f1956bea474034ffec5ab2c75f343548038/compiler/rustc_smir/src/stable_mir/ty.rs#L30) Type 
+It represents a projection of an associated type. In stable MIR, its implementation is bridged to [`TypeKind::Alias(AliasKind, I::AliasTy)`](https://github.com/rust-lang/rust/blob/c5833f1956bea474034ffec5ab2c75f343548038/compiler/rustc_type_ir/src/sty.rs#L203) of the `rustc_type_ir`.
+
+
+```k
+  syntax Alias ::=  "Alias" "(" AliasKind "," AliasTy ")"         //TypeKind::Alias(i:AliasKind, a:AliasTy)
+// https://github.com/rust-lang/rust/blob/c5833f1956bea474034ffec5ab2c75f343548038/compiler/rustc_middle/src/ty/sty.rs#L1220
+  syntax AliasKind ::= AssocTyDescr                          //DefKind::AssocTy who's parent is a DefKind::Impl=> AliasKind::Projection, something to do with DefKind: https://github.com/rust-lang/rust/blob/master/compiler/rustc_hir/src/def.rs
+                     | AssocTyDescr                          //DefKind::AssocTy if let DefKind::Impl { of_trait: false } = tcx.def_kind(tcx.parent(self.def_id)) => AliasKind::Inherent
+                     | OpaqueTyDescr                              //DefKind::OpaqueTy => AliasKind::Opaque
+                     | TyAliasDescr                               //DefKind::TyAlias { .. } => ty::Weak,
+                     | "unexpected DefKind in AliasTy:" DefKind   //Other DefKinds
+
+  syntax AliasTy ::= "AliasTy" "{" "args:" GenericArgs "def_id:" DefId "}" //https://github.com/rust-lang/rust/blob/c5833f1956bea474034ffec5ab2c75f343548038/compiler/rustc_middle/src/ty/structural_impls.rs#L240
+```
+
+# The [Param](https://github.com/rust-lang/rust/blob/f3b4c6746aa0e278797ae52e2c16fdef04136e3a/compiler/rustc_smir/src/stable_mir/ty.rs#L31) Type
+It represents the type parameter. In stable MIR, its implementation is bridged to [`TypeKind::Param(I::ParamTy)`](https://github.com/rust-lang/rust/blob/c5833f1956bea474034ffec5ab2c75f343548038/compiler/rustc_type_ir/src/sty.rs#L209) in of the `rustc_type_ir`.
+```k
+  syntax Param
+```
+
+## The [Bound](https://github.com/rust-lang/rust/blob/f3b4c6746aa0e278797ae52e2c16fdef04136e3a/compiler/rustc_smir/src/stable_mir/ty.rs#L32) Type
+It is used to represent the `'a` in `for<'a> fn(&'a ())`
+
+```k
+  syntax Bound
 ```
 
 ```k
-  // https://doc.rust-lang.org/reference/types.html#type-expressions
-  syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
-                | TypeNoBounds
-                | TraitObjectTypeReduced
-
-  syntax TypeList ::= List{Type, ","}
-
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
                         // In the Rust syntax, ImplTraitTypeReduced is a direct
                         // child of type. For some reason, MIR allows `&impl A+B`
@@ -27,27 +124,9 @@ module MIR-TYPE-SYNTAX
                         | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
-                        | NonPathImplementableType
-                        // Probably not used in MIR: InferredType
                         | QualifiedPathInType
                         // Probably not used im MIR: MacroInvocation
-                        | MirOnlyType
-
-  syntax NonPathImplementableType ::= TupleType
-                                    | NeverType
-                                    | RawPointerType
-                                    | ReferenceType
-                                    // TODO: DoubleReferenceType should be removed.
-                                    // This exists only because a type like
-                                    // &&usize, which should probably be parsed as
-                                    // &(&usize), fails to parse because
-                                    // K identifies "&&" as a single token.
-                                    // One option would be to replace all "&&"
-                                    // tokens with "&" "&".
-                                    | DoubleReferenceType
-                                    | ArrayType
-                                    | SliceType
-                                    | BareFunctionType
+                        | MirOnlyTyp
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -100,15 +179,9 @@ module MIR-TYPE-SYNTAX
   syntax GenericArgsBinding ::= Identifier "=" Type
   syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
   syntax MaybeResultType ::= "" | "->" Type
-
-  // https://doc.rust-lang.org/reference/types/tuple.html#tuple-types
-  syntax TupleType  ::= "(" ")"
-                      | "(" Type "," TypeList ")"
   // https://doc.rust-lang.org/reference/types/never.html
   syntax NeverType ::= "!"
-  // https://doc.rust-lang.org/reference/types/pointer.html#raw-pointers-const-and-mut
-  syntax RawPointerType ::= "*" "mut" TypeNoBounds
-                          | "*" "const" TypeNoBounds
+
   // https://doc.rust-lang.org/reference/types/pointer.html#shared-references-
   syntax ReferenceType  ::= "&" TypeNoBounds
                           | "&" Lifetime TypeNoBounds
@@ -125,11 +198,6 @@ module MIR-TYPE-SYNTAX
   // single one. Consider actually using multiple token types.
   syntax Lifetime ::= "'" Identifier | "'static"
   syntax LifetimeBounds ::= List{Lifetime, "+"}
-
-  syntax ArrayType ::= "[" Type ";" Int "]" // Int is the size of the array, is it usize?
-
-  // https://doc.rust-lang.org/reference/types/slice.html
-  syntax SliceType ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInType ::= QualifiedPathType
   syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
@@ -329,13 +397,6 @@ The values of `RValueResult` sort represent the evaluation result of the syntact
 TODO: add more domain sorts
 
 ```k
-  syntax MIRValue ::= Int
-                    | String
-                    | "Unit"
-                    | Bool
-                    | "Never"
-                    | "UNIMPLEMENTED"
-
   syntax RValueResult ::= MIRValue
                         | MIRValueNeList
 
@@ -359,102 +420,6 @@ A best-effort default value inference function, for locals initialization.
   rule defaultMIRValue(BOOL_TYPE)     => false requires IdentifierToken2String(BOOL_TYPE)  ==String "bool"
   rule defaultMIRValue(!)             => Never
   rule defaultMIRValue(_:Type)        => UNIMPLEMENTED [owise]
-```
-
-```k
-endmodule
-```
-
-Internal sort casts
--------------------
-
-```k
-module MIR-SORT-CASTS
-  imports MIR-TYPE-SYNTAX
-  imports MIR-RVALUE
-
-
-  syntax Int ::= castMIRValueToInt(MIRValue) [function]
-  //---------------------------------------------------
-  rule castMIRValueToInt(X:Int) => X
-  rule castMIRValueToInt(true:Bool) => 1
-  rule castMIRValueToInt(false:Bool) => 0
-
-  syntax FunctionPath ::= toFunctionPath(PathInExpression) [function]
-  //-----------------------------------------------------------------
-  rule toFunctionPath(.ExpressionPathList) => .FunctionPath
-  rule toFunctionPath(NAME:Identifier :: .ExpressionPathList) => NAME :: .FunctionPath
-
-endmodule
-```
-
-Hooked functions
-----------------
-
-```k
-module MIR-HOOKS
-  imports STRING
-  imports MIR-SYNTAX
-```
-
-We use several hooks which convert between token and string representations:
-
-```k
-  syntax String ::= StringLiteral2Sring(StringLiteral) [function, total, hook(STRING.token2string)]
-  syntax StringLiteral ::= String2SringLiteral(String) [function, total, hook(STRING.string2token)]
-
-  syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
-  syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
-
-  syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
-
-  syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
-
-  syntax String ::= SignedLitertal2String(SignedLiteral) [function, total, hook(STRING.token2string)]
-  syntax String ::= UnsignedLitertal2String(UnsignedLiteral) [function, total, hook(STRING.token2string)]
-  syntax String ::= StringLitertal2String(StringLiteral) [function, total, hook(STRING.token2string)]
-```
-
-Additionally, we need functions that convert between syntactic and semantics representations of several types:
-
-### Locals
-
-```k
-  syntax Int ::= Local2Int(Local) [function, total]
-  //-----------------------------------------------
-  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR)))
-
-  syntax Local ::= Int2Local(Int) [function, total]
-  //-----------------------------------------------
-  rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
-
-  syntax Int ::= BBName2Int(BBName) [function, total]
-  //-------------------------------------------------
-  rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
-```
-
-### Literals
-
-* Unsigned integer literals
-
-```k
-  syntax Int ::= UnsignedLiteral2Int(UnsignedLiteral) [function]
-  //------------------------------------------------------------
-  rule UnsignedLiteral2Int(LITERAL) =>
-    #let     STR = UnsignedLitertal2String(LITERAL)
-    #in #let UNDERSCORE_POSITION = findChar(STR, "_", 0)
-    #in String2Int(substrString(STR, 0, UNDERSCORE_POSITION))
-```
-
-* Signed integer literals
-
-```k
-  syntax Int ::= SignedLiteral2Int(SignedLiteral) [function]
-  //--------------------------------------------------------
-  rule SignedLiteral2Int(LITERAL) =>
-    #let     STR = SignedLitertal2String(LITERAL)
-    #in #let UNDERSCORE_POSITION = findChar(STR, "_", 0)
-    #in String2Int(substrString(STR, 0, UNDERSCORE_POSITION))
 ```
 
 ```k

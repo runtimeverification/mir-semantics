@@ -22,12 +22,18 @@ module MIR-CONSTANT-SYNTAX
   imports MIR-TYPE-SYNTAX
 ```
 
-### [`Constant`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Constant.html)
+### [`Constant`](https://github.com/rust-lang/rust/blob/e3590fccfbdb6284bded9b70eca2e72b0c57e070/compiler/rustc_middle/src/mir/mod.rs#L2219)
+There are three types of constants- 
+- constant value from the type system
+- constant that are unevaluated, thus not part of the type system
+- constant that doesnot go back to type system like pointers.
 
-TODO: these sorts may need refactoring to closer match the `rustc` implementation.
+Literals and const generic parameters are eagerly converted to a constant, everything else becomes `Unevaluated`.
 
 ```k
-  syntax Constant ::= "const" ConstantValue
+  syntax Constant ::= "const " ConstantValue   //ConstantKind::Ty(ty::Const<'tcx>)
+                    | "const " "_"             //ConstantKind::Unevaluated(UnevaluatedConst<'tcx>, Ty<'tcx>)
+                    |                  //ConstantKind::Val(interpret::ConstValue<'tcx>, Ty<'tcx>)
   syntax ConstantValue  ::= UnsignedLiteral
                           | SignedLiteral
                           | FloatLiteral
