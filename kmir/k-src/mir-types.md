@@ -179,8 +179,6 @@ It is used to represent the `'a` in `for<'a> fn(&'a ())`
   syntax GenericArgsBinding ::= Identifier "=" Type
   syntax TypePathFn ::= "(" TypeList ")" MaybeResultType
   syntax MaybeResultType ::= "" | "->" Type
-  // https://doc.rust-lang.org/reference/types/never.html
-  syntax NeverType ::= "!"
 
   // https://doc.rust-lang.org/reference/types/pointer.html#shared-references-
   syntax ReferenceType  ::= "&" TypeNoBounds
@@ -268,19 +266,7 @@ It is used to represent the `'a` in `for<'a> fn(&'a ())`
 
   syntax Abi ::= StringLiteral
 
-  syntax FunctionPathComponent  ::= Identifier
-                                  | PathLocation
-                                  | PathClosure
-                                  | PathConstant
-                                  | PathOpaque
-                                  | Int
-  // TODO: Figure out if FunctionPath is always non-empty. If so, merge with
-  // PathFunctionData
-  syntax FunctionPath ::= List{FunctionPathComponent, "::"}
-  syntax PathLocation ::= "<" "impl" "at" FilePosition ">"
-  syntax PathClosure ::= "{" "closure" "#" Int "}"
-  syntax PathConstant ::= "{" "constant" "#" Int "}"
-  syntax PathOpaque ::= "{" "opaque" "#" Int "}"
+  
 
   syntax Literal  ::= UnsignedLiteral
                     | SignedLiteral
