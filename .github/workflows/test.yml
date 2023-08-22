@@ -49,3 +49,21 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+
+  nix:
+    name: 'Nix'
+    needs: code-quality-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v3
+      - name: 'Install Nix'
+        uses: cachix/install-nix-action@v22
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.13.3/install
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }} 
+      - name: 'Nix Build KMIR'
+        run: GC_DONT_GC=1 nix build . --extra-experimental-features 'nix-command flakes' --print-build-logs
+      - name: 'Nix Test KMIR'
+        run: GC_DONT_GC=1 nix build --extra-experimental-features 'nix-command flakes' --print-build-logs .#kmir-test
