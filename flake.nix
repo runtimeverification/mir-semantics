@@ -86,6 +86,29 @@
             '';
           });
         })
+        (final: prev: {
+          kmir-test = prev.stdenv.mkDerivation {
+            pname = "kmir-test";
+            version = self.rev or "dirty";
+
+            src = ./.;
+
+            buildInputs = [ final.kmir prev.which prev.git ];
+
+            buildPhase = ''
+              mkdir -p tests/
+              cp -v kmir/src/tests/integration/test-data/handwritten-mir/execution/arithm-simple.* tests/
+              ls tests/
+              ls ./nix-tests.sh
+              patchShebangs .
+              ./nix-tests.sh
+            '';
+
+            installPhase = ''
+              touch $out
+            '';
+          };
+        })
       ];
     in flake-utils.lib.eachSystem [
       "x86_64-linux"
@@ -100,7 +123,7 @@
         };
       in {
         packages = rec {
-          inherit (pkgs) kmir mir-semantics;
+          inherit (pkgs) kmir mir-semantics kmir-test;
           default = kmir;
           # default = mir-semantics;
           #  = pkgs..pyk;
