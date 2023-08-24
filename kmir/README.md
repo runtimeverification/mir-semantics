@@ -137,3 +137,7 @@ poetry run kmir run --definition-dir $KMIR_DEFINITION --output pretty src/tests/
 
 
 To reduce this friction a little, we provide a simple `bash` script [`doit.sh`](doit.sh) that encapsulates the common `kmir` calls.
+
+To automatically connect kmir with the backend definitions, setting environement variables `KMIR_LLVM_DIR` and `KMIR_HASKELL_DIR` 
+to the path of the definitions directories will mean that `--definition-dir` can be omitted. A script is provided to automatically set
+these variables which can be run with `source set_env.sh`. NOTE: this will NOT WORK if installing via `pip`
