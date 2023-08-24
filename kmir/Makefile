@@ -120,5 +120,9 @@ check-black: poetry-install
 
 kbuild-%:
 	$(POETRY_RUN) kbuild kompile $*
+
+kwhich-%:
+	$(POETRY_RUN) kbuild which $*
+
 .PHONY: kbuild-*
 
