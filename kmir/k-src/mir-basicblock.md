@@ -11,6 +11,7 @@ module MIR-BASICBLOCK-SYNTAX
   imports MIR-TERMINATOR-SYNTAX
 
   syntax BasicBlock ::= BBId ":" BasicBlockData
+                      | BBId ":" BasicBlockData "(cleanup)"  
 
   syntax BasicBlockData ::= "{" Statements Terminator ";" "}"
 

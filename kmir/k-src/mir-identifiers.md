@@ -5,17 +5,20 @@ module MIR-IDENTIFIERS
 This module defined the necessary `token` productions.
 
 ```k
-    syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
+  syntax Identifier ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
 
-    syntax LocalToken ::= r"_[0-9]+"  [token(2)] //replace regular expression with UnsignedInt
-    syntax Local ::= LocalToken
+  syntax LocalToken ::= "_" Int  [token] //replace regular expression with UnsignedInt
+  syntax Local ::= LocalToken
     
-    syntax BBId       ::= r"bb[0-9]+" [token(2)] //It is the BasicBlock type in rustc
-    syntax UserVar    ::= Identifier
-    syntax AdtFieldName ::= Identifier //TODO: figure out the exact definition
+  syntax BBId       ::= "bb" Int [token] //It is the BasicBlock type in rustc
+  syntax UserVar    ::= Identifier
+  syntax AdtFieldName ::= Identifier //TODO: figure out the exact definition
 
   // syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
   // syntax IdentifierToken ::= StringIdentifierToken(String) [function, hook(STRING.string2token)]
+
+  syntax DefId ::= Int
+  syntax Symbol ::= Int  
 ```
 
 Primitive types (in literal format) used in MIR. 

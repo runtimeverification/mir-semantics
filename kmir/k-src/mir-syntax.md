@@ -53,22 +53,6 @@ module MIR-SYNTAX
   syntax Arg ::= Local ":" Type
   syntax Args ::= List{Arg, ","}
 
-  //TODO:https://github.com/rust-lang/rust/blob/a1e1dba9cc40a90409bccb8b19e359c4bdf573e5/compiler/rustc_middle/src/mir/pretty.rs#L1020
-  syntax DefPath ::= List{DefPathKind, "::"}
-
-  syntax DefPathKind  ::= DefName
-                        | ImplPath
-                        | PathClosure
-                        | PathConstant
-                        | PathOpaque
-                        | Int     //CrateNum or Disambiguate
-  syntax DefName ::= Identifier //function name
-  
-  syntax ImplPath ::= "<" "impl" "at" FilePosition ">"
-  syntax PathClosure ::= "{" "closure" "#" Int "}"
-  syntax PathConstant ::= "{" "constant" "#" Int "}"
-  syntax PathOpaque ::= "{" "opaque" "#" Int "}"
-
   syntax Allocations
 /*   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L725
   // https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L806
