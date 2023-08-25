@@ -1,7 +1,7 @@
+import logging
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import Any, Final
-import logging
 
 from pyk.cli.utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput

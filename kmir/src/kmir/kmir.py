@@ -1,14 +1,14 @@
 __all__ = ['KMIR']
 
 import json
+import logging
 import os
 import subprocess
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
-from typing import Optional, Union, Final, final
+from typing import Final, Optional, Union, final
 
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
