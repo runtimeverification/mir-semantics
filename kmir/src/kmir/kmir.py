@@ -3,11 +3,12 @@ __all__ = ['KMIR']
 import json
 import os
 import subprocess
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
-from typing import Optional, Union, final
+from typing import Optional, Union, Final, final
 
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
@@ -16,6 +17,8 @@ from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
 from .preprocessor import preprocess
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 @final
@@ -54,7 +57,7 @@ class KMIR:
                 haskell_dir = Path(env_haskell_dir)
             else:
                 # Haskell dir doesn't exist, but it not needed for current functionality
-                print('WARN: Haskell defintion could not be found')
+                _LOGGER.warning('Haskell defintion could not be found')
                 haskell_dir = llvm_dir  # Just to pass type checking for now
         else:
             haskell_dir = Path(haskell_dir)
