@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import subprocess
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
