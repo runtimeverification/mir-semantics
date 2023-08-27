@@ -9,6 +9,7 @@ kmir parse --output pretty tests/arithm-simple.mir > tests/nix-arithm-simple.par
 git --no-pager diff tests/nix-arithm-simple.parse.out tests/arithm-simple.parse.out
 
 kmir run   --output pretty tests/arithm-simple.mir > tests/nix-arithm-simple.run.out 
-# Below fails, </generatedTop> does not get processed in poetry shell env
+# When the K issue below is solved, tests/nix-arithm-simple.run.out will need to be updated
+# https://github.com/runtimeverification/k/issues/3604
 # Uncomment and run `nix build --extra-experimental-features 'nix-command flakes' --print-build-logs .#kmir-test`
-#git --no-pager diff tests/nix-arithm-simple.run.out   tests/arithm-simple.run.out
+git --no-pager diff tests/nix-arithm-simple.run.out   tests/arithm-simple.run.out
