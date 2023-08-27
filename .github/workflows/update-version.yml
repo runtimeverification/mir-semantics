@@ -32,6 +32,10 @@ jobs:
           git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
       - name: 'Update Nix flake inputs'
         run: |
+          K_VERSION=$(cat deps/k_release)
+          PYK_VERSION=$(cat ./deps/pyk_release)
+          sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/v'"${K_VERSION}"'"!' flake.nix
+          sed -i 's!    pyk.url = "github:runtimeverification/pyk/[v0-9\.]*"!    pyk.url = "github:runtimeverification/pyk/'"${PYK_VERSION}"'"!' flake.nix
           nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
           git add flake.nix flake.lock
           git commit -m 'flake.{nix,lock}: update Nix derivations' || true
