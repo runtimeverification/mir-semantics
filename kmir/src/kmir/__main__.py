@@ -1,6 +1,7 @@
-from argparse import ArgumentParser
+import logging
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 from pyk.cli.utils import dir_path, file_path
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -9,10 +10,15 @@ from pyk.utils import BugReport
 
 from .kmir import KMIR
 
+_LOGGER: Final = logging.getLogger(__name__)
+LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
 
 def main() -> None:
     parser = create_argument_parser()
     args = parser.parse_args()
+
+    logging.basicConfig(level=loglevel(args), format=LOG_FORMAT)
 
     executor_name = 'exec_' + args.command.lower().replace('-', '_')
     if executor_name not in globals():
@@ -75,11 +81,16 @@ def exec_run(
 
 
 def create_argument_parser() -> ArgumentParser:
+    logging_args = ArgumentParser(add_help=False)
+    logging_args.add_argument('--verbose', '-v', default=False, action='store_true', help='Verbose output.')
+    logging_args.add_argument('--debug', default=False, action='store_true', help='Debug output.')
+
     parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
+
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
 
     # Init
-    init_subparser = command_parser.add_parser('init', help='Initialises a KMIR object')
+    init_subparser = command_parser.add_parser('init', parents=[logging_args], help='Initialises a KMIR object')
     init_subparser.add_argument(
         'llvm_dir',
         type=dir_path,
@@ -87,7 +98,7 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Parse
-    parse_subparser = command_parser.add_parser('parse', help='Parse a MIR file')
+    parse_subparser = command_parser.add_parser('parse', parents=[logging_args], help='Parse a MIR file')
     parse_subparser.add_argument(
         'input_file',
         type=file_path,
@@ -120,7 +131,7 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Run
-    run_subparser = command_parser.add_parser('run', help='Run a MIR program')
+    run_subparser = command_parser.add_parser('run', parents=[logging_args], help='Run a MIR program')
     run_subparser.add_argument(
         'input_file',
         type=file_path,
@@ -162,6 +173,16 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     return parser
+
+
+def loglevel(args: Namespace) -> int:
+    if args.debug:
+        return logging.DEBUG
+
+    if args.verbose:
+        return logging.INFO
+
+    return logging.WARNING
 
 
 if __name__ == '__main__':
