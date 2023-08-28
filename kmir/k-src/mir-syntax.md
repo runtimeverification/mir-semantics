@@ -10,10 +10,9 @@ This module is designed to parse the exported MIR of a rust program from `rustc`
 
 ```k
 module MIR-SYNTAX
-  imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
   imports MIR-PLACE
-  imports MIR-IDENTIFIERS
+  //imports MIR-IDENTIFIERS
   imports MIR-BASICBLOCK-SYNTAX
 ```
 
@@ -29,7 +28,8 @@ module MIR-SYNTAX
   syntax Function ::= Fn Promoteds             //ty::InstanceDef::Item(def_id)
                     | Fn Promoteds FnForCTFE   //ConstFnRaw: tcx.def_kind(def_id) = DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure && tcx.constness(def_id) == hir::Constness::Const
 ```
-## Function signatures are dependent on the function type. Where in the pretty print, the [implementations](//https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L988) matches `(kind:DefKind, body.source.promoted:Option(Promoted) )` to different types.
+## Function signatures 
+They are dependent on the function type. Where in the pretty print, the [implementations](//https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L988) matches `(kind:DefKind, body.source.promoted:Option(Promoted) )` to different types.
 ```k
   syntax Fn ::= FnSig "{" Body "}"
               | FnSig "{" Body "}" Allocations //assume only Fn Body has allocations
