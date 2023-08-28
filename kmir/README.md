@@ -141,3 +141,9 @@ To reduce this friction a little, we provide a simple `bash` script [`doit.sh`](
 To automatically connect kmir with the backend definitions, setting environement variables `KMIR_LLVM_DIR` and `KMIR_HASKELL_DIR` 
 to the path of the definitions directories will mean that `--definition-dir` can be omitted. A script is provided to automatically set
 these variables which can be run with `source set_env.sh`. NOTE: this will NOT WORK if installing via `pip`
+
+### Updating expected output for `nix` tests
+Inside the directory `mir-semantics/kmir/src/tests/nix` there is a `Makefile`, calling `make` from this directory will automatically update
+the expected output of the run and parse `nix` tests with the output of the current build with `poetry`. This should only need to be done if 
+there has been some change to the expected output (e.g. a change in syntax or semantics). This command will expect that the definitions are built,
+and that they have been exported to the `KMIR_*_DIR` (see the note above on the `set_env.sh` script).
