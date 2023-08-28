@@ -98,8 +98,9 @@
             buildPhase = ''
               mkdir -p tests/
               cp -v kmir/src/tests/integration/test-data/handwritten-mir/execution/arithm-simple.* tests/
-              ls tests/
-              ls ./nix-tests.sh
+              cp -v kmir/src/tests/nix/arithm* tests/
+              cp -v kmir/src/tests/nix/nix-tests.sh tests/
+              cd tests/
               patchShebangs .
               ./nix-tests.sh
             '';
