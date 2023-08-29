@@ -153,3 +153,4 @@ Use the following commands from the `kmir` directory to manually prove `k` speci
 ```
 poetry run kmir prove --definition-dir $(poetry run kbuild which llvm) --haskell-dir $(poetry run kbuild which haskell) --spec-file src/tests/proofs/simple-spec.k
 ```
+In order to save `kcfgs` the flag `--save-directory` can be added with a path to the directory to save the kcfgs to (this dir must already be created).

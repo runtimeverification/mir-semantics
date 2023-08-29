@@ -25,7 +25,6 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 def main() -> None:
     parser = create_argument_parser()
     args = parser.parse_args()
-    print(args)
     logging.basicConfig(level=_loglevel(args), format=_LOG_FORMAT)
 
     executor_name = 'exec_' + args.command.lower().replace('-', '_')
@@ -157,7 +156,7 @@ def exec_prove(
                     new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
                     _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
-                    new_init = kcfg_explore.cterm_assume_defined(new_init)  # Fails
+                    new_init = kcfg_explore.cterm_assume_defined(new_init)
 
                     kcfg.replace_node(init_node_id, new_init)
                     kcfg.replace_node(target_node_id, new_target)
@@ -208,8 +207,8 @@ def create_argument_parser() -> ArgumentParser:
 
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
 
-    # Init
-    init_subparser = command_parser.add_parser('init', parents=[logging_args], help='Initialises a KMIR object')
+    # Init (See flake.nix)
+    init_subparser = command_parser.add_parser('init', parents=[logging_args])
     init_subparser.add_argument(
         'llvm_dir',
         type=dir_path,
@@ -292,7 +291,9 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Prove
-    prove_subparser = command_parser.add_parser('prove', parents=[logging_args], help='Prove a MIR specification')
+    prove_subparser = command_parser.add_parser(
+        'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
+    )
     prove_subparser.add_argument(
         '--definition-dir',
         dest='definition_dir',
