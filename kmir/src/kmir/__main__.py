@@ -25,6 +25,7 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 def main() -> None:
     parser = create_argument_parser()
     args = parser.parse_args()
+    print(args)
     logging.basicConfig(level=_loglevel(args), format=_LOG_FORMAT)
 
     executor_name = 'exec_' + args.command.lower().replace('-', '_')
@@ -35,9 +36,13 @@ def main() -> None:
     execute(**vars(args))
 
 
+def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
+    return KMIR(llvm_dir, llvm_dir)
+
+
 def exec_parse(
     input_file: str,
-    definition_dir: str,
+    definition_dir: str | None = None,
     input: str = 'program',
     output: str = 'kore',
     **kwargs: Any,
@@ -45,7 +50,7 @@ def exec_parse(
     kast_input = KAstInput[input.upper()]
     kast_output = KAstOutput[output.upper()]
 
-    kmir = KMIR(definition_dir, definition_dir)
+    kmir = KMIR(definition_dir, None)
     proc_res = kmir.parse_program_raw(input_file, input=kast_input, output=kast_output)
 
     if output != KAstOutput.NONE:
@@ -54,7 +59,7 @@ def exec_parse(
 
 def exec_run(
     input_file: str,
-    definition_dir: str,
+    definition_dir: str | None = None,
     output: str = 'none',
     depth: int | None = None,
     bug_report: bool = False,
@@ -63,7 +68,7 @@ def exec_run(
 ) -> None:
     krun_output = KRunOutput[output.upper()]
     br = BugReport(Path(input_file).with_suffix('.bug_report.tar')) if bug_report else None
-    kmir = KMIR(definition_dir, definition_dir, bug_report=br)
+    kmir = KMIR(definition_dir, None, bug_report=br)
 
     try:
         proc_res = kmir.run_program(input_file, output=krun_output, depth=depth)
@@ -157,8 +162,9 @@ def exec_prove(
                     kcfg.replace_node(init_node_id, new_init)
                     kcfg.replace_node(target_node_id, new_target)
 
+                    # Unsure if terminal should be empty
                     proof_problem = APRProof(
-                        claim.label, kcfg, init_node_id, target_node_id, {}, proof_dir=save_directory
+                        claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
                     )
 
             passed = kmir_prove(
@@ -167,6 +173,7 @@ def exec_prove(
                 kcfg_explore,
                 max_depth=depth,
             )
+            failure_log = None
             if not passed:
                 failure_log = print_failure_info(proof_problem, kcfg_explore)
 
@@ -193,11 +200,24 @@ def exec_prove(
 
 
 def create_argument_parser() -> ArgumentParser:
+    logging_args = ArgumentParser(add_help=False)
+    logging_args.add_argument('--verbose', '-v', default=False, action='store_true', help='Verbose output.')
+    logging_args.add_argument('--debug', default=False, action='store_true', help='Debug output.')
+
     parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
+
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
 
+    # Init
+    init_subparser = command_parser.add_parser('init', parents=[logging_args], help='Initialises a KMIR object')
+    init_subparser.add_argument(
+        'llvm_dir',
+        type=dir_path,
+        help='Path to the llvm definition',
+    )
+
     # Parse
-    parse_subparser = command_parser.add_parser('parse', help='Parse a MIR file')
+    parse_subparser = command_parser.add_parser('parse', parents=[logging_args], help='Parse a MIR file')
     parse_subparser.add_argument(
         'input_file',
         type=file_path,
@@ -205,6 +225,7 @@ def create_argument_parser() -> ArgumentParser:
     )
     parse_subparser.add_argument(
         '--definition-dir',
+        default=None,
         dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
@@ -229,7 +250,7 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Run
-    run_subparser = command_parser.add_parser('run', help='Run a MIR program')
+    run_subparser = command_parser.add_parser('run', parents=[logging_args], help='Run a MIR program')
     run_subparser.add_argument(
         'input_file',
         type=file_path,
@@ -237,6 +258,7 @@ def create_argument_parser() -> ArgumentParser:
     )
     run_subparser.add_argument(
         '--definition-dir',
+        default=None,
         dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
@@ -270,7 +292,7 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     # Prove
-    prove_subparser = command_parser.add_parser('prove', help='Prove a MIR specification')
+    prove_subparser = command_parser.add_parser('prove', parents=[logging_args], help='Prove a MIR specification')
     prove_subparser.add_argument(
         '--definition-dir',
         dest='definition_dir',
@@ -338,7 +360,13 @@ def create_argument_parser() -> ArgumentParser:
 
 
 def _loglevel(args: Namespace) -> int:
-    return logging.DEBUG  # TODO: HARDCODED FOR DEVELOPMENT
+    if args.debug:
+        return logging.DEBUG
+
+    if args.verbose:
+        return logging.INFO
+
+    return logging.WARNING
 
 
 if __name__ == '__main__':

@@ -1,12 +1,14 @@
 __all__ = ['KMIR']
 
 import json
+import logging
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
-from typing import Optional, Union, final
+from typing import Final, Optional, Union, final
 
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
@@ -16,6 +18,8 @@ from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
 from .preprocessor import preprocess
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 @final
@@ -29,19 +33,37 @@ class KMIR:
 
     def __init__(
         self,
-        llvm_dir: Union[str, Path],
-        haskell_dir: Union[str, Path],
+        llvm_dir: Union[str, Path] | None,
+        haskell_dir: Union[str, Path] | None,
         bug_report: BugReport | None = None,
         use_directory: Path | None = None,
     ):
-        llvm_dir = Path(llvm_dir)
+        if llvm_dir is None:
+            env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
+            if env_llvm_dir:
+                llvm_dir = Path(env_llvm_dir)
+            else:
+                raise RuntimeError(
+                    'Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR'
+                )
+        else:
+            llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
 
         mir_parser = llvm_dir / 'parser_Mir_MIR-PARSER-SYNTAX'
         if not mir_parser.is_file():
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-PARSER-SYNTAX', sort='Mir')
 
-        haskell_dir = Path(haskell_dir)
+        if haskell_dir is None:
+            env_haskell_dir = os.getenv('KMIR_HASKELL_DIR')
+            if env_haskell_dir:
+                haskell_dir = Path(env_haskell_dir)
+            else:
+                # Haskell dir doesn't exist, but it not needed for current functionality
+                _LOGGER.warning('Haskell defintion could not be found')
+                haskell_dir = llvm_dir  # Just to pass type checking for now
+        else:
+            haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
         kprove = KProve(haskell_dir, use_directory=use_directory)

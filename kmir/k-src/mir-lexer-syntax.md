@@ -19,8 +19,8 @@ This module defined the necessary `token` productions.
 
 ```k
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
-  syntax LocalToken      ::= r"_[0-9]+"  [token(2)]
-  syntax BBToken         ::= r"bb[0-9]+" [token(2)]
+  syntax LocalToken      ::= r"_[0-9]+"  [token]
+  syntax BBToken         ::= r"bb[0-9]+" [token]
 ```
 
 Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/tokens.html#literals), since MIR does not seem to use the full range:
@@ -45,7 +45,7 @@ Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/toke
 
 ```k
   syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
-  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
+  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
 ```
 
