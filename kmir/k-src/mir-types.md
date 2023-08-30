@@ -507,7 +507,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ```k
   syntax Int ::= Local2Int(Local) [function, total]
   //-----------------------------------------------
-  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR)))
+  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR))) [concrete]
 
   syntax Local ::= Int2Local(Int) [function, total]
   //-----------------------------------------------

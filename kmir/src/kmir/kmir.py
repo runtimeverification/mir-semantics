@@ -13,6 +13,7 @@ from typing import Final, Optional, Union, final
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.kast.inner import KInner
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
+from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRunOutput, _krun
 from pyk.utils import BugReport
 
@@ -28,12 +29,14 @@ class KMIR:
     haskell_dir: Path
     mir_parser: Path
     bug_report: BugReport | None
+    kprove: KProve | None
 
     def __init__(
         self,
         llvm_dir: Union[str, Path] | None,
         haskell_dir: Union[str, Path] | None,
         bug_report: BugReport | None = None,
+        use_directory: Path | None = None,
     ):
         if llvm_dir is None:
             env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
@@ -63,10 +66,13 @@ class KMIR:
             haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
+        kprove = KProve(haskell_dir, use_directory=use_directory)
+
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'haskell_dir', haskell_dir)
         object.__setattr__(self, 'mir_parser', mir_parser)
         object.__setattr__(self, 'bug_report', bug_report)
+        object.__setattr__(self, 'kprove', kprove)
 
     def parse_program_raw(
         self,

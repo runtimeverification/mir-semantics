@@ -35,13 +35,16 @@ test: test-unit test-integration
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration: test-integration-parse test-integration-run
+test-integration: test-integration-parse test-integration-run test-integration-prove
 
 test-integration-parse: poetry-install
 	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration-run: poetry-install
 	$(POETRY_RUN) pytest src/tests/integration/test_run.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
+
+test-integration-prove: poetry-install
+	$(POETRY_RUN) pytest src/tests/integration/test_prove.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
 
 ## Produce *-fail.tsv files by running the tests with --no-skip and no parallelism
 compiletest-parse-fail:

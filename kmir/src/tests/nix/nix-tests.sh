@@ -13,3 +13,5 @@ kmir run   --output pretty arithm-simple.mir > nix-arithm-simple.run.out
 # https://github.com/runtimeverification/k/issues/3604
 # Uncomment and run `nix build --extra-experimental-features 'nix-command flakes' --print-build-logs .#kmir-test`
 git --no-pager diff nix-arithm-simple.run.out   arithm-simple.run.out
+
+kmir prove --spec-file simple-spec.k
