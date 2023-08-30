@@ -99,8 +99,10 @@
               mkdir -p tests/
               cp -v kmir/src/tests/integration/test-data/handwritten-mir/execution/arithm-simple.* tests/
               cp -v kmir/src/tests/nix/arithm* tests/
+              cp -v kmir/src/tests/integration/proofs/simple-spec.k tests/
               cp -v kmir/src/tests/nix/nix-tests.sh tests/
               cd tests/
+              sed -i 's!requires "../../../../k-src/mir.md"!requires "../kmir/k-src/mir.md"!' simple-spec.k
               patchShebangs .
               ./nix-tests.sh
             '';

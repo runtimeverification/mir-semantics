@@ -59,6 +59,9 @@ endmodule
 ```k
 module MIR-SYMBOLIC
   imports MIR-CONFIGURATION
+  imports MIR-INITIALIZATION
+  imports MIR-EXECUTION
+  imports MIR-FINALIZATION
 
 endmodule
 ```
