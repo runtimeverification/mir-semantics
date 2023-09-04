@@ -53,6 +53,8 @@ Runtime representation of MIR's *function-like* entities. A *function-like* is o
 ```k
   syntax FunctionLikeKey ::= Fn(FunctionPath)
                            | Promoted(FunctionPath, Int)
+  syntax FunctionPath ::= "TEMPORARY PRODUCTION" // TODO: Temp to try and identify all kompile bugs
+
 ```
 
 It looks like we can consider all these *normal functions* in the execution semantics.
@@ -80,7 +82,7 @@ module MIR-LOCALS
     imports INT
     imports BOOL
     imports MIR-SYNTAX
-    imports MIR-TYPES
+    imports MIR-TYPE-SYNTAX
 ```
 
 We declare a runtime configuration to represent [`LocalDecl`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.LocalDecl.html) --- a variable declaration within a function-like.
@@ -144,7 +146,7 @@ Basic blocks
 ```k
 module MIR-BASIC-BLOCKS
   imports MIR-SYNTAX
-  imports MIR-TYPES
+  imports MIR-TYPE-SYNTAX
 ```
 
 ```k

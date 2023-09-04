@@ -9,6 +9,7 @@ Syntax of MIR types
 ```k
 module MIR-TYPE-SYNTAX
   imports MIR-IDENTIFIERS
+  imports STRING-SYNTAX
 
   syntax Type ::= RigidTy       //stable_mir::Ty::TyKind::RigidTy(RigidTy)
                 | Alias         //stable_mir::Ty::TyKind::Alias(AliasKind, AliasTy)
@@ -93,6 +94,7 @@ The following `TyKind` are defined in `rust_type_ir` but not used in [Stable mir
 
   //PolyFnSig = Binder{value: FnSig, bound_vars: &'tcx List{BoundVariableKind}}
   syntax PolyFnSig ::= "Binder" "(" Value "," Bind ")"
+  syntax Bind ::= "TEMPORARY PRODUCTION" // TODO: Temp to try and identify all kompile bugs
   syntax Value ::= UnsafetyPrefix Abi "fn" "(...)" OutputType                  // inputs.len() = 0 && *c_variadic
                  | UnsafetyPrefix Abi "fn" "()" OutputType                     // inputs.len() = 0 && !*c_variadic
                  | UnsafetyPrefix Abi "fn" "(" InputTypes "..." ")" OutputType // inputs.len() != 0 && *c_variadic

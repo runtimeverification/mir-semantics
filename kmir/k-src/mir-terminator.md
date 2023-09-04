@@ -1,7 +1,7 @@
 ```k
 require "mir-identifiers.md"
 require "mir-assert.md"
-require "mir-oprand.md"
+require "mir-operand.md"
 require "mir-place.md"
 ```
 ## [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html) occur at the end of a basic block and always transfer control outside the current block: either to a block within the same function or to a block outside of it.
@@ -11,7 +11,7 @@ module MIR-TERMINATOR-SYNTAX
   import MIR-IDENTIFIERS
   import MIR-ASSERT-SYNTAX
   import MIR-OPERAND-SYNTAX
-  import MIR-PLACE-SYNTAX
+  import MIR-PLACE
 
   syntax Terminator ::= "goto" "->" BBId //TerminatorKind::Goto
                       | "switchInt" "(" Operand ")" "->" "[" SwitchTargets "," OwTarget "]" //Terminator::SwitchInt{Operand, SwitchTargets}

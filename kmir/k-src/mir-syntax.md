@@ -75,7 +75,7 @@ The `Body` sort represents a single MIR function. Based on [`rustc::mir::Body`](
 ```k
   syntax Body ::= VarDebugList LocalDecls ScopeTree BasicBlocks
 
-  syntax VarDebugList ::= List{Debug, ""} 
+  syntax VarDebugList ::= List{VarDebug, ""} 
   syntax VarDebug ::= "debug" UserVar "=>" Place ";"
 
   // Temporaries and the return place are always mutable.

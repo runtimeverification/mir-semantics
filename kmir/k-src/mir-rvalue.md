@@ -154,6 +154,8 @@ module MIR-RVALUE-SYNTAX
                            | PathExpression "::" Identifier
                            | PathExpression "::" Identifier "(" OperandList ")"
 
+  syntax PathExpression ::= "TEMPORARY PRODUCTION" // TODO: Temp to try and identify all kompile bugs
+
   syntax AdtField ::= AdtFieldName ":" Operand
   syntax AdtFieldList ::= List{AdtField, ","}
 
@@ -175,7 +177,7 @@ Evaluation of rvalues
 ```k
 module MIR-RVALUE
   imports MIR-RVALUE-SYNTAX
-  imports MIR-TYPES
+  imports MIR-TYPE-SYNTAX
   imports MIR-CONFIGURATION
 ```
 

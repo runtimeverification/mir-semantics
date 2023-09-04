@@ -10,6 +10,7 @@ module MIR-STATEMENT-SYNTAX
   imports MIR-PLACE
   imports MIR-RVALUE-SYNTAX
   imports MIR-IDENTIFIERS
+  imports COVERAGE-SYNTAX
 
   syntax Statements ::= List {Statement, ";"}
 

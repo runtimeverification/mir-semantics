@@ -1,5 +1,6 @@
 ```k
 module MIR-IDENTIFIERS
+  import INT-SYNTAX
 ```
 
 This module defined the necessary `token` productions.
@@ -57,7 +58,7 @@ Types such as structs, tuples and unions, which has fields (indexed by `VariantI
 
 ```k
   syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
-  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token(2)]
+  syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
 ```
 
