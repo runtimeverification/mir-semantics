@@ -11,7 +11,8 @@ module MIR-TYPE-SYNTAX
   imports MIR-IDENTIFIERS
   imports STRING-SYNTAX
 
-  syntax Type ::= RigidTy       //stable_mir::Ty::TyKind::RigidTy(RigidTy)
+  syntax Type ::= "()"          //unit type?
+                | RigidTy       //stable_mir::Ty::TyKind::RigidTy(RigidTy)
                 | Alias         //stable_mir::Ty::TyKind::Alias(AliasKind, AliasTy)
                 | Param         //stable_mir::Ty::TyKind::Param(ParamTy)
                 | Bound         //stable_mir::Ty::TyKind::Bound(usize, BoundTy)

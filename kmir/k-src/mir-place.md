@@ -5,6 +5,8 @@ require "mir-identifiers.md"
 
 ```k
 module MIR-PLACE
+  imports STRING-SYNTAX
+  imports INT-SYNTAX
   imports MIR-IDENTIFIERS
   imports MIR-TYPE-SYNTAX
 ```

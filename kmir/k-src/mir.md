@@ -1,15 +1,15 @@
 ```k
-// require "mir-syntax.md"
-require "mir-configuration.md"
+require "mir-syntax.md"
+//require "mir-configuration.md"
 ```
 
 ```k
 module MIR
-  // imports MIR-SYNTAX
-  imports MIR-CONFIGURATION
+  imports MIR-SYNTAX
+  //imports MIR-CONFIGURATION
 
-  // configuration
-  //   <k> $PGM:Mir </k>
+  configuration
+    <k> $PGM:Mir </k>
   //   <returncode exit=""> 4 </returncode>     // the simulator exit code
   
 endmodule

@@ -1,7 +1,7 @@
 ```k
 require "mir-types.md"
 require "mir-place.md"
-require "mir-basicblock.md"
+//require "mir-basicblock.md"
 ```
 
 MIR syntax
@@ -10,10 +10,11 @@ This module is designed to parse the exported MIR of a rust program from `rustc`
 
 ```k
 module MIR-SYNTAX
+  imports INT-SYNTAX
   imports MIR-TYPE-SYNTAX
   imports MIR-PLACE
   //imports MIR-IDENTIFIERS
-  imports MIR-BASICBLOCK-SYNTAX
+  //imports MIR-BASICBLOCK-SYNTAX
 ```
 
 ```k
@@ -94,6 +95,7 @@ The `Body` sort represents a single MIR function. Based on [`rustc::mir::Body`](
   syntax Scope ::= "scope" Int "{" VarDebugList LocalDecls ScopeTree "}" //Body::source_scope
 
   syntax BasicBlocks ::= List {BasicBlock, ""} //IndexVec
+  syntax BasicBlock
 
 endmodule
 ```
