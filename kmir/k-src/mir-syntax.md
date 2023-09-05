@@ -1,7 +1,7 @@
 ```k
 require "mir-types.md"
 require "mir-place.md"
-//require "mir-basicblock.md"
+require "mir-basicblock.md"
 ```
 
 MIR syntax
@@ -14,7 +14,7 @@ module MIR-SYNTAX
   imports MIR-TYPE-SYNTAX
   imports MIR-PLACE
   //imports MIR-IDENTIFIERS
-  //imports MIR-BASICBLOCK-SYNTAX
+  imports MIR-BASICBLOCK-SYNTAX
 ```
 
 ```k

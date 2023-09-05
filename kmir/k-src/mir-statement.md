@@ -1,6 +1,7 @@
 ```k
 require "mir-rvalue.md"
 require "mir-identifiers.md"
+require "mir-operand.md"
 ```
 # [Statements]
 [Statements](https://github.com/rust-lang/rust/blob/e3590fccfbdb6284bded9b70eca2e72b0c57e070/compiler/rustc_middle/src/mir/mod.rs#L1450) occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
@@ -72,6 +73,7 @@ module COVERAGE-SYNTAX
                            | "Expression" "(" ExpressionId ")" //Coverage::Operand::Expression(ExpressionId)
   syntax CoverageOp ::= "+" //Op::Add
                       | "-" //Op::Subtract
-  syntax CodeRegion ::= FileName ":" CodePosition "-" CodePosition
+  // syntax CodeRegion ::= FileName ":" CodePosition "-" CodePosition
+  syntax CodeRegion ::= "ab" ":" "cd" "-" "ef"
 endmodule
 ```
