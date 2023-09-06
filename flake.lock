@@ -1544,11 +1544,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1693051011,
-        "narHash": "sha256-HNbuVCS/Fnl1YZOjBk9/MlIem+wM8fvIzTH0CVQrLSQ=",
+        "lastModified": 1693998442,
+        "narHash": "sha256-HQwzZK2UOTaHvh/mlO2D+CzG30laReMewJBp8PgcXVY=",
         "owner": "nix-community",
         "repo": "poetry2nix",
-        "rev": "5b3a5151cf212021ff8d424f215fb030e4ff2837",
+        "rev": "28995cdf05d693a5c48b25c205c1f30e73064a76",
         "type": "github"
       },
       "original": {
@@ -1612,16 +1612,16 @@
         "poetry2nix": "poetry2nix_2"
       },
       "locked": {
-        "lastModified": 1693330087,
-        "narHash": "sha256-gHc4wrk0nw070fYlJoup5scKM3Wx0I5NFp5RHi0T820=",
+        "lastModified": 1694001834,
+        "narHash": "sha256-jKhekCU45nFFx0Cr7sCW0zld3NKCQAG9Zmc4xNDd+ls=",
         "owner": "runtimeverification",
         "repo": "pyk",
-        "rev": "a18d76df9419194acf1f9d159d8fa697e0471bd9",
+        "rev": "9d780f1d10e0e17ff484a7448890744da0640987",
         "type": "github"
       },
       "original": {
         "owner": "runtimeverification",
-        "ref": "v0.1.431",
+        "ref": "v0.1.432",
         "repo": "pyk",
         "type": "github"
       }
