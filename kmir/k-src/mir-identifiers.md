@@ -10,11 +10,12 @@ This module defined the necessary `token` productions.
   //                       | FileName
   // syntax FileName ::= r"[^@ ]+" [token]
 
-  // syntax LocalToken ::= r"_[0-9]+" [token]
-  syntax LocalToken ::= "_" Int [token] //replace regular expression with UnsignedInt
+  syntax LocalToken ::= r"_[0-9]+" [prefer, token, prec(2)]
+  // syntax LocalToken ::= "_" Int [token] //replace regular expression with UnsignedInt
   syntax Local ::= LocalToken
     
-  syntax BBId       ::= "bb" Int [token] //It is the BasicBlock type in rustc
+  syntax BBId       ::= r"bb[0-9]+" [prefer, token, prec(2)] //It is the BasicBlock type in rustc
+  // syntax BBId       ::= "bb" Int [token] //It is the BasicBlock type in rustc
   syntax UserVar    ::= Identifier
   syntax AdtFieldName ::= Identifier //TODO: figure out the exact definition
 

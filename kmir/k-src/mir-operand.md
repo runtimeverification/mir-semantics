@@ -37,7 +37,7 @@ Literals and const generic parameters are eagerly converted to a constant, every
                     | "const " "_"             //ConstantKind::Unevaluated(UnevaluatedConst<'tcx>, Ty<'tcx>), const_eval
                     //|                          //ConstantKind::Val(interpret::ConstValue<'tcx>, Ty<'tcx>), used by miri and CTFE, https://github.com/rust-lang/rust/blob/9bd60a60cefdddca1f507083dda37e1664b295c5/compiler/rustc_middle/src/mir/interpret/value.rs#L32
   
-  syntax ConstantValue ::= "TEMPORARY PRODUCTION" // TODO: Temp to try and identify all kompile bugs
+  syntax ConstantValue ::= UnsignedLiteral | "TEMPORARY PRODUCTION" // TODO: Temp to try and identify all kompile bugs
 
   syntax ConstantValueTree  ::= ConstByteStr   //ty::ConstKind::Value(value:Valtree), ty::ValTree::Branch(_), ty::Ref(_, inner_ty, _), inner_ty match ty::Slice(t)
                           | ConstString    //ty::ConstKind::Value(value:Valtree), ty::ValTree::Branch(_), ty::Ref(_, inner_ty, _), inner_ty match ty::Str

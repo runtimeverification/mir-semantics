@@ -47,6 +47,8 @@ They are dependent on the function type. Where in the pretty print, the [impleme
                  | "static mut" DefPath ":" Type "="                      //pattern: (DefKind::Static(hir::Mutability::Mut), _)
                  | "fn" DefPath "()" "->" Type                            //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
                  | "fn" DefPath "(" Args ")" "->" Type                    //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
+                //  | "fn" DefPath "(" LocalToken ":" Type ")" "->" Type // FAIL: test-sum-to-n.mir                    //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
+                //  | "fn" DefPath "(" "_1" ":" Type ")" "->" Type  // PASS: test-sum-to-n.mir                   //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
                  | "fn" DefPath "()" "->" Type  "yields" Type             //pattern: DefKind::Generator     //TODO: Do we need `\n`
                  | "fn" DefPath "(" Args ")" "->" Type  "yields" Type     //pattern: DefKind::Generator
                  | DefPath ":" Type "="                                   //pattern: (DefKind::AnonConst | DefKind::InlineConst, _)
@@ -82,9 +84,9 @@ The `Body` sort represents a single MIR function. Based on [`rustc::mir::Body`](
   // Temporaries and the return place are always mutable.
   // a binding declared by the user, a temporary inserted by the compiler, a function argument, or the return place
   // a binding declared by the user, a function argument will be recorded as a localdecl, the others will be a map from place to value
-  syntax LocalDecls ::= List{LocalDecl, ";"}
-  syntax LocalDecl ::= "let" Local ":" Type
-                   | "let" "mut" Local ":" Type
+  syntax LocalDecls ::= List{LocalDecl, ""}
+  syntax LocalDecl ::= "let" Local ":" Type ";"
+                   | "let" "mut" Local ":" Type ";"
                    // UserTypeProjecttion
   
 /*   syntax Mutability ::= MutPrefixToMutability(MutPrefix) [function]
@@ -95,7 +97,7 @@ The `Body` sort represents a single MIR function. Based on [`rustc::mir::Body`](
   syntax Scope ::= "scope" Int "{" VarDebugList LocalDecls ScopeTree "}" //Body::source_scope
 
   syntax BasicBlocks ::= List {BasicBlock, ""} //IndexVec
-  syntax BasicBlock
+  // syntax BasicBlock`
 
 endmodule
 ```

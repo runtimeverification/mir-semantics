@@ -13,23 +13,23 @@ module MIR-STATEMENT-SYNTAX
   imports MIR-IDENTIFIERS
   imports COVERAGE-SYNTAX
 
-  syntax Statements ::= List {Statement, ";"}
+  syntax Statements ::= List {Statement, ""}
 
-  syntax Statement  ::= Place "=" RValue // StatementKind::Assign
-                      | "FakeRead" FakeReadCause "," Place // StatementKind::FakeRead. It is removed before codegen, which should be safe to ignore here?
-                      | "Retag" "()" Place //StatementKind::Retag where RetagKindPretty = "" RegtagKind::Default
-                      | "Retag" "(" RetagKindPretty ")" Place //StatementKind::Retag
-                      | "StorageLive" "(" Local ")" //StatementKind::StorageLive
-                      | "StorageDead" "(" Local ")" //StatementKind::StorageDead
-                      | "discriminant" "(" Place ")" "=" VariantIdx //StatementKind::SetDiscriminant
-                      | "Deinit" "(" Place ")" //StatementKind::Deinit
-                      | "PlaceMention" "(" Place ")"  //StatementKind::PlaceMention
-                      | "AscribeUserType" "(" Place "," Variance "," UserTypeProjection ")" //StatementKind::AscribeUserType
-                      | "Coverage" "::" CoverageKind "for" CodeRegion //StatementKind::CoverageKind
-                      | "Coverage" "::" CoverageKind //StatementKind::CoverageKind
-                      | NonDivergingIntrinsic //StatemetKind::Intrinsic
-                      | "ConstEvalCounter" //StatementKind::ConstEvalCounter
-                      | "nop" //StatementKind::NOP
+  syntax Statement  ::= Place "=" RValue ";" // StatementKind::Assign
+                      | "FakeRead" FakeReadCause "," Place ";" // StatementKind::FakeRead. It is removed before codegen, which should be safe to ignore here?
+                      | "Retag" "()" Place ";" //StatementKind::Retag where RetagKindPretty = "" RegtagKind::Default
+                      | "Retag" "(" RetagKindPretty ")" Place ";" //StatementKind::Retag
+                      | "StorageLive" "(" Local ")" ";" //StatementKind::StorageLive
+                      | "StorageDead" "(" Local ")" ";" //StatementKind::StorageDead
+                      | "discriminant" "(" Place ")" "=" VariantIdx ";" //StatementKind::SetDiscriminant
+                      | "Deinit" "(" Place ")" ";" //StatementKind::Deinit
+                      | "PlaceMention" "(" Place ")" ";" //StatementKind::PlaceMention
+                      | "AscribeUserType" "(" Place "," Variance "," UserTypeProjection ")" ";" //StatementKind::AscribeUserType
+                      | "Coverage" "::" CoverageKind "for" CodeRegion ";" //StatementKind::CoverageKind
+                      | "Coverage" "::" CoverageKind ";" //StatementKind::CoverageKind
+                      | NonDivergingIntrinsic ";" //StatemetKind::Intrinsic
+                      | "ConstEvalCounter" ";" //StatementKind::ConstEvalCounter
+                      | "nop" ";" //StatementKind::NOP
 
   syntax FakeReadCause ::= "ForMatchGuard"  //TODO: Cannot locate the fomatter.
                          | "ForMatchedPlace" DefId 
