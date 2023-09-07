@@ -74,6 +74,6 @@ module COVERAGE-SYNTAX
   syntax CoverageOp ::= "+" //Op::Add
                       | "-" //Op::Subtract
   // syntax CodeRegion ::= FileName ":" CodePosition "-" CodePosition
-  syntax CodeRegion ::= "ab" ":" "cd" "-" "ef"
+  syntax CodeRegion ::= FilePosition
 endmodule
 ```

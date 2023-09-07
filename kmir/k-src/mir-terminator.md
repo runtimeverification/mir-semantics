@@ -23,13 +23,16 @@ module MIR-TERMINATOR-SYNTAX
                       | Place "=" "yield" "(" Operand ")" // TerminatorKind::Yield, Yield { resume: t, drop: None, .. }, unwind() is always None.
                       | "unreachale" //TerminatorKind::Unreachale, &[]                     
                       | "drop" Place "->" DropSuccessor//TerminatorKind::Drop                                      
-                      | Place "=" Operand "(" ArgList ")" "->" CallSuccessor //TerminatorKind::Call, Case 3_1 and Case 3_3
-                      | Place "=" Operand "(" ArgList ")" //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
+                      // | Place "=" Operand "(" ")" "->" CallSuccessor //TerminatorKind::Call, Case 3_1 and Case 3_3
+                      | Place "=" Operand "(" ArgList ")" "->" CallSuccessor [group(termCall)] //TerminatorKind::Call, Case 3_1 and Case 3_3
+                      | Place "=" Operand "(" ArgList ")" [group(termCall)] //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
                       | "assert" "(" "!" Operand "," AssertKind ")" "->" AssertSuccessor//Terminator::Assert not 
                       | "assert" "(" Operand "," AssertKind ")" "->" AssertSuccessor //Terminator::Assert expected
                       | "falseEdge" "->" BBId      //FalseEdge { real_target, ref imaginary_target } and unwind() on TerminatorKind::FalseEdge { .. } => None, -> (1, None) => BBId
                       | "falseUnwind" "->" FalseUnwindSuccessor  //TerminatorKind::FalseUnwind
 //                      | "asm!({}, )" //TODO:https://github.com/rust-lang/rust/blob/e81522aa0e0bef810c8e8298128a652339c992c3/compiler/rustc_middle/src/mir/terminator.rs#L340
+
+  syntax priorities termCall > rustUnit 
 
   // https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/terminator/struct.SwitchTargets.html
   syntax SwitchTargets ::= List{SwitchTarget, ","} //SwitchTargets{values: SmallVec<u128, usize>, targets: SmallVec<BBId, usize>}

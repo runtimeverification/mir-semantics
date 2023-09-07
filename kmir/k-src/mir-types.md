@@ -11,7 +11,7 @@ module MIR-TYPE-SYNTAX
   imports MIR-IDENTIFIERS
   imports STRING-SYNTAX
 
-  syntax Type ::= "()"          //unit type?
+  syntax Type ::= "()" [group(rustUnit)]          //unit type?
                 | RigidTy       //stable_mir::Ty::TyKind::RigidTy(RigidTy)
                 | Alias         //stable_mir::Ty::TyKind::Alias(AliasKind, AliasTy)
                 | Param         //stable_mir::Ty::TyKind::Param(ParamTy)
