@@ -1,5 +1,5 @@
 ```k
-require "mir-place-syntax.md"
+require "mir-place.md"
 ```
 
 ### [`Operand`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.Operand.html)
