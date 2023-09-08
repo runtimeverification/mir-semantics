@@ -1,6 +1,6 @@
 ```k
 require "mir-types.md"
-require "mir-place-syntax.md"
+require "mir-place.md"
 require "mir-rvalue.md"
 require "mir-basicblock.md"
 ```
