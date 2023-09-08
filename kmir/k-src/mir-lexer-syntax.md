@@ -7,7 +7,7 @@ This module defined the necessary `token` productions.
 ```k
   syntax Identifier ::= IdentifierToken
                       | LocalToken
-                      | BBToken
+                      | BBId
                       | DoubleHexDigitNoIntLetter
                       | Whitelisted
 
@@ -20,7 +20,7 @@ This module defined the necessary `token` productions.
 ```k
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax LocalToken      ::= r"_[0-9]+"  [token]
-  syntax BBToken         ::= r"bb[0-9]+" [token]
+  syntax BBId         ::= r"bb[0-9]+" [token]
 ```
 
 Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/tokens.html#literals), since MIR does not seem to use the full range:
