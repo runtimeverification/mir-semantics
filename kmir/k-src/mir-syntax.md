@@ -2,8 +2,7 @@
 require "mir-types.md"
 require "mir-place-syntax.md"
 require "mir-rvalue.md"
-require "mir-terminator.md"
-require "mir-statement.md"
+require "mir-basicblock.md"
 ```
 
 MIR syntax
@@ -19,6 +18,7 @@ module MIR-SYNTAX
   imports MIR-RVALUE-SYNTAX
   imports MIR-TERMINATOR-SYNTAX
   imports MIR-STATEMENT-SYNTAX
+  imports MIR-BASICBLOCK-SYNTAX
 ```
 
 ```k
@@ -51,9 +51,6 @@ The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir:
   syntax Debug ::= "debug" UserVariableName "=>" Place ";"
   syntax DebugList ::= List{Debug, ""}
 
-  syntax BasicBlock ::= BB ":" BasicBlockBody
-  syntax BasicBlockBody ::= "{" Statements Terminator ";" "}"
-  syntax BasicBlockList ::= List {BasicBlock, ""}
 ```
 
 The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
