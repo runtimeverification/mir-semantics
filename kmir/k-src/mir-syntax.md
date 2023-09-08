@@ -3,6 +3,7 @@ require "mir-types.md"
 require "mir-place-syntax.md"
 require "mir-rvalue.md"
 require "mir-terminator.md"
+require "mir-statement.md"
 ```
 
 MIR syntax
@@ -17,6 +18,7 @@ module MIR-SYNTAX
   imports MIR-PLACE-SYNTAX
   imports MIR-RVALUE-SYNTAX
   imports MIR-TERMINATOR-SYNTAX
+  imports MIR-STATEMENT-SYNTAX
 ```
 
 ```k
@@ -68,31 +70,6 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
   syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
 ```
-
-### [Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) and [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html)
-
-[Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) occur within a basic block. They are executed in sequence and never transfer control anywhere outside their basic block.
-
-```k
-  syntax StatementKind  ::= Assign
-                      // FakeRead does not seem to be used
-                      | "discriminant" "(" Place ")" "=" Int
-                      | "Deinit" "(" Place ")"
-                      | "StorageLive" "(" Local ")"
-                      | "StorageDead" "(" Local ")"
-                      // Retag does not seem to be used
-                      // AscribeUserType does not seem to be used
-                      // Coverage does not seem to be used
-                      | NonDivergingIntrinsic
-                      | "ConstEvalCounter"
-                      // Nop does not seem to be used
-  syntax Assign ::= Place "=" RValue
-  syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
-                                  | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
-  syntax Statement ::= StatementKind ";"
-  syntax Statements ::= List {Statement, ""}
-```
-
 
 ```k
 endmodule
