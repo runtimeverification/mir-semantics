@@ -114,6 +114,7 @@ The various kinds of rvalues that can appear in MIR.
                | EnumConstructor
 
   syntax StructConstructor ::= Type "{" AdtFieldList "}"
+                             | TypePath "(" OperandList ")" // compiletest-rs/ui/traits/copy-requires-self-wf.mir LINE 17
 
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
