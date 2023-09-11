@@ -8,5 +8,4 @@ fn main() -> () {
   let _7: impl (? Type);
   let _8: impl (? for <usize> Type);
   let _9: impl 'a;
-  let _10: impl 'a + Type;
 }
