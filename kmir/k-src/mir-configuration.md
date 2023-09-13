@@ -158,7 +158,8 @@ module MIR-BASIC-BLOCKS
 
   syntax BasicBlockBody ::= "BBBottom" [macro]
   // -----------------------------------------
-  rule BBBottom => assert(String2SringLiteral("dummy"))
+  // rule BBBottom => assert(String2SringLiteral("dummy"))
+  rule BBBottom => assert(Int2Local(0), generator resumed after panicking)
 ```
 
 ```k

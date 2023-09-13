@@ -75,10 +75,7 @@ endmodule
 ```k
 module MIR-PARSER-SYNTAX
   imports MIR-SYNTAX
-
-  // Declaring regular expressions of sort `#Layout` infroms the K lexer to drop these tokens.
-  syntax #Layout  ::= r"(\\/\\/[^\\n\\r]*)" // single-line comments
-                    | r"([\\ \\n\\r\\t])"   // whitespace
+  imports DEFAULT-LAYOUT
 
 endmodule
 ```

@@ -1,6 +1,7 @@
 ```k
 require "mir-types.md"
 require "mir-rvalue.md"
+require "mir-assert.md"
 ```
 
 
@@ -10,6 +11,7 @@ require "mir-rvalue.md"
 module MIR-TERMINATOR-SYNTAX
   import MIR-TYPE-SYNTAX
   import MIR-RVALUE-SYNTAX
+  import MIR-ASSERT-SYNTAX
 
   syntax Terminator ::= Goto
                       | SwitchInt
@@ -62,9 +64,11 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
   syntax Callable ::= PathExpression
                     | "move" Local
 
-  syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
-  syntax AssertArgument ::= Operand | "!" Operand | StringLiteral
-  syntax AssertArgumentList ::= NeList{AssertArgument, ","}
+  syntax AssertCall ::= "assert" "(" AssertArgument "," AssertKind ")"
+  syntax AssertCall ::= "assert" "(" AssertArgument "," AssertKind ")"
+//   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
+  syntax AssertArgument ::= Operand | "!" Operand // | StringLiteral
+//   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
 
   syntax ArgumentList ::= List{Operand, ","}
 
