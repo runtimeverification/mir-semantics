@@ -66,8 +66,5 @@ The `FunctionForData` and `FunctionForPromoted` sorts are currently unfinished.
 ```k
   syntax FunctionForPromoted ::= FunctionForPromotedSignature "{" FunctionBody "}"
   syntax FunctionForPromotedSignature ::= "promoted" "[" Int "]" "in" FunctionPath ":" Type "="
-```
 
-```k
 endmodule
-```
