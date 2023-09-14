@@ -1612,16 +1612,16 @@
         "poetry2nix": "poetry2nix_2"
       },
       "locked": {
-        "lastModified": 1694645005,
-        "narHash": "sha256-rB9MIQf2hhrtkZd8DySmTxS7rYOGPsgSerPMx0hGh0o=",
+        "lastModified": 1694683495,
+        "narHash": "sha256-msihJzVo593FVnvSyzOk6KbMGKc5DNGZwSGV2RoXtNM=",
         "owner": "runtimeverification",
         "repo": "pyk",
-        "rev": "26443bfcb4c36189ed86e6d7af14fa1efcb6652a",
+        "rev": "7efffac480f3e375021945e88c308b9bbe88e0ca",
         "type": "github"
       },
       "original": {
         "owner": "runtimeverification",
-        "ref": "v0.1.440",
+        "ref": "v0.1.441",
         "repo": "pyk",
         "type": "github"
       }
