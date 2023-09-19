@@ -27,7 +27,7 @@ module MIR-SYNTAX
 
   //We disabled the Promoted while dumping mir using Rustc.
   syntax Function ::= Fn Promoteds             //ty::InstanceDef::Item(def_id)
-                    | Fn Promoteds FnForCTFE   //ConstFnRaw: tcx.def_kind(def_id) = DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure && tcx.constness(def_id) == hir::Constness::Const
+//                    | Fn Promoteds FnForCTFE   //ConstFnRaw: tcx.def_kind(def_id) = DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure && tcx.constness(def_id) == hir::Constness::Const
 ```
 ## Function signatures 
 They are dependent on the function type. Where in the pretty print, the [implementations](//https://github.com/rust-lang/rust/blob/bda32a4023b1d3f96e56e1b2fc7510324f430316/compiler/rustc_middle/src/mir/pretty.rs#L988) matches `(kind:DefKind, body.source.promoted:Option(Promoted) )` to different types.
@@ -40,7 +40,7 @@ They are dependent on the function type. Where in the pretty print, the [impleme
 
   syntax PromotedSig ::= "promoted" "[" Int "]" DefPath ":" Type "="            //pattern: (_, Some(i)). Here Int is a Promoted Type, a.k.a., index type in rustc_index
   
-  syntax FnForCTFE ::= Fn
+//  syntax FnForCTFE ::= Fn
 
   syntax FnSig ::= "const" DefPath ":" Type "="                           //pattern: (DefKind::Const | DefKind::AssocConst, _)
                  | "static" DefPath ":" Type "="                          //pattern: (DefKind::Static(hir::Mutability::Not), _)
