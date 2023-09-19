@@ -60,7 +60,7 @@
             src = ./kmir;
             
             # kmir init $(kbuild which llvm) is to populate $out/lib/llvm
-            # with parser_Mir_MIR-PARSER-SYNTAX from gen_glr_parser 
+            # with parser_Mir_MIR-SYNTAX from gen_glr_parser 
             # before nix directory becomes read only
             buildPhase = ''
               export KBUILD_DIR=".kbuild"

@@ -162,14 +162,3 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
 ```k
 endmodule
 ```
-
-```k
-module MIR-PARSER-SYNTAX
-  imports MIR-SYNTAX
-
-  // Declaring regular expressions of sort `#Layout` infroms the K lexer to drop these tokens.
-  syntax #Layout  ::= r"(\\/\\/[^\\n\\r]*)" // single-line comments
-                    | r"([\\ \\n\\r\\t])"   // whitespace
-
-endmodule
-```
