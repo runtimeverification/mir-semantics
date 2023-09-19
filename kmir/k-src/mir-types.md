@@ -127,7 +127,7 @@ module MIR-TYPE-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+  syntax ArrayType ::= "[" Type ";" RustExpression "]" // HERE
 
   // https://doc.rust-lang.org/reference/types/slice.html
   syntax SliceType ::= "[" Type "]"
@@ -249,7 +249,8 @@ module MIR-TYPE-SYNTAX
                                   | RustExpression "/" RustExpression
                                   | RustExpression "%" RustExpression
                                   > left:
-                                    RustExpression "+" RustExpression
+                                    // RustExpression " + " RustExpression // PASSES
+                                    RustExpression "+" RustExpression // FAILS
                                   | RustExpression "-" RustExpression
                                   > left:
                                     RustExpression "<" "<" RustExpression
