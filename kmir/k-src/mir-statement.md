@@ -17,7 +17,7 @@ module MIR-STATEMENT-SYNTAX
 
   syntax Statement  ::= Place "=" RValue ";" // StatementKind::Assign
                       | "FakeRead" FakeReadCause "," Place ";" // StatementKind::FakeRead. It is removed before codegen, which should be safe to ignore here?
-                      | "Retag" "()" Place ";" //StatementKind::Retag where RetagKindPretty = "" RegtagKind::Default
+                      | "Retag" "(" ")" Place ";" //StatementKind::Retag where RetagKindPretty = "" RegtagKind::Default
                       | "Retag" "(" RetagKindPretty ")" Place ";" //StatementKind::Retag
                       | "StorageLive" "(" Local ")" ";" //StatementKind::StorageLive
                       | "StorageDead" "(" Local ")" ";" //StatementKind::StorageDead

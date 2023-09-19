@@ -18,8 +18,9 @@ Quote from RustDoc: "Places roughly correspond to a “location in memory.” Pl
 ```k
   syntax Place  ::= Local
                   | Projection // &'tcx List<PlaceElem<'tcx>>, projection out of a place (access a field, deref a pointer, etc)
-  
-  syntax Projection ::= List{ProjectionElem, ""} //pub type PlaceElem<'tcx> = ProjectionElem<Local, Ty<'tcx>>;
+
+  syntax Projection ::= ProjectionElem
+  syntax Projection ::= ProjectionElem Projection //pub type PlaceElem<'tcx> = ProjectionElem<Local, Ty<'tcx>>;
 ```
 
 ```k

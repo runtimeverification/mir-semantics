@@ -45,11 +45,11 @@ They are dependent on the function type. Where in the pretty print, the [impleme
   syntax FnSig ::= "const" DefPath ":" Type "="                           //pattern: (DefKind::Const | DefKind::AssocConst, _)
                  | "static" DefPath ":" Type "="                          //pattern: (DefKind::Static(hir::Mutability::Not), _)
                  | "static mut" DefPath ":" Type "="                      //pattern: (DefKind::Static(hir::Mutability::Mut), _)
-                 | "fn" DefPath "()" "->" Type                            //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
+                //  | "fn" DefPath "()" "->" Type                            //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
                  | "fn" DefPath "(" Args ")" "->" Type                    //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
                 //  | "fn" DefPath "(" LocalToken ":" Type ")" "->" Type // FAIL: test-sum-to-n.mir                    //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
                 //  | "fn" DefPath "(" "_1" ":" Type ")" "->" Type  // PASS: test-sum-to-n.mir                   //pattern: DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
-                 | "fn" DefPath "()" "->" Type  "yields" Type             //pattern: DefKind::Generator     //TODO: Do we need `\n`
+                //  | "fn" DefPath "()" "->" Type  "yields" Type             //pattern: DefKind::Generator     //TODO: Do we need `\n`
                  | "fn" DefPath "(" Args ")" "->" Type  "yields" Type     //pattern: DefKind::Generator
                  | DefPath ":" Type "="                                   //pattern: (DefKind::AnonConst | DefKind::InlineConst, _)
 

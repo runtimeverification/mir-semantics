@@ -24,9 +24,9 @@ module MIR-TERMINATOR-SYNTAX
                       | "unreachale" //TerminatorKind::Unreachale, &[]                     
                       | "drop" Place "->" DropSuccessor//TerminatorKind::Drop                                      
                       // | Place "=" Operand "(" ")" "->" CallSuccessor //TerminatorKind::Call, Case 3_1 and Case 3_3
-                      | Place "=" Operand "()" "->" CallSuccessor [group(termCall)] //TerminatorKind::Call, Case 3_1 and Case 3_3
+                      // | Place "=" Operand "()" "->" CallSuccessor [group(termCall)] //TerminatorKind::Call, Case 3_1 and Case 3_3
                       | Place "=" Operand "(" ArgList ")" "->" CallSuccessor [group(termCall)] //TerminatorKind::Call, Case 3_1 and Case 3_3
-                      | Place "=" Operand "()" [group(termCall)] //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
+                      // | Place "=" Operand "()" [group(termCall)] //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
                       | Place "=" Operand "(" ArgList ")" [group(termCall)] //TerminatorKind::Call, Case 3_2: Call { target: None, unwind: UnwindAction::Cleanup(ref mut t), .. } -> (0, None) => ""
                       | "assert" "(" "!" Operand "," AssertKind ")" "->" AssertSuccessor//Terminator::Assert not 
                       | "assert" "(" Operand "," AssertKind ")" "->" AssertSuccessor //Terminator::Assert expected
