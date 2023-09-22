@@ -39,7 +39,7 @@ Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/toke
 
 ```k
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
-  syntax FileLineColumnStartLiteral ::= r"[a-zA-Z0-9|\\_]+[a-zA-Z0-9|\\-|\\_|\\/]*.rs:[0-9]+:[0-9]+:"  [token] // Adding slash (type-param-constraunts.mir LINE 42), and forcing '.rs' extension
+  syntax FileLineColumnStartLiteral ::= r"[a-zA-Z0-9_/\\-\\.]*\\.rs:[0-9]+:[0-9]+:"  [token] // Adding slash (type-param-constraunts.mir LINE 42), and forcing '.rs' extension
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 ```
 
