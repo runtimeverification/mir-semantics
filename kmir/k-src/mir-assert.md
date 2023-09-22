@@ -29,10 +29,12 @@ module MIR-ASSERT-SYNTAX
                     | "\"attempt to shift right by " Operand ", which would overflow\""
                     | "\"attempt to shift left by " Operand ", which would overflow\""
 
+                    | "\"attempt to calculate the remainder of `{}` with a divisor of zero\"" "," Operand
                     | "\"attempt to compute `{} + {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to compute `{} - {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to compute `{} * {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to compute `{} / {}`, which would overflow\"" "," Operand "," Operand
+                    | "\"attempt to compute the remainder of `{} % {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to shift right by `{}`, which would overflow\"" "," Operand
                     | "\"attempt to shift left by `{}`, which would overflow\""  "," Operand
 
