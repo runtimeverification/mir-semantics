@@ -27,6 +27,14 @@ module MIR-ASSERT-SYNTAX
                     | "\"attempt to compute " Operand " % " Operand ", which would overflow\""
                     | "\"attempt to shift right by " Operand ", which would overflow\""
                     | "\"attempt to shift left by " Operand ", which would overflow\""
+
+                    | "\"attempt to compute `{} + {}`, which would overflow\"" "," Operand "," Operand
+                    | "\"attempt to compute `{} - {}`, which would overflow\"" "," Operand "," Operand
+                    | "\"attempt to compute `{} * {}`, which would overflow\"" "," Operand "," Operand
+                    | "\"attempt to compute `{} / {}`, which would overflow\"" "," Operand "," Operand
+                    | "\"attempt to shift right by `{}`, which would overflow\"" "," Operand
+                    | "\"attempt to shift left by `{}`, which would overflow\""  "," Operand
+
   syntax MisalignedPointerDereference ::= "\"misaligned pointer dereference: address must be a multiple of " Operand " but is " Operand "\""
   syntax ResumedAfterReturn ::= "\"generator resumed after completion\""
                               | "\"`async fn` resumed after completion\""
