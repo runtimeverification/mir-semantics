@@ -21,11 +21,11 @@ module MIR-ASSERT-SYNTAX
   syntax DivisionByZero ::= "\"attempt to divide " Operand " by zero\""
                           | "\"attempt to divide `{}` by zero\"" "," Operand
   syntax RemainderByZero ::= "\"attempt to calculate the remainder of " Operand " with a divisor of zero\""
-  syntax Overflow ::= "\"attempt to compute " Operand " + " Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand " - " Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand " * " Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand " / " Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand " % " Operand ", which would overflow\""
+  syntax Overflow ::= "\"attempt to compute " Operand "+" Operand ", which would overflow\""
+                    | "\"attempt to compute " Operand "-" Operand ", which would overflow\""
+                    | "\"attempt to compute " Operand "*" Operand ", which would overflow\""
+                    | "\"attempt to compute " Operand "/" Operand ", which would overflow\""
+                    | "\"attempt to compute " Operand "%" Operand ", which would overflow\""
                     | "\"attempt to shift right by " Operand ", which would overflow\""
                     | "\"attempt to shift left by " Operand ", which would overflow\""
 
