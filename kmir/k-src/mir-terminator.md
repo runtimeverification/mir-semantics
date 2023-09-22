@@ -65,7 +65,6 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
                     | "move" Local
 
   syntax AssertCall ::= "assert" "(" AssertArgument "," AssertKind ")"
-  syntax AssertCall ::= "assert" "(" AssertArgument "," AssertKind ")"
 //   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
   syntax AssertArgument ::= Operand | "!" Operand // | StringLiteral
 //   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
