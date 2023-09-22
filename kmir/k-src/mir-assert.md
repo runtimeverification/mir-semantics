@@ -19,6 +19,7 @@ module MIR-ASSERT-SYNTAX
                        | "\"index out of bounds: the length is {} but the index is {}\"" "," Operand "," Operand //Should this Oprand always uSize
   syntax OverflowNeg ::= "\"attempt to negate " Operand ", which would overflow\""
   syntax DivisionByZero ::= "\"attempt to divide " Operand " by zero\""
+                          | "\"attempt to divide `{}` by zero\"" "," Operand
   syntax RemainderByZero ::= "\"attempt to calculate the remainder of " Operand " with a divisor of zero\""
   syntax Overflow ::= "\"attempt to compute " Operand " + " Operand ", which would overflow\""
                     | "\"attempt to compute " Operand " - " Operand ", which would overflow\""
