@@ -15,21 +15,11 @@ module MIR-ASSERT-SYNTAX
                       | ResumedAfterPanic
                       | MisalignedPointerDereference
 
-  syntax BoundsCheck ::= "index out of bounds: the length is " Operand " but the index is " Operand //Should this Oprand always uSize
-                       | "\"index out of bounds: the length is {} but the index is {}\"" "," Operand "," Operand //Should this Oprand always uSize
+  syntax BoundsCheck ::= "\"index out of bounds: the length is {} but the index is {}\"" "," Operand "," Operand //Should this Oprand always uSize
   syntax OverflowNeg ::= "\"attempt to negate " Operand ", which would overflow\""
-  syntax DivisionByZero ::= "\"attempt to divide " Operand " by zero\""
-                          | "\"attempt to divide `{}` by zero\"" "," Operand
+  syntax DivisionByZero ::= "\"attempt to divide `{}` by zero\"" "," Operand
   syntax RemainderByZero ::= "\"attempt to calculate the remainder of " Operand " with a divisor of zero\""
-  syntax Overflow ::= "\"attempt to compute " Operand "+" Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand "-" Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand "*" Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand "/" Operand ", which would overflow\""
-                    | "\"attempt to compute " Operand "%" Operand ", which would overflow\""
-                    | "\"attempt to shift right by " Operand ", which would overflow\""
-                    | "\"attempt to shift left by " Operand ", which would overflow\""
-
-                    | "\"attempt to calculate the remainder of `{}` with a divisor of zero\"" "," Operand
+  syntax Overflow ::= "\"attempt to calculate the remainder of `{}` with a divisor of zero\"" "," Operand
                     | "\"attempt to compute `{} + {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to compute `{} - {}`, which would overflow\"" "," Operand "," Operand
                     | "\"attempt to compute `{} * {}`, which would overflow\"" "," Operand "," Operand
