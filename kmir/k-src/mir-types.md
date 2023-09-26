@@ -14,33 +14,9 @@ module MIR-TYPE-SYNTAX
 
 ```k
   // https://doc.rust-lang.org/reference/types.html#type-expressions
-  syntax Type ::= "(" Type ")" [bracket]
-                | "(" ")" [avoid] // unit type
-                // | RigidTy         //stable_mir::Ty::TyKind::RigidTy(RigidTy)
+  syntax Type ::= "(" Type ")"  [bracket]  // TypeNoBounds
                 | TypeNoBounds
                 | TraitObjectTypeReduced
-
-  syntax RigidTy ::= "bool" 
-                   | IntTy
-                   | UintTy
-                  //  | FloatTy
-
-  syntax IntTy ::= "isize"
-                 | "i8"
-                 | "i16" 
-                 | "i32"
-                 | "i64"
-                 | "i128"
-
-  syntax UintTy ::= "usize"  
-                  | "u8"
-                  | "u16"
-                  | "u32"
-                  | "u64"
-                  | "u128"
-
-  // syntax FloatTy ::= "f32" // Broken
-  //                  | "f64"
 
   syntax TypeList ::= List{Type, ","}
 
@@ -109,8 +85,7 @@ module MIR-TYPE-SYNTAX
   syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
                                       | TypePathFn
 
-  // syntax PathIdentSegment ::= Identifier | "$crate"
-  syntax PathIdentSegment ::= RigidTy | Identifier | "$crate" // GO HERE?
+  syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
   syntax GenericArg ::= Lifetime
@@ -217,8 +192,7 @@ module MIR-TYPE-SYNTAX
                         // ConstParam is likely not used in MIR.
   syntax LifetimeParam  ::= Lifetime
                           | Lifetime ":" LifetimeBounds
-  syntax TypeParamPrefix ::= RigidTy | Identifier // TODO:Daniel. Think of better name
-  syntax TypeParam ::= TypeParamPrefix MaybeColonTypeParamBounds MaybeEqualsType
+  syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
   syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
   syntax MaybeEqualsType ::= "" | "=" Type
 
@@ -471,9 +445,8 @@ A best-effort default value inference function, for locals initialization.
   syntax MIRValue ::= defaultMIRValue(Type) [function]
   //--------------------------------------------------
   rule defaultMIRValue(( ):TupleType) => Unit
-  rule defaultMIRValue(bool)  => false
-  rule defaultMIRValue(_:IntTy) => 0
-  rule defaultMIRValue(_:UintTy) => 0
+  rule defaultMIRValue(USIZE_TYPE)    => 0     requires IdentifierToken2String(USIZE_TYPE) ==String "usize"
+  rule defaultMIRValue(BOOL_TYPE)     => false requires IdentifierToken2String(BOOL_TYPE)  ==String "bool"
   rule defaultMIRValue(!)             => Never
   rule defaultMIRValue(_:Type)        => UNIMPLEMENTED [owise]
 ```
