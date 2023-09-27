@@ -285,10 +285,6 @@ module MIR-TYPE-SYNTAX
                               | ByteStringLiteral
                               | Int
                               | Bool
-                              // | CapitalIdent // TEMPORARY
-                              // | Identifier // IDENTIFIER IS INCORRECT AS FIRST POSITION CANNOT BE UPPER CASE. NEED TO PRINT ACTUAL REPRESETATION
-                              
-  // syntax CapitalIdent ::= r"[A-Z]" [token]
 
   // https://doc.rust-lang.org/reference/expressions/grouped-expr.html
   syntax GroupedExpression ::= "(" RustExpression ")"
