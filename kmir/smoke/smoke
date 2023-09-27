@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -xueo pipefail
+
+# NOTE: run script from mir-semantics/kmir
+
+# Clean previous results
+(cd smoke/ && rm -f result*.out)
+
+# Parse
+poetry run kmir parse --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/const-arithm-simple.mir &> smoke/result.parse.const-arithm-simple.out
+git --no-pager diff smoke/result.parse.const-arithm-simple.out smoke/benchmark.parse.const-arithm-simple.out
+poetry run kmir parse --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/test-binop.mir          &> smoke/result.parse.test-binop.out
+git --no-pager diff smoke/result.parse.test-binop.out smoke/benchmark.parse.test-binop.out
+poetry run kmir parse --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/test-sum-to-n.mir       &> smoke/result.parse.test-sum-to-n.out
+git --no-pager diff smoke/result.parse.test-sum-to-n.out smoke/benchmark.parse.test-sum-to-n.out
+
+# Run
+poetry run kmir run --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/const-arithm-simple.mir   &> smoke/result.run.const-arithm-simple.out
+git --no-pager diff smoke/result.run.const-arithm-simple.out smoke/benchmark.run.const-arithm-simple.out
+poetry run kmir run --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/test-binop.mir            &> smoke/result.run.test-binop.out
+git --no-pager diff smoke/result.run.test-binop.out smoke/benchmark.run.test-binop.out
+poetry run kmir run --definition-dir $(poetry run kbuild which llvm) --output pretty src/tests/integration/test-data/handwritten-rust/test-sum-to-n.mir         &> smoke/result.run.test-sum-to-n.out
+git --no-pager diff smoke/result.run.test-sum-to-n.out smoke/benchmark.run.test-sum-to-n.out

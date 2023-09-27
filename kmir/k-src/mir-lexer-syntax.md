@@ -7,7 +7,7 @@ This module defined the necessary `token` productions.
 ```k
   syntax Identifier ::= IdentifierToken
                       | LocalToken
-                      | BBToken
+                      | BBId
                       | DoubleHexDigitNoIntLetter
                       | Whitelisted
 
@@ -20,7 +20,7 @@ This module defined the necessary `token` productions.
 ```k
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
   syntax LocalToken      ::= r"_[0-9]+"  [token]
-  syntax BBToken         ::= r"bb[0-9]+" [token]
+  syntax BBId            ::= r"bb[0-9]+" [prefer, token]
 ```
 
 Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/tokens.html#literals), since MIR does not seem to use the full range:
@@ -39,7 +39,7 @@ Simplified forms of the [Rust literals](https://doc.rust-lang.org/reference/toke
 
 ```k
   syntax FilePosition ::= FileLineColumnStartLiteral LineColumnEndLiteral
-  syntax FileLineColumnStartLiteral ::= r"[^@ ]+:[0-9]+:[0-9]+:"  [token]
+  syntax FileLineColumnStartLiteral ::= r"[a-zA-Z0-9_/\\-\\.]*\\.rs:[0-9]+:[0-9]+:"  [token] // Adding '/' (type-param-constraints.mir LINE 42), and forcing '.rs' extension
   syntax LineColumnEndLiteral ::= r"[0-9]+:[0-9]+"  [token]
 ```
 

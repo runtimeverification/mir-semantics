@@ -1,6 +1,5 @@
 ```k
 require "mir-configuration.md"
-require "mir-rvalue.md"
 require "panics.md"
 ```
 
@@ -431,8 +430,8 @@ or panics if the function-like or the block is missing:
          </localDecl>
          ...
        </function>
-  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB))
-        => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
+  rule <k> #executeTerminator(assert(ARG:AssertArgument, KIND:AssertKind) -> ((NEXT:BBName _):BB))
+        => #assert(FN_KEY, ARG, KIND) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
@@ -558,7 +557,7 @@ The `#assert` production will be eliminated from the `<k>` cell if the assertion
 a `#panic` (or `#internalPanic`) production otherwise.
 
 ```k
-  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgumentList)
+  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgument, AssertKind)
   //-------------------------------------------------------------------
 ```
 
@@ -567,20 +566,20 @@ Positive assertion succeeds if the argument evaluates to true, but fails if eith
 * argument is not boolean --- internal type error --- should be impossible with real MIR.
 
 ```k
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, _KIND:AssertKind)
         => .K
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K true
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, _KIND:AssertKind)
         => #panic(FN_KEY, AssertionViolation, ASSERTION)
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K false
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
-        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION))
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, KIND:AssertKind)
+        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION, KIND))
         ...
        </k>
    requires notBool isBool(evalOperand(FN_KEY, ASSERTION))
@@ -590,28 +589,28 @@ Negative assertions are similar to positive ones but need special treatment for 
 TODO: maybe we should unify positive and negative assertions.
 
 ```k
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand)  , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ! ASSERTION:Operand, _KIND:AssertKind)
         => .K
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K false
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
-        => #panic(FN_KEY, AssertionViolation, (! ASSERTION))
+  rule <k> #assert(FN_KEY, ! ASSERTION:Operand, _KIND:AssertKind)
+        => #panic(FN_KEY, AssertionViolation, (! ASSERTION)) //TODO!
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K true
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
-        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION))
+  rule <k> #assert(FN_KEY, (! ASSERTION:Operand), KIND:AssertKind)
+        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION, KIND))
         ...
        </k>
    requires notBool isBool(evalOperand(FN_KEY, ASSERTION))
 ```
 
 ```k
-  rule <k> #assert(FN_KEY, ARGS)
-        => #internalPanic(FN_KEY, NotImplemented, assert(ARGS))
+  rule <k> #assert(FN_KEY, ARG, KIND)
+        => #internalPanic(FN_KEY, NotImplemented, assert(ARG, KIND))
         ...
        </k> [owise]
 ```
