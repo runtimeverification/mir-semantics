@@ -4,7 +4,7 @@ fn main() -> () {
 
     bb0: {
         _1 = const true;
-        assert (_1) -> bb1;
+        assert (_1, "generator resumed after completion") -> bb1;
     }
 
     bb1: {
