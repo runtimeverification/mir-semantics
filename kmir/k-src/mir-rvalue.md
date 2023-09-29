@@ -162,6 +162,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, VALUE:Operand)   => evalOperand(FN_KEY, VALUE)
   rule evalRValue(FN_KEY, UN_OP:UnaryOp)   => evalUnaryOp(FN_KEY, UN_OP)
   rule evalRValue(FN_KEY, BIN_OP:BinaryOp) => evalBinaryOp(FN_KEY, BIN_OP)
+  rule evalRValue(FN_KEY, ADDR:AddressOf)  => evalAddressOf(FN_KEY, ADDR)
   rule evalRValue(_FN_KEY, RVALUE)         => Unsupported(RVALUE) [owise]
 ```
 
@@ -170,9 +171,10 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalOperand(FunctionLikeKey, Operand) [function]
   //------------------------------------------------------------------
-  rule evalOperand(_, const VALUE:ConstantValue)     => evalConstantValue(VALUE)
-  rule evalOperand(FN_KEY, LOCAL:Local)                   => evalLocal(FN_KEY, LOCAL)
-  rule evalOperand(FN_KEY, move LOCAL:Local)              => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(_, const VALUE:ConstantValue) => evalConstantValue(VALUE)
+  rule evalOperand(FN_KEY, LOCAL:Local)          => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(FN_KEY, move LOCAL:Local)     => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(FN_KEY, REF:Deref)            => evalDeref(FN_KEY, REF)
 ```
 
 ### `UnaryOp` evaluation
@@ -252,6 +254,42 @@ Locals only makes sense withing a function-like, hence we evaluate them as a con
     requires  INDEX ==Int Local2Int(LOCAL)
 ```
 
+### `Reference and Deref` evaluation
+
+```k
+  // TODO: These assumes PLACE is a Local, need to handle other options
+  syntax MIRValue ::= evalAddressOf(FunctionLikeKey, AddressOf) [function]
+  //----------------------------------------------------------------------
+  rule [[ evalAddressOf(FN_KEY, & _PtrModifiers PLACE) => INDEX ]]
+    <function>
+      <fnKey> FN_KEY </fnKey>
+      <localDecl>
+        <index> INDEX </index>
+        ...
+      </localDecl>
+      ...
+    </function>
+    requires INDEX ==Int Local2Int(PLACE)
+
+  syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
+  //--------------------------------------------------------------
+  rule [[ evalDeref(FN_KEY, ( * PLACE)) => VALUE ]]
+    <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecl>
+          <index> REF </index>
+          <value> INDEX </value>
+          ...
+        </localDecl>
+        <localDecl>
+          <index> INDEX </index>
+          <value> VALUE </value>
+          ...
+        </localDecl>
+      ...
+    </function>
+    requires REF ==Int Local2Int(PLACE)
+```
 
 ```k
 endmodule
