@@ -151,14 +151,13 @@ module MIR-BASIC-BLOCKS
     <basicBlocks>
       <basicBlock multiplicity="*" type="Map">
         <bbName> 0:Int </bbName>
-        <bbBody> BBBottom:BasicBlockBody </bbBody>
+        <bbBody> bbDummy: {BBBottom;}:BasicBlockBody </bbBody>
       </basicBlock>
     </basicBlocks>
-
-  syntax BasicBlockBody ::= "BBBottom" [macro]
+  
   // -----------------------------------------
-  // rule BBBottom => assert(String2SringLiteral("dummy"))
-  rule BBBottom => assert(Int2Local(0), "generator resumed after panicking")
+  syntax BasicBlockBody ::= BBBottom
+  syntax BBBottom ::= "bbDummy" ":" "{" "BBBottom" ";" "}"
 ```
 
 ```k
