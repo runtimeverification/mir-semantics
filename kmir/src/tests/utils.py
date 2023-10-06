@@ -8,3 +8,4 @@ if TYPE_CHECKING:
 
 
 REPO_ROOT: Final = Path(__file__).parents[3].resolve(strict=True)
+KMIR_DIR: Final = Path(__file__).parents[2].resolve(strict=True)
