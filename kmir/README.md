@@ -100,6 +100,8 @@ Working on the semantics (targeting the LLVM backend) roughly comprises the foll
    This time, do not include the `--kbuild-dir` option to re-kompile everything in a temporary directory.
 
 ### Get MIR files from rust programs
+NOTE: KMIR is currently designed for a fixed verson of `rustc` which is `rustc 1.72.0-nightly (46514218f 2023-06-20)`, this can be installed by `rustup default nightly-2023-06-21`.
+
 At MIR level, it will go through multiple passes of optimization until the final file ready for code gen. The Rust compiler provides ways to output the MIR file for a rust program. 
 1. The [`emit`](https://doc.rust-lang.org/rustc/command-line-arguments.html#--emit-specifies-the-types-of-output-files-to-generate) option (enabled for `stable` and `nightly` versions):
    ```

@@ -1,0 +1,586 @@
+<generatedTop>
+  <k>
+    .
+  </k>
+  <returncode>
+    0
+  </returncode>
+  <mir>
+    <simulator>
+      <callStack>
+        .List
+      </callStack>
+      <currentBasicBlock>
+        1
+      </currentBasicBlock>
+      <phase>
+        Finalization
+      </phase>
+    </simulator>
+    <data>
+      <functions>
+        <function>
+          <fnKey>
+            Fn ( main :: .FunctionPath )
+          </fnKey>
+          <localDecls>
+            <localDecl>
+              <index>
+                0
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                ( )
+              </ty>
+              <value>
+                Unit
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                1
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                42
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                2
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                10
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                3
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                ( )
+              </ty>
+              <value>
+                Unit
+              </value>
+            </localDecl>
+          </localDecls>
+          <basicBlocks>
+            <basicBlock>
+              <bbName>
+                0
+              </bbName>
+              <bbBody>
+                { _1 = const 42_usize ;  _2 = const 10_usize ;  .Statements _3 = test_binop :: .ExpressionPathList ( _1 , _2 , .ArgumentList ) -> bb1  ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                1
+              </bbName>
+              <bbBody>
+                { .Statements return ; }
+              </bbBody>
+            </basicBlock>
+          </basicBlocks>
+        </function> <function>
+          <fnKey>
+            Fn ( test_binop :: .FunctionPath )
+          </fnKey>
+          <localDecls>
+            <localDecl>
+              <index>
+                0
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                ( )
+              </ty>
+              <value>
+                Unit
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                1
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                42
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                2
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                10
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                3
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                false
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                4
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                5
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                52
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                6
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                !
+              </ty>
+              <value>
+                Never
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                7
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                false
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                8
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                9
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                52
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                10
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                !
+              </ty>
+              <value>
+                Never
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                11
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                false
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                12
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                13
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                52
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                14
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                52
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                15
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                !
+              </ty>
+              <value>
+                Never
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                16
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                false
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                17
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                18
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                52
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                19
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                !
+              </ty>
+              <value>
+                Never
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                20
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                false
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                21
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                22
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                32
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                23
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                !
+              </ty>
+              <value>
+                Never
+              </value>
+            </localDecl>
+          </localDecls>
+          <basicBlocks>
+            <basicBlock>
+              <bbName>
+                0
+              </bbName>
+              <bbBody>
+                { _5 = Add ( _1 , _2 ) ;  _4 = Gt ( move _5 , _1 ) ;  _3 = Not ( move _4 ) ;  .Statements switchInt ( move _3 ) -> [ 0 : bb2  , .SwitchTargets , otherwise : bb1  ] ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                1
+              </bbName>
+              <bbBody>
+                { .Statements _6 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: x + y > x" , .ArgumentList ) ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                2
+              </bbName>
+              <bbBody>
+                { _9 = Add ( _1 , _2 ) ;  _8 = Eq ( move _9 , const 52_usize ) ;  _7 = Not ( move _8 ) ;  .Statements switchInt ( move _7 ) -> [ 0 : bb4  , .SwitchTargets , otherwise : bb3  ] ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                3
+              </bbName>
+              <bbBody>
+                { .Statements _10 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: x + y == 52" , .ArgumentList ) ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                4
+              </bbName>
+              <bbBody>
+                { _13 = Add ( _1 , _2 ) ;  _14 = Add ( _2 , _1 ) ;  _12 = Eq ( move _13 , move _14 ) ;  _11 = Not ( move _12 ) ;  .Statements switchInt ( move _11 ) -> [ 0 : bb6  , .SwitchTargets , otherwise : bb5  ] ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                5
+              </bbName>
+              <bbBody>
+                { .Statements _15 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: x + y == y + x" , .ArgumentList ) ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                6
+              </bbName>
+              <bbBody>
+                { _18 = Add ( _1 , _2 ) ;  _17 = Eq ( move _18 , const 52_usize ) ;  _16 = Not ( move _17 ) ;  .Statements switchInt ( move _16 ) -> [ 0 : bb8  , .SwitchTargets , otherwise : bb7  ] ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                7
+              </bbName>
+              <bbBody>
+                { .Statements _19 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: x + y == 52" , .ArgumentList ) ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                8
+              </bbName>
+              <bbBody>
+                { _22 = Sub ( _1 , _2 ) ;  _21 = Eq ( move _22 , const 32_usize ) ;  _20 = Not ( move _21 ) ;  .Statements switchInt ( move _20 ) -> [ 0 : bb10  , .SwitchTargets , otherwise : bb9  ] ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                9
+              </bbName>
+              <bbBody>
+                { .Statements _23 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: x - y == 32" , .ArgumentList ) ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                10
+              </bbName>
+              <bbBody>
+                { .Statements return ; }
+              </bbBody>
+            </basicBlock>
+          </basicBlocks>
+        </function>
+      </functions>
+    </data>
+  </mir>
+</generatedTop>
+

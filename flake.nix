@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url =
       "github:NixOS/nixpkgs/f971f35f7d79c53a83c7b10de953f1db032cba0e";
-    k-framework.url = "github:runtimeverification/k/v6.0.69";
+    k-framework.url = "github:runtimeverification/k/v6.0.118";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.url = "github:runtimeverification/rv-nix-tools";
     poetry2nix.url = "github:nix-community/poetry2nix/master";
@@ -60,7 +60,7 @@
             src = ./kmir;
             
             # kmir init $(kbuild which llvm) is to populate $out/lib/llvm
-            # with parser_Mir_MIR-PARSER-SYNTAX from gen_glr_parser 
+            # with parser_Mir_MIR-SYNTAX from gen_glr_parser 
             # before nix directory becomes read only
             buildPhase = ''
               export KBUILD_DIR=".kbuild"
