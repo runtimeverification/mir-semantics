@@ -51,8 +51,8 @@ The various kinds of rvalues that can appear in MIR.
   syntax Len ::= "Len" "(" Place ")"
 
   // TODO: this needs additional productions
-  syntax Cast ::= Operand "as" Type
-                | Operand "as" Type  "(" PointerCastArg ")"
+  syntax Cast ::= Operand "as" Type [prefer]
+                | Operand "as" Type  "(" PointerCastArg ")" [prefer]
                 | PathExpression "as" Type
                 | PathExpression "as" Type "(" PointerCastArg ")"
 
