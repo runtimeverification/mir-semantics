@@ -14,7 +14,7 @@ all: check test
 
 .PHONY: clean
 clean:
-	$(POETRY_RUN) kbuild clean
+	rm -rf kdist/;
 	rm -rf dist .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
