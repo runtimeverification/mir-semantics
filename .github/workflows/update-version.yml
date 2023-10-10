@@ -32,7 +32,6 @@ jobs:
           git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
       - name: 'Update K release tag'
         run: |
-          PATH="/home/github-runner/.local/bin:$PATH"
           K_VERSION=$(poetry -C kmir run python3 -c 'import pyk; print(pyk.K_VERSION)')
           echo ${K_VERSION} > deps/k_release
           git add deps/k_release && git commit -m "deps/k_release: sync release file version ${K_VERSION}" || true
