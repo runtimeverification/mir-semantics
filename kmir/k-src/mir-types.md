@@ -18,6 +18,29 @@ module MIR-TYPE-SYNTAX
                 | TypeNoBounds
                 | TraitObjectTypeReduced
 
+  syntax RigidTy ::= "bool"
+                  //  | "char" // TODO Errors
+                   | IntTy
+                   | UintTy
+                  //  | FloatTy // TODO Errors
+
+  syntax IntTy ::= "isize"
+                 | "i8"
+                 | "i16" 
+                 | "i32"
+                 | "i64"
+                 | "i128"
+
+  syntax UintTy ::= "usize"
+                  | "u8"
+                  | "u16"
+                  | "u32"
+                  | "u64"
+                  | "u128"
+
+  // syntax FloatTy ::= "f32" // TODO Errors
+  //                  | "f64"
+
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
@@ -85,6 +108,7 @@ module MIR-TYPE-SYNTAX
   syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
                                       | TypePathFn
 
+  syntax PathIdentSegment ::= RigidTy [prefer]
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -192,6 +216,7 @@ module MIR-TYPE-SYNTAX
                         // ConstParam is likely not used in MIR.
   syntax LifetimeParam  ::= Lifetime
                           | Lifetime ":" LifetimeBounds
+  syntax TypeParam  ::= RigidTy [prefer]
   syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
   syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
   syntax MaybeEqualsType ::= "" | "=" Type
@@ -441,8 +466,19 @@ A best-effort default value inference function, for locals initialization.
   syntax MIRValue ::= defaultMIRValue(Type) [function]
   //--------------------------------------------------
   rule defaultMIRValue(( ):TupleType) => Unit
-  rule defaultMIRValue(USIZE_TYPE)    => 0     requires IdentifierToken2String(USIZE_TYPE) ==String "usize"
-  rule defaultMIRValue(BOOL_TYPE)     => false requires IdentifierToken2String(BOOL_TYPE)  ==String "bool"
+  rule defaultMIRValue(usize)         => 0
+  rule defaultMIRValue(u8)            => 0
+  rule defaultMIRValue(u16)           => 0
+  rule defaultMIRValue(u32)           => 0
+  rule defaultMIRValue(u64)           => 0
+  rule defaultMIRValue(u128)          => 0
+  rule defaultMIRValue(isize)         => 0
+  rule defaultMIRValue(i8)            => 0
+  rule defaultMIRValue(i16)           => 0
+  rule defaultMIRValue(i32)           => 0
+  rule defaultMIRValue(i64)           => 0
+  rule defaultMIRValue(i128)          => 0
+  rule defaultMIRValue(bool)          => false
   rule defaultMIRValue(!)             => Never
   rule defaultMIRValue(_:Type)        => UNIMPLEMENTED [owise]
 ```
