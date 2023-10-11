@@ -19,7 +19,7 @@ clean:
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 .PHONY: build-backends
-build-backends: kbuild-llvm kbuild-haskell
+build-backends: clean kbuild-llvm kbuild-haskell
 
 .PHONY: build
 build: poetry-install build-backends
