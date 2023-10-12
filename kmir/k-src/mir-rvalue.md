@@ -119,6 +119,7 @@ The various kinds of rvalues that can appear in MIR.
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
                            | PathExpression "::" Identifier
+                           | PathExpression "::" BinaryOpName // "Eq" in BinaryOpName not an Identifier
                            | PathExpression "::" Identifier "(" OperandList ")"
 
   syntax AdtField ::= AdtFieldName ":" Operand
