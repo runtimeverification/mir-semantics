@@ -76,7 +76,8 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
   syntax IntCaseList ::= NeList{IntCase, ","}
   syntax IntCase ::= Int ":" BB
   syntax OtherwiseCase ::= "otherwise" ":" BB
-  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" ":" BB "]"
+  syntax TerminateOrBB ::= ":" BB | "terminate"
+  syntax CallDestination ::= "[" "return" ":" BB "," "unwind" TerminateOrBB "]"
   syntax AssertDestination ::= "[" "success" ":" BB "," "unwind" ":" BB "]"
 endmodule
 ```
