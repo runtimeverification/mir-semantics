@@ -19,7 +19,7 @@ This module defined the necessary `token` productions.
 
 ```k
   syntax IdentifierToken ::= r"[_a-zA-Z][_a-zA-Z0-9]*" [token]
-  syntax LocalToken      ::= r"_[0-9]+"  [token]
+  syntax LocalToken      ::= r"_[0-9]+" [prec(1), token]
 
   syntax BBId            ::= r"bb[0-9]+" [prefer, token]
 
