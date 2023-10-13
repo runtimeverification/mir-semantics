@@ -49,6 +49,8 @@ The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir:
   syntax ScopeList ::= List{Scope, ""}
 
   syntax Debug ::= "debug" UserVariableName "=>" Place ";"
+  syntax Debug ::= "debug" UserVariableName "=>" Constant ";"
+
   syntax DebugList ::= List{Debug, ""}
 
 ```
