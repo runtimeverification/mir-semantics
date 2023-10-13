@@ -116,10 +116,13 @@ The various kinds of rvalues that can appear in MIR.
   syntax StructConstructor ::= Type "{" AdtFieldList "}"
                             //  | TypePath "(" OperandList ")" // compiletest-rs/ui/traits/copy-requires-self-wf.mir LINE 17
 
+  // `AssertKind` `Eq`, `Ne` conflict with BinaryOp names https://github.com/rust-lang/rust/blob/f562931178ff103f23b9e9a10dc0deb38e0d064f/library/core/src/panicking.rs#L259-L263
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
                            | PathExpression "::" Identifier
-                           | PathExpression "::" BinaryOpName // "Eq" in BinaryOpName not an Identifier
+                           | PathExpression "::" "Eq"
+                           | PathExpression "::" "Ne"
+                          //  | PathExpression "::" "Match" // Match isn't conflicting at the moment but might later
                            | PathExpression "::" Identifier "(" OperandList ")"
 
   syntax AdtField ::= AdtFieldName ":" Operand
