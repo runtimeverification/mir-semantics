@@ -121,11 +121,14 @@ check-black: poetry-install
 
 # Kompilation
 
-kbuild-%:
+kbuild-%: check-k-version
 	$(POETRY_RUN) kbuild kompile $*
 
 kwhich-%:
 	$(POETRY_RUN) kbuild which $*
+
+check-k-version:
+	./check_k_version.sh
 
 .PHONY: kbuild-*
 
