@@ -132,3 +132,13 @@ check-k-version:
 
 .PHONY: kbuild-*
 
+# Nix (doesn't perform version check)
+
+.PHONY: nix-build-backends
+
+nix-build-backends: clean nix-kbuild-llvm nix-kbuild-haskell
+
+nix-kbuild-%:
+	$(POETRY_RUN) kbuild kompile $*
+
+.PHONY: nix-kbuild-*
