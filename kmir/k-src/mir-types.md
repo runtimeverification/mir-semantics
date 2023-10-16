@@ -19,10 +19,13 @@ module MIR-TYPE-SYNTAX
                 | TraitObjectTypeReduced
 
   syntax RigidTy ::= "bool"
-                  //  | "char" // TODO Errors
+                   | "char"
                    | IntTy
                    | UintTy
-                  //  | FloatTy // TODO Errors
+                   | FloatTy
+                   | "str"
+                   | Array
+                   | Slice
 
   syntax IntTy ::= "isize"
                  | "i8"
@@ -38,8 +41,8 @@ module MIR-TYPE-SYNTAX
                   | "u64"
                   | "u128"
 
-  // syntax FloatTy ::= "f32" // TODO Errors
-  //                  | "f64"
+  syntax FloatTy ::= "f32"
+                   | "f64"
 
   syntax TypeList ::= List{Type, ","}
 
@@ -68,8 +71,6 @@ module MIR-TYPE-SYNTAX
                                     // One option would be to replace all "&&"
                                     // tokens with "&" "&".
                                     | DoubleReferenceType
-                                    | ArrayType
-                                    | SliceType
                                     | BareFunctionType
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
@@ -151,10 +152,10 @@ module MIR-TYPE-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" RustExpression "]" // HERE
+  syntax Array ::= "[" Type ";" RustExpression "]"
 
   // https://doc.rust-lang.org/reference/types/slice.html
-  syntax SliceType ::= "[" Type "]"
+  syntax Slice ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInType ::= QualifiedPathType
   syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
@@ -360,6 +361,8 @@ module MIR-TYPE-SYNTAX
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
 
+  // Variable names can also clash with type names, see compiletest-rs/ui/moves/move-out-of-field.mir
+  // TODO: Handle this clash. See issue #228
   syntax UserVariableName ::= Identifier
   syntax AdtFieldName ::= Identifier
   syntax BBName ::= BBId

@@ -150,6 +150,7 @@ compiletest-rs/ui/autoref-autoderef/deref-into-array.mir	1
 compiletest-rs/ui/moves/move-3-unique.mir	1
 compiletest-rs/ui/moves/move-2.mir	1
 compiletest-rs/ui/moves/move-arg-2-unique.mir	1
+compiletest-rs/ui/moves/move-out-of-field.mir	1
 compiletest-rs/ui/moves/move-1-unique.mir	1
 compiletest-rs/ui/moves/move-2-unique.mir	1
 compiletest-rs/ui/moves/move-4.mir	1
@@ -375,6 +376,7 @@ compiletest-rs/ui/consts/const-big-enum.mir	1
 compiletest-rs/ui/consts/const-enum-vector.mir	1
 compiletest-rs/ui/consts/self_normalization2.mir	1
 compiletest-rs/ui/consts/issue-27890.mir	1
+compiletest-rs/ui/consts/const-float-bits-conv.mir	1
 compiletest-rs/ui/consts/const-rec-and-tup.mir	1
 compiletest-rs/ui/consts/issue-21721.mir	1
 compiletest-rs/ui/consts/const-vec-of-fns.mir	1
@@ -388,6 +390,7 @@ compiletest-rs/ui/consts/const_let_assign2.mir	1
 compiletest-rs/ui/consts/const-size_of-align_of.mir	1
 compiletest-rs/ui/consts/issue-89088.mir	1
 compiletest-rs/ui/consts/const-block.mir	1
+compiletest-rs/ui/consts/const-float-classify.mir	1
 compiletest-rs/ui/consts/issue-13837.mir	1
 compiletest-rs/ui/consts/const-cast.mir	1
 compiletest-rs/ui/consts/const-enum-cast.mir	1
