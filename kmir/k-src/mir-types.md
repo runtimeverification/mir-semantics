@@ -24,7 +24,8 @@ module MIR-TYPE-SYNTAX
                    | UintTy
                    | FloatTy
                    | "str"
-                   | ArrayType
+                   | Array
+                   | Slice
 
   syntax IntTy ::= "isize"
                  | "i8"
@@ -70,7 +71,6 @@ module MIR-TYPE-SYNTAX
                                     // One option would be to replace all "&&"
                                     // tokens with "&" "&".
                                     | DoubleReferenceType
-                                    | SliceType
                                     | BareFunctionType
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
@@ -152,10 +152,10 @@ module MIR-TYPE-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+  syntax Array ::= "[" Type ";" RustExpression "]"
 
   // https://doc.rust-lang.org/reference/types/slice.html
-  syntax SliceType ::= "[" Type "]"
+  syntax Slice ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInType ::= QualifiedPathType
   syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
