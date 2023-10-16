@@ -47,7 +47,7 @@
             checkGroups = [ ];
           };
         })
-      (final: prev: {
+      (let k_release = builtins.readFile ./deps/k_release; in final: prev: {
           mir-semantics = prev.stdenv.mkDerivation {
             pname = "mir-semantics";
             version = self.rev or "dirty";
@@ -58,13 +58,14 @@
             nativeBuildInputs = [ prev.makeWrapper ]; 
 
             src = ./kmir;
-            
+
             # kmir init $(kbuild which llvm) is to populate $out/lib/llvm
             # with parser_Mir_MIR-SYNTAX from gen_glr_parser 
             # before nix directory becomes read only
             buildPhase = ''
               export KBUILD_DIR=".kbuild"
-              make build-backends POETRY_RUN=
+              patchShebangs .
+              make build-backends VERSION="${k_release}" POETRY_RUN=
               kmir init $(kbuild which llvm)
             '';
 
