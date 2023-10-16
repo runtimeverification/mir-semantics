@@ -127,7 +127,8 @@ kbuild-%: check-k-version
 kwhich-%:
 	$(POETRY_RUN) kbuild which $*
 
+# VERSION intended to be empty, unless building with nix
 check-k-version:
-	./check_k_version.sh
+	./check_k_version.sh $(VERSION)
 
 .PHONY: kbuild-*

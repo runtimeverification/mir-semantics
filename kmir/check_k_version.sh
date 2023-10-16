@@ -2,7 +2,15 @@
 
 set -euo pipefail
 
-EXPECTED=$(cat ../deps/k_release)
+if [ $# -eq 0 ] 
+then
+    # No args given, check k_release directly
+    EXPECTED=$(cat ../deps/k_release)
+else
+    # Arg provided, must be nix providing version
+    EXPECTED=$1
+fi
+
 INSTALLED=$(kompile --version | head -1 | cut -f3 -dv)
 
 if grep -q "$EXPECTED" <<< "$INSTALLED"; 
