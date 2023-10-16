@@ -19,10 +19,10 @@ module MIR-TYPE-SYNTAX
                 | TraitObjectTypeReduced
 
   syntax RigidTy ::= "bool"
-                  //  | "char" // TODO Errors
+                   | "char"
                    | IntTy
                    | UintTy
-                  //  | FloatTy // TODO Errors
+                   | FloatTy
 
   syntax IntTy ::= "isize"
                  | "i8"
@@ -38,8 +38,8 @@ module MIR-TYPE-SYNTAX
                   | "u64"
                   | "u128"
 
-  // syntax FloatTy ::= "f32" // TODO Errors
-  //                  | "f64"
+  syntax FloatTy ::= "f32"
+                   | "f64"
 
   syntax TypeList ::= List{Type, ","}
 
