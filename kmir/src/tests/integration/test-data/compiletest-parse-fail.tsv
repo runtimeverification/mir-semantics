@@ -150,6 +150,7 @@ compiletest-rs/ui/autoref-autoderef/deref-into-array.mir	1
 compiletest-rs/ui/moves/move-3-unique.mir	1
 compiletest-rs/ui/moves/move-2.mir	1
 compiletest-rs/ui/moves/move-arg-2-unique.mir	1
+compiletest-rs/ui/moves/move-out-of-field.mir	1
 compiletest-rs/ui/moves/move-1-unique.mir	1
 compiletest-rs/ui/moves/move-2-unique.mir	1
 compiletest-rs/ui/moves/move-4.mir	1

@@ -23,6 +23,7 @@ module MIR-TYPE-SYNTAX
                    | IntTy
                    | UintTy
                    | FloatTy
+                   | "str"
 
   syntax IntTy ::= "isize"
                  | "i8"
@@ -360,6 +361,8 @@ module MIR-TYPE-SYNTAX
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
 
+  // Variable names can also clash with type names, see compiletest-rs/ui/moves/move-out-of-field.mir
+  // TODO: Handle this clash. See issue #228
   syntax UserVariableName ::= Identifier
   syntax AdtFieldName ::= Identifier
   syntax BBName ::= BBId
