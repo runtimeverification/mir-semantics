@@ -1,0 +1,32 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: u32;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: !;
+    scope 1 {
+        debug a => _1;
+        let _2: u32;
+        scope 2 {
+            debug b => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const u32::MAX;
+        _2 = Add(const 4294967294_u32, const 1_u32);
+        _4 = Eq(_1, _2);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = core::panicking::panic(const "assertion failed: a == b");
+    }
+
+    bb2: {
+        return;
+    }
+}
