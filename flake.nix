@@ -4,12 +4,12 @@
   inputs = {
     nixpkgs.url =
       "github:NixOS/nixpkgs/f971f35f7d79c53a83c7b10de953f1db032cba0e";
-    k-framework.url = "github:runtimeverification/k/v6.0.145";
+    k-framework.url = "github:runtimeverification/k/v6.0.146";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.url = "github:runtimeverification/rv-nix-tools";
     poetry2nix.url = "github:nix-community/poetry2nix/master";
     poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
-    pyk.url = "github:runtimeverification/pyk/v0.1.467";
+    pyk.url = "github:runtimeverification/pyk/v0.1.468";
     pyk.inputs.flake-utils.follows = "k-framework/flake-utils";
     pyk.inputs.nixpkgs.follows = "k-framework/nixpkgs";
   };
