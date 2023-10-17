@@ -229,7 +229,36 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
   rule evalConstantValue(VALUE:Bool)            => VALUE
+  rule evalConstantValue(VALUE:PrimitiveBound)  => evalPrimitiveBound(VALUE)
 //  rule evalConstantValue(_VALUE)              => "Error: evalConstantValue --- unsupported ConstantValue" [owise]
+```
+
+#### Primitive type bounds TODO: usize depends on architecture, which we currently do not handle
+
+```k
+  syntax Int ::= evalPrimitiveBound(PrimitiveBound) [function]
+  //----------------------------------------------------------
+  rule evalPrimitiveBound(u8::MAX)   => 255
+  rule evalPrimitiveBound(u16::MAX)  => 65535
+  rule evalPrimitiveBound(u32::MAX)  => 4294967295
+  rule evalPrimitiveBound(u64::MAX)  => 18446744073709551615
+  rule evalPrimitiveBound(u128::MAX) => 340282366920938463463374607431768211455
+  rule evalPrimitiveBound(u8::MIN)   => 0
+  rule evalPrimitiveBound(u16::MIN)  => 0
+  rule evalPrimitiveBound(u32::MIN)  => 0
+  rule evalPrimitiveBound(u64::MIN)  => 0
+  rule evalPrimitiveBound(u128::MIN) => 0
+
+  rule evalPrimitiveBound(i8::MAX)   => 127
+  rule evalPrimitiveBound(i16::MAX)  => 32767
+  rule evalPrimitiveBound(i32::MAX)  => 2147483647
+  rule evalPrimitiveBound(i64::MAX)  => 9223372036854775807
+  rule evalPrimitiveBound(i128::MAX) => 170141183460469231731687303715884105727
+  rule evalPrimitiveBound(i8::MIN)   => -127
+  rule evalPrimitiveBound(i16::MIN)  => -32768
+  rule evalPrimitiveBound(i32::MIN)  => -2147483648
+  rule evalPrimitiveBound(i64::MIN)  => -9223372036854775808
+  rule evalPrimitiveBound(i128::MIN) => -170141183460469231731687303715884105728
 ```
 
 ### `Local` evaluation
