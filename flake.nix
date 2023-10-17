@@ -9,7 +9,7 @@
     rv-utils.url = "github:runtimeverification/rv-nix-tools";
     poetry2nix.url = "github:nix-community/poetry2nix/master";
     poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
-    pyk.url = "github:runtimeverification/pyk/v0.1.466";
+    pyk.url = "github:runtimeverification/pyk/v0.1.467";
     pyk.inputs.flake-utils.follows = "k-framework/flake-utils";
     pyk.inputs.nixpkgs.follows = "k-framework/nixpkgs";
   };
