@@ -63,7 +63,6 @@ compiletest-rs/ui/inference/issue-70703.mir	1
 compiletest-rs/ui/auto-traits/auto-trait-projection-recursion.mir	1
 compiletest-rs/ui/repeat-expr/infer.mir	1
 compiletest-rs/ui/expr/compound-assignment/eval-order.mir	1
-compiletest-rs/ui/layout/thin-meta-implies-thin-ptr.mir	1
 compiletest-rs/ui/enum-discriminant/discriminant_value-wrapper.mir	1
 compiletest-rs/ui/enum-discriminant/issue-43398.mir	1
 compiletest-rs/ui/enum-discriminant/actually_not_an_enum-discriminant.mir	1
@@ -112,13 +111,10 @@ compiletest-rs/ui/statics/static-function-pointer.mir	1
 compiletest-rs/ui/statics/issue-17718-static-unsafe-interior.mir	1
 compiletest-rs/ui/statics/static-impl.mir	1
 compiletest-rs/ui/statics/static-recursive.mir	1
-compiletest-rs/ui/packed/packed-struct-layout.mir	1
 compiletest-rs/ui/packed/packed-tuple-struct-size.mir	1
 compiletest-rs/ui/packed/packed-struct-drop-aligned.mir	1
-compiletest-rs/ui/packed/packed-tuple-struct-layout.mir	1
 compiletest-rs/ui/packed/packed-struct-size.mir	1
 compiletest-rs/ui/packed/packed-struct-optimized-enum.mir	1
-compiletest-rs/ui/packed/packed-struct-generic-layout.mir	1
 compiletest-rs/ui/binding/match-phi.mir	1
 compiletest-rs/ui/binding/expr-match-generic-unique2.mir	1
 compiletest-rs/ui/binding/empty-types-in-patterns.mir	1
@@ -193,7 +189,6 @@ compiletest-rs/ui/or-patterns/box-patterns.mir	1
 compiletest-rs/ui/or-patterns/for-loop.mir	1
 compiletest-rs/ui/object-lifetime/object-lifetime-default-inferred.mir	1
 compiletest-rs/ui/hygiene/issue-61574-const-parameters.mir	1
-compiletest-rs/ui/hygiene/thread-local-not-in-prelude.mir	1
 compiletest-rs/ui/self/self_lifetime.mir	1
 compiletest-rs/ui/self/arbitrary_self_types_unsized_struct.mir	1
 compiletest-rs/ui/self/self-in-mut-slot-default-method.mir	1
@@ -269,7 +264,6 @@ compiletest-rs/ui/mir/issue-77911.mir	1
 compiletest-rs/ui/mir/mir_codegen_calls.mir	1
 compiletest-rs/ui/mir/mir_dynamic_drops_1.mir	1
 compiletest-rs/ui/mir/issue-29227.mir	1
-compiletest-rs/ui/mir/mir_misc_casts.mir	1
 compiletest-rs/ui/mir/mir_fat_ptr.mir	1
 compiletest-rs/ui/mir/mir_adt_construction.mir	1
 compiletest-rs/ui/mir/mir_dynamic_drops_3.mir	1
@@ -289,14 +283,12 @@ compiletest-rs/ui/numbers-arithmetic/issue-8460.mir	1
 compiletest-rs/ui/numbers-arithmetic/int-abs-overflow.mir	1
 compiletest-rs/ui/numbers-arithmetic/shift-various-types.mir	1
 compiletest-rs/ui/numbers-arithmetic/numeric-method-autoexport.mir	1
-compiletest-rs/ui/numbers-arithmetic/integer-literal-suffix-inference-2.mir	1
 compiletest-rs/ui/numbers-arithmetic/shift-near-oflo.mir	1
 compiletest-rs/ui/numbers-arithmetic/next-power-of-two-overflow-debug.mir	1
 compiletest-rs/ui/numbers-arithmetic/num-wrapping.mir	1
 compiletest-rs/ui/numbers-arithmetic/shift.mir	1
 compiletest-rs/ui/numbers-arithmetic/float_math.mir	1
 compiletest-rs/ui/extern/issue-64655-extern-rust-must-allow-unwind.mir	1
-compiletest-rs/ui/extern/extern-types-pointer-cast.mir	1
 compiletest-rs/ui/extern/issue-64655-allow-unwind-when-calling-panic-directly.mir	1
 compiletest-rs/ui/extern/issue-13655.mir	1
 compiletest-rs/ui/derives/derive-hygiene.mir	1
@@ -359,8 +351,6 @@ compiletest-rs/ui/codegen/issue-55976.mir	1
 compiletest-rs/ui/consts/promoted-validation-55454.mir	1
 compiletest-rs/ui/consts/underscore_const_names.mir	1
 compiletest-rs/ui/consts/const-binops.mir	1
-compiletest-rs/ui/consts/consts-in-patterns.mir	1
-compiletest-rs/ui/consts/int_ptr_for_zst_slices.mir	1
 compiletest-rs/ui/consts/const-extern-function.mir	1
 compiletest-rs/ui/consts/static-raw-pointer-interning.mir	1
 compiletest-rs/ui/consts/const_let_eq.mir	1
@@ -388,10 +378,8 @@ compiletest-rs/ui/consts/unwind-abort.mir	1
 compiletest-rs/ui/consts/const-contents.mir	1
 compiletest-rs/ui/consts/const_let_assign2.mir	1
 compiletest-rs/ui/consts/const-size_of-align_of.mir	1
-compiletest-rs/ui/consts/issue-89088.mir	1
 compiletest-rs/ui/consts/const-block.mir	1
 compiletest-rs/ui/consts/const-float-classify.mir	1
-compiletest-rs/ui/consts/issue-13837.mir	1
 compiletest-rs/ui/consts/const-cast.mir	1
 compiletest-rs/ui/consts/const-enum-cast.mir	1
 compiletest-rs/ui/consts/const-enum-tuplestruct.mir	1
@@ -422,12 +410,10 @@ compiletest-rs/ui/consts/const-blocks/nll-pass.mir	1
 compiletest-rs/ui/consts/const-blocks/migrate-pass.mir	1
 compiletest-rs/ui/consts/const-blocks/const-repeat.mir	1
 compiletest-rs/ui/consts/const_in_pattern/issue-44333.mir	1
-compiletest-rs/ui/consts/extra-const-ub/detect-extra-ub.mir	1
 compiletest-rs/ui/consts/std/iter.mir	1
 compiletest-rs/ui/consts/const-eval/write-to-uninhabited-enum-variant.mir	1
 compiletest-rs/ui/consts/const-eval/issue-50706.mir	1
 compiletest-rs/ui/consts/const-eval/issue-53157.mir	1
-compiletest-rs/ui/consts/const-eval/issue-91827-extern-types.mir	1
 compiletest-rs/ui/consts/const-eval/heap/alloc_intrinsic_transient.mir	1
 compiletest-rs/ui/consts/const-eval/heap/alloc_intrinsic_nontransient.mir	1
 compiletest-rs/ui/generic-associated-types/issue-93874.mir	1
@@ -500,7 +486,6 @@ compiletest-rs/ui/const-generics/inhabited-assoc-ty-ice-2.mir	1
 compiletest-rs/ui/const-generics/issue-70408.mir	1
 compiletest-rs/ui/const-generics/uninferred-consts-during-codegen-2.mir	1
 compiletest-rs/ui/const-generics/backcompat/unevaluated-consts.mir	1
-compiletest-rs/ui/const-generics/generic_const_exprs/infer-too-generic.mir	1
 compiletest-rs/ui/const-generics/generic_const_exprs/nested-abstract-consts-2.mir	1
 compiletest-rs/ui/const-generics/generic_const_exprs/issue-100217.mir	1
 compiletest-rs/ui/const-generics/generic_const_exprs/impl-bounds.mir	1
@@ -547,7 +532,6 @@ compiletest-rs/ui/array-slice-vec/rcvr-borrowed-to-slice.mir	1
 compiletest-rs/ui/array-slice-vec/dst-raw-slice.mir	1
 compiletest-rs/ui/array-slice-vec/byte-literals.mir	1
 compiletest-rs/ui/array-slice-vec/slice-panic-2.mir	1
-compiletest-rs/ui/array-slice-vec/slice-of-zero-size-elements.mir	1
 compiletest-rs/ui/array-slice-vec/nested-vec-2.mir	1
 compiletest-rs/ui/array-slice-vec/box-of-array-of-drop-2.mir	1
 compiletest-rs/ui/array-slice-vec/vec-late-init.mir	1
@@ -581,7 +565,6 @@ compiletest-rs/ui/resolve/issue-85671.mir	1
 compiletest-rs/ui/hashmap/hashmap-memory.mir	1
 compiletest-rs/ui/match/issue-84434.mir	1
 compiletest-rs/ui/match/issue-42679.mir	1
-compiletest-rs/ui/match/const_non_normal_zst_ref_pattern.mir	1
 compiletest-rs/ui/impl-header-lifetime-elision/inherent-impl.mir	1
 compiletest-rs/ui/impl-header-lifetime-elision/constant-used-as-arraylen.mir	1
 compiletest-rs/ui/half-open-range-patterns/half-open-range-pats-semantics.mir	1
@@ -618,7 +601,6 @@ compiletest-rs/ui/cast/cast-rfc0401.mir	1
 compiletest-rs/ui/cast/fat-ptr-cast-rpass.mir	1
 compiletest-rs/ui/cast/cast-rfc0401-vtable-kinds.mir	1
 compiletest-rs/ui/cast/cast-does-fallback.mir	1
-compiletest-rs/ui/cast/cast-pointee-projection.mir	1
 compiletest-rs/ui/closures/closure_no_cap_coerce_many_run_pass.mir	1
 compiletest-rs/ui/closures/issue-68025.mir	1
 compiletest-rs/ui/closures/old-closure-iter-1.mir	1

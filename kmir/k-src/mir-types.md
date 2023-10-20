@@ -23,9 +23,30 @@ module MIR-TYPE-SYNTAX
                    | IntTy
                    | UintTy
                    | FloatTy
+                   // Adt
+                   // Foreign
                    | "str"
                    | Array
                    | Slice
+                   | RawPtr
+                   | Ref
+                   // FnDef
+                   // FnPtr
+                   // Closure
+                   // Generator
+                   // Dyanamic
+                   | NeverType
+                   | TupleType
+
+                    // TODO: DoubleReferenceType should be removed.
+                    // This exists only because a type like
+                    // &&usize, which should probably be parsed as
+                    // &(&usize), fails to parse because
+                    // K identifies "&&" as a single token.
+                    // One option would be to replace all "&&"
+                    // tokens with "&" "&".
+  syntax RigidTy ::= DoubleReferenceType
+                   | BareFunctionType // TODO: Check equivalence with FnDef
 
   syntax IntTy ::= "isize"
                  | "i8"
@@ -53,25 +74,11 @@ module MIR-TYPE-SYNTAX
                         | ImplTraitTypeReduced
                         | TraitObjectTypeOneBound
                         | TypePath
-                        | NonPathImplementableType
                         // Probably not used in MIR: InferredType
                         | QualifiedPathInType
                         // Probably not used im MIR: MacroInvocation
                         | MirOnlyType
-
-  syntax NonPathImplementableType ::= TupleType
-                                    | NeverType
-                                    | RawPointerType
-                                    | ReferenceType
-                                    // TODO: DoubleReferenceType should be removed.
-                                    // This exists only because a type like
-                                    // &&usize, which should probably be parsed as
-                                    // &(&usize), fails to parse because
-                                    // K identifies "&&" as a single token.
-                                    // One option would be to replace all "&&"
-                                    // tokens with "&" "&".
-                                    | DoubleReferenceType
-                                    | BareFunctionType
+                        | RigidTy
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
   syntax ImplTraitTypeOneBound ::= "impl" TraitBound
@@ -91,7 +98,7 @@ module MIR-TYPE-SYNTAX
                             | PathIdentSegment "::" PathIdentSegmentSuffix
                             | PathOpaque
 
-  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
+  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix [avoid]
                               | PathIdentSegment "::" PathIdentSegmentEndSuffix
                               | PathOpaque
 
@@ -109,7 +116,7 @@ module MIR-TYPE-SYNTAX
   syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
                                       | TypePathFn
 
-  syntax PathIdentSegment ::= RigidTy [prefer]
+  syntax PathIdentSegment ::= RigidTy
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -132,13 +139,13 @@ module MIR-TYPE-SYNTAX
   // https://doc.rust-lang.org/reference/types/never.html
   syntax NeverType ::= "!"
   // https://doc.rust-lang.org/reference/types/pointer.html#raw-pointers-const-and-mut
-  syntax RawPointerType ::= "*" "mut" TypeNoBounds
-                          | "*" "const" TypeNoBounds
+  syntax RawPtr ::= "*" "mut" TypeNoBounds
+                  | "*" "const" TypeNoBounds
   // https://doc.rust-lang.org/reference/types/pointer.html#shared-references-
-  syntax ReferenceType  ::= "&" TypeNoBounds
-                          | "&" Lifetime TypeNoBounds
-                          | "&" "mut" TypeNoBounds
-                          | "&" Lifetime "mut" TypeNoBounds
+  syntax Ref ::= "&" TypeNoBounds
+               | "&" Lifetime TypeNoBounds
+               | "&" "mut" TypeNoBounds
+               | "&" Lifetime "mut" TypeNoBounds
   syntax DoubleReferenceType  ::= "&&" TypeNoBounds
                                 | "&&" Lifetime TypeNoBounds
                                 | "&&" "mut" TypeNoBounds
@@ -373,15 +380,17 @@ module MIR-TYPE-SYNTAX
   // https://doc.rust-lang.org/reference/paths.html#paths-in-expressions
   syntax PathInExpression ::= "::" ExpressionPathList
                             | ExpressionPathList
-  syntax ExpressionPathList ::= NeList{PathExprSegment, "::"}
+  syntax ExpressionPathList ::= NeList{PathExprSegment, "::"} [prefer]
   syntax PathExprSegment  ::= PathIdentSegment
                             | PathIdentSegment "::" GenericArgs
                             | PathLocation  // MIR-only thing.
                             | TypeImplSegment  // MIR-only thing.
+                            | RigidTy
+
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInExpression  ::= QualifiedPathType "::" ExpressionPathList
 
-  syntax TypeImplSegment  ::= "<" "impl" NonPathImplementableType ">"
+  syntax TypeImplSegment  ::= "<" "impl" RigidTy ">"
 
 
   // TODO: This grammar needs a preprocessing step that removes comments and
