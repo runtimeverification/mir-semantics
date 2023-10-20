@@ -42,7 +42,7 @@ TODO: these sorts may need refactoring to closer match the `rustc` implementatio
                           | AllocConstant
                           | TransmuteConstant
                           | LiteralAsConstant
-                          | PrimitiveBound
+                          // | PrimitiveBound
   syntax ConstantValueList ::= List{ConstantValue, ","}
 
   syntax ConstEnumConstructor ::= Identifier
@@ -63,12 +63,5 @@ TODO: these sorts may need refactoring to closer match the `rustc` implementatio
 
   syntax LiteralAsConstant ::= "{" Literal "as" Type "}"
 
-  syntax PrimitiveBound ::= PrimitiveBoundMax | PrimitiveBoundMin
-  syntax PrimitiveBoundMax ::= UintTy MaxExtension
-                             | IntTy  MaxExtension
-  syntax PrimitiveBoundMin ::= UintTy MinExtension
-                             | IntTy  MinExtension
-  syntax MaxExtension ::= "::MAX"
-  syntax MinExtension ::= "::MIN"
 endmodule
 ```
