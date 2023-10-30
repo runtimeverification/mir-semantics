@@ -232,12 +232,43 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
   rule evalConstantValue(VALUE:Bool)            => VALUE
+  rule evalConstantValue(VALUE:ConstEnumConstructor)  => evalPrimitiveBound(VALUE)
 //  rule evalConstantValue(_VALUE)              => "Error: evalConstantValue --- unsupported ConstantValue" [owise]
+```
+
+#### Primitive type bounds TODO: usize depends on architecture, which we currently do not handle
+
+```k
+  syntax Int ::= evalPrimitiveBound(ConstEnumConstructor) [function]
+  syntax Int ::= maxUint(UintTy) [function]
+  syntax Int ::= maxInt(IntTy)   [function]
+  syntax Int ::= minInt(IntTy)   [function]
+  //----------------------------------------------------------
+  rule evalPrimitiveBound((UINT:UintTy :: .ExpressionPathList :: MAX):ConstEnumConstructor)  => maxUint(UINT) requires IdentifierToken2String(MAX) ==String "MAX"
+  rule evalPrimitiveBound((_:UintTy :: .ExpressionPathList :: MIN):ConstEnumConstructor)  => 0 requires IdentifierToken2String(MIN) ==String "MIN"
+  rule maxUint(u8)   => 255
+  rule maxUint(u16)  => 65535
+  rule maxUint(u32)  => 4294967295
+  rule maxUint(u64)  => 18446744073709551615
+  rule maxUint(u128) => 340282366920938463463374607431768211455
+
+  rule evalPrimitiveBound((INT:IntTy :: .ExpressionPathList :: MAX):ConstEnumConstructor)  => maxInt(INT) requires IdentifierToken2String(MAX) ==String "MAX"
+  rule evalPrimitiveBound((INT:IntTy :: .ExpressionPathList :: MIN):ConstEnumConstructor)  => minInt(INT) requires IdentifierToken2String(MIN) ==String "MIN"
+  rule maxInt(i8)   => 127
+  rule maxInt(i16)  => 32767
+  rule maxInt(i32)  => 2147483647
+  rule maxInt(i64)  => 9223372036854775807
+  rule maxInt(i128) => 170141183460469231731687303715884105727
+  rule minInt(i8)   => -128
+  rule minInt(i16)  => -32768
+  rule minInt(i32)  => -2147483648
+  rule minInt(i64)  => -9223372036854775808
+  rule minInt(i128) => -170141183460469231731687303715884105728
 ```
 
 ### `Local` evaluation
 
-Locals only makes sense withing a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
+Locals only makes sense within a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
 
 ```k
   syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]

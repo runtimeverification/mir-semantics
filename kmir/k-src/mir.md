@@ -171,7 +171,7 @@ For now, we convert them into immutable variables, but that may need to be chang
 #### Scopes processing
 
 The scopes are a part of a function body that tracks the Rust-level user-defined local variables. i.e. named variables.
-It is likely that we do not care about variables scoping withing a function, but we still need to process the scope declarations, because
+It is likely that we do not care about variables scoping within a function, but we still need to process the scope declarations, because
 **scopes contain local declarations for user variables**. We need to traverse the scopes, collect these variables, and append them to the
 bindings list of the function.
 
