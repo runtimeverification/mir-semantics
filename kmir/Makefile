@@ -48,31 +48,34 @@ test-integration-prove: poetry-install
 
 ## Produce *-fail.tsv files by running the tests with --no-skip and no parallelism
 compiletest-parse-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                     \
+	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                    \
             --tb=line                                                                \
             --no-skip                                                                \
             -k test_compiletest                                                      \
             --report-file src/tests/integration/test-data/compiletest-parse-fail.tsv \
-            $(TEST_ARGS)
+            $(TEST_ARGS);
+	sort src/tests/integration/test-data/compiletest-parse-fail.tsv -o src/tests/integration/test-data/compiletest-parse-fail.tsv
 .PHONY: compiletest-parse-fail
 
 compiletest-run-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+	-$(POETRY_RUN) pytest src/tests/integration/test_run.py                     \
             --timeout=30                                                            \
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_compiletest                                                     \
             --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
-            $(TEST_ARGS)
+            $(TEST_ARGS);
+	sort src/tests/integration/test-data/compiletest-run-fail.tsv -o src/tests/integration/test-data/compiletest-run-fail.tsv
 .PHONY: compiletest-run-fail
 
 handwritten-parse-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_parse.py                    \
+	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                     \
             --tb=line                                                                 \
             --no-skip                                                                 \
             -k test_handwritten_syntax                                                \
             --report-file src/tests/integration/test-data/handwritten-parse-fail.tsv  \
-            $(TEST_ARGS)
+            $(TEST_ARGS);
+	sort src/tests/integration/test-data/handwritten-parse-fail.tsv -o src/tests/integration/test-data/handwritten-parse-fail.tsv
 .PHONY: handwritten-test-parse
 
 handwritten-run-fail:
@@ -81,7 +84,8 @@ handwritten-run-fail:
             --no-skip                                                               \
             -k test_handwritten                                                     \
             --report-file src/tests/integration/test-data/handwritten-run-fail.tsv  \
-            $(TEST_ARGS)
+            $(TEST_ARGS);
+	sort src/tests/integration/test-data/handwritten-run-fail.tsv -o src/tests/integration/test-data/handwritten-run-fail.tsv
 .PHONY: handwritten-test-run
 
 ## compile the handwritten Rust integration tests to Mir
