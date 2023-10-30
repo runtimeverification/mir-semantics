@@ -1051,7 +1051,7 @@ compiletest-rs/ui/expr/if/expr-if-panic.mir	4
 compiletest-rs/ui/expr/if/expr-if-panic-pass.mir	4
 compiletest-rs/ui/expr-if-generic.mir	1
 compiletest-rs/ui/expr/if/if-check.mir	4
-compiletest-rs/ui/expr/if/if-check-panic.mir	4
+compiletest-rs/ui/expr/if/if-check-panic.mir	1
 compiletest-rs/ui/expr/if/if-cond-bot.mir	4
 compiletest-rs/ui/expr/if/if-let.mir	4
 compiletest-rs/ui/extern/extern-compare-with-return-type.mir	4
