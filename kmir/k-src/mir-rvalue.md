@@ -268,7 +268,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 
 ### `Local` evaluation
 
-Locals only makes sense withing a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
+Locals only makes sense within a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
 
 ```k
   syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]
