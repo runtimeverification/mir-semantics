@@ -157,7 +157,7 @@ compiletest-rs/ui/backtrace.mir	1
 compiletest-rs/ui/bare-fn-implements-fn-mut.mir	1
 compiletest-rs/ui/bare-static-string.mir	4
 compiletest-rs/ui/bench/issue-32062.mir	1
-compiletest-rs/ui/big-literals.mir	113
+compiletest-rs/ui/big-literals.mir	4
 compiletest-rs/ui/bind-by-move.mir	134
 compiletest-rs/ui/binding/bind-field-short-with-modifiers.mir	4
 compiletest-rs/ui/binding/borrowed-ptr-pattern-2.mir	4
@@ -1658,7 +1658,7 @@ compiletest-rs/ui/no-warn-on-field-replace-issue-34101.mir	1
 compiletest-rs/ui/nul-characters.mir	134
 compiletest-rs/ui/nullable-pointer-iotareduction.mir	1
 compiletest-rs/ui/nullable-pointer-size.mir	1
-compiletest-rs/ui/numbers-arithmetic/arith-unsigned.mir	113
+compiletest-rs/ui/numbers-arithmetic/arith-unsigned.mir	4
 compiletest-rs/ui/numbers-arithmetic/divide-by-zero.mir	2
 compiletest-rs/ui/numbers-arithmetic/div-mod.mir	113
 compiletest-rs/ui/numbers-arithmetic/float2.mir	113
@@ -1676,7 +1676,6 @@ compiletest-rs/ui/numbers-arithmetic/int-abs-overflow.mir	1
 compiletest-rs/ui/numbers-arithmetic/integer-literal-radix.mir	4
 compiletest-rs/ui/numbers-arithmetic/integer-literal-suffix-inference-2.mir	1
 compiletest-rs/ui/numbers-arithmetic/integer-literal-suffix-inference-3.mir	4
-compiletest-rs/ui/numbers-arithmetic/integer-literal-suffix-inference.mir	113
 compiletest-rs/ui/numbers-arithmetic/issue-8460.mir	1
 compiletest-rs/ui/numbers-arithmetic/mod-zero.mir	2
 compiletest-rs/ui/numbers-arithmetic/next-power-of-two-overflow-debug.mir	1
@@ -1691,7 +1690,7 @@ compiletest-rs/ui/numbers-arithmetic/shift-near-oflo.mir	1
 compiletest-rs/ui/numbers-arithmetic/shift-various-types.mir	1
 compiletest-rs/ui/numbers-arithmetic/signed-shift-const-eval.mir	4
 compiletest-rs/ui/numbers-arithmetic/u128-as-f32.mir	4
-compiletest-rs/ui/numbers-arithmetic/u128.mir	113
+compiletest-rs/ui/numbers-arithmetic/u128.mir	4
 compiletest-rs/ui/numbers-arithmetic/u32-decr.mir	4
 compiletest-rs/ui/numbers-arithmetic/u8-incr-decr.mir	4
 compiletest-rs/ui/numbers-arithmetic/u8-incr.mir	4
