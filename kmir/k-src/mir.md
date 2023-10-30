@@ -324,6 +324,13 @@ Note that the `main` function is special: it does not have a caller.
         ...
        </k>
        <callStack> ListItem(CALLER_FN_KEY) STACK => ListItem(CALLEE_FN_KEY) ListItem(CALLER_FN_KEY) STACK </callStack>
+  // TODO: RECURSION IS NOT SUPPORTED YET
+  rule <k> #executeFunctionLike(CALLEE_FN_KEY, _ARGS)
+        => #internalPanic(CALLEE_FN_KEY:FunctionLikeKey, NotImplemented:InternalPanic, 0:KItem)
+        ...
+       </k>
+       <callStack> ListItem(CALLER_FN_KEY) _STACK </callStack>
+       requires CALLER_FN_KEY ==K CALLEE_FN_KEY
 ```
 
 Assign arguments (actual parameters) to formal parameters of a function-like:
