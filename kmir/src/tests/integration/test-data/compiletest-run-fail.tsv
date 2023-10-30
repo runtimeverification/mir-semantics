@@ -107,7 +107,7 @@ compiletest-rs/ui/associated-types/defaults-in-other-trait-items-pass.mir	113
 compiletest-rs/ui/associated-types/issue-18655.mir	4
 compiletest-rs/ui/associated-types/issue-21726.mir	1
 compiletest-rs/ui/associated-types/issue-22828.mir	113
-compiletest-rs/ui/associated-types/issue-23208.mir	4
+compiletest-rs/ui/associated-types/issue-23208.mir	113
 compiletest-rs/ui/associated-types/issue-25700-1.mir	1
 compiletest-rs/ui/associated-types/issue-25700-2.mir	1
 compiletest-rs/ui/associated-types/issue-37808.mir	1
@@ -157,13 +157,13 @@ compiletest-rs/ui/backtrace.mir	1
 compiletest-rs/ui/bare-fn-implements-fn-mut.mir	1
 compiletest-rs/ui/bare-static-string.mir	4
 compiletest-rs/ui/bench/issue-32062.mir	1
-compiletest-rs/ui/big-literals.mir	4
+compiletest-rs/ui/big-literals.mir	113
 compiletest-rs/ui/bind-by-move.mir	134
 compiletest-rs/ui/binding/bind-field-short-with-modifiers.mir	4
 compiletest-rs/ui/binding/borrowed-ptr-pattern-2.mir	4
 compiletest-rs/ui/binding/borrowed-ptr-pattern-3.mir	4
-compiletest-rs/ui/binding/borrowed-ptr-pattern-infallible.mir	4
-compiletest-rs/ui/binding/borrowed-ptr-pattern.mir	4
+compiletest-rs/ui/binding/borrowed-ptr-pattern-infallible.mir	113
+compiletest-rs/ui/binding/borrowed-ptr-pattern.mir	113
 compiletest-rs/ui/binding/borrowed-ptr-pattern-option.mir	4
 compiletest-rs/ui/binding/empty-types-in-patterns.mir	1
 compiletest-rs/ui/binding/exhaustive-bool-match-sanity.mir	4
@@ -226,7 +226,6 @@ compiletest-rs/ui/binding/mut-in-ident-patterns.mir	134
 compiletest-rs/ui/binding/nested-matchs.mir	134
 compiletest-rs/ui/binding/nested-pattern.mir	134
 compiletest-rs/ui/binding/nullary-or-pattern.mir	4
-compiletest-rs/ui/binding/optional_comma_in_match_arm.mir	4
 compiletest-rs/ui/binding/order-drop-with-match.mir	1
 compiletest-rs/ui/binding/or-pattern.mir	134
 compiletest-rs/ui/binding/pat-ranges.mir	4
@@ -307,7 +306,7 @@ compiletest-rs/ui/borrowck/issue-80772.mir	1
 compiletest-rs/ui/borrowck/lazy-init.mir	4
 compiletest-rs/ui/borrowck/two-phase-baseline.mir	1
 compiletest-rs/ui/borrowck/two-phase-bin-ops.mir	1
-compiletest-rs/ui/borrowck/two-phase-control-flow-split-before-activation.mir	4
+compiletest-rs/ui/borrowck/two-phase-control-flow-split-before-activation.mir	113
 compiletest-rs/ui/borrowck/two-phase-method-receivers.mir	4
 compiletest-rs/ui/borrowck/two-phase-multiple-activations.mir	113
 compiletest-rs/ui/box/alloc-unstable.mir	113
@@ -359,7 +358,7 @@ compiletest-rs/ui/closures/2229_closure_analysis/migrations/issue-78720.mir	4
 compiletest-rs/ui/closures/2229_closure_analysis/migrations/issue-90024-adt-correct-subst.mir	113
 compiletest-rs/ui/closures/2229_closure_analysis/migrations/no_migrations.mir	1
 compiletest-rs/ui/closures/2229_closure_analysis/migrations/precise_no_migrations.mir	1
-compiletest-rs/ui/closures/2229_closure_analysis/migrations/unpin_no_migration.mir	4
+compiletest-rs/ui/closures/2229_closure_analysis/migrations/unpin_no_migration.mir	113
 compiletest-rs/ui/closures/2229_closure_analysis/run_pass/by_value.mir	1
 compiletest-rs/ui/closures/2229_closure_analysis/run_pass/destructure-pattern-closure-within-closure.mir	4
 compiletest-rs/ui/closures/2229_closure_analysis/run_pass/destructure_patterns.mir	1
@@ -420,7 +419,7 @@ compiletest-rs/ui/coercion/coerce-overloaded-autoderef.mir	1
 compiletest-rs/ui/coercion/coerce-reborrow-imm-ptr-rcvr.mir	4
 compiletest-rs/ui/coercion/coerce-reborrow-imm-vec-arg.mir	134
 compiletest-rs/ui/coercion/coerce-reborrow-imm-vec-rcvr.mir	1
-compiletest-rs/ui/coercion/coerce-reborrow-multi-arg.mir	4
+compiletest-rs/ui/coercion/coerce-reborrow-multi-arg.mir	113
 compiletest-rs/ui/coercion/coerce-reborrow-mut-ptr-arg.mir	4
 compiletest-rs/ui/coercion/coerce-reborrow-mut-ptr-rcvr.mir	4
 compiletest-rs/ui/coercion/coerce-reborrow-mut-vec-arg.mir	1
@@ -881,7 +880,7 @@ compiletest-rs/ui/consts/unnormalized-param-env.mir	4
 compiletest-rs/ui/consts/unstable-precise-live-drops-in-libcore.mir	134
 compiletest-rs/ui/consts/unwind-abort.mir	1
 compiletest-rs/ui/crate-leading-sep.mir	113
-compiletest-rs/ui/debuginfo/debuginfo-box-with-large-allocator.mir	4
+compiletest-rs/ui/debuginfo/debuginfo-box-with-large-allocator.mir	113
 compiletest-rs/ui/debuginfo/debuginfo_with_uninhabitable_field_and_unsized.mir	113
 compiletest-rs/ui/debuginfo/issue-105386-debuginfo-ub.mir	113
 compiletest-rs/ui/deep.mir	4
@@ -1076,7 +1075,7 @@ compiletest-rs/ui/fact.mir	4
 compiletest-rs/ui/fmt/format-args-capture.mir	1
 compiletest-rs/ui/fn/fun-call-variants.mir	1
 compiletest-rs/ui/fn/issue-3904.mir	113
-compiletest-rs/ui/fn/nested-function-names-issue-8587.mir	4
+compiletest-rs/ui/fn/nested-function-names-issue-8587.mir	113
 compiletest-rs/ui/for-loop-while/auto-loop.mir	1
 compiletest-rs/ui/for-loop-while/break.mir	1
 compiletest-rs/ui/for-loop-while/cleanup-rvalue-during-if-and-while.mir	1
@@ -1282,8 +1281,8 @@ compiletest-rs/ui/hygiene/traits-in-scope.mir	4
 compiletest-rs/ui/impl-header-lifetime-elision/constant-used-as-arraylen.mir	1
 compiletest-rs/ui/impl-header-lifetime-elision/inherent-impl.mir	1
 compiletest-rs/ui/impl-header-lifetime-elision/path-underscore.mir	4
-compiletest-rs/ui/impl-header-lifetime-elision/ref-underscore.mir	4
-compiletest-rs/ui/impl-header-lifetime-elision/trait-underscore.mir	4
+compiletest-rs/ui/impl-header-lifetime-elision/ref-underscore.mir	113
+compiletest-rs/ui/impl-header-lifetime-elision/trait-underscore.mir	113
 compiletest-rs/ui/implied-bounds/hrlt-implied-trait-bounds-roundtrip.mir	1
 compiletest-rs/ui/impl-inherent-non-conflict.mir	1
 compiletest-rs/ui/impl-not-adjacent-to-type.mir	4
@@ -1361,7 +1360,7 @@ compiletest-rs/ui/inline-const/const-match-pat-range.mir	4
 compiletest-rs/ui/inline-const/expr-with-block.mir	4
 compiletest-rs/ui/inline-const/pat-unsafe-err.mir	1
 compiletest-rs/ui/inline-const/pat-unsafe.mir	1
-compiletest-rs/ui/inner-attrs-on-impl.mir	4
+compiletest-rs/ui/inner-attrs-on-impl.mir	113
 compiletest-rs/ui/inner-module.mir	113
 compiletest-rs/ui/iterators/array.mir	4
 compiletest-rs/ui/iterators/array-of-ranges.mir	4
@@ -1477,9 +1476,9 @@ compiletest-rs/ui/macros/macro-lifetime.mir	4
 compiletest-rs/ui/macros/macro-lifetime-used-with-bound.mir	113
 compiletest-rs/ui/macros/macro-lifetime-used-with-static.mir	4
 compiletest-rs/ui/macros/macro-literal.mir	134
-compiletest-rs/ui/macros/macro-method-issue-4621.mir	4
-compiletest-rs/ui/macros/macro-multiple-items.mir	4
-compiletest-rs/ui/macros/macro-named-default.mir	4
+compiletest-rs/ui/macros/macro-method-issue-4621.mir	113
+compiletest-rs/ui/macros/macro-multiple-items.mir	113
+compiletest-rs/ui/macros/macro-named-default.mir	113
 compiletest-rs/ui/macros/macro-nested_definition_issue-31946.mir	4
 compiletest-rs/ui/macros/macro-nested_stmt_macros.mir	113
 compiletest-rs/ui/macros/macro-of-higher-order.mir	4
@@ -1500,7 +1499,7 @@ compiletest-rs/ui/macros/macro-with-attrs2.mir	4
 compiletest-rs/ui/macros/macro-with-braces-in-expr-position.mir	1
 compiletest-rs/ui/macros/meta-variable-misuse.mir	4
 compiletest-rs/ui/macros/must-use-in-macro-55516.mir	113
-compiletest-rs/ui/macros/pub-method-inside-macro.mir	4
+compiletest-rs/ui/macros/pub-method-inside-macro.mir	113
 compiletest-rs/ui/macros/rfc-3086-metavar-expr/count-and-length-are-distinct.mir	4
 compiletest-rs/ui/macros/rfc-3086-metavar-expr/dollar-dollar-has-correct-behavior.mir	4
 compiletest-rs/ui/macros/rfc-3086-metavar-expr/feature-gate-macro_metavar_expr.mir	4
@@ -1535,7 +1534,7 @@ compiletest-rs/ui/match/issue-84434.mir	1
 compiletest-rs/ui/match/match-bot-panic.mir	4
 compiletest-rs/ui/match/match-disc-bot.mir	1
 compiletest-rs/ui/match/match-on-negative-integer-ranges.mir	4
-compiletest-rs/ui/match/match-ref-mut-stability.mir	4
+compiletest-rs/ui/match/match-ref-mut-stability.mir	113
 compiletest-rs/ui/match/match-wildcards.mir	4
 compiletest-rs/ui/match/pattern-deref-miscompile.mir	4
 compiletest-rs/ui/maximal_mir_to_hir_coverage.mir	4
@@ -1545,7 +1544,7 @@ compiletest-rs/ui/methods/method-early-bound-lifetimes-on-self.mir	1
 compiletest-rs/ui/methods/method-mut-self-modifies-mut-slice-lvalue.mir	4
 compiletest-rs/ui/methods/method-probe-no-guessing-dyn-trait.mir	1
 compiletest-rs/ui/methods/method-projection.mir	4
-compiletest-rs/ui/methods/method-recursive-blanket-impl.mir	4
+compiletest-rs/ui/methods/method-recursive-blanket-impl.mir	113
 compiletest-rs/ui/methods/method-self-arg.mir	1
 compiletest-rs/ui/methods/method-self-arg-trait.mir	1
 compiletest-rs/ui/methods/method-two-trait-defer-resolution-1.mir	113
@@ -1669,7 +1668,7 @@ compiletest-rs/ui/numbers-arithmetic/float_math.mir	1
 compiletest-rs/ui/numbers-arithmetic/float.mir	113
 compiletest-rs/ui/numbers-arithmetic/float-nan.mir	113
 compiletest-rs/ui/numbers-arithmetic/float-signature.mir	113
-compiletest-rs/ui/numbers-arithmetic/i128.mir	4
+compiletest-rs/ui/numbers-arithmetic/i128.mir	113
 compiletest-rs/ui/numbers-arithmetic/i32-sub.mir	4
 compiletest-rs/ui/numbers-arithmetic/i8-incr.mir	4
 compiletest-rs/ui/numbers-arithmetic/int-abs-overflow.mir	1
@@ -1690,7 +1689,7 @@ compiletest-rs/ui/numbers-arithmetic/shift-near-oflo.mir	1
 compiletest-rs/ui/numbers-arithmetic/shift-various-types.mir	1
 compiletest-rs/ui/numbers-arithmetic/signed-shift-const-eval.mir	4
 compiletest-rs/ui/numbers-arithmetic/u128-as-f32.mir	4
-compiletest-rs/ui/numbers-arithmetic/u128.mir	4
+compiletest-rs/ui/numbers-arithmetic/u128.mir	113
 compiletest-rs/ui/numbers-arithmetic/u32-decr.mir	4
 compiletest-rs/ui/numbers-arithmetic/u8-incr-decr.mir	4
 compiletest-rs/ui/numbers-arithmetic/u8-incr.mir	4
@@ -1789,7 +1788,7 @@ compiletest-rs/ui/pattern/issue-8351-2.mir	134
 compiletest-rs/ui/pattern/issue-88074-pat-range-type-inference.mir	4
 compiletest-rs/ui/pattern/move-ref-patterns/borrowck-move-ref-pattern-pass.mir	1
 compiletest-rs/ui/pattern/move-ref-patterns/issue-53840.mir	134
-compiletest-rs/ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.mir	4
+compiletest-rs/ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.mir	113
 compiletest-rs/ui/pattern/move-ref-patterns/move-ref-patterns-dynamic-semantics.mir	1
 compiletest-rs/ui/pattern/size-and-align.mir	1
 compiletest-rs/ui/pattern/usefulness/const-pat-ice.mir	4
@@ -1807,7 +1806,7 @@ compiletest-rs/ui/pattern/usefulness/slice-patterns-irrefutable.mir	4
 compiletest-rs/ui/primitive-binop-lhs-mut.mir	1
 compiletest-rs/ui/print-stdout-eprint-stderr.mir	1
 compiletest-rs/ui/project-cache-issue-31849.mir	4
-compiletest-rs/ui/ptr-coercion-rpass.mir	4
+compiletest-rs/ui/ptr-coercion-rpass.mir	113
 compiletest-rs/ui/ptr_ops/issue-80309.mir	4
 compiletest-rs/ui/ptr_ops/issue-80309-safe.mir	4
 compiletest-rs/ui/range_inclusive.mir	134
@@ -1847,7 +1846,6 @@ compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-result.m
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/box.mir	1
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/constref.mir	4
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/general.mir	134
-compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/range.mir	4
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/ref-region.mir	134
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/reset-mode.mir	4
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/struct.mir	4
@@ -1886,7 +1884,7 @@ compiletest-rs/ui/self/object-safety-sized-self-by-value-self.mir	4
 compiletest-rs/ui/self/object-safety-sized-self-generic-method.mir	1
 compiletest-rs/ui/self/object-safety-sized-self-return-Self.mir	113
 compiletest-rs/ui/self/objects-owned-object-owned-method.mir	1
-compiletest-rs/ui/self/self-impl-2.mir	4
+compiletest-rs/ui/self/self-impl-2.mir	113
 compiletest-rs/ui/self/self-in-mut-slot-default-method.mir	1
 compiletest-rs/ui/self/self-in-mut-slot-immediate-value.mir	4
 compiletest-rs/ui/self/self-in-typedefs.mir	1
@@ -1904,7 +1902,7 @@ compiletest-rs/ui/sepcomp/sepcomp-unwind.mir	1
 compiletest-rs/ui/shadow-bool.mir	4
 compiletest-rs/ui/simple_global_asm.mir	1
 compiletest-rs/ui/sse2.mir	134
-compiletest-rs/ui/stable-addr-of.mir	4
+compiletest-rs/ui/stable-addr-of.mir	113
 compiletest-rs/ui/static/issue-34194.mir	4
 compiletest-rs/ui/static/refer-to-other-statics-by-value.mir	4
 compiletest-rs/ui/statics/issue-15261.mir	4
@@ -1927,7 +1925,7 @@ compiletest-rs/ui/stdlib-unit-tests/log-knows-the-names-of-variants-in-std.mir	1
 compiletest-rs/ui/stdlib-unit-tests/minmax-stability-issue-23687.mir	1
 compiletest-rs/ui/stdlib-unit-tests/raw-fat-ptr.mir	1
 compiletest-rs/ui/stdlib-unit-tests/seq-compare.mir	1
-compiletest-rs/ui/stdlib-unit-tests/volatile-fat-ptr.mir	4
+compiletest-rs/ui/stdlib-unit-tests/volatile-fat-ptr.mir	113
 compiletest-rs/ui/string-box-error.mir	4
 compiletest-rs/ui/str/str-escape.mir	4
 compiletest-rs/ui/str/str-overrun.mir	4
@@ -1935,7 +1933,7 @@ compiletest-rs/ui/struct-ctor-mangling.mir	1
 compiletest-rs/ui/structs/large-records.mir	4
 compiletest-rs/ui/structs/rhs-type.mir	4
 compiletest-rs/ui/super-fast-paren-parsing.mir	4
-compiletest-rs/ui/swap-1.mir	4
+compiletest-rs/ui/swap-1.mir	113
 compiletest-rs/ui/swap-overlapping.mir	1
 compiletest-rs/ui/syntax-extension-minor.mir	4
 compiletest-rs/ui/tail-call-arg-leak.mir	4
@@ -1974,7 +1972,7 @@ compiletest-rs/ui/traits/fmt-pointer-trait.mir	113
 compiletest-rs/ui/traits/generic.mir	1
 compiletest-rs/ui/traits/impl-evaluation-order.mir	1
 compiletest-rs/ui/traits/impl-implicit-trait.mir	1
-compiletest-rs/ui/traits/impl-inherent-prefer-over-trait.mir	4
+compiletest-rs/ui/traits/impl-inherent-prefer-over-trait.mir	113
 compiletest-rs/ui/traits/impl-object-overlap-issue-23853.mir	113
 compiletest-rs/ui/traits/infer-from-object-issue-26952.mir	1
 compiletest-rs/ui/traits/inherent-method-order.mir	4
@@ -1985,9 +1983,9 @@ compiletest-rs/ui/traits/inheritance/call-bound-inherited.mir	4
 compiletest-rs/ui/traits/inheritance/cast.mir	4
 compiletest-rs/ui/traits/inheritance/cast-without-call-to-supertrait.mir	4
 compiletest-rs/ui/traits/inheritance/cross-trait-call.mir	4
-compiletest-rs/ui/traits/inheritance/diamond.mir	4
-compiletest-rs/ui/traits/inheritance/multiple-inheritors.mir	4
-compiletest-rs/ui/traits/inheritance/multiple-params.mir	4
+compiletest-rs/ui/traits/inheritance/diamond.mir	113
+compiletest-rs/ui/traits/inheritance/multiple-inheritors.mir	113
+compiletest-rs/ui/traits/inheritance/multiple-params.mir	113
 compiletest-rs/ui/traits/inheritance/num2.mir	113
 compiletest-rs/ui/traits/inheritance/num3.mir	113
 compiletest-rs/ui/traits/inheritance/num5.mir	113
@@ -2001,7 +1999,7 @@ compiletest-rs/ui/traits/inheritance/static2.mir	113
 compiletest-rs/ui/traits/inheritance/static.mir	113
 compiletest-rs/ui/traits/inheritance/subst2.mir	1
 compiletest-rs/ui/traits/inheritance/subst.mir	1
-compiletest-rs/ui/traits/inheritance/visibility.mir	4
+compiletest-rs/ui/traits/inheritance/visibility.mir	113
 compiletest-rs/ui/traits/issue-18412.mir	1
 compiletest-rs/ui/traits/issue-22655.mir	113
 compiletest-rs/ui/traits/issue-23003.mir	1
@@ -2014,7 +2012,7 @@ compiletest-rs/ui/traits/issue-4107.mir	4
 compiletest-rs/ui/traits/issue-43132.mir	1
 compiletest-rs/ui/traits/issue-56202.mir	1
 compiletest-rs/ui/traits/issue-6128.mir	113
-compiletest-rs/ui/traits/issue-6334.mir	4
+compiletest-rs/ui/traits/issue-6334.mir	113
 compiletest-rs/ui/traits/issue-72455.mir	134
 compiletest-rs/ui/traits/issue-90195-2.mir	4
 compiletest-rs/ui/traits/issue-90195.mir	4
@@ -2038,7 +2036,7 @@ compiletest-rs/ui/traits/pointee-deduction.mir	1
 compiletest-rs/ui/traits/principal-less-objects.mir	1
 compiletest-rs/ui/traits/privacy.mir	1
 compiletest-rs/ui/traits/region-pointer-simple.mir	4
-compiletest-rs/ui/traits/safety-ok.mir	4
+compiletest-rs/ui/traits/safety-ok.mir	113
 compiletest-rs/ui/traits/static-method-overwriting.mir	4
 compiletest-rs/ui/traits/static-outlives-a-where-clause.mir	113
 compiletest-rs/ui/traits/superdefault-generics.mir	1
@@ -2073,7 +2071,7 @@ compiletest-rs/ui/type-param-constraints.mir	4
 compiletest-rs/ui/typestate-multi-decl.mir	4
 compiletest-rs/ui/type/type-alias-bounds.mir	1
 compiletest-rs/ui/type/type-ascription.mir	4
-compiletest-rs/ui/type-use-i1-versus-i8.mir	4
+compiletest-rs/ui/type-use-i1-versus-i8.mir	113
 compiletest-rs/ui/underscore-lifetimes.mir	1
 compiletest-rs/ui/underscore-method-after-integer.mir	4
 compiletest-rs/ui/uninit-empty-types.mir	1
@@ -2097,7 +2095,7 @@ compiletest-rs/ui/union/union-pat-refutability.mir	4
 compiletest-rs/ui/union/union-trait-impl.mir	4
 compiletest-rs/ui/union/union-transmute.mir	4
 compiletest-rs/ui/unnamed_argument_mode.mir	1
-compiletest-rs/ui/unsafe/issue-85435-unsafe-op-in-let-under-unsafe-under-closure.mir	4
+compiletest-rs/ui/unsafe/issue-85435-unsafe-op-in-let-under-unsafe-under-closure.mir	113
 compiletest-rs/ui/unsafe/issue-87414-query-cycle.mir	4
 compiletest-rs/ui/unsafe/new-unsafe-pointers.mir	4
 compiletest-rs/ui/unsafe/ranged_ints_macro.mir	1
