@@ -159,11 +159,12 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax InterpResult ::= evalRValue(FunctionLikeKey, RValue) [function]
   //--------------------------------------------------------------------
-  rule evalRValue(FN_KEY, VALUE:Operand)   => evalOperand(FN_KEY, VALUE)
-  rule evalRValue(FN_KEY, UN_OP:UnaryOp)   => evalUnaryOp(FN_KEY, UN_OP)
-  rule evalRValue(FN_KEY, BIN_OP:BinaryOp) => evalBinaryOp(FN_KEY, BIN_OP)
-  rule evalRValue(FN_KEY, ADDR:AddressOf)  => evalAddressOf(FN_KEY, ADDR)
-  rule evalRValue(_FN_KEY, RVALUE)         => Unsupported(RVALUE) [owise]
+  rule evalRValue(FN_KEY, VALUE:Operand)    => evalOperand(FN_KEY, VALUE)
+  rule evalRValue(FN_KEY, UN_OP:UnaryOp)    => evalUnaryOp(FN_KEY, UN_OP)
+  rule evalRValue(FN_KEY, BIN_OP:BinaryOp)  => evalBinaryOp(FN_KEY, BIN_OP)
+  rule evalRValue(FN_KEY, ADDR:AddressOf)   => evalAddressOf(FN_KEY, ADDR)
+  rule evalRValue(FN_KEY, CFD:CopyForDeref) => evalCopyForDeref(FN_KEY, CFD)
+  rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
 ```
 
 ### `Operand` evaluation
@@ -320,6 +321,11 @@ Locals only makes sense withing a function-like, hence we evaluate them as a con
       ...
     </function>
     requires REF ==Int Local2Int(PLACE)
+
+  // TODO: Investigate if this requires some more checks or effects. Needs to cover more cases.
+  syntax MIRValue ::= evalCopyForDeref(FunctionLikeKey, CopyForDeref) [function]
+  //----------------------------------------------------------------------------
+  rule evalCopyForDeref(FN_KEY, deref_copy(DEREF:Deref)) => evalDeref(FN_KEY, DEREF)
 ```
 
 ```k
