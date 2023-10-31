@@ -1,0 +1,78 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn is_even(_1: u32) -> bool {
+    debug n => _1;
+    let mut _0: bool;
+    let mut _2: u32;
+
+    bb0: {
+        switchInt(move _1) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const true;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _2 = Sub(_1, const 1_u32);
+        _0 = is_odd(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn is_odd(_1: u32) -> bool {
+    debug n => _1;
+    let mut _0: bool;
+    let mut _2: u32;
+
+    bb0: {
+        switchInt(move _1) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _2 = Sub(_1, const 1_u32);
+        _0 = is_even(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: !;
+    scope 1 {
+        debug ans => _1;
+    }
+
+    bb0: {
+        _1 = is_even(const 10_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = _1;
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _4 = core::panicking::panic(const "assertion failed: ans == true");
+    }
+
+    bb3: {
+        return;
+    }
+}
