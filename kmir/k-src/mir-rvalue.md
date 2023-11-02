@@ -174,6 +174,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   syntax MIRValue ::= evalOperand(FunctionLikeKey, Operand) [function]
   //------------------------------------------------------------------
   rule evalOperand(_, const VALUE:ConstantValue) => evalConstantValue(VALUE)
+  rule evalOperand(FN_KEY, FIELD:Field)          => evalField(FN_KEY, FIELD)
   rule evalOperand(FN_KEY, LOCAL:Local)          => evalLocal(FN_KEY, LOCAL)
   rule evalOperand(FN_KEY, move LOCAL:Local)     => evalLocal(FN_KEY, LOCAL)
   rule evalOperand(FN_KEY, REF:Deref)            => evalDeref(FN_KEY, REF)
@@ -340,6 +341,26 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
   syntax MIRValue ::= evalTuple(FunctionLikeKey, Tuple) [function]
   //--------------------------------------------------------------
   rule evalTuple(FN_KEY, ( OPERANDS , OperandList )) => ( evalOperandList(FN_KEY, OPERANDS, OperandList) )
+```
+
+### `Field` evaluation
+```k
+  syntax MIRValue ::= evalField(FunctionLikeKey, Field) [function]
+  //--------------------------------------------------------------
+  rule [[ evalField(FN_KEY, ( PLACE . INDEX : _TYPE ) ) => TUPLE[INDEX] ]] // Ignoring type currently
+    <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecl>
+          <index> PLACE_INDEX </index>
+          <value> TUPLE </value>
+          ...
+        </localDecl>
+      ...
+    </function>
+    requires PLACE_INDEX ==Int Local2Int(PLACE)
+
+  syntax MIRValue ::= TupleArgs "[" Int "]" [function]
+  rule ( _ARGS:MIRValueNeList ) [ _INDEX ] => 616 // TODO: REMOVE SEMAPHORE
 ```
 
 ```k
