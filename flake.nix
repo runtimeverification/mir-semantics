@@ -2,30 +2,33 @@
   description = " A flake for KMIR Semantics";
 
   inputs = {
-    nixpkgs.url =
-      "github:NixOS/nixpkgs/f971f35f7d79c53a83c7b10de953f1db032cba0e";
     k-framework.url = "github:runtimeverification/k/v6.0.187";
+    nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
-    rv-utils.url = "github:runtimeverification/rv-nix-tools";
-    poetry2nix.url = "github:nix-community/poetry2nix/master";
-    poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
+    rv-utils.follows = "k-framework/rv-utils";
     pyk.url = "github:runtimeverification/pyk/v0.1.489";
-    pyk.inputs.flake-utils.follows = "k-framework/flake-utils";
-    pyk.inputs.nixpkgs.follows = "k-framework/nixpkgs";
+    nixpkgs-pyk.follows = "pyk/nixpkgs";
+    poetry2nix.follows = "pyk/poetry2nix";
   };
   outputs =
-    { self, k-framework, nixpkgs, flake-utils, poetry2nix, rv-utils, pyk }:
+    { self, k-framework, nixpkgs, flake-utils, rv-utils, pyk, ... }@inputs:
     let
-      allOverlays = [
-        poetry2nix.overlay
-        pyk.overlay
-        (final: prev: {
-          kmir = prev.poetry2nix.mkPoetryApplication {
-            python = final.python310;
+      overlay = (final: prev:
+        let
+          nixpkgs-pyk = import inputs.nixpkgs-pyk {
+            system = prev.system;
+            overlays = [ pyk.overlay ];
+          };
+          poetry2nix =
+            inputs.poetry2nix.lib.mkPoetry2Nix { pkgs = nixpkgs-pyk; };
+          k_release = builtins.readFile ./deps/k_release;
+        in {
+          kmir-pyk = poetry2nix.mkPoetryApplication {
+            python = nixpkgs-pyk.python310;
             projectDir = ./kmir;
-            overrides = prev.poetry2nix.overrides.withDefaults
+            overrides = poetry2nix.overrides.withDefaults
               (finalPython: prevPython: {
-                pyk = prev.pyk-python310.overridePythonAttrs (old: {
+                pyk = nixpkgs-pyk.pyk-python310.overridePythonAttrs (old: {
                   # both kmir and pyk depend on the filelock package, however the two packages are likely 
                   # to use different versions, based on whatever version was locked in their respecitve poetry.lock
                   # files. However, because all python package deps are propagated py poetry2nix into any
@@ -46,16 +49,15 @@
             # We remove `dev` from `checkGroups`, so that poetry2nix does not try to resolve dev dependencies.
             checkGroups = [ ];
           };
-        })
-      (let k_release = builtins.readFile ./deps/k_release; in final: prev: {
-          mir-semantics = prev.stdenv.mkDerivation {
-            pname = "mir-semantics";
+
+          kmir = prev.stdenv.mkDerivation {
+            pname = "kmir";
             version = self.rev or "dirty";
             buildInputs = with prev; [
               k-framework.packages.${prev.system}.k
-              kmir
+              final.kmir-pyk
             ];
-            nativeBuildInputs = [ prev.makeWrapper ]; 
+            nativeBuildInputs = [ prev.makeWrapper ];
 
             src = ./kmir;
 
@@ -69,25 +71,23 @@
               kmir init $(kbuild which llvm)
             '';
 
+            # Now mir-semantics is built, wrap kmir with LLVM and HASKELL defs
             installPhase = ''
               mkdir -p $out/lib/
               cp -r $(kbuild which llvm) $out/lib/
               cp -r $(kbuild which haskell) $out/lib/ 
 
               mkdir -p $out/bin/
+
+              makeWrapper ${final.kmir-pyk}/bin/kmir $out/bin/kmir \
+                --set KMIR_LLVM_DIR "$out/lib/llvm" \
+                --set KMIR_HASKELL_DIR "$out/lib/haskell" \
+                --prefix PATH : ${
+                  prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]
+                }
             '';
           };
-        })
-        # Now mir-semantics is built, wrap kmir with LLVM and HASKELL defs
-        (final: prev: {
-          kmir = prev.kmir.overrideAttrs (oldAttrs: {
-            buildInputs = oldAttrs.buildInputs or [] ++ [ prev.python310 prev.makeWrapper ];
-            postInstall = oldAttrs.postInstall or "" + ''
-              wrapProgram $out/bin/kmir --set KMIR_LLVM_DIR ${(toString prev.mir-semantics) + "/lib/llvm"} --set KMIR_HASKELL_DIR ${(toString prev.mir-semantics) + "/lib/haskell"} --prefix PATH : ${prev.lib.makeBinPath [ k-framework.packages.${prev.system}.k ]}
-            '';
-          });
-        })
-        (final: prev: {
+
           kmir-test = prev.stdenv.mkDerivation {
             pname = "kmir-test";
             version = self.rev or "dirty";
@@ -112,8 +112,7 @@
               touch $out
             '';
           };
-        })
-      ];
+        });
     in flake-utils.lib.eachSystem [
       "x86_64-linux"
       "x86_64-darwin"
@@ -123,16 +122,14 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = allOverlays;
+          overlays = [ overlay ];
         };
       in {
         packages = rec {
-          inherit (pkgs) kmir mir-semantics kmir-test;
+          inherit (pkgs) kmir kmir-test;
           default = kmir;
-          # default = mir-semantics;
-          #  = pkgs..pyk;
         };
       }) // {
-        overlays.default = nixpkgs.lib.composeManyExtensions allOverlays;
+        overlays.default = overlay;
       };
 }
