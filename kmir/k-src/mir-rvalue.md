@@ -152,6 +152,7 @@ module MIR-RVALUE
   imports MIR-RVALUE-SYNTAX
   imports MIR-TYPES
   imports MIR-CONFIGURATION
+  imports LIST
 ```
 
 Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval_rvalue_into_place](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_const_eval/src/interpret/step.rs#L148).
@@ -164,6 +165,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, BIN_OP:BinaryOp)  => evalBinaryOp(FN_KEY, BIN_OP)
   rule evalRValue(FN_KEY, ADDR:AddressOf)   => evalAddressOf(FN_KEY, ADDR)
   rule evalRValue(FN_KEY, CFD:CopyForDeref) => evalCopyForDeref(FN_KEY, CFD)
+  rule evalRValue(FN_KEY, TUP:Tuple)        => evalTuple(FN_KEY, TUP)
   rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
 ```
 
@@ -173,9 +175,15 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   syntax MIRValue ::= evalOperand(FunctionLikeKey, Operand) [function]
   //------------------------------------------------------------------
   rule evalOperand(_, const VALUE:ConstantValue) => evalConstantValue(VALUE)
+  rule evalOperand(FN_KEY, FIELD:Field)          => evalField(FN_KEY, FIELD)
   rule evalOperand(FN_KEY, LOCAL:Local)          => evalLocal(FN_KEY, LOCAL)
   rule evalOperand(FN_KEY, move LOCAL:Local)     => evalLocal(FN_KEY, LOCAL)
   rule evalOperand(FN_KEY, REF:Deref)            => evalDeref(FN_KEY, REF)
+
+  syntax MIRValueNeList ::= evalOperandList(FunctionLikeKey, OperandList) [function]
+  //--------------------------------------------------------------------------------
+  rule evalOperandList(_FN_KEY, .OperandList) => .List
+  rule evalOperandList(FN_KEY, OPERAND:Operand, REST:OperandList) => ListItem(evalOperand(FN_KEY, OPERAND)) {evalOperandList(FN_KEY, REST)}:>List
 ```
 
 ### `UnaryOp` evaluation
@@ -326,6 +334,34 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
   syntax MIRValue ::= evalCopyForDeref(FunctionLikeKey, CopyForDeref) [function]
   //----------------------------------------------------------------------------
   rule evalCopyForDeref(FN_KEY, deref_copy(DEREF:Deref)) => evalDeref(FN_KEY, DEREF)
+```
+
+### `Aggregate` evaluation
+
+```k
+  syntax MIRValue ::= evalTuple(FunctionLikeKey, Tuple) [function]
+  //--------------------------------------------------------------
+  rule evalTuple(FN_KEY, ( OPERANDS , OperandList )) => ( evalOperandList(FN_KEY, OPERANDS, OperandList) )
+```
+
+### `Field` evaluation
+```k
+  syntax MIRValue ::= TupleArgs "[" Int "]" [function]
+  rule ( ARGS:List ) [ INDEX ] => {ARGS[INDEX]}:>MIRValue
+
+  syntax MIRValue ::= evalField(FunctionLikeKey, Field) [function]
+  //--------------------------------------------------------------
+  rule [[ evalField(FN_KEY, ( PLACE . INDEX : _TYPE ) ) => TUPLE[INDEX] ]] // Ignoring type currently
+    <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecl>
+          <index> PLACE_INDEX </index>
+          <value> TUPLE </value>
+          ...
+        </localDecl>
+      ...
+    </function>
+    requires PLACE_INDEX ==Int Local2Int(PLACE)
 ```
 
 ```k
