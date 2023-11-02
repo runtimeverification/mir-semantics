@@ -148,6 +148,7 @@ class KMIR:
                 pmap={'PGM': str(self.mir_parser)},
                 bug_report=self.bug_report,
                 depth=depth,
+                no_expand_macros=True,
             )
 
         def preprocess_and_run(program_file: Path, temp_file: Path) -> CompletedProcess:
