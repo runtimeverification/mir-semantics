@@ -52,6 +52,7 @@ Runtime representation of MIR's *function-like* entities. A *function-like* is o
 ```k
   syntax FunctionLikeKey ::= Fn(FunctionPath)
                            | Promoted(FunctionPath, Int)
+                           | Rec(FunctionPath, Int)
 ```
 
 It looks like we can consider all these *normal functions* in the execution semantics.

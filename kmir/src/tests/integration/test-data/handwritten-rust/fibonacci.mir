@@ -1,0 +1,74 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn fibonacci(_1: u32) -> u32 {
+    debug n => _1;
+    let mut _0: u32;
+    let mut _2: u32;
+    let mut _3: u32;
+    let mut _4: u32;
+    let mut _5: u32;
+
+    bb0: {
+        switchInt(_1) -> [0: bb2, 1: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = Sub(_1, const 2_u32);
+        _2 = fibonacci(move _3) -> bb4;
+    }
+
+    bb2: {
+        _0 = const 0_u32;
+        goto -> bb6;
+    }
+
+    bb3: {
+        _0 = const 1_u32;
+        goto -> bb6;
+    }
+
+    bb4: {
+        _5 = Sub(_1, const 1_u32);
+        _4 = fibonacci(move _5) -> bb5;
+    }
+
+    bb5: {
+        _0 = Add(move _2, move _4);
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u32;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: u32;
+    let mut _5: !;
+    scope 1 {
+        debug ans => _1;
+    }
+
+    bb0: {
+        _1 = fibonacci(const 5_u32) -> bb1;
+    }
+
+    bb1: {
+        _4 = _1;
+        _3 = Eq(move _4, const 5_u32);
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = core::panicking::panic(const "assertion failed: ans == 5");
+    }
+
+    bb3: {
+        return;
+    }
+}
