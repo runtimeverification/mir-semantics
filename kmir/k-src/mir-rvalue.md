@@ -152,6 +152,7 @@ module MIR-RVALUE
   imports MIR-RVALUE-SYNTAX
   imports MIR-TYPES
   imports MIR-CONFIGURATION
+  imports LIST
 ```
 
 Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval_rvalue_into_place](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_const_eval/src/interpret/step.rs#L148).
@@ -345,6 +346,9 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 
 ### `Field` evaluation
 ```k
+  syntax MIRValue ::= TupleArgs "[" Int "]" [function]
+  rule ( ARGS:List ) [ INDEX ] => {ARGS[INDEX]}:>MIRValue
+
   syntax MIRValue ::= evalField(FunctionLikeKey, Field) [function]
   //--------------------------------------------------------------
   rule [[ evalField(FN_KEY, ( PLACE . INDEX : _TYPE ) ) => TUPLE[INDEX] ]] // Ignoring type currently
@@ -358,9 +362,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
       ...
     </function>
     requires PLACE_INDEX ==Int Local2Int(PLACE)
-
-  syntax MIRValue ::= TupleArgs "[" Int "]" [function]
-  rule ( _ARGS:MIRValueNeList ) [ _INDEX ] => 616 // TODO: REMOVE SEMAPHORE
 ```
 
 ```k
