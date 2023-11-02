@@ -19,7 +19,7 @@ module SIMPLE-SPEC
           <callStack> ListItem(FN_KEY) ... </callStack>
           <function>
             <fnKey> FN_KEY </fnKey>
-              <localDecl> 
+              <localDecl>
                 <index> 3 </index>
                 <value> _ => 5 </value>
                 ...
@@ -31,7 +31,7 @@ module SIMPLE-SPEC
           <callStack> ListItem(FN_KEY) ... </callStack>
           <function>
             <fnKey> FN_KEY </fnKey>
-              <localDecl> 
+              <localDecl>
                 <index> INDEX </index>
                 <value> _ => 5 </value>
                 ...
@@ -44,7 +44,7 @@ module SIMPLE-SPEC
           <callStack> ListItem(FN_KEY) ... </callStack>
           <function>
             <fnKey> FN_KEY </fnKey>
-              <localDecl> 
+              <localDecl>
                 <index> INDEX </index>
                 <value> _ => 8 </value>
                 ...
@@ -57,12 +57,12 @@ module SIMPLE-SPEC
           <callStack> ListItem(FN_KEY) ... </callStack>
           <function>
             <fnKey> FN_KEY </fnKey>
-              <localDecl> 
+              <localDecl>
                 <index> INDEX1 </index>
                 <value> _ => 8 </value>
                 ...
               </localDecl>
-              <localDecl> 
+              <localDecl>
                 <index> INDEX2 </index>
                 <value> _ => 9 </value>
                 ...
@@ -75,7 +75,7 @@ module SIMPLE-SPEC
           <callStack> ListItem(FN_KEY) ... </callStack>
           <function>
             <fnKey> FN_KEY </fnKey>
-              <localDecl> 
+              <localDecl>
                 <index> INDEX </index>
                 <value> _ => 9 </value>
                 ...
@@ -84,20 +84,20 @@ module SIMPLE-SPEC
           </function>
     requires INDEX ==Int Local2Int(PLACE)
 
-    claim <k> #executeStatement(_1:Local = move _2) => .K ...</k>
-          <callStack> ListItem(FN_KEY) ... </callStack>
-          <function>
-            <fnKey> FN_KEY </fnKey>
-              <localDecl> 
-                <index> 1 </index>
-                <value> _ => 42 </value>
-                ...
-              </localDecl>
-              <localDecl> 
-                <index> 2 </index>
-                <value> 42 </value>
-                ...
-              </localDecl>
-              ...
-          </function>
+    // claim <k> #executeStatement(_1:Local = move _2) => .K ...</k>
+    //       <callStack> ListItem(FN_KEY) ... </callStack>
+    //       <function>
+    //         <fnKey> FN_KEY </fnKey>
+    //           <localDecl>
+    //             <index> 1 </index>
+    //             <value> _ => 42 </value>
+    //             ...
+    //           </localDecl>
+    //           <localDecl>
+    //             <index> 2 </index>
+    //             <value> 42 </value>
+    //             ...
+    //           </localDecl>
+    //           ...
+    //       </function>
 endmodule

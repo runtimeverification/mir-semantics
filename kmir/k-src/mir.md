@@ -329,7 +329,7 @@ Note that the `main` function is special: it does not have a caller.
         ...
        </k>
        <callStack> ListItem(CALLER_FN_KEY) _STACK </callStack>
-       requires CALLER_FN_KEY ==K CALLEE_FN_KEY 
+       requires CALLER_FN_KEY ==K CALLEE_FN_KEY
   rule <k> #executeFunctionLike(Fn(PATH), ARGS)
         => #addRecursiveFrame(Fn(PATH), ARGS)
         ...
@@ -339,25 +339,25 @@ Note that the `main` function is special: it does not have a caller.
   // TODO: Either save unimplemented stack frame for correct initial values, or clear values
   syntax MirSimulation ::= #addRecursiveFrame(FunctionLikeKey, ArgumentList)
   //-------------------------------------------------------------------------
-  rule <k> #addRecursiveFrame(Fn(PATH), ARGS) 
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
         => #instantiateArguments(Rec(PATH, 0), ARGS, 1)
         ~> #executeBasicBlock(Rec(PATH, 0), 0)
         ...
        </k>
        <callStack> ListItem(Fn(PATH)) STACK => ListItem(Rec(PATH, 0)) ListItem(Fn(PATH)) STACK </callStack>
-       <functions>... 
-         <function> <fnKey> Fn(PATH) </fnKey> REST </function> 
-         (.Bag => <function> <fnKey> Rec(PATH, 0) </fnKey> REST </function>) 
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, 0) </fnKey> REST </function>)
        ...</functions>
-  rule <k> #addRecursiveFrame(Fn(PATH), ARGS) 
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
         => #instantiateArguments(Rec(PATH, DEPTH +Int 1), ARGS, 1)
         ~> #executeBasicBlock(Rec(PATH, DEPTH +Int 1), 0)
         ...
        </k>
        <callStack> ListItem(Rec(PATH, DEPTH)) STACK => ListItem(Rec(PATH, DEPTH +Int 1)) ListItem(Rec(PATH, DEPTH)) STACK </callStack>
-       <functions>... 
-         <function> <fnKey> Fn(PATH) </fnKey> REST </function> 
-         (.Bag => <function> <fnKey> Rec(PATH, DEPTH +Int 1) </fnKey> REST </function>) 
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, DEPTH +Int 1) </fnKey> REST </function>)
        ...</functions>
 ```
 
