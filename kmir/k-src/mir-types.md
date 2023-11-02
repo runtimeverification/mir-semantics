@@ -423,6 +423,7 @@ module MIR-VALUE
   imports BYTES
   imports MIR-TYPE-SYNTAX
   imports MIR-LEXER-SYNTAX
+  imports LIST
 
   syntax KItem ::= RValueResult
 ```
@@ -452,9 +453,8 @@ TODO: add more domain sorts
                     | "UNIMPLEMENTED"
 
   syntax RValueResult ::= MIRValue
-                        | MIRValueNeList
 
-  syntax MIRValueNeList ::= NeList{MIRValue, ","}
+  syntax MIRValueNeList ::= List
 ```
 
 The `InteprError` sort represent the errors that may occur while interpreting an `RValue` into `RValueResult` (inspired by [InterpError](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_middle/src/mir/interpret/error.rs#L480)):

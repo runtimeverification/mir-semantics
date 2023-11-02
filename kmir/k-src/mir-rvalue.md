@@ -180,8 +180,8 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 
   syntax MIRValueNeList ::= evalOperandList(FunctionLikeKey, OperandList) [function]
   //--------------------------------------------------------------------------------
-  rule evalOperandList(_FN_KEY, .OperandList) => .MIRValueNeList
-  rule evalOperandList(FN_KEY, OPERAND:Operand, REST:OperandList) => evalOperand(FN_KEY, OPERAND), evalOperandList(FN_KEY, REST)
+  rule evalOperandList(_FN_KEY, .OperandList) => .List
+  rule evalOperandList(FN_KEY, OPERAND:Operand, REST:OperandList) => ListItem(evalOperand(FN_KEY, OPERAND)) {evalOperandList(FN_KEY, REST)}:>List
 ```
 
 ### `UnaryOp` evaluation
