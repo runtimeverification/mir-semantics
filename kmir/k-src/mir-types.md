@@ -91,7 +91,7 @@ module MIR-TYPE-SYNTAX
                             | PathIdentSegment "::" PathIdentSegmentSuffix
                             | PathOpaque
 
-  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
+  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix [avoid] // [avoid] to stop parsing ambiguity  syntax Type ::= Type ":Type" [format(%1%2), org.kframework.kore.Sort(Type)] #SemanticCastToType(#token("ABCD","#KVariable"))
                               | PathIdentSegment "::" PathIdentSegmentEndSuffix
                               | PathOpaque
 
@@ -449,9 +449,11 @@ TODO: add more domain sorts
                     | "Unit"
                     | Bool
                     | "Never"
-                    | "(" MIRValueNeList ")"
+                    | TupleArgs
                     | "UNIMPLEMENTED"
 
+  syntax TupleArgs ::= "(" MIRValueNeList ")"
+  
   syntax RValueResult ::= MIRValue
 
   syntax MIRValueNeList ::= List
