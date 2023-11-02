@@ -324,6 +324,41 @@ Note that the `main` function is special: it does not have a caller.
         ...
        </k>
        <callStack> ListItem(CALLER_FN_KEY) STACK => ListItem(CALLEE_FN_KEY) ListItem(CALLER_FN_KEY) STACK </callStack>
+  rule <k> #executeFunctionLike(CALLEE_FN_KEY, ARGS)
+        => #addRecursiveFrame(CALLEE_FN_KEY, ARGS)
+        ...
+       </k>
+       <callStack> ListItem(CALLER_FN_KEY) _STACK </callStack>
+       requires CALLER_FN_KEY ==K CALLEE_FN_KEY
+  rule <k> #executeFunctionLike(Fn(PATH), ARGS)
+        => #addRecursiveFrame(Fn(PATH), ARGS)
+        ...
+       </k>
+       <callStack> ListItem(Rec(PATH, _)) _STACK </callStack> [priority(49)]
+
+  // TODO: Either save unimplemented stack frame for correct initial values, or clear values
+  syntax MirSimulation ::= #addRecursiveFrame(FunctionLikeKey, ArgumentList)
+  //-------------------------------------------------------------------------
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
+        => #instantiateArguments(Rec(PATH, 0), ARGS, 1)
+        ~> #executeBasicBlock(Rec(PATH, 0), 0)
+        ...
+       </k>
+       <callStack> ListItem(Fn(PATH)) STACK => ListItem(Rec(PATH, 0)) ListItem(Fn(PATH)) STACK </callStack>
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, 0) </fnKey> REST </function>)
+       ...</functions>
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
+        => #instantiateArguments(Rec(PATH, DEPTH +Int 1), ARGS, 1)
+        ~> #executeBasicBlock(Rec(PATH, DEPTH +Int 1), 0)
+        ...
+       </k>
+       <callStack> ListItem(Rec(PATH, DEPTH)) STACK => ListItem(Rec(PATH, DEPTH +Int 1)) ListItem(Rec(PATH, DEPTH)) STACK </callStack>
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, DEPTH +Int 1) </fnKey> REST </function>)
+       ...</functions>
 ```
 
 Assign arguments (actual parameters) to formal parameters of a function-like:
@@ -447,6 +482,22 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
+  rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
+        => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
+        ~> #transferLocal(Rec(toFunctionPath(OTHER_FN_NAME), 0), Int2Local(0), Fn(FNAME), DEST_LOCAL)
+        ~> #executeBasicBlock(Fn(FNAME), BBName2Int(NEXT))
+        ...
+       </k>
+       <callStack> ListItem(Fn(FNAME)) ... </callStack>
+       requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
+  rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
+        => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
+        ~> #transferLocal(Rec(toFunctionPath(OTHER_FN_NAME), DEPTH +Int 1), Int2Local(0), Rec(FNAME, DEPTH), DEST_LOCAL)
+        ~> #executeBasicBlock(Rec(FNAME, DEPTH), BBName2Int(NEXT))
+        ...
+       </k>
+       <callStack> ListItem(Rec(FNAME, DEPTH)) ... </callStack>
+       requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
   rule <k> #executeTerminator(switchInt (ARG:Operand) -> [ TARGETS:SwitchTargets , otherwise : OTHERWISE:BB ])
         => #switchInt(FN_KEY, castMIRValueToInt(evalOperand(FN_KEY, ARG)), TARGETS, OTHERWISE)
         ...
