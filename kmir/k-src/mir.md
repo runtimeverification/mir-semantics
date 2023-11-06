@@ -33,7 +33,7 @@ The presence of the empty program, `.Mir`, on the `<k>` cell indicates that the 
 ```k
   rule <k> .Mir => #initialized() ... </k>
        <phase> Initialization </phase>
-  rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath), .ArgumentList) ... </k>
+  rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath), .OperandList) ... </k>
        <phase> Initialization => Execution </phase>
 ```
 
@@ -310,7 +310,7 @@ Executing a function-like means:
 Note that the `main` function is special: it does not have a caller.
 
 ```k
-  syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey, ArgumentList)
+  syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey, OperandList)
   //--------------------------------------------------------------------------
   rule <k> #executeFunctionLike(FN_KEY, _ARGS)
         => #executeBasicBlock(FN_KEY, 0)
@@ -337,7 +337,7 @@ Note that the `main` function is special: it does not have a caller.
        <callStack> ListItem(Rec(PATH, _)) _STACK </callStack> [priority(49)]
 
   // TODO: Either save unimplemented stack frame for correct initial values, or clear values
-  syntax MirSimulation ::= #addRecursiveFrame(FunctionLikeKey, ArgumentList)
+  syntax MirSimulation ::= #addRecursiveFrame(FunctionLikeKey, OperandList)
   //-------------------------------------------------------------------------
   rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
         => #instantiateArguments(Rec(PATH, 0), ARGS, 1)
@@ -364,10 +364,10 @@ Note that the `main` function is special: it does not have a caller.
 Assign arguments (actual parameters) to formal parameters of a function-like:
 
 ```k
-  syntax MirSimulation ::= #instantiateArguments(FunctionLikeKey, ArgumentList, Int)
+  syntax MirSimulation ::= #instantiateArguments(FunctionLikeKey, OperandList, Int)
   //--------------------------------------------------------------------------------
-  rule <k> #instantiateArguments(_FN_KEY, .ArgumentList, _) => .K ... </k>
-  rule <k> #instantiateArguments(FN_KEY, (ARG, REST):ArgumentList, ARGUMENT_NUMBER:Int)
+  rule <k> #instantiateArguments(_FN_KEY, .OperandList, _) => .K ... </k>
+  rule <k> #instantiateArguments(FN_KEY, (ARG, REST):OperandList, ARGUMENT_NUMBER:Int)
         => #writeLocal(CALLEE_FN_KEY, Int2Local(ARGUMENT_NUMBER), evalOperand(CALLER_FN_KEY, ARG))
         ~> #instantiateArguments(FN_KEY, REST, ARGUMENT_NUMBER +Int 1)
         ...
@@ -504,7 +504,7 @@ or panics if the function-like or the block is missing:
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
     requires isInt(castMIRValueToInt(evalOperand(FN_KEY, ARG)))
-  rule <k> #executeTerminator(_:Local = PANIC_CALL (ARG, .ArgumentList))
+  rule <k> #executeTerminator(_:Local = PANIC_CALL (ARG, .OperandList))
         => #panic(FN_KEY, PanicCall, ARG)
         ...
        </k>
