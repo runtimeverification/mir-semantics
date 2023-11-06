@@ -450,9 +450,12 @@ TODO: add more domain sorts
                     | Bool
                     | "Never"
                     | TupleArgs
+                    | OptionVal
                     | "UNIMPLEMENTED"
 
   syntax TupleArgs ::= "(" MIRValueNeList ")"
+  syntax OptionVal ::= "OptSome" "(" MIRValue ")"
+                     | "OptNone"
   
   syntax RValueResult ::= MIRValue
 

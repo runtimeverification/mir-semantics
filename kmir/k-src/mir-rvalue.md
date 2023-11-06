@@ -119,7 +119,7 @@ The various kinds of rvalues that can appear in MIR.
   // `AssertKind` `Eq`, `Ne` conflict with BinaryOp names https://github.com/rust-lang/rust/blob/f562931178ff103f23b9e9a10dc0deb38e0d064f/library/core/src/panicking.rs#L259-L263
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
-                           | PathExpression "::" Identifier
+                           | PathExpression "::" Identifier [avoid]
                            | PathExpression "::" "Eq"
                            | PathExpression "::" "Ne"
                           //  | PathExpression "::" "Match" // Match isn't conflicting at the moment but might later
@@ -166,6 +166,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, ADDR:AddressOf)   => evalAddressOf(FN_KEY, ADDR)
   rule evalRValue(FN_KEY, CFD:CopyForDeref) => evalCopyForDeref(FN_KEY, CFD)
   rule evalRValue(FN_KEY, TUP:Tuple)        => evalTuple(FN_KEY, TUP)
+  rule evalRValue(FN_KEY, ENUM:EnumConstructor) => evalEnumConstructor(FN_KEY, ENUM) [priority(51)]
   rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
 ```
 
@@ -362,6 +363,16 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
       ...
     </function>
     requires PLACE_INDEX ==Int Local2Int(PLACE)
+```
+
+### `Enum` evaluation
+```k
+  syntax MIRValue ::= evalEnumConstructor(FunctionLikeKey, EnumConstructor) [function]
+  //--------------------------------------------------------------
+  rule evalEnumConstructor(FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))
+    requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(Some) ==String "Some"
+  rule evalEnumConstructor(_FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: None ) => OptNone
+    requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(None) ==String "None"
 ```
 
 ```k
