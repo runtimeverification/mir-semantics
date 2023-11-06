@@ -138,6 +138,8 @@ The various kinds of rvalues that can appear in MIR.
   syntax OperandList ::= List{Operand, ","}
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
+
+  syntax RValue ::= #unwrap(Operand)
 ```
 
 ```k
@@ -168,6 +170,8 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, TUP:Tuple)        => evalTuple(FN_KEY, TUP)
   rule evalRValue(FN_KEY, ENUM:EnumConstructor) => evalEnumConstructor(FN_KEY, ENUM) [priority(51)]
   rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
+
+  rule evalRValue(FN_KEY, #unwrap(OP))      => evalUnwrap(evalOperand(FN_KEY, OP)) 
 ```
 
 ### `Operand` evaluation
@@ -373,6 +377,13 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
     requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(Some) ==String "Some"
   rule evalEnumConstructor(_FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: None ) => OptNone
     requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(None) ==String "None"
+```
+
+### Internal Functions
+```k
+  syntax MIRValue ::= evalUnwrap(MIRValue) [function]
+  //-------------------------------------------------
+  rule evalUnwrap(OptSome( VALUE:MIRValue )) => VALUE
 ```
 
 ```k
