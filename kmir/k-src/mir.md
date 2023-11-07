@@ -517,11 +517,10 @@ or panics if the function-like or the block is missing:
        <callStack> ListItem(FN_KEY) ... </callStack> [owise]
 
   // Option Unwrap Call
-  rule <k> #executeTerminator(DEST_LOCAL:Local = Option :: < _TYPES > :: Unwrap :: .ExpressionPathList ( ARG , .OperandList ) -> ((NEXT:BBName _):BB)) 
+  rule <k> #executeTerminator(DEST_LOCAL:Local = Option :: < _TYPES > :: unwrap :: .ExpressionPathList ( ARG , .OperandList ) -> ((NEXT:BBName _):BB)) 
         => #executeStatement(DEST_LOCAL = #unwrap(ARG)) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT)) ...
        </k>
-       <callStack> ListItem(FN_KEY) ... </callStack>
-    requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(Unwrap) ==String "unwrap" [priority(48)]       
+       <callStack> ListItem(FN_KEY) ... </callStack> [priority(48)]
 ```
 
 The following rule executes exists to copy a value of one local to another local, the locals may belong to different functions.

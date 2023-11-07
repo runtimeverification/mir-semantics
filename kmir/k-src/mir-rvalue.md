@@ -373,10 +373,8 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 ```k
   syntax MIRValue ::= evalEnumConstructor(FunctionLikeKey, EnumConstructor) [function]
   //--------------------------------------------------------------
-  rule evalEnumConstructor(FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))
-    requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(Some) ==String "Some"
+  rule evalEnumConstructor( FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))
   rule evalEnumConstructor(_FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: None ) => OptNone
-    requires IdentifierToken2String(Option) ==String "Option" andBool IdentifierToken2String(None) ==String "None"
 ```
 
 ### Internal Functions
