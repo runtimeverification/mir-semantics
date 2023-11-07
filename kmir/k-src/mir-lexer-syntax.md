@@ -11,11 +11,11 @@ This module defined the necessary `token` productions.
                       | DoubleHexDigitNoIntLetter
                       | Whitelisted
   
-  syntax Whitelisted ::= "main"
+  syntax Whitelisted ::= "main" [token]
 
-  syntax Whitelisted ::= "transmute" | "unwind" | "count"
+  syntax Whitelisted ::= "transmute" [token] | "unwind" [token] | "count" [token]
 
-  syntax Whitelisted ::= "Option" | "None" | "Some" | "unwrap"
+  syntax Whitelisted ::= "Option" [token] | "None" [token] | "Some" [token] | "unwrap" [token]
 
   syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
   syntax IdentifierToken ::= StringIdentifierToken(String) [function, hook(STRING.string2token)]
