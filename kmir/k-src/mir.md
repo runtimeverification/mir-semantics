@@ -33,7 +33,7 @@ The presence of the empty program, `.Mir`, on the `<k>` cell indicates that the 
 ```k
   rule <k> .Mir => #initialized() ... </k>
        <phase> Initialization </phase>
-  rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath), .OperandList) ... </k>
+  rule <k> #initialized() => #executeFunctionLike(Fn(main :: .FunctionPath), .OperandList) ... </k>
        <phase> Initialization => Execution </phase>
 ```
 
@@ -45,11 +45,11 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
        <callStack> ListItem(FUNCTION_KEY) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
-    requires FUNCTION_KEY ==K Fn(String2IdentifierToken("main"))
+    requires FUNCTION_KEY ==K Fn(main)
 
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
-    requires FUNCTION_KEY =/=K Fn(String2IdentifierToken("main"))
+    requires FUNCTION_KEY =/=K Fn(main)
 endmodule
 ```
 
@@ -317,7 +317,7 @@ Note that the `main` function is special: it does not have a caller.
         ...
        </k>
        <callStack> .List => ListItem(FN_KEY) </callStack>
-    requires FN_KEY ==K Fn(String2IdentifierToken("main"):: .FunctionPath)
+    requires FN_KEY ==K Fn(main :: .FunctionPath)
   rule <k> #executeFunctionLike(CALLEE_FN_KEY, ARGS)
         => #instantiateArguments(CALLER_FN_KEY, ARGS, 1)
         ~> #executeBasicBlock(CALLEE_FN_KEY, 0)
@@ -489,7 +489,7 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(Fn(FNAME)) ... </callStack>
-       requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
+    requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
   rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
         => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
         ~> #transferLocal(Rec(toFunctionPath(OTHER_FN_NAME), DEPTH +Int 1), Int2Local(0), Rec(FNAME, DEPTH), DEST_LOCAL)
@@ -497,7 +497,7 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(Rec(FNAME, DEPTH)) ... </callStack>
-       requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
+    requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
   rule <k> #executeTerminator(switchInt (ARG:Operand) -> [ TARGETS:SwitchTargets , otherwise : OTHERWISE:BB ])
         => #switchInt(FN_KEY, castMIRValueToInt(evalOperand(FN_KEY, ARG)), TARGETS, OTHERWISE)
         ...
@@ -509,7 +509,7 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
-   requires PANIC_CALL ==K String2IdentifierToken("core") :: String2IdentifierToken("panicking") :: String2IdentifierToken("panic") :: .ExpressionPathList
+    requires PANIC_CALL ==K String2IdentifierToken("core") :: String2IdentifierToken("panicking") :: String2IdentifierToken("panic") :: .ExpressionPathList
   rule <k> #executeTerminator(TERMIANTOR:Terminator)
         => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
         ...

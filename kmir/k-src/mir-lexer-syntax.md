@@ -10,6 +10,8 @@ This module defined the necessary `token` productions.
                       | BBId
                       | DoubleHexDigitNoIntLetter
                       | Whitelisted
+  
+  syntax Whitelisted ::= "main"
 
   syntax Whitelisted ::= "transmute" | "unwind" | "count"
 
