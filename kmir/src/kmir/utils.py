@@ -2,7 +2,7 @@ import logging
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Final
+from typing import Final, TypeVar
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KInner, Subst
@@ -16,9 +16,44 @@ from pyk.ktool.kprove import KProve
 from pyk.proof import APRBMCProof, APRBMCProver, APRProof, APRProver
 from pyk.proof.equality import EqualityProof, EqualityProver
 from pyk.proof.proof import Proof, ProofStatus
-from pyk.utils import BugReport
+from pyk.utils import BugReport, single
+
+T1 = TypeVar('T1')
+T2 = TypeVar('T2')
+
+NodeIdLike = int | str
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+def get_apr_proof_for_spec(
+    kprove: KProve,
+    spec_file: Path,
+    save_directory: Path | None,
+    spec_module_name: str | None = None,
+    include_dirs: Iterable[Path] = (),
+    md_selector: str | None = None,
+    claim_labels: Iterable[str] | None = None,
+    exclude_claim_labels: Iterable[str] = (),
+) -> APRProof:
+    if save_directory is None:
+        save_directory = Path('.')
+        _LOGGER.info(f'Using default save_directory: {save_directory}')
+
+    _LOGGER.info(f'Extracting claim from file: {spec_file}')
+    claim = single(
+        kprove.get_claims(
+            spec_file,
+            spec_module_name=spec_module_name,
+            include_dirs=include_dirs,
+            md_selector=md_selector,
+            claim_labels=claim_labels,
+            exclude_claim_labels=exclude_claim_labels,
+        )
+    )
+
+    apr_proof = APRProof.read_proof_data(save_directory, claim.label)
+    return apr_proof
 
 
 def kmir_prove(
@@ -198,3 +233,23 @@ def print_model(node: KCFG.Node, kcfg_explore: KCFGExplore) -> list[str]:
         res_lines.append('  Failed to generate a model.')
 
     return res_lines
+
+
+def node_id_like(s: str) -> NodeIdLike:
+    try:
+        return int(s)
+    except ValueError:
+        return s
+
+
+def arg_pair_of(
+    fst_type: Callable[[str], T1], snd_type: Callable[[str], T2], delim: str = ','
+) -> Callable[[str], tuple[T1, T2]]:
+    def parse(s: str) -> tuple[T1, T2]:
+        elems = s.split(delim)
+        length = len(elems)
+        if length != 2:
+            raise ValueError(f'Expected 2 elements, found {length}')
+        return fst_type(elems[0]), snd_type(elems[1])
+
+    return parse
