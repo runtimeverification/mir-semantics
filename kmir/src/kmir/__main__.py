@@ -1,10 +1,10 @@
 import logging
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import Namespace
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
-from pyk.cli.utils import dir_path, file_path
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -13,10 +13,19 @@ from pyk.ktool.krun import KRunOutput
 from pyk.proof import APRProof
 from pyk.proof.equality import EqualityProof
 from pyk.proof.proof import Proof
+from pyk.proof.show import APRProofShow
 from pyk.utils import BugReport
 
+from .cli import create_argument_parser
 from .kmir import KMIR
-from .utils import ensure_ksequence_on_k_cell, kmir_prove, legacy_explore, print_failure_info
+from .utils import (
+    NodeIdLike,
+    ensure_ksequence_on_k_cell,
+    get_apr_proof_for_spec,
+    kmir_prove,
+    legacy_explore,
+    print_failure_info,
+)
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -103,6 +112,9 @@ def exec_prove(
     trace_rewrites: bool = False,
     **kwargs: Any,
 ) -> None:
+    if spec_file is None:
+        raise ValueError('A spec file must be provided')
+
     # TODO: workers
     # TODO: md_selector doesn't work
     spec_file_path = Path(spec_file)
@@ -201,168 +213,71 @@ def exec_prove(
         sys.exit(failed)
 
 
-def create_argument_parser() -> ArgumentParser:
-    logging_args = ArgumentParser(add_help=False)
-    logging_args.add_argument('--verbose', '-v', default=False, action='store_true', help='Verbose output.')
-    logging_args.add_argument('--debug', default=False, action='store_true', help='Debug output.')
+def exec_show_kcfg(
+    definition_dir: str,
+    haskell_dir: str,
+    spec_file: Path,
+    save_directory: Path | None = None,
+    claim_labels: Iterable[str] | None = None,
+    exclude_claim_labels: Iterable[str] = (),
+    spec_module: str | None = None,
+    md_selector: str | None = None,
+    nodes: Iterable[NodeIdLike] = (),
+    node_deltas: Iterable[tuple[NodeIdLike, NodeIdLike]] = (),
+    to_module: bool = False,
+    minimize: bool = True,
+    failure_info: bool = False,
+    sort_collections: bool = False,
+    pending: bool = False,
+    failing: bool = False,
+    **kwargs: Any,
+) -> None:
+    # TODO: include dirs
 
-    parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
+    if spec_file is None:
+        raise ValueError('A spec file must be provided')
 
-    command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
+    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
 
-    # Init (See flake.nix)
-    # This command is not needed unless it is for the flake, so we should hide it from users
-    if 'init' in sys.argv:
-        init_subparser = command_parser.add_parser('init', parents=[logging_args])
-        init_subparser.add_argument(
-            'llvm_dir',
-            type=dir_path,
-            help='Path to the llvm definition',
-        )
+    kprove: KProve
+    if kmir.kprove is None:
+        raise ValueError('Cannot use KProve object when it is None')
+    else:
+        kprove = kmir.kprove
 
-    # Parse
-    parse_subparser = command_parser.add_parser('parse', parents=[logging_args], help='Parse a MIR file')
-    parse_subparser.add_argument(
-        'input_file',
-        type=file_path,
-        help='Path to .mir file',
-    )
-    parse_subparser.add_argument(
-        '--definition-dir',
-        default=None,
-        dest='definition_dir',
-        type=dir_path,
-        help='Path to LLVM definition to use.',
-    )
-    parse_subparser.add_argument(
-        '--input',
-        dest='input',
-        type=str,
-        default='program',
-        help='Input mode',
-        choices=['program', 'binary', 'json', 'kast', 'kore'],
-        required=False,
-    )
-    parse_subparser.add_argument(
-        '--output',
-        dest='output',
-        type=str,
-        default='kore',
-        help='Output mode',
-        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
-        required=False,
+    proof = get_apr_proof_for_spec(
+        kprove,
+        spec_file,
+        save_directory=save_directory,
+        spec_module_name=spec_module,
+        # include_dirs=include_dirs,
+        md_selector=md_selector,
+        claim_labels=claim_labels,
+        exclude_claim_labels=exclude_claim_labels,
     )
 
-    # Run
-    run_subparser = command_parser.add_parser('run', parents=[logging_args], help='Run a MIR program')
-    run_subparser.add_argument(
-        'input_file',
-        type=file_path,
-        help='Path to .mir file',
-    )
-    run_subparser.add_argument(
-        '--definition-dir',
-        default=None,
-        dest='definition_dir',
-        type=dir_path,
-        help='Path to LLVM definition to use.',
-    )
-    run_subparser.add_argument(
-        '--output',
-        dest='output',
-        type=str,
-        default='kast',
-        help='Output mode',
-        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
-        required=False,
-    )
-    run_subparser.add_argument(
-        '--ignore-return-code',
-        action='store_true',
-        default=False,
-        help='Ignore return code of krun, alwasys return 0 (use for debugging only)',
-    )
-    run_subparser.add_argument(
-        '--bug-report',
-        action='store_true',
-        default=False,
-        help='Generate a haskell-backend bug report for the execution',
-    )
-    run_subparser.add_argument(
-        '--depth',
-        default=None,
-        type=int,
-        help='Stop execution after `depth` rewrite steps',
+    if pending:
+        nodes = list(nodes) + [node.id for node in proof.pending]
+    if failing:
+        nodes = list(nodes) + [node.id for node in proof.failing]
+
+    # TODO: Create NodePrinter ???
+    proof_show = APRProofShow(kprove)
+
+    res_lines = proof_show.show(
+        proof,
+        nodes=nodes,
+        node_deltas=node_deltas,
+        to_module=to_module,
+        minimize=minimize,
+        sort_collections=sort_collections,
     )
 
-    # Prove
-    prove_subparser = command_parser.add_parser(
-        'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
-    )
-    prove_subparser.add_argument(
-        '--definition-dir',
-        dest='definition_dir',
-        type=dir_path,
-        help='Path to LLVM definition to use.',
-    )
-    prove_subparser.add_argument(
-        '--haskell-dir',
-        dest='haskell_dir',
-        type=dir_path,
-        help='Path to Haskell definition to use.',
-    )
-    prove_subparser.add_argument(
-        '--spec-file',
-        dest='spec_file',
-        type=file_path,
-        help='Path to specification file',
-    )
-    prove_subparser.add_argument(
-        '--bug-report',
-        action='store_true',
-        default=False,
-        help='Generate a haskell-backend bug report for the execution',
-    )
-    prove_subparser.add_argument(
-        '--depth',
-        default=None,
-        type=int,
-        help='Stop execution after `depth` rewrite steps',
-    )
-    prove_subparser.add_argument(
-        '--smt-timeout',
-        dest='smt_timeout',
-        type=int,
-        default=125,
-        help='Timeout in ms to use for SMT queries',
-    )
-    prove_subparser.add_argument(
-        '--smt-retry-limit',
-        dest='smt_retry_limit',
-        type=int,
-        default=4,
-        help='Number of times to retry SMT queries with scaling timeouts.',
-    )
-    prove_subparser.add_argument(
-        '--trace-rewrites',
-        default=False,
-        action='store_true',
-        help='Log traces of all simplification and rewrite rule applications.',
-    )
-    prove_subparser.add_argument(
-        '--save-directory',
-        dest='save_directory',
-        type=dir_path,
-        help='Path to KCFG proofs directory, directory must already exist.',
-    )
-    prove_subparser.add_argument(
-        '--reinit',
-        action='store_true',
-        default=False,
-        help='Reinit a proof.S',
-    )
+    if failure_info:
+        with legacy_explore(kprove, id=proof.id) as kcfg_explore:
+            res_lines += print_failure_info(proof, kcfg_explore)
 
-    return parser
+    print('\n'.join(res_lines))
 
 
 def _loglevel(args: Namespace) -> int:
