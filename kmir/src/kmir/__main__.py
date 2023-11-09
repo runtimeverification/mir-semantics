@@ -292,7 +292,7 @@ def exec_view_kcfg(
     md_selector: str | None = None,
     **kwargs: Any,
 ) -> None:
-    #TODO: include dirs
+    # TODO: include dirs
 
     if spec_file is None:
         raise ValueError('A spec file must be provided')
@@ -317,7 +317,7 @@ def exec_view_kcfg(
     # TODO: NodePrinter ???
     proof_view = APRProofViewer(proof, kprove)
 
-    proof_view.run()    
+    proof_view.run()
 
 
 def _loglevel(args: Namespace) -> int:
