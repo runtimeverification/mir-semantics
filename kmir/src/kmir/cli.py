@@ -206,6 +206,38 @@ def create_argument_parser() -> ArgumentParser:
         help='Path to KCFG proofs directory, directory must already exist.',
     )
 
+    # KCFG view
+    view_subparser = command_parser.add_parser(
+        'view-kcfg',
+        help='Display tree view of CFG',
+        parents=[logging_args],
+    )
+
+    view_subparser.add_argument(
+        '--definition-dir',
+        dest='definition_dir',
+        type=dir_path,
+        help='Path to LLVM definition to use.',
+    )
+    view_subparser.add_argument(
+        '--haskell-dir',
+        dest='haskell_dir',
+        type=dir_path,
+        help='Path to Haskell definition to use.',
+    )
+    view_subparser.add_argument(
+        '--spec-file',
+        dest='spec_file',
+        type=file_path,
+        help='Path to specification file',
+    )
+    view_subparser.add_argument(
+        '--save-directory',
+        dest='save_directory',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
+    )
+
     return parser
 
 

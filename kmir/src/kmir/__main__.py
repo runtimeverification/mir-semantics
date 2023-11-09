@@ -14,6 +14,7 @@ from pyk.proof import APRProof
 from pyk.proof.equality import EqualityProof
 from pyk.proof.proof import Proof
 from pyk.proof.show import APRProofShow
+from pyk.proof.tui import APRProofViewer
 from pyk.utils import BugReport
 
 from .cli import create_argument_parser
@@ -278,6 +279,45 @@ def exec_show_kcfg(
             res_lines += print_failure_info(proof, kcfg_explore)
 
     print('\n'.join(res_lines))
+
+
+def exec_view_kcfg(
+    definition_dir: str,
+    haskell_dir: str,
+    spec_file: Path,
+    save_directory: Path | None = None,
+    claim_labels: Iterable[str] | None = None,
+    exclude_claim_labels: Iterable[str] = (),
+    spec_module: str | None = None,
+    md_selector: str | None = None,
+    **kwargs: Any,
+) -> None:
+    #TODO: include dirs
+
+    if spec_file is None:
+        raise ValueError('A spec file must be provided')
+    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
+
+    kprove: KProve
+    if kmir.kprove is None:
+        raise ValueError('Cannot use KProve object when it is None')
+    else:
+        kprove = kmir.kprove
+
+    proof = get_apr_proof_for_spec(
+        kprove,
+        spec_file,
+        save_directory=save_directory,
+        spec_module_name=spec_module,
+        md_selector=md_selector,
+        claim_labels=claim_labels,
+        exclude_claim_labels=exclude_claim_labels,
+    )
+
+    # TODO: NodePrinter ???
+    proof_view = APRProofViewer(proof, kprove)
+
+    proof_view.run()    
 
 
 def _loglevel(args: Namespace) -> int:
