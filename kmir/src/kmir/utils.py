@@ -21,6 +21,8 @@ from pyk.utils import BugReport, single
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
 
+NodeIdLike = int | str
+
 _LOGGER: Final = logging.getLogger(__name__)
 
 
@@ -231,9 +233,6 @@ def print_model(node: KCFG.Node, kcfg_explore: KCFGExplore) -> list[str]:
         res_lines.append('  Failed to generate a model.')
 
     return res_lines
-
-
-NodeIdLike = int | str
 
 
 def node_id_like(s: str) -> NodeIdLike:

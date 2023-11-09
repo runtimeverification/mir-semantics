@@ -37,13 +37,11 @@ def create_argument_parser() -> ArgumentParser:
     parse_subparser.add_argument(
         '--definition-dir',
         default=None,
-        dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     parse_subparser.add_argument(
         '--input',
-        dest='input',
         type=str,
         default='program',
         help='Input mode',
@@ -52,7 +50,6 @@ def create_argument_parser() -> ArgumentParser:
     )
     parse_subparser.add_argument(
         '--output',
-        dest='output',
         type=str,
         default='kore',
         help='Output mode',
@@ -70,13 +67,11 @@ def create_argument_parser() -> ArgumentParser:
     run_subparser.add_argument(
         '--definition-dir',
         default=None,
-        dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     run_subparser.add_argument(
         '--output',
-        dest='output',
         type=str,
         default='kast',
         help='Output mode',
@@ -87,7 +82,7 @@ def create_argument_parser() -> ArgumentParser:
         '--ignore-return-code',
         action='store_true',
         default=False,
-        help='Ignore return code of krun, alwasys return 0 (use for debugging only)',
+        help='Ignore return code of krun, always return 0 (use for debugging only)',
     )
     run_subparser.add_argument(
         '--bug-report',
@@ -108,19 +103,16 @@ def create_argument_parser() -> ArgumentParser:
     )
     prove_subparser.add_argument(
         '--definition-dir',
-        dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     prove_subparser.add_argument(
         '--haskell-dir',
-        dest='haskell_dir',
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
     prove_subparser.add_argument(
         '--spec-file',
-        dest='spec_file',
         type=file_path,
         help='Path to specification file',
     )
@@ -138,14 +130,12 @@ def create_argument_parser() -> ArgumentParser:
     )
     prove_subparser.add_argument(
         '--smt-timeout',
-        dest='smt_timeout',
         type=int,
         default=125,
         help='Timeout in ms to use for SMT queries',
     )
     prove_subparser.add_argument(
         '--smt-retry-limit',
-        dest='smt_retry_limit',
         type=int,
         default=4,
         help='Number of times to retry SMT queries with scaling timeouts.',
@@ -158,7 +148,6 @@ def create_argument_parser() -> ArgumentParser:
     )
     prove_subparser.add_argument(
         '--save-directory',
-        dest='save_directory',
         type=dir_path,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
@@ -166,7 +155,7 @@ def create_argument_parser() -> ArgumentParser:
         '--reinit',
         action='store_true',
         default=False,
-        help='Reinit a proof.S',
+        help='Reinitialise a proof.',
     )
 
     kmir_cli_args = KMIRCLIArgs()
@@ -183,25 +172,21 @@ def create_argument_parser() -> ArgumentParser:
 
     show_subparser.add_argument(
         '--definition-dir',
-        dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     show_subparser.add_argument(
         '--haskell-dir',
-        dest='haskell_dir',
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
     show_subparser.add_argument(
         '--spec-file',
-        dest='spec_file',
         type=file_path,
         help='Path to specification file',
     )
     show_subparser.add_argument(
         '--save-directory',
-        dest='save_directory',
         type=dir_path,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
@@ -215,25 +200,21 @@ def create_argument_parser() -> ArgumentParser:
 
     view_subparser.add_argument(
         '--definition-dir',
-        dest='definition_dir',
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     view_subparser.add_argument(
         '--haskell-dir',
-        dest='haskell_dir',
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
     view_subparser.add_argument(
         '--spec-file',
-        dest='spec_file',
         type=file_path,
         help='Path to specification file',
     )
     view_subparser.add_argument(
         '--save-directory',
-        dest='save_directory',
         type=dir_path,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
@@ -274,15 +255,9 @@ class KMIRCLIArgs(KCLIArgs):
             action='store_false',
             help='Do not show failure summary for cfg',
         )
-        args.add_argument(
-            '--to-module', dest='to_module', default=False, action='store_true', help='Output edges as a K module.'
-        )
-        args.add_argument(
-            '--pending', dest='pending', default=False, action='store_true', help='Also display pending nodes'
-        )
-        args.add_argument(
-            '--failing', dest='failing', default=False, action='store_true', help='Also display failing nodes'
-        )
+        args.add_argument('--to-module', default=False, action='store_true', help='Output edges as a K module.')
+        args.add_argument('--pending', default=False, action='store_true', help='Also display pending nodes')
+        args.add_argument('--failing', default=False, action='store_true', help='Also display failing nodes')
         args.add_argument(
             '--counterexample-information',
             dest='counterexample_info',
