@@ -371,6 +371,11 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 
 ### `Enum` evaluation
 ```k
+  syntax IdentifierToken ::= "Option" [token] 
+                           | "None"   [token] 
+                           | "Some"   [token] 
+                           | "unwrap" [token]
+
   syntax MIRValue ::= evalEnumConstructor(FunctionLikeKey, EnumConstructor) [function]
   //--------------------------------------------------------------
   rule evalEnumConstructor( FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))

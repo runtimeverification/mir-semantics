@@ -310,6 +310,8 @@ Executing a function-like means:
 Note that the `main` function is special: it does not have a caller.
 
 ```k
+  syntax IdentifierToken ::= "main" [token]
+
   syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey, OperandList)
   //--------------------------------------------------------------------------
   rule <k> #executeFunctionLike(FN_KEY, _ARGS)
