@@ -119,7 +119,7 @@ The various kinds of rvalues that can appear in MIR.
   // `AssertKind` `Eq`, `Ne` conflict with BinaryOp names https://github.com/rust-lang/rust/blob/f562931178ff103f23b9e9a10dc0deb38e0d064f/library/core/src/panicking.rs#L259-L263
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
-                           | PathExpression "::" Identifier
+                           | PathExpression "::" Identifier [avoid]
                            | PathExpression "::" "Eq"
                            | PathExpression "::" "Ne"
                           //  | PathExpression "::" "Match" // Match isn't conflicting at the moment but might later
@@ -138,6 +138,8 @@ The various kinds of rvalues that can appear in MIR.
   syntax OperandList ::= List{Operand, ","}
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
+
+  syntax RValue ::= #unwrap(Operand)
 ```
 
 ```k
@@ -166,7 +168,10 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalRValue(FN_KEY, ADDR:AddressOf)   => evalAddressOf(FN_KEY, ADDR)
   rule evalRValue(FN_KEY, CFD:CopyForDeref) => evalCopyForDeref(FN_KEY, CFD)
   rule evalRValue(FN_KEY, TUP:Tuple)        => evalTuple(FN_KEY, TUP)
+  rule evalRValue(FN_KEY, ENUM:EnumConstructor) => evalEnumConstructor(FN_KEY, ENUM) [priority(51)]
   rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
+
+  rule evalRValue(FN_KEY, #unwrap(OP))      => evalUnwrap(evalOperand(FN_KEY, OP)) 
 ```
 
 ### `Operand` evaluation
@@ -362,6 +367,26 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
       ...
     </function>
     requires PLACE_INDEX ==Int Local2Int(PLACE)
+```
+
+### `Enum` evaluation
+```k
+  syntax IdentifierToken ::= "Option" [token] 
+                           | "None"   [token] 
+                           | "Some"   [token] 
+                           | "unwrap" [token]
+
+  syntax MIRValue ::= evalEnumConstructor(FunctionLikeKey, EnumConstructor) [function]
+  //--------------------------------------------------------------
+  rule evalEnumConstructor( FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))
+  rule evalEnumConstructor(_FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: None ) => OptNone
+```
+
+### Internal Functions
+```k
+  syntax MIRValue ::= evalUnwrap(MIRValue) [function]
+  //-------------------------------------------------
+  rule evalUnwrap(OptSome( VALUE:MIRValue )) => VALUE
 ```
 
 ```k

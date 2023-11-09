@@ -1,4 +1,4 @@
-compiletest-rs/ui/alias-uninit-value.mir	4
+compiletest-rs/ui/alias-uninit-value.mir	113
 compiletest-rs/ui/allocator/object-safe.mir	4
 compiletest-rs/ui/array-slice-vec/array_const_index-2.mir	4
 compiletest-rs/ui/array-slice-vec/bounds-check-no-overflow.mir	4
@@ -161,7 +161,7 @@ compiletest-rs/ui/binding/borrowed-ptr-pattern-2.mir	4
 compiletest-rs/ui/binding/borrowed-ptr-pattern-3.mir	4
 compiletest-rs/ui/binding/borrowed-ptr-pattern-infallible.mir	113
 compiletest-rs/ui/binding/borrowed-ptr-pattern.mir	113
-compiletest-rs/ui/binding/borrowed-ptr-pattern-option.mir	4
+compiletest-rs/ui/binding/borrowed-ptr-pattern-option.mir	113
 compiletest-rs/ui/binding/empty-types-in-patterns.mir	1
 compiletest-rs/ui/binding/expr-match-generic.mir	4
 compiletest-rs/ui/binding/expr-match-generic-unique1.mir	1
@@ -216,7 +216,7 @@ compiletest-rs/ui/binding/match-with-ret-arm.mir	134
 compiletest-rs/ui/binding/mut-in-ident-patterns.mir	134
 compiletest-rs/ui/binding/nested-matchs.mir	134
 compiletest-rs/ui/binding/nested-pattern.mir	134
-compiletest-rs/ui/binding/nullary-or-pattern.mir	4
+compiletest-rs/ui/binding/nullary-or-pattern.mir	113
 compiletest-rs/ui/binding/order-drop-with-match.mir	1
 compiletest-rs/ui/binding/or-pattern.mir	134
 compiletest-rs/ui/binding/pat-ranges.mir	4
@@ -338,7 +338,7 @@ compiletest-rs/ui/closure-expected-type/issue-24421.mir	1
 compiletest-rs/ui/closures/2229_closure_analysis/diagnostics/liveness_unintentional_copy.mir	4
 compiletest-rs/ui/closures/2229_closure_analysis/issue-89606.mir	1
 compiletest-rs/ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.mir	1
-compiletest-rs/ui/closures/2229_closure_analysis/match/issue-87097.mir	4
+compiletest-rs/ui/closures/2229_closure_analysis/match/issue-87097.mir	113
 compiletest-rs/ui/closures/2229_closure_analysis/match/issue-87426.mir	4
 compiletest-rs/ui/closures/2229_closure_analysis/match/issue-87988.mir	4
 compiletest-rs/ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.mir	1
@@ -872,7 +872,6 @@ compiletest-rs/ui/crate-leading-sep.mir	113
 compiletest-rs/ui/debuginfo/debuginfo-box-with-large-allocator.mir	113
 compiletest-rs/ui/debuginfo/debuginfo_with_uninhabitable_field_and_unsized.mir	113
 compiletest-rs/ui/debuginfo/issue-105386-debuginfo-ub.mir	113
-compiletest-rs/ui/deep.mir	4
 compiletest-rs/ui/default-method-simple.mir	4
 compiletest-rs/ui/defaults-well-formedness.mir	1
 compiletest-rs/ui/deref.mir	1
@@ -910,7 +909,7 @@ compiletest-rs/ui/deriving/deriving-meta-multiple.mir	4
 compiletest-rs/ui/deriving/deriving-self-lifetime-totalord-totaleq.mir	4
 compiletest-rs/ui/deriving/deriving-show-2.mir	134
 compiletest-rs/ui/deriving/deriving-show.mir	134
-compiletest-rs/ui/deriving/deriving-via-extension-c-enum.mir	4
+compiletest-rs/ui/deriving/deriving-via-extension-c-enum.mir	113
 compiletest-rs/ui/deriving/deriving-via-extension-enum.mir	134
 compiletest-rs/ui/deriving/deriving-via-extension-hash-enum.mir	134
 compiletest-rs/ui/deriving/deriving-via-extension-struct-empty.mir	4
@@ -1057,7 +1056,7 @@ compiletest-rs/ui/extern/issue-13655.mir	1
 compiletest-rs/ui/extern/issue-64655-allow-unwind-when-calling-panic-directly.mir	1
 compiletest-rs/ui/extern/issue-64655-extern-rust-must-allow-unwind.mir	1
 compiletest-rs/ui/ext-expand-inner-exprs.mir	4
-compiletest-rs/ui/extoption_env-not-defined.mir	4
+compiletest-rs/ui/extoption_env-not-defined.mir	113
 compiletest-rs/ui/fact.mir	4
 compiletest-rs/ui/fmt/format-args-capture.mir	1
 compiletest-rs/ui/fn/fun-call-variants.mir	1
@@ -1402,8 +1401,8 @@ compiletest-rs/ui/log-poly.mir	1
 compiletest-rs/ui/loops/for-each-loop-panic.mir	4
 compiletest-rs/ui/loops/loop-break-unsize.mir	113
 compiletest-rs/ui/macros/assert-as-macro.mir	2
-compiletest-rs/ui/macros/assert-eq-macro-msg.mir	4
-compiletest-rs/ui/macros/assert-eq-macro-panic.mir	4
+compiletest-rs/ui/macros/assert-eq-macro-msg.mir	113
+compiletest-rs/ui/macros/assert-eq-macro-panic.mir	113
 compiletest-rs/ui/macros/assert-eq-macro-success.mir	4
 compiletest-rs/ui/macros/assert-eq-macro-unsized.mir	1
 compiletest-rs/ui/macros/assert-macro-explicit.mir	2
@@ -1411,8 +1410,8 @@ compiletest-rs/ui/macros/assert-macro-fmt.mir	4
 compiletest-rs/ui/macros/assert-macro-owned.mir	4
 compiletest-rs/ui/macros/assert-macro-static.mir	4
 compiletest-rs/ui/macros/assert-matches-macro-msg.mir	4
-compiletest-rs/ui/macros/assert-ne-macro-msg.mir	4
-compiletest-rs/ui/macros/assert-ne-macro-panic.mir	4
+compiletest-rs/ui/macros/assert-ne-macro-msg.mir	113
+compiletest-rs/ui/macros/assert-ne-macro-panic.mir	113
 compiletest-rs/ui/macros/assert-ne-macro-success.mir	4
 compiletest-rs/ui/macros/assert-ne-macro-unsized.mir	1
 compiletest-rs/ui/macros/colorful-write-macros.mir	113
@@ -1467,7 +1466,7 @@ compiletest-rs/ui/macros/macro-pat-pattern-followed-by-or.mir	134
 compiletest-rs/ui/macros/macro-pub-matcher.mir	4
 compiletest-rs/ui/macros/macro-stmt-matchers.mir	113
 compiletest-rs/ui/macros/macro-tt-followed-by-seq.mir	134
-compiletest-rs/ui/macros/macro-with-attrs1.mir	4
+compiletest-rs/ui/macros/macro-with-attrs1.mir	113
 compiletest-rs/ui/macros/macro-with-braces-in-expr-position.mir	1
 compiletest-rs/ui/macros/must-use-in-macro-55516.mir	113
 compiletest-rs/ui/macros/pub-method-inside-macro.mir	113
@@ -1520,7 +1519,7 @@ compiletest-rs/ui/methods/method-self-arg-trait.mir	1
 compiletest-rs/ui/methods/method-two-trait-defer-resolution-1.mir	113
 compiletest-rs/ui/methods/method-two-trait-defer-resolution-2.mir	113
 compiletest-rs/ui/methods/method-two-traits-distinguished-via-where-clause.mir	4
-compiletest-rs/ui/methods/method-where-clause.mir	4
+compiletest-rs/ui/methods/method-where-clause.mir	113
 compiletest-rs/ui/mir/important-higher-ranked-regions.mir	1
 compiletest-rs/ui/mir/issue-29227.mir	2
 compiletest-rs/ui/mir/issue-46845.mir	113
@@ -1533,7 +1532,7 @@ compiletest-rs/ui/mir/issue-67710-inline-projection.mir	4
 compiletest-rs/ui/mir/issue-74739.mir	4
 compiletest-rs/ui/mir/issue-76248.mir	4
 compiletest-rs/ui/mir/issue-76740-copy-propagation.mir	4
-compiletest-rs/ui/mir/issue-76803-branches-not-same.mir	4
+compiletest-rs/ui/mir/issue-76803-branches-not-same.mir	113
 compiletest-rs/ui/mir/issue-77002.mir	4
 compiletest-rs/ui/mir/issue-77359-simplify-arm-identity.mir	134
 compiletest-rs/ui/mir/issue-77911.mir	1
@@ -1588,7 +1587,7 @@ compiletest-rs/ui/mir/mir_overflow_off.mir	1
 compiletest-rs/ui/mir/mir_static_subtype.mir	4
 compiletest-rs/ui/mir/mir_struct_with_assoc_ty.mir	1
 compiletest-rs/ui/mir/mir_temp_promotions.mir	113
-compiletest-rs/ui/mir/simplify-branch-same.mir	4
+compiletest-rs/ui/mir/simplify-branch-same.mir	113
 compiletest-rs/ui/mir/thir-constparam-temp.mir	4
 compiletest-rs/ui/mir/validate/issue-95978-validator-lifetime-comparison.mir	4
 compiletest-rs/ui/mir/validate/needs-reveal-all.mir	1
@@ -1615,7 +1614,6 @@ compiletest-rs/ui/new-style-constants.mir	4
 compiletest-rs/ui/newtype.mir	1
 compiletest-rs/ui/newtype-polymorphic.mir	1
 compiletest-rs/ui/new-unicode-escapes.mir	4
-compiletest-rs/ui/no-core-1.mir	4
 compiletest-rs/ui/no-core-2.mir	134
 compiletest-rs/ui/no-warn-on-field-replace-issue-34101.mir	1
 compiletest-rs/ui/nul-characters.mir	134
@@ -1737,7 +1735,7 @@ compiletest-rs/ui/pattern/issue-11577.mir	134
 compiletest-rs/ui/pattern/issue-12582.mir	113
 compiletest-rs/ui/pattern/issue-15080.mir	4
 compiletest-rs/ui/pattern/issue-22546.mir	1
-compiletest-rs/ui/pattern/issue-27320.mir	4
+compiletest-rs/ui/pattern/issue-27320.mir	113
 compiletest-rs/ui/pattern/issue-6449.mir	134
 compiletest-rs/ui/pattern/issue-74954.mir	134
 compiletest-rs/ui/pattern/issue-8351-1.mir	134
@@ -1788,9 +1786,6 @@ compiletest-rs/ui/resolve/blind-item-mixed-use-item.mir	4
 compiletest-rs/ui/resolve/issue-57523.mir	1
 compiletest-rs/ui/resolve/issue-85671.mir	1
 compiletest-rs/ui/resolve/macro-determinacy-non-module.mir	4
-compiletest-rs/ui/resolve/no-std-1.mir	4
-compiletest-rs/ui/resolve/no-std-2.mir	4
-compiletest-rs/ui/resolve/no-std-3.mir	4
 compiletest-rs/ui/resolve/resolve-issue-2428.mir	4
 compiletest-rs/ui/resolve/resolve-pseudo-shadowing.mir	113
 compiletest-rs/ui/resource-assign-is-not-copy.mir	113
@@ -1798,8 +1793,8 @@ compiletest-rs/ui/resource-destruct.mir	113
 compiletest-rs/ui/rfcs/rfc-1789-as-cell/from-mut.mir	4
 compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-exitcode.mir	113
 compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-impl-termination.mir	4
-compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-result-box-error_ok.mir	4
-compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-result.mir	4
+compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-result-box-error_ok.mir	113
+compiletest-rs/ui/rfcs/rfc-1937-termination-trait/termination-trait-for-result.mir	113
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/box.mir	1
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/constref.mir	4
 compiletest-rs/ui/rfcs/rfc-2005-default-binding-mode/general.mir	134
@@ -1921,7 +1916,7 @@ compiletest-rs/ui/traits/copy-requires-self-wf.mir	1
 compiletest-rs/ui/traits/dyn-trait.mir	4
 compiletest-rs/ui/traits/early-vtbl-resolution.mir	113
 compiletest-rs/ui/traits/elaborate-type-region.mir	4
-compiletest-rs/ui/traits/false-ambiguity-where-clause-builtin-bound.mir	4
+compiletest-rs/ui/traits/false-ambiguity-where-clause-builtin-bound.mir	113
 compiletest-rs/ui/traits/fmt-pointer-trait.mir	113
 compiletest-rs/ui/traits/generic.mir	1
 compiletest-rs/ui/traits/impl-evaluation-order.mir	1
@@ -2043,7 +2038,7 @@ compiletest-rs/ui/union/union-nodrop.mir	4
 compiletest-rs/ui/union/union-nonzero.mir	1
 compiletest-rs/ui/union/union-overwrite.mir	1
 compiletest-rs/ui/union/union-packed.mir	4
-compiletest-rs/ui/union/union-pat-refutability.mir	4
+compiletest-rs/ui/union/union-pat-refutability.mir	113
 compiletest-rs/ui/union/union-trait-impl.mir	4
 compiletest-rs/ui/union/union-transmute.mir	4
 compiletest-rs/ui/unnamed_argument_mode.mir	1
@@ -2071,7 +2066,7 @@ compiletest-rs/ui/where-clauses/where-clauses-method.mir	4
 compiletest-rs/ui/where-clauses/where-clauses.mir	4
 compiletest-rs/ui/where-clauses/where-clauses-unboxed-closures.mir	1
 compiletest-rs/ui/write-fmt-errors.mir	4
-compiletest-rs/ui/wrong-hashset-issue-42918.mir	4
+compiletest-rs/ui/wrong-hashset-issue-42918.mir	113
 compiletest-rs/ui/zero-sized/zero-sized-binary-heap-push.mir	134
 compiletest-rs/ui/zero-sized/zero-sized-btreemap-insert.mir	134
 compiletest-rs/ui/zero-sized/zero-sized-linkedlist-push.mir	134

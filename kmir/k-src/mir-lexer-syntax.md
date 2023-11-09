@@ -9,9 +9,10 @@ This module defined the necessary `token` productions.
                       | LocalToken
                       | BBId
                       | DoubleHexDigitNoIntLetter
-                      | Whitelisted
 
-  syntax Whitelisted ::= "transmute" | "unwind" | "count"
+  syntax IdentifierToken ::= "transmute" [token] 
+                           | "unwind"    [token] 
+                           | "count"     [token]
 
   syntax String ::= IdentifierToken2String(IdentifierToken) [function, hook(STRING.token2string)]
   syntax IdentifierToken ::= StringIdentifierToken(String) [function, hook(STRING.string2token)]

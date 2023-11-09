@@ -59,17 +59,13 @@ These constructs need to be disambiguated at runtime. See the `MIR-AMBIGUITIES` 
   syntax SwitchTargets ::= List{SwitchTarget, ","}
   syntax SwitchTarget ::= Int ":" BB
 
-  syntax CallLike ::= Callable "(" ArgumentList ")" | AssertCall
+  syntax CallLike ::= Callable "(" OperandList ")" | AssertCall
 
   syntax Callable ::= PathExpression
                     | "move" Local
 
   syntax AssertCall ::= "assert" "(" AssertArgument "," AssertKind ")"
-//   syntax AssertCall ::= "assert" "(" AssertArgumentList ")"
-  syntax AssertArgument ::= Operand | "!" Operand // | StringLiteral
-//   syntax AssertArgumentList ::= NeList{AssertArgument, ","}
-
-  syntax ArgumentList ::= List{Operand, ","}
+  syntax AssertArgument ::= Operand | "!" Operand
 
   syntax TerminatorDestination ::= BB | SwitchIntCases | CallDestination | AssertDestination
   syntax SwitchIntCases ::= "[" IntCaseList "," OtherwiseCase "]"
