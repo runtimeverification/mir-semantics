@@ -218,6 +218,76 @@ def create_argument_parser() -> ArgumentParser:
         type=dir_path,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
+    
+    # DUMP
+    dump_subparser = command_parser.add_parser(
+        'dump-proof-state',
+        help='Dump the APR data',
+        parents=[logging_args],
+    )
+
+    dump_subparser.add_argument(
+        '--definition-dir',
+        dest='definition_dir',
+        type=dir_path,
+        help='Path to LLVM definition to use.',
+    )
+    dump_subparser.add_argument(
+        '--haskell-dir',
+        dest='haskell_dir',
+        type=dir_path,
+        help='Path to Haskell definition to use.',
+    )
+    dump_subparser.add_argument(
+        '--spec-file',
+        dest='spec_file',
+        type=file_path,
+        help='Path to specification file',
+    )
+    dump_subparser.add_argument(
+        '--save-directory',
+        dest='save_directory',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
+    )
+
+    # CTERM PROVE
+    cterm_subparser = command_parser.add_parser(
+        'from-cterms-prove',
+        help='As expected',
+        parents=[logging_args],
+    )
+
+    cterm_subparser.add_argument(
+        '--definition-dir',
+        dest='definition_dir',
+        type=dir_path,
+        help='Path to LLVM definition to use.',
+    )
+    cterm_subparser.add_argument(
+        '--haskell-dir',
+        dest='haskell_dir',
+        type=dir_path,
+        help='Path to Haskell definition to use.',
+    )
+    cterm_subparser.add_argument(
+        '--initial-cterm-path',
+        dest='initial_cterm_path',
+        type=file_path,
+        help='CTerm that is the initial proof state.',
+    )
+    cterm_subparser.add_argument(
+        '--target-cterm-path',
+        dest='target_cterm_path',
+        type=file_path,
+        help='CTerm that is the target proof state.',
+    )
+    cterm_subparser.add_argument(
+        '--save-directory',
+        dest='save_directory',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
+    )
 
     return parser
 

@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
+from pyk.cterm import CTerm
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -332,3 +333,181 @@ def _loglevel(args: Namespace) -> int:
 
 if __name__ == '__main__':
     main()
+
+
+def exec_dump_proof_state(
+    definition_dir: str,
+    haskell_dir: str,
+    spec_file: Path,
+    save_directory: Path | None = None,
+    claim_labels: Iterable[str] | None = None,
+    exclude_claim_labels: Iterable[str] = (),
+    spec_module: str | None = None,
+    md_selector: str | None = None,
+    nodes: Iterable[NodeIdLike] = (),
+    node_deltas: Iterable[tuple[NodeIdLike, NodeIdLike]] = (),
+    to_module: bool = False,
+    minimize: bool = True,
+    failure_info: bool = False,
+    sort_collections: bool = False,
+    pending: bool = False,
+    failing: bool = False,
+    **kwargs: Any,
+) -> None:
+    # TODO: include dirs
+
+    if spec_file is None:
+        raise ValueError('A spec file must be provided')
+
+    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
+
+    kprove: KProve
+    if kmir.kprove is None:
+        raise ValueError('Cannot use KProve object when it is None')
+    else:
+        kprove = kmir.kprove
+
+    proof = get_apr_proof_for_spec(
+        kprove,
+        spec_file,
+        save_directory=save_directory,
+        spec_module_name=spec_module,
+        # include_dirs=include_dirs,
+        md_selector=md_selector,
+        claim_labels=claim_labels,
+        exclude_claim_labels=exclude_claim_labels,
+    )
+
+    print(proof.kcfg.node(proof.target).cterm)
+
+
+def exec_from_cterms_prove(
+    definition_dir: str,
+    haskell_dir: str,
+    initial_cterm_path: str,
+    target_cterm_path: str,
+    # spec_file: str,
+    # bug_report: bool = False,
+    save_directory: Path | None = None,
+    # reinit: bool = False,
+    # depth: int | None = None,
+    # smt_timeout: int | None = None,
+    # smt_retry_limit: int | None = None,
+    # trace_rewrites: bool = False,
+    **kwargs: Any,
+) -> None:
+    # if spec_file is None:
+    #     raise ValueError('A spec file must be provided')
+
+    # # TODO: workers
+    # # TODO: md_selector doesn't work
+    # spec_file_path = Path(spec_file)
+
+    # br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
+    initial_cterm: CTerm
+    target_cterm:  CTerm
+    with open(str(initial_cterm_path), 'r') as icp:
+        initial_cterm = icp.read()
+        initial_cterm = CTerm(initial_cterm)
+    with open(str(target_cterm_path), 'r') as icp:
+        target_cterm = icp.read()
+        target_cterm = CTerm(target_cterm)
+
+    print(type(initial_cterm), flush=True)
+    print(type(target_cterm), flush=True)
+    
+    
+
+    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
+
+    kprove: KProve
+    if kmir.kprove is None:
+        raise ValueError('Cannot use KProve object when it is None')
+    else:
+        kprove = kmir.kprove
+    
+    print(kprove.prove_cterm('ABCD', initial_cterm, target_cterm))
+
+    # # _LOGGER.info('Extracting claims from file')
+    # # claims = kprove.get_claims(Path(spec_file))
+    # # if not claims:
+    # #     raise ValueError(f'No claims found in file {spec_file}')
+
+    # def is_functional(claim: KClaim) -> bool:
+    #     claim_lhs = claim.body
+    #     if type(claim_lhs) is KRewrite:
+    #         claim_lhs = claim_lhs.lhs
+    #     return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
+
+    # def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
+    #     with legacy_explore(
+    #         kprove,
+    #         id=claim.label,
+    #         # bug_report=br,
+    #         smt_timeout=smt_timeout,
+    #         smt_retry_limit=smt_retry_limit,
+    #         trace_rewrites=trace_rewrites,
+    #     ) as kcfg_explore:
+    #         # TODO: simplfy_init
+    #         proof_problem: Proof
+    #         if is_functional(claim):
+    #             if (
+    #                 save_directory is not None
+    #                 and not reinit
+    #                 and EqualityProof.proof_exists(claim.label, save_directory)
+    #             ):
+    #                 proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
+    #             else:
+    #                 proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
+    #         else:
+    #             if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
+    #                 proof_problem = APRProof.read_proof_data(save_directory, claim.label)
+
+    #             else:
+    #                 _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
+    #                 kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+
+    #                 new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+    #                 new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+
+    #                 _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
+    #                 new_init = kcfg_explore.cterm_assume_defined(new_init)
+
+    #                 kcfg.replace_node(init_node_id, new_init)
+    #                 kcfg.replace_node(target_node_id, new_target)
+
+    #                 # Unsure if terminal should be empty
+    #                 proof_problem = APRProof(
+    #                     claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
+    #                 )
+
+    #         passed = kmir_prove(
+    #             kprove,
+    #             proof_problem,
+    #             kcfg_explore,
+    #             max_depth=depth,
+    #         )
+    #         failure_log = None
+    #         if not passed:
+    #             failure_log = print_failure_info(proof_problem, kcfg_explore)
+
+    #         return passed, failure_log
+
+    # results: list[tuple[bool, list[str] | None]] = []
+    # for claim in claims:
+    #     results.append(_init_and_run_proof(claim))
+
+    # failed = 0
+    # for claim, r in zip(claims, results, strict=True):
+    #     passed, failure_log = r
+    #     if passed:
+    #         print(f'PROOF PASSED: {claim.label}')
+    #     else:
+    #         failed += 1
+    #         print(f'PROOF FAILED: {claim.label}')
+    #         if failure_log is not None:
+    #             for line in failure_log:
+    #                 print(line)
+
+    # if failed:
+    #     sys.exit(failed)
