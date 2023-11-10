@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from pyk.cterm import CTerm
+from pyk.kast.inner import Subst
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -170,6 +171,15 @@ def exec_prove(
                     kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
 
                     new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+
+                    # modify the init node by substituting some variables for simpler concrete turms
+                    subst = Subst(
+                        {
+                            'FUNCTIONS_CELL_fe1cac3f': KApply('.FunctionCellMap'),
+                        }
+                    )
+                    new_init = CTerm.from_kast(subst.apply(new_init.kast))
+
                     new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
                     _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
@@ -378,7 +388,11 @@ def exec_dump_proof_state(
         exclude_claim_labels=exclude_claim_labels,
     )
 
-    print(proof.kcfg.node(proof.target).cterm)
+    init_node = proof.kcfg.node(proof.init).cterm
+
+    subts = Subst({'FUNCTIONS_CELL_fe1cac3f': KApply('.FunctionCellMap')})
+
+    print(kprove.pretty_print(subts.apply(init_node.kast)))
 
 
 def exec_from_cterms_prove(
@@ -405,7 +419,7 @@ def exec_from_cterms_prove(
 
     # br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
     initial_cterm: CTerm
-    target_cterm:  CTerm
+    target_cterm: CTerm
     with open(str(initial_cterm_path), 'r') as icp:
         initial_cterm = icp.read()
         initial_cterm = CTerm(initial_cterm)
@@ -415,8 +429,6 @@ def exec_from_cterms_prove(
 
     print(type(initial_cterm), flush=True)
     print(type(target_cterm), flush=True)
-    
-    
 
     kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
 
@@ -425,7 +437,7 @@ def exec_from_cterms_prove(
         raise ValueError('Cannot use KProve object when it is None')
     else:
         kprove = kmir.kprove
-    
+
     print(kprove.prove_cterm('ABCD', initial_cterm, target_cterm))
 
     # # _LOGGER.info('Extracting claims from file')
