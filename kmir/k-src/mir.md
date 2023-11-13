@@ -56,13 +56,22 @@ The `#halt` construct is used to signify the end of execution. Any remaining ite
 ```k
   syntax KItem ::= "#halt"
   //----------------------
+<<<<<<< HEAD
   rule [halt]: <k> #halt ~> (_:MirSimulation => .K) </k>
   rule         <k> #halt ~> (#initialized()  => .K) </k>
+=======
+  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) ... </k>
+  rule         <k> #halt ~> (#initialized()  => .K) ... </k>
+>>>>>>> 4c626f2 (Added `#halt` rule to signify end of execution.)
 endmodule
 ```
 
 
+<<<<<<< HEAD
 `MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since `amb` productions are not supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
+=======
+`MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since the `amb` productions seem to not be supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
+>>>>>>> 4c626f2 (Added `#halt` rule to signify end of execution.)
 
 ```k
 module MIR-SYMBOLIC
