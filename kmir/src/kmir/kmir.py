@@ -51,6 +51,19 @@ class KMIRSemantics(KCFGSemantics):
         # TODO: break every step and add to terminal rules. Semantics does not support this currently
         return terminal_rules
 
+    @staticmethod
+    def cut_point_rules() -> list[str]:
+        return []
+
+    def extract_branches(self, cterm: CTerm) -> list[KInner]:
+        return []
+
+    def same_loop(self, cterm1: CTerm, cterm2: CTerm) -> bool:
+        return False
+
+    def abstract_node(self, cterm: CTerm) -> CTerm:
+        return cterm
+
 
 @final
 @dataclass(frozen=True)
