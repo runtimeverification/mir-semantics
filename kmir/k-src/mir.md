@@ -41,7 +41,7 @@ The `#return` rule is triggered by the `return` terminator. We need to give it d
 If we are, then we stop execution and enter the finalization phase. Otherwise, if we're not currently in `main`, we return control to the caller function.
 
 ```k
-  rule <k> #return(FUNCTION_KEY, Unit) => .K ... </k>
+  rule <k> #return(FUNCTION_KEY, Unit) => #halt ... </k>
        <callStack> ListItem(FUNCTION_KEY) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
@@ -50,8 +50,18 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
     requires FUNCTION_KEY =/=K Fn(main)
+```
+
+The `#halt` construct is used to signify the end of execution. Any remaining items on the `<k>` cell will be removed.
+
+```k
+  syntax KItem ::= "#halt"
+  //----------------------
+  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) ... </k>
+  rule         <k> #halt ~> (#initialized()  => .K) ... </k>
 endmodule
 ```
+
 
 `MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since the `amb` productions seem to not be supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
 
