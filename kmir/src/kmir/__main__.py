@@ -143,7 +143,7 @@ def exec_prove(
     def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
         with legacy_explore(
             kprove,
-            kcfg_semantics=KMIRSemantics,  # type: ignore
+            kcfg_semantics=KMIRSemantics(),
             id=claim.label,
             bug_report=br,
             smt_timeout=smt_timeout,
