@@ -12,7 +12,7 @@ fn main() -> () {
         _4 = Mul(_2, _3);
         _5 = Div(_4, const 2_usize);
         _1 = Eq(_5, const 2_usize);
-        assert (_1) -> bb1;
+        assert (_1, "generator resumed after completion") -> bb1;
     }
 
     bb1: {

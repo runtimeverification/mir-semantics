@@ -1,6 +1,5 @@
 ```k
 require "mir-syntax.md"
-require "mir-types.md"
 ```
 
 MIR interpreter configuration
@@ -53,6 +52,7 @@ Runtime representation of MIR's *function-like* entities. A *function-like* is o
 ```k
   syntax FunctionLikeKey ::= Fn(FunctionPath)
                            | Promoted(FunctionPath, Int)
+                           | Rec(FunctionPath, Int)
 ```
 
 It looks like we can consider all these *normal functions* in the execution semantics.
@@ -152,13 +152,13 @@ module MIR-BASIC-BLOCKS
     <basicBlocks>
       <basicBlock multiplicity="*" type="Map">
         <bbName> 0:Int </bbName>
-        <bbBody> BBBottom:BasicBlockBody </bbBody>
+        <bbBody> bbDummy: {BBBottom;}:BasicBlockBody </bbBody>
       </basicBlock>
     </basicBlocks>
-
-  syntax BasicBlockBody ::= "BBBottom" [macro]
+  
   // -----------------------------------------
-  rule BBBottom => assert(String2SringLiteral("dummy"))
+  syntax BasicBlockBody ::= BBBottom
+  syntax BBBottom ::= "bbDummy" ":" "{" "BBBottom" ";" "}"
 ```
 
 ```k

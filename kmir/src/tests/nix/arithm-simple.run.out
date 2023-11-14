@@ -1,0 +1,147 @@
+<generatedTop>
+  <k>
+    .
+  </k>
+  <returncode>
+    0
+  </returncode>
+  <mir>
+    <simulator>
+      <callStack>
+        .List
+      </callStack>
+      <currentBasicBlock>
+        1
+      </currentBasicBlock>
+      <phase>
+        Finalization
+      </phase>
+    </simulator>
+    <data>
+      <functions>
+        <function>
+          <fnKey>
+            Fn ( main :: .FunctionPath )
+          </fnKey>
+          <localDecls>
+            <localDecl>
+              <index>
+                0
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                ( )
+              </ty>
+              <value>
+                Unit
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                1
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                bool 
+              </ty>
+              <value>
+                true
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                2
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                2
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                3
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                2
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                4
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                4
+              </value>
+            </localDecl> <localDecl>
+              <index>
+                5
+              </index>
+              <mutability>
+                Not
+              </mutability>
+              <internal>
+                false
+              </internal>
+              <ty>
+                usize 
+              </ty>
+              <value>
+                2
+              </value>
+            </localDecl>
+          </localDecls>
+          <basicBlocks>
+            <basicBlock>
+              <bbName>
+                0
+              </bbName>
+              <bbBody>
+                { _2 = Add ( const 1_usize , const 1_usize ) ;  _3 = Sub ( const 5_usize , const 3_usize ) ;  _4 = Mul ( _2 , _3 ) ;  _5 = Div ( _4 , const 2_usize ) ;  _1 = Eq ( _5 , const 2_usize ) ;  .Statements assert ( _1 , "generator resumed after completion" ) -> bb1  ; }
+              </bbBody>
+            </basicBlock> <basicBlock>
+              <bbName>
+                1
+              </bbName>
+              <bbBody>
+                { _0 = const ( ) ;  .Statements return ; }
+              </bbBody>
+            </basicBlock>
+          </basicBlocks>
+        </function>
+      </functions>
+    </data>
+  </mir>
+</generatedTop>
+

@@ -29,6 +29,7 @@ COMPILETEST_RUN_EXCLUDE = {
     'iterators/iter-count-overflow-ndebug.mir',
     'iterators/iter-position-overflow-debug.mir',
     'iterators/iter-position-overflow-ndebug.mir',
+    'compiletest-rs/ui/consts/promote_evaluation_unused_result.mir',
     # requires special run flags
     'test-attrs/test-filter-multiple.mir',
     # requires environment variables when running
@@ -39,7 +40,7 @@ COMPILETEST_RUN_EXCLUDE = {
 }
 
 HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
-HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines()}
+HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
 
 
 @pytest.mark.parametrize(

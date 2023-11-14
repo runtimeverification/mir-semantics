@@ -1,6 +1,5 @@
 ```k
 require "mir-configuration.md"
-require "mir-rvalue.md"
 require "panics.md"
 ```
 
@@ -34,7 +33,7 @@ The presence of the empty program, `.Mir`, on the `<k>` cell indicates that the 
 ```k
   rule <k> .Mir => #initialized() ... </k>
        <phase> Initialization </phase>
-  rule <k> #initialized() => #executeFunctionLike(Fn(String2IdentifierToken("main"):: .FunctionPath), .ArgumentList) ... </k>
+  rule <k> #initialized() => #executeFunctionLike(Fn(main :: .FunctionPath), .OperandList) ... </k>
        <phase> Initialization => Execution </phase>
 ```
 
@@ -46,11 +45,11 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
        <callStack> ListItem(FUNCTION_KEY) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
-    requires FUNCTION_KEY ==K Fn(String2IdentifierToken("main"))
+    requires FUNCTION_KEY ==K Fn(main)
 
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
-    requires FUNCTION_KEY =/=K Fn(String2IdentifierToken("main"))
+    requires FUNCTION_KEY =/=K Fn(main)
 endmodule
 ```
 
@@ -59,6 +58,9 @@ endmodule
 ```k
 module MIR-SYMBOLIC
   imports MIR-CONFIGURATION
+  imports MIR-INITIALIZATION
+  imports MIR-EXECUTION
+  imports MIR-FINALIZATION
 
 endmodule
 ```
@@ -74,7 +76,7 @@ with the Haskell backend at the moment.
 module MIR-INITIALIZATION
   imports MIR-CONFIGURATION
   imports PANICS
-  imports MIR-AMBIGUITIES
+  //imports MIR-AMBIGUITIES
 ```
 
 ### Function definition processing
@@ -169,7 +171,7 @@ For now, we convert them into immutable variables, but that may need to be chang
 #### Scopes processing
 
 The scopes are a part of a function body that tracks the Rust-level user-defined local variables. i.e. named variables.
-It is likely that we do not care about variables scoping withing a function, but we still need to process the scope declarations, because
+It is likely that we do not care about variables scoping within a function, but we still need to process the scope declarations, because
 **scopes contain local declarations for user variables**. We need to traverse the scopes, collect these variables, and append them to the
 bindings list of the function.
 
@@ -273,7 +275,7 @@ This rule panics if it encounters a duplicate block.
          <basicBlocks>
            (.Bag => <basicBlock>
                       <bbName> BBName2Int(NAME) </bbName>
-                      <bbBody> disambiguateBasicBlockBody(BODY) </bbBody>
+                      <bbBody> BODY</bbBody>
                     </basicBlock>
            )
            ...
@@ -308,29 +310,66 @@ Executing a function-like means:
 Note that the `main` function is special: it does not have a caller.
 
 ```k
-  syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey, ArgumentList)
+  syntax IdentifierToken ::= "main" [token]
+
+  syntax MirSimulation ::= #executeFunctionLike(FunctionLikeKey, OperandList)
   //--------------------------------------------------------------------------
   rule <k> #executeFunctionLike(FN_KEY, _ARGS)
         => #executeBasicBlock(FN_KEY, 0)
         ...
        </k>
        <callStack> .List => ListItem(FN_KEY) </callStack>
-    requires FN_KEY ==K Fn(String2IdentifierToken("main"):: .FunctionPath)
+    requires FN_KEY ==K Fn(main :: .FunctionPath)
   rule <k> #executeFunctionLike(CALLEE_FN_KEY, ARGS)
         => #instantiateArguments(CALLER_FN_KEY, ARGS, 1)
         ~> #executeBasicBlock(CALLEE_FN_KEY, 0)
         ...
        </k>
        <callStack> ListItem(CALLER_FN_KEY) STACK => ListItem(CALLEE_FN_KEY) ListItem(CALLER_FN_KEY) STACK </callStack>
+  rule <k> #executeFunctionLike(CALLEE_FN_KEY, ARGS)
+        => #addRecursiveFrame(CALLEE_FN_KEY, ARGS)
+        ...
+       </k>
+       <callStack> ListItem(CALLER_FN_KEY) _STACK </callStack>
+       requires CALLER_FN_KEY ==K CALLEE_FN_KEY
+  rule <k> #executeFunctionLike(Fn(PATH), ARGS)
+        => #addRecursiveFrame(Fn(PATH), ARGS)
+        ...
+       </k>
+       <callStack> ListItem(Rec(PATH, _)) _STACK </callStack> [priority(49)]
+
+  // TODO: Either save unimplemented stack frame for correct initial values, or clear values
+  syntax MirSimulation ::= #addRecursiveFrame(FunctionLikeKey, OperandList)
+  //-------------------------------------------------------------------------
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
+        => #instantiateArguments(Rec(PATH, 0), ARGS, 1)
+        ~> #executeBasicBlock(Rec(PATH, 0), 0)
+        ...
+       </k>
+       <callStack> ListItem(Fn(PATH)) STACK => ListItem(Rec(PATH, 0)) ListItem(Fn(PATH)) STACK </callStack>
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, 0) </fnKey> REST </function>)
+       ...</functions>
+  rule <k> #addRecursiveFrame(Fn(PATH), ARGS)
+        => #instantiateArguments(Rec(PATH, DEPTH +Int 1), ARGS, 1)
+        ~> #executeBasicBlock(Rec(PATH, DEPTH +Int 1), 0)
+        ...
+       </k>
+       <callStack> ListItem(Rec(PATH, DEPTH)) STACK => ListItem(Rec(PATH, DEPTH +Int 1)) ListItem(Rec(PATH, DEPTH)) STACK </callStack>
+       <functions>...
+         <function> <fnKey> Fn(PATH) </fnKey> REST </function>
+         (.Bag => <function> <fnKey> Rec(PATH, DEPTH +Int 1) </fnKey> REST </function>)
+       ...</functions>
 ```
 
 Assign arguments (actual parameters) to formal parameters of a function-like:
 
 ```k
-  syntax MirSimulation ::= #instantiateArguments(FunctionLikeKey, ArgumentList, Int)
+  syntax MirSimulation ::= #instantiateArguments(FunctionLikeKey, OperandList, Int)
   //--------------------------------------------------------------------------------
-  rule <k> #instantiateArguments(_FN_KEY, .ArgumentList, _) => .K ... </k>
-  rule <k> #instantiateArguments(FN_KEY, (ARG, REST):ArgumentList, ARGUMENT_NUMBER:Int)
+  rule <k> #instantiateArguments(_FN_KEY, .OperandList, _) => .K ... </k>
+  rule <k> #instantiateArguments(FN_KEY, (ARG, REST):OperandList, ARGUMENT_NUMBER:Int)
         => #writeLocal(CALLEE_FN_KEY, Int2Local(ARGUMENT_NUMBER), evalOperand(CALLER_FN_KEY, ARG))
         ~> #instantiateArguments(FN_KEY, REST, ARGUMENT_NUMBER +Int 1)
         ...
@@ -428,8 +467,8 @@ or panics if the function-like or the block is missing:
          </localDecl>
          ...
        </function>
-  rule <k> #executeTerminator(assert(ARGS) -> ((NEXT:BBName _):BB))
-        => #assert(FN_KEY, ARGS) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
+  rule <k> #executeTerminator(assert(ARG:AssertArgument, KIND:AssertKind) -> ((NEXT:BBName _):BB))
+        => #assert(FN_KEY, ARG, KIND) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT))
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
@@ -445,23 +484,45 @@ or panics if the function-like or the block is missing:
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
+  rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
+        => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
+        ~> #transferLocal(Rec(toFunctionPath(OTHER_FN_NAME), 0), Int2Local(0), Fn(FNAME), DEST_LOCAL)
+        ~> #executeBasicBlock(Fn(FNAME), BBName2Int(NEXT))
+        ...
+       </k>
+       <callStack> ListItem(Fn(FNAME)) ... </callStack>
+    requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
+  rule <k> #executeTerminator(DEST_LOCAL:Local = OTHER_FN_NAME:PathInExpression ( ARGS ) -> ((NEXT:BBName _):BB))
+        => #executeFunctionLike(Fn(toFunctionPath(OTHER_FN_NAME)), ARGS)
+        ~> #transferLocal(Rec(toFunctionPath(OTHER_FN_NAME), DEPTH +Int 1), Int2Local(0), Rec(FNAME, DEPTH), DEST_LOCAL)
+        ~> #executeBasicBlock(Rec(FNAME, DEPTH), BBName2Int(NEXT))
+        ...
+       </k>
+       <callStack> ListItem(Rec(FNAME, DEPTH)) ... </callStack>
+    requires FNAME ==K toFunctionPath(OTHER_FN_NAME) [priority(49)]
   rule <k> #executeTerminator(switchInt (ARG:Operand) -> [ TARGETS:SwitchTargets , otherwise : OTHERWISE:BB ])
         => #switchInt(FN_KEY, castMIRValueToInt(evalOperand(FN_KEY, ARG)), TARGETS, OTHERWISE)
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
     requires isInt(castMIRValueToInt(evalOperand(FN_KEY, ARG)))
-  rule <k> #executeTerminator(_:Local = PANIC_CALL (ARG, .ArgumentList))
+  rule <k> #executeTerminator(_:Local = PANIC_CALL (ARG, .OperandList))
         => #panic(FN_KEY, PanicCall, ARG)
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack>
-   requires PANIC_CALL ==K String2IdentifierToken("core") :: String2IdentifierToken("panicking") :: String2IdentifierToken("panic") :: .ExpressionPathList
+    requires PANIC_CALL ==K String2IdentifierToken("core") :: String2IdentifierToken("panicking") :: String2IdentifierToken("panic") :: .ExpressionPathList
   rule <k> #executeTerminator(TERMIANTOR:Terminator)
         => #internalPanic(FN_KEY, NotImplemented, TERMIANTOR)
         ...
        </k>
        <callStack> ListItem(FN_KEY) ... </callStack> [owise]
+
+  // Option Unwrap Call
+  rule <k> #executeTerminator(DEST_LOCAL:Local = Option :: < _TYPES > :: unwrap :: .ExpressionPathList ( ARG , .OperandList ) -> ((NEXT:BBName _):BB)) 
+        => #executeStatement(DEST_LOCAL = #unwrap(ARG)) ~> #executeBasicBlock(FN_KEY, BBName2Int(NEXT)) ...
+       </k>
+       <callStack> ListItem(FN_KEY) ... </callStack> [priority(48)]
 ```
 
 The following rule executes exists to copy a value of one local to another local, the locals may belong to different functions.
@@ -555,7 +616,7 @@ The `#assert` production will be eliminated from the `<k>` cell if the assertion
 a `#panic` (or `#internalPanic`) production otherwise.
 
 ```k
-  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgumentList)
+  syntax MirSimulation ::= #assert(FunctionLikeKey, AssertArgument, AssertKind)
   //-------------------------------------------------------------------
 ```
 
@@ -564,20 +625,20 @@ Positive assertion succeeds if the argument evaluates to true, but fails if eith
 * argument is not boolean --- internal type error --- should be impossible with real MIR.
 
 ```k
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, _KIND:AssertKind)
         => .K
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K true
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, _KIND:AssertKind)
         => #panic(FN_KEY, AssertionViolation, ASSERTION)
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K false
-  rule <k> #assert(FN_KEY, (ASSERTION:Operand) , .AssertArgumentList)
-        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION))
+  rule <k> #assert(FN_KEY, ASSERTION:Operand, KIND:AssertKind)
+        => #internalPanic(FN_KEY, TypeError, assert(ASSERTION, KIND))
         ...
        </k>
    requires notBool isBool(evalOperand(FN_KEY, ASSERTION))
@@ -587,28 +648,28 @@ Negative assertions are similar to positive ones but need special treatment for 
 TODO: maybe we should unify positive and negative assertions.
 
 ```k
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand)  , .AssertArgumentList)
+  rule <k> #assert(FN_KEY, ! ASSERTION:Operand, _KIND:AssertKind)
         => .K
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K false
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
-        => #panic(FN_KEY, AssertionViolation, (! ASSERTION))
+  rule <k> #assert(FN_KEY, ! ASSERTION:Operand, _KIND:AssertKind)
+        => #panic(FN_KEY, AssertionViolation, (! ASSERTION)) //TODO!
         ...
        </k>
    requires isBool(evalOperand(FN_KEY, ASSERTION))
     andBool evalOperand(FN_KEY, ASSERTION) ==K true
-  rule <k> #assert(FN_KEY, (! ASSERTION:Operand) , .AssertArgumentList)
-        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION))
+  rule <k> #assert(FN_KEY, (! ASSERTION:Operand), KIND:AssertKind)
+        => #internalPanic(FN_KEY, TypeError, assert(! ASSERTION, KIND))
         ...
        </k>
    requires notBool isBool(evalOperand(FN_KEY, ASSERTION))
 ```
 
 ```k
-  rule <k> #assert(FN_KEY, ARGS)
-        => #internalPanic(FN_KEY, NotImplemented, assert(ARGS))
+  rule <k> #assert(FN_KEY, ARG, KIND)
+        => #internalPanic(FN_KEY, NotImplemented, assert(ARG, KIND))
         ...
        </k> [owise]
 ```

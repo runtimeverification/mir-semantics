@@ -18,6 +18,32 @@ module MIR-TYPE-SYNTAX
                 | TypeNoBounds
                 | TraitObjectTypeReduced
 
+  syntax RigidTy ::= "bool"
+                   | "char"
+                   | IntTy
+                   | UintTy
+                   | FloatTy
+                   | "str"
+                   | Array
+                   | Slice
+
+  syntax IntTy ::= "isize"
+                 | "i8"
+                 | "i16" 
+                 | "i32"
+                 | "i64"
+                 | "i128"
+
+  syntax UintTy ::= "usize"
+                  | "u8"
+                  | "u16"
+                  | "u32"
+                  | "u64"
+                  | "u128"
+
+  syntax FloatTy ::= "f32"
+                   | "f64"
+
   syntax TypeList ::= List{Type, ","}
 
   syntax TypeNoBounds ::= ImplTraitTypeOneBound
@@ -45,8 +71,6 @@ module MIR-TYPE-SYNTAX
                                     // One option would be to replace all "&&"
                                     // tokens with "&" "&".
                                     | DoubleReferenceType
-                                    | ArrayType
-                                    | SliceType
                                     | BareFunctionType
 
   // https://doc.rust-lang.org/reference/types/impl-trait.html
@@ -67,7 +91,7 @@ module MIR-TYPE-SYNTAX
                             | PathIdentSegment "::" PathIdentSegmentSuffix
                             | PathOpaque
 
-  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix
+  syntax TypePathEndSegment ::= PathIdentSegment PathIdentSegmentEndSuffix [avoid] // [avoid] to stop parsing ambiguity  syntax Type ::= Type ":Type" [format(%1%2), org.kframework.kore.Sort(Type)] #SemanticCastToType(#token("ABCD","#KVariable"))
                               | PathIdentSegment "::" PathIdentSegmentEndSuffix
                               | PathOpaque
 
@@ -85,6 +109,7 @@ module MIR-TYPE-SYNTAX
   syntax PathIdentSegmentEndSuffix  ::= PathIdentSegmentSuffix
                                       | TypePathFn
 
+  syntax PathIdentSegment ::= RigidTy [prefer]
   syntax PathIdentSegment ::= Identifier | "$crate"
   syntax GenericArgs ::= "<" GenericArgsList ">"
   syntax GenericArgsList ::= List{GenericArg, ","}
@@ -127,10 +152,10 @@ module MIR-TYPE-SYNTAX
   syntax LifetimeBounds ::= List{Lifetime, "+"}
 
   // https://doc.rust-lang.org/reference/types/array.html
-  syntax ArrayType ::= "[" Type ";" RustExpression "]"
+  syntax Array ::= "[" Type ";" RustExpression "]"
 
   // https://doc.rust-lang.org/reference/types/slice.html
-  syntax SliceType ::= "[" Type "]"
+  syntax Slice ::= "[" Type "]"
   // https://doc.rust-lang.org/reference/paths.html#qualified-paths
   syntax QualifiedPathInType ::= QualifiedPathType
   syntax QualifiedPathInType ::= QualifiedPathInType "::" TypePathSegment
@@ -192,6 +217,7 @@ module MIR-TYPE-SYNTAX
                         // ConstParam is likely not used in MIR.
   syntax LifetimeParam  ::= Lifetime
                           | Lifetime ":" LifetimeBounds
+  syntax TypeParam  ::= RigidTy [prefer]
   syntax TypeParam  ::= Identifier MaybeColonTypeParamBounds MaybeEqualsType
   syntax MaybeColonTypeParamBounds ::= "" | ":" | ":" TypeParamBounds
   syntax MaybeEqualsType ::= "" | "=" Type
@@ -249,7 +275,8 @@ module MIR-TYPE-SYNTAX
                                   | RustExpression "/" RustExpression
                                   | RustExpression "%" RustExpression
                                   > left:
-                                    RustExpression "+" RustExpression
+                                    // RustExpression " + " RustExpression // PASSES
+                                    RustExpression "+" RustExpression // FAILS
                                   | RustExpression "-" RustExpression
                                   > left:
                                     RustExpression "<" "<" RustExpression
@@ -334,9 +361,11 @@ module MIR-TYPE-SYNTAX
                         | "[" MaybeStatic "generator" "@" FilePosition "]"
   syntax MaybeStatic ::= "" | "static"
 
+  // Variable names can also clash with type names, see compiletest-rs/ui/moves/move-out-of-field.mir
+  // TODO: Handle this clash. See issue #228
   syntax UserVariableName ::= Identifier
   syntax AdtFieldName ::= Identifier
-  syntax BBName ::= BBToken
+  syntax BBName ::= BBId
 
   // https://doc.rust-lang.org/reference/expressions/path-expr.html
   syntax PathExpression ::= PathInExpression
@@ -394,6 +423,7 @@ module MIR-VALUE
   imports BYTES
   imports MIR-TYPE-SYNTAX
   imports MIR-LEXER-SYNTAX
+  imports LIST
 
   syntax KItem ::= RValueResult
 ```
@@ -419,12 +449,17 @@ TODO: add more domain sorts
                     | "Unit"
                     | Bool
                     | "Never"
+                    | TupleArgs
+                    | OptionVal
                     | "UNIMPLEMENTED"
 
+  syntax TupleArgs ::= "(" MIRValueNeList ")"
+  syntax OptionVal ::= "OptSome" "(" MIRValue ")"
+                     | "OptNone"
+  
   syntax RValueResult ::= MIRValue
-                        | MIRValueNeList
 
-  syntax MIRValueNeList ::= MIRValue | MIRValue MIRValueNeList
+  syntax MIRValueNeList ::= List
 ```
 
 The `InteprError` sort represent the errors that may occur while interpreting an `RValue` into `RValueResult` (inspired by [InterpError](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_middle/src/mir/interpret/error.rs#L480)):
@@ -440,8 +475,19 @@ A best-effort default value inference function, for locals initialization.
   syntax MIRValue ::= defaultMIRValue(Type) [function]
   //--------------------------------------------------
   rule defaultMIRValue(( ):TupleType) => Unit
-  rule defaultMIRValue(USIZE_TYPE)    => 0     requires IdentifierToken2String(USIZE_TYPE) ==String "usize"
-  rule defaultMIRValue(BOOL_TYPE)     => false requires IdentifierToken2String(BOOL_TYPE)  ==String "bool"
+  rule defaultMIRValue(usize)         => 0
+  rule defaultMIRValue(u8)            => 0
+  rule defaultMIRValue(u16)           => 0
+  rule defaultMIRValue(u32)           => 0
+  rule defaultMIRValue(u64)           => 0
+  rule defaultMIRValue(u128)          => 0
+  rule defaultMIRValue(isize)         => 0
+  rule defaultMIRValue(i8)            => 0
+  rule defaultMIRValue(i16)           => 0
+  rule defaultMIRValue(i32)           => 0
+  rule defaultMIRValue(i64)           => 0
+  rule defaultMIRValue(i128)          => 0
+  rule defaultMIRValue(bool)          => false
   rule defaultMIRValue(!)             => Never
   rule defaultMIRValue(_:Type)        => UNIMPLEMENTED [owise]
 ```
@@ -491,7 +537,7 @@ We use several hooks which convert between token and string representations:
   syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
   syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
 
-  syntax String ::= BBToken2String(BBToken) [function, total, hook(STRING.token2string)]
+  syntax String ::= BBId2String(BBId) [function, total, hook(STRING.token2string)]
 
   syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
 
@@ -507,7 +553,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ```k
   syntax Int ::= Local2Int(Local) [function, total]
   //-----------------------------------------------
-  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR)))
+  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR))) [concrete]
 
   syntax Local ::= Int2Local(Int) [function, total]
   //-----------------------------------------------
@@ -515,7 +561,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
 
   syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------
-  rule BBName2Int(NAME) => #let STR = BBToken2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
+  rule BBName2Int(NAME) => #let STR = BBId2String(NAME) #in String2Int(substrString(STR, 2, lengthString(STR)))
 ```
 
 ### Literals
