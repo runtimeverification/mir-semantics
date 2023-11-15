@@ -1,4 +1,14 @@
+handwritten-rust/structs/struct.mir	4
+handwritten-rust/arrays/array.mir	4
+handwritten-rust/enums/enum.mir	113
 handwritten-rust/integers/div.mir	113
 handwritten-rust/integers/shl_min.mir	2
 handwritten-rust/integers/modulo.mir	113
+handwritten-rust/strings-chars/std-to-string.mir	4
+handwritten-rust/strings-chars/char-trivial.mir	113
+handwritten-rust/strings-chars/std-string-empty.mir	113
+handwritten-rust/strings-chars/str-empty.mir	4
+handwritten-rust/strings-chars/str-trivial.mir	4
+handwritten-rust/slices/slice.mir	4
 handwritten-rust/recursion/fibonacci.mir	134
+handwritten-rust/tuples/tuple-eq.mir	4
