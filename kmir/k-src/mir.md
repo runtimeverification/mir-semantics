@@ -57,8 +57,8 @@ The `#halt` construct is used to signify the end of execution. Any remaining ite
 ```k
   syntax KItem ::= "#halt"
   //----------------------
-  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) ... </k>
-  rule         <k> #halt ~> (#initialized()  => .K) ... </k>
+  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) </k>
+  rule         <k> #halt ~> (#initialized()  => .K) </k>
 endmodule
 ```
 
