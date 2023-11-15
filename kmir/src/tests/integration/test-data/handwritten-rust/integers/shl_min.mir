@@ -1,0 +1,84 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: i32;
+    let mut _4: !;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: i16;
+    let mut _8: !;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: i32;
+    let mut _12: !;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: i64;
+    let mut _16: !;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: i128;
+    let mut _20: !;
+
+    bb0: {
+        _3 = Shl(const -128_i32, const 1_i32);
+        _2 = Eq(move _3, const 0_i32);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _4 = core::panicking::panic(const "assertion failed: -128_i32 << 1 == 0");
+    }
+
+    bb2: {
+        _7 = Shl(const i16::MIN, const 1_i32);
+        _6 = Eq(move _7, const 0_i16);
+        _5 = Not(move _6);
+        switchInt(move _5) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _8 = core::panicking::panic(const "assertion failed: -32768_i16 << 1 == 0");
+    }
+
+    bb4: {
+        _11 = Shl(const i32::MIN, const 1_i32);
+        _10 = Eq(move _11, const 0_i32);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _12 = core::panicking::panic(const "assertion failed: -2147483648_i32 << 1 == 0");
+    }
+
+    bb6: {
+        _15 = Shl(const i64::MIN, const 1_i32);
+        _14 = Eq(move _15, const 0_i64);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _16 = core::panicking::panic(const "assertion failed: -9223372036854775808_i64 << 1 == 0");
+    }
+
+    bb8: {
+        _19 = Shl(const -17014118346046923173168730371588410572_i128, const 1_i32);
+        _18 = Eq(move _19, const 0_i128);
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _20 = core::panicking::panic(const "assertion failed: -17014118346046923173168730371588410572_i128 << 1 == 0");
+    }
+
+    bb10: {
+        return;
+    }
+}

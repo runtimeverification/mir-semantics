@@ -1,1 +1,4 @@
+handwritten-rust/integers/div.mir	113
+handwritten-rust/integers/shl_min.mir	2
+handwritten-rust/integers/modulo.mir	113
 handwritten-rust/recursion/fibonacci.mir	134
