@@ -41,11 +41,10 @@ The `#return` rule is triggered by the `return` terminator. We need to give it d
 If we are, then we stop execution and enter the finalization phase. Otherwise, if we're not currently in `main`, we return control to the caller function.
 
 ```k
-  rule <k> #return(FUNCTION_KEY, Unit) => #halt ... </k>
-       <callStack> ListItem(FUNCTION_KEY) => .List </callStack>
+  rule <k> #return(Fn(main), Unit) => #halt ... </k>
+       <callStack> ListItem(Fn(main)) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
-    requires FUNCTION_KEY ==K Fn(main)
 
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
