@@ -46,7 +46,7 @@ class KMIRSemantics(KCFGSemantics):
 
     @staticmethod
     def terminal_rules() -> list[str]:
-        terminal_rules = ['EVM.halt']
+        terminal_rules = ['MIR.halt']
 
         # TODO: break every step and add to terminal rules. Semantics does not support this currently
         return terminal_rules
