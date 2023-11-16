@@ -1,6 +1,7 @@
 handwritten-rust/structs/struct.mir	4
 handwritten-rust/arrays/array.mir	4
 handwritten-rust/enums/enum.mir	113
+handwritten-rust/generics/generic.mir	4
 handwritten-rust/integers/div.mir	113
 handwritten-rust/integers/shl_min.mir	2
 handwritten-rust/integers/modulo.mir	113
