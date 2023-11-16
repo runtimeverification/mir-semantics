@@ -61,7 +61,6 @@ The `#halt` construct is used to signify the end of execution. Any remaining ite
 endmodule
 ```
 
-
 `MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since `amb` productions are not supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
 
 ```k

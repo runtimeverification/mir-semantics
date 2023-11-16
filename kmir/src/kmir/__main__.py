@@ -104,6 +104,8 @@ def exec_prove(
     definition_dir: str,
     haskell_dir: str,
     spec_file: str,
+    *,
+    use_booster: bool = False,
     bug_report: bool = False,
     save_directory: Path | None = None,
     reinit: bool = False,
@@ -111,6 +113,7 @@ def exec_prove(
     smt_timeout: int | None = None,
     smt_retry_limit: int | None = None,
     trace_rewrites: bool = False,
+    kore_rpc_command: str | Iterable[str] | None = None,
     **kwargs: Any,
 ) -> None:
     if spec_file is None:
@@ -134,6 +137,11 @@ def exec_prove(
     if not claims:
         raise ValueError(f'No claims found in file {spec_file}')
 
+    if kore_rpc_command is None:
+        kore_rpc_command = ('kore-rpc-booster',) if use_booster else ('kore-rpc',)
+    elif isinstance(kore_rpc_command, str):
+        kore_rpc_command = kore_rpc_command.split()
+
     def is_functional(claim: KClaim) -> bool:
         claim_lhs = claim.body
         if type(claim_lhs) is KRewrite:
@@ -145,7 +153,9 @@ def exec_prove(
             kprove,
             kcfg_semantics=KMIRSemantics(),
             id=claim.label,
+            llvm_definition_dir=kmir.llvm_dir,
             bug_report=br,
+            kore_rpc_command=kore_rpc_command,
             smt_timeout=smt_timeout,
             smt_retry_limit=smt_retry_limit,
             trace_rewrites=trace_rewrites,
