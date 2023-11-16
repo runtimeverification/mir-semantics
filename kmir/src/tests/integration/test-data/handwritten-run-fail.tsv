@@ -4,6 +4,7 @@ handwritten-rust/enums/enum.mir	113
 handwritten-rust/integers/div.mir	113
 handwritten-rust/integers/shl_min.mir	2
 handwritten-rust/integers/modulo.mir	113
+handwritten-rust/floats/float.mir	113
 handwritten-rust/strings-chars/std-to-string.mir	4
 handwritten-rust/strings-chars/char-trivial.mir	113
 handwritten-rust/strings-chars/std-string-empty.mir	113
