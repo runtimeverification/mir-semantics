@@ -18,7 +18,7 @@ from pyk.proof.tui import APRProofViewer
 from pyk.utils import BugReport
 
 from .cli import create_argument_parser
-from .kmir import KMIR
+from .kmir import KMIR, KMIRSemantics
 from .utils import (
     NodeIdLike,
     ensure_ksequence_on_k_cell,
@@ -143,6 +143,7 @@ def exec_prove(
     def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
         with legacy_explore(
             kprove,
+            kcfg_semantics=KMIRSemantics(),
             id=claim.label,
             bug_report=br,
             smt_timeout=smt_timeout,

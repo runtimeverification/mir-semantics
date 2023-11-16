@@ -1,6 +1,6 @@
 <generatedTop>
   <k>
-    .
+    #halt ~> .
   </k>
   <returncode>
     0
