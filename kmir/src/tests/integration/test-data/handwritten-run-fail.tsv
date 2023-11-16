@@ -1,3 +1,5 @@
+handwritten-rust/traits/derive-copy-struct.mir	4
+handwritten-rust/traits/defined-trait.mir	4
 handwritten-rust/structs/struct.mir	4
 handwritten-rust/arrays/array.mir	4
 handwritten-rust/enums/enum.mir	113
