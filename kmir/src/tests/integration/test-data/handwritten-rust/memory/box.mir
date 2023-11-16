@@ -1,0 +1,89 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<i32>;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: &std::boxed::Box<i32>;
+    let mut _6: &std::boxed::Box<i32>;
+    let mut _7: !;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: &&std::boxed::Box<i32>;
+    let _11: &std::boxed::Box<i32>;
+    let mut _12: &&std::boxed::Box<i32>;
+    let _13: &std::boxed::Box<i32>;
+    let mut _14: !;
+    scope 1 {
+        debug a => _1;
+        let _2: std::boxed::Box<i32>;
+        scope 2 {
+            debug b => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Box::<i32>::new(const 5_i32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Box::<i32>::new(const 5_i32) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _5 = &_1;
+        _6 = &_2;
+        _4 = <Box<i32> as PartialEq>::eq(move _5, move _6) -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _7 = core::panicking::panic(const "assertion failed: a == b") -> bb11;
+    }
+
+    bb5: {
+        _11 = &_1;
+        _10 = &_11;
+        _13 = &_2;
+        _12 = &_13;
+        _9 = <&Box<i32> as PartialEq>::eq(move _10, move _12) -> [return: bb6, unwind: bb11];
+    }
+
+    bb6: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _14 = core::panicking::panic(const "assertion failed: &a == &b") -> bb11;
+    }
+
+    bb8: {
+        drop(_2) -> [return: bb9, unwind: bb12];
+    }
+
+    bb9: {
+        drop(_1) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
