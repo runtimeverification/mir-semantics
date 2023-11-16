@@ -645,7 +645,7 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyk"
-version = "0.1.500"
+version = "0.1.502"
 description = ""
 category = "main"
 optional = false
@@ -666,8 +666,8 @@ tomli = "^2.0.1"
 [package.source]
 type = "git"
 url = "https://github.com/runtimeverification/pyk.git"
-reference = "v0.1.500"
-resolved_reference = "ea1e4ebac62b67ab1f3cedd821faa8610d6db935"
+reference = "v0.1.502"
+resolved_reference = "75e6ae77ef663048e312b6e0124be1c1ad39ee09"
 
 [[package]]
 name = "pyperclip"
@@ -771,14 +771,14 @@ testing = ["filelock"]
 
 [[package]]
 name = "rich"
-version = "13.6.0"
+version = "13.7.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "rich-13.6.0-py3-none-any.whl", hash = "sha256:2b38e2fe9ca72c9a00170a1a2d20c63c790d0e10ef1fe35eba76e1e7b1d7d245"},
-    {file = "rich-13.6.0.tar.gz", hash = "sha256:5c14d22737e6d5084ef4771b62d5d4363165b403455a30a1c8ca39dc7b644bef"},
+    {file = "rich-13.7.0-py3-none-any.whl", hash = "sha256:6da14c108c4866ee9520bbffa71f6fe3962e193b7da68720583850cd4548e235"},
+    {file = "rich-13.7.0.tar.gz", hash = "sha256:5cb5123b5cf9ee70584244246816e9114227e0b98ad9176eede6ad54bf5403fa"},
 ]
 
 [package.dependencies]
@@ -879,4 +879,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cc9578e18bef572cddcee780381683e1485aa40d3e83b41564af05a2e680ca61"
+content-hash = "f77276b8f22f444add7ebe2d91c4bb708af30015d89a78ac13e5331b89beea0f"
