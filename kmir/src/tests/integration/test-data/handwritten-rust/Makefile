@@ -1,19 +1,19 @@
-default: mir executables
+default: mir
 
-all: mir executables
+all: mir exe
 
 clean:
-	rm -f *.mir
-	rm -f *.out
+	find . -name "*.mir" -type f -delete
+	find . -name "*.out" -type f -delete
 
 RUSTC:=rustc
-RUST_SOURCES=$(wildcard *.rs)
+RUST_SOURCES=$(shell find . -name '*.rs')
 RUSTC_OPTIONS=-C overflow-checks=off -Zmir-enable-passes=-ConstDebugInfo,-PromoteTemps
 
-mir: $(RUST_SOURCES:%.rs=%.mir)
-%.mir : %.rs
-	$(RUSTC) --emit mir $(RUSTC_OPTIONS) $< -o $@
+mir: $(patsubst %.rs,%.mir,${RUST_SOURCES})
+%.mir: %.rs
+	$(RUSTC) --emit mir $(RUSTC_OPTIONS) -o $@ $*.rs
 
-executables: $(RUST_SOURCES:%.rs=%.out)
-%.out : %.rs
-	$(RUSTC) $(RUSTC_OPTIONS) $< -o $@
+exe: $(patsubst %.rs,%.out,${RUST_SOURCES})
+%.out: %.rs
+	$(RUSTC) $(RUSTC_OPTIONS) -o $@ $*.rs

@@ -1,0 +1,59 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: f32;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: f32;
+    let mut _6: !;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: f64;
+    let mut _12: !;
+    scope 1 {
+        debug a => _1;
+        let _2: f32;
+        scope 2 {
+            debug b => _2;
+            let _7: f64;
+            scope 3 {
+                debug c => _7;
+                let _8: f64;
+                scope 4 {
+                    debug d => _8;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3.5f32;
+        _2 = const 1.20000005f32;
+        _5 = Add(_1, _2);
+        _4 = Eq(move _5, const 4.69999981f32);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _6 = core::panicking::panic(const "assertion failed: a + b == 4.7");
+    }
+
+    bb2: {
+        _7 = const 3.5f64;
+        _8 = const 1.2f64;
+        _11 = Add(_7, _8);
+        _10 = Eq(move _11, const 4.7000000000000002f64);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _12 = core::panicking::panic(const "assertion failed: c + d == 4.7");
+    }
+
+    bb4: {
+        return;
+    }
+}
