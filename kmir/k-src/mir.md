@@ -70,6 +70,11 @@ module MIR-SYMBOLIC
   imports MIR-EXECUTION
   imports MIR-FINALIZATION
 
+    syntax KItem ::= runLemma ( Step ) | doneLemma ( Step )
+    // -------------------------------------------------------
+    rule <k> runLemma(S) => doneLemma(S) ... </k>
+
+    syntax Step ::= Bool | Int | MIRValue
 endmodule
 ```
 
