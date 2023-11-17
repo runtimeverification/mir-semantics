@@ -197,12 +197,8 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                 simplified_node, _ = kcfg_explore.cterm_simplify(node.cterm)
                 simplified_target, _ = kcfg_explore.cterm_simplify(target.cterm)
 
-                # TODO: Remove the ignore annotations, unsure why mypy couldn't infer type here
-                node_cterm = CTerm.from_kast(simplified_node)  # type: ignore
-                target_cterm = CTerm.from_kast(simplified_target)  # type: ignore
-
                 res_lines.append('  Failure reason:')
-                _, reason = kcfg_explore.implication_failure_reason(node_cterm, target_cterm)
+                _, reason = kcfg_explore.implication_failure_reason(simplified_node, simplified_target)
                 res_lines += [f'    {line}' for line in reason.split('\n')]
 
                 res_lines.append('  Path condition:')
