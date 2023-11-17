@@ -49,15 +49,6 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
     requires FUNCTION_KEY =/=K Fn(main)
-```
-
-The `#halt` construct is used to signify the end of execution. Any remaining items on the `<k>` cell will be removed.
-
-```k
-  syntax KItem ::= "#halt"
-  //----------------------
-  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) </k>
-  rule         <k> #halt ~> (#initialized()  => .K) </k>
 endmodule
 ```
 
@@ -314,6 +305,15 @@ module MIR-EXECUTION
   imports MIR-RVALUE
   imports PANICS
   imports K-EQUAL
+```
+
+The `#halt` construct is used to signify the end of execution. Any remaining items on the `<k>` cell will be removed.
+
+```k
+  syntax KItem ::= "#halt"
+  //----------------------
+  rule [halt]: <k> #halt ~> (_:MirSimulation => .K) </k>
+  // rule         <k> #halt ~> (#initialized()  => .K) </k>
 ```
 
 Executing a function-like means:
