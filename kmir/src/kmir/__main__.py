@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
+from pyk.cterm import CTerm
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -153,14 +154,13 @@ def exec_prove(
             kprove,
             kcfg_semantics=KMIRSemantics(),
             id=claim.label,
-            llvm_definition_dir=kmir.llvm_dir,
+            llvm_definition_dir=kmir.llvm_dir if use_booster else None,
             bug_report=br,
             kore_rpc_command=kore_rpc_command,
             smt_timeout=smt_timeout,
             smt_retry_limit=smt_retry_limit,
             trace_rewrites=trace_rewrites,
         ) as kcfg_explore:
-            # TODO: simplfy_init
             proof_problem: Proof
             if is_functional(claim):
                 if (
@@ -184,6 +184,14 @@ def exec_prove(
 
                     _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
                     new_init = kcfg_explore.cterm_assume_defined(new_init)
+
+                    _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
+                    new_init, _ = kcfg_explore.cterm_simplify(new_init)
+                    new_target, _ = kcfg_explore.cterm_simplify(new_target)
+                    if CTerm._is_bottom(new_init.kast):
+                        raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
+                    if CTerm._is_top(new_target.kast):
+                        raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
                     kcfg.replace_node(init_node_id, new_init)
                     kcfg.replace_node(target_node_id, new_target)
