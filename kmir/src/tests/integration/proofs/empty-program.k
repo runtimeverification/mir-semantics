@@ -25,5 +25,6 @@ module EMPTY-PROGRAM
       </k>
       <callStack> .List </callStack>
       <returncode> 4 => 0 </returncode> 
-     <phase> Initialization => Execution </phase> 
+      <phase> Initialization => Finalization </phase> 
+      <functions> .Bag => ?_ </functions>
 endmodule
