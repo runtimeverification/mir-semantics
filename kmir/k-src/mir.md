@@ -45,11 +45,6 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
        <callStack> ListItem(Fn(main)) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
-  rule <k> #return(Fn(main :: .FunctionPath), Unit) => #halt ... </k>
-       <callStack> ListItem(Fn(main)) => .List </callStack>
-       <phase> Execution => Finalization </phase>
-       <returncode> _ => 0 </returncode>
-
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
     requires FUNCTION_KEY =/=K Fn(main)
