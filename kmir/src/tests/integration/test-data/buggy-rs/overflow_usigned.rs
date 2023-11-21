@@ -1,6 +1,6 @@
 //Oversimplified example from https://github.com/galacticcouncil/HydraDX-node/blob/07f3d0f0755117c4e5abcc3ef2100085d01112b9/math/src/omnipool/math.rs#L52
 //The type u256 is not in rust core but implemented in Substrate, sp::core.
-// lesson always used arithmatic functions with overflow handled such as `checked` or `sactuated` versions.
+// lesson: always used arithmatic functions with overflow handled such as `checked` or `sactuated` versions.
 use std::convert::TryFrom;
 
 fn mul1(x:u8, y:u8) -> u8 {
