@@ -4,10 +4,12 @@ from typing import Optional
 import pytest
 from _pytest.config import Notset
 from pyk.cli.utils import dir_path, file_path
-from pyk.kbuild import KBuild, Package
+from pyk.kbuild import KBuild, Project
 from pytest import Config, Parser, TempPathFactory
 
 from kmir import KMIR
+
+from .utils import KMIR_DIR
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -60,18 +62,18 @@ def kbuild(kbuild_dir: Path) -> KBuild:
 
 
 @pytest.fixture(scope='session')
-def package() -> Package:
-    return Package.create(Path('kbuild.toml'))
+def project() -> Project:
+    return Project.load_from_dir(KMIR_DIR)
 
 
 @pytest.fixture(scope='session')
-def llvm_dir(kbuild: KBuild, package: Package) -> Path:
-    return kbuild.kompile(package, 'llvm')
+def llvm_dir(kbuild: KBuild, project: Project) -> Path:
+    return kbuild.kompile(project, 'llvm')
 
 
 @pytest.fixture(scope='session')
-def haskell_dir(kbuild: KBuild, package: Package) -> Path:
-    return kbuild.kompile(package, 'haskell')
+def haskell_dir(kbuild: KBuild, project: Project) -> Path:
+    return kbuild.kompile(project, 'haskell')
 
 
 @pytest.fixture(scope='session')

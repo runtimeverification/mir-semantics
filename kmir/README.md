@@ -100,6 +100,8 @@ Working on the semantics (targeting the LLVM backend) roughly comprises the foll
    This time, do not include the `--kbuild-dir` option to re-kompile everything in a temporary directory.
 
 ### Get MIR files from rust programs
+NOTE: KMIR is currently designed for a fixed verson of `rustc` which is `rustc 1.72.0-nightly (46514218f 2023-06-20)`, this can be installed by `rustup default nightly-2023-06-21`.
+
 At MIR level, it will go through multiple passes of optimization until the final file ready for code gen. The Rust compiler provides ways to output the MIR file for a rust program. 
 1. The [`emit`](https://doc.rust-lang.org/rustc/command-line-arguments.html#--emit-specifies-the-types-of-output-files-to-generate) option (enabled for `stable` and `nightly` versions):
    ```
@@ -137,3 +139,20 @@ poetry run kmir run --definition-dir $KMIR_DEFINITION --output pretty src/tests/
 
 
 To reduce this friction a little, we provide a simple `bash` script [`doit.sh`](doit.sh) that encapsulates the common `kmir` calls.
+To automatically connect kmir with the backend definitions, setting environement variables `KMIR_LLVM_DIR` and `KMIR_HASKELL_DIR` 
+to the path of the definitions directories will mean that `--definition-dir` can be omitted. A script is provided to automatically set
+these variables which can be run with `source set_env.sh`. NOTE: this will NOT WORK if installing via `pip`
+
+### Updating expected output for `nix` tests
+Inside the directory `mir-semantics/kmir/src/tests/nix` there is a `Makefile`, calling `make` from this directory will automatically update
+the expected output of the run and parse `nix` tests with the output of the current build with `poetry`. This should only need to be done if 
+there has been some change to the expected output (e.g. a change in syntax or semantics). This command will expect that the definitions are built,
+and that they have been exported to the `KMIR_*_DIR` (see the note above on the `set_env.sh` script).
+
+### Proving MIR claims
+
+Use the following commands from the `kmir` directory to manually prove `k` specification files for MIR.
+```
+poetry run kmir prove --definition-dir $(poetry run kbuild which llvm) --haskell-dir $(poetry run kbuild which haskell) --spec-file src/tests/proofs/simple-spec.k
+```
+In order to save `kcfgs` the flag `--save-directory` can be added with a path to the directory to save the kcfgs to (this dir must already be created).

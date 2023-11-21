@@ -1,7 +1,7 @@
 ```k
 require "mir-syntax.md"
 require "mir-configuration.md"
-require "mir-types.md"
+require "mir-operand.md"
 ```
 
 Syntax of rvalues
@@ -14,18 +14,7 @@ module MIR-RVALUE-SYNTAX
   imports BOOL
   imports UNSIGNED-INT-SYNTAX
   imports MIR-TYPE-SYNTAX
-  imports MIR-PLACE-SYNTAX
-  imports MIR-CONSTANT-SYNTAX
-```
-
-### [`Operand`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.Operand.html)
-
-Operands are leafs, i.e. the "basic components" of rvalues: either a loading of a place, or a constant.
-
-```k
-  syntax Operand ::= Place
-                   | "move" Place
-                   | Constant
+  imports MIR-OPERAND-SYNTAX
 ```
 
 ### [`RValue`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.Rvalue.html)
@@ -62,8 +51,8 @@ The various kinds of rvalues that can appear in MIR.
   syntax Len ::= "Len" "(" Place ")"
 
   // TODO: this needs additional productions
-  syntax Cast ::= Operand "as" Type
-                | Operand "as" Type  "(" PointerCastArg ")"
+  syntax Cast ::= Operand "as" Type [prefer]
+                | Operand "as" Type  "(" PointerCastArg ")" [prefer]
                 | PathExpression "as" Type
                 | PathExpression "as" Type "(" PointerCastArg ")"
 
@@ -125,10 +114,15 @@ The various kinds of rvalues that can appear in MIR.
                | EnumConstructor
 
   syntax StructConstructor ::= Type "{" AdtFieldList "}"
+                            //  | TypePath "(" OperandList ")" // compiletest-rs/ui/traits/copy-requires-self-wf.mir LINE 17
 
+  // `AssertKind` `Eq`, `Ne` conflict with BinaryOp names https://github.com/rust-lang/rust/blob/f562931178ff103f23b9e9a10dc0deb38e0d064f/library/core/src/panicking.rs#L259-L263
   syntax EnumConstructor ::= Identifier
                            | Identifier "(" OperandList ")"
-                           | PathExpression "::" Identifier
+                           | PathExpression "::" Identifier [avoid]
+                           | PathExpression "::" "Eq"
+                           | PathExpression "::" "Ne"
+                          //  | PathExpression "::" "Match" // Match isn't conflicting at the moment but might later
                            | PathExpression "::" Identifier "(" OperandList ")"
 
   syntax AdtField ::= AdtFieldName ":" Operand
@@ -144,56 +138,11 @@ The various kinds of rvalues that can appear in MIR.
   syntax OperandList ::= List{Operand, ","}
 
   syntax PtrModifiers ::= "" | "mut" | "raw" "mut" | "raw" "const"
+
+  syntax RValue ::= #unwrap(Operand)
 ```
 
 ```k
-endmodule
-```
-
-```k
-module MIR-CONSTANT-SYNTAX
-  imports MIR-TYPE-SYNTAX
-```
-
-### [`Constant`](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/struct.Constant.html)
-
-TODO: these sorts may need refactoring to closer match the `rustc` implementation.
-
-```k
-  syntax Constant ::= "const" ConstantValue
-  syntax ConstantValue  ::= UnsignedLiteral
-                          | SignedLiteral
-                          | FloatLiteral
-                          | CharLiteral
-                          | StringLiteral
-                          | ByteLiteral
-                          | ByteStringLiteral
-                          | Bool
-                          | ConstEnumConstructor
-                          | TupleConstant
-                          | AdtConstant
-                          | AllocConstant
-                          | TransmuteConstant
-                          | LiteralAsConstant
-  syntax ConstantValueList ::= List{ConstantValue, ","}
-
-  syntax ConstEnumConstructor ::= Identifier
-                                | Identifier "(" ConstantValueList ")"
-                                | PathExpression "::" Identifier
-                                | PathExpression "::" Identifier "(" ConstantValueList ")"
-
-  syntax AllocConstant ::= "{" Identifier ":" Type "}"
-  syntax TransmuteConstant ::= "{" "transmute" "(" HexLiteral ")" ":" Type "}"
-
-  syntax TupleConstant  ::= "(" ")"
-                          | "(" ConstantValue "," ConstantValueList ")"
-
-  syntax AdtConstant ::= Type "{" "{" AdtFieldConstantList "}" "}"
-                       | Type "{" AdtFieldConstantList "}"
-  syntax AdtFieldConstant ::= AdtFieldName ":" ConstantValue
-  syntax AdtFieldConstantList ::= List{AdtFieldConstant, ","}
-
-  syntax LiteralAsConstant ::= "{" Literal "as" Type "}"
 endmodule
 ```
 
@@ -205,6 +154,7 @@ module MIR-RVALUE
   imports MIR-RVALUE-SYNTAX
   imports MIR-TYPES
   imports MIR-CONFIGURATION
+  imports LIST
 ```
 
 Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval_rvalue_into_place](https://github.com/rust-lang/rust/blob/bd43458d4c2a01af55f7032f7c47d7c8fecfe560/compiler/rustc_const_eval/src/interpret/step.rs#L148).
@@ -212,10 +162,16 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax InterpResult ::= evalRValue(FunctionLikeKey, RValue) [function]
   //--------------------------------------------------------------------
-  rule evalRValue(FN_KEY, VALUE:Operand)   => evalOperand(FN_KEY, VALUE)
-  rule evalRValue(FN_KEY, UN_OP:UnaryOp)   => evalUnaryOp(FN_KEY, UN_OP)
-  rule evalRValue(FN_KEY, BIN_OP:BinaryOp) => evalBinaryOp(FN_KEY, BIN_OP)
-  rule evalRValue(_FN_KEY, RVALUE)         => Unsupported(RVALUE) [owise]
+  rule evalRValue(FN_KEY, VALUE:Operand)    => evalOperand(FN_KEY, VALUE)
+  rule evalRValue(FN_KEY, UN_OP:UnaryOp)    => evalUnaryOp(FN_KEY, UN_OP)
+  rule evalRValue(FN_KEY, BIN_OP:BinaryOp)  => evalBinaryOp(FN_KEY, BIN_OP)
+  rule evalRValue(FN_KEY, ADDR:AddressOf)   => evalAddressOf(FN_KEY, ADDR)
+  rule evalRValue(FN_KEY, CFD:CopyForDeref) => evalCopyForDeref(FN_KEY, CFD)
+  rule evalRValue(FN_KEY, TUP:Tuple)        => evalTuple(FN_KEY, TUP)
+  rule evalRValue(FN_KEY, ENUM:EnumConstructor) => evalEnumConstructor(FN_KEY, ENUM) [priority(51)]
+  rule evalRValue(_FN_KEY, RVALUE)          => Unsupported(RVALUE) [owise]
+
+  rule evalRValue(FN_KEY, #unwrap(OP))      => evalUnwrap(evalOperand(FN_KEY, OP)) 
 ```
 
 ### `Operand` evaluation
@@ -223,9 +179,16 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
 ```k
   syntax MIRValue ::= evalOperand(FunctionLikeKey, Operand) [function]
   //------------------------------------------------------------------
-  rule evalOperand(_, const VALUE:ConstantValue)     => evalConstantValue(VALUE)
-  rule evalOperand(FN_KEY, LOCAL:Local)                   => evalLocal(FN_KEY, LOCAL)
-  rule evalOperand(FN_KEY, move LOCAL:Local)              => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(_, const VALUE:ConstantValue) => evalConstantValue(VALUE)
+  rule evalOperand(FN_KEY, FIELD:Field)          => evalField(FN_KEY, FIELD)
+  rule evalOperand(FN_KEY, LOCAL:Local)          => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(FN_KEY, move LOCAL:Local)     => evalLocal(FN_KEY, LOCAL)
+  rule evalOperand(FN_KEY, REF:Deref)            => evalDeref(FN_KEY, REF)
+
+  syntax MIRValueNeList ::= evalOperandList(FunctionLikeKey, OperandList) [function]
+  //--------------------------------------------------------------------------------
+  rule evalOperandList(_FN_KEY, .OperandList) => .List
+  rule evalOperandList(FN_KEY, OPERAND:Operand, REST:OperandList) => ListItem(evalOperand(FN_KEY, OPERAND)) {evalOperandList(FN_KEY, REST)}:>List
 ```
 
 ### `UnaryOp` evaluation
@@ -282,12 +245,43 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
   rule evalConstantValue(VALUE:Bool)            => VALUE
+  rule evalConstantValue(VALUE:ConstEnumConstructor)  => evalPrimitiveBound(VALUE)
 //  rule evalConstantValue(_VALUE)              => "Error: evalConstantValue --- unsupported ConstantValue" [owise]
+```
+
+#### Primitive type bounds TODO: usize depends on architecture, which we currently do not handle
+
+```k
+  syntax Int ::= evalPrimitiveBound(ConstEnumConstructor) [function]
+  syntax Int ::= maxUint(UintTy) [function]
+  syntax Int ::= maxInt(IntTy)   [function]
+  syntax Int ::= minInt(IntTy)   [function]
+  //----------------------------------------------------------
+  rule evalPrimitiveBound((UINT:UintTy :: .ExpressionPathList :: MAX):ConstEnumConstructor)  => maxUint(UINT) requires IdentifierToken2String(MAX) ==String "MAX"
+  rule evalPrimitiveBound((_:UintTy :: .ExpressionPathList :: MIN):ConstEnumConstructor)  => 0 requires IdentifierToken2String(MIN) ==String "MIN"
+  rule maxUint(u8)   => 255
+  rule maxUint(u16)  => 65535
+  rule maxUint(u32)  => 4294967295
+  rule maxUint(u64)  => 18446744073709551615
+  rule maxUint(u128) => 340282366920938463463374607431768211455
+
+  rule evalPrimitiveBound((INT:IntTy :: .ExpressionPathList :: MAX):ConstEnumConstructor)  => maxInt(INT) requires IdentifierToken2String(MAX) ==String "MAX"
+  rule evalPrimitiveBound((INT:IntTy :: .ExpressionPathList :: MIN):ConstEnumConstructor)  => minInt(INT) requires IdentifierToken2String(MIN) ==String "MIN"
+  rule maxInt(i8)   => 127
+  rule maxInt(i16)  => 32767
+  rule maxInt(i32)  => 2147483647
+  rule maxInt(i64)  => 9223372036854775807
+  rule maxInt(i128) => 170141183460469231731687303715884105727
+  rule minInt(i8)   => -128
+  rule minInt(i16)  => -32768
+  rule minInt(i32)  => -2147483648
+  rule minInt(i64)  => -9223372036854775808
+  rule minInt(i128) => -170141183460469231731687303715884105728
 ```
 
 ### `Local` evaluation
 
-Locals only makes sense withing a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
+Locals only makes sense within a function-like, hence we evaluate them as a contextual function that grabs the value from the function-like's environment:
 
 ```k
   syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]
@@ -305,6 +299,95 @@ Locals only makes sense withing a function-like, hence we evaluate them as a con
     requires  INDEX ==Int Local2Int(LOCAL)
 ```
 
+### `Reference and Deref` evaluation
+
+```k
+  // TODO: These assumes PLACE is a Local, need to handle other options
+  syntax MIRValue ::= evalAddressOf(FunctionLikeKey, AddressOf) [function]
+  //----------------------------------------------------------------------
+  rule [[ evalAddressOf(FN_KEY, & _PtrModifiers PLACE) => INDEX ]]
+    <function>
+      <fnKey> FN_KEY </fnKey>
+      <localDecl>
+        <index> INDEX </index>
+        ...
+      </localDecl>
+      ...
+    </function>
+    requires INDEX ==Int Local2Int(PLACE)
+
+  syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
+  //--------------------------------------------------------------
+  rule [[ evalDeref(FN_KEY, ( * PLACE)) => VALUE ]]
+    <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecl>
+          <index> REF </index>
+          <value> INDEX </value>
+          ...
+        </localDecl>
+        <localDecl>
+          <index> INDEX </index>
+          <value> VALUE </value>
+          ...
+        </localDecl>
+      ...
+    </function>
+    requires REF ==Int Local2Int(PLACE)
+
+  // TODO: Investigate if this requires some more checks or effects. Needs to cover more cases.
+  syntax MIRValue ::= evalCopyForDeref(FunctionLikeKey, CopyForDeref) [function]
+  //----------------------------------------------------------------------------
+  rule evalCopyForDeref(FN_KEY, deref_copy(DEREF:Deref)) => evalDeref(FN_KEY, DEREF)
+```
+
+### `Aggregate` evaluation
+
+```k
+  syntax MIRValue ::= evalTuple(FunctionLikeKey, Tuple) [function]
+  //--------------------------------------------------------------
+  rule evalTuple(FN_KEY, ( OPERANDS , OperandList )) => ( evalOperandList(FN_KEY, OPERANDS, OperandList) )
+```
+
+### `Field` evaluation
+```k
+  syntax MIRValue ::= TupleArgs "[" Int "]" [function]
+  rule ( ARGS:List ) [ INDEX ] => {ARGS[INDEX]}:>MIRValue
+
+  syntax MIRValue ::= evalField(FunctionLikeKey, Field) [function]
+  //--------------------------------------------------------------
+  rule [[ evalField(FN_KEY, ( PLACE . INDEX : _TYPE ) ) => TUPLE[INDEX] ]] // Ignoring type currently
+    <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecl>
+          <index> PLACE_INDEX </index>
+          <value> TUPLE </value>
+          ...
+        </localDecl>
+      ...
+    </function>
+    requires PLACE_INDEX ==Int Local2Int(PLACE)
+```
+
+### `Enum` evaluation
+```k
+  syntax IdentifierToken ::= "Option" [token] 
+                           | "None"   [token] 
+                           | "Some"   [token] 
+                           | "unwrap" [token]
+
+  syntax MIRValue ::= evalEnumConstructor(FunctionLikeKey, EnumConstructor) [function]
+  //--------------------------------------------------------------
+  rule evalEnumConstructor( FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: Some ( OP , .OperandList ) ) => OptSome(evalOperand(FN_KEY, OP:Operand))
+  rule evalEnumConstructor(_FN_KEY, Option :: < _TYPES > :: .ExpressionPathList :: None ) => OptNone
+```
+
+### Internal Functions
+```k
+  syntax MIRValue ::= evalUnwrap(MIRValue) [function]
+  //-------------------------------------------------
+  rule evalUnwrap(OptSome( VALUE:MIRValue )) => VALUE
+```
 
 ```k
 endmodule
