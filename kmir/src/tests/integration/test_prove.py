@@ -19,8 +19,9 @@ sys.setrecursionlimit(10**8)
 TEST_DIR: Final = REPO_ROOT / 'kmir/src/tests'
 SYMBOLIC_TEST_DIR: Final = TEST_DIR / 'integration/proofs'
 INITIAL_SPECS: Final = SYMBOLIC_TEST_DIR / 'simple-spec.k'
+EMPTY_PROGRAM: Final = SYMBOLIC_TEST_DIR / 'empty-program.k'
 
-ALL_TESTS: Final = [INITIAL_SPECS]
+ALL_TESTS: Final = [INITIAL_SPECS, EMPTY_PROGRAM]
 
 
 def exclude_list(exclude_file: Path) -> list[Path]:
@@ -40,7 +41,7 @@ SKIPPED_TESTS: Final = exclude_list(SYMBOLIC_TEST_DIR / 'symbolic-failing')
 @pytest.mark.parametrize(
     'spec_file',
     ALL_TESTS,
-    ids=[str(spec_file.relative_to(INITIAL_SPECS)) for spec_file in ALL_TESTS],
+    ids=[str(spec_file.relative_to(SYMBOLIC_TEST_DIR)) for spec_file in ALL_TESTS],
 )
 def test_pyk_prove(
     llvm_dir: str,
