@@ -157,6 +157,18 @@ def create_argument_parser() -> ArgumentParser:
         default=False,
         help='Reinitialise a proof.',
     )
+    prove_subparser.add_argument(
+        '--use-booster',
+        action='store_true',
+        default=False,
+        help='Use the booster backend instead of the haskell backend',
+    )
+    prove_subparser.add_argument(
+        '--kore-rpc-command',
+        type=str,
+        default=None,
+        help='Custom command to start RPC server',
+    )
 
     kmir_cli_args = KMIRCLIArgs()
 
