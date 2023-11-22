@@ -1,0 +1,147 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn mul1(_1: u8, _2: u8) -> u8 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u8;
+    let _3: u16;
+    let mut _7: std::result::Result<u8, std::num::TryFromIntError>;
+    scope 1 {
+        debug _x => _3;
+        let _4: u16;
+        scope 2 {
+            debug _y => _4;
+            let _5: u16;
+            scope 3 {
+                debug _z => _5;
+                let _6: u8;
+                scope 4 {
+                    debug z => _6;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = _1 as u16 (IntToInt);
+        _4 = _2 as u16 (IntToInt);
+        _5 = Mul(_3, _4);
+        _7 = <u8 as TryFrom<u16>>::try_from(_5) -> bb1;
+    }
+
+    bb1: {
+        _6 = Result::<u8, TryFromIntError>::unwrap(move _7) -> bb2;
+    }
+
+    bb2: {
+        _0 = _6;
+        return;
+    }
+}
+
+fn mul2(_1: u8, _2: u8) -> u8 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u8;
+    let _3: u16;
+    let mut _6: u16;
+    let mut _7: u16;
+    let mut _8: u16;
+    let mut _9: bool;
+    let mut _11: std::result::Result<u8, std::num::TryFromIntError>;
+    scope 1 {
+        debug _x => _3;
+        let _4: u16;
+        scope 2 {
+            debug _y => _4;
+            let _5: u16;
+            scope 3 {
+                debug _z => _5;
+                let _10: u8;
+                scope 4 {
+                    debug z => _10;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = _1 as u16 (IntToInt);
+        _4 = _2 as u16 (IntToInt);
+        _7 = Mul(_3, _4);
+        _6 = Mul(move _7, const 16_u16);
+        _8 = Mul(_4, const 4_u16);
+        _9 = Eq(_8, const 0_u16);
+        assert(!move _9, "attempt to divide `{}` by zero", _6) -> bb1;
+    }
+
+    bb1: {
+        _5 = Div(move _6, move _8);
+        _11 = <u8 as TryFrom<u16>>::try_from(_5) -> bb2;
+    }
+
+    bb2: {
+        _10 = Result::<u8, TryFromIntError>::unwrap(move _11) -> bb3;
+    }
+
+    bb3: {
+        _0 = _10;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u8;
+    let mut _2: (&u8, &u8);
+    let mut _3: &u8;
+    let mut _4: &u8;
+    let _5: u8;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u8;
+    let mut _11: u8;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug b => _1;
+        let _6: &u8;
+        let _7: &u8;
+        scope 2 {
+            debug left_val => _6;
+            debug right_val => _7;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = mul2(const 32_u8, const _) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_1;
+        _5 = const 128_u8;
+        _4 = &_5;
+        _2 = (move _3, move _4);
+        _6 = (_2.0: &u8);
+        _7 = (_2.1: &u8);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u8, u8>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        return;
+    }
+}
