@@ -1,0 +1,2 @@
+parse-mir/const-enum-same-as-builtin.mir	1
+parse-mir/terminator-assert.mir	1

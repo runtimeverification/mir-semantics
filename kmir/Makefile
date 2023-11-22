@@ -88,6 +88,15 @@ handwritten-run-fail:
 	sort src/tests/integration/test-data/handwritten-run-fail.tsv -o src/tests/integration/test-data/handwritten-run-fail.tsv
 .PHONY: handwritten-test-run
 
+handwritten-prove-fail:
+	$(POETRY_RUN) pytest src/tests/integration/test_prove.py
+			--tb=line                                                               \
+            -k test_handwritten                                                     \
+            --report-file src/tests/integration/test-data/handwritten-prove-fail.tsv  \
+            $(TEST_ARGS);
+	sort src/tests/integration/test-data/handwritten-prove-fail.tsv -o src/tests/integration/test-data/handwritten-prove-fail.tsv
+.PHONY: handwritten-test-prove
+
 ## compile the handwritten Rust integration tests to Mir
 compile-handwritten-rust:
 	make -C src/tests/integration/test-data/handwritten-rust

@@ -8,51 +8,29 @@ from pytest import LogCaptureFixture
 
 from kmir.__main__ import exec_prove
 
-from ..utils import REPO_ROOT
+from .utils import (
+    PROVE_TEST_DATA,
+    PROVE_FAIL,
+)
 
 sys.setrecursionlimit(10**8)
 
-# -------------------
-# Test specifications
-# -------------------
-
-TEST_DIR: Final = REPO_ROOT / 'kmir/src/tests'
-SYMBOLIC_TEST_DIR: Final = TEST_DIR / 'integration/test-data/proofs'
-INITIAL_SPECS: Final = SYMBOLIC_TEST_DIR / 'simple-spec.k'
-EMPTY_PROGRAM: Final = SYMBOLIC_TEST_DIR / 'empty-program.k'
-
-ALL_TESTS: Final = [INITIAL_SPECS, EMPTY_PROGRAM]
-
-
-def exclude_list(exclude_file: Path) -> list[Path]:
-    res = [REPO_ROOT / test_path for test_path in exclude_file.read_text().splitlines()]
-    # assert res
-    return res
-
-
-SKIPPED_TESTS: Final = exclude_list(SYMBOLIC_TEST_DIR / 'symbolic-failing')
-
-
-# ---------
-# Pyk tests
-# ---------
-
-
 @pytest.mark.parametrize(
-    'spec_file',
-    ALL_TESTS,
-    ids=[str(spec_file.relative_to(SYMBOLIC_TEST_DIR)) for spec_file in ALL_TESTS],
+    ('test_id', 'spec_file'),
+    PROVE_TEST_DATA,
+    ids=[test_id for test_id, *_ in PROVE_TEST_DATA],
 )
-def test_pyk_prove(
+def test_handwritten(
     llvm_dir: str,
     haskell_dir: str,
+    test_id: str,
     spec_file: Path,
     tmp_path: Path,
     caplog: LogCaptureFixture,
 ) -> None:
     caplog.set_level(logging.INFO)
 
-    if spec_file in SKIPPED_TESTS:
+    if test_id in PROVE_FAIL:
         pytest.skip()
 
     # Given
