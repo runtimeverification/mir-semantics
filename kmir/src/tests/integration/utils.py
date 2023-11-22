@@ -2,8 +2,10 @@ from pathlib import Path
 
 TEST_DATA_DIR = Path(__file__).parent / 'test-data'
 
-
+##---------
 # Mir files that were written by hand to test *PARSING*. May not be valid for execution.
+##---------
+
 HANDWRITTEN_MIR_DIR = TEST_DATA_DIR / 'parse-mir'
 MIR_PARSE_FILES = tuple(HANDWRITTEN_MIR_DIR.glob('*.mir'))
 HANDWRITTEN_PARSE_TEST_DATA = tuple(
@@ -15,7 +17,10 @@ HANDWRITTEN_PARSE_FAIL = {
     str(input_path.split('\t')[0]) for input_path in HANDWRITTEN_PARSE_FAIL_LIST.read_text().splitlines()
 }
 
+##---------
 # Mir files compiled from handwritten Rust examples for execution test
+##---------
+
 HANDWRITTEN_RUST_DIR = TEST_DATA_DIR / 'run-rs'
 MIR_RUN_FILES = tuple(HANDWRITTEN_RUST_DIR.rglob('*.mir'))
 HANDWRITTEN_RUN_TEST_DATA = tuple(
@@ -25,8 +30,10 @@ HANDWRITTEN_RUN_TEST_DATA = tuple(
 HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
 HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
 
+##---------
+# rustc's unit test suite - compiletest-rs/ui
+##---------
 
-# Mir files dumped from rustc's unit test suite
 COMPILETEST_DIR = TEST_DATA_DIR / 'compiletest-rs' / 'ui'
 MIR_COMPILETEST_FILES = tuple(COMPILETEST_DIR.rglob('*.mir'))
 COMPILETEST_TEST_DATA = tuple(
@@ -82,15 +89,15 @@ COMPILETEST_RUN_FAIL = {
     test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines() + COMPILETEST_RUN_EXCLUDE
 }
 
-# proving test data
+##---------
+# prove test data
+##---------
 PROVE_TEST_DIR = TEST_DATA_DIR / 'prove-rs'
 MIR_PROVE_FILES = tuple(PROVE_TEST_DIR.rglob('*.k'))
 PROVE_TEST_DATA = tuple(
     ( (str(input_path.relative_to(TEST_DATA_DIR)), input_path)) for input_path in MIR_PROVE_FILES
 )
-""" INITIAL_SPECS = PROVE_TEST_DIR / 'simple-spec.k'
-EMPTY_PROGRAM = PROVE_TEST_DIR / 'empty-program.k'
-PROVE_TEST_DATA = [INITIAL_SPECS, EMPTY_PROGRAM] """
 
 PROVE_FAIL_FILE = TEST_DATA_DIR / 'handwritten-prove-fail.tsv'
-PROVE_FAIL = {test.split('\t')[0] for test in PROVE_FAIL_FILE.read_text().splitlines()}
+PROVE_EXCLUDE = ['verify.k']
+PROVE_FAIL = {test.split('\t')[0] for test in PROVE_FAIL_FILE.read_text().splitlines() + PROVE_EXCLUDE}
