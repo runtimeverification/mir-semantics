@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
+from pyk.cterm import CTerm
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
 from pyk.ktool.kprint import KAstInput, KAstOutput
@@ -104,6 +105,8 @@ def exec_prove(
     definition_dir: str,
     haskell_dir: str,
     spec_file: str,
+    *,
+    use_booster: bool = False,
     bug_report: bool = False,
     save_directory: Path | None = None,
     reinit: bool = False,
@@ -111,6 +114,7 @@ def exec_prove(
     smt_timeout: int | None = None,
     smt_retry_limit: int | None = None,
     trace_rewrites: bool = False,
+    kore_rpc_command: str | Iterable[str] | None = None,
     **kwargs: Any,
 ) -> None:
     if spec_file is None:
@@ -134,6 +138,11 @@ def exec_prove(
     if not claims:
         raise ValueError(f'No claims found in file {spec_file}')
 
+    if kore_rpc_command is None:
+        kore_rpc_command = ('kore-rpc-booster',) if use_booster else ('kore-rpc',)
+    elif isinstance(kore_rpc_command, str):
+        kore_rpc_command = kore_rpc_command.split()
+
     def is_functional(claim: KClaim) -> bool:
         claim_lhs = claim.body
         if type(claim_lhs) is KRewrite:
@@ -145,12 +154,13 @@ def exec_prove(
             kprove,
             kcfg_semantics=KMIRSemantics(),
             id=claim.label,
+            llvm_definition_dir=kmir.llvm_dir if use_booster else None,
             bug_report=br,
+            kore_rpc_command=kore_rpc_command,
             smt_timeout=smt_timeout,
             smt_retry_limit=smt_retry_limit,
             trace_rewrites=trace_rewrites,
         ) as kcfg_explore:
-            # TODO: simplfy_init
             proof_problem: Proof
             if is_functional(claim):
                 if (
@@ -174,6 +184,14 @@ def exec_prove(
 
                     _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
                     new_init = kcfg_explore.cterm_assume_defined(new_init)
+
+                    _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
+                    new_init, _ = kcfg_explore.cterm_simplify(new_init)
+                    new_target, _ = kcfg_explore.cterm_simplify(new_target)
+                    if CTerm._is_bottom(new_init.kast):
+                        raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
+                    if CTerm._is_top(new_target.kast):
+                        raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
                     kcfg.replace_node(init_node_id, new_init)
                     kcfg.replace_node(target_node_id, new_target)

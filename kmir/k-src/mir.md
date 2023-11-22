@@ -45,7 +45,6 @@ If we are, then we stop execution and enter the finalization phase. Otherwise, i
        <callStack> ListItem(Fn(main)) => .List </callStack>
        <phase> Execution => Finalization </phase>
        <returncode> _ => 0 </returncode>
-
   rule <k> #return(FUNCTION_KEY, _) => .K ... </k>
        <callStack> ListItem(FUNCTION_KEY) XS => XS </callStack>
     requires FUNCTION_KEY =/=K Fn(main)
@@ -61,16 +60,17 @@ The `#halt` construct is used to signify the end of execution. Any remaining ite
 endmodule
 ```
 
-
 `MIR-SYMBOLIC` is a stub module to be used with the Haskell backend in the future. It does not import `MIR-AMBIGUITIES`, since `amb` productions are not supported by the Haskell backend. We may need to consult the C semantics team when we start working on symbolic execution.
 
 ```k
 module MIR-SYMBOLIC
-  imports MIR-CONFIGURATION
-  imports MIR-INITIALIZATION
-  imports MIR-EXECUTION
-  imports MIR-FINALIZATION
+  imports MIR
 
+    syntax KItem ::= runLemma ( Step ) | doneLemma ( Step )
+    // -------------------------------------------------------
+    rule <k> runLemma(S) => doneLemma(S) ... </k>
+
+    syntax Step ::= Bool | Int | MIRValue
 endmodule
 ```
 
