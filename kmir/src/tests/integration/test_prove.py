@@ -17,7 +17,7 @@ sys.setrecursionlimit(10**8)
 # -------------------
 
 TEST_DIR: Final = REPO_ROOT / 'kmir/src/tests'
-SYMBOLIC_TEST_DIR: Final = TEST_DIR / 'integration/proofs'
+SYMBOLIC_TEST_DIR: Final = TEST_DIR / 'integration/test-data/proofs'
 INITIAL_SPECS: Final = SYMBOLIC_TEST_DIR / 'simple-spec.k'
 
 ALL_TESTS: Final = [INITIAL_SPECS]
