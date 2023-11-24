@@ -51,7 +51,7 @@ def create_argument_parser() -> ArgumentParser:
     parse_subparser.add_argument(
         '--output',
         type=str,
-        default='kore',
+        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,
@@ -73,7 +73,7 @@ def create_argument_parser() -> ArgumentParser:
     run_subparser.add_argument(
         '--output',
         type=str,
-        default='kast',
+        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,
