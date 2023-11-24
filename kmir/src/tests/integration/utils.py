@@ -86,7 +86,7 @@ COMPILETEST_RUN_EXCLUDE = [
     'multibyte.mir',
 ]
 COMPILETEST_RUN_FAIL = {
-    test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines() + COMPILETEST_RUN_EXCLUDE
+    test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines() + COMPILETEST_PARSE_FAIL + COMPILETEST_RUN_EXCLUDE
 }
 
 ##---------
