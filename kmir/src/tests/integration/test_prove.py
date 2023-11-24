@@ -1,19 +1,16 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Final
 
 import pytest
 from pytest import LogCaptureFixture
 
 from kmir.__main__ import exec_prove
 
-from .utils import (
-    PROVE_TEST_DATA,
-    PROVE_FAIL,
-)
+from .utils import PROVE_FAIL, PROVE_TEST_DATA
 
 sys.setrecursionlimit(10**8)
+
 
 @pytest.mark.parametrize(
     ('test_id', 'spec_file'),

@@ -94,9 +94,7 @@ COMPILETEST_RUN_FAIL = {
 ##---------
 PROVE_TEST_DIR = TEST_DATA_DIR / 'prove-rs'
 MIR_PROVE_FILES = tuple(PROVE_TEST_DIR.rglob('*.k'))
-PROVE_TEST_DATA = tuple(
-    ( (str(input_path.relative_to(TEST_DATA_DIR)), input_path)) for input_path in MIR_PROVE_FILES
-)
+PROVE_TEST_DATA = tuple(((str(input_path.relative_to(TEST_DATA_DIR)), input_path)) for input_path in MIR_PROVE_FILES)
 
 PROVE_FAIL_FILE = TEST_DATA_DIR / 'handwritten-prove-fail.tsv'
 PROVE_EXCLUDE = ['verify.k']

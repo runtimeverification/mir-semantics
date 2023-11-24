@@ -17,9 +17,7 @@ from .utils import (
 
 
 @pytest.mark.parametrize(
-    ('test_id', 'input_path'), 
-    HANDWRITTEN_PARSE_TEST_DATA, 
-    ids=[test_id for test_id, *_ in HANDWRITTEN_PARSE_TEST_DATA]
+    ('test_id', 'input_path'), HANDWRITTEN_PARSE_TEST_DATA, ids=[test_id for test_id, *_ in HANDWRITTEN_PARSE_TEST_DATA]
 )
 def test_handwritten_syntax(
     kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
