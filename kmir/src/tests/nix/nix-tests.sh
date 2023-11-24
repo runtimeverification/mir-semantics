@@ -14,4 +14,4 @@ kmir run   --output pretty sum-to-n.mir > nix-sum-to-n.run.out
 # Uncomment and run `nix build --extra-experimental-features 'nix-command flakes' --print-build-logs .#kmir-test`
 git --no-pager diff nix-sum-to-n.run.out   sum-to-n.run.out
 
-kmir prove --spec-file simple-spec.k
+kmir prove simple-spec.k
