@@ -1,13 +1,16 @@
-import logging
 import sys
 from pathlib import Path
+from typing import Optional
 
 import pytest
-from pytest import LogCaptureFixture
+from filelock import FileLock
 
 from kmir.__main__ import exec_prove
 
-from .utils import PROVE_FAIL, PROVE_TEST_DATA
+from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
+
+# from pytest import LogCaptureFixture
+
 
 sys.setrecursionlimit(10**8)
 
@@ -23,15 +26,17 @@ def test_handwritten(
     test_id: str,
     spec_file: Path,
     tmp_path: Path,
-    caplog: LogCaptureFixture,
+    allow_skip: bool,
+    report_file: Optional[Path],
+    #  caplog: LogCaptureFixture,
 ) -> None:
-    caplog.set_level(logging.INFO)
+    # caplog.set_level(logging.INFO)
 
-    if test_id in PROVE_FAIL:
+    if allow_skip and test_id in PROVE_FAIL:
         pytest.skip()
 
     # Given
-    log_file = tmp_path / 'log.txt'
+    tmp_path / 'log.txt'
     use_directory = tmp_path / 'kprove'
     use_directory.mkdir()
 
@@ -45,7 +50,16 @@ def test_handwritten(
             smt_timeout=300,
             smt_retry_limit=10,
         )
-    except BaseException:
+    except ValueError:
+        if report_file:
+            lock = FileLock(f'{report_file.name}.lock')
+            with lock:
+                with report_file.open('a') as f:
+                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
+                    # TODO: 1 to be replaced with actual prove result or return codeß
         raise
-    finally:
-        log_file.write_text(caplog.text)
+
+
+#   finally:
+#       log_file.write_text(caplog.text)
+#

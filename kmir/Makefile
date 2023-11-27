@@ -89,8 +89,9 @@ handwritten-run-fail:
 .PHONY: handwritten-test-run
 
 handwritten-prove-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_prove.py
+	$(POETRY_RUN) pytest src/tests/integration/test_prove.py                      \
 			--tb=line                                                               \
+			--no-skip                                                               \
             -k test_handwritten                                                     \
             --report-file src/tests/integration/test-data/handwritten-prove-fail.tsv  \
             $(TEST_ARGS);
