@@ -104,7 +104,7 @@
               cp -v kmir/src/tests/integration/test-data/prove-rs/simple-spec.k tests/
               cp -v kmir/src/tests/nix/nix-tests.sh tests/
               cd tests/
-              sed -i 's!requires "../../../../k-src/mir.md"!requires "../kmir/k-src/mir.md"!' simple-spec.k
+              sed -i 's!requires "../../../../../k-src/mir.md"!requires "../kmir/k-src/mir.md"!' verify.k
               patchShebangs .
               ./nix-tests.sh
             '';
