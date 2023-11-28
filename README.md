@@ -116,6 +116,10 @@ git clone --recurse-submodules git@github.com:runtimeverification/mir-semantics.
 ### Build `KMIR`
 
 Prerequsites: `python 3.8.*`, `pip >= 20.0.2`, `poetry >= 1.3.2`.
+Users are referred to the tool's installation page for more details:
+- [Installing Python](https://www.python.org/downloads/)
+- [Installing `pip`](https://pip.pypa.io/en/stable/installation/): It usually comes with Python installation.
+- [Installing `poetry`](https://python-poetry.org/docs/)
 
 The build system of `KMIR` is a mixture of `poetry` + `kbuild` + `make`:
 * `poetry` handles Python dependencies, see [pyproject.toml](`pyproject.toml`) for Python-related configuration
