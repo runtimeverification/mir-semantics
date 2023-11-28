@@ -1,19 +1,7 @@
-requires "../../../../k-src/mir.md"
-
-module VERIFICATION
-    imports K-EQUAL
-    imports BASIC-K
-    imports MIR-SYMBOLIC
-
-    // LocalTokens will have parsing error if they are not enumerated here 
-    syntax LocalToken ::= "_1" [token]
-    syntax LocalToken ::= "_2" [token]
-    syntax LocalToken ::= "_3" [token]
-    syntax LocalToken ::= "_4" [token]
-endmodule
+requires "verify.k"
 
 module SIMPLE-SPEC
-    imports VERIFICATION
+    imports VERIFY
 
     claim [statement.1]: <k> #executeStatement(_3 = const 5_usize) => .K ...</k>
           <callStack> ListItem(FN_KEY) ... </callStack>

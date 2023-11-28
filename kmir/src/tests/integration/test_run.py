@@ -7,46 +7,19 @@ from pyk.ktool.krun import KRunOutput
 
 from kmir import KMIR
 
-from .utils import COMPILETEST_PARSE_FAIL, COMPILETEST_TEST_DATA, HANDWRITTEN_EXECUTE_TEST_DATA, TEST_DATA_DIR
-
-COMPILETEST_RUN_FAIL_FILE = TEST_DATA_DIR / 'compiletest-run-fail.tsv'
-COMPILETEST_RUN_FAIL = {test.split('\t')[0] for test in COMPILETEST_RUN_FAIL_FILE.read_text().splitlines()}
-
-COMPILETEST_RUN_EXCLUDE = {
-    # macos only
-    'backtrace-apple-no-dsymutil.mir',
-    # requires special compilation
-    'codegen/init-large-type.mir',
-    'macros/macro-with-attrs1.mir',
-    'macros/syntax-extension-cfg.mir',
-    'mir/mir_overflow_off.mir',
-    'numbers-arithmetic/next-power-of-two-overflow-ndebug.mir',
-    'panic-runtime/abort.mir',
-    'test-attrs/test-vs-cfg-test.mir',
-    'codegen/issue-28950.mir',
-    # takes too long
-    'iterators/iter-count-overflow-debug.mir',
-    'iterators/iter-count-overflow-ndebug.mir',
-    'iterators/iter-position-overflow-debug.mir',
-    'iterators/iter-position-overflow-ndebug.mir',
-    'compiletest-rs/ui/consts/promote_evaluation_unused_result.mir',
-    # requires special run flags
-    'test-attrs/test-filter-multiple.mir',
-    # requires environment variables when running
-    'exec-env.mir',
-    # scanner error
-    'new-unicode-escapes.mir',
-    'multibyte.mir',
-}
-
-HANDWRITTEN_RUN_FAIL_FILE = TEST_DATA_DIR / 'handwritten-run-fail.tsv'
-HANDWRITTEN_RUN_FAIL = {test.split('\t')[0] for test in HANDWRITTEN_RUN_FAIL_FILE.read_text().splitlines()}
+from .utils import (
+    COMPILETEST_RUN_FAIL,
+    COMPILETEST_TEST_DATA,
+    HANDWRITTEN_RUN_FAIL,
+    HANDWRITTEN_RUN_TEST_DATA,
+    TEST_DATA_DIR,
+)
 
 
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
-    HANDWRITTEN_EXECUTE_TEST_DATA,
-    ids=[test_id for test_id, *_ in HANDWRITTEN_EXECUTE_TEST_DATA],
+    HANDWRITTEN_RUN_TEST_DATA,
+    ids=[test_id for test_id, *_ in HANDWRITTEN_RUN_TEST_DATA],
 )
 def test_handwritten(
     kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
@@ -84,9 +57,7 @@ def test_compiletest(
     2. Check the return code w.r.t. run-pass/run-fail condition
     3. Compare the output with the expected output
     """
-    if allow_skip and (
-        test_id in COMPILETEST_PARSE_FAIL or test_id in COMPILETEST_RUN_EXCLUDE or test_id in COMPILETEST_RUN_FAIL
-    ):
+    if allow_skip and test_id in COMPILETEST_RUN_FAIL:
         pytest.skip()
 
     # Given

@@ -1,62 +1,42 @@
-import logging
 import sys
 from pathlib import Path
-from typing import Final
+from typing import Optional
 
 import pytest
-from pytest import LogCaptureFixture
+from filelock import FileLock
 
 from kmir.__main__ import exec_prove
 
-from ..utils import REPO_ROOT
+from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
+
+# from pytest import LogCaptureFixture
+
 
 sys.setrecursionlimit(10**8)
 
-# -------------------
-# Test specifications
-# -------------------
-
-TEST_DIR: Final = REPO_ROOT / 'kmir/src/tests'
-SYMBOLIC_TEST_DIR: Final = TEST_DIR / 'integration/proofs'
-INITIAL_SPECS: Final = SYMBOLIC_TEST_DIR / 'simple-spec.k'
-EMPTY_PROGRAM: Final = SYMBOLIC_TEST_DIR / 'empty-program.k'
-
-ALL_TESTS: Final = [INITIAL_SPECS, EMPTY_PROGRAM]
-
-
-def exclude_list(exclude_file: Path) -> list[Path]:
-    res = [REPO_ROOT / test_path for test_path in exclude_file.read_text().splitlines()]
-    # assert res
-    return res
-
-
-SKIPPED_TESTS: Final = exclude_list(SYMBOLIC_TEST_DIR / 'symbolic-failing')
-
-
-# ---------
-# Pyk tests
-# ---------
-
 
 @pytest.mark.parametrize(
-    'spec_file',
-    ALL_TESTS,
-    ids=[str(spec_file.relative_to(SYMBOLIC_TEST_DIR)) for spec_file in ALL_TESTS],
+    ('test_id', 'spec_file'),
+    PROVE_TEST_DATA,
+    ids=[test_id for test_id, *_ in PROVE_TEST_DATA],
 )
-def test_pyk_prove(
+def test_handwritten(
     llvm_dir: str,
     haskell_dir: str,
+    test_id: str,
     spec_file: Path,
     tmp_path: Path,
-    caplog: LogCaptureFixture,
+    allow_skip: bool,
+    report_file: Optional[Path],
+    #  caplog: LogCaptureFixture,
 ) -> None:
-    caplog.set_level(logging.INFO)
+    # caplog.set_level(logging.INFO)
 
-    if spec_file in SKIPPED_TESTS:
+    if allow_skip and test_id in PROVE_FAIL:
         pytest.skip()
 
     # Given
-    log_file = tmp_path / 'log.txt'
+    tmp_path / 'log.txt'
     use_directory = tmp_path / 'kprove'
     use_directory.mkdir()
 
@@ -70,7 +50,16 @@ def test_pyk_prove(
             smt_timeout=300,
             smt_retry_limit=10,
         )
-    except BaseException:
+    except ValueError:
+        if report_file:
+            lock = FileLock(f'{report_file.name}.lock')
+            with lock:
+                with report_file.open('a') as f:
+                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
+                    # TODO: 1 to be replaced with actual prove result or return codeß
         raise
-    finally:
-        log_file.write_text(caplog.text)
+
+
+#   finally:
+#       log_file.write_text(caplog.text)
+#
