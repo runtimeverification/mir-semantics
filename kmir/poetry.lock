@@ -646,7 +646,7 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pyk"
-version = "0.1.523"
+version = "0.1.524"
 description = ""
 category = "main"
 optional = false
@@ -663,12 +663,13 @@ psutil = "5.9.5"
 pybind11 = "^2.10.3"
 textual = "^0.27.0"
 tomli = "^2.0.1"
+xdg-base-dirs = "^6.0.1"
 
 [package.source]
 type = "git"
 url = "https://github.com/runtimeverification/pyk.git"
-reference = "v0.1.523"
-resolved_reference = "646a4fe7e7b6819062e352444e22dd27cddf19a6"
+reference = "v0.1.524"
+resolved_reference = "1643899e3ce7eaf9d60a4237ca1f13f6e7e834f7"
 
 [[package]]
 name = "pyperclip"
@@ -862,6 +863,18 @@ files = [
 ]
 
 [[package]]
+name = "xdg-base-dirs"
+version = "6.0.1"
+description = "Variables defined by the XDG Base Directory Specification"
+category = "main"
+optional = false
+python-versions = ">=3.10,<4.0"
+files = [
+    {file = "xdg_base_dirs-6.0.1-py3-none-any.whl", hash = "sha256:63f6ebc1721ced2e86c340856e004ef829501a30a37e17079c52cfaf0e1741b9"},
+    {file = "xdg_base_dirs-6.0.1.tar.gz", hash = "sha256:b4c8f4ba72d1286018b25eea374ec6fbf4fddda3d4137edf50de95de53e195a6"},
+]
+
+[[package]]
 name = "zipp"
 version = "3.17.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -880,4 +893,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0fbafb0b6b2ca495f464bf0a004ae8bfd92259f8a9578787f74fc6f57779b054"
+content-hash = "ea0271c8fd4273fd51f7a8520c0e5190964dcb069322498bcb0f59e46d265074"
