@@ -96,16 +96,3 @@ jobs:
           set -x
           VERSION=v$(cat package/version)
           gh release create ${VERSION} --target ${{ github.sha }}
-
-      - name: 'Update dependents'
-        run: |
-          set -x
-          VERSION=$(cat package/version)
-          curl --fail                                                          \
-            -X POST                                                            \
-            -H "Accept: application/vnd.github+json"                           \
-            -H "Authorization: Bearer ${{ secrets.JENKINS_GITHUB_PAT }}"       \
-            -H "X-GitHub-Api-Version: 2022-11-28"                              \
-            https://api.github.com/repos/runtimeverification/devops/dispatches \
-            -d '{"event_type":"on-demand-test","client_payload":{"repo":"runtimeverification/kmir","version":"'${VERSION}'"}}'
-
