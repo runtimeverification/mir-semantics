@@ -21,6 +21,10 @@ version_bump() {
     if [[ "${version_major}" == "${current_version_major}" ]] && [[ "${version_minor}" == "${current_version_minor}" ]]; then
         new_version="${version_major}.${version_minor}.$((version_patch + 1))"
     fi
+    # If the file being commited increases the major or minor, then take that version as it is
+    if [[ "${version_major}" < "${current_version_major}" ]] || [[ "${version_minor}" < "${current_version_minor}" ]]; then
+        new_version="${current_version}"
+    fi
     echo "${new_version}" > "${version_file}"
     notif "Version: ${new_version}"
 }
