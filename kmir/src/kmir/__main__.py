@@ -18,6 +18,7 @@ from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 from pyk.utils import BugReport
 
+from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR, KMIRSemantics
 from .utils import (
@@ -44,6 +45,10 @@ def main() -> None:
 
     execute = globals()[executor_name]
     execute(**vars(args))
+
+
+def exec_version(**kwargs: Any) -> None:
+    print(f'KMIR Version: {VERSION}')
 
 
 def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
