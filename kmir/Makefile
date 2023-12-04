@@ -36,7 +36,7 @@ test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration: poetry-install
-	$(POETRY_RUN) pytest                                                  \
+	$(POETRY_RUN) pytest -ra                                              \
         src/tests/integration/test_parse.py                               \
         src/tests/integration/test_run.py                                 \
         src/tests/integration/test_prove.py                               \
