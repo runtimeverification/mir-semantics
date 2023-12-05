@@ -66,7 +66,6 @@ jobs:
 
       - name: 'Build Docker image'
         run: |
-          K_VERSION=$(cat deps/k_release)
           K_COMMIT=$(grep -Po '[0-9.]+' ./deps/k_release)
           docker build . --tag ${TAG} --build-arg K_COMMIT=${K_COMMIT}
 
