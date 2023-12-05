@@ -20,4 +20,5 @@ USER user
 ENV PATH=/home/user/.local/bin:${PATH}
 RUN cd kmir-build \
     && pip install ./kmir \
-    && rm -rf kmir
+    && cd ../ \
+    &&  rm -rf kmir-build
