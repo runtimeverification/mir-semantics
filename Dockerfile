@@ -1,5 +1,8 @@
 ARG K_DISTRO=jammy
-ARG K_COMMIT
+
+K_COMMIT=$(grep -Po '[0-9.]+' ./deps/k_release)
+docker build . --tag ${TAG} --build-arg K_COMMIT=${K_COMMIT}
+
 FROM runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_COMMIT}
 
 RUN    apt-get update        \
