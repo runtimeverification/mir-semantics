@@ -70,7 +70,7 @@ jobs:
           docker build . --tag ${TAG} --build-arg K_COMMIT=${K_COMMIT}
 
       - name: 'Run Docker image'
-        run: docker run --rm ${TAG} kmir --help
+        run: docker run --rm ${TAG} /bin/bash -c "kmir --help"
 
       - name: 'Push Docker image to Docker Hub'
         run: |
