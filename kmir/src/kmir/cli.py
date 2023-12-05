@@ -1,3 +1,4 @@
+import os
 import sys
 from argparse import ArgumentParser
 from functools import cached_property
@@ -36,7 +37,7 @@ def create_argument_parser() -> ArgumentParser:
     )
     parse_subparser.add_argument(
         '--definition-dir',
-        default=None,
+        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
@@ -51,7 +52,7 @@ def create_argument_parser() -> ArgumentParser:
     parse_subparser.add_argument(
         '--output',
         type=str,
-        default='kore',
+        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
         required=False,
@@ -66,7 +67,7 @@ def create_argument_parser() -> ArgumentParser:
     )
     run_subparser.add_argument(
         '--definition-dir',
-        default=None,
+        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
@@ -103,11 +104,13 @@ def create_argument_parser() -> ArgumentParser:
     )
     prove_subparser.add_argument(
         '--definition-dir',
+        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     prove_subparser.add_argument(
         '--haskell-dir',
+        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
@@ -184,11 +187,13 @@ def create_argument_parser() -> ArgumentParser:
 
     show_subparser.add_argument(
         '--definition-dir',
+        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     show_subparser.add_argument(
         '--haskell-dir',
+        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
@@ -212,11 +217,13 @@ def create_argument_parser() -> ArgumentParser:
 
     view_subparser.add_argument(
         '--definition-dir',
+        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     view_subparser.add_argument(
         '--haskell-dir',
+        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )

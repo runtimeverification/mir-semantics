@@ -8,18 +8,18 @@ from typing import Any, Final
 from pyk.cterm import CTerm
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
-from pyk.ktool.kprint import KAstInput, KAstOutput
 from pyk.ktool.kprove import KProve
-from pyk.ktool.krun import KRunOutput
 from pyk.proof import APRProof
 from pyk.proof.equality import EqualityProof
 from pyk.proof.proof import Proof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
-from pyk.utils import BugReport
+from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from .cli import create_argument_parser
 from .kmir import KMIR, KMIRSemantics
+from .parse import parse
+from .run import run
 from .utils import (
     NodeIdLike,
     ensure_ksequence_on_k_cell,
@@ -57,17 +57,21 @@ def exec_parse(
     input_file: str,
     definition_dir: str | None = None,
     input: str = 'program',
-    output: str = 'kore',
+    output: str = 'pretty',
     **kwargs: Any,
 ) -> None:
-    kast_input = KAstInput[input.upper()]
-    kast_output = KAstOutput[output.upper()]
+    mir_file = Path(input_file)
+    check_file_path(mir_file)
 
-    kmir = KMIR(definition_dir, None)
-    proc_res = kmir.parse_program_raw(input_file, input=kast_input, output=kast_output)
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+    else:
+        llvm_dir = Path(definition_dir)
+    check_dir_path(llvm_dir)
 
-    if output != KAstOutput.NONE:
-        print(proc_res.stdout)
+    # _LOGGER.log( 'Call parser at {llvm_dir}')
+    result = parse(llvm_dir, mir_file, output)
+    print(result)
 
 
 def exec_run(
@@ -79,18 +83,27 @@ def exec_run(
     ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
-    krun_output = KRunOutput[output.upper()]
-    br = BugReport(Path(input_file).with_suffix('.bug_report.tar')) if bug_report else None
-    kmir = KMIR(definition_dir, None, bug_report=br)
+    mir_file = Path(input_file)
+    check_file_path(mir_file)
+
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+    else:
+        llvm_dir = Path(definition_dir)
+    check_dir_path(llvm_dir)
+
+    # krun_output = KRunOutput[output.upper()]
+    br = BugReport(mir_file.with_suffix('.bug_report.tar')) if bug_report else None
+    # kmir = KMIR(definition_dir, None, bug_report=br)
 
     try:
-        proc_res = kmir.run_program(input_file, output=krun_output, depth=depth)
-        if output != KAstOutput.NONE:
-            print(proc_res.stdout)
+        result = run(llvm_dir, mir_file, depth=depth, output=output, bug_report=br)
+        if output != 'none':
+            print(result.stdout)
     except RuntimeError as err:
         if ignore_return_code:
             msg, stdout, stderr = err.args
-            print(stdout)
+            print(stdout)  # TODO: log error
             print(stderr)
             print(msg)
         else:

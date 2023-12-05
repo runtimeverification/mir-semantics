@@ -3,9 +3,8 @@ from typing import Optional
 
 import pytest
 from filelock import FileLock
-from pyk.ktool.kprint import KAstInput, KAstOutput
 
-from kmir import KMIR
+from kmir.parse import parse
 
 from .utils import (
     COMPILETEST_PARSE_FAIL,
@@ -20,7 +19,7 @@ from .utils import (
     ('test_id', 'input_path'), HANDWRITTEN_PARSE_TEST_DATA, ids=[test_id for test_id, *_ in HANDWRITTEN_PARSE_TEST_DATA]
 )
 def test_handwritten_syntax(
-    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     if allow_skip and test_id in HANDWRITTEN_PARSE_FAIL:
         pytest.skip()
@@ -30,8 +29,11 @@ def test_handwritten_syntax(
 
     # Then
     try:
-        parse_result = kmir.parse_program_raw(
-            input_path, temp_file=temp_file, input=KAstInput.PROGRAM, output=KAstOutput.KORE
+        parse_result = parse(
+            llvm_dir,
+            input_path,
+            output='kore',
+            temp_file=temp_file,
         )
         assert not parse_result.returncode
     except ValueError:
@@ -49,7 +51,7 @@ def test_handwritten_syntax(
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
 def test_compiletest(
-    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     if allow_skip and test_id in COMPILETEST_PARSE_FAIL:
         pytest.skip()
@@ -59,8 +61,11 @@ def test_compiletest(
 
     # Then
     try:
-        parse_result = kmir.parse_program_raw(
-            input_path, temp_file=temp_file, input=KAstInput.PROGRAM, output=KAstOutput.KORE
+        parse_result = parse(
+            llvm_dir,
+            input_path,
+            output='kore',
+            temp_file=temp_file,
         )
         assert not parse_result.returncode
     except ValueError:

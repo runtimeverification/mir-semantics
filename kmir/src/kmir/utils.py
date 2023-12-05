@@ -18,12 +18,18 @@ from pyk.proof.equality import EqualityProof, EqualityProver
 from pyk.proof.proof import Proof, ProofStatus
 from pyk.utils import BugReport, single
 
+from .preprocessor import preprocess
+
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
 
 NodeIdLike = int | str
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+def preprocess_mir_file(program_file: Path, temp_file: Path) -> None:
+    temp_file.write_text(preprocess(program_file.read_text()))
 
 
 def get_apr_proof_for_spec(

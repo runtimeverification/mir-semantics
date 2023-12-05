@@ -77,5 +77,5 @@ def haskell_dir(kbuild: KBuild, project: Project) -> Path:
 
 
 @pytest.fixture(scope='session')
-def kmir(llvm_dir: Path, haskell_dir: Path) -> KMIR:
+def kmir(llvm_dir: str, haskell_dir: str) -> KMIR:
     return KMIR(llvm_dir=llvm_dir, haskell_dir=haskell_dir)

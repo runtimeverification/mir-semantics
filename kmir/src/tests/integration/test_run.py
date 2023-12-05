@@ -3,9 +3,9 @@ from typing import Optional
 
 import pytest
 from filelock import FileLock
-from pyk.ktool.krun import KRunOutput
 
-from kmir import KMIR
+# from kmir import KMIR
+from kmir.run import run
 
 from .utils import (
     COMPILETEST_RUN_FAIL,
@@ -15,6 +15,8 @@ from .utils import (
     TEST_DATA_DIR,
 )
 
+# from pyk.ktool.krun import KRunOutput
+
 
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
@@ -22,7 +24,7 @@ from .utils import (
     ids=[test_id for test_id, *_ in HANDWRITTEN_RUN_TEST_DATA],
 )
 def test_handwritten(
-    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
@@ -36,7 +38,7 @@ def test_handwritten(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
+    run_result = run(llvm_dir, input_path, check=False, temp_file=temp_file)
     if report_file and run_result.returncode:
         with FileLock(f'{report_file.name}.lock', timeout=1):
             with report_file.open('a') as f:
@@ -50,7 +52,7 @@ def test_handwritten(
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
 def test_compiletest(
-    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
@@ -64,7 +66,7 @@ def test_compiletest(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
+    run_result = run(llvm_dir, input_path, check=False, temp_file=temp_file)
     if report_file and run_result.returncode:
         lock = FileLock(f'{report_file.name}.lock')
         with lock:

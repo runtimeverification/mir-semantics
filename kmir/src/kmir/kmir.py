@@ -1,12 +1,9 @@
 __all__ = ['KMIR']
 
-import json
 import logging
-import os
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from subprocess import CalledProcessError, CompletedProcess
+from subprocess import CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Final, Optional, Union, final
 
@@ -14,7 +11,7 @@ from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.cterm import CTerm
 from pyk.kast.inner import KApply, KInner, KSequence, KVariable
 from pyk.kcfg.semantics import KCFGSemantics
-from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
+from pyk.ktool.kprint import gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRunOutput, _krun
 from pyk.prelude.k import K
@@ -82,13 +79,7 @@ class KMIR:
         use_directory: Path | None = None,
     ):
         if llvm_dir is None:
-            env_llvm_dir = os.getenv('KMIR_LLVM_DIR')
-            if env_llvm_dir:
-                llvm_dir = Path(env_llvm_dir)
-            else:
-                raise RuntimeError(
-                    'Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR'
-                )
+            raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
         else:
             llvm_dir = Path(llvm_dir)
         check_dir_path(llvm_dir)
@@ -98,13 +89,7 @@ class KMIR:
             mir_parser = gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
 
         if haskell_dir is None:
-            env_haskell_dir = os.getenv('KMIR_HASKELL_DIR')
-            if env_haskell_dir:
-                haskell_dir = Path(env_haskell_dir)
-            else:
-                # Haskell dir doesn't exist, but it not needed for current functionality
-                _LOGGER.warning('Haskell defintion could not be found')
-                haskell_dir = llvm_dir  # Just to pass type checking for now
+            raise RuntimeError('Cannot find KMIR HASKELL definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
         else:
             haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
@@ -117,6 +102,7 @@ class KMIR:
         object.__setattr__(self, 'bug_report', bug_report)
         object.__setattr__(self, 'kprove', kprove)
 
+    """     
     def parse_program_raw(
         self,
         program_file: Union[str, Path],
@@ -171,7 +157,9 @@ class KMIR:
         )
 
         return KInner.from_dict(json.loads(proc_res.stdout)['term'])
+    """
 
+    """     
     def run_program(
         self,
         program_file: Union[str, Path],
@@ -208,7 +196,8 @@ class KMIR:
 
         temp_file = Path(temp_file)
         return preprocess_and_run(program_file, temp_file)
-
+    """
+    
     @staticmethod
     def halt() -> KApply:
         return KApply('#halt_MIR_KItem')
