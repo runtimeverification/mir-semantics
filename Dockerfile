@@ -13,11 +13,11 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && useradd -m -u $USER_ID -s /bin/sh -g user user
 
-
-COPY --chown=user:user . /home/user
+WORKDIR /home/user
+COPY --chown=user:user . /home/user/kmir-build
 USER user
 
 ENV PATH=/home/user/.local/bin:${PATH}
-RUN    cd kmir            \ 
+RUN cd kmir-build \
     && pip install ./kmir \
     && rm -rf kmir
