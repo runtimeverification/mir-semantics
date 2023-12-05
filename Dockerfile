@@ -1,5 +1,5 @@
 ARG K_DISTRO=jammy
-K_COMMIT
+ARG K_COMMIT
 FROM runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_COMMIT}
 
 RUN    apt-get update        \
