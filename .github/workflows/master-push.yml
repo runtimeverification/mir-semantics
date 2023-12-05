@@ -60,6 +60,9 @@ jobs:
 
       - name: 'Set environment'
         run: |
+          K_COMMIT=$(grep -Po '[0-9.]+' ./deps/k_release)
+          docker build . --tag ${TAG} --build-arg K_COMMIT=${K_COMMIT}
+          
           KMIR_VERSION=$(cat package/version)
           TAG=runtimeverificationinc/kmir:ubuntu-jammy-${KMIR_VERSION}
           echo "TAG=${TAG}" >> ${GITHUB_ENV}
