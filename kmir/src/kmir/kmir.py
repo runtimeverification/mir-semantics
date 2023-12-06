@@ -49,7 +49,7 @@ class KMIRSemantics(KCFGSemantics):
 
     @staticmethod
     def terminal_rules() -> list[str]:
-        terminal_rules = ['MIR.halt']
+        terminal_rules = ['MIR.halt', 'MIR.panic', 'MIR.iPanic']
 
         # TODO: break every step and add to terminal rules. Semantics does not support this currently
         return terminal_rules
