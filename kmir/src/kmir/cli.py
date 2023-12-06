@@ -47,7 +47,6 @@ def create_argument_parser() -> ArgumentParser:
         default='program',
         help='Input mode',
         choices=['program', 'binary', 'json', 'kast', 'kore'],
-        required=False,
     )
     parse_subparser.add_argument(
         '--output',
@@ -55,7 +54,6 @@ def create_argument_parser() -> ArgumentParser:
         default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
-        required=False,
     )
 
     # Run
@@ -77,7 +75,6 @@ def create_argument_parser() -> ArgumentParser:
         default='kast',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
-        required=False,
     )
     run_subparser.add_argument(
         '--ignore-return-code',
@@ -103,6 +100,11 @@ def create_argument_parser() -> ArgumentParser:
         'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
     )
     prove_subparser.add_argument(
+        'spec-file',
+        type=file_path,
+        help='Path to specification file',
+    )
+    prove_subparser.add_argument(
         '--definition-dir',
         default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
@@ -113,11 +115,6 @@ def create_argument_parser() -> ArgumentParser:
         default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
-    )
-    prove_subparser.add_argument(
-        '--spec-file',
-        type=file_path,
-        help='Path to specification file',
     )
     prove_subparser.add_argument(
         '--bug-report',
@@ -184,7 +181,11 @@ def create_argument_parser() -> ArgumentParser:
             kmir_cli_args.kcfg_show_args,
         ],
     )
-
+    show_subparser.add_argument(
+        'spec-file',
+        type=file_path,
+        help='Path to specification file',
+    )
     show_subparser.add_argument(
         '--definition-dir',
         default=os.getenv('KMIR_LLVM_DIR'),
@@ -196,11 +197,6 @@ def create_argument_parser() -> ArgumentParser:
         default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
-    )
-    show_subparser.add_argument(
-        '--spec-file',
-        type=file_path,
-        help='Path to specification file',
     )
     show_subparser.add_argument(
         '--save-directory',
@@ -214,7 +210,11 @@ def create_argument_parser() -> ArgumentParser:
         help='Display tree view of CFG',
         parents=[logging_args],
     )
-
+    view_subparser.add_argument(
+        'spec-file',
+        type=file_path,
+        help='Path to specification file',
+    )
     view_subparser.add_argument(
         '--definition-dir',
         default=os.getenv('KMIR_LLVM_DIR'),
@@ -226,11 +226,6 @@ def create_argument_parser() -> ArgumentParser:
         default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
-    )
-    view_subparser.add_argument(
-        '--spec-file',
-        type=file_path,
-        help='Path to specification file',
     )
     view_subparser.add_argument(
         '--save-directory',

@@ -5,8 +5,8 @@ from subprocess import CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Optional
 
-from pyk.cli.utils import BugReport, check_file_path
 from pyk.ktool.krun import KRunOutput, _krun
+from pyk.utils import BugReport
 
 from .utils import preprocess_mir_file
 

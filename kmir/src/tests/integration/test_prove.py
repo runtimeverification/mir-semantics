@@ -5,12 +5,14 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir.__main__ import exec_prove
+from kmir.prove import prove
 
 from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
 
-# from pytest import LogCaptureFixture
+# from kmir.__main__ import exec_prove
 
+
+# from pytest import LogCaptureFixture
 
 sys.setrecursionlimit(10**8)
 
@@ -21,8 +23,8 @@ sys.setrecursionlimit(10**8)
     ids=[test_id for test_id, *_ in PROVE_TEST_DATA],
 )
 def test_handwritten(
-    llvm_dir: str,
-    haskell_dir: str,
+    llvm_dir: Path,
+    haskell_dir: Path,
     test_id: str,
     spec_file: Path,
     tmp_path: Path,
@@ -42,10 +44,10 @@ def test_handwritten(
 
     # When
     try:
-        exec_prove(
-            definition_dir=llvm_dir,
+        prove(
+            llvm_dir=llvm_dir,
             haskell_dir=haskell_dir,
-            spec_file=str(spec_file),
+            spec_file=spec_file,
             save_directory=use_directory,
             smt_timeout=300,
             smt_retry_limit=10,

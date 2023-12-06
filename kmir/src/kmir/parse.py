@@ -5,7 +5,6 @@ from subprocess import CalledProcessError, CompletedProcess
 from tempfile import NamedTemporaryFile
 from typing import Final, Optional, Union
 
-from pyk.cli.utils import check_file_path
 from pyk.ktool.kprint import KAstOutput, gen_glr_parser
 
 from .utils import preprocess_mir_file
@@ -16,8 +15,9 @@ _LOGGER: Final = logging.getLogger(__name__)
 def parse(
     llvm_dir: Path,
     mir_file: Path,
+    *,
     #   input: str,
-    output: str,
+    output: str = 'pretty',
     # log: Logger,
     temp_file: Optional[Union[str, Path]] = None,
 ) -> CompletedProcess:
@@ -42,7 +42,7 @@ def parse(
     match output_format:
         case KAstOutput.KORE:
             return kore_output.stdout
-       # case KAstOutput.PRETTY:
+        # case KAstOutput.PRETTY:
         case _:
             return kore_output
     # TODO: kore convert to other output format? Move to Main?
