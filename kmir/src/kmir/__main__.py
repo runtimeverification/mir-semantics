@@ -5,6 +5,7 @@ from typing import Any, Final, Iterable
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
+from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR
 from .kmir_cfg import show_kcfg, view_kcfg
@@ -28,6 +29,10 @@ def main() -> None:
 
     execute = globals()[executor_name]
     execute(**vars(args))
+
+
+def exec_version(**kwargs: Any) -> None:
+    print(f'KMIR Version: {VERSION}')
 
 
 def exec_init(definition_dir: str, **kwargs: Any) -> KMIR:

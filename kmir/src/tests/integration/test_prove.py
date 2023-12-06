@@ -9,9 +9,6 @@ from kmir.prove import prove
 
 from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
 
-# from kmir.__main__ import exec_prove
-
-
 # from pytest import LogCaptureFixture
 
 sys.setrecursionlimit(10**8)

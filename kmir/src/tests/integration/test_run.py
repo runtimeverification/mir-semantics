@@ -15,8 +15,6 @@ from .utils import (
     TEST_DATA_DIR,
 )
 
-# from pyk.ktool.krun import KRunOutput
-
 
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
