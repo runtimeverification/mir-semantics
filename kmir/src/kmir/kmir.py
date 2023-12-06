@@ -31,7 +31,7 @@ class KMIRSemantics(KCFGSemantics):
         # <k> #halt </k>
         if k_cell == KMIR.halt() or KMIR.is_panic(k_cell):
             return True
-        if type(k_cell) is KSequence:
+        elif type(k_cell) is KSequence:
             # <k> . </k>
             if k_cell.arity == 0:
                 return True
