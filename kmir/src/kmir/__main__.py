@@ -44,7 +44,7 @@ def exec_init(definition_dir: str, **kwargs: Any) -> KMIR:
         RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     )
 
-    return KMIR(llvm_dir, llvm_dir)
+    return KMIR(llvm_dir)
 
 
 def exec_parse(
@@ -63,8 +63,9 @@ def exec_parse(
         llvm_dir = Path(definition_dir)
         check_dir_path(llvm_dir)
 
+    kmir = KMIR(llvm_dir)
     # _LOGGER.log( 'Call parser at {llvm_dir}')
-    result = parse(llvm_dir, mir_file, output=output)
+    result = parse(kmir, mir_file, output=output)
     print(result)
 
 
