@@ -68,6 +68,7 @@ def project() -> Project:
 
 @pytest.fixture(scope='session')
 def llvm_dir(kbuild: KBuild, project: Project) -> Path:
+    kbuild.kompile(project, 'llvmc')
     return kbuild.kompile(project, 'llvm')
 
 
