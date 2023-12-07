@@ -9,6 +9,13 @@ main-file = "mir.md"
 main-module = "MIR"
 syntax-module = "MIR-SYNTAX"
 
+[targets.llvmc]
+backend = "llvm"
+main-file = "mir.md"
+main-module = "MIR"
+syntax-module = "MIR-SYNTAX"
+llvm-kompile-type = "c"
+
 [targets.haskell]
 backend = "haskell"
 main-file = "mir.md"
