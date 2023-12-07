@@ -148,6 +148,8 @@ def exec_prove(
     elif isinstance(kore_rpc_command, str):
         kore_rpc_command = kore_rpc_command.split()
 
+    llvm_library_dir = kmir.llvm_dir / '..' / 'llvmc'
+
     def is_functional(claim: KClaim) -> bool:
         claim_lhs = claim.body
         if type(claim_lhs) is KRewrite:
@@ -159,7 +161,7 @@ def exec_prove(
             kprove,
             kcfg_semantics=KMIRSemantics(),
             id=claim.label,
-            llvm_definition_dir=kmir.llvm_dir if use_booster else None,
+            llvm_definition_dir=llvm_library_dir if use_booster else None,
             bug_report=br,
             kore_rpc_command=kore_rpc_command,
             smt_timeout=smt_timeout,
