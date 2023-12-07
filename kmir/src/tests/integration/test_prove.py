@@ -59,6 +59,7 @@ def test_handwritten(
                     # TODO: 1 to be replaced with actual prove result or return codeß
         raise
 
+
 @pytest.mark.parametrize(
     ('test_id', 'spec_file'),
     PROVE_TEST_DATA,
