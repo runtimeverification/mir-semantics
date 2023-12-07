@@ -211,6 +211,7 @@ def exec_prove(
                 proof_problem,
                 kcfg_explore,
                 max_depth=depth,
+                terminal_rules=KMIRSemantics.terminal_rules(),
             )
             failure_log = None
             if not passed:
