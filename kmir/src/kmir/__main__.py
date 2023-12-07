@@ -1,18 +1,15 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final, Iterable
+from typing import Any, Final
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR
-from .kmir_cfg import show_kcfg, view_kcfg
 from .parse import parse
-from .prove import prove
 from .run import run
-from .utils import NodeIdLike
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -65,8 +62,8 @@ def exec_parse(
 
     kmir = KMIR(llvm_dir)
     # _LOGGER.log( 'Call parser at {llvm_dir}')
-    result = parse(kmir, mir_file, output=output)
-    print(result)
+    parse(kmir, mir_file, output=output)
+    # print(proc_res.stdout) if output != 'none' else None
 
 
 def exec_run(
@@ -75,7 +72,7 @@ def exec_run(
     output: str = 'none',
     depth: int | None = None,
     bug_report: bool = False,
-    ignore_return_code: bool = False,
+    # ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
     mir_file = Path(input_file)
@@ -87,29 +84,20 @@ def exec_run(
         llvm_dir = Path(definition_dir)
         check_dir_path(llvm_dir)
 
-    # krun_output = KRunOutput[output.upper()]
-    br = BugReport(mir_file.with_suffix('.bug_report.tar')) if bug_report else None
-    # kmir = KMIR(definition_dir, None, bug_report=br)
+    if depth is not None:
+        assert depth < 0, ValueError(f'Argument "depth" must be non-negative, got: {depth}')
 
-    try:
-        result = run(llvm_dir, mir_file, depth=depth, output=output, bug_report=br)
-        if output != 'none':
-            print(result.stdout)
-    except RuntimeError as err:
-        if ignore_return_code:
-            msg, stdout, stderr = err.args
-            print(stdout)  # TODO: log error
-            print(stderr)
-            print(msg)
-        else:
-            msg, stdout, stderr = err.args
-            print(stdout)
-            print(stderr)
-            print(msg)
-            exit(1)
+    if bug_report:
+        br = BugReport(mir_file.with_suffix('.bug_report.tar'))
+        kmir = KMIR(llvm_dir, bug_report=br)
+    else:
+        kmir = KMIR(llvm_dir)
+
+    run(kmir, mir_file, depth=depth, output=output)
+    # print(result)
 
 
-def exec_prove(
+""" def exec_prove(
     input_file: Path,
     definition_dir: Path | None = None,
     symbolic_dir: Path | None = None,
@@ -275,6 +263,7 @@ def exec_view_kcfg(
         spec_module,
         md_selector,
     )
+"""
 
 
 def _loglevel(args: Namespace) -> int:
@@ -287,5 +276,7 @@ def _loglevel(args: Namespace) -> int:
     return logging.WARNING
 
 
+"""
 if __name__ == '__main__':
     main()
+ """

@@ -4,7 +4,7 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-# from kmir import KMIR
+from kmir import KMIR
 from kmir.run import run
 
 from .utils import (
@@ -22,7 +22,7 @@ from .utils import (
     ids=[test_id for test_id, *_ in HANDWRITTEN_RUN_TEST_DATA],
 )
 def test_handwritten(
-    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
@@ -36,12 +36,14 @@ def test_handwritten(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = run(llvm_dir, input_path, check=False, temp_file=temp_file)
-    if report_file and run_result.returncode:
-        with FileLock(f'{report_file.name}.lock', timeout=1):
-            with report_file.open('a') as f:
-                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
-    assert not run_result.returncode
+    try:
+        run(kmir, input_path, depth=None, output='none', temp_file=temp_file)
+    except ValueError:
+        if report_file:
+            with FileLock(f'{report_file.name}.lock', timeout=1):
+                with report_file.open('a') as f:
+                    f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{1}\n')
+        raise
 
 
 @pytest.mark.parametrize(
@@ -50,7 +52,7 @@ def test_handwritten(
     ids=[test_id for test_id, *_ in COMPILETEST_TEST_DATA],
 )
 def test_compiletest(
-    llvm_dir: Path, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
+    kmir: KMIR, test_id: str, input_path: Path, tmp_path: Path, allow_skip: bool, report_file: Optional[Path]
 ) -> None:
     """
     1. Execute the program and grab the output in stdout and stderr
@@ -64,10 +66,13 @@ def test_compiletest(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = run(llvm_dir, input_path, check=False, temp_file=temp_file)
-    if report_file and run_result.returncode:
-        lock = FileLock(f'{report_file.name}.lock')
-        with lock:
-            with report_file.open('a') as f:
-                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
-    assert not run_result.returncode
+    try:
+        run(kmir, input_path, temp_file=temp_file)
+    except ValueError:
+        if report_file:
+            lock = FileLock(f'{report_file.name}.lock')
+            with lock:
+                with report_file.open('a') as f:
+                    f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{1}\n')
+        raise
+    # assert not run_result.returncode
