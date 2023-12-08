@@ -152,6 +152,7 @@ source set_env.sh
 
 ## Working with Docker
 We provide a Docker image for isolated testing, locally and in CI.
+NOTE: Mac Silicon hardware not supported.
 
 From the root of the repository:
   - Build the docker image (the `./deps/k_release` file pins the K version):
@@ -159,14 +160,14 @@ From the root of the repository:
     docker build . --tag kmir-tests --build-arg K_COMMIT=$(cat deps/k_release) --file .github/workflows/Dockerfile
     ```
    - Run the integration tests in a container:
-    ```sh
+    ```
     docker run --name kmir-container --rm --interactive --tty --detach --workdir /home/user kmir-tests &&
     docker cp . kmir-container:/home/user &&
     docker exec kmir-container chown -R user:user /home/user &&
     docker exec --user user kmir-container make -C kmir test-integration
     ```
 
-Note: you may need to run the `docker` commands with `sudo`, or start a superuser shell with `sudo -s`..
+Note: you may need to run the `docker` commands with `sudo`, or start a superuser shell with `sudo -s`.
 
 We use a similar workflow in CI actions defined in the `.github/` directory.
 
