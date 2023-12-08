@@ -2,8 +2,14 @@
 
 set -euo pipefail
 
-POETRY_RUN="$1"
-
 if [ "$1" == "llvm" ]; then
-    $(POETRY_RUN) kmir init $($(POETRY_RUN) kbuild which llvm)
+    case $# in
+
+    1)
+        kmir init $(kbuild which llvm)
+        ;;
+    *)
+        poetry run kmir init $(poetry run kbuild which llvm)
+        ;;
+    esac
 fi
