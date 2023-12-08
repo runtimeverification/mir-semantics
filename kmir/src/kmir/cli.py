@@ -56,7 +56,7 @@ def create_argument_parser() -> ArgumentParser:
         type=str,
         default='pretty',
         help='Output mode',
-        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
+        choices=['pretty', 'program', 'json', 'kore', 'kast', 'binary', 'latex', 'none'],
     )
 
     # Run
