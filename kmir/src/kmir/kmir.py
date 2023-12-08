@@ -6,9 +6,12 @@ from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from typing import Final, Optional, final
 
+from pyk.kore.parser import KoreParser
 from pyk.kore.prelude import SORT_K_ITEM, inj, top_cell_initializer
 from pyk.kore.syntax import Pattern, SortApp
-from pyk.ktool.kprint import KPrint, gen_glr_parser
+from pyk.kore.tools import PrintOutput, kore_print
+
+from pyk.ktool.kprint import gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.utils import BugReport, run_process
 
@@ -21,7 +24,6 @@ class KMIR:
     llvm_dir: Path
     mir_parser: Path
     llvm_interpreter: Path
-    kprint: KPrint
     haskell_dir: Path | None
     mir_symbolic: Path | None
     booster_interpreter: Path | None
@@ -43,7 +45,6 @@ class KMIR:
         else:
             mir_parser = mir_parser
 
-        kprint = KPrint(llvm_dir)
         # the run executor for interpreting mir programs
         llvm_interpreter = llvm_dir / 'interpreter'
 
@@ -58,15 +59,16 @@ class KMIR:
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'mir_parser', mir_parser)
-        object.__setattr__(self, 'haskell_dir', haskell_dir)
         object.__setattr__(self, 'llvm_interpreter', llvm_interpreter)
-        object.__setattr__(self, 'kprint', kprint)
+
+        object.__setattr__(self, 'haskell_dir', haskell_dir)
         object.__setattr__(self, 'mir_symbolic', None)
         object.__setattr__(self, 'booster_interpreter', booster_interpreter)
         object.__setattr__(self, 'mir_prove', mir_prove)
+
         object.__setattr__(self, 'bug_report', bug_report)
 
-    def mir_to_k(
+    def mir_to_kore(
         self,
         mir_file: Path,
     ) -> CompletedProcess:
@@ -83,9 +85,12 @@ class KMIR:
 
     def interpret_mir_to_kore(
         self,
-        pgm: Pattern,
+        pgm: str | Pattern,
         depth: int | None = None,
     ) -> CompletedProcess:
+        if not isinstance(pgm, Pattern):
+            pgm = KoreParser(pgm).pattern()
+
         depth = depth if depth is not None else -1
         args = [str(self.llvm_interpreter), '/dev/stdin', str(depth), '/dev/stdout']
 
@@ -96,3 +101,18 @@ class KMIR:
             raise RuntimeError(f'kmir interpreter failed with status {err.returncode}: {err.stderr}') from err
 
         return res
+
+    def print_kore_to_xxx(self, kore_text: str | Pattern, output: str) -> None:
+        output_format = PrintOutput(output)
+
+        match output_format:
+            case PrintOutput.NONE:
+                None
+            case PrintOutput.KORE:
+                print(kore_text)
+            case PrintOutput.JSON | PrintOutput.PRETTY | PrintOutput.PROGRAM | PrintOutput.KAST | PrintOutput.LATEX | PrintOutput.BINARY:
+                kore_pattern = KoreParser(kore_text).pattern()
+                print(kore_print(kore_pattern, self.llvm_dir, output_format))
+                # replace kore_print with run_process, make use of the executable, turn the color on.
+            case _:
+                raise ValueError('Output format not supported.')

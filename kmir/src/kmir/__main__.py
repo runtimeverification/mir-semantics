@@ -94,7 +94,6 @@ def exec_run(
         kmir = KMIR(llvm_dir)
 
     run(kmir, mir_file, depth=depth, output=output)
-    # print(result)
 
 
 """ def exec_prove(
