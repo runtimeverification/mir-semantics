@@ -50,7 +50,7 @@ def run(
                 print(kmir.kprint.kore_to_kast(run_result_kore).to_json())
             case KRunOutput.KORE:
                 print(run_result_kore)
-            case KRunOutput.PRETTY | KRunOutput.PROGRAM | KRunOutput.KAST | KRunOutput.BINARY | KRunOutput.LATEX:
+            case KRunOutput.PRETTY | KRunOutput.PROGRAM | KRunOutput.KAST | KRunOutput.LATEX | KRunOutput.BINARY:
                 print(kore_print(run_result_kore, kmir.llvm_dir, PrintOutput(output)))
                 # TODO: Should use output_format
             case _:

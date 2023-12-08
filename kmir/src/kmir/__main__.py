@@ -69,7 +69,7 @@ def exec_parse(
 def exec_run(
     input_file: str,
     definition_dir: str | None = None,
-    output: str = 'none',
+    output: str = 'pretty',
     depth: int | None = None,
     bug_report: bool = False,
     # ignore_return_code: bool = False,

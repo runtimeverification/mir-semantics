@@ -1,13 +1,13 @@
 __all__ = ['KMIR']
 
 import logging
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from typing import Final, Optional, final
 
-from pyk.kore.syntax import Pattern
+from pyk.kore.prelude import SORT_K_ITEM, inj, top_cell_initializer
+from pyk.kore.syntax import Pattern, SortApp
 from pyk.ktool.kprint import KPrint, gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.utils import BugReport, run_process
@@ -70,7 +70,7 @@ class KMIR:
         self,
         mir_file: Path,
     ) -> CompletedProcess:
-        args = [str(self.mir_parser), str(mir_file)] 
+        args = [str(self.mir_parser), str(mir_file)]
 
         try:
             # proc_res.stdout would always be KORE
@@ -86,9 +86,12 @@ class KMIR:
         pgm: Pattern,
         depth: int | None = None,
     ) -> CompletedProcess:
+        depth = depth if depth is not None else -1
         args = [str(self.llvm_interpreter), '/dev/stdin', str(depth), '/dev/stdout']
+
+        init_config = top_cell_initializer({'$PGM': inj(SortApp('SortMir'), SORT_K_ITEM, pgm)})
         try:
-            res = run_process(args, input=pgm.text, pipe_stderr=True)
+            res = run_process(args, input=init_config.text, pipe_stderr=True)
         except CalledProcessError as err:
             raise RuntimeError(f'kmir interpreter failed with status {err.returncode}: {err.stderr}') from err
 

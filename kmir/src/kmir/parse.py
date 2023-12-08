@@ -3,9 +3,9 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Final, Optional
 
-from pyk.ktool.kprint import KAstOutput
 from pyk.kore.parser import KoreParser
 from pyk.kore.tools import PrintOutput, kore_print
+from pyk.ktool.kprint import KAstOutput
 
 from .kmir import KMIR
 from .utils import preprocess_mir_file

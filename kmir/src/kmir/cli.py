@@ -77,7 +77,7 @@ def create_argument_parser() -> ArgumentParser:
         type=str,
         default='kast',
         help='Output mode',
-        choices=['pretty', 'program', 'json', 'kore', 'kast', 'none'],
+        choices=['pretty', 'program', 'json', 'kore', 'latex', 'kast', 'binary', 'none'],
     )
     """ run_subparser.add_argument(
         '--ignore-return-code',
