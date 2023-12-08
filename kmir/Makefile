@@ -137,6 +137,7 @@ check-black: poetry-install
 
 kbuild-%: check-k-version
 	$(POETRY_RUN) kbuild kompile $*
+	@./build_glr.sh $*
 
 kwhich-%:
 	$(POETRY_RUN) kbuild which $*
