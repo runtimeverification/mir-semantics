@@ -156,16 +156,16 @@ NOTE: Mac Silicon hardware not supported.
 
 From the root of the repository:
   - Build the docker image (the `./deps/k_release` file pins the K version):
-    ```sh
-    docker build . --tag kmir-tests --build-arg K_COMMIT=$(cat deps/k_release) --file .github/workflows/Dockerfile
-    ```
+```sh
+docker build . --tag kmir-tests --build-arg K_COMMIT=$(cat deps/k_release) --file .github/workflows/Dockerfile
+```
    - Run the integration tests in a container:
-    ```
-    docker run --name kmir-container --rm --interactive --tty --detach --workdir /home/user kmir-tests &&
-    docker cp . kmir-container:/home/user &&
-    docker exec kmir-container chown -R user:user /home/user &&
-    docker exec --user user kmir-container make -C kmir test-integration
-    ```
+```sh
+docker run --name kmir-container --rm --interactive --tty --detach --workdir /home/user kmir-tests &&
+docker cp . kmir-container:/home/user &&
+docker exec kmir-container chown -R user:user /home/user &&
+docker exec --user user kmir-container make -C kmir test-integration
+```
 
 Note: you may need to run the `docker` commands with `sudo`, or start a superuser shell with `sudo -s`.
 
