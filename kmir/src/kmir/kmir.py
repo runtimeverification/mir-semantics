@@ -12,7 +12,7 @@ from typing import Final, Optional, Union, final
 
 from pyk.cli.utils import check_dir_path, check_file_path
 from pyk.cterm import CTerm
-from pyk.kast.inner import KApply, KInner, KSequence, KVariable
+from pyk.kast.inner import KApply, KInner, KLabel, KSequence, KVariable
 from pyk.kcfg.semantics import KCFGSemantics
 from pyk.ktool.kprint import KAstInput, KAstOutput, _kast, gen_glr_parser
 from pyk.ktool.kprove import KProve
@@ -29,24 +29,27 @@ class KMIRSemantics(KCFGSemantics):
     def is_terminal(self, cterm: CTerm) -> bool:
         k_cell = cterm.cell('K_CELL')
         # <k> #halt </k>
-        if k_cell == KMIR.halt():
+        if k_cell == KMIR.halt() or KMIR.is_panic(k_cell):
             return True
         elif type(k_cell) is KSequence:
             # <k> . </k>
             if k_cell.arity == 0:
                 return True
             # <k> #halt </k>
-            elif k_cell.arity == 1 and k_cell[0] == KMIR.halt():
+            elif k_cell.arity == 1 and (k_cell[0] == KMIR.halt() or KMIR.is_panic(k_cell[0])):
                 return True
             elif (
-                k_cell.arity == 2 and k_cell[0] == KMIR.halt() and type(k_cell[1]) is KVariable and k_cell[1].sort == K
+                k_cell.arity == 2
+                and (k_cell[0] == KMIR.halt() or KMIR.is_panic(k_cell[0]))
+                and type(k_cell[1]) is KVariable
+                and k_cell[1].sort == K
             ):
                 return True
         return False
 
     @staticmethod
     def terminal_rules() -> list[str]:
-        terminal_rules = ['MIR.halt']
+        terminal_rules = ['MIR.halt', 'MIR.panic', 'MIR.iPanic']
 
         # TODO: break every step and add to terminal rules. Semantics does not support this currently
         return terminal_rules
@@ -212,3 +215,17 @@ class KMIR:
     @staticmethod
     def halt() -> KApply:
         return KApply('#halt_MIR_KItem')
+
+    @staticmethod
+    def panic_label() -> KLabel:
+        return KLabel('#panic(_,_,_)_PANICS_KItem_FunctionLikeKey_Panic_KItem')
+
+    @staticmethod
+    def internal_panic_label() -> KLabel:
+        return KLabel('#internalPanic(_,_,_)_PANICS_KItem_FunctionLikeKey_InternalPanic_KItem')
+
+    @staticmethod
+    def is_panic(inner: KInner) -> bool:
+        return type(inner) is KApply and (
+            inner.label == KMIR.internal_panic_label() or inner.label == KMIR.panic_label()
+        )

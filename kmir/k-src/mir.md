@@ -702,7 +702,7 @@ module MIR-FINALIZATION
 These are internal panics that are specific to KMIR.
 
 ```k
-  rule <k> #internalPanic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
+  rule [iPanic]: <k> #internalPanic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
        <returncode> 4 => 1 </returncode>
 ```
 
@@ -711,9 +711,7 @@ These are internal panics that are specific to KMIR.
 These panics are not specific to KMIR and caused by program-level reasons, i.e. assertion violations.
 
 ```k
-  rule <k> #panic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
-       <returncode> 4 => 2 </returncode>
-  rule <k> #panic(_FN_KEY, _PANIC, _MSG) ... </k>
+  rule [panic]: <k> #panic(_FN_KEY, _PANIC, _MSG) ~> (_ITEM:KItem => .K) ... </k>
        <returncode> 4 => 2 </returncode>
 ```
 
