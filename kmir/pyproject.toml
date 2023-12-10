@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.2.7"
+version = "0.2.8"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
@@ -13,7 +13,7 @@ authors = [
 [tool.poetry.dependencies]
 python = "^3.10"
 filelock = "3.9.0"
-pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "v0.1.534" }
+pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "v0.1.540" }
 pytest-timeout = "2.1.0"
 
 [tool.poetry.group.dev.dependencies]
