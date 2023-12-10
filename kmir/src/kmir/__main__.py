@@ -18,6 +18,7 @@ from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 from pyk.utils import BugReport
 
+from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR, KMIRSemantics
 from .utils import (
@@ -44,6 +45,10 @@ def main() -> None:
 
     execute = globals()[executor_name]
     execute(**vars(args))
+
+
+def exec_version(**kwargs: Any) -> None:
+    print(f'KMIR Version: {VERSION}')
 
 
 def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
@@ -143,6 +148,8 @@ def exec_prove(
     elif isinstance(kore_rpc_command, str):
         kore_rpc_command = kore_rpc_command.split()
 
+    llvm_library_dir = kmir.llvm_dir / '..' / 'llvmc'
+
     def is_functional(claim: KClaim) -> bool:
         claim_lhs = claim.body
         if type(claim_lhs) is KRewrite:
@@ -154,7 +161,7 @@ def exec_prove(
             kprove,
             kcfg_semantics=KMIRSemantics(),
             id=claim.label,
-            llvm_definition_dir=kmir.llvm_dir if use_booster else None,
+            llvm_definition_dir=llvm_library_dir if use_booster else None,
             bug_report=br,
             kore_rpc_command=kore_rpc_command,
             smt_timeout=smt_timeout,
@@ -206,6 +213,7 @@ def exec_prove(
                 proof_problem,
                 kcfg_explore,
                 max_depth=depth,
+                terminal_rules=KMIRSemantics.terminal_rules(),
             )
             failure_log = None
             if not passed:

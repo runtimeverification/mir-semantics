@@ -4,6 +4,7 @@ set -xueo pipefail
 
 which kmir
 kmir --help
+kmir version
 
 kmir parse --output pretty sum-to-n.mir > nix-sum-to-n.parse.out 
 git --no-pager diff nix-sum-to-n.parse.out sum-to-n.parse.out

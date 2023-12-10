@@ -27,6 +27,9 @@ def create_argument_parser() -> ArgumentParser:
             help='Path to the llvm definition',
         )
 
+    # Version
+    command_parser.add_parser('version', parents=[logging_args], help='Display KMIR version')
+
     # Parse
     parse_subparser = command_parser.add_parser('parse', parents=[logging_args], help='Parse a MIR file')
     parse_subparser.add_argument(
