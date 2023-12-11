@@ -16,6 +16,7 @@ from .kmir_cfg import KMIRSemantics
 from .utils import ensure_ksequence_on_k_cell, kmir_prove, legacy_explore, print_failure_info
 
 _LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 def prove(

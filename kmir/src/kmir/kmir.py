@@ -16,6 +16,7 @@ from pyk.ktool.kprove import KProve
 from pyk.utils import BugReport, run_process
 
 _LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 @final

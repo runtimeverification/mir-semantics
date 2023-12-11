@@ -10,6 +10,7 @@ from .cli import create_argument_parser
 from .kmir import KMIR
 from .parse import parse
 from .run import run
+from .prove import prove
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -96,7 +97,7 @@ def exec_run(
     run(kmir, mir_file, depth=depth, output=output)
 
 
-""" def exec_prove(
+def exec_prove(
     input_file: Path,
     definition_dir: Path | None = None,
     symbolic_dir: Path | None = None,
@@ -150,9 +151,9 @@ def exec_run(
         smt_retry_limit=smt_retry_limit,
         trace_rewrites=trace_rewrites,
         kore_rpc_command=kore_rpc_command,
-    )
+    ) 
 
-
+"""
 def exec_show_kcfg(
     definition_dir: str,
     symbolic_dir: str,
