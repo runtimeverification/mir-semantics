@@ -60,9 +60,9 @@ def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
 
 def exec_parse(
     input_file: str,
+    input: str,
+    output: str,
     definition_dir: str | None = None,
-    input: str = 'program',
-    output: str = 'kore',
     **kwargs: Any,
 ) -> None:
     kast_input = KAstInput[input.upper()]
@@ -77,8 +77,8 @@ def exec_parse(
 
 def exec_run(
     input_file: str,
+    output: str,
     definition_dir: str | None = None,
-    output: str = 'none',
     depth: int | None = None,
     bug_report: bool = False,
     ignore_return_code: bool = False,
