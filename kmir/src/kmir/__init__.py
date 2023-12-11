@@ -1,5 +1,5 @@
 from typing import Final
 
-from .kmir import KMIR
+#from .kmir import KMIR
 
-VERSION: Final = '0.2.5'
+VERSION: Final = '0.2.9'

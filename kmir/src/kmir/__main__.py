@@ -1,7 +1,7 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Iterable
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
@@ -47,9 +47,9 @@ def exec_init(definition_dir: str, **kwargs: Any) -> KMIR:
 
 def exec_parse(
     input_file: str,
+    input: str,
+    output: str,
     definition_dir: str | None = None,
-    input: str = 'program',
-    output: str = 'pretty',
     **kwargs: Any,
 ) -> None:
     mir_file = Path(input_file)
@@ -69,8 +69,8 @@ def exec_parse(
 
 def exec_run(
     input_file: str,
+    output: str,
     definition_dir: str | None = None,
-    output: str = 'pretty',
     depth: int | None = None,
     bug_report: bool = False,
     # ignore_return_code: bool = False,

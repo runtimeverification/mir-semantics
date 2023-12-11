@@ -120,6 +120,11 @@ def create_argument_parser() -> ArgumentParser:
         help='Path to Haskell definition to use.',
     )
     prove_subparser.add_argument(
+        'spec_file',
+        type=file_path,
+        help='Path to specification file',
+    )
+    prove_subparser.add_argument(
         '--bug-report',
         action='store_true',
         default=False,

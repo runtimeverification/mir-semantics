@@ -68,13 +68,12 @@ def kmir_prove(
     kcfg_explore: KCFGExplore,
     max_depth: int | None = 1000,
     max_iterations: int | None = None,
-    is_terminal: Callable[[CTerm], bool] | None = None,
+    terminal_rules: Iterable[str] = (),
+    cut_point_rules: Iterable[str] = (),  # TODO
     extract_branches: Callable[[CTerm], Iterable[KInner]] | None = None,
     abstract_node: Callable[[CTerm], CTerm] | None = None,
 ) -> bool:
     proof = proof
-    terminal_rules: Iterable[str] = ['MIR.halt']
-    cut_point_rules: Iterable[str] = []  # TODO: cut point rules
     prover: APRBMCProver | APRProver | EqualityProver
     if type(proof) is APRBMCProof:
         prover = APRBMCProver(proof, kcfg_explore)
