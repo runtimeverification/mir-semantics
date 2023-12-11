@@ -424,6 +424,7 @@ or panics if the function-like or the block is missing:
 ```k
   syntax MirSimulation ::= #executeStatements(Statements)
                          | #executeStatement(StatementKind)
+                         | #executeStatement(ResolvedStatementKind)
   //--------------------------------------------------------
   rule <k> #executeStatements(FIRST; REST)
         => #executeStatement(FIRST)
@@ -439,7 +440,9 @@ or panics if the function-like or the block is missing:
 ##### Assignment
 
 ```k
-  rule <k> #executeStatement(PLACE:Local = RVALUE)
+  rule <k> #executeStatement(LOCAL:Local = RVALUE) => #executeStatement(Local2Int(LOCAL) = RVALUE) ...</k>
+
+  rule <k> #executeStatement(INDEX:Int = RVALUE)
         => .K
         ...
        </k>
@@ -453,8 +456,7 @@ or panics if the function-like or the block is missing:
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(PLACE)
-     andBool isRValueResult(evalRValue(FN_KEY, RVALUE))
+     requires isRValueResult(evalRValue(FN_KEY, RVALUE))
 ```
 
 #### Terminators
