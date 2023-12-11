@@ -23,7 +23,7 @@ module MIR-STATEMENT-SYNTAX
                       | NonDivergingIntrinsic
                       | "ConstEvalCounter"
                       // Nop does not seem to be used
-  syntax Assign ::= Local "=" RValue
+  syntax Assign ::= Place "=" RValue
   syntax NonDivergingIntrinsic  ::= "assume" "(" Place ")"
                                   | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
   syntax Statement ::= StatementKind ";"
