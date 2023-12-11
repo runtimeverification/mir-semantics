@@ -112,7 +112,14 @@ class KMIR:
                 print(kore_text)
             case PrintOutput.JSON | PrintOutput.PRETTY | PrintOutput.PROGRAM | PrintOutput.KAST | PrintOutput.LATEX | PrintOutput.BINARY:
                 kore_pattern = KoreParser(kore_text).pattern()
-                print(kore_print(kore_pattern, self.llvm_dir, output_format))
-                # replace kore_print with run_process, make use of the executable, turn the color on.
+                # args = ['kore-print', '/dev/stdin', str(self.llvm_dir), output, '/dev/stdout']
+                try:
+                    # how to trun the color on?
+                    print(kore_print(kore_pattern, self.llvm_dir, output_format))
+                    #proc_res = run_process(args, input=kore_pattern.text, pipe_stderr=True)
+                    # print(proc_res.stdout)
+                except CalledProcessError as err:
+                    raise RuntimeError(f'kmir interpreter failed with status {err.returncode}: {err.stderr}') from err
+                
             case _:
                 raise ValueError('Output format not supported.')
