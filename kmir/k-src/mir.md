@@ -581,18 +581,19 @@ The rule **gets stuck** of if does not find function/locals it needs.
        </function>
 
   syntax MIRValue ::= readLocal(FunctionLikeKey, Local) [function]
+  syntax MIRValue ::= readLocalResolved(FunctionLikeKey, Int) [function]
   //--------------------------------------------------------------
-  rule [[ readLocal(FN_KEY, LOCAL) => VALUE ]]
+  rule readLocal(FN_KEY, LOCAL) => readLocalResolved(FN_KEY, Local2Int(LOCAL))
+  rule [[ readLocalResolved(FN_KEY, INDEX) => VALUE ]]
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
-           <index> INDEX  </index>
+           <index> INDEX </index>
            <value> VALUE </value>
            ...
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(LOCAL)
 ```
 
 * `switchInt`
