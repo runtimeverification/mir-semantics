@@ -227,7 +227,7 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          <fnKey> FN_KEY </fnKey>
          <localDecls>
            <localDecl>
-             <index>      KEY              </index>
+             <index> KEY </index>
              ...
            </localDecl>
            ...
@@ -542,8 +542,10 @@ The rule **gets stuck** of if does not find function/locals it needs.
 
 ```k
   syntax MirSimulation ::= #transferLocal(FunctionLikeKey, Local, FunctionLikeKey, Local)
+  syntax MirSimulation ::= #transferLocalResolved(FunctionLikeKey, Int, FunctionLikeKey, Int)
   //-------------------------------------------------------------------------------------
-  rule <k> #transferLocal(FN_KEY_SOURCE, LOCAL_SOURCE, FN_KEY_DEST, LOCAL_DEST) => .K ... </k>
+  rule <k> #transferLocal(FN_KEY_SOURCE, LOCAL_SOURCE, FN_KEY_DEST, LOCAL_DEST) => #transferLocalResolved(FN_KEY_SOURCE, Local2Int(LOCAL_SOURCE), FN_KEY_DEST, Local2Int(LOCAL_DEST)) ... </k>
+  rule <k> #transferLocalResolved(FN_KEY_SOURCE, INDEX_SOURCE, FN_KEY_DEST, INDEX_DEST) => .K ... </k>
        <function>
          <fnKey> FN_KEY_SOURCE </fnKey>
          <localDecl>
@@ -562,8 +564,6 @@ The rule **gets stuck** of if does not find function/locals it needs.
          </localDecl>
          ...
        </function>
-    requires INDEX_SOURCE ==Int Local2Int(LOCAL_SOURCE)
-     andBool INDEX_DEST ==Int Local2Int(LOCAL_DEST)
 
   syntax MirSimulation ::= #writeLocal(FunctionLikeKey, Local, MIRValue)
   //--------------------------------------------------------------------
