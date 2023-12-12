@@ -217,29 +217,33 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
 
 ```k
   syntax MirSimulation ::= #initBindings(FunctionLikeKey, BindingList)
+  syntax MirSimulation ::= #initBinding(FunctionLikeKey, ResolvedBinding)
   //------------------------------------------------------------------
   rule <k> #initBindings(_FN_KEY, .BindingList)               => .K ... </k>
-  rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : _TYPE:Type ;):Binding _REST:BindingList)
-        => #internalPanic(FN_KEY, DuplicateBinding, LOCAL)
+  rule <k> #initBindings(FN_KEY, (let MUT:OptMut LOCAL:Local : TYPE:Type ;):Binding REST:BindingList) 
+        => 
+        #initBinding(FN_KEY, (let MUT Local2Int(LOCAL) : TYPE ;):ResolvedBinding) ~> #initBindings(FN_KEY, REST)...</k>
+  rule <k> #initBinding(FN_KEY, (let _MUT:OptMut INDEX:Int : _TYPE:Type ;):ResolvedBinding)
+        => #internalPanic(FN_KEY, DuplicateBinding, INDEX)
         ...
        </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecls>
            <localDecl>
-             <index> KEY </index>
+             <index> INDEX </index>
              ...
            </localDecl>
            ...
          </localDecls>
          ...
-       </function> requires KEY ==Int Local2Int(LOCAL)
-  rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : TYPE:Type ;):Binding REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
+       </function>
+  rule <k> #initBinding(FN_KEY, (let _MUT:OptMut INDEX:Int : TYPE:Type ;):ResolvedBinding) ~> #initBindings(FN_KEY, REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecls>
            (.Bag => <localDecl>
-                      <index>       Local2Int(LOCAL) </index>
+                      <index>       INDEX            </index>
                       <mutability>  Not:Mutability   </mutability>
                       <internal>    false            </internal>
                       <ty>          TYPE:Type        </ty>

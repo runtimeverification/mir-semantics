@@ -42,6 +42,7 @@ The `FunctionBody` sort represents a single MIR function. Based on [`rustc::mir:
 ```k
   syntax FunctionBody ::= DebugList BindingList ScopeList BasicBlockList
   syntax Binding ::= "let" OptMut Local ":" Type ";"
+  syntax ResolvedBinding ::= "let" OptMut Int ":" Type ";"
   syntax BindingList ::= List{Binding, ""}
   syntax OptMut ::= "mut" | ""
 
