@@ -566,8 +566,10 @@ The rule **gets stuck** of if does not find function/locals it needs.
        </function>
 
   syntax MirSimulation ::= #writeLocal(FunctionLikeKey, Local, MIRValue)
+  syntax MirSimulation ::= #writeLocalResolved(FunctionLikeKey, Int, MIRValue)
   //--------------------------------------------------------------------
-  rule <k> #writeLocal(FN_KEY, LOCAL, VALUE) => .K ... </k>
+  rule <k> #writeLocal(FN_KEY, LOCAL, VALUE) => #writeLocalResolved(FN_KEY, Local2Int(LOCAL), VALUE) ... </k>
+  rule <k> #writeLocalResolved(FN_KEY, INDEX, VALUE) => .K ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
@@ -577,7 +579,6 @@ The rule **gets stuck** of if does not find function/locals it needs.
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(LOCAL)
 
   syntax MIRValue ::= readLocal(FunctionLikeKey, Local) [function]
   //--------------------------------------------------------------
