@@ -1,5 +1,4 @@
 import logging
-
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Final
@@ -10,12 +9,14 @@ from .utils import preprocess_mir_file
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
+
 def run(
     kmir: KMIR,
     mir_file: Path,
     *,
     depth: int | None = None,
     output: str = 'none',
+    # bug_report
     temp_file: Path | None = None,
 ) -> None:
     if temp_file is None:
@@ -25,7 +26,7 @@ def run(
         temp_file = Path(temp_file)
 
     preprocess_mir_file(mir_file, temp_file)
- 
+
     proc_res = kmir.mir_to_kore(mir_file)
 
     # TODO: what should we do to the bug_report, reference pyk.ktools.krun._krun()

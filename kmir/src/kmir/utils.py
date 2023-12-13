@@ -1,22 +1,19 @@
 import logging
-from collections.abc import Callable, Iterable, Iterator
-from contextlib import contextmanager
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Final, TypeVar
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KInner, Subst
 from pyk.kast.manip import set_cell
-from pyk.kast.outer import KSequence
+from pyk.kast.outer import KApply, KClaim, KRewrite, KSequence
 from pyk.kcfg import KCFG, KCFGExplore
-from pyk.kcfg.semantics import KCFGSemantics
-from pyk.kore.rpc import KoreClient, KoreExecLogFormat, kore_server
-from pyk.ktool.kprint import KPrint
 from pyk.ktool.kprove import KProve
-from pyk.proof import APRBMCProof, APRBMCProver, APRProof, APRProver
-from pyk.proof.equality import EqualityProof, EqualityProver
-from pyk.proof.proof import Proof, ProofStatus
-from pyk.utils import BugReport, single
+from pyk.proof import APRProof
+
+# from pyk.proof.equality import EqualityProof
+# from pyk.proof.proof import Proof
+from pyk.utils import single
 
 from .preprocessor import preprocess
 
@@ -30,6 +27,13 @@ _LOGGER: Final = logging.getLogger(__name__)
 
 def preprocess_mir_file(program_file: Path, temp_file: Path) -> None:
     temp_file.write_text(preprocess(program_file.read_text()))
+
+
+def is_functional(claim: KClaim) -> bool:
+    claim_lhs = claim.body
+    if type(claim_lhs) is KRewrite:
+        claim_lhs = claim_lhs.lhs
+    return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
 
 
 def get_apr_proof_for_spec(
@@ -62,111 +66,6 @@ def get_apr_proof_for_spec(
     return apr_proof
 
 
-def kmir_prove(
-    kprove: KProve,
-    proof: Proof,
-    kcfg_explore: KCFGExplore,
-    max_depth: int | None = 1000,
-    max_iterations: int | None = None,
-    terminal_rules: Iterable[str] = (),
-    cut_point_rules: Iterable[str] = (),  # TODO
-    extract_branches: Callable[[CTerm], Iterable[KInner]] | None = None,
-    abstract_node: Callable[[CTerm], CTerm] | None = None,
-) -> bool:
-    proof = proof
-    prover: APRBMCProver | APRProver | EqualityProver
-    if type(proof) is APRBMCProof:
-        prover = APRBMCProver(proof, kcfg_explore)
-    elif type(proof) is APRProof:
-        prover = APRProver(proof, kcfg_explore)
-    elif type(proof) is EqualityProof:
-        prover = EqualityProver(kcfg_explore=kcfg_explore, proof=proof)
-    else:
-        raise ValueError(f'Do not know how to build prover for proof: {proof}')
-    try:
-        if type(prover) is APRBMCProver or type(prover) is APRProver:
-            prover.advance_proof(
-                max_iterations=max_iterations,
-                execute_depth=max_depth,
-                terminal_rules=terminal_rules,
-                cut_point_rules=cut_point_rules,
-            )
-            assert isinstance(proof, APRProof)
-            failure_nodes = proof.failing
-            if len(failure_nodes) == 0:
-                _LOGGER.info(f'Proof passed: {proof.id}')
-                return True
-            else:
-                _LOGGER.error(f'Proof failed: {proof.id}')
-                return False
-        elif type(prover) is EqualityProver:
-            prover.advance_proof()
-            if prover.proof.status == ProofStatus.PASSED:
-                _LOGGER.info(f'Proof passed: {prover.proof.id}')
-                return True
-            if prover.proof.status == ProofStatus.FAILED:
-                _LOGGER.error(f'Proof failed: {prover.proof.id}')
-                if type(proof) is EqualityProof:
-                    _LOGGER.info(proof.pretty(kprove))
-                return False
-            if prover.proof.status == ProofStatus.PENDING:
-                _LOGGER.info(f'Proof pending: {prover.proof.id}')
-                return False
-        return False
-
-    except Exception as e:
-        _LOGGER.error(f'Proof crashed: {proof.id}\n{e}')
-        return False
-    failure_nodes = proof.pending + proof.failing
-    if len(failure_nodes) == 0:
-        _LOGGER.info(f'Proof passed: {proof.id}')
-        return True
-    else:
-        _LOGGER.error(f'Proof failed: {proof.id}')
-        return False
-
-
-@contextmanager
-def legacy_explore(
-    kprint: KPrint,
-    *,
-    kcfg_semantics: KCFGSemantics | None = None,
-    id: str | None = None,
-    port: int | None = None,
-    kore_rpc_command: str | Iterable[str] | None = None,
-    llvm_definition_dir: Path | None = None,
-    smt_timeout: int | None = None,
-    smt_retry_limit: int | None = None,
-    bug_report: BugReport | None = None,
-    haskell_log_format: KoreExecLogFormat = KoreExecLogFormat.ONELINE,
-    haskell_log_entries: Iterable[str] = (),
-    log_axioms_file: Path | None = None,
-    trace_rewrites: bool = False,
-) -> Iterator[KCFGExplore]:
-    # Old way of handling KCFGExplore, to be removed
-    with kore_server(
-        definition_dir=kprint.definition_dir,
-        llvm_definition_dir=llvm_definition_dir,
-        module_name=kprint.main_module,
-        port=port,
-        command=kore_rpc_command,
-        bug_report=bug_report,
-        smt_timeout=smt_timeout,
-        smt_retry_limit=smt_retry_limit,
-        haskell_log_format=haskell_log_format,
-        haskell_log_entries=haskell_log_entries,
-        log_axioms_file=log_axioms_file,
-    ) as server:
-        with KoreClient('localhost', server.port, bug_report=bug_report) as client:
-            yield KCFGExplore(
-                kprint=kprint,
-                kore_client=client,
-                kcfg_semantics=kcfg_semantics,
-                id=id,
-                trace_rewrites=trace_rewrites,
-            )
-
-
 def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:
     k_cell = cterm.cell('K_CELL')
     if type(k_cell) is not KSequence:
@@ -175,7 +74,7 @@ def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:
     return cterm
 
 
-def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_info: bool = False) -> list[str]:
+""" def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_info: bool = False) -> list[str]:
     if type(proof) is APRProof or type(proof) is APRBMCProof:
         target = proof.kcfg.node(proof.target)
 
@@ -221,6 +120,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
         return ['EqualityProof failed.']
     else:
         raise ValueError('Unknown proof type.')
+ """
 
 
 def print_model(node: KCFG.Node, kcfg_explore: KCFGExplore) -> list[str]:

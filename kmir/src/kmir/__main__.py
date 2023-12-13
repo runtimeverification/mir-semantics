@@ -1,7 +1,7 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final, Iterable
+from typing import Any, Final
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
@@ -9,8 +9,8 @@ from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR
 from .parse import parse
-from .run import run
 from .prove import prove
+from .run import run
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -89,8 +89,8 @@ def exec_run(
         assert depth < 0, ValueError(f'Argument "depth" must be non-negative, got: {depth}')
 
     if bug_report:
-        br = BugReport(mir_file.with_suffix('.bug_report.tar'))
-        kmir = KMIR(llvm_dir, bug_report=br)
+        # br = BugReport(mir_file.with_suffix('.bug_report.tar'))
+        kmir = KMIR(llvm_dir)
     else:
         kmir = KMIR(llvm_dir)
 
@@ -101,15 +101,16 @@ def exec_prove(
     input_file: Path,
     definition_dir: Path | None = None,
     symbolic_dir: Path | None = None,
-    reinit: bool = False,
-    depth: int | None = None,
-    smt_timeout: int | None = None,
-    smt_retry_limit: int | None = None,
-    trace_rewrites: bool = False,
-    use_booster: bool = True,
-    bug_report: bool = False,
-    save_directory: Path | None = None,
-    kore_rpc_command: str | Iterable[str] | None = None,
+    *,
+    reinit: bool,
+    depth: int | None,
+    smt_timeout: int,
+    smt_retry_limit: int,
+    trace_rewrites: bool,
+    use_booster: bool,
+    bug_report: bool | None,
+    save_directory: Path | None,
+    # kore_rpc_command: str | Iterable[str] | None, # TODO: disabled for now
     **kwargs: Any,
 ) -> None:
     # TODO: workers
@@ -136,22 +137,22 @@ def exec_prove(
         check_dir_path(use_directory)
 
     br = BugReport(spec_file.with_suffix('.bug_report.tar')) if bug_report else None
-    # kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory, bug_report=br)
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir, use_booster=use_booster, bug_report=br)
+    # We provide configuration of which backend to use in a KMIR object.
+    # `use_booster` is by default True, where Booster Backend is always used unless turned off
 
     prove(
-        llvm_dir,
-        haskell_dir,
+        kmir,
         spec_file,
-        use_booster=use_booster,
-        bug_report=br,
         save_directory=use_directory,
         reinit=reinit,
         depth=depth,
         smt_timeout=smt_timeout,
         smt_retry_limit=smt_retry_limit,
         trace_rewrites=trace_rewrites,
-        kore_rpc_command=kore_rpc_command,
-    ) 
+        # kore_rpc_command=kore_rpc_command,
+    )
+
 
 """
 def exec_show_kcfg(

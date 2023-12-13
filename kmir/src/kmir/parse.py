@@ -9,6 +9,7 @@ from .utils import preprocess_mir_file
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
+
 def parse(
     kmir: KMIR,
     mir_file: Path,

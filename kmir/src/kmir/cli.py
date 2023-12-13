@@ -120,11 +120,6 @@ def create_argument_parser() -> ArgumentParser:
         help='Path to Haskell definition to use.',
     )
     prove_subparser.add_argument(
-        'spec_file',
-        type=file_path,
-        help='Path to specification file',
-    )
-    prove_subparser.add_argument(
         '--bug-report',
         action='store_true',
         default=False,
@@ -168,15 +163,15 @@ def create_argument_parser() -> ArgumentParser:
     prove_subparser.add_argument(
         '--use-booster',
         action='store_true',
-        default=False,
+        default=False,  # TODO: debug the booster backend, when it is as fast as legacy, change this to be True
         help='Use the booster backend instead of the haskell backend',
     )
-    prove_subparser.add_argument(
+    """prove_subparser.add_argument(
         '--kore-rpc-command',
         type=str,
         default=None,
         help='Custom command to start RPC server',
-    )
+    ) """
 
     kmir_cli_args = KMIRCLIArgs()
 

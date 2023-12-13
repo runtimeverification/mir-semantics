@@ -2,58 +2,11 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-from pyk.cterm import CTerm
-from pyk.kast.inner import KApply, KInner, KSequence, KVariable
-from pyk.kcfg.semantics import KCFGSemantics
 from pyk.ktool.kprove import KProve
-from pyk.prelude.k import K
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .utils import NodeIdLike, get_apr_proof_for_spec, legacy_explore, print_failure_info
-
-
-class KMIRSemantics(KCFGSemantics):
-    def is_terminal(self, cterm: CTerm) -> bool:
-        k_cell = cterm.cell('K_CELL')
-        # <k> #halt </k>
-        if k_cell == halt():
-            return True
-        elif type(k_cell) is KSequence:
-            # <k> . </k>
-            if k_cell.arity == 0:
-                return True
-            # <k> #halt </k>
-            elif k_cell.arity == 1 and k_cell[0] == halt():
-                return True
-            elif k_cell.arity == 2 and k_cell[0] == halt() and type(k_cell[1]) is KVariable and k_cell[1].sort == K:
-                return True
-        return False
-
-    @staticmethod
-    def terminal_rules() -> list[str]:
-        terminal_rules = ['MIR.halt']
-
-        # TODO: break every step and add to terminal rules. Semantics does not support this currently
-        return terminal_rules
-
-    @staticmethod
-    def cut_point_rules() -> list[str]:
-        return []
-
-    def extract_branches(self, cterm: CTerm) -> list[KInner]:
-        return []
-
-    def same_loop(self, cterm1: CTerm, cterm2: CTerm) -> bool:
-        return False
-
-    def abstract_node(self, cterm: CTerm) -> CTerm:
-        return cterm
-
-
-# @staticmethod
-def halt() -> KApply:
-    return KApply('#halt_MIR_KItem')
+from .utils import NodeIdLike, get_apr_proof_for_spec
 
 
 def show_kcfg(
@@ -110,9 +63,9 @@ def show_kcfg(
         sort_collections=sort_collections,
     )
 
-    if failure_info:
+    """if failure_info:
         with legacy_explore(kprove, id=proof.id) as kcfg_explore:
-            res_lines += print_failure_info(proof, kcfg_explore)
+            res_lines += print_failure_info(proof, kcfg_explore) """
 
     print('\n'.join(res_lines))
 
