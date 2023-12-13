@@ -305,8 +305,10 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 ```k
   // TODO: These assumes PLACE is a Local, need to handle other options
   syntax MIRValue ::= evalAddressOf(FunctionLikeKey, AddressOf) [function]
+  syntax MIRValue ::= evalAddressOfResolved(FunctionLikeKey, Int) [function]
   //----------------------------------------------------------------------
-  rule [[ evalAddressOf(FN_KEY, & _PtrModifiers PLACE) => INDEX ]]
+  rule evalAddressOf(FN_KEY, & _PtrModifiers PLACE:Local) => evalAddressOfResolved(FN_KEY, Local2Int(PLACE))
+  rule [[ evalAddressOfResolved(FN_KEY, INDEX) => INDEX ]]
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
@@ -315,7 +317,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
       </localDecl>
       ...
     </function>
-    requires INDEX ==Int Local2Int(PLACE)
 
   syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
   //--------------------------------------------------------------
