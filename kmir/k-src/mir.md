@@ -238,8 +238,7 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          </localDecls>
          ...
        </function>
-  // TODO! Simplify
-  rule <k> #initBinding(FN_KEY, (let _MUT:OptMut INDEX:Int : TYPE:Type ;):ResolvedBinding) ~> #initBindings(FN_KEY, REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
+  rule <k> #initBinding(FN_KEY, (let _MUT:OptMut INDEX:Int : TYPE:Type ;):ResolvedBinding) => .K ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecls>
