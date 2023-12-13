@@ -48,6 +48,10 @@ def prove(
         proof = kmir_prover.initialise_a_proof(claim, kcfg_explore, save_directory = save_directory, reinit = reinit)
         res = kmir.prove_driver(proof, kcfg_explore, max_depth=depth)
 
+        '''passed = proof.status
+        if passed is ProofStatus.FAILED:
+            ...'''
+
         _, passed = res
         if not passed:
             failed += 1
