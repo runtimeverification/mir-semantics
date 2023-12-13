@@ -32,20 +32,6 @@ module MIR-STATEMENT-SYNTAX
 
 #### Resolved statements are MIR statements where the Places and Locals have been resolved to their indices in the LocalDecls
 ```k
-  syntax ResolvedStatementKind ::= ResolvedAssign
-                      // FakeRead does not seem to be used
-                      | "discriminant" "(" Int ")" "=" Int
-                      | "Deinit" "(" Int ")"
-                      | "StorageLive" "(" Int ")"
-                      | "StorageDead" "(" Int ")"
-                      // Retag does not seem to be used
-                      // AscribeUserType does not seem to be used
-                      // Coverage does not seem to be used
-                      | ResolvedNonDivergingIntrinsic
-                      | "ConstEvalCounter"
-                      // Nop does not seem to be used
-  syntax ResolvedAssign ::= Int "=" RValue
-  syntax ResolvedNonDivergingIntrinsic  ::= "assume" "(" Int ")"
-                                          | "copy_nonoverlapping" "(" "dst" "=" RValue "," "src" "=" RValue "," "count" "=" RValue ")"
+  syntax ResolvedStatementKind ::= Int "=" RValue
 endmodule
 ```
