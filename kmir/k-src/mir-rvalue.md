@@ -286,7 +286,7 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 ```k
   syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]
   syntax MIRValue ::= evalLocalResolved(FunctionLikeKey, Int) [function]
-  //--------------------------------------------------------------
+  //--------------------------------------------------------------------
   rule evalLocal(FN_KEY, LOCAL) => evalLocalResolved(FN_KEY, Local2Int(LOCAL))
   rule [[ evalLocalResolved(FN_KEY, INDEX) => VALUE ]]
     <function>
@@ -306,7 +306,7 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
   // TODO: These assumes PLACE is a Local, need to handle other options
   syntax MIRValue ::= evalAddressOf(FunctionLikeKey, AddressOf) [function]
   syntax MIRValue ::= evalAddressOfResolved(FunctionLikeKey, Int) [function]
-  //----------------------------------------------------------------------
+  //------------------------------------------------------------------------
   rule evalAddressOf(FN_KEY, & _PtrModifiers PLACE:Local) => evalAddressOfResolved(FN_KEY, Local2Int(PLACE))
   rule [[ evalAddressOfResolved(FN_KEY, INDEX) => INDEX ]]
     <function>
@@ -320,7 +320,7 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 
   syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
   syntax MIRValue ::= evalDerefResolved(FunctionLikeKey, Int) [function]
-  //--------------------------------------------------------------
+  //--------------------------------------------------------------------
   rule evalDeref(FN_KEY, ( * PLACE:Local)) => evalDerefResolved(FN_KEY, Local2Int(PLACE))
   rule [[ evalDerefResolved(FN_KEY, REF) => VALUE ]]
     <function>
@@ -358,8 +358,11 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
   rule ( ARGS:List ) [ INDEX ] => {ARGS[INDEX]}:>MIRValue
 
   syntax MIRValue ::= evalField(FunctionLikeKey, Field) [function]
-  //--------------------------------------------------------------
-  rule [[ evalField(FN_KEY, ( PLACE . INDEX : _TYPE ) ) => TUPLE[INDEX] ]] // Ignoring type currently
+  syntax MIRValue ::= evalFieldResolved(FunctionLikeKey, Int, Int) [function]
+  //-------------------------------------------------------------------------
+  // TODO: These assumes PLACE is a Local, need to handle other options
+  rule evalField(FN_KEY, ( PLACE:Local . INDEX : _TYPE ) ) => evalFieldResolved(FN_KEY, Local2Int(PLACE), INDEX) // Ignoring type currently
+  rule [[ evalFieldResolved(FN_KEY, PLACE_INDEX, INDEX) => TUPLE[INDEX] ]]
     <function>
       <fnKey> FN_KEY </fnKey>
         <localDecl>
@@ -369,7 +372,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
         </localDecl>
       ...
     </function>
-    requires PLACE_INDEX ==Int Local2Int(PLACE)
 ```
 
 ### `Enum` evaluation
