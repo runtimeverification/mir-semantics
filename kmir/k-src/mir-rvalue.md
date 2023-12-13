@@ -319,8 +319,10 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
     </function>
 
   syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
+  syntax MIRValue ::= evalDerefResolved(FunctionLikeKey, Int) [function]
   //--------------------------------------------------------------
-  rule [[ evalDeref(FN_KEY, ( * PLACE)) => VALUE ]]
+  rule evalDeref(FN_KEY, ( * PLACE:Local)) => evalDerefResolved(FN_KEY, Local2Int(PLACE))
+  rule [[ evalDerefResolved(FN_KEY, REF) => VALUE ]]
     <function>
       <fnKey> FN_KEY </fnKey>
         <localDecl>
@@ -335,7 +337,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
         </localDecl>
       ...
     </function>
-    requires REF ==Int Local2Int(PLACE)
 
   // TODO: Investigate if this requires some more checks or effects. Needs to cover more cases.
   syntax MIRValue ::= evalCopyForDeref(FunctionLikeKey, CopyForDeref) [function]
