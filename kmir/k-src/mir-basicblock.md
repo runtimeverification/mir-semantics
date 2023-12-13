@@ -10,6 +10,7 @@ module MIR-BASICBLOCK-SYNTAX
 
 
   syntax BasicBlock ::= BB ":" BasicBlockBody
+  syntax ResolvedBasicBlock ::= Int ":" BasicBlockBody
   syntax BasicBlockBody ::= "{" Statements Terminator ";" "}"
   syntax BasicBlockList ::= List {BasicBlock, ""}
 endmodule

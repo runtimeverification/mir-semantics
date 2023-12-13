@@ -238,6 +238,7 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          </localDecls>
          ...
        </function>
+  // TODO! Simplify
   rule <k> #initBinding(FN_KEY, (let _MUT:OptMut INDEX:Int : TYPE:Type ;):ResolvedBinding) ~> #initBindings(FN_KEY, REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
@@ -264,31 +265,34 @@ This rule panics if it encounters a duplicate block.
 
 ```k
   syntax MirSimulation ::= #initBasicBlocks(FunctionLikeKey, BasicBlockList)
-  //-------------------------------------------------------
-  rule <k> #initBasicBlocks(_FN_KEY, .BasicBlockList)               => .K ... </k>
-  rule <k> #initBasicBlocks(FN_KEY, ((NAME:BBName CLEANUP:MaybeBBCleanup):BB : _BODY:BasicBlockBody):BasicBlock _REST:BasicBlockList)
-        => #internalPanic(FN_KEY, DuplicateBasicBlock, (NAME:BBName CLEANUP:MaybeBBCleanup))
+  syntax MirSimulation ::= #initBasicBlock(FunctionLikeKey, ResolvedBasicBlock)
+  //------------------------------------------------------------------------
+  rule <k> #initBasicBlocks(_FN_KEY, .BasicBlockList) => .K ... </k>
+  rule <k> #initBasicBlocks(FN_KEY, ((NAME:BBName _CLEANUP:MaybeBBCleanup):BB : BODY:BasicBlockBody):BasicBlock REST:BasicBlockList)
+        => #initBasicBlock(FN_KEY, (BBName2Int(NAME):Int : BODY:BasicBlockBody):ResolvedBasicBlock) ~> #initBasicBlocks(FN_KEY, REST) ...</k>
+  rule <k> #initBasicBlock(FN_KEY, (INDEX:Int : _BODY:BasicBlockBody):ResolvedBasicBlock)
+        => #internalPanic(FN_KEY, DuplicateBasicBlock, INDEX:Int)
         ...
        </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <basicBlocks>
            <basicBlock>
-             <bbName> KEY </bbName>
+             <bbName> INDEX </bbName>
              ...
            </basicBlock>
            ...
          </basicBlocks>
          ...
-       </function> requires KEY ==Int BBName2Int(NAME)
-  rule <k> #initBasicBlocks(FN_KEY, ((NAME:BBName _:MaybeBBCleanup):BB : BODY:BasicBlockBody):BasicBlock REST:BasicBlockList)
-        => #initBasicBlocks(FN_KEY, REST) ... </k>
+       </function>
+  rule <k> #initBasicBlock(FN_KEY, (INDEX:Int : BODY:BasicBlockBody):ResolvedBasicBlock) 
+        => .K ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <basicBlocks>
            (.Bag => <basicBlock>
-                      <bbName> BBName2Int(NAME) </bbName>
-                      <bbBody> BODY</bbBody>
+                      <bbName> INDEX </bbName>
+                      <bbBody> BODY  </bbBody>
                     </basicBlock>
            )
            ...
