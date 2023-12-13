@@ -285,8 +285,10 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
 
 ```k
   syntax MIRValue ::= evalLocal(FunctionLikeKey, Local) [function]
+  syntax MIRValue ::= evalLocalResolved(FunctionLikeKey, Int) [function]
   //--------------------------------------------------------------
-  rule [[ evalLocal(FN_KEY, LOCAL) => VALUE ]]
+  rule evalLocal(FN_KEY, LOCAL) => evalLocalResolved(FN_KEY, Local2Int(LOCAL))
+  rule [[ evalLocalResolved(FN_KEY, INDEX) => VALUE ]]
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
@@ -296,7 +298,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
       </localDecl>
       ...
     </function>
-    requires  INDEX ==Int Local2Int(LOCAL)
 ```
 
 ### `Reference and Deref` evaluation
