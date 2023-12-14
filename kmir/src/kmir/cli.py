@@ -17,10 +17,10 @@ def create_argument_parser() -> ArgumentParser:
 
     command_parser = parser.add_subparsers(dest='command', required=True, help='Command to execute')
 
-    # Init (See flake.nix)
+    # Generating GLR Parser (See flake.nix)
     # This command is not needed unless it is for the flake, so we should hide it from users
-    if 'init' in sys.argv:
-        init_subparser = command_parser.add_parser('init', parents=[logging_args])
+    if 'gen-glr-parser' == sys.argv[1]:
+        init_subparser = command_parser.add_parser('gen-glr-parser', parents=[logging_args])
         init_subparser.add_argument(
             'llvm_dir',
             type=dir_path,

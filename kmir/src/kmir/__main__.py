@@ -51,10 +51,10 @@ def exec_version(**kwargs: Any) -> None:
     print(f'KMIR Version: {VERSION}')
 
 
-def exec_init(llvm_dir: str, **kwargs: Any) -> None:
+def exec_gen_glr_parser(llvm_dir: str, **kwargs: Any) -> None:
     mir_parser = Path(llvm_dir) / 'parser_Mir_MIR-SYNTAX'
     if not mir_parser.is_file():
-        print('kmir init: Building GLR parser')
+        _LOGGER.info('Generating GLR parser')
         gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
 
 
