@@ -5,6 +5,7 @@ import pytest
 from _pytest.config import Notset
 from pyk.cli.utils import dir_path, file_path
 from pyk.kbuild import KBuild, Project
+from pyk.ktool.kprint import gen_glr_parser
 from pytest import Config, Parser, TempPathFactory
 
 from kmir import KMIR
@@ -68,7 +69,9 @@ def project() -> Project:
 
 @pytest.fixture(scope='session')
 def llvm_dir(kbuild: KBuild, project: Project) -> Path:
-    return kbuild.kompile(project, 'llvm')
+    llvm_dir = kbuild.kompile(project, 'llvm')
+    gen_glr_parser(llvm_dir / 'parser_Mir_MIR-SYNTAX', definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
+    return llvm_dir
 
 
 @pytest.fixture(scope='session')
