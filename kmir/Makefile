@@ -29,6 +29,51 @@ build: poetry-install build-backends
 poetry-install:
 	poetry install
 
+# Checks and formatting
+
+format: autoflake isort black
+check: check-flake8 check-mypy check-autoflake check-isort check-black
+
+check-flake8: poetry-install
+	$(POETRY_RUN) flake8 src
+
+check-mypy: poetry-install
+	$(POETRY_RUN) mypy src
+
+autoflake: poetry-install
+	$(POETRY_RUN) autoflake --quiet --in-place src
+
+check-autoflake: poetry-install
+	$(POETRY_RUN) autoflake --quiet --check src
+
+isort: poetry-install
+	$(POETRY_RUN) isort src
+
+check-isort: poetry-install
+	$(POETRY_RUN) isort --check src
+
+black: poetry-install
+	$(POETRY_RUN) black src
+
+check-black: poetry-install
+	$(POETRY_RUN) black --check src
+
+
+# Kompilation
+
+kbuild-%: check-k-version
+	$(POETRY_RUN) kbuild kompile $*
+#	@./build_glr.sh $* $(POETRY_RUN)
+
+kwhich-%:
+	$(POETRY_RUN) kbuild which $*
+
+# VERSION intended to be empty, unless building with nix
+check-k-version:
+	./check_k_version.sh $(VERSION)
+
+.PHONY: kbuild-*
+
 # Tests
 test: test-unit test-integration
 
@@ -108,47 +153,3 @@ compile-handwritten-rust:
 	make -C src/tests/integration/test-data/handwritten-rust
 .PHONY: compile-handwritten-rust
 
-# Checks and formatting
-
-format: autoflake isort black
-check: check-flake8 check-mypy check-autoflake check-isort check-black
-
-check-flake8: poetry-install
-	$(POETRY_RUN) flake8 src
-
-check-mypy: poetry-install
-	$(POETRY_RUN) mypy src
-
-autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --in-place src
-
-check-autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --check src
-
-isort: poetry-install
-	$(POETRY_RUN) isort src
-
-check-isort: poetry-install
-	$(POETRY_RUN) isort --check src
-
-black: poetry-install
-	$(POETRY_RUN) black src
-
-check-black: poetry-install
-	$(POETRY_RUN) black --check src
-
-
-# Kompilation
-
-kbuild-%: check-k-version
-	$(POETRY_RUN) kbuild kompile $*
-	@./build_glr.sh $* $(POETRY_RUN)
-
-kwhich-%:
-	$(POETRY_RUN) kbuild which $*
-
-# VERSION intended to be empty, unless building with nix
-check-k-version:
-	./check_k_version.sh $(VERSION)
-
-.PHONY: kbuild-*

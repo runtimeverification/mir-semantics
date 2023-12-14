@@ -8,6 +8,7 @@ backend = "llvm"
 main-file = "mir.md"
 main-module = "MIR"
 syntax-module = "MIR-SYNTAX"
+gen-glr-bison-parser = "true"
 
 [targets.llvmc]
 backend = "llvm"
