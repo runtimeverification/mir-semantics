@@ -8,7 +8,7 @@ from typing import Any, Final
 from pyk.cterm import CTerm
 from pyk.kast.outer import KApply, KClaim, KRewrite
 from pyk.kcfg import KCFG
-from pyk.ktool.kprint import KAstInput, KAstOutput
+from pyk.ktool.kprint import KAstInput, KAstOutput, gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRunOutput
 from pyk.proof import APRProof
@@ -51,11 +51,13 @@ def exec_version(**kwargs: Any) -> None:
     print(f'KMIR Version: {VERSION}')
 
 
-def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
+def exec_init(llvm_dir: str, **kwargs: Any) -> None:
     print(
-        'WARN: "init" was seen in args, this calls an internal function. If a file is named "init", it must be renamed'
+        'kmir init: Building GLR parser'
     )
-    return KMIR(llvm_dir, llvm_dir)
+    mir_parser = Path(llvm_dir) / 'parser_Mir_MIR-SYNTAX'
+    if not mir_parser.is_file():
+        gen_glr_parser(mir_parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
 
 
 def exec_parse(
