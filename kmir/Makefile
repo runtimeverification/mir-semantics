@@ -35,7 +35,12 @@ test: test-unit test-integration
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration: test-integration-parse test-integration-run test-integration-prove
+test-integration: poetry-install
+	$(POETRY_RUN) pytest -ra                                              \
+        src/tests/integration/test_parse.py                               \
+        src/tests/integration/test_run.py                                 \
+        src/tests/integration/test_prove.py                               \
+        --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS) \
 
 test-integration-parse: poetry-install
 	$(POETRY_RUN) pytest src/tests/integration/test_parse.py --numprocesses=4 --durations=0 --maxfail=1 --verbose $(TEST_ARGS)
@@ -48,7 +53,7 @@ test-integration-prove: poetry-install
 
 ## Produce *-fail.tsv files by running the tests with --no-skip and no parallelism
 compiletest-parse-fail:
-	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                    \
+	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                        \
             --tb=line                                                                \
             --no-skip                                                                \
             -k test_compiletest                                                      \
@@ -58,7 +63,7 @@ compiletest-parse-fail:
 .PHONY: compiletest-parse-fail
 
 compiletest-run-fail:
-	-$(POETRY_RUN) pytest src/tests/integration/test_run.py                     \
+	-$(POETRY_RUN) pytest src/tests/integration/test_run.py                         \
             --timeout=30                                                            \
             --tb=line                                                               \
             --no-skip                                                               \
@@ -69,7 +74,7 @@ compiletest-run-fail:
 .PHONY: compiletest-run-fail
 
 handwritten-parse-fail:
-	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                     \
+	-$(POETRY_RUN) pytest src/tests/integration/test_parse.py                         \
             --tb=line                                                                 \
             --no-skip                                                                 \
             -k test_handwritten_syntax                                                \
@@ -79,7 +84,7 @@ handwritten-parse-fail:
 .PHONY: handwritten-test-parse
 
 handwritten-run-fail:
-	$(POETRY_RUN) pytest src/tests/integration/test_run.py                      \
+	$(POETRY_RUN) pytest src/tests/integration/test_run.py                          \
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_handwritten                                                     \
