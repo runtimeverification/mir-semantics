@@ -3,8 +3,6 @@ import sys
 from pathlib import Path
 from typing import Final
 
-from pyk.proof.proof import ProofStatus
-
 from .kmir import KMIR
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -27,10 +25,10 @@ def prove(
     _LOGGER.info('Extracting claims from file')
 
     # kmir.prover should
-    
-    if kmir.prover :
+
+    if kmir.prover:
         kmir_prover = kmir.prover
-    else :
+    else:
         raise ValueError('The prover object in kmir is not initialised.')
 
     claims = kmir_prover.get_all_claims(spec_file)
@@ -39,18 +37,14 @@ def prove(
     # start an rpc session with KoreServer
     # port is not given, is it necessary?
     # can the server share by multiple client?
-    server = kmir_prover.set_kore_server(smt_timeout = smt_timeout, smt_retry_limit = smt_retry_limit)
+    server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
 
-    results: list[(str, str)] = []
+    results: list[tuple[str, str]]=[]
     failed = 0
     for claim in claims:
         kcfg_explore = kmir_prover.rpc_session(server, claim.label, trace_rewrites)
-        proof = kmir_prover.initialise_a_proof(claim, kcfg_explore, save_directory = save_directory, reinit = reinit)
+        proof = kmir_prover.initialise_a_proof(claim, kcfg_explore, save_directory=save_directory, reinit=reinit)
         res = kmir.prove_driver(proof, kcfg_explore, max_depth=depth)
-
-        '''passed = proof.status()
-        if passed is ProofStatus.FAILED:
-            ...'''
 
         _, passed = res
         if not passed:

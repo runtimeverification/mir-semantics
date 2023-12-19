@@ -54,5 +54,5 @@ def test_handwritten(
             with lock:
                 with report_file.open('a') as f:
                     f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
-                    # TODO: 1 to be replaced with actual prove result or return codeß
+                    # TODO: 1 to be replaced with actual prove result or return code
         raise

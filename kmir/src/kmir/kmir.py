@@ -2,11 +2,12 @@ __all__ = ['KMIR']
 
 import logging
 import sys
+
 # from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
-from typing import Callable, Final, Iterable, Optional, final, Iterator
+from typing import Callable, Final, Iterable, Iterator, Optional, final
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KInner
@@ -20,7 +21,7 @@ from pyk.kore.tools import PrintOutput, kore_print
 from pyk.ktool.kprint import gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.proof import APRProof, APRProver, EqualityProof, EqualityProver
-from pyk.proof.proof import Proof, Prover, ProofStatus  # not exported explicitly
+from pyk.proof.proof import Proof, Prover  # not exported explicitly
 from pyk.utils import BugReport, check_file_path, run_process
 
 from .semantics import KMIRSemantics
@@ -80,7 +81,7 @@ class KMIRProve:
         object.__setattr__(self, 'bug_report', br)
 
     # start the kore server, `backend_cmd` decide which server to start.
-   #  @contextmanager
+    #  @contextmanager
     def set_kore_server(
         self,
         *,
@@ -99,7 +100,7 @@ class KMIRProve:
             smt_retry_limit=smt_retry_limit,
         )
 
-    #@contextmanager
+    # @contextmanager
     def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
         with server as server:
             with KoreClient('localhost', server.port, bug_report=self.bug_report) as client:
@@ -181,7 +182,7 @@ class KMIR:
         haskell_dir: Optional[Path] = None,
         use_booster: bool = False,
         # use_directory: Optional[Path] = None,
-        br: Optional[BugReport] = None,  # TODO: shall we make the bug report by default?
+        bug_report: Optional[BugReport] = None,  # TODO: shall we make the bug report by default?
     ):
         # the parser executor for mir syntax
         parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
@@ -193,9 +194,9 @@ class KMIR:
         # the run executor for interpreting mir programs
         interpreter = llvm_dir / 'interpreter'
 
-        bug_report = br if br else None
+        #bug_report = br if br else None
 
-        prover = KMIRProve(haskell_dir, use_booster, br) if haskell_dir else None
+        prover = KMIRProve(haskell_dir, use_booster, bug_report) if haskell_dir else None
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
         object.__setattr__(self, 'parser', parser)
@@ -263,7 +264,7 @@ class KMIR:
     def prove_driver(
         self,
         proof: Proof,
-        rpc_session: KCFGExplore,
+        rpc_session: Iterator[KCFGExplore],
         *,
         max_depth: int | None = 1000,
         max_iterations: int | None = None,
@@ -275,27 +276,30 @@ class KMIR:
         with rpc_session as kcfg_explore:
             prover: Prover
 
-            match type(proof):
-                case APRProof:
-                    prover = APRProver(proof, kcfg_explore)
-                    prover.advance_proof(
-                        max_iterations=max_iterations,
-                        execute_depth=max_depth,
-                        terminal_rules=terminal_rules,
-                        cut_point_rules=cut_point_rules,
-                    )
-                    passed = proof.status()
-                    summary = proof.summary()
-                case EqualityProof:
-                    prover = EqualityProver(proof, kcfg_explore)
-                    prover.advance_proof()
-                    passed = proof.status()
-                    summary = proof.summary()
-                case _:  # APRBMCProof not supported for now
-                    raise ValueError(f'Do not know how to build a prover for the proof: {proof}')
-            
-            _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {summary} ')
-            if passed is ProofStatus.FAILED:
-                _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
+            # match type(proof):
+            # case APRProof:
+            if isinstance(proof, APRProof):
+                prover = APRProver(proof, kcfg_explore)
+                prover.advance_proof(
+                    max_iterations=max_iterations,
+                    execute_depth=max_depth,
+                    terminal_rules=terminal_rules,
+                    cut_point_rules=cut_point_rules,
+                )
+                passed = proof.status
+                # summary = proof.summary()
+            elif isinstance(proof, EqualityProof):
+                # case EqualityProof:
+                prover = EqualityProver(proof, kcfg_explore)
+                prover.advance_proof()
+                passed = proof.status
+                # summary = proof.summary()
+            else:
+                # case _:  # APRBMCProof not supported for now
+                raise ValueError(f'Do not know how to build a prover for the proof: {proof.id}')
+
+            # _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {summary} ')
+            # if passed is ProofStatus.FAILED:
+            #    _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
 
             return (proof.id, passed.value)
