@@ -2,8 +2,7 @@ __all__ = ['KMIR']
 
 import logging
 import sys
-
-# from contextlib import contextmanager
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
@@ -28,6 +27,7 @@ from .utils import ensure_ksequence_on_k_cell, is_functional
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
 
 @final
 @dataclass(frozen=True)
@@ -79,7 +79,7 @@ class KMIRProve:
         object.__setattr__(self, 'bug_report', br)
 
     # start the kore server, `backend_cmd` decide which server to start.
-    #  @contextmanager
+    @contextmanager
     def set_kore_server(
         self,
         *,
@@ -98,8 +98,8 @@ class KMIRProve:
             smt_retry_limit=smt_retry_limit,
         )
 
-    # @contextmanager
-    def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
+    @contextmanager
+    def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> KCFGExplore:
         with server as server:
             with KoreClient('localhost', server.port, bug_report=self.bug_report) as client:
                 yield KCFGExplore(
@@ -117,7 +117,7 @@ class KMIRProve:
     def initialise_a_proof(
         self,
         claim: KClaim,
-        kcfg_explore: Iterator[KCFGExplore],
+        rpc_session: KCFGExplore,
         *,
         save_directory: Optional[Path] = None,
         reinit: bool = False,
@@ -125,40 +125,46 @@ class KMIRProve:
         # TODO: rewrite
         proof_problem: Proof
         kprove = self.mir_prove
-        if is_functional(claim):
-            if save_directory is not None and not reinit and EqualityProof.proof_exists(claim.label, save_directory):
-                proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
+
+        with rpc_session as kcfg_explore:
+            if is_functional(claim):
+                if (
+                    save_directory is not None
+                    and not reinit
+                    and EqualityProof.proof_exists(claim.label, save_directory)
+                ):
+                    proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
+                else:
+                    proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
             else:
-                proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
-        else:
-            if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
-                proof_problem = APRProof.read_proof_data(save_directory, claim.label)
+                if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
+                    proof_problem = APRProof.read_proof_data(save_directory, claim.label)
 
-            else:
-                _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
-                kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+                else:
+                    _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
+                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
 
-                new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
-                new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
-                _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
-                new_init = kcfg_explore.cterm_assume_defined(new_init)
+                    _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
+                    new_init = kcfg_explore.cterm_assume_defined(new_init)
 
-                _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
-                new_init, _ = kcfg_explore.cterm_simplify(new_init)
-                new_target, _ = kcfg_explore.cterm_simplify(new_target)
-                if CTerm._is_bottom(new_init.kast):
-                    raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
-                if CTerm._is_top(new_target.kast):
-                    raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
+                    _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
+                    new_init, _ = kcfg_explore.cterm_simplify(new_init)
+                    new_target, _ = kcfg_explore.cterm_simplify(new_target)
+                    if CTerm._is_bottom(new_init.kast):
+                        raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
+                    if CTerm._is_top(new_target.kast):
+                        raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
-                kcfg.replace_node(init_node_id, new_init)
-                kcfg.replace_node(target_node_id, new_target)
+                    kcfg.replace_node(init_node_id, new_init)
+                    kcfg.replace_node(target_node_id, new_target)
 
-                # Unsure if terminal should be empty
-                proof_problem = APRProof(
-                    claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
-                )
+                    # Unsure if terminal should be empty
+                    proof_problem = APRProof(
+                        claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
+                    )
         return proof_problem
 
 
@@ -190,7 +196,7 @@ class KMIR:
         # the run executor for interpreting mir programs
         interpreter = llvm_dir / 'interpreter'
 
-        #bug_report = br if br else None
+        # bug_report = br if br else None
 
         prover = KMIRProve(haskell_dir, use_booster, bug_report) if haskell_dir else None
 
@@ -248,7 +254,7 @@ class KMIR:
                 try:
                     # how to trun the color on?
                     # turn the logger on?
-                    print(kore_print(kore_pattern, self.llvm_dir, output_format))
+                    print(kore_print(kore_pattern, definition_dir=self.llvm_dir, output=output_format))
                     # proc_res = run_process(args, input=kore_pattern.text, pipe_stderr=True)
                     # print(proc_res.stdout)
                 except CalledProcessError as err:
@@ -272,7 +278,7 @@ class KMIR:
         with rpc_session as kcfg_explore:
             prover: Prover
             # passed: ProofStatus
-            #summary: ProofSummary
+            # summary: ProofSummary
 
             # match type(proof):
             # case APRProof:

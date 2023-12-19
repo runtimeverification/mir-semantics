@@ -37,18 +37,19 @@ def prove(
     # start an rpc session with KoreServer
     # port is not given, is it necessary?
     # can the server share by multiple client?
-    server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
+    with kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit) as server:
+        results: list[tuple[str, str]] = []
+        failed = 0
+        for claim in claims:
+            with kmir_prover.rpc_session(server, claim.label, trace_rewrites) as kcfg_explore:
+                proof = kmir_prover.initialise_a_proof(
+                    claim, kcfg_explore, save_directory=save_directory, reinit=reinit
+                )
+                res = kmir.prove_driver(proof, kcfg_explore, max_depth=depth)
 
-    results: list[tuple[str, str]]=[]
-    failed = 0
-    for claim in claims:
-        kcfg_explore = kmir_prover.rpc_session(server, claim.label, trace_rewrites)
-        proof = kmir_prover.initialise_a_proof(claim, kcfg_explore, save_directory=save_directory, reinit=reinit)
-        res = kmir.prove_driver(proof, kcfg_explore, max_depth=depth)
-        
-        _, passed = res
-        if not passed:
-            failed += 1
-        results.append(res)
-    if failed:
-        sys.exit(failed)
+                _, passed = res
+                if not passed:
+                    failed += 1
+                results.append(res)
+        if failed:  # TODO: fail immediately or fail when all claims tried.
+            sys.exit(failed)
