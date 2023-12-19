@@ -198,7 +198,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                 try:
                     simplified_node, _ = kcfg_explore.cterm_simplify(node.cterm)
                 except Exception as err:
-                    process_expection(
+                    process_exception(
                         err,
                         res_lines,
                         '    ERROR PRINTING FAILURE INFO: Could not simplify "node.cterm", see stack trace above',
@@ -206,7 +206,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                 try:
                     simplified_target, _ = kcfg_explore.cterm_simplify(target.cterm)
                 except Exception as err:
-                    process_expection(
+                    process_exception(
                         err,
                         res_lines,
                         '   ERROR PRINTING FAILURE INFO: Could not simplify "target.cterm", see stack trace above',
@@ -217,7 +217,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                     _, reason = kcfg_explore.implication_failure_reason(simplified_node, simplified_target)
                     res_lines += [f'    {line}' for line in reason.split('\n')]
                 except Exception as err:
-                    process_expection(
+                    process_exception(
                         err,
                         res_lines,
                         '   ERROR PRINTING FAILURE INFO: Could not create "implication_failure_reason", see stack trace above',
@@ -227,7 +227,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                 try:
                     res_lines += [f'    {kcfg_explore.kprint.pretty_print(proof.path_constraints(node.id))}']
                 except Exception as err:
-                    process_expection(
+                    process_exception(
                         err,
                         res_lines,
                         '   ERROR PRINTING FAILURE INFO: Could not pretty print "proof.path_constraints(node.id)", see stack trace above',
@@ -248,7 +248,7 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
         raise ValueError('Unknown proof type.')
 
 
-def process_expection(err: Exception, curr_output: list[str], err_msg: str) -> None:
+def process_exception(err: Exception, curr_output: list[str], err_msg: str) -> None:
     curr_output.append(err_msg)
     print(err, flush=True, file=sys.stderr)
     print(traceback.format_exc(), flush=True, file=sys.stderr)
