@@ -1,4 +1,6 @@
 import logging
+import sys
+import traceback
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -193,15 +195,44 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
                 res_lines.append('')
                 res_lines.append(f'  Node id: {str(node.id)}')
 
-                simplified_node, _ = kcfg_explore.cterm_simplify(node.cterm)
-                simplified_target, _ = kcfg_explore.cterm_simplify(target.cterm)
+                try:
+                    simplified_node, _ = kcfg_explore.cterm_simplify(node.cterm)
+                except Exception as err:
+                    process_exception(
+                        err,
+                        res_lines,
+                        '    ERROR PRINTING FAILURE INFO: Could not simplify "node.cterm", see stack trace above',
+                    )
+                try:
+                    simplified_target, _ = kcfg_explore.cterm_simplify(target.cterm)
+                except Exception as err:
+                    process_exception(
+                        err,
+                        res_lines,
+                        '   ERROR PRINTING FAILURE INFO: Could not simplify "target.cterm", see stack trace above',
+                    )
 
                 res_lines.append('  Failure reason:')
-                _, reason = kcfg_explore.implication_failure_reason(simplified_node, simplified_target)
-                res_lines += [f'    {line}' for line in reason.split('\n')]
+                try:
+                    _, reason = kcfg_explore.implication_failure_reason(simplified_node, simplified_target)
+                    res_lines += [f'    {line}' for line in reason.split('\n')]
+                except Exception as err:
+                    process_exception(
+                        err,
+                        res_lines,
+                        '   ERROR PRINTING FAILURE INFO: Could not create "implication_failure_reason", see stack trace above',
+                    )
 
                 res_lines.append('  Path condition:')
-                res_lines += [f'    {kcfg_explore.kprint.pretty_print(proof.path_constraints(node.id))}']
+                try:
+                    res_lines += [f'    {kcfg_explore.kprint.pretty_print(proof.path_constraints(node.id))}']
+                except Exception as err:
+                    process_exception(
+                        err,
+                        res_lines,
+                        '   ERROR PRINTING FAILURE INFO: Could not pretty print "proof.path_constraints(node.id)", see stack trace above',
+                    )
+
                 if counterexample_info:
                     res_lines.extend(print_model(node, kcfg_explore))
 
@@ -215,6 +246,12 @@ def print_failure_info(proof: Proof, kcfg_explore: KCFGExplore, counterexample_i
         return ['EqualityProof failed.']
     else:
         raise ValueError('Unknown proof type.')
+
+
+def process_exception(err: Exception, curr_output: list[str], err_msg: str) -> None:
+    curr_output.append(err_msg)
+    print(err, flush=True, file=sys.stderr)
+    print(traceback.format_exc(), flush=True, file=sys.stderr)
 
 
 def print_model(node: KCFG.Node, kcfg_explore: KCFGExplore) -> list[str]:
