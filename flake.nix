@@ -68,7 +68,6 @@
               export KBUILD_DIR=".kbuild"
               patchShebangs .
               make build-backends VERSION="${k_release}" POETRY_RUN=
-              kmir gen-glr-parser $(kbuild which llvm) --verbose
             '';
 
             # Now mir-semantics is built, wrap kmir with LLVM and HASKELL defs
