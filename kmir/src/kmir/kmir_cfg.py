@@ -6,12 +6,12 @@ from pyk.ktool.kprove import KProve
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
+from .kmir import KMIR
 from .utils import NodeIdLike, get_apr_proof_for_spec
 
 
 def show_kcfg(
-    llvm_dir: Path,
-    haskell_dir: Path,
+    kmir: KMIR,
     spec_file: Path,
     save_directory: Path | None = None,
     claim_labels: Iterable[str] | None = None,
@@ -32,10 +32,13 @@ def show_kcfg(
 
     # kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
 
-    kprove = KProve(haskell_dir, use_directory=save_directory)
-    assert not kprove, ValueError('Cannot use KProve object when it is None')
+    kprove = kmir.prover
+    assert not kprove, ValueError(
+        'The prover objectof KMIR is not initialized, provide path to the haskell definition directory'
+    )
+    # better error message with instructions to fix
 
-    proof = get_apr_proof_for_spec(
+    proof = get_apr_proof_for_spec(  # read directly from the proof directory
         kprove,
         spec_file,
         save_directory=save_directory,

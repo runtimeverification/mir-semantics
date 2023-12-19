@@ -194,8 +194,6 @@ class KMIR:
         # the run executor for interpreting mir programs
         interpreter = llvm_dir / 'interpreter'
 
-        #bug_report = br if br else None
-
         prover = KMIRProve(haskell_dir, use_booster, bug_report) if haskell_dir else None
 
         object.__setattr__(self, 'llvm_dir', llvm_dir)
@@ -272,9 +270,11 @@ class KMIR:
         cut_point_rules: Iterable[str] = (),  # TODO
         extract_branches: Callable[[CTerm], Iterable[KInner]] | None = None,
         abstract_node: Callable[[CTerm], CTerm] | None = None,
-    ) -> (str, str):
+    ) -> tuple[str, str]:
         with rpc_session as kcfg_explore:
             prover: Prover
+            # passed: ProofStatus
+            #summary: ProofSummary
 
             # match type(proof):
             # case APRProof:
