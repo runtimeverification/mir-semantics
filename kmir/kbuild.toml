@@ -8,11 +8,8 @@ backend = "llvm"
 main-file = "mir.md"
 main-module = "MIR"
 syntax-module = "MIR-SYNTAX"
-<<<<<<< Updated upstream
 gen-glr-bison-parser = "true"
-=======
-gen-bison-parser = "true"
->>>>>>> Stashed changes
+
 
 [targets.llvmc]
 backend = "llvm"

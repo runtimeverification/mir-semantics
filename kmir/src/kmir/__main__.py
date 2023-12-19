@@ -33,18 +33,6 @@ def exec_version(**kwargs: Any) -> None:
     print(f'KMIR Version: {VERSION}')
 
 
-def exec_init(definition_dir: str, **kwargs: Any) -> KMIR:
-    print(
-        'WARN: "init" was seen in args, this calls an internal function. If a file is named "init", it must be renamed'
-    )
-    llvm_dir = Path(definition_dir)
-    assert not llvm_dir, ValueError(
-        RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
-    )
-
-    return KMIR(llvm_dir)
-
-
 def exec_parse(
     input_file: str,
     input: str,

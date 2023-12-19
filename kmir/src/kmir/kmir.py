@@ -18,7 +18,6 @@ from pyk.kore.prelude import SORT_K_ITEM, inj, top_cell_initializer
 from pyk.kore.rpc import KoreClient, KoreServer
 from pyk.kore.syntax import Pattern, SortApp
 from pyk.kore.tools import PrintOutput, kore_print
-from pyk.ktool.kprint import gen_glr_parser
 from pyk.ktool.kprove import KProve
 from pyk.proof import APRProof, APRProver, EqualityProof, EqualityProver
 from pyk.proof.proof import Proof, Prover  # not exported explicitly
@@ -29,7 +28,6 @@ from .utils import ensure_ksequence_on_k_cell, is_functional
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
-
 
 @final
 @dataclass(frozen=True)
@@ -187,9 +185,7 @@ class KMIR:
         # the parser executor for mir syntax
         parser = llvm_dir / 'parser_Mir_MIR-SYNTAX'
         if not parser.is_file():
-            parser = gen_glr_parser(parser, definition_dir=llvm_dir, module='MIR-SYNTAX', sort='Mir')
-        else:
-            parser = parser
+            raise RuntimeError("GLR parser 'parser_Mir_MIR-SYNTAX' not found in 'llvm' directory")
 
         # the run executor for interpreting mir programs
         interpreter = llvm_dir / 'interpreter'

@@ -2,11 +2,11 @@
   description = " A flake for KMIR Semantics";
 
   inputs = {
-    k-framework.url = "github:runtimeverification/k/v6.1.58";
+    k-framework.url = "github:runtimeverification/k/v6.1.65";
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.follows = "k-framework/rv-utils";
-    pyk.url = "github:runtimeverification/pyk/v0.1.546";
+    pyk.url = "github:runtimeverification/pyk/v0.1.556";
     nixpkgs-pyk.follows = "pyk/nixpkgs";
     poetry2nix.follows = "pyk/poetry2nix";
   };
@@ -68,7 +68,6 @@
               export KBUILD_DIR=".kbuild"
               patchShebangs .
               make build-backends VERSION="${k_release}" POETRY_RUN=
-              kmir init $(kbuild which llvm)
             '';
 
             # Now mir-semantics is built, wrap kmir with LLVM and HASKELL defs
