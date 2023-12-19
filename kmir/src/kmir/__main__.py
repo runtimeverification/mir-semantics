@@ -51,13 +51,6 @@ def exec_version(**kwargs: Any) -> None:
     print(f'KMIR Version: {VERSION}')
 
 
-def exec_init(llvm_dir: str, **kwargs: Any) -> KMIR:
-    print(
-        'WARN: "init" was seen in args, this calls an internal function. If a file is named "init", it must be renamed'
-    )
-    return KMIR(llvm_dir, llvm_dir)
-
-
 def exec_parse(
     input_file: str,
     input: str,
