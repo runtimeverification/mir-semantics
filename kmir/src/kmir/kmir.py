@@ -2,6 +2,7 @@ __all__ = ['KMIR']
 
 import logging
 import sys
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
@@ -23,9 +24,6 @@ from pyk.utils import BugReport, check_file_path, run_process
 
 from .semantics import KMIRSemantics
 from .utils import ensure_ksequence_on_k_cell, is_functional
-
-# from contextlib import contextmanager
-
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -81,7 +79,6 @@ class KMIRProve:
         object.__setattr__(self, 'bug_report', br)
 
     # start the kore server, `backend_cmd` decide which server to start.
-    # @contextmanager
     def set_kore_server(
         self,
         *,
@@ -100,7 +97,7 @@ class KMIRProve:
             smt_retry_limit=smt_retry_limit,
         )
 
-    # @contextmanager
+    @contextmanager
     def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
         with server as server:
             with KoreClient('localhost', server.port, bug_report=self.bug_report) as client:
@@ -119,7 +116,7 @@ class KMIRProve:
     def initialise_a_proof(
         self,
         claim: KClaim,
-        rpc_session: Iterator[KCFGExplore],
+        rpc_session: KCFGExplore,
         *,
         save_directory: Optional[Path] = None,
         reinit: bool = False,
@@ -268,7 +265,7 @@ class KMIR:
     def prove_driver(
         self,
         proof: Proof,
-        rpc_session: Iterator[KCFGExplore],
+        rpc_session: KCFGExplore,
         *,
         max_depth: int | None = 1000,
         max_iterations: int | None = None,

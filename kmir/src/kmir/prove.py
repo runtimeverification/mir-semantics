@@ -42,14 +42,14 @@ def prove(
     results: list[tuple[str, str]] = []
     failed = 0
     for claim in claims:
-        kcfg_explore = kmir_prover.rpc_session(server, claim.label, trace_rewrites)
-        proof = kmir_prover.initialise_a_proof(claim, kcfg_explore, save_directory=save_directory, reinit=reinit)
-        res = kmir.prove_driver(proof, kcfg_explore, max_depth=depth)
+        with kmir_prover.rpc_session(server, claim.label, trace_rewrites) as session:
+            proof = kmir_prover.initialise_a_proof(claim, session, save_directory=save_directory, reinit=reinit)
+            res = kmir.prove_driver(proof, session, max_depth=depth)
 
-        _, passed = res
-        if not passed:
-            failed += 1
-        results.append(res)
+            _, passed = res
+            if not passed:
+                failed += 1
+            results.append(res)
 
-        if failed:  # TODO: fail immediately or fail when all claims tried.
-            sys.exit(failed)
+    if failed:  # TODO: fail immediately or fail when all claims tried.
+        sys.exit(failed)
