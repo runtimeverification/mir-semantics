@@ -1,7 +1,7 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Optional
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
@@ -37,7 +37,7 @@ def exec_parse(
     input_file: str,
     input: str,
     output: str,
-    definition_dir: str | None = None,
+    definition_dir: Optional[str] = None,
     **kwargs: Any,
 ) -> None:
     mir_file = Path(input_file)
@@ -58,8 +58,8 @@ def exec_parse(
 def exec_run(
     input_file: str,
     output: str,
-    definition_dir: str | None = None,
-    depth: int | None = None,
+    definition_dir: Optional[str] = None,
+    depth: Optional[int] = None,
     bug_report: bool = False,
     # ignore_return_code: bool = False,
     **kwargs: Any,
@@ -86,25 +86,27 @@ def exec_run(
 
 
 def exec_prove(
-    input_file: Path,
-    definition_dir: Path | None = None,
-    symbolic_dir: Path | None = None,
+    spec_file: str,
     *,
-    reinit: bool,
-    depth: int | None,
     smt_timeout: int,
     smt_retry_limit: int,
-    trace_rewrites: bool,
-    use_booster: bool,
-    bug_report: bool | None,
-    save_directory: Path | None,
-    # kore_rpc_command: str | Iterable[str] | None, # TODO: disabled for now
+    definition_dir: Optional[str] = None,
+    haskell_dir: Optional[str] = None,
+    use_booster: bool = True,
+    bug_report: bool = False,
+    save_directory: Optional[str] = None,
+    reinit: bool = False,
+    depth: Optional[int] = None,
+    trace_rewrites: bool = False,
     **kwargs: Any,
 ) -> None:
     # TODO: workers
     # TODO: md_selector doesn't work
-    spec_file = Path(input_file)
-    check_file_path(spec_file)
+    if spec_file is None:
+        raise RuntimeError("A specification file must be provided")
+    else: 
+        spec_file = Path(spec_file)
+        check_file_path(spec_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
@@ -112,10 +114,10 @@ def exec_prove(
         llvm_dir = Path(definition_dir)
         check_dir_path(llvm_dir)
 
-    if symbolic_dir is None:
+    if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
-        haskell_dir = Path(symbolic_dir)
+        haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
     if save_directory is None:

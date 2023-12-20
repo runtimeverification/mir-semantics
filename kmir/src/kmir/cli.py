@@ -92,7 +92,7 @@ def create_argument_parser() -> ArgumentParser:
         'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
     )
     prove_subparser.add_argument(
-        'spec-file',
+        'input-file',
         type=file_path,
         help='Path to specification file',
     )
@@ -141,6 +141,7 @@ def create_argument_parser() -> ArgumentParser:
     prove_subparser.add_argument(
         '--save-directory',
         type=dir_path,
+        default=None,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
     prove_subparser.add_argument(
@@ -155,12 +156,6 @@ def create_argument_parser() -> ArgumentParser:
         default=False,  # TODO: debug the booster backend, when it is as fast as legacy, change this to be True
         help='Use the booster backend instead of the haskell backend',
     )
-    """prove_subparser.add_argument(
-        '--kore-rpc-command',
-        type=str,
-        default=None,
-        help='Custom command to start RPC server',
-    ) """
 
     kmir_cli_args = KMIRCLIArgs()
 

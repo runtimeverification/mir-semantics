@@ -116,7 +116,7 @@ class KMIRProve:
     def initialise_a_proof(
         self,
         claim: KClaim,
-        rpc_session: KCFGExplore,
+        kcfg_explore: KCFGExplore,
         *,
         save_directory: Optional[Path] = None,
         reinit: bool = False,
@@ -125,45 +125,40 @@ class KMIRProve:
         proof_problem: Proof
         kprove = self.mir_prove
 
-        with rpc_session as kcfg_explore:
-            if is_functional(claim):
-                if (
-                    save_directory is not None
-                    and not reinit
-                    and EqualityProof.proof_exists(claim.label, save_directory)
-                ):
-                    proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
-                else:
-                    proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
+        if is_functional(claim):
+            if save_directory is not None and not reinit and EqualityProof.proof_exists(claim.label, save_directory):
+                proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
             else:
-                if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
-                    proof_problem = APRProof.read_proof_data(save_directory, claim.label)
+                proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
+        else:
+            if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
+                proof_problem = APRProof.read_proof_data(save_directory, claim.label)
 
-                else:
-                    _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
-                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
+            else:
+                _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
+                kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
 
-                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
-                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
+                new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
+                new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
-                    _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
-                    new_init = kcfg_explore.cterm_assume_defined(new_init)
+                _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
+                new_init = kcfg_explore.cterm_assume_defined(new_init)
 
-                    _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
-                    new_init, _ = kcfg_explore.cterm_simplify(new_init)
-                    new_target, _ = kcfg_explore.cterm_simplify(new_target)
-                    if CTerm._is_bottom(new_init.kast):
-                        raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
-                    if CTerm._is_top(new_target.kast):
-                        raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
+                _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
+                new_init, _ = kcfg_explore.cterm_simplify(new_init)
+                new_target, _ = kcfg_explore.cterm_simplify(new_target)
+                if CTerm._is_bottom(new_init.kast):
+                    raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
+                if CTerm._is_top(new_target.kast):
+                    raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
-                    kcfg.replace_node(init_node_id, new_init)
-                    kcfg.replace_node(target_node_id, new_target)
+                kcfg.replace_node(init_node_id, new_init)
+                kcfg.replace_node(target_node_id, new_target)
 
-                    # Unsure if terminal should be empty
-                    proof_problem = APRProof(
-                        claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
-                    )
+                # Unsure if terminal should be empty
+                proof_problem = APRProof(
+                    claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
+                )
         return proof_problem
 
 
@@ -274,35 +269,31 @@ class KMIR:
         extract_branches: Callable[[CTerm], Iterable[KInner]] | None = None,
         abstract_node: Callable[[CTerm], CTerm] | None = None,
     ) -> tuple[str, str]:
-        with rpc_session as kcfg_explore:
-            prover: Prover
-            # passed: ProofStatus
-            # summary: ProofSummary
+        # with rpc_session as kcfg_explore:
+        prover: Prover
+        # case APRProof:
+        if isinstance(proof, APRProof):
+            prover = APRProver(proof, rpc_session)
+            prover.advance_proof(
+                max_iterations=max_iterations,
+                execute_depth=max_depth,
+                terminal_rules=terminal_rules,
+                cut_point_rules=cut_point_rules,
+            )
+            passed = proof.status
+            # summary = proof.summary()
+        elif isinstance(proof, EqualityProof):
+            # case EqualityProof:
+            prover = EqualityProver(proof, rpc_session)
+            prover.advance_proof()
+            passed = proof.status
+            # summary = proof.summary()
+        else:
+            # case _:  # APRBMCProof not supported for now
+            raise ValueError(f'Do not know how to build a prover for the proof: {proof.id}')
 
-            # match type(proof):
-            # case APRProof:
-            if isinstance(proof, APRProof):
-                prover = APRProver(proof, kcfg_explore)
-                prover.advance_proof(
-                    max_iterations=max_iterations,
-                    execute_depth=max_depth,
-                    terminal_rules=terminal_rules,
-                    cut_point_rules=cut_point_rules,
-                )
-                passed = proof.status
-                # summary = proof.summary()
-            elif isinstance(proof, EqualityProof):
-                # case EqualityProof:
-                prover = EqualityProver(proof, kcfg_explore)
-                prover.advance_proof()
-                passed = proof.status
-                # summary = proof.summary()
-            else:
-                # case _:  # APRBMCProof not supported for now
-                raise ValueError(f'Do not know how to build a prover for the proof: {proof.id}')
+        # _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {summary} ')
+        # if passed is ProofStatus.FAILED:
+        #    _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
 
-            # _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {summary} ')
-            # if passed is ProofStatus.FAILED:
-            #    _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
-
-            return (proof.id, passed.value)
+        return (proof.id, passed.value)
