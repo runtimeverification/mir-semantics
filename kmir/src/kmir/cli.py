@@ -23,7 +23,7 @@ def create_argument_parser() -> ArgumentParser:
     # Parse
     parse_subparser = command_parser.add_parser('parse', parents=[logging_args], help='Parse a MIR file')
     parse_subparser.add_argument(
-        'input_file',
+        'mir_file',
         type=file_path,
         help='Path to .mir file',
     )
@@ -51,7 +51,7 @@ def create_argument_parser() -> ArgumentParser:
     # Run
     run_subparser = command_parser.add_parser('run', parents=[logging_args], help='Run a MIR program')
     run_subparser.add_argument(
-        'input_file',
+        'mir_file',
         type=file_path,
         help='Path to .mir file',
     )
@@ -92,7 +92,7 @@ def create_argument_parser() -> ArgumentParser:
         'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
     )
     prove_subparser.add_argument(
-        'input-file',
+        'spec-file',
         type=file_path,
         help='Path to specification file',
     )

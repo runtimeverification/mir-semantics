@@ -1,7 +1,7 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final, Optional
+from typing import Any, Final, Optional, Iterable
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
@@ -34,59 +34,59 @@ def exec_version(**kwargs: Any) -> None:
 
 
 def exec_parse(
-    input_file: str,
+    mir_file: Path,
     input: str,
     output: str,
-    definition_dir: Optional[str] = None,
+    definition_dir: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
-    mir_file = Path(input_file)
+    #mir_file = Path(input_file)
     check_file_path(mir_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        llvm_dir = Path(definition_dir)
-        check_dir_path(llvm_dir)
+        #llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
 
-    kmir = KMIR(llvm_dir)
-    # _LOGGER.log( 'Call parser at {llvm_dir}')
+    kmir = KMIR(definition_dir)
+    # _LOGGER.log( 'Call parser at {definition_dir}')
     parse(kmir, mir_file, output=output)
     # print(proc_res.stdout) if output != 'none' else None
 
 
 def exec_run(
-    input_file: str,
+    mir_file: Path,
     output: str,
-    definition_dir: Optional[str] = None,
+    definition_dir: Optional[Path] = None,
     depth: Optional[int] = None,
     bug_report: bool = False,
     # ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
-    mir_file = Path(input_file)
+    #mir_file = Path(input_file)
     check_file_path(mir_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        llvm_dir = Path(definition_dir)
-        check_dir_path(llvm_dir)
+        #llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
 
     if depth is not None:
         assert depth < 0, ValueError(f'Argument "depth" must be non-negative, got: {depth}')
 
     if bug_report:
-        # br = BugReport(mir_file.with_suffix('.bug_report.tar'))
-        kmir = KMIR(llvm_dir)
+        br = BugReport(mir_file.with_suffix('.bug_report.tar'))
+        kmir = KMIR(definition_dir, bug_report=br)
     else:
-        kmir = KMIR(llvm_dir)
+        kmir = KMIR(definition_dir)
 
     run(kmir, mir_file, depth=depth, output=output)
 
 
 def exec_prove(
-    spec_file: str,
+    spec_file: Path,
     *,
     smt_timeout: int,
     smt_retry_limit: int,
@@ -94,7 +94,7 @@ def exec_prove(
     haskell_dir: Optional[str] = None,
     use_booster: bool = True,
     bug_report: bool = False,
-    save_directory: Optional[str] = None,
+    save_directory: Optional[Path] = None,
     reinit: bool = False,
     depth: Optional[int] = None,
     trace_rewrites: bool = False,
@@ -102,28 +102,25 @@ def exec_prove(
 ) -> None:
     # TODO: workers
     # TODO: md_selector doesn't work
-    if spec_file is None:
-        raise RuntimeError("A specification file must be provided")
-    else: 
-        spec_file = Path(spec_file)
-        check_file_path(spec_file)
+
+    check_file_path(spec_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        llvm_dir = Path(definition_dir)
-        check_dir_path(llvm_dir)
+        #llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
 
     if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
-        haskell_dir = Path(haskell_dir)
+        #haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
     if save_directory is None:
         raise RuntimeError('Cannot find the save directory, please specify a valid directory')
     else:
-        use_directory = Path(save_directory)
+        #use_directory = Path(save_directory)
         check_dir_path(use_directory)
 
     br = BugReport(spec_file.with_suffix('.bug_report.tar')) if bug_report else None
@@ -134,18 +131,15 @@ def exec_prove(
     prove(
         kmir,
         spec_file,
-        save_directory=use_directory,
+        save_directory=save_directory,
         reinit=reinit,
         depth=depth,
         smt_timeout=smt_timeout,
         smt_retry_limit=smt_retry_limit,
         trace_rewrites=trace_rewrites,
-        # kore_rpc_command=kore_rpc_command,
     )
 
-
-"""
-def exec_show_kcfg(
+"""def exec_show_kcfg(
     definition_dir: str,
     symbolic_dir: str,
     input_file: Path,
@@ -253,9 +247,7 @@ def exec_view_kcfg(
         exclude_claim_labels,
         spec_module,
         md_selector,
-    )
-"""
-
+    ) """
 
 def _loglevel(args: Namespace) -> int:
     if args.debug:
@@ -266,8 +258,6 @@ def _loglevel(args: Namespace) -> int:
 
     return logging.WARNING
 
-
-"""
 if __name__ == '__main__':
     main()
- """
+
