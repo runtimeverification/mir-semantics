@@ -227,19 +227,19 @@ TODO: figure out how to deal with duplicate bindings. For now, we panic.
          <fnKey> FN_KEY </fnKey>
          <localDecls>
            <localDecl>
-             <index>      KEY              </index>
+             <index> LOCAL </index>
              ...
            </localDecl>
            ...
          </localDecls>
          ...
-       </function> requires KEY ==Int Local2Int(LOCAL)
+       </function>
   rule <k> #initBindings(FN_KEY, (let _MUT:OptMut LOCAL:Local : TYPE:Type ;):Binding REST:BindingList) => #initBindings(FN_KEY, REST) ... </k>
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecls>
            (.Bag => <localDecl>
-                      <index>       Local2Int(LOCAL) </index>
+                      <index>       LOCAL            </index>
                       <mutability>  Not:Mutability   </mutability>
                       <internal>    false            </internal>
                       <ty>          TYPE:Type        </ty>
@@ -447,14 +447,13 @@ or panics if the function-like or the block is missing:
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
-           <index> INDEX  </index>
+           <index> PLACE  </index>
            <value> _ => fromInterpResult(evalRValue(FN_KEY, RVALUE)) </value>
            ...
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(PLACE)
-     andBool isRValueResult(evalRValue(FN_KEY, RVALUE))
+    requires isRValueResult(evalRValue(FN_KEY, RVALUE))
 ```
 
 #### Terminators
@@ -470,7 +469,7 @@ or panics if the function-like or the block is missing:
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
-           <index> 0  </index>
+           <index> _0  </index>
            <value> RETURN_VALUE </value>
            ...
          </localDecl>
@@ -545,7 +544,7 @@ The rule **gets stuck** of if does not find function/locals it needs.
        <function>
          <fnKey> FN_KEY_SOURCE </fnKey>
          <localDecl>
-           <index> INDEX_SOURCE  </index>
+           <index> LOCAL_SOURCE  </index>
            <value> VALUE </value>
            ...
          </localDecl>
@@ -554,14 +553,12 @@ The rule **gets stuck** of if does not find function/locals it needs.
        <function>
          <fnKey> FN_KEY_DEST </fnKey>
          <localDecl>
-           <index> INDEX_DEST  </index>
+           <index> LOCAL_DEST  </index>
            <value> _ => VALUE </value>
            ...
          </localDecl>
          ...
        </function>
-    requires INDEX_SOURCE ==Int Local2Int(LOCAL_SOURCE)
-     andBool INDEX_DEST ==Int Local2Int(LOCAL_DEST)
 
   syntax MirSimulation ::= #writeLocal(FunctionLikeKey, Local, MIRValue)
   //--------------------------------------------------------------------
@@ -569,13 +566,12 @@ The rule **gets stuck** of if does not find function/locals it needs.
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
-           <index> INDEX  </index>
+           <index> LOCAL  </index>
            <value> _ => VALUE </value>
            ...
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(LOCAL)
 
   syntax MIRValue ::= readLocal(FunctionLikeKey, Local) [function]
   //--------------------------------------------------------------
@@ -583,13 +579,12 @@ The rule **gets stuck** of if does not find function/locals it needs.
        <function>
          <fnKey> FN_KEY </fnKey>
          <localDecl>
-           <index> INDEX  </index>
+           <index> LOCAL  </index>
            <value> VALUE </value>
            ...
          </localDecl>
          ...
        </function>
-    requires INDEX ==Int Local2Int(LOCAL)
 ```
 
 * `switchInt`

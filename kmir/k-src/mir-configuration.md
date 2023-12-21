@@ -91,7 +91,7 @@ We represent `LocalDecls` as a cell `Map` of multiplicity `"*"`. The fields of `
   configuration
     <localDecls>
         <localDecl multiplicity="*" type="Map">
-            <index> 0:Int </index>
+            <index> _0:Local </index>
             <mutability>  Not:Mutability </mutability>
             <internal>    false          </internal>
             <ty>          ():Type        </ty>
