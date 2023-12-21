@@ -221,7 +221,7 @@ module SIMPLE-SPEC
         </localDecls>
         <basicBlocks>
           <basicBlock>
-          <bbName> _2 </bbName>
+          <bbName> 2 </bbName>
             <bbBody> { _2 = Add(const 3_usize, const 5_usize); .Statements return;} </bbBody>
           </basicBlock>
           ...
