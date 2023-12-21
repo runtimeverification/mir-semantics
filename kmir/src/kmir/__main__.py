@@ -1,4 +1,3 @@
-import os
 import logging
 from argparse import Namespace
 from pathlib import Path
@@ -116,11 +115,11 @@ def exec_prove(
     else:
         # haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
-    
-    if save_directory is None:   
+
+    if save_directory is None:
         save_directory = spec_file.parent
     else:
-        check_dir_path(save_directory) 
+        check_dir_path(save_directory)
 
     br = BugReport(spec_file.with_suffix('.bug_report.tar')) if bug_report else None
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir, use_booster=use_booster, bug_report=br)
