@@ -1,7 +1,7 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final, Optional, Iterable
+from typing import Any, Final, Optional
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
@@ -40,13 +40,13 @@ def exec_parse(
     definition_dir: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
-    #mir_file = Path(input_file)
+    # mir_file = Path(input_file)
     check_file_path(mir_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        #llvm_dir = Path(definition_dir)
+        # llvm_dir = Path(definition_dir)
         check_dir_path(definition_dir)
 
     kmir = KMIR(definition_dir)
@@ -61,16 +61,16 @@ def exec_run(
     definition_dir: Optional[Path] = None,
     depth: Optional[int] = None,
     bug_report: bool = False,
-    #ignore_return_code: bool = False,
+    # ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
-    #mir_file = Path(input_file)
+    # mir_file = Path(input_file)
     check_file_path(mir_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        #llvm_dir = Path(definition_dir)
+        # llvm_dir = Path(definition_dir)
         check_dir_path(definition_dir)
 
     if depth is not None:
@@ -87,11 +87,10 @@ def exec_run(
 
 def exec_prove(
     spec_file: Path,
-    *,
     smt_timeout: int,
     smt_retry_limit: int,
-    definition_dir: Optional[str] = None,
-    haskell_dir: Optional[str] = None,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
     use_booster: bool = True,
     bug_report: bool = False,
     save_directory: Optional[Path] = None,
@@ -108,13 +107,13 @@ def exec_prove(
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        #llvm_dir = Path(definition_dir)
+        # llvm_dir = Path(definition_dir)
         check_dir_path(definition_dir)
 
     if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
-        #haskell_dir = Path(haskell_dir)
+        # haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
     if save_directory is None:
@@ -138,6 +137,7 @@ def exec_prove(
         smt_retry_limit=smt_retry_limit,
         trace_rewrites=trace_rewrites,
     )
+
 
 """def exec_show_kcfg(
     definition_dir: str,
@@ -250,6 +250,7 @@ def exec_view_kcfg(
     ) 
 """
 
+
 def _loglevel(args: Namespace) -> int:
     if args.debug:
         return logging.DEBUG
@@ -258,6 +259,7 @@ def _loglevel(args: Namespace) -> int:
         return logging.INFO
 
     return logging.WARNING
+
 
 if __name__ == '__main__':
     main()

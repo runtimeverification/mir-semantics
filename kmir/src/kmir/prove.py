@@ -24,8 +24,6 @@ def prove(
 ) -> None:
     _LOGGER.info('Extracting claims from file')
 
-    # kmir.prover should
-
     if kmir.prover:
         kmir_prover = kmir.prover
     else:
@@ -35,8 +33,7 @@ def prove(
     assert not claims, ValueError(f'No claims found in file {spec_file}')
 
     # start an rpc session with KoreServer
-    # port is not given, is it necessary?
-    # can the server share by multiple client?
+    # TODO: Learn about port.
     server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
 
     results: list[tuple[str, str]] = []
@@ -47,7 +44,7 @@ def prove(
             res = kmir.prove_driver(proof, session, max_depth=depth)
 
             _, passed = res
-            if not passed:
+            if passed == 'failed':
                 failed += 1
             results.append(res)
 

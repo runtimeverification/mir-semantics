@@ -168,10 +168,8 @@ class KMIR:
     llvm_dir: Path
     parser: Path
     interpreter: Path
-    # haskell_dir: Path | None
     prover: Optional[KMIRProve] = None
     bug_report: Optional[BugReport] = None
-    # mir_prove: KProve | None
 
     def __init__(
         self,
@@ -189,8 +187,6 @@ class KMIR:
 
         # the run executor for interpreting mir programs
         interpreter = llvm_dir / 'interpreter'
-
-        # bug_report = br if br else None
 
         prover = KMIRProve(haskell_dir, use_booster, bug_report) if haskell_dir else None
 
@@ -246,14 +242,11 @@ class KMIR:
                 kore_pattern = KoreParser(kore_text).pattern()
                 # args = ['kore-print', '/dev/stdin', str(self.llvm_dir), output, '/dev/stdout']
                 try:
-                    # how to trun the color on?
-                    # turn the logger on?
-                    print(kore_print(kore_pattern, definition_dir=self.llvm_dir, output=output_format))
-                    # proc_res = run_process(args, input=kore_pattern.text, pipe_stderr=True)
-                    # print(proc_res.stdout)
+                    # TODO: Is it necessary to pass the logger in? Like the others
+                    text = kore_print(kore_pattern, definition_dir=self.llvm_dir, output=output_format, color=True)
+                    print(text)
                 except CalledProcessError as err:
-                    raise RuntimeError(f'kmir interpreter failed with status {err.returncode}: {err.stderr}') from err
-
+                    raise RuntimeError(f'kmir print failed with status {err.returncode}: {err.stderr}') from err
             case _:
                 raise ValueError('Output format not supported.')
 
@@ -269,7 +262,6 @@ class KMIR:
         extract_branches: Callable[[CTerm], Iterable[KInner]] | None = None,
         abstract_node: Callable[[CTerm], CTerm] | None = None,
     ) -> tuple[str, str]:
-        # with rpc_session as kcfg_explore:
         prover: Prover
         # case APRProof:
         if isinstance(proof, APRProof):
@@ -281,18 +273,16 @@ class KMIR:
                 cut_point_rules=cut_point_rules,
             )
             passed = proof.status
-            # summary = proof.summary()
         elif isinstance(proof, EqualityProof):
             # case EqualityProof:
             prover = EqualityProver(proof, rpc_session)
             prover.advance_proof()
             passed = proof.status
-            # summary = proof.summary()
         else:
             # case _:  # APRBMCProof not supported for now
             raise ValueError(f'Do not know how to build a prover for the proof: {proof.id}')
 
-        # _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {summary} ')
+        _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {proof.summary} ')
         # if passed is ProofStatus.FAILED:
         #    _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
 

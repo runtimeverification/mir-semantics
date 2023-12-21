@@ -1,8 +1,7 @@
 import logging
 import sys
 import traceback
-from collections.abc import Callable, Iterable, Iterator
-from contextlib import contextmanager
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Final, TypeVar
 
