@@ -13,7 +13,6 @@ def prove(
     kmir: KMIR,
     spec_file: Path,
     *,
-    # bug_report: BugReport | None = None, handled at init KMIR
     save_directory: Path | None = None,
     reinit: bool = False,
     depth: int | None = None,
@@ -29,8 +28,8 @@ def prove(
     else:
         raise ValueError('The prover object in kmir is not initialised.')
 
-    claims = kmir_prover.get_all_claims(spec_file)
-    assert not claims, ValueError(f'No claims found in file {spec_file}')
+    claims = kmir_prover.mir_prove.get_claims(spec_file)
+    assert claims, ValueError(f'No claims found in file {spec_file}')
 
     # start an rpc session with KoreServer
     # TODO: Learn about port.

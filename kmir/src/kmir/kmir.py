@@ -34,10 +34,8 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 class KMIRProve:
     haskell_dir: Path
     mir_prove: KProve
-    # mir_konfig: KMIRSemantics
     backend_cmd: list[str]  # `kore-rpc` for legacy backend; `kore-booster-rpc ` for booster backend with dylib supplied
     bug_report: Optional[BugReport] = None
-    # explore: Iterator[KCFGExplore]
 
     # use_booster should be removed in future
     def __init__(self, haskell_dir: Path, use_booster: bool, br: Optional[BugReport]):
@@ -78,6 +76,8 @@ class KMIRProve:
         object.__setattr__(self, 'backend_cmd', cmd)
         object.__setattr__(self, 'bug_report', br)
 
+        _LOGGER.info(f'Initialised a KMIR prover with definition directory {haskell_dir} with the backend {cmd}.')
+
     # start the kore server, `backend_cmd` decide which server to start.
     def set_kore_server(
         self,
@@ -109,10 +109,6 @@ class KMIRProve:
                     trace_rewrites=trace_rewrites,
                 )
 
-    # A wrapper on KProve's get_claims
-    def get_all_claims(self, spec_file: Path) -> list[KClaim]:
-        return self.mir_prove.get_claims(spec_file)
-
     def initialise_a_proof(
         self,
         claim: KClaim,
@@ -124,6 +120,8 @@ class KMIRProve:
         # TODO: rewrite
         proof_problem: Proof
         kprove = self.mir_prove
+
+        _LOGGER.info(f'Write proofs to {save_directory}')
 
         if is_functional(claim):
             if save_directory is not None and not reinit and EqualityProof.proof_exists(claim.label, save_directory):

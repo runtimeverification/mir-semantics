@@ -86,7 +86,7 @@ def create_argument_parser() -> ArgumentParser:
         'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
     )
     prove_subparser.add_argument(
-        'spec-file',
+        'spec_file',
         type=file_path,
         help='Path to specification file',
     )
