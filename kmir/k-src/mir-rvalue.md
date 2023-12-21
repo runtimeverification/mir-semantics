@@ -290,13 +290,12 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
-        <index> INDEX </index>
+        <index> LOCAL </index>
         <value> VALUE </value>
         ...
       </localDecl>
       ...
     </function>
-    requires  INDEX ==Int Local2Int(LOCAL)
 ```
 
 ### `Reference and Deref` evaluation
@@ -305,16 +304,15 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
   // TODO: These assumes PLACE is a Local, need to handle other options
   syntax MIRValue ::= evalAddressOf(FunctionLikeKey, AddressOf) [function]
   //----------------------------------------------------------------------
-  rule [[ evalAddressOf(FN_KEY, & _PtrModifiers PLACE) => INDEX ]]
+  rule [[ evalAddressOf(FN_KEY, & _PtrModifiers PLACE) => PLACE ]]
     <function>
       <fnKey> FN_KEY </fnKey>
       <localDecl>
-        <index> INDEX </index>
+        <index> PLACE </index>
         ...
       </localDecl>
       ...
     </function>
-    requires INDEX ==Int Local2Int(PLACE)
 
   syntax MIRValue ::= evalDeref(FunctionLikeKey, Deref) [function]
   //--------------------------------------------------------------
@@ -322,7 +320,7 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
     <function>
       <fnKey> FN_KEY </fnKey>
         <localDecl>
-          <index> REF </index>
+          <index> PLACE </index>
           <value> INDEX </value>
           ...
         </localDecl>
@@ -333,7 +331,6 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
         </localDecl>
       ...
     </function>
-    requires REF ==Int Local2Int(PLACE)
 
   // TODO: Investigate if this requires some more checks or effects. Needs to cover more cases.
   syntax MIRValue ::= evalCopyForDeref(FunctionLikeKey, CopyForDeref) [function]
@@ -360,13 +357,12 @@ Locals only makes sense within a function-like, hence we evaluate them as a cont
     <function>
       <fnKey> FN_KEY </fnKey>
         <localDecl>
-          <index> PLACE_INDEX </index>
+          <index> PLACE </index>
           <value> TUPLE </value>
           ...
         </localDecl>
       ...
     </function>
-    requires PLACE_INDEX ==Int Local2Int(PLACE)
 ```
 
 ### `Enum` evaluation

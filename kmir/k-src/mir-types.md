@@ -452,6 +452,7 @@ TODO: add more domain sorts
                     | TupleArgs
                     | OptionVal
                     | "UNIMPLEMENTED"
+                    | LocalToken
 
   syntax TupleArgs ::= "(" MIRValueNeList ")"
   syntax OptionVal ::= "OptSome" "(" MIRValue ")"
@@ -551,10 +552,6 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ### Locals
 
 ```k
-  syntax Int ::= Local2Int(Local) [function, total]
-  //-----------------------------------------------
-  rule Local2Int(LOCAL) => #let STR = LocalToken2String({LOCAL}:>LocalToken) #in String2Int(substrString(STR, 1, lengthString(STR))) [concrete]
-
   syntax Local ::= Int2Local(Int) [function, total]
   //-----------------------------------------------
   rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
