@@ -26,7 +26,7 @@
           <localDecls>
             <localDecl>
               <index>
-                0
+                _0
               </index>
               <mutability>
                 Not
@@ -42,7 +42,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                1
+                _1
               </index>
               <mutability>
                 Not
@@ -82,7 +82,7 @@
           <localDecls>
             <localDecl>
               <index>
-                0
+                _0
               </index>
               <mutability>
                 Not
@@ -98,7 +98,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                1
+                _1
               </index>
               <mutability>
                 Not
@@ -114,7 +114,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                2
+                _2
               </index>
               <mutability>
                 Not
@@ -130,7 +130,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                3
+                _3
               </index>
               <mutability>
                 Not
@@ -146,7 +146,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                4
+                _4
               </index>
               <mutability>
                 Not
@@ -162,7 +162,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                5
+                _5
               </index>
               <mutability>
                 Not
@@ -178,7 +178,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                6
+                _6
               </index>
               <mutability>
                 Not
@@ -194,7 +194,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                7
+                _7
               </index>
               <mutability>
                 Not
@@ -248,7 +248,7 @@
           <localDecls>
             <localDecl>
               <index>
-                0
+                _0
               </index>
               <mutability>
                 Not
@@ -264,7 +264,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                1
+                _1
               </index>
               <mutability>
                 Not
@@ -280,7 +280,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                2
+                _2
               </index>
               <mutability>
                 Not
@@ -296,7 +296,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                3
+                _3
               </index>
               <mutability>
                 Not
@@ -312,7 +312,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                4
+                _4
               </index>
               <mutability>
                 Not
@@ -328,7 +328,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                5
+                _5
               </index>
               <mutability>
                 Not
@@ -344,7 +344,7 @@
               </value>
             </localDecl> <localDecl>
               <index>
-                6
+                _6
               </index>
               <mutability>
                 Not
