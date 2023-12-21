@@ -68,12 +68,6 @@ def create_argument_parser() -> ArgumentParser:
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'latex', 'kast', 'binary', 'none'],
     )
-    """ run_subparser.add_argument(
-        '--ignore-return-code',
-        action='store_true',
-        default=False,
-        help='Ignore return code of krun, always return 0 (use for debugging only)',
-    ) """
     run_subparser.add_argument(
         '--bug-report',
         action='store_true',

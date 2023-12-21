@@ -61,7 +61,7 @@ def exec_run(
     definition_dir: Optional[Path] = None,
     depth: Optional[int] = None,
     bug_report: bool = False,
-    # ignore_return_code: bool = False,
+    #ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
     #mir_file = Path(input_file)
@@ -120,7 +120,7 @@ def exec_prove(
     if save_directory is None:
         raise RuntimeError('Cannot find the save directory, please specify a valid directory')
     else:
-        #use_directory = Path(save_directory)
+        use_directory = Path(save_directory)
         check_dir_path(use_directory)
 
     br = BugReport(spec_file.with_suffix('.bug_report.tar')) if bug_report else None
@@ -247,7 +247,8 @@ def exec_view_kcfg(
         exclude_claim_labels,
         spec_module,
         md_selector,
-    ) """
+    ) 
+"""
 
 def _loglevel(args: Namespace) -> int:
     if args.debug:
@@ -260,4 +261,3 @@ def _loglevel(args: Namespace) -> int:
 
 if __name__ == '__main__':
     main()
-
