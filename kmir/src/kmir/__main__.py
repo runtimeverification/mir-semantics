@@ -1,16 +1,18 @@
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Any, Final, Optional
+from typing import Any, Final, Iterable, Optional
 
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
+from .kcfg import show_kcfg
 from .kmir import KMIR
 from .parse import parse
 from .prove import prove
 from .run import run
+from .utils import NodeIdLike
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -139,15 +141,15 @@ def exec_prove(
     )
 
 
-"""def exec_show_kcfg(
-    definition_dir: str,
-    symbolic_dir: str,
-    input_file: Path,
+def exec_show_kcfg(
+    definition_dir: Path,
+    haskell_dir: Path,
+    # spec_file: Path,
+    claim_label: str,
     save_directory: Path | None = None,
-    claim_labels: Iterable[str] | None = None,
-    exclude_claim_labels: Iterable[str] = (),
-    spec_module: str | None = None,
-    md_selector: str | None = None,
+    # exclude_claim_labels: Iterable[str] = (),
+    # spec_module: str | None = None,
+    # md_selector: str | None = None,
     nodes: Iterable[NodeIdLike] = (),
     node_deltas: Iterable[tuple[NodeIdLike, NodeIdLike]] = (),
     to_module: bool = False,
@@ -160,38 +162,33 @@ def exec_prove(
 ) -> None:
     # TODO: include dirs
 
-    spec_file = Path(input_file)
-    check_file_path(spec_file)
+    # check_file_path(spec_file)
+
+    if save_directory is None:
+        raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
+    else:
+        check_dir_path(save_directory)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        llvm_dir = Path(definition_dir)
-        check_dir_path(llvm_dir)
+        check_dir_path(definition_dir)
 
-    if symbolic_dir is None:
+    if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
-        haskell_dir = Path(symbolic_dir)
         check_dir_path(haskell_dir)
 
-    if save_directory is None:
-        raise RuntimeError('Cannot find the save directory, please specify a valid directory')
-    else:
-        use_directory = Path(save_directory)
-        check_dir_path(use_directory)
-
-    # kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
     show_kcfg(
-        llvm_dir,
-        haskell_dir,
-        spec_file,
-        use_directory,
-        claim_labels,
-        exclude_claim_labels,
-        spec_module,
-        md_selector,
+        kmir,
+        # spec_file,
+        claim_label,
+        save_directory,
+        # exclude_claim_labels,
+        # spec_module,
+        # md_selector,
         nodes,
         node_deltas,
         to_module,
@@ -203,52 +200,47 @@ def exec_prove(
     )
 
 
-def exec_view_kcfg(
-    definition_dir: str,
-    symbolic_dir: str,
-    input_file: Path,
+""" def exec_view_kcfg(
+    definition_dir: Path,
+    haskell_dir: Path,
+    #spec_file: Path,
+    claim_label: str,
     save_directory: Path | None = None,
-    claim_labels: Iterable[str] | None = None,
-    exclude_claim_labels: Iterable[str] = (),
-    spec_module: str | None = None,
-    md_selector: str | None = None,
+    #exclude_claim_labels: Iterable[str] = (),
+    #spec_module: str | None = None,
+    #md_selector: str | None = None,
     **kwargs: Any,
 ) -> None:
     # TODO: include dirs
 
-    spec_file = Path(input_file)
-    check_file_path(spec_file)
+    #check_file_path(spec_file)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        llvm_dir = Path(definition_dir)
-        check_dir_path(llvm_dir)
+        check_dir_path(definition_dir)
 
-    if symbolic_dir is None:
+    if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
-        haskell_dir = Path(symbolic_dir)
         check_dir_path(haskell_dir)
 
     if save_directory is None:
-        raise RuntimeError('Cannot find the save directory, please specify a valid directory')
+        save_directory = spec_file.parent
     else:
-        use_directory = Path(save_directory)
-        check_dir_path(use_directory)
-    # kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
+        check_dir_path(save_directory)
+
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
     view_kcfg(
-        llvm_dir,
-        haskell_dir,
+        kmir,
         spec_file,
-        use_directory,
+        save_directory,
         claim_labels,
         exclude_claim_labels,
         spec_module,
         md_selector,
-    ) 
-"""
+    ) """
 
 
 def _loglevel(args: Namespace) -> int:

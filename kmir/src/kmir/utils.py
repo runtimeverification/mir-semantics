@@ -1,7 +1,7 @@
 import logging
 import sys
 import traceback
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from pathlib import Path
 from typing import Final, TypeVar
 
@@ -10,14 +10,12 @@ from pyk.kast.inner import KInner, Subst
 from pyk.kast.manip import set_cell
 from pyk.kast.outer import KApply, KClaim, KRewrite, KSequence
 from pyk.kcfg import KCFG, KCFGExplore
-from pyk.ktool.kprove import KProve
-from pyk.proof import APRProof
-
-# from pyk.proof.equality import EqualityProof
-# from pyk.proof.proof import Proof
-from pyk.utils import single
 
 from .preprocessor import preprocess
+
+# from pyk.ktool.kprove import KProve
+# from pyk.utils import single
+
 
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
@@ -38,10 +36,10 @@ def is_functional(claim: KClaim) -> bool:
     return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
 
 
-def get_apr_proof_for_spec(
+""" def get_apr_proof_for_spec(
     kprove: KProve,
     spec_file: Path,
-    save_directory: Path | None,
+    save_directory: Path ,
     spec_module_name: str | None = None,
     include_dirs: Iterable[Path] = (),
     md_selector: str | None = None,
@@ -65,7 +63,7 @@ def get_apr_proof_for_spec(
     )
 
     apr_proof = APRProof.read_proof_data(save_directory, claim.label)
-    return apr_proof
+    return apr_proof """
 
 
 def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:

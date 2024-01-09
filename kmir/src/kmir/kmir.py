@@ -280,7 +280,7 @@ class KMIR:
             # case _:  # APRBMCProof not supported for now
             raise ValueError(f'Do not know how to build a prover for the proof: {proof.id}')
 
-        _LOGGER.info('Claim {proof.id} is {passed.value} with a summary {proof.summary} ')
+        _LOGGER.info(f'Claim {proof.id} is {passed.value} with a summary {proof.summary} ')
         # if passed is ProofStatus.FAILED:
         #    _LOGGER.info('The failure reoprt this claim is {proof.failure_info}')
 

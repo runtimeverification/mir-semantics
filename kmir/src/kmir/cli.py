@@ -162,10 +162,11 @@ def create_argument_parser() -> ArgumentParser:
             kmir_cli_args.kcfg_show_args,
         ],
     )
+    show_subparser.add_argument('claim_label', type=str, help='Provide the claim label for showing the proof')
     show_subparser.add_argument(
-        'spec-file',
-        type=file_path,
-        help='Path to specification file',
+        '--save-directory',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
     )
     show_subparser.add_argument(
         '--definition-dir',
@@ -179,11 +180,6 @@ def create_argument_parser() -> ArgumentParser:
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
-    show_subparser.add_argument(
-        '--save-directory',
-        type=dir_path,
-        help='Path to KCFG proofs directory, directory must already exist.',
-    )
 
     # KCFG view
     view_subparser = command_parser.add_parser(
@@ -192,7 +188,7 @@ def create_argument_parser() -> ArgumentParser:
         parents=[logging_args],
     )
     view_subparser.add_argument(
-        'spec-file',
+        'spec_file',
         type=file_path,
         help='Path to specification file',
     )
