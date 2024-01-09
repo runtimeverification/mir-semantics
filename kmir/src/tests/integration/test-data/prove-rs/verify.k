@@ -19,4 +19,5 @@ module VERIFY
     syntax BBId ::= "bb4" [token]
 
     syntax Identifier ::= "num" [token]
+    // syntax Identifier ::= "temp" [token]
 endmodule

@@ -332,25 +332,106 @@ module SIMPLE-SPEC
     </functions>
     requires FN_KEY =/=K Fn(main)
 
-    // claim [terminator]: <k> #executeTerminator(_1 = Fn(temp) ( .OperandList )) -> ((bb2:BBName _):BB) ...</k>
-    // <mir>
-    //   <simulator>
-    //     <callStack> ListItem(Fn(main)) .List </callStack>
-    //     <currentBasicBlock> _ => 2 </currentBasicBlock>
-    //     ...
-    //   </simulator>
-    //   <data>
-    //     <functions>
-    //       <function>
-    //       <fnKey> Fn(main) </fnKey>
-    //       <localDecls>
-    //         <localDecl>
-    //         <index> _1 <index>
+    claim [terminator.3]: <k> #executeTerminator(_1 = FN_NAME:PathInExpression ( .OperandList ) -> ((bb2:BBName _):BB)) => #halt ...</k>
+    <phase> Execution => Finalization </phase>
+    <callStack> ListItem(Fn(main)) .List => .List </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <returncode> _ => 0 </returncode>
+    <functions>
+      <function>
+      <fnKey> Fn(main) </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+          <value> Unit </value>
+          ...
+          </localDecl>
+          <localDecl>
+          <index> _1 </index>
+          <value> _ => 42 </value>
+          ...
+          </localDecl>
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+        ...
+      </function>
+      <function>
+      <fnKey> Fn(toFunctionPath(FN_NAME)) </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+          <value> _ => 42 </value>
+          ...
+          </localDecl>
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 0 </bbName>
+            <bbBody> { _0 = const 42_usize; return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+        ...
+      </function>
+      ...
+    </functions>
 
-    //         </localDecl>
-    //       </localDecls>
-    //       </function>
-    //     </functions>
-    //   </data>
-    // </mir>
+    // claim [terminator.fail]: <k> #executeTerminator(_1 = FN_NAME:PathInExpression ( .OperandList ) -> ((bb2:BBName _):BB)) => .K ...</k>
+    // <phase> Execution </phase>
+    // <callStack> ListItem(Fn(KEY)) REST => REST </callStack>
+    // <currentBasicBlock> _ => 2 </currentBasicBlock>
+    // <functions>
+    //   <function>
+    //   <fnKey> Fn(main) </fnKey>
+    //   ...
+    //   </function>
+    //   <function>
+    //   <fnKey> Fn(KEY) </fnKey>
+    //     <localDecls>
+    //       <localDecl>
+    //       <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+    //       <value> Unit </value>
+    //       ...
+    //       </localDecl>
+    //       <localDecl>
+    //       <index> _1 </index>
+    //       <value> _ => 42 </value>
+    //       ...
+    //       </localDecl>
+    //     </localDecls>
+    //     <basicBlocks>
+    //       <basicBlock>
+    //       <bbName> 2 </bbName>
+    //         <bbBody> { .Statements return;} </bbBody>
+    //       </basicBlock>
+    //       ...
+    //     </basicBlocks>
+    //     ...
+    //   </function>
+    //   <function>
+    //   <fnKey> Fn(toFunctionPath(FN_NAME)) </fnKey>
+    //     <localDecls>
+    //       <localDecl>
+    //       <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+    //       <value> _ => 42 </value>
+    //       ...
+    //       </localDecl>
+    //     </localDecls>
+    //     <basicBlocks>
+    //       <basicBlock>
+    //       <bbName> 0 </bbName>
+    //         <bbBody> { _0 = const 42_usize; return;} </bbBody>
+    //       </basicBlock>
+    //       ...
+    //     </basicBlocks>
+    //     ...
+    //   </function>
+    //   ...
+    // </functions>
 endmodule
