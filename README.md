@@ -71,13 +71,17 @@ Use the following commands from the `kmir` directory to manually prove `k` speci
 ```sh
 kmir prove demo/simple-spec.k
 ```
+This command will automatically store the proof graph- `kcfgs` in the same directory as the `spec-file`. User could specify a specific directory using the flag `--save-directory`.
 
-#### Display KCFG
+#### Display the tree show of a specified proof
 ```sh
-kmir show-kcfg --spec-file kmir/src/tests/integration/test-data/prove-rs/simple-spec.k --save-directory <path to folder>
+kmir show-kcfg SIMPLE-SPEC.statement.1 --proof-dir demo
 ```
 
-In order to save `kcfgs` the flag `--save-directory` can be added with a path to the directory to save the kcfgs to (this dir must already be created).
+#### Display an interative view of a specified proof
+```sh
+kmir view-kcfg SIMPLE-SPEC.statement.1 --proof-dir demo
+```
 
 ## Build from source
 
