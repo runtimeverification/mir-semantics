@@ -117,7 +117,7 @@ def create_argument_parser() -> ArgumentParser:
     prove_subparser.add_argument(
         '--smt-timeout',
         type=int,
-        default=125,
+        default=200,
         help='Timeout in ms to use for SMT queries',
     )
     prove_subparser.add_argument(

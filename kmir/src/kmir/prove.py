@@ -28,16 +28,15 @@ def prove(
     else:
         raise ValueError('The prover object in kmir is not initialised.')
 
-    claims = kmir_prover.mir_prove.get_claims(spec_file)
+    claims = kmir_prover.get_all_claims(spec_file)
     assert claims, ValueError(f'No claims found in file {spec_file}')
-
-    # start an rpc session with KoreServer
-    # TODO: Learn about port.
-    server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
 
     results: list[tuple[str, str]] = []
     failed = 0
     for claim in claims:
+        # start an rpc session with KoreServer
+        server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
+
         with kmir_prover.rpc_session(server, claim.label, trace_rewrites) as session:
             proof = kmir_prover.initialise_a_proof(claim, session, save_directory=save_directory, reinit=reinit)
             res = kmir.prove_driver(proof, session, max_depth=depth)
@@ -46,6 +45,7 @@ def prove(
             if passed == 'failed':
                 failed += 1
             results.append(res)
+    print(results)
 
     if failed:  # TODO: fail immediately or fail when all claims tried.
         sys.exit(failed)
