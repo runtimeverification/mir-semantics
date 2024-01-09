@@ -2,9 +2,9 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-from pyk.kcfg.show import KCFGShow
 from pyk.proof import APRProof  # , EqualityProof, APRBMCProof
 from pyk.proof.proof import Proof
+from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
 from .kmir import KMIR
@@ -38,16 +38,16 @@ def show_kcfg(
 
     proof = Proof.read_proof_data(proof_dir, claim_label)
     # TODO: Create NodePrinter ???
-    kmir_show = KCFGShow(kprove)
 
     if isinstance(proof, APRProof):
+        kmir_show = APRProofShow(kprove)
         if pending:
             nodes = list(nodes) + [node.id for node in proof.pending]
         if failing:
             nodes = list(nodes) + [node.id for node in proof.failing]
 
         res_lines = kmir_show.show(
-            proof.kcfg,
+            proof,
             nodes=nodes,
             node_deltas=node_deltas,
             to_module=to_module,
@@ -60,7 +60,7 @@ def show_kcfg(
     #        proof.failure_info.print()
     # TODO: print counterexample
     else:  # TODO: implement the other proof types
-        raise ValueError('Proof type not supported')
+        raise ValueError('Proof type not supported yet.')
 
     print('\n'.join(res_lines))
 
@@ -82,7 +82,6 @@ def view_kcfg(
     else:
         kprove = prover.mir_prove
 
-    # proof = APRProof.read_proof_data(save_directory, claim_label)
     proof = Proof.read_proof_data(proof_dir, claim_label)
 
     if isinstance(proof, APRProof):
