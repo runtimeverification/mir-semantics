@@ -164,7 +164,7 @@ def create_argument_parser() -> ArgumentParser:
     )
     show_subparser.add_argument('claim_label', type=str, help='Provide the claim label for showing the proof')
     show_subparser.add_argument(
-        '--save-directory',
+        '--proof-dir',
         type=dir_path,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
@@ -187,10 +187,11 @@ def create_argument_parser() -> ArgumentParser:
         help='Display tree view of CFG',
         parents=[logging_args],
     )
+    view_subparser.add_argument('claim_label', type=str, help='Provide the claim label for showing the proof')
     view_subparser.add_argument(
-        'spec_file',
-        type=file_path,
-        help='Path to specification file',
+        '--proof-dir',
+        type=dir_path,
+        help='Path to KCFG proofs directory, directory must already exist.',
     )
     view_subparser.add_argument(
         '--definition-dir',
@@ -204,11 +205,6 @@ def create_argument_parser() -> ArgumentParser:
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
-    view_subparser.add_argument(
-        '--save-directory',
-        type=dir_path,
-        help='Path to KCFG proofs directory, directory must already exist.',
-    )
 
     return parser
 
@@ -218,7 +214,7 @@ class KMIRCLIArgs(KCLIArgs):
     def kcfg_show_args(self) -> ArgumentParser:
         args = ArgumentParser(add_help=False)
         args.add_argument(
-            '--node',
+            '--nodes',
             type=node_id_like,
             dest='nodes',
             default=[],
@@ -226,7 +222,7 @@ class KMIRCLIArgs(KCLIArgs):
             help='List of nodes to display as well.',
         )
         args.add_argument(
-            '--node-delta',
+            '--node-deltas',
             type=arg_pair_of(node_id_like, node_id_like),
             dest='node_deltas',
             default=[],
@@ -238,13 +234,7 @@ class KMIRCLIArgs(KCLIArgs):
             dest='failure_info',
             default=False,
             action='store_true',
-            help='Show failure summary for cfg',
-        )
-        args.add_argument(
-            '--no-failure-information',
-            dest='failure_info',
-            action='store_false',
-            help='Do not show failure summary for cfg',
+            help='Falg to show failure summary for cfg, by default, false.',
         )
         args.add_argument('--to-module', default=False, action='store_true', help='Output edges as a K module.')
         args.add_argument('--pending', default=False, action='store_true', help='Also display pending nodes')

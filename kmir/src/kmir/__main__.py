@@ -7,7 +7,7 @@ from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
-from .kcfg import show_kcfg
+from .kcfg import show_kcfg, view_kcfg
 from .kmir import KMIR
 from .parse import parse
 from .prove import prove
@@ -142,32 +142,24 @@ def exec_prove(
 
 
 def exec_show_kcfg(
-    definition_dir: Path,
-    haskell_dir: Path,
-    # spec_file: Path,
     claim_label: str,
-    save_directory: Path | None = None,
-    # exclude_claim_labels: Iterable[str] = (),
-    # spec_module: str | None = None,
-    # md_selector: str | None = None,
+    proof_dir: Optional[Path] = None,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
     nodes: Iterable[NodeIdLike] = (),
     node_deltas: Iterable[tuple[NodeIdLike, NodeIdLike]] = (),
-    to_module: bool = False,
-    minimize: bool = True,
     failure_info: bool = False,
-    sort_collections: bool = False,
+    to_module: bool = False,
+    # minimize: bool = True,
     pending: bool = False,
     failing: bool = False,
+    counterexample_info: bool = False,
     **kwargs: Any,
 ) -> None:
-    # TODO: include dirs
-
-    # check_file_path(spec_file)
-
-    if save_directory is None:
+    if proof_dir is None:
         raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
     else:
-        check_dir_path(save_directory)
+        check_dir_path(proof_dir)
 
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
@@ -183,64 +175,52 @@ def exec_show_kcfg(
 
     show_kcfg(
         kmir,
-        # spec_file,
         claim_label,
-        save_directory,
-        # exclude_claim_labels,
-        # spec_module,
-        # md_selector,
+        proof_dir,
         nodes,
         node_deltas,
         to_module,
-        minimize,
         failure_info,
-        sort_collections,
         pending,
         failing,
+        counterexample_info,
     )
 
 
-""" def exec_view_kcfg(
-    definition_dir: Path,
-    haskell_dir: Path,
-    #spec_file: Path,
+def exec_view_kcfg(
     claim_label: str,
-    save_directory: Path | None = None,
-    #exclude_claim_labels: Iterable[str] = (),
-    #spec_module: str | None = None,
-    #md_selector: str | None = None,
+    proof_dir: Optional[Path] = None,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
+    # exclude_claim_labels: Iterable[str] = (),
+    # spec_module: str | None = None,
+    # md_selector: str | None = None,
     **kwargs: Any,
 ) -> None:
     # TODO: include dirs
 
-    #check_file_path(spec_file)
+    # check_file_path(spec_file)
 
+    if proof_dir is None:
+        raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
+    else:
+        check_dir_path(proof_dir)
     if definition_dir is None:
         raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
         check_dir_path(definition_dir)
-
     if haskell_dir is None:
         raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
     else:
         check_dir_path(haskell_dir)
 
-    if save_directory is None:
-        save_directory = spec_file.parent
-    else:
-        check_dir_path(save_directory)
-
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
     view_kcfg(
         kmir,
-        spec_file,
-        save_directory,
-        claim_labels,
-        exclude_claim_labels,
-        spec_module,
-        md_selector,
-    ) """
+        claim_label,
+        proof_dir,
+    )
 
 
 def _loglevel(args: Namespace) -> int:
