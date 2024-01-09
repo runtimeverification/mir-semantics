@@ -76,8 +76,6 @@ class KMIRProve:
         object.__setattr__(self, 'backend_cmd', cmd)
         object.__setattr__(self, 'bug_report', br)
 
-        _LOGGER.info(f'Initialised a KMIR prover with definition directory {haskell_dir} with the backend {cmd}.')
-
     # start the kore server, `backend_cmd` decide which server to start.
     def set_kore_server(
         self,
@@ -109,6 +107,10 @@ class KMIRProve:
                     trace_rewrites=trace_rewrites,
                 )
 
+    # A wrapper on KProve's get_claims
+    def get_all_claims(self, spec_file: Path) -> list[KClaim]:
+        return self.mir_prove.get_claims(spec_file)
+
     def initialise_a_proof(
         self,
         claim: KClaim,
@@ -120,8 +122,6 @@ class KMIRProve:
         # TODO: rewrite
         proof_problem: Proof
         kprove = self.mir_prove
-
-        _LOGGER.info(f'Write proofs to {save_directory}')
 
         if is_functional(claim):
             if save_directory is not None and not reinit and EqualityProof.proof_exists(claim.label, save_directory):

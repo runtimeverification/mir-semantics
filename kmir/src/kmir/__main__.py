@@ -116,6 +116,7 @@ def exec_prove(
         # haskell_dir = Path(haskell_dir)
         check_dir_path(haskell_dir)
 
+    # if the save_directory is not provided, the proofs are saved to the same directory of spec_file
     if save_directory is None:
         save_directory = spec_file.parent
     else:
