@@ -50,7 +50,7 @@ def test_handwritten(
             smt_timeout=300,
             smt_retry_limit=10,
         )
-    except:
+    except Exception:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
