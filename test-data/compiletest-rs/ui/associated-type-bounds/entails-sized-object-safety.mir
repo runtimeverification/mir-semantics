@@ -1,0 +1,81 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn _assert_obj_safe_1(_1: Box<dyn ObjTr1>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn _assert_obj_safe_2(_1: Box<dyn ObjTr2>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn _assert_obj_safe_3(_1: Box<dyn ObjTr3>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn _assert_obj_safe_4(_1: Box<dyn ObjTr4>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn _assert_obj_safe_5(_1: Box<dyn ObjTr5>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn _assert_obj_safe_6(_1: Box<dyn ObjTr6>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

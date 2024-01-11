@@ -1,0 +1,18 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/shadow-bool.rs:14:1: 14:22>::SOME_PROPERTY: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

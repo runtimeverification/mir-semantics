@@ -1,0 +1,121 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: Box<Triple>) -> Box<Triple> {
+    debug foo => _1;
+    let mut _0: std::boxed::Box<Triple>;
+    scope 1 {
+        debug foo => _1;
+        scope 2 {
+            debug bar => _1;
+            scope 3 {
+                debug baz => _1;
+                scope 4 {
+                    debug quux => _1;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<Triple>;
+    let mut _2: Triple;
+    let mut _4: std::boxed::Box<Triple>;
+    let mut _5: (&isize, &isize);
+    let mut _6: &isize;
+    let mut _7: &isize;
+    let _8: isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: *const Triple;
+    scope 1 {
+        debug x => _1;
+        let _3: std::boxed::Box<Triple>;
+        scope 2 {
+            debug y => _3;
+            let _9: &isize;
+            let _10: &isize;
+            let mut _19: *const ();
+            let mut _20: usize;
+            let mut _21: usize;
+            let mut _22: usize;
+            let mut _23: usize;
+            let mut _24: bool;
+            scope 3 {
+                debug left_val => _9;
+                debug right_val => _10;
+                let _15: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _15;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Triple { a: const 1_isize, b: const 2_isize, c: const 3_isize };
+        _1 = Box::<Triple>::new(move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = move _1;
+        _3 = test(move _4) -> bb2;
+    }
+
+    bb2: {
+        _18 = (((_3.0: std::ptr::Unique<Triple>).0: std::ptr::NonNull<Triple>).0: *const Triple);
+        _19 = _18 as *const () (PtrToPtr);
+        _20 = _19 as usize (Transmute);
+        _21 = AlignOf(Triple);
+        _22 = Sub(_21, const 1_usize);
+        _23 = BitAnd(_20, _22);
+        _24 = Eq(_23, const 0_usize);
+        assert(_24, "misaligned pointer dereference: address must be a multiple of {} but is {}", _21, _20) -> [success: bb8, unwind unreachable];
+    }
+
+    bb3: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17) -> bb6;
+    }
+
+    bb4: {
+        drop(_3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_3) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+
+    bb8: {
+        _6 = &((*_18).2: isize);
+        _8 = const 3_isize;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &isize);
+        _10 = (_5.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+}

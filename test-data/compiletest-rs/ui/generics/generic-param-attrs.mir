@@ -1,0 +1,171 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generics/generic-param-attrs.rs:19:1: 19:46>::foo(_1: &StLt<'_>, _2: &[u32]) -> &u32 {
+    debug self => _1;
+    let mut _0: &u32;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn <impl at ui/generics/generic-param-attrs.rs:22:1: 22:43>::foo(_1: &StTy<N>, _2: N) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn f_lt(_1: &[u32]) -> &u32 {
+    let mut _0: &u32;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn f_ty(_1: O) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-param-attrs.rs:29:1: 29:16>::m_lt(_1: &[u32]) -> &u32 {
+    let mut _0: &u32;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn <impl at ui/generics/generic-param-attrs.rs:29:1: 29:16>::m_ty(_1: P) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn hof_lt(_1: Q) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn StLt(_1: &u32) -> StLt<'_> {
+    let mut _0: StLt<'_>;
+
+    bb0: {
+        _0 = StLt::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn StLt(_1: &u32) -> StLt<'_> {
+    let mut _0: StLt<'_>;
+
+    bb0: {
+        _0 = StLt::<'_>(move _1);
+        return;
+    }
+}
+
+fn StTy(_1: I) -> StTy<I> {
+    let mut _0: StTy<I>;
+
+    bb0: {
+        _0 = StTy::<I>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn StTy(_1: I) -> StTy<I> {
+    let mut _0: StTy<I>;
+
+    bb0: {
+        _0 = StTy::<I>(move _1);
+        return;
+    }
+}
+
+fn EnLt::A(_1: &u32) -> EnLt<'_> {
+    let mut _0: EnLt<'_>;
+
+    bb0: {
+        _0 = EnLt::<'_>::A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn EnLt::A(_1: &u32) -> EnLt<'_> {
+    let mut _0: EnLt<'_>;
+
+    bb0: {
+        _0 = EnLt::<'_>::A(move _1);
+        return;
+    }
+}
+
+fn EnTy::A(_1: J) -> EnTy<J> {
+    let mut _0: EnTy<J>;
+
+    bb0: {
+        _0 = EnTy::<J>::A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn EnTy::A(_1: J) -> EnTy<J> {
+    let mut _0: EnTy<J>;
+
+    bb0: {
+        _0 = EnTy::<J>::A(move _1);
+        return;
+    }
+}

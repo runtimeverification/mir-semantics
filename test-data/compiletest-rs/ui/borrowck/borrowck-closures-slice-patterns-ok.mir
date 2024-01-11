@@ -1,0 +1,1079 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn arr_by_ref(_1: [String; 3]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: &[std::string::String; 3];
+    let mut _4: &[std::string::String; 3];
+    let _5: ();
+    let mut _6: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15];
+    let _7: ();
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15];
+    let _9: ();
+    let _10: ();
+    let mut _11: [std::string::String; 3];
+    let mut _12: bool;
+    scope 1 {
+        debug r => _2;
+        let _3: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15];
+        scope 2 {
+            debug f => _3;
+        }
+    }
+
+    bb0: {
+        _12 = const false;
+        _12 = const true;
+        _2 = &_1;
+        _4 = &_1;
+        _3 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15] { x: move _4 };
+        _6 = &_3;
+        _5 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15] as Fn<()>>::call(move _6, const ()) -> [return: bb1, unwind: bb7];
+    }
+
+    bb1: {
+        _8 = &_3;
+        _7 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15] as Fn<()>>::call(move _8, const ()) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _9 = std::mem::drop::<&[String; 3]>(_2) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _12 = const false;
+        _11 = move _1;
+        _10 = std::mem::drop::<[String; 3]>(move _11) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        switchInt(_12) -> [0: bb5, otherwise: bb6];
+    }
+}
+
+arr_by_ref::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_by_ref::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:10:13: 10:15]) -> () {
+    debug x => (*((*_1).0: &[std::string::String; 3]));
+    let mut _0: ();
+    let _2: &std::string::String;
+    let _3: &[std::string::String; 2];
+    let mut _4: &[std::string::String; 3];
+    let mut _5: &[std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &[std::string::String; 3]);
+        _2 = &(*_4)[0 of 3];
+        _5 = deref_copy ((*_1).0: &[std::string::String; 3]);
+        _3 = &(*_5)[1..3];
+        return;
+    }
+}
+
+fn arr_by_mut(_1: [String; 3]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let mut _2: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19];
+    let mut _3: &mut [std::string::String; 3];
+    let _4: ();
+    let mut _5: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19];
+    let _6: ();
+    let mut _7: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19];
+    let _8: ();
+    let mut _9: [std::string::String; 3];
+    let mut _10: bool;
+    scope 1 {
+        debug f => _2;
+    }
+
+    bb0: {
+        _10 = const false;
+        _10 = const true;
+        _3 = &mut _1;
+        _2 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19] { x: move _3 };
+        _5 = &mut _2;
+        _4 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19] as FnMut<()>>::call_mut(move _5, const ()) -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _7 = &mut _2;
+        _6 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19] as FnMut<()>>::call_mut(move _7, const ()) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _10 = const false;
+        _9 = move _1;
+        _8 = std::mem::drop::<[String; 3]>(move _9) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        switchInt(_10) -> [0: bb4, otherwise: bb5];
+    }
+}
+
+arr_by_mut::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_by_mut::{closure#0}(_1: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:22:17: 22:19]) -> () {
+    debug x => (*((*_1).0: &mut [std::string::String; 3]));
+    let mut _0: ();
+    let _2: &mut std::string::String;
+    let _3: &mut [std::string::String; 2];
+    let mut _4: &mut [std::string::String; 3];
+    let mut _5: &mut [std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &mut [std::string::String; 3]);
+        _2 = &mut (*_4)[0 of 3];
+        _5 = deref_copy ((*_1).0: &mut [std::string::String; 3]);
+        _3 = &mut (*_5)[1..3];
+        return;
+    }
+}
+
+fn arr_by_move(_1: [String; 3]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:31:13: 31:15];
+    let _3: ();
+    scope 1 {
+        debug f => _2;
+    }
+
+    bb0: {
+        _2 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:31:13: 31:15] { x: move _1 };
+        _3 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:31:13: 31:15] as FnOnce<()>>::call_once(move _2, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+arr_by_move::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_by_move::{closure#0}(_1: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:31:13: 31:15]) -> () {
+    debug x => (_1.0: [std::string::String; 3]);
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: [std::string::String; 2];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _2 = move (_1.0: [std::string::String; 3])[0 of 3];
+        _3 = move (_1.0: [std::string::String; 3])[1..3];
+        drop(_3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn arr_ref_by_ref(_1: &[String; 3]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: &&[std::string::String; 3];
+    let mut _4: &&[std::string::String; 3];
+    let mut _6: &&[std::string::String; 3];
+    let _7: ();
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15];
+    let _9: ();
+    let mut _10: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15];
+    let _11: ();
+    let mut _12: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15];
+    let _13: ();
+    let mut _14: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15];
+    let _15: ();
+    let _16: ();
+    let mut _17: &[std::string::String; 3];
+    scope 1 {
+        debug r => _2;
+        let _3: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15];
+        scope 2 {
+            debug f => _3;
+            let _5: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15];
+            scope 3 {
+                debug g => _5;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &_1;
+        _4 = &_1;
+        _3 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15] { x: move _4 };
+        _6 = &_1;
+        _5 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15] { x: move _6 };
+        _8 = &_3;
+        _7 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15] as Fn<()>>::call(move _8, const ()) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_5;
+        _9 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15] as Fn<()>>::call(move _10, const ()) -> bb2;
+    }
+
+    bb2: {
+        _12 = &_3;
+        _11 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15] as Fn<()>>::call(move _12, const ()) -> bb3;
+    }
+
+    bb3: {
+        _14 = &_5;
+        _13 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15] as Fn<()>>::call(move _14, const ()) -> bb4;
+    }
+
+    bb4: {
+        _15 = std::mem::drop::<&&[String; 3]>(_2) -> bb5;
+    }
+
+    bb5: {
+        _17 = _1;
+        _16 = std::mem::drop::<&[String; 3]>(move _17) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+arr_ref_by_ref::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_ref_by_ref::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:39:13: 39:15]) -> () {
+    debug x => (*((*_1).0: &&[std::string::String; 3]));
+    let mut _0: ();
+    let _2: &std::string::String;
+    let _3: &[std::string::String; 2];
+    let mut _4: &&[std::string::String; 3];
+    let mut _5: &[std::string::String; 3];
+    let mut _6: &&[std::string::String; 3];
+    let mut _7: &[std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &&[std::string::String; 3]);
+        _5 = deref_copy (*_4);
+        _2 = &(*_5)[0 of 3];
+        _6 = deref_copy ((*_1).0: &&[std::string::String; 3]);
+        _7 = deref_copy (*_6);
+        _3 = &(*_7)[1..3];
+        return;
+    }
+}
+
+fn arr_ref_by_ref::{closure#1}(_1: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:42:13: 42:15]) -> () {
+    debug x => (*((*_1).0: &&[std::string::String; 3]));
+    let mut _0: ();
+    let _2: &std::string::String;
+    let _3: &[std::string::String; 2];
+    let mut _4: &&[std::string::String; 3];
+    let mut _5: &[std::string::String; 3];
+    let mut _6: &&[std::string::String; 3];
+    let mut _7: &[std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &&[std::string::String; 3]);
+        _5 = deref_copy (*_4);
+        _2 = &(*_5)[0 of 3];
+        _6 = deref_copy ((*_1).0: &&[std::string::String; 3]);
+        _7 = deref_copy (*_6);
+        _3 = &(*_7)[1..3];
+        return;
+    }
+}
+
+fn arr_ref_by_mut(_1: &mut [String; 3]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let mut _2: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19];
+    let mut _3: &mut &mut [std::string::String; 3];
+    let _4: ();
+    let mut _5: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19];
+    let _6: ();
+    let mut _7: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19];
+    let mut _9: &mut &mut [std::string::String; 3];
+    let _10: ();
+    let mut _11: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19];
+    let _12: ();
+    let mut _13: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19];
+    let _14: ();
+    let mut _15: &mut [std::string::String; 3];
+    scope 1 {
+        debug f => _2;
+        let mut _8: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19];
+        scope 2 {
+            debug g => _8;
+        }
+    }
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19] { x: move _3 };
+        _5 = &mut _2;
+        _4 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19] as FnMut<()>>::call_mut(move _5, const ()) -> bb1;
+    }
+
+    bb1: {
+        _7 = &mut _2;
+        _6 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19] as FnMut<()>>::call_mut(move _7, const ()) -> bb2;
+    }
+
+    bb2: {
+        _9 = &mut _1;
+        _8 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19] { x: move _9 };
+        _11 = &mut _8;
+        _10 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19] as FnMut<()>>::call_mut(move _11, const ()) -> bb3;
+    }
+
+    bb3: {
+        _13 = &mut _8;
+        _12 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19] as FnMut<()>>::call_mut(move _13, const ()) -> bb4;
+    }
+
+    bb4: {
+        _15 = move _1;
+        _14 = std::mem::drop::<&mut [String; 3]>(move _15) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+arr_ref_by_mut::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_ref_by_mut::{closure#0}(_1: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:54:17: 54:19]) -> () {
+    debug x => (*((*_1).0: &mut &mut [std::string::String; 3]));
+    let mut _0: ();
+    let _2: &mut std::string::String;
+    let _3: &mut [std::string::String; 2];
+    let mut _4: &mut &mut [std::string::String; 3];
+    let mut _5: &mut [std::string::String; 3];
+    let mut _6: &mut &mut [std::string::String; 3];
+    let mut _7: &mut [std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &mut &mut [std::string::String; 3]);
+        _5 = deref_copy (*_4);
+        _2 = &mut (*_5)[0 of 3];
+        _6 = deref_copy ((*_1).0: &mut &mut [std::string::String; 3]);
+        _7 = deref_copy (*_6);
+        _3 = &mut (*_7)[1..3];
+        return;
+    }
+}
+
+fn arr_ref_by_mut::{closure#1}(_1: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:59:17: 59:19]) -> () {
+    debug x => (*((*_1).0: &mut &mut [std::string::String; 3]));
+    let mut _0: ();
+    let _2: &mut std::string::String;
+    let _3: &mut [std::string::String; 2];
+    let _4: ();
+    let mut _5: &mut std::string::String;
+    let _6: usize;
+    let mut _7: usize;
+    let mut _8: bool;
+    let mut _9: &mut &mut [std::string::String; 3];
+    let mut _10: &mut [std::string::String; 3];
+    let mut _11: &mut &mut [std::string::String; 3];
+    let mut _12: &mut [std::string::String; 3];
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _9 = deref_copy ((*_1).0: &mut &mut [std::string::String; 3]);
+        _10 = deref_copy (*_9);
+        _2 = &mut (*_10)[0 of 3];
+        _11 = deref_copy ((*_1).0: &mut &mut [std::string::String; 3]);
+        _12 = deref_copy (*_11);
+        _3 = &mut (*_12)[1..3];
+        _6 = const 0_usize;
+        _7 = const 2_usize;
+        _8 = Lt(_6, _7);
+        assert(move _8, "index out of bounds: the length is {} but the index is {}", move _7, _6) -> bb1;
+    }
+
+    bb1: {
+        _5 = &mut (*_3)[_6];
+        _4 = std::mem::swap::<String>(_2, _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn arr_box_by_move(_1: Box<[String; 3]>) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:70:13: 70:15];
+    let _3: ();
+    scope 1 {
+        debug f => _2;
+    }
+
+    bb0: {
+        _2 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:70:13: 70:15] { x: move _1 };
+        _3 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:70:13: 70:15] as FnOnce<()>>::call_once(move _2, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+arr_box_by_move::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn arr_box_by_move::{closure#0}(_1: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:70:13: 70:15]) -> () {
+    debug x => (_1.0: std::boxed::Box<[std::string::String; 3]>);
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: [std::string::String; 2];
+    let mut _4: std::boxed::Box<[std::string::String; 3]>;
+    let mut _5: std::boxed::Box<[std::string::String; 3]>;
+    let mut _6: &mut std::boxed::Box<[std::string::String; 3]>;
+    let mut _7: ();
+    let mut _8: &mut std::boxed::Box<[std::string::String; 3]>;
+    let mut _9: ();
+    let mut _10: *const [std::string::String; 3];
+    let mut _11: *const [std::string::String; 3];
+    let mut _12: *const ();
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: usize;
+    let mut _16: usize;
+    let mut _17: bool;
+    let mut _18: *const ();
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: usize;
+    let mut _23: bool;
+    scope 1 {
+        debug y => _2;
+        debug z => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy (_1.0: std::boxed::Box<[std::string::String; 3]>);
+        _10 = (((_4.0: std::ptr::Unique<[std::string::String; 3]>).0: std::ptr::NonNull<[std::string::String; 3]>).0: *const [std::string::String; 3]);
+        _18 = _10 as *const () (PtrToPtr);
+        _19 = _18 as usize (Transmute);
+        _20 = AlignOf(std::string::String);
+        _21 = Sub(_20, const 1_usize);
+        _22 = BitAnd(_19, _21);
+        _23 = Eq(_22, const 0_usize);
+        assert(_23, "misaligned pointer dereference: address must be a multiple of {} but is {}", _20, _19) -> [success: bb8, unwind unreachable];
+    }
+
+    bb1: {
+        drop(_2) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _6 = &mut (_1.0: std::boxed::Box<[std::string::String; 3]>);
+        _7 = <Box<[String; 3]> as Drop>::drop(move _6) -> bb5;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb6, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        _8 = &mut (_1.0: std::boxed::Box<[std::string::String; 3]>);
+        _9 = <Box<[String; 3]> as Drop>::drop(move _8) -> [return: bb4, unwind terminate];
+    }
+
+    bb7: {
+        _3 = move (*_11)[1..3];
+        drop(_3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb8: {
+        _2 = move (*_10)[0 of 3];
+        _5 = deref_copy (_1.0: std::boxed::Box<[std::string::String; 3]>);
+        _11 = (((_5.0: std::ptr::Unique<[std::string::String; 3]>).0: std::ptr::NonNull<[std::string::String; 3]>).0: *const [std::string::String; 3]);
+        _12 = _11 as *const () (PtrToPtr);
+        _13 = _12 as usize (Transmute);
+        _14 = AlignOf(std::string::String);
+        _15 = Sub(_14, const 1_usize);
+        _16 = BitAnd(_13, _15);
+        _17 = Eq(_16, const 0_usize);
+        assert(_17, "misaligned pointer dereference: address must be a multiple of {} but is {}", _14, _13) -> [success: bb7, unwind unreachable];
+    }
+}
+
+fn slice_by_ref(_1: &[String]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: &&[std::string::String];
+    let mut _4: &&[std::string::String];
+    let mut _6: &&[std::string::String];
+    let _7: ();
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15];
+    let _9: ();
+    let mut _10: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15];
+    let _11: ();
+    let mut _12: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15];
+    let _13: ();
+    let mut _14: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15];
+    let _15: ();
+    let _16: ();
+    let mut _17: &[std::string::String];
+    scope 1 {
+        debug r => _2;
+        let _3: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15];
+        scope 2 {
+            debug f => _3;
+            let _5: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15];
+            scope 3 {
+                debug g => _5;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &_1;
+        _4 = &_1;
+        _3 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15] { x: move _4 };
+        _6 = &_1;
+        _5 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15] { x: move _6 };
+        _8 = &_3;
+        _7 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15] as Fn<()>>::call(move _8, const ()) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_5;
+        _9 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15] as Fn<()>>::call(move _10, const ()) -> bb2;
+    }
+
+    bb2: {
+        _12 = &_3;
+        _11 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15] as Fn<()>>::call(move _12, const ()) -> bb3;
+    }
+
+    bb3: {
+        _14 = &_5;
+        _13 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15] as Fn<()>>::call(move _14, const ()) -> bb4;
+    }
+
+    bb4: {
+        _15 = std::mem::drop::<&&[String]>(_2) -> bb5;
+    }
+
+    bb5: {
+        _17 = _1;
+        _16 = std::mem::drop::<&[String]>(move _17) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn slice_by_ref::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:78:13: 78:15]) -> () {
+    debug x => (*((*_1).0: &&[std::string::String]));
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _7: &&[std::string::String];
+    let mut _8: &[std::string::String];
+    let mut _9: &&[std::string::String];
+    let mut _10: &[std::string::String];
+    let mut _11: &&[std::string::String];
+    let mut _12: &[std::string::String];
+    scope 1 {
+        debug y => _5;
+        debug z => _6;
+        let _5: &std::string::String;
+        let _6: &[std::string::String];
+    }
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &&[std::string::String]);
+        _8 = deref_copy (*_7);
+        _2 = Len((*_8));
+        _3 = const 1_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _9 = deref_copy ((*_1).0: &&[std::string::String]);
+        _10 = deref_copy (*_9);
+        _5 = &(*_10)[0 of 1];
+        _11 = deref_copy ((*_1).0: &&[std::string::String]);
+        _12 = deref_copy (*_11);
+        _6 = &(*_12)[1:];
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn slice_by_ref::{closure#1}(_1: &[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:81:13: 81:15]) -> () {
+    debug x => (*((*_1).0: &&[std::string::String]));
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _7: &&[std::string::String];
+    let mut _8: &[std::string::String];
+    let mut _9: &&[std::string::String];
+    let mut _10: &[std::string::String];
+    let mut _11: &&[std::string::String];
+    let mut _12: &[std::string::String];
+    scope 1 {
+        debug y => _5;
+        debug z => _6;
+        let _5: &std::string::String;
+        let _6: &[std::string::String];
+    }
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &&[std::string::String]);
+        _8 = deref_copy (*_7);
+        _2 = Len((*_8));
+        _3 = const 1_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _9 = deref_copy ((*_1).0: &&[std::string::String]);
+        _10 = deref_copy (*_9);
+        _5 = &(*_10)[0 of 1];
+        _11 = deref_copy ((*_1).0: &&[std::string::String]);
+        _12 = deref_copy (*_11);
+        _6 = &(*_12)[1:];
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn slice_by_mut(_1: &mut [String]) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let mut _2: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19];
+    let mut _3: &mut &mut [std::string::String];
+    let _4: ();
+    let mut _5: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19];
+    let _6: ();
+    let mut _7: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19];
+    let mut _9: &mut &mut [std::string::String];
+    let _10: ();
+    let mut _11: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19];
+    let _12: ();
+    let mut _13: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19];
+    let _14: ();
+    let mut _15: &mut [std::string::String];
+    scope 1 {
+        debug f => _2;
+        let mut _8: [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19];
+        scope 2 {
+            debug g => _8;
+        }
+    }
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19] { x: move _3 };
+        _5 = &mut _2;
+        _4 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19] as FnMut<()>>::call_mut(move _5, const ()) -> bb1;
+    }
+
+    bb1: {
+        _7 = &mut _2;
+        _6 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19] as FnMut<()>>::call_mut(move _7, const ()) -> bb2;
+    }
+
+    bb2: {
+        _9 = &mut _1;
+        _8 = [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19] { x: move _9 };
+        _11 = &mut _8;
+        _10 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19] as FnMut<()>>::call_mut(move _11, const ()) -> bb3;
+    }
+
+    bb3: {
+        _13 = &mut _8;
+        _12 = <[closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19] as FnMut<()>>::call_mut(move _13, const ()) -> bb4;
+    }
+
+    bb4: {
+        _15 = move _1;
+        _14 = std::mem::drop::<&mut [String]>(move _15) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn slice_by_mut::{closure#0}(_1: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:93:17: 93:19]) -> () {
+    debug x => (*((*_1).0: &mut &mut [std::string::String]));
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _7: &mut &mut [std::string::String];
+    let mut _8: &mut [std::string::String];
+    let mut _9: &mut &mut [std::string::String];
+    let mut _10: &mut [std::string::String];
+    let mut _11: &mut &mut [std::string::String];
+    let mut _12: &mut [std::string::String];
+    scope 1 {
+        debug y => _5;
+        debug z => _6;
+        let _5: &mut std::string::String;
+        let _6: &mut [std::string::String];
+    }
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _8 = deref_copy (*_7);
+        _2 = Len((*_8));
+        _3 = const 1_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _9 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _10 = deref_copy (*_9);
+        _5 = &mut (*_10)[0 of 1];
+        _11 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _12 = deref_copy (*_11);
+        _6 = &mut (*_12)[1:];
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn slice_by_mut::{closure#1}(_1: &mut [closure@ui/borrowck/borrowck-closures-slice-patterns-ok.rs:98:17: 98:19]) -> () {
+    debug x => (*((*_1).0: &mut &mut [std::string::String]));
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let _7: ();
+    let mut _8: &mut std::string::String;
+    let _9: usize;
+    let mut _10: usize;
+    let mut _11: bool;
+    let mut _12: &mut &mut [std::string::String];
+    let mut _13: &mut [std::string::String];
+    let mut _14: &mut &mut [std::string::String];
+    let mut _15: &mut [std::string::String];
+    let mut _16: &mut &mut [std::string::String];
+    let mut _17: &mut [std::string::String];
+    scope 1 {
+        debug y => _5;
+        debug z => _6;
+        let _5: &mut std::string::String;
+        let _6: &mut [std::string::String];
+    }
+
+    bb0: {
+        _12 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _13 = deref_copy (*_12);
+        _2 = Len((*_13));
+        _3 = const 1_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _15 = deref_copy (*_14);
+        _5 = &mut (*_15)[0 of 1];
+        _16 = deref_copy ((*_1).0: &mut &mut [std::string::String]);
+        _17 = deref_copy (*_16);
+        _6 = &mut (*_17)[1:];
+        _9 = const 0_usize;
+        _10 = Len((*_6));
+        _11 = Lt(_9, _10);
+        assert(move _11, "index out of bounds: the length is {} but the index is {}", move _10, _9) -> bb2;
+    }
+
+    bb2: {
+        _8 = &mut (*_6)[_9];
+        _7 = std::mem::swap::<String>(_5, _8) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: [std::string::String; 3];
+    let _3: ();
+    let mut _4: [std::string::String; 3];
+    let _5: ();
+    let mut _6: [std::string::String; 3];
+    let _7: ();
+    let _8: &[std::string::String; 3];
+    let _9: [std::string::String; 3];
+    let _10: ();
+    let mut _11: &mut [std::string::String; 3];
+    let mut _12: [std::string::String; 3];
+    let _13: ();
+    let mut _14: std::boxed::Box<[std::string::String; 3]>;
+    let _15: ();
+    let mut _16: &[std::string::String];
+    let _17: &[std::string::String; 3];
+    let _18: [std::string::String; 3];
+    let _19: ();
+    let mut _20: &mut [std::string::String];
+    let mut _21: &mut [std::string::String; 3];
+    let mut _22: [std::string::String; 3];
+
+    bb0: {
+        _2 = <[String; 3] as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _1 = arr_by_ref(move _2) -> bb2;
+    }
+
+    bb2: {
+        _4 = <[String; 3] as Default>::default() -> bb3;
+    }
+
+    bb3: {
+        _3 = arr_by_mut(move _4) -> bb4;
+    }
+
+    bb4: {
+        _6 = <[String; 3] as Default>::default() -> bb5;
+    }
+
+    bb5: {
+        _5 = arr_by_move(move _6) -> bb6;
+    }
+
+    bb6: {
+        _9 = <[String; 3] as Default>::default() -> bb7;
+    }
+
+    bb7: {
+        _8 = &_9;
+        _7 = arr_ref_by_ref(_8) -> [return: bb8, unwind: bb24];
+    }
+
+    bb8: {
+        drop(_9) -> bb9;
+    }
+
+    bb9: {
+        _12 = <[String; 3] as Default>::default() -> bb10;
+    }
+
+    bb10: {
+        _11 = &mut _12;
+        _10 = arr_ref_by_mut(_11) -> [return: bb11, unwind: bb23];
+    }
+
+    bb11: {
+        drop(_12) -> bb12;
+    }
+
+    bb12: {
+        _14 = <Box<[String; 3]> as Default>::default() -> bb13;
+    }
+
+    bb13: {
+        _13 = arr_box_by_move(move _14) -> bb14;
+    }
+
+    bb14: {
+        _18 = <[String; 3] as Default>::default() -> bb15;
+    }
+
+    bb15: {
+        _17 = &_18;
+        _16 = _17 as &[std::string::String] (Pointer(Unsize));
+        _15 = slice_by_ref(move _16) -> [return: bb16, unwind: bb22];
+    }
+
+    bb16: {
+        drop(_18) -> bb17;
+    }
+
+    bb17: {
+        _22 = <[String; 3] as Default>::default() -> bb18;
+    }
+
+    bb18: {
+        _21 = &mut _22;
+        _20 = _21 as &mut [std::string::String] (Pointer(Unsize));
+        _19 = slice_by_mut(move _20) -> [return: bb19, unwind: bb21];
+    }
+
+    bb19: {
+        drop(_22) -> bb20;
+    }
+
+    bb20: {
+        return;
+    }
+
+    bb21 (cleanup): {
+        drop(_22) -> [return: bb25, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_18) -> [return: bb25, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_12) -> [return: bb25, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_9) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

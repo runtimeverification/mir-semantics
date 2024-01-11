@@ -1,0 +1,34 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: Option<u32>) -> () {
+    let mut _0: ();
+    let mut _2: isize;
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb2, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::option::Option<u32>;
+
+    bb0: {
+        _2 = Option::<u32>::None;
+        _1 = foo(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

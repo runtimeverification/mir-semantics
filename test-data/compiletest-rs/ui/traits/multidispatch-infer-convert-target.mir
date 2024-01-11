@@ -1,0 +1,169 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/multidispatch-infer-convert-target.rs:11:1: 11:26>::convert(_1: &i16) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+    let mut _2: i16;
+
+    bb0: {
+        _2 = (*_1);
+        _0 = move _2 as u32 (IntToInt);
+        return;
+    }
+}
+
+fn <impl at ui/traits/multidispatch-infer-convert-target.rs:17:1: 17:26>::convert(_1: &u32) -> i16 {
+    debug self => _1;
+    let mut _0: i16;
+    let mut _2: u32;
+
+    bb0: {
+        _2 = (*_1);
+        _0 = move _2 as i16 (IntToInt);
+        return;
+    }
+}
+
+fn test(_1: T, _2: U, _3: usize, _4: usize) -> () {
+    debug t_size => _3;
+    debug u_size => _4;
+    let mut _0: ();
+    let mut _5: (&usize, &usize);
+    let mut _6: &usize;
+    let _7: usize;
+    let mut _8: &usize;
+    let _9: &usize;
+    let _10: &usize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&usize, &usize);
+    let mut _19: &usize;
+    let _20: usize;
+    let mut _21: &usize;
+    let _22: &usize;
+    let _23: &usize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: usize;
+    let mut _27: usize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _15;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _28: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _28;
+        }
+    }
+
+    bb0: {
+        _7 = std::mem::size_of::<T>() -> [return: bb1, unwind: bb9];
+    }
+
+    bb1: {
+        _6 = &_7;
+        _8 = &_3;
+        _5 = (move _6, move _8);
+        _9 = (_5.0: &usize);
+        _10 = (_5.1: &usize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<usize, usize>(move _15, _9, _10, move _17) -> bb9;
+    }
+
+    bb3: {
+        _20 = std::mem::size_of::<U>() -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        _19 = &_20;
+        _21 = &_4;
+        _18 = (move _19, move _21);
+        _22 = (_18.0: &usize);
+        _23 = (_18.1: &usize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<usize, usize>(move _28, _22, _23, move _30) -> bb9;
+    }
+
+    bb6: {
+        drop(_2) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        drop(_1) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_2) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: u32;
+    let _3: ();
+    let mut _4: i16;
+
+    bb0: {
+        _2 = <u32 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _1 = test::<i16, u32>(const 22_i16, move _2, const 2_usize, const 4_usize) -> bb2;
+    }
+
+    bb2: {
+        _4 = <i16 as Default>::default() -> bb3;
+    }
+
+    bb3: {
+        _3 = test::<u32, i16>(const 22_u32, move _4, const 4_usize, const 2_usize) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

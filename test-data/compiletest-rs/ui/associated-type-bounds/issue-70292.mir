@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: F) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = foo::<()>(const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

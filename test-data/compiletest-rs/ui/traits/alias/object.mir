@@ -1,0 +1,189 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &dyn std::cmp::PartialEq<i32> + std::marker::Send + std::marker::Sync;
+    let _2: &i32;
+    let _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: &i32;
+    let _7: i32;
+    let mut _8: !;
+    let mut _10: std::boxed::Box<dyn std::cmp::PartialEq<i32> + std::marker::Send>;
+    let mut _11: std::boxed::Box<i32>;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: &dyn std::cmp::PartialEq<i32> + std::marker::Send;
+    let mut _15: &i32;
+    let _16: i32;
+    let mut _17: !;
+    let mut _19: &mut std::vec::IntoIter<i32>;
+    let mut _20: std::vec::IntoIter<i32>;
+    let mut _21: std::vec::Vec<i32>;
+    let mut _22: std::boxed::Box<[i32]>;
+    let mut _23: usize;
+    let mut _24: usize;
+    let mut _25: *mut u8;
+    let mut _26: std::boxed::Box<[i32; 1]>;
+    let mut _27: (&std::option::Option<i32>, &std::option::Option<i32>);
+    let mut _28: &std::option::Option<i32>;
+    let _29: std::option::Option<i32>;
+    let mut _30: &std::option::Option<i32>;
+    let _31: std::option::Option<i32>;
+    let mut _34: bool;
+    let mut _35: bool;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: *const dyn std::cmp::PartialEq<i32> + std::marker::Send;
+    let mut _40: *const [i32; 1];
+    scope 1 {
+        debug a => _1;
+        let _9: std::boxed::Box<dyn std::cmp::PartialEq<i32> + std::marker::Send>;
+        scope 2 {
+            debug b => _9;
+            let _18: &mut dyn std::iter::Iterator<Item = i32>;
+            let mut _41: *const ();
+            let mut _42: usize;
+            let mut _43: usize;
+            let mut _44: usize;
+            let mut _45: usize;
+            let mut _46: bool;
+            scope 3 {
+                debug c => _18;
+                let _32: &std::option::Option<i32>;
+                let _33: &std::option::Option<i32>;
+                scope 5 {
+                    debug left_val => _32;
+                    debug right_val => _33;
+                    let _36: core::panicking::AssertKind;
+                    scope 6 {
+                        debug kind => _36;
+                    }
+                }
+            }
+            scope 4 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = const 123_i32;
+        _2 = &_3;
+        _1 = _2 as &dyn std::cmp::PartialEq<i32> + std::marker::Send + std::marker::Sync (Pointer(Unsize));
+        _7 = const 123_i32;
+        _6 = &_7;
+        _5 = <dyn PartialEq<i32> + Send + Sync as PartialEq<i32>>::eq(_1, move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = core::panicking::panic(const "assertion failed: *a == 123");
+    }
+
+    bb3: {
+        _11 = Box::<i32>::new(const 456_i32) -> bb4;
+    }
+
+    bb4: {
+        _10 = move _11 as std::boxed::Box<dyn std::cmp::PartialEq<i32> + std::marker::Send> (Pointer(Unsize));
+        _9 = move _10;
+        _39 = (((_9.0: std::ptr::Unique<dyn std::cmp::PartialEq<i32> + std::marker::Send>).0: std::ptr::NonNull<dyn std::cmp::PartialEq<i32> + std::marker::Send>).0: *const dyn std::cmp::PartialEq<i32> + std::marker::Send);
+        _14 = &(*_39);
+        _16 = const 456_i32;
+        _15 = &_16;
+        _13 = <dyn PartialEq<i32> + Send as PartialEq<i32>>::eq(move _14, move _15) -> [return: bb5, unwind: bb18];
+    }
+
+    bb5: {
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _17 = core::panicking::panic(const "assertion failed: *b == 456") -> bb18;
+    }
+
+    bb7: {
+        _23 = SizeOf([i32; 1]);
+        _24 = AlignOf([i32; 1]);
+        _25 = alloc::alloc::exchange_malloc(move _23, move _24) -> [return: bb8, unwind: bb18];
+    }
+
+    bb8: {
+        _26 = ShallowInitBox(move _25, [i32; 1]);
+        _40 = (((_26.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _41 = _40 as *const () (PtrToPtr);
+        _42 = _41 as usize (Transmute);
+        _43 = AlignOf(i32);
+        _44 = Sub(_43, const 1_usize);
+        _45 = BitAnd(_42, _44);
+        _46 = Eq(_45, const 0_usize);
+        assert(_46, "misaligned pointer dereference: address must be a multiple of {} but is {}", _43, _42) -> [success: bb20, unwind unreachable];
+    }
+
+    bb9: {
+        _20 = <Vec<i32> as IntoIterator>::into_iter(move _21) -> [return: bb10, unwind: bb18];
+    }
+
+    bb10: {
+        _19 = &mut _20;
+        _18 = _19 as &mut dyn std::iter::Iterator<Item = i32> (Pointer(Unsize));
+        _29 = <dyn Iterator<Item = i32> as Iterator>::next(_18) -> [return: bb11, unwind: bb17];
+    }
+
+    bb11: {
+        _28 = &_29;
+        _31 = Option::<i32>::Some(const 123_i32);
+        _30 = &_31;
+        _27 = (move _28, move _30);
+        _32 = (_27.0: &std::option::Option<i32>);
+        _33 = (_27.1: &std::option::Option<i32>);
+        _35 = <Option<i32> as PartialEq>::eq(_32, _33) -> [return: bb12, unwind: bb17];
+    }
+
+    bb12: {
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<Option<i32>, Option<i32>>(move _36, _32, _33, move _38) -> bb17;
+    }
+
+    bb14: {
+        drop(_20) -> [return: bb15, unwind: bb18];
+    }
+
+    bb15: {
+        drop(_9) -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+
+    bb17 (cleanup): {
+        drop(_20) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        drop(_9) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        resume;
+    }
+
+    bb20: {
+        (*_40) = [const 123_i32];
+        _22 = move _26 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _21 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _22) -> [return: bb9, unwind: bb18];
+    }
+}

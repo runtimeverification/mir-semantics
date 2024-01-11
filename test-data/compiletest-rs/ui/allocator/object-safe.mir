@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn ensure_object_safe(_1: &dyn Allocator) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: &dyn std::alloc::Allocator;
+    let _3: &std::alloc::System;
+    let _4: std::alloc::System;
+
+    bb0: {
+        _3 = &_4;
+        _2 = _3 as &dyn std::alloc::Allocator (Pointer(Unsize));
+        _1 = ensure_object_safe(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,31 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _2: usize;
+    let mut _3: bool;
+    scope 1 {
+        debug cols => const [];
+    }
+
+    bb0: {
+        _1 = const 0_usize;
+        _2 = const 0_usize;
+        _3 = Lt(_1, _2);
+        assert(move _3, "index out of bounds: the length is {} but the index is {}", move _2, _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}

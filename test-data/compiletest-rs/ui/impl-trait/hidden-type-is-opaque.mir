@@ -1,0 +1,103 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn reify_as() -> Thunk<impl ContFn> {
+    let mut _0: Thunk<impl ContFn>;
+
+    bb0: {
+        _0 = Thunk::<[closure@ui/impl-trait/hidden-type-is-opaque.rs:5:16: 5:26]>::new(const ZeroSized: [closure@ui/impl-trait/hidden-type-is-opaque.rs:5:16: 5:26]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn reify_as::{closure#0}(_1: [closure@ui/impl-trait/hidden-type-is-opaque.rs:5:16: 5:26], _2: Continuation) -> Continuation {
+    debug cont => const Continuation;
+    let mut _0: Continuation;
+    let _3: ();
+    let mut _4: &mut Continuation;
+
+    bb0: {
+        _4 = &mut _2;
+        _3 = Continuation::reify_as(move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn reify_as_tait() -> Thunk<Tait> {
+    let mut _0: Thunk<Tait>;
+
+    bb0: {
+        _0 = Thunk::<[closure@ui/impl-trait/hidden-type-is-opaque.rs:14:16: 14:26]>::new(const ZeroSized: [closure@ui/impl-trait/hidden-type-is-opaque.rs:14:16: 14:26]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn reify_as_tait::{closure#0}(_1: [closure@ui/impl-trait/hidden-type-is-opaque.rs:14:16: 14:26], _2: Continuation) -> Continuation {
+    debug cont => const Continuation;
+    let mut _0: Continuation;
+    let _3: ();
+    let mut _4: &mut Continuation;
+
+    bb0: {
+        _4 = &mut _2;
+        _3 = Continuation::reify_as(move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/hidden-type-is-opaque.rs:23:1: 23:17>::new(_1: F) -> Thunk<F> {
+    debug f => _1;
+    let mut _0: Thunk<F>;
+
+    bb0: {
+        _0 = Thunk::<F>(move _1);
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/hidden-type-is-opaque.rs:38:1: 38:18>::reify_as(_1: &mut Continuation) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Thunk(_1: F) -> Thunk<F> {
+    let mut _0: Thunk<F>;
+
+    bb0: {
+        _0 = Thunk::<F>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Thunk(_1: F) -> Thunk<F> {
+    let mut _0: Thunk<F>;
+
+    bb0: {
+        _0 = Thunk::<F>(move _1);
+        return;
+    }
+}

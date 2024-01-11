@@ -1,0 +1,44 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: thing<std::string::String>;
+    let mut _2: std::string::String;
+    let _3: &str;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _3 = const "hi";
+        _2 = <str as ToString>::to_string(_3) -> bb1;
+    }
+
+    bb1: {
+        _1 = thing::<String>::some(move _2);
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn thing::some(_1: K) -> thing<K> {
+    let mut _0: thing<K>;
+
+    bb0: {
+        _0 = thing::<K>::some(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn thing::some(_1: K) -> thing<K> {
+    let mut _0: thing<K>;
+
+    bb0: {
+        _0 = thing::<K>::some(move _1);
+        return;
+    }
+}

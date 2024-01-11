@@ -1,0 +1,158 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn lub_short(_1: &[&T], _2: &[&T]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn long_and_short(_1: &[&T; 1], _2: &[&T; 1]) -> () {
+    debug xs => _1;
+    debug ys => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: &[&T];
+    let mut _5: &[&T];
+
+    bb0: {
+        _4 = _1 as &[&T] (Pointer(Unsize));
+        _5 = _2 as &[&T] (Pointer(Unsize));
+        _3 = lub_short::<T>(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+long_and_short::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+long_and_short::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn long_to_short(_1: &[&T; 1]) -> &[&T] {
+    debug xs => _1;
+    let mut _0: &[&T];
+
+    bb0: {
+        _0 = _1 as &[&T] (Pointer(Unsize));
+        return;
+    }
+}
+
+long_to_short::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn long_to_short_rc(_1: Rc<[&T; 1]>) -> Rc<[&T]> {
+    debug xs => _1;
+    let mut _0: std::rc::Rc<[&T]>;
+
+    bb0: {
+        _0 = move _1 as std::rc::Rc<[&T]> (Pointer(Unsize));
+        return;
+    }
+}
+
+long_to_short_rc::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn long_and_short_lub1(_1: &[&T; 1], _2: &[&T]) -> () {
+    debug xs => _1;
+    debug ys => _2;
+    let mut _0: ();
+    let _3: [&[&T]; 2];
+    let mut _4: &[&T];
+    let mut _6: &[&T];
+    scope 1 {
+        debug _order1 => _3;
+        let _5: [&[&T]; 2];
+        scope 2 {
+            debug _order2 => _5;
+        }
+    }
+
+    bb0: {
+        _4 = _1 as &[&T] (Pointer(Unsize));
+        _3 = [move _4, _2];
+        _6 = _1 as &[&T] (Pointer(Unsize));
+        _5 = [_2, move _6];
+        return;
+    }
+}
+
+long_and_short_lub1::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn long_and_short_lub2(_1: &[&T], _2: &[&T; 1]) -> () {
+    debug xs => _1;
+    debug ys => _2;
+    let mut _0: ();
+    let _3: [&[&T]; 2];
+    let mut _4: &[&T];
+    let mut _6: &[&T];
+    scope 1 {
+        debug _order1 => _3;
+        let _5: [&[&T]; 2];
+        scope 2 {
+            debug _order2 => _5;
+        }
+    }
+
+    bb0: {
+        _4 = _2 as &[&T] (Pointer(Unsize));
+        _3 = [_1, move _4];
+        _6 = _2 as &[&T] (Pointer(Unsize));
+        _5 = [move _6, _1];
+        return;
+    }
+}
+
+long_and_short_lub2::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,43 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/use-keyword-2.rs:12:1: 12:7>::f() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/use-keyword-2.rs:12:1: 12:7>::g() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = A::f() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+        debug a => const A;
+        scope 2 {
+            debug b => const A;
+            let _1: ();
+            scope 3 {
+                debug c => const ();
+            }
+        }
+    }
+
+    bb0: {
+        _1 = A::g() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

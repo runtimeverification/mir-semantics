@@ -1,0 +1,45 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-96654.rs:7:1: 7:24>::{constant#0}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-96654.rs:7:1: 7:24>::M: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+C::a::{constant#0}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+C::a::{constant#0}::{constant#0}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 1_u32;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

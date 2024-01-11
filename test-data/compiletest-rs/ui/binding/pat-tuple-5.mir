@@ -1,0 +1,60 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn tuple() -> () {
+    let mut _0: ();
+    scope 1 {
+        debug x => const (tuple::S, tuple::Z, tuple::W);
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn tuple_struct() -> () {
+    let mut _0: ();
+    scope 1 {
+        debug x => const SS(tuple_struct::S, tuple_struct::Z, tuple_struct::W);
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = tuple() -> bb1;
+    }
+
+    bb1: {
+        _2 = tuple_struct() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn SS(_1: tuple_struct::S, _2: tuple_struct::Z, _3: tuple_struct::W) -> SS {
+    let mut _0: tuple_struct::SS;
+
+    bb0: {
+        _0 = SS(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn SS(_1: tuple_struct::S, _2: tuple_struct::Z, _3: tuple_struct::W) -> SS {
+    let mut _0: tuple_struct::SS;
+
+    bb0: {
+        _0 = SS(move _1, move _2, move _3);
+        return;
+    }
+}

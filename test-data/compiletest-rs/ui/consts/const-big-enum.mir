@@ -1,0 +1,258 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static X: Foo = {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Baz;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &Foo;
+    let mut _2: isize;
+    let mut _3: !;
+    let mut _4: &Foo;
+    let mut _5: isize;
+    let _6: u32;
+    let mut _7: (&u32, &u32);
+    let mut _8: &u32;
+    let mut _9: &u32;
+    let _10: u32;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: u32;
+    let mut _16: u32;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: !;
+    let mut _21: &Foo;
+    let mut _22: isize;
+    let _23: u64;
+    let _24: u16;
+    let mut _25: (&u64, &u64);
+    let mut _26: &u64;
+    let mut _27: &u64;
+    let _28: u64;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: u64;
+    let mut _34: u64;
+    let _36: !;
+    let mut _37: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _38: (&u16, &u16);
+    let mut _39: &u16;
+    let mut _40: &u16;
+    let _41: u16;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: u16;
+    let mut _47: u16;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: !;
+    scope 1 {
+        debug s => _6;
+        let _11: &u32;
+        let _12: &u32;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+    }
+    scope 4 {
+        debug d => _23;
+        debug h => _24;
+        let _29: &u64;
+        let _30: &u64;
+        let _42: &u16;
+        let _43: &u16;
+        scope 5 {
+            debug left_val => _29;
+            debug right_val => _30;
+            let _35: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _35;
+            }
+        }
+        scope 7 {
+            debug left_val => _42;
+            debug right_val => _43;
+            let _48: core::panicking::AssertKind;
+            scope 8 {
+                debug kind => _48;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const {alloc1: &Foo};
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb2: {
+        _4 = const {alloc2: &Foo};
+        _5 = discriminant((*_4));
+        switchInt(move _5) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _20 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        _6 = (((*_4) as Bar).0: u32);
+        _8 = &_6;
+        _10 = const 2654435769_u32;
+        _9 = &_10;
+        _7 = (move _8, move _9);
+        _11 = (_7.0: &u32);
+        _12 = (_7.1: &u32);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<u32, u32>(move _17, _11, _12, move _19);
+    }
+
+    bb6: {
+        _21 = const {alloc3: &Foo};
+        _22 = discriminant((*_21));
+        switchInt(move _22) -> [2: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _51 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb8: {
+        _23 = (((*_21) as Quux).0: u64);
+        _24 = (((*_21) as Quux).1: u16);
+        _26 = &_23;
+        _28 = const 1311768467463790320_u64;
+        _27 = &_28;
+        _25 = (move _26, move _27);
+        _29 = (_25.0: &u64);
+        _30 = (_25.1: &u64);
+        _33 = (*_29);
+        _34 = (*_30);
+        _32 = Eq(move _33, move _34);
+        _31 = Not(move _32);
+        switchInt(move _31) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _35 = core::panicking::AssertKind::Eq;
+        _37 = Option::<Arguments<'_>>::None;
+        _36 = core::panicking::assert_failed::<u64, u64>(move _35, _29, _30, move _37);
+    }
+
+    bb10: {
+        _39 = &_24;
+        _41 = const 4660_u16;
+        _40 = &_41;
+        _38 = (move _39, move _40);
+        _42 = (_38.0: &u16);
+        _43 = (_38.1: &u16);
+        _46 = (*_42);
+        _47 = (*_43);
+        _45 = Eq(move _46, move _47);
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<u16, u16>(move _48, _42, _43, move _50);
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+alloc3 (static: Z, size: 16, align: 8) {
+    02 00 34 12 __ __ __ __ f0 de bc 9a 78 56 34 12 │ ..4.░░░░....xV4.
+}
+
+alloc2 (static: Y, size: 16, align: 8) {
+    00 00 __ __ b9 79 37 9e __ __ __ __ __ __ __ __ │ ..░░.y7.░░░░░░░░
+}
+
+alloc1 (static: X, size: 16, align: 8) {
+    01 00 __ __ __ __ __ __ __ __ __ __ __ __ __ __ │ ..░░░░░░░░░░░░░░
+}
+
+static Y: Foo = {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Bar(const 2654435769_u32);
+        return;
+    }
+}
+
+static Z: Foo = {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Quux(const 1311768467463790320_u64, const 4660_u16);
+        return;
+    }
+}
+
+fn Foo::Bar(_1: u32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Bar(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo::Bar(_1: u32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Bar(move _1);
+        return;
+    }
+}
+
+fn Foo::Quux(_1: u64, _2: u16) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Quux(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo::Quux(_1: u64, _2: u16) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Quux(move _1, move _2);
+        return;
+    }
+}

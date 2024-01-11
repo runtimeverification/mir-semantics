@@ -1,0 +1,366 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/2229_closure_analysis/run_pass/fru_syntax.rs:7:10: 7:15>::clone(_1: &S) -> S {
+    debug self => _1;
+    let mut _0: S;
+    let mut _2: std::string::String;
+    let _3: &std::string::String;
+    let mut _4: std::string::String;
+    let _5: &std::string::String;
+
+    bb0: {
+        _3 = &((*_1).0: std::string::String);
+        _2 = <String as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: std::string::String);
+        _4 = <String as Clone>::clone(_5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = S { a: move _2, b: move _4 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let mut _5: std::string::String;
+    let mut _6: std::string::String;
+    let mut _8: std::string::String;
+    let mut _9: S;
+    let mut _10: &S;
+    let _12: ();
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: bool;
+    scope 1 {
+        debug a => _1;
+        let _2: std::string::String;
+        scope 2 {
+            debug b => _2;
+            let _3: std::string::String;
+            scope 3 {
+                debug c => _3;
+                let _4: S;
+                scope 4 {
+                    debug s => _4;
+                    let _7: T;
+                    scope 5 {
+                        debug t => _7;
+                        let _11: [closure@ui/closures/2229_closure_analysis/run_pass/fru_syntax.rs:28:13: 28:15];
+                        scope 6 {
+                            debug c => _11;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _15 = const false;
+        _14 = const false;
+        _13 = const false;
+        _15 = const true;
+        _1 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = String::new() -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _14 = const true;
+        _3 = String::new() -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _15 = const false;
+        _5 = move _1;
+        _14 = const false;
+        _6 = move _2;
+        _13 = const true;
+        _4 = S { a: move _5, b: move _6 };
+        _8 = move _3;
+        _10 = &_4;
+        _9 = <S as Clone>::clone(move _10) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        _7 = T { a: move _8, s: move _9 };
+        _13 = const false;
+        _11 = [closure@ui/closures/2229_closure_analysis/run_pass/fru_syntax.rs:28:13: 28:15] { s: move _4, t: move _7 };
+        _12 = <[closure@ui/closures/2229_closure_analysis/run_pass/fru_syntax.rs:28:13: 28:15] as FnOnce<()>>::call_once(move _11, const ()) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        _13 = const false;
+        _14 = const false;
+        _15 = const false;
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_8) -> [return: bb9, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+
+    bb8 (cleanup): {
+        drop(_4) -> [return: bb11, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        switchInt(_13) -> [0: bb11, otherwise: bb8];
+    }
+
+    bb10 (cleanup): {
+        drop(_2) -> [return: bb13, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        switchInt(_14) -> [0: bb13, otherwise: bb10];
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        switchInt(_15) -> [0: bb7, otherwise: bb12];
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/fru_syntax.rs:28:13: 28:15]) -> () {
+    debug s => (_1.0: S);
+    debug t => (_1.1: T);
+    let mut _0: ();
+    let _2: S;
+    let mut _3: std::string::String;
+    let _4: std::string::String;
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 1];
+    let _8: [&str; 1];
+    let mut _10: std::string::String;
+    let mut _12: std::fmt::Arguments<'_>;
+    let mut _13: &[&str];
+    let _14: &[&str; 1];
+    let _15: [&str; 1];
+    let _16: ();
+    let mut _17: std::fmt::Arguments<'_>;
+    let mut _18: &[&str];
+    let _19: &[&str; 3];
+    let _20: [&str; 3];
+    let mut _21: &[core::fmt::rt::Argument<'_>];
+    let _22: &[core::fmt::rt::Argument<'_>; 2];
+    let _23: [core::fmt::rt::Argument<'_>; 2];
+    let mut _24: core::fmt::rt::Argument<'_>;
+    let _25: &std::string::String;
+    let mut _26: core::fmt::rt::Argument<'_>;
+    let _27: &std::string::String;
+    let _28: ();
+    let mut _29: std::fmt::Arguments<'_>;
+    let mut _30: &[&str];
+    let _31: &[&str; 4];
+    let _32: [&str; 4];
+    let mut _33: &[core::fmt::rt::Argument<'_>];
+    let _34: &[core::fmt::rt::Argument<'_>; 3];
+    let _35: [core::fmt::rt::Argument<'_>; 3];
+    let mut _36: core::fmt::rt::Argument<'_>;
+    let _37: &std::string::String;
+    let mut _38: core::fmt::rt::Argument<'_>;
+    let _39: &std::string::String;
+    let mut _40: core::fmt::rt::Argument<'_>;
+    let _41: &std::string::String;
+    let mut _42: bool;
+    let mut _43: bool;
+    scope 1 {
+        debug s2 => _2;
+        let _9: S;
+        let _11: std::string::String;
+        scope 3 {
+            debug s3 => _9;
+        }
+        scope 4 {
+            debug res => _11;
+        }
+    }
+    scope 2 {
+        debug res => _4;
+    }
+
+    bb0: {
+        _43 = const false;
+        _42 = const false;
+        _42 = const true;
+        _43 = const true;
+        _8 = [const "New s2"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_const(move _6) -> [return: bb1, unwind: bb31];
+    }
+
+    bb1: {
+        _4 = format(move _5) -> [return: bb2, unwind: bb31];
+    }
+
+    bb2: {
+        _3 = move _4;
+        _43 = const false;
+        _2 = S { a: move _3, b: move ((_1.0: S).1: std::string::String) };
+        _15 = [const "New s3"];
+        _14 = &_15;
+        _13 = _14 as &[&str] (Pointer(Unsize));
+        _12 = Arguments::<'_>::new_const(move _13) -> [return: bb3, unwind: bb17];
+    }
+
+    bb3: {
+        _11 = format(move _12) -> [return: bb4, unwind: bb17];
+    }
+
+    bb4: {
+        _10 = move _11;
+        _42 = const false;
+        _9 = S { a: move _10, b: move (((_1.1: T).1: S).1: std::string::String) };
+        _20 = [const "", const " ", const "\n"];
+        _19 = &_20;
+        _18 = _19 as &[&str] (Pointer(Unsize));
+        _25 = &(_2.0: std::string::String);
+        _24 = core::fmt::rt::Argument::<'_>::new_display::<String>(_25) -> [return: bb5, unwind: bb16];
+    }
+
+    bb5: {
+        _27 = &(_2.1: std::string::String);
+        _26 = core::fmt::rt::Argument::<'_>::new_display::<String>(_27) -> [return: bb6, unwind: bb16];
+    }
+
+    bb6: {
+        _23 = [move _24, move _26];
+        _22 = &_23;
+        _21 = _22 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _17 = Arguments::<'_>::new_v1(move _18, move _21) -> [return: bb7, unwind: bb16];
+    }
+
+    bb7: {
+        _16 = _print(move _17) -> [return: bb8, unwind: bb16];
+    }
+
+    bb8: {
+        _32 = [const "", const " ", const " ", const "\n"];
+        _31 = &_32;
+        _30 = _31 as &[&str] (Pointer(Unsize));
+        _37 = &(_9.0: std::string::String);
+        _36 = core::fmt::rt::Argument::<'_>::new_display::<String>(_37) -> [return: bb9, unwind: bb16];
+    }
+
+    bb9: {
+        _39 = &(_9.1: std::string::String);
+        _38 = core::fmt::rt::Argument::<'_>::new_display::<String>(_39) -> [return: bb10, unwind: bb16];
+    }
+
+    bb10: {
+        _41 = &((_1.1: T).0: std::string::String);
+        _40 = core::fmt::rt::Argument::<'_>::new_display::<String>(_41) -> [return: bb11, unwind: bb16];
+    }
+
+    bb11: {
+        _35 = [move _36, move _38, move _40];
+        _34 = &_35;
+        _33 = _34 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _29 = Arguments::<'_>::new_v1(move _30, move _33) -> [return: bb12, unwind: bb16];
+    }
+
+    bb12: {
+        _28 = _print(move _29) -> [return: bb13, unwind: bb16];
+    }
+
+    bb13: {
+        drop(_9) -> [return: bb14, unwind: bb17];
+    }
+
+    bb14: {
+        drop(_2) -> [return: bb15, unwind: bb31];
+    }
+
+    bb15: {
+        drop(((_1.0: S).0: std::string::String)) -> [return: bb24, unwind: bb23];
+    }
+
+    bb16 (cleanup): {
+        drop(_9) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop(_2) -> [return: bb31, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        resume;
+    }
+
+    bb19 (cleanup): {
+        drop((((_1.1: T).1: S).0: std::string::String)) -> [return: bb18, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        drop((((_1.1: T).1: S).0: std::string::String)) -> [return: bb18, unwind terminate];
+    }
+
+    bb21: {
+        drop((((_1.1: T).1: S).0: std::string::String)) -> bb22;
+    }
+
+    bb22: {
+        return;
+    }
+
+    bb23 (cleanup): {
+        drop(((_1.1: T).0: std::string::String)) -> [return: bb19, unwind terminate];
+    }
+
+    bb24: {
+        drop(((_1.1: T).0: std::string::String)) -> [return: bb21, unwind: bb20];
+    }
+
+    bb25 (cleanup): {
+        drop(((_1.1: T).0: std::string::String)) -> [return: bb26, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        drop((((_1.1: T).1: S).0: std::string::String)) -> [return: bb27, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        switchInt(_42) -> [0: bb18, otherwise: bb28];
+    }
+
+    bb28 (cleanup): {
+        drop((((_1.1: T).1: S).1: std::string::String)) -> [return: bb18, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        switchInt(_43) -> [0: bb25, otherwise: bb30];
+    }
+
+    bb30 (cleanup): {
+        drop(((_1.0: S).1: std::string::String)) -> [return: bb25, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(((_1.0: S).0: std::string::String)) -> [return: bb29, unwind terminate];
+    }
+}

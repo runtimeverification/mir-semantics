@@ -1,0 +1,277 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/min_const_generics/macro.rs:12:1: 12:46>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/min_const_generics/macro.rs:12:1: 12:46>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn make_marker() -> impl Marker<{
+    #[macro_export]
+    macro_rules! const_macro { () => {{ 3 }} } inline!()
+}> {
+    let mut _0: impl Marker<{
+    #[macro_export]
+    macro_rules! const_macro { () => {{ 3 }} } inline!()
+}>;
+
+    bb0: {
+        return;
+    }
+}
+
+make_marker::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+make_marker::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn from_marker(_1: impl Marker<{     #[macro_export]     macro_rules! inline { () => { { 3 } } }     { 3 } }>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+from_marker::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _7: ();
+    let mut _8: impl Marker<{
+    #[macro_export]
+    macro_rules! const_macro { () => {{ 3 }} } inline!()
+}>;
+    scope 1 {
+        debug _ok => const Example::<3>;
+        scope 2 {
+            debug _ok => const Example::<1337>;
+            let _1: [i32; 3];
+            scope 3 {
+                debug _ok => _1;
+                let _2: [[u8; 3]; 3];
+                scope 4 {
+                    debug _ok => _2;
+                    let _3: [u8; 3];
+                    scope 5 {
+                        debug _ok => _3;
+                        let _4: [u8; 2];
+                        scope 6 {
+                            debug _ok => _4;
+                            let _5: [i32; 3];
+                            scope 7 {
+                                debug _ok => _5;
+                                let _6: [i32; 3];
+                                scope 8 {
+                                    debug _ok => _6;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 0_i32, const 0_i32, const 0_i32];
+        _5 = [const 0_i32; 3];
+        _6 = [const 0_i32; 3];
+        _8 = make_marker() -> bb1;
+    }
+
+    bb1: {
+        _7 = from_marker::<impl Marker<{
+    #[macro_export]
+    macro_rules! const_macro { () => {{ 3 }} } inline!()
+}>>(const ZeroSized: impl Marker<{
+    #[macro_export]
+    macro_rules! const_macro { () => {{ 3 }} } inline!()
+}>) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+    let _1: usize;
+    let mut _2: &usize;
+    scope 1 {
+        debug run => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 3_usize;
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const X: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1337_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+    let _1: usize;
+    let mut _2: &usize;
+    scope 1 {
+        debug blah => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 3_usize;
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+    let _1: usize;
+    let mut _2: &usize;
+    scope 1 {
+        debug blah => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 3_usize;
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+    let _1: usize;
+    let mut _2: &usize;
+    scope 1 {
+        debug blah => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 3_usize;
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+    let _1: usize;
+    let mut _2: &usize;
+    scope 1 {
+        debug blah => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 3_usize;
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+main::{constant#6}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#8}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

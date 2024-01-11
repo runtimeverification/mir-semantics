@@ -1,0 +1,317 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static DROP: AtomicUsize = {
+    let mut _0: std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = AtomicUsize::new(const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generator/panic-drops-resume.rs:17:1: 17:22>::drop(_1: &mut Dropper) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 1_usize, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: DROP, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _3: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _4: (&usize, &usize);
+    let mut _5: &usize;
+    let _6: usize;
+    let _7: &std::sync::atomic::AtomicUsize;
+    let mut _8: std::sync::atomic::Ordering;
+    let mut _9: &usize;
+    let _10: usize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: usize;
+    let mut _16: usize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _21: std::panic::AssertUnwindSafe<[closure@ui/generator/panic-drops-resume.rs:33:45: 33:47]>;
+    let mut _22: [closure@ui/generator/panic-drops-resume.rs:33:45: 33:47];
+    let mut _23: &mut std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: &std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _27: !;
+    let mut _28: (&usize, &usize);
+    let mut _29: &usize;
+    let _30: usize;
+    let _31: &std::sync::atomic::AtomicUsize;
+    let mut _32: std::sync::atomic::Ordering;
+    let mut _33: &usize;
+    let _34: usize;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: usize;
+    let mut _40: usize;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug gen => _1;
+        let mut _2: std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>;
+        scope 2 {
+            debug gen => _2;
+            let _11: &usize;
+            let _12: &usize;
+            let _20: std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+            scope 3 {
+                debug left_val => _11;
+                debug right_val => _12;
+                let _17: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _17;
+                }
+            }
+            scope 5 {
+                debug res => _20;
+                let _35: &usize;
+                let _36: &usize;
+                scope 6 {
+                    debug left_val => _35;
+                    debug right_val => _36;
+                    let _41: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _41;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25 (#0)];
+        _3 = &mut _1;
+        _2 = Pin::<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>::new(move _3) -> [return: bb1, unwind: bb15];
+    }
+
+    bb1: {
+        _7 = const {alloc1: &AtomicUsize};
+        _8 = Acquire;
+        _6 = AtomicUsize::load(_7, move _8) -> [return: bb2, unwind: bb15];
+    }
+
+    bb2: {
+        _5 = &_6;
+        _10 = const 0_usize;
+        _9 = &_10;
+        _4 = (move _5, move _9);
+        _11 = (_4.0: &usize);
+        _12 = (_4.1: &usize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<usize, usize>(move _17, _11, _12, move _19) -> bb15;
+    }
+
+    bb4: {
+        _23 = &mut _2;
+        _22 = [closure@ui/generator/panic-drops-resume.rs:33:45: 33:47] { gen: move _23 };
+        _21 = AssertUnwindSafe::<[closure@ui/generator/panic-drops-resume.rs:33:45: 33:47]>(move _22);
+        _20 = catch_unwind::<AssertUnwindSafe<[closure@ui/generator/panic-drops-resume.rs:33:45: 33:47]>, GeneratorState<(), ()>>(move _21) -> [return: bb5, unwind: bb15];
+    }
+
+    bb5: {
+        _26 = &_20;
+        _25 = Result::<GeneratorState<(), ()>, Box<dyn Any + Send>>::is_err(move _26) -> [return: bb6, unwind: bb14];
+    }
+
+    bb6: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _27 = core::panicking::panic(const "assertion failed: res.is_err()") -> bb14;
+    }
+
+    bb8: {
+        _31 = const {alloc1: &AtomicUsize};
+        _32 = Acquire;
+        _30 = AtomicUsize::load(_31, move _32) -> [return: bb9, unwind: bb14];
+    }
+
+    bb9: {
+        _29 = &_30;
+        _34 = const 1_usize;
+        _33 = &_34;
+        _28 = (move _29, move _33);
+        _35 = (_28.0: &usize);
+        _36 = (_28.1: &usize);
+        _39 = (*_35);
+        _40 = (*_36);
+        _38 = Eq(move _39, move _40);
+        _37 = Not(move _38);
+        switchInt(move _37) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<usize, usize>(move _41, _35, _36, move _43) -> bb14;
+    }
+
+    bb11: {
+        drop(_20) -> [return: bb12, unwind: bb15];
+    }
+
+    bb12: {
+        drop(_1) -> bb13;
+    }
+
+    bb13: {
+        return;
+    }
+
+    bb14 (cleanup): {
+        drop(_20) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_1) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: DROP, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>, _2: Dropper) -> GeneratorState<(), ()> {
+    debug _arg => (((*(_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25])) as variant#3).0: Dropper);
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: bool;
+    let mut _4: !;
+    let _5: Dropper;
+    let mut _6: ();
+    let mut _7: ();
+    let mut _8: u32;
+    let mut _9: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _10: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _11: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _12: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _13: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _14: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+    let mut _15: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25];
+
+    bb0: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        _8 = discriminant((*_9));
+        switchInt(move _8) -> [0: bb1, 1: bb10, 2: bb9, 3: bb8, otherwise: bb11];
+    }
+
+    bb1: {
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        (((*_10) as variant#3).0: Dropper) = move _2;
+        _3 = const true;
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _4 = begin_panic::<&str>(const "explicit panic") -> bb6;
+    }
+
+    bb3: {
+        _6 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _6);
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        discriminant((*_11)) = 3;
+        return;
+    }
+
+    bb4: {
+        _7 = const ();
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        drop((((*_12) as variant#3).0: Dropper)) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        _0 = GeneratorState::<(), ()>::Complete(move _7);
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        discriminant((*_13)) = 1;
+        return;
+    }
+
+    bb6 (cleanup): {
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        drop((((*_14) as variant#3).0: Dropper)) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]);
+        discriminant((*_15)) = 2;
+        resume;
+    }
+
+    bb8: {
+        _5 = move _2;
+        drop(_5) -> [return: bb4, unwind: bb6];
+    }
+
+    bb9: {
+        assert(const false, "generator resumed after panicking") -> bb9;
+    }
+
+    bb10: {
+        assert(const false, "generator resumed after completion") -> bb10;
+    }
+
+    bb11: {
+        unreachable;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/generator/panic-drops-resume.rs:33:45: 33:47]) -> GeneratorState<(), ()> {
+    debug gen => (*((*_1).0: &mut std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>));
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _2: std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>;
+    let mut _3: &mut std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut std::pin::Pin<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>);
+        _2 = Pin::<&mut [generator@ui/generator/panic-drops-resume.rs:24:19: 24:25]>::as_mut(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <[generator@ui/generator/panic-drops-resume.rs:24:19: 24:25] as Generator<Dropper>>::resume(move _2, const Dropper {{  }}) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

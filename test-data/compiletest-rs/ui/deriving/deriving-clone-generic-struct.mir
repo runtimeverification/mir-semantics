@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-clone-generic-struct.rs:6:10: 6:15>::clone(_1: &S<T>) -> S<T> {
+    debug self => _1;
+    let mut _0: S<T>;
+    let mut _2: T;
+    let _3: &T;
+
+    bb0: {
+        _3 = &((*_1).2: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = S::<T> { foo: const (), bar: const (), baz: move _2 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: S<i32>;
+    let mut _2: &S<i32>;
+    let _3: S<i32>;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = S::<i32> { foo: const (), bar: const (), baz: const 1_i32 };
+        _2 = &_3;
+        _1 = <S<i32> as Clone>::clone(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn A::Foo(_1: &A<'_, T>) -> A<'_, T> {
+    let mut _0: A<'_, T>;
+
+    bb0: {
+        _0 = A::<'_, T>::Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A::Foo(_1: &A<'_, T>) -> A<'_, T> {
+    let mut _0: A<'_, T>;
+
+    bb0: {
+        _0 = A::<'_, T>::Foo(move _1);
+        return;
+    }
+}
+
+fn A::Bar(_1: T) -> A<'_, T> {
+    let mut _0: A<'_, T>;
+
+    bb0: {
+        _0 = A::<'_, T>::Bar(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A::Bar(_1: T) -> A<'_, T> {
+    let mut _0: A<'_, T>;
+
+    bb0: {
+        _0 = A::<'_, T>::Bar(move _1);
+        return;
+    }
+}

@@ -1,0 +1,56 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _3: (&&str, &&str);
+    let mut _4: &&str;
+    let mut _5: &&str;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug data => _1;
+        let _2: &str;
+        scope 2 {
+            debug xs => _2;
+            let _6: &&str;
+            let _7: &&str;
+            scope 3 {
+                debug left_val => _6;
+                debug right_val => _7;
+                let _10: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _10;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const "Hello, World!";
+        _2 = _1;
+        _4 = &_1;
+        _5 = &_2;
+        _3 = (move _4, move _5);
+        _6 = (_3.0: &&str);
+        _7 = (_3.1: &&str);
+        _9 = <&str as PartialEq>::eq(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<&str, &str>(move _10, _6, _7, move _12);
+    }
+
+    bb3: {
+        return;
+    }
+}

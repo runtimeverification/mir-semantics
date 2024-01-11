@@ -1,0 +1,42 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: Union;
+    let mut _3: &Union;
+    let _4: u64;
+    let mut _5: &[closure@ui/closures/2229_closure_analysis/run_pass/issue-87378.rs:11:13: 11:15];
+    scope 1 {
+        debug u => _1;
+        let _2: [closure@ui/closures/2229_closure_analysis/run_pass/issue-87378.rs:11:13: 11:15];
+        scope 2 {
+            debug c => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Union { value: const 42_u64 };
+        _3 = &_1;
+        _2 = [closure@ui/closures/2229_closure_analysis/run_pass/issue-87378.rs:11:13: 11:15] { u: move _3 };
+        _5 = &_2;
+        _4 = <[closure@ui/closures/2229_closure_analysis/run_pass/issue-87378.rs:11:13: 11:15] as Fn<()>>::call(move _5, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/run_pass/issue-87378.rs:11:13: 11:15]) -> u64 {
+    debug u => (*((*_1).0: &Union));
+    let mut _0: u64;
+    let mut _2: &Union;
+    scope 1 {
+    }
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &Union);
+        _0 = ((*_2).0: u64);
+        return;
+    }
+}

@@ -1,0 +1,18 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: main::A;
+    let mut _2: main::B;
+    scope 1 {
+        debug p => _1;
+    }
+
+    bb0: {
+        _2 = B { a: const 1_isize };
+        _1 = A { a: const 1_isize, w: move _2 };
+        (_1.0: isize) = const 2_isize;
+        ((_1.1: main::B).0: isize) = const 2_isize;
+        return;
+    }
+}

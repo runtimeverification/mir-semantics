@@ -1,0 +1,70 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn id(_1: bool) -> bool {
+    debug x => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn call_id() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: !;
+    scope 1 {
+        debug c => _1;
+    }
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn call_id_2() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+
+    bb0: {
+        _1 = id(const true) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn call_id_3() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn ret_guard() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let _2: i32;
+    let _3: &i32;
+    scope 1 {
+        debug x => _2;
+        debug x => _3;
+    }
+
+    bb0: {
+        _1 = const 2_i32;
+        _3 = &_1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

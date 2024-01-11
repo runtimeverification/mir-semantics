@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-62187-encountered-polymorphic-const.rs:6:1: 6:40>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const L;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-62187-encountered-polymorphic-const.rs:6:1: 6:40>::BIT_LEN: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedMul(const 8_usize, const L);
+        assert(!move (_1.1: bool), "attempt to compute `{} * {}`, which would overflow", const 8_usize, const L) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    scope 1 {
+        debug _foo => _1;
+    }
+
+    bb0: {
+        _1 = const _;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}

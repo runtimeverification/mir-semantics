@@ -1,0 +1,86 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &mut isize;
+    let mut _2: isize;
+    let _5: &mut isize;
+    let mut _6: isize;
+    let _7: &isize;
+    let _8: isize;
+    let _11: &isize;
+    let _12: isize;
+    let mut _13: &mut isize;
+    let mut _14: isize;
+    let _17: &mut isize;
+    let mut _18: isize;
+    let mut _20: &mut isize;
+    let mut _21: isize;
+    scope 1 {
+        debug x => _1;
+        let _3: &isize;
+        scope 2 {
+            debug x => _3;
+            let _4: &isize;
+            scope 3 {
+                debug x => _4;
+                scope 4 {
+                    debug x => _7;
+                    let _9: *const isize;
+                    scope 5 {
+                        debug x => _9;
+                        let _10: *const isize;
+                        scope 6 {
+                            debug x => _10;
+                            scope 7 {
+                                debug x => _13;
+                                let _15: *const isize;
+                                scope 8 {
+                                    debug x => _15;
+                                    let _16: *const isize;
+                                    scope 9 {
+                                        debug x => _16;
+                                        let _19: *mut isize;
+                                        scope 10 {
+                                            debug x => _19;
+                                            let _22: *const isize;
+                                            scope 11 {
+                                                debug x => _22;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const 42_isize;
+        _1 = &mut _2;
+        _3 = &(*_1);
+        _6 = const 42_isize;
+        _5 = &mut _6;
+        _4 = &(*_5);
+        _8 = const 42_isize;
+        _7 = &_8;
+        _9 = &raw const (*_7);
+        _12 = const 42_isize;
+        _11 = &_12;
+        _10 = &raw const (*_11);
+        _14 = const 42_isize;
+        _13 = &mut _14;
+        _15 = &raw const (*_13);
+        _18 = const 42_isize;
+        _17 = &mut _18;
+        _16 = &raw const (*_17);
+        _21 = const 42_isize;
+        _20 = &mut _21;
+        _19 = &raw mut (*_20);
+        _22 = _19 as *const isize (Pointer(MutToConstPointer));
+        return;
+    }
+}

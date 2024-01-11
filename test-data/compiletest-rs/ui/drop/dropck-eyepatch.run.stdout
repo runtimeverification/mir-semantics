@@ -1,0 +1,5 @@
+("dt", "dr", "pt", "pr", "st", "sr")
+drop pr
+drop pt
+drop dr
+drop dt

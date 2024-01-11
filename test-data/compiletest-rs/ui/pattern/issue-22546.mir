@@ -1,0 +1,207 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/pattern/issue-22546.rs:7:10: 7:17>::default() -> Foo<T> {
+    let mut _0: Foo<T>;
+    let mut _1: T;
+    let mut _2: T;
+
+    bb0: {
+        _1 = <T as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _2 = <T as Default>::default() -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = Foo::<T>(move _1, move _2);
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/pattern/issue-22546.rs:10:1: 10:36>::foo(_1: &Foo<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: &T;
+    let _3: &T;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 3];
+    let _8: [&str; 3];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 2];
+    let _11: [core::fmt::rt::Argument<'_>; 2];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &&T;
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &&T;
+    scope 1 {
+        debug x => _2;
+        debug y => _3;
+    }
+
+    bb0: {
+        _2 = &((*_1).0: T);
+        _3 = &((*_1).1: T);
+        _8 = [const "Goodbye, World! ", const " ", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_2;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<&T>(_13) -> bb1;
+    }
+
+    bb1: {
+        _15 = &_3;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<&T>(_15) -> bb2;
+    }
+
+    bb2: {
+        _11 = [move _12, move _14];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> bb3;
+    }
+
+    bb3: {
+        _4 = _print(move _5) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _2: i32;
+    let mut _3: Foo<i32>;
+    let _5: ();
+    let mut _6: &Foo<i32>;
+    let mut _8: Foo<u8>;
+    let mut _9: !;
+    let mut _10: !;
+    let mut _11: std::option::Option<u8>;
+    let mut _12: isize;
+    let mut _13: !;
+    let mut _14: std::option::Option<u8>;
+    let mut _15: isize;
+    let mut _16: !;
+    let mut _17: std::option::Option<u8>;
+    let mut _18: isize;
+    let mut _19: !;
+    scope 1 {
+        debug a => _1;
+        debug b => _2;
+        let _4: Foo<i32>;
+        scope 2 {
+            debug f => _4;
+            let _7: Wrapper<Foo<u8>>;
+            scope 3 {
+                debug w => _7;
+                scope 4 {
+                }
+                scope 5 {
+                }
+                scope 6 {
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = <Foo<i32> as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _1 = (_3.0: i32);
+        _2 = (_3.1: i32);
+        _4 = Foo::<i32>(const 2_i32, const 3_i32);
+        _6 = &_4;
+        _5 = Foo::<i32>::foo(move _6) -> bb2;
+    }
+
+    bb2: {
+        _8 = Foo::<u8>(const 10_u8, const 11_u8);
+        _7 = Wrapper::<Foo<u8>> { value: move _8 };
+        switchInt(((_7.0: Foo<u8>).0: u8)) -> [10: bb3, 11: bb5, otherwise: bb4];
+    }
+
+    bb3: {
+        switchInt(((_7.0: Foo<u8>).1: u8)) -> [11: bb6, otherwise: bb4];
+    }
+
+    bb4: {
+        _10 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb5: {
+        switchInt(((_7.0: Foo<u8>).1: u8)) -> [16: bb7, otherwise: bb4];
+    }
+
+    bb6: {
+        _11 = Option::<u8>::Some(const 8_u8);
+        _12 = discriminant(_11);
+        switchInt(move _12) -> [0: bb8, otherwise: bb9];
+    }
+
+    bb7: {
+        _9 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb8: {
+        _13 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb9: {
+        _14 = Option::<u8>::Some(const 8_u8);
+        _15 = discriminant(_14);
+        switchInt(move _15) -> [0: bb10, otherwise: bb11];
+    }
+
+    bb10: {
+        _16 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb11: {
+        _17 = Option::<u8>::Some(const 8_u8);
+        _18 = discriminant(_17);
+        switchInt(move _18) -> [0: bb12, otherwise: bb13];
+    }
+
+    bb12: {
+        _19 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb13: {
+        return;
+    }
+}
+
+fn Foo(_1: T, _2: T) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: T, _2: T) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1, move _2);
+        return;
+    }
+}

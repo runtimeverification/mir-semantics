@@ -1,0 +1,168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: impl Display + Clone) -> String {
+    debug f => _1;
+    let mut _0: std::string::String;
+    let _2: impl Display + Clone;
+    let mut _3: &impl Display + Clone;
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 2];
+    let _11: [core::fmt::rt::Argument<'_>; 2];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &impl Display + Clone;
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &impl Display + Clone;
+    scope 1 {
+        debug g => _2;
+        let _4: std::string::String;
+        scope 2 {
+            debug res => _4;
+        }
+    }
+
+    bb0: {
+        _3 = &_1;
+        _2 = <impl Display + Clone as Clone>::clone(move _3) -> [return: bb1, unwind: bb9];
+    }
+
+    bb1: {
+        _8 = [const "", const " + "];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_1;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<impl Display + Clone>(_13) -> [return: bb2, unwind: bb8];
+    }
+
+    bb2: {
+        _15 = &_2;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<impl Display + Clone>(_15) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _11 = [move _12, move _14];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _4 = format(move _5) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        _0 = move _4;
+        drop(_2) -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        drop(_1) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let mut _2: std::string::String;
+    let _3: std::string::String;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let mut _8: (&std::string::String, &&str);
+    let mut _9: &std::string::String;
+    let mut _10: &&str;
+    let _11: &str;
+    let mut _14: bool;
+    let mut _15: bool;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug sum => _1;
+        let _12: &std::string::String;
+        let _13: &&str;
+        scope 3 {
+            debug left_val => _12;
+            debug right_val => _13;
+            let _16: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _16;
+            }
+        }
+    }
+    scope 2 {
+        debug res => _3;
+    }
+
+    bb0: {
+        _7 = [const "22"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_const(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = format(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = move _3;
+        _1 = foo::<String>(move _2) -> bb3;
+    }
+
+    bb3: {
+        _9 = &_1;
+        _11 = const "22 + 22";
+        _10 = &_11;
+        _8 = (move _9, move _10);
+        _12 = (_8.0: &std::string::String);
+        _13 = (_8.1: &&str);
+        _15 = <String as PartialEq<&str>>::eq(_12, _13) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<String, &str>(move _16, _12, _13, move _18) -> bb8;
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_1) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}

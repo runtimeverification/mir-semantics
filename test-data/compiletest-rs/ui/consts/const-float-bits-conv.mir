@@ -1,0 +1,2704 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn nop(_1: T) -> T {
+    debug x => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn nop(_1: T) -> T {
+    debug x => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn f32() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: u32;
+    let mut _5: &u32;
+    let _6: u32;
+    let _7: &u32;
+    let _8: &u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&u32, &u32);
+    let mut _17: &u32;
+    let _18: u32;
+    let mut _19: u32;
+    let mut _20: [u8; 4];
+    let mut _21: &u32;
+    let _22: u32;
+    let _23: &u32;
+    let _24: &u32;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: u32;
+    let mut _28: u32;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: (&u32, &u32);
+    let mut _33: &u32;
+    let _34: u32;
+    let mut _35: u32;
+    let mut _36: &u32;
+    let _37: u32;
+    let _38: &u32;
+    let _39: &u32;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: u32;
+    let mut _43: u32;
+    let _45: !;
+    let mut _46: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _47: (&u32, &u32);
+    let mut _48: &u32;
+    let _49: u32;
+    let mut _50: u32;
+    let mut _51: [u8; 4];
+    let mut _52: &u32;
+    let _53: u32;
+    let _54: &u32;
+    let _55: &u32;
+    let mut _56: bool;
+    let mut _57: bool;
+    let mut _58: u32;
+    let mut _59: u32;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _63: (&u32, &u32);
+    let mut _64: &u32;
+    let _65: u32;
+    let mut _66: u32;
+    let mut _67: &u32;
+    let _68: u32;
+    let _69: &u32;
+    let _70: &u32;
+    let mut _71: bool;
+    let mut _72: bool;
+    let mut _73: u32;
+    let mut _74: u32;
+    let _76: !;
+    let mut _77: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _78: (&u32, &u32);
+    let mut _79: &u32;
+    let _80: u32;
+    let mut _81: u32;
+    let mut _82: [u8; 4];
+    let mut _83: &u32;
+    let _84: u32;
+    let _85: &u32;
+    let _86: &u32;
+    let mut _87: bool;
+    let mut _88: bool;
+    let mut _89: u32;
+    let mut _90: u32;
+    let _92: !;
+    let mut _93: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _94: (&u32, &u32);
+    let mut _95: &u32;
+    let _96: u32;
+    let mut _97: u32;
+    let mut _98: &u32;
+    let _99: u32;
+    let _100: &u32;
+    let _101: &u32;
+    let mut _102: bool;
+    let mut _103: bool;
+    let mut _104: u32;
+    let mut _105: u32;
+    let _107: !;
+    let mut _108: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _109: (&f32, &f32);
+    let mut _110: &f32;
+    let _111: f32;
+    let mut _112: f32;
+    let mut _113: &f32;
+    let _114: f32;
+    let _115: &f32;
+    let _116: &f32;
+    let mut _117: bool;
+    let mut _118: bool;
+    let mut _119: f32;
+    let mut _120: f32;
+    let _122: !;
+    let mut _123: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _124: (&f32, &f32);
+    let mut _125: &f32;
+    let _126: f32;
+    let mut _127: f32;
+    let mut _128: [u8; 4];
+    let mut _129: &f32;
+    let _130: f32;
+    let _131: &f32;
+    let _132: &f32;
+    let mut _133: bool;
+    let mut _134: bool;
+    let mut _135: f32;
+    let mut _136: f32;
+    let _138: !;
+    let mut _139: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _140: (&f32, &f32);
+    let mut _141: &f32;
+    let _142: f32;
+    let mut _143: f32;
+    let mut _144: &f32;
+    let _145: f32;
+    let _146: &f32;
+    let _147: &f32;
+    let mut _148: bool;
+    let mut _149: bool;
+    let mut _150: f32;
+    let mut _151: f32;
+    let _153: !;
+    let mut _154: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _155: (&f32, &f32);
+    let mut _156: &f32;
+    let _157: f32;
+    let mut _158: f32;
+    let mut _159: [u8; 4];
+    let mut _160: &f32;
+    let _161: f32;
+    let _162: &f32;
+    let _163: &f32;
+    let mut _164: bool;
+    let mut _165: bool;
+    let mut _166: f32;
+    let mut _167: f32;
+    let _169: !;
+    let mut _170: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _171: (&f32, &f32);
+    let mut _172: &f32;
+    let _173: f32;
+    let mut _174: f32;
+    let mut _175: &f32;
+    let _176: f32;
+    let _177: &f32;
+    let _178: &f32;
+    let mut _179: bool;
+    let mut _180: bool;
+    let mut _181: f32;
+    let mut _182: f32;
+    let _184: !;
+    let mut _185: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _186: (&f32, &f32);
+    let mut _187: &f32;
+    let _188: f32;
+    let mut _189: f32;
+    let mut _190: [u8; 4];
+    let mut _191: &f32;
+    let _192: f32;
+    let _193: &f32;
+    let _194: &f32;
+    let mut _195: bool;
+    let mut _196: bool;
+    let mut _197: f32;
+    let mut _198: f32;
+    let _200: !;
+    let mut _201: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _202: (&f32, &f32);
+    let mut _203: &f32;
+    let _204: f32;
+    let mut _205: f32;
+    let mut _206: &f32;
+    let _207: f32;
+    let _208: &f32;
+    let _209: &f32;
+    let mut _210: bool;
+    let mut _211: bool;
+    let mut _212: f32;
+    let mut _213: f32;
+    let _215: !;
+    let mut _216: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _23;
+        debug right_val => _24;
+        let _29: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _29;
+        }
+    }
+    scope 5 {
+        debug left_val => _38;
+        debug right_val => _39;
+        let _44: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _44;
+        }
+    }
+    scope 7 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _60: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _60;
+        }
+    }
+    scope 9 {
+        debug left_val => _69;
+        debug right_val => _70;
+        let _75: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _75;
+        }
+    }
+    scope 11 {
+        debug left_val => _85;
+        debug right_val => _86;
+        let _91: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _91;
+        }
+    }
+    scope 13 {
+        debug left_val => _100;
+        debug right_val => _101;
+        let _106: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _106;
+        }
+    }
+    scope 15 {
+        debug left_val => _115;
+        debug right_val => _116;
+        let _121: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _121;
+        }
+    }
+    scope 17 {
+        debug left_val => _131;
+        debug right_val => _132;
+        let _137: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _137;
+        }
+    }
+    scope 19 {
+        debug left_val => _146;
+        debug right_val => _147;
+        let _152: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _152;
+        }
+    }
+    scope 21 {
+        debug left_val => _162;
+        debug right_val => _163;
+        let _168: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _168;
+        }
+    }
+    scope 23 {
+        debug left_val => _177;
+        debug right_val => _178;
+        let _183: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _183;
+        }
+    }
+    scope 25 {
+        debug left_val => _193;
+        debug right_val => _194;
+        let _199: core::panicking::AssertKind;
+        scope 26 {
+            debug kind => _199;
+        }
+    }
+    scope 27 {
+        debug left_val => _208;
+        debug right_val => _209;
+        let _214: core::panicking::AssertKind;
+        scope 28 {
+            debug kind => _214;
+        }
+    }
+
+    bb0: {
+        _4 = core::f32::<impl f32>::to_bits(const 1f32) -> bb1;
+    }
+
+    bb1: {
+        _3 = nop::<u32>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _6 = nop::<u32>(const 1065353216_u32) -> bb3;
+    }
+
+    bb3: {
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &u32);
+        _8 = (_1.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb5: {
+        _20 = core::f32::<impl f32>::to_be_bytes(const 1f32) -> bb6;
+    }
+
+    bb6: {
+        _19 = core::num::<impl u32>::from_be_bytes(move _20) -> bb7;
+    }
+
+    bb7: {
+        _18 = nop::<u32>(move _19) -> bb8;
+    }
+
+    bb8: {
+        _17 = &_18;
+        _22 = nop::<u32>(const 1065353216_u32) -> bb9;
+    }
+
+    bb9: {
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _23 = (_16.0: &u32);
+        _24 = (_16.1: &u32);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<u32, u32>(move _29, _23, _24, move _31);
+    }
+
+    bb11: {
+        _35 = core::f32::<impl f32>::to_bits(const 12.5f32) -> bb12;
+    }
+
+    bb12: {
+        _34 = nop::<u32>(move _35) -> bb13;
+    }
+
+    bb13: {
+        _33 = &_34;
+        _37 = nop::<u32>(const 1095237632_u32) -> bb14;
+    }
+
+    bb14: {
+        _36 = &_37;
+        _32 = (move _33, move _36);
+        _38 = (_32.0: &u32);
+        _39 = (_32.1: &u32);
+        _42 = (*_38);
+        _43 = (*_39);
+        _41 = Eq(move _42, move _43);
+        _40 = Not(move _41);
+        switchInt(move _40) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _44 = core::panicking::AssertKind::Eq;
+        _46 = Option::<Arguments<'_>>::None;
+        _45 = core::panicking::assert_failed::<u32, u32>(move _44, _38, _39, move _46);
+    }
+
+    bb16: {
+        _51 = core::f32::<impl f32>::to_le_bytes(const 12.5f32) -> bb17;
+    }
+
+    bb17: {
+        _50 = core::num::<impl u32>::from_le_bytes(move _51) -> bb18;
+    }
+
+    bb18: {
+        _49 = nop::<u32>(move _50) -> bb19;
+    }
+
+    bb19: {
+        _48 = &_49;
+        _53 = nop::<u32>(const 1095237632_u32) -> bb20;
+    }
+
+    bb20: {
+        _52 = &_53;
+        _47 = (move _48, move _52);
+        _54 = (_47.0: &u32);
+        _55 = (_47.1: &u32);
+        _58 = (*_54);
+        _59 = (*_55);
+        _57 = Eq(move _58, move _59);
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<u32, u32>(move _60, _54, _55, move _62);
+    }
+
+    bb22: {
+        _66 = core::f32::<impl f32>::to_bits(const 1337f32) -> bb23;
+    }
+
+    bb23: {
+        _65 = nop::<u32>(move _66) -> bb24;
+    }
+
+    bb24: {
+        _64 = &_65;
+        _68 = nop::<u32>(const 1151803392_u32) -> bb25;
+    }
+
+    bb25: {
+        _67 = &_68;
+        _63 = (move _64, move _67);
+        _69 = (_63.0: &u32);
+        _70 = (_63.1: &u32);
+        _73 = (*_69);
+        _74 = (*_70);
+        _72 = Eq(move _73, move _74);
+        _71 = Not(move _72);
+        switchInt(move _71) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _75 = core::panicking::AssertKind::Eq;
+        _77 = Option::<Arguments<'_>>::None;
+        _76 = core::panicking::assert_failed::<u32, u32>(move _75, _69, _70, move _77);
+    }
+
+    bb27: {
+        _82 = core::f32::<impl f32>::to_ne_bytes(const 1337f32) -> bb28;
+    }
+
+    bb28: {
+        _81 = core::num::<impl u32>::from_ne_bytes(move _82) -> bb29;
+    }
+
+    bb29: {
+        _80 = nop::<u32>(move _81) -> bb30;
+    }
+
+    bb30: {
+        _79 = &_80;
+        _84 = nop::<u32>(const 1151803392_u32) -> bb31;
+    }
+
+    bb31: {
+        _83 = &_84;
+        _78 = (move _79, move _83);
+        _85 = (_78.0: &u32);
+        _86 = (_78.1: &u32);
+        _89 = (*_85);
+        _90 = (*_86);
+        _88 = Eq(move _89, move _90);
+        _87 = Not(move _88);
+        switchInt(move _87) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _91 = core::panicking::AssertKind::Eq;
+        _93 = Option::<Arguments<'_>>::None;
+        _92 = core::panicking::assert_failed::<u32, u32>(move _91, _85, _86, move _93);
+    }
+
+    bb33: {
+        _97 = core::f32::<impl f32>::to_bits(const -14.25f32) -> bb34;
+    }
+
+    bb34: {
+        _96 = nop::<u32>(move _97) -> bb35;
+    }
+
+    bb35: {
+        _95 = &_96;
+        _99 = nop::<u32>(const 3244556288_u32) -> bb36;
+    }
+
+    bb36: {
+        _98 = &_99;
+        _94 = (move _95, move _98);
+        _100 = (_94.0: &u32);
+        _101 = (_94.1: &u32);
+        _104 = (*_100);
+        _105 = (*_101);
+        _103 = Eq(move _104, move _105);
+        _102 = Not(move _103);
+        switchInt(move _102) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _106 = core::panicking::AssertKind::Eq;
+        _108 = Option::<Arguments<'_>>::None;
+        _107 = core::panicking::assert_failed::<u32, u32>(move _106, _100, _101, move _108);
+    }
+
+    bb38: {
+        _112 = core::f32::<impl f32>::from_bits(const 1065353216_u32) -> bb39;
+    }
+
+    bb39: {
+        _111 = nop::<f32>(move _112) -> bb40;
+    }
+
+    bb40: {
+        _110 = &_111;
+        _114 = nop::<f32>(const 1f32) -> bb41;
+    }
+
+    bb41: {
+        _113 = &_114;
+        _109 = (move _110, move _113);
+        _115 = (_109.0: &f32);
+        _116 = (_109.1: &f32);
+        _119 = (*_115);
+        _120 = (*_116);
+        _118 = Eq(move _119, move _120);
+        _117 = Not(move _118);
+        switchInt(move _117) -> [0: bb43, otherwise: bb42];
+    }
+
+    bb42: {
+        _121 = core::panicking::AssertKind::Eq;
+        _123 = Option::<Arguments<'_>>::None;
+        _122 = core::panicking::assert_failed::<f32, f32>(move _121, _115, _116, move _123);
+    }
+
+    bb43: {
+        _128 = core::num::<impl u32>::to_be_bytes(const 1065353216_u32) -> bb44;
+    }
+
+    bb44: {
+        _127 = core::f32::<impl f32>::from_be_bytes(move _128) -> bb45;
+    }
+
+    bb45: {
+        _126 = nop::<f32>(move _127) -> bb46;
+    }
+
+    bb46: {
+        _125 = &_126;
+        _130 = nop::<f32>(const 1f32) -> bb47;
+    }
+
+    bb47: {
+        _129 = &_130;
+        _124 = (move _125, move _129);
+        _131 = (_124.0: &f32);
+        _132 = (_124.1: &f32);
+        _135 = (*_131);
+        _136 = (*_132);
+        _134 = Eq(move _135, move _136);
+        _133 = Not(move _134);
+        switchInt(move _133) -> [0: bb49, otherwise: bb48];
+    }
+
+    bb48: {
+        _137 = core::panicking::AssertKind::Eq;
+        _139 = Option::<Arguments<'_>>::None;
+        _138 = core::panicking::assert_failed::<f32, f32>(move _137, _131, _132, move _139);
+    }
+
+    bb49: {
+        _143 = core::f32::<impl f32>::from_bits(const 1095237632_u32) -> bb50;
+    }
+
+    bb50: {
+        _142 = nop::<f32>(move _143) -> bb51;
+    }
+
+    bb51: {
+        _141 = &_142;
+        _145 = nop::<f32>(const 12.5f32) -> bb52;
+    }
+
+    bb52: {
+        _144 = &_145;
+        _140 = (move _141, move _144);
+        _146 = (_140.0: &f32);
+        _147 = (_140.1: &f32);
+        _150 = (*_146);
+        _151 = (*_147);
+        _149 = Eq(move _150, move _151);
+        _148 = Not(move _149);
+        switchInt(move _148) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb53: {
+        _152 = core::panicking::AssertKind::Eq;
+        _154 = Option::<Arguments<'_>>::None;
+        _153 = core::panicking::assert_failed::<f32, f32>(move _152, _146, _147, move _154);
+    }
+
+    bb54: {
+        _159 = core::num::<impl u32>::to_le_bytes(const 1095237632_u32) -> bb55;
+    }
+
+    bb55: {
+        _158 = core::f32::<impl f32>::from_le_bytes(move _159) -> bb56;
+    }
+
+    bb56: {
+        _157 = nop::<f32>(move _158) -> bb57;
+    }
+
+    bb57: {
+        _156 = &_157;
+        _161 = nop::<f32>(const 12.5f32) -> bb58;
+    }
+
+    bb58: {
+        _160 = &_161;
+        _155 = (move _156, move _160);
+        _162 = (_155.0: &f32);
+        _163 = (_155.1: &f32);
+        _166 = (*_162);
+        _167 = (*_163);
+        _165 = Eq(move _166, move _167);
+        _164 = Not(move _165);
+        switchInt(move _164) -> [0: bb60, otherwise: bb59];
+    }
+
+    bb59: {
+        _168 = core::panicking::AssertKind::Eq;
+        _170 = Option::<Arguments<'_>>::None;
+        _169 = core::panicking::assert_failed::<f32, f32>(move _168, _162, _163, move _170);
+    }
+
+    bb60: {
+        _174 = core::f32::<impl f32>::from_bits(const 1151803392_u32) -> bb61;
+    }
+
+    bb61: {
+        _173 = nop::<f32>(move _174) -> bb62;
+    }
+
+    bb62: {
+        _172 = &_173;
+        _176 = nop::<f32>(const 1337f32) -> bb63;
+    }
+
+    bb63: {
+        _175 = &_176;
+        _171 = (move _172, move _175);
+        _177 = (_171.0: &f32);
+        _178 = (_171.1: &f32);
+        _181 = (*_177);
+        _182 = (*_178);
+        _180 = Eq(move _181, move _182);
+        _179 = Not(move _180);
+        switchInt(move _179) -> [0: bb65, otherwise: bb64];
+    }
+
+    bb64: {
+        _183 = core::panicking::AssertKind::Eq;
+        _185 = Option::<Arguments<'_>>::None;
+        _184 = core::panicking::assert_failed::<f32, f32>(move _183, _177, _178, move _185);
+    }
+
+    bb65: {
+        _190 = core::num::<impl u32>::to_ne_bytes(const 1151803392_u32) -> bb66;
+    }
+
+    bb66: {
+        _189 = core::f32::<impl f32>::from_ne_bytes(move _190) -> bb67;
+    }
+
+    bb67: {
+        _188 = nop::<f32>(move _189) -> bb68;
+    }
+
+    bb68: {
+        _187 = &_188;
+        _192 = nop::<f32>(const 1337f32) -> bb69;
+    }
+
+    bb69: {
+        _191 = &_192;
+        _186 = (move _187, move _191);
+        _193 = (_186.0: &f32);
+        _194 = (_186.1: &f32);
+        _197 = (*_193);
+        _198 = (*_194);
+        _196 = Eq(move _197, move _198);
+        _195 = Not(move _196);
+        switchInt(move _195) -> [0: bb71, otherwise: bb70];
+    }
+
+    bb70: {
+        _199 = core::panicking::AssertKind::Eq;
+        _201 = Option::<Arguments<'_>>::None;
+        _200 = core::panicking::assert_failed::<f32, f32>(move _199, _193, _194, move _201);
+    }
+
+    bb71: {
+        _205 = core::f32::<impl f32>::from_bits(const 3244556288_u32) -> bb72;
+    }
+
+    bb72: {
+        _204 = nop::<f32>(move _205) -> bb73;
+    }
+
+    bb73: {
+        _203 = &_204;
+        _207 = nop::<f32>(const -14.25f32) -> bb74;
+    }
+
+    bb74: {
+        _206 = &_207;
+        _202 = (move _203, move _206);
+        _208 = (_202.0: &f32);
+        _209 = (_202.1: &f32);
+        _212 = (*_208);
+        _213 = (*_209);
+        _211 = Eq(move _212, move _213);
+        _210 = Not(move _211);
+        switchInt(move _210) -> [0: bb76, otherwise: bb75];
+    }
+
+    bb75: {
+        _214 = core::panicking::AssertKind::Eq;
+        _216 = Option::<Arguments<'_>>::None;
+        _215 = core::panicking::assert_failed::<f32, f32>(move _214, _208, _209, move _216);
+    }
+
+    bb76: {
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::to_bits(const 1f32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1065353216_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (1f32).to_bits() == 0x3f800000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f32::<impl f32>::to_be_bytes(const 1f32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u32>::from_be_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1065353216_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u32::from_be_bytes(1f32.to_be_bytes()) == 0x3f800000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::to_bits(const 12.5f32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1095237632_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (12.5f32).to_bits() == 0x41480000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f32::<impl f32>::to_le_bytes(const 12.5f32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u32>::from_le_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1095237632_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u32::from_le_bytes(12.5f32.to_le_bytes()) == 0x41480000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::to_bits(const 1337f32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1151803392_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (1337f32).to_bits() == 0x44a72000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f32::<impl f32>::to_ne_bytes(const 1337f32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u32>::from_ne_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1151803392_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u32::from_ne_bytes(1337f32.to_ne_bytes()) == 0x44a72000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::to_bits(const -14.25f32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 3244556288_u32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (-14.25f32).to_bits() == 0xc1640000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_bits(const 1065353216_u32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f32::from_bits(0x3f800000) == 1.0");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u32>::to_be_bytes(const 1065353216_u32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_be_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f32::from_be_bytes(0x3f800000u32.to_be_bytes()) == 1.0");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_bits(const 1095237632_u32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 12.5f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f32::from_bits(0x41480000) == 12.5");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u32>::to_le_bytes(const 1095237632_u32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_le_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 12.5f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f32::from_le_bytes(0x41480000u32.to_le_bytes()) == 12.5");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_bits(const 1151803392_u32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1337f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f32::from_bits(0x44a72000) == 1337.0");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: [u8; 4];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u32>::to_ne_bytes(const 1151803392_u32) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_ne_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1337f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f32::from_ne_bytes(0x44a72000u32.to_ne_bytes()) == 1337.0");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f32::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f32;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f32::<impl f32>::from_bits(const 3244556288_u32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const -14.25f32);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f32::from_bits(0xc1640000) == -14.25");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn f64() -> () {
+    let mut _0: ();
+    let mut _1: (&u64, &u64);
+    let mut _2: &u64;
+    let _3: u64;
+    let mut _4: u64;
+    let mut _5: &u64;
+    let _6: u64;
+    let _7: &u64;
+    let _8: &u64;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u64;
+    let mut _12: u64;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&u64, &u64);
+    let mut _17: &u64;
+    let _18: u64;
+    let mut _19: u64;
+    let mut _20: [u8; 8];
+    let mut _21: &u64;
+    let _22: u64;
+    let _23: &u64;
+    let _24: &u64;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: u64;
+    let mut _28: u64;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: (&u64, &u64);
+    let mut _33: &u64;
+    let _34: u64;
+    let mut _35: u64;
+    let mut _36: &u64;
+    let _37: u64;
+    let _38: &u64;
+    let _39: &u64;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: u64;
+    let mut _43: u64;
+    let _45: !;
+    let mut _46: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _47: (&u64, &u64);
+    let mut _48: &u64;
+    let _49: u64;
+    let mut _50: u64;
+    let mut _51: [u8; 8];
+    let mut _52: &u64;
+    let _53: u64;
+    let _54: &u64;
+    let _55: &u64;
+    let mut _56: bool;
+    let mut _57: bool;
+    let mut _58: u64;
+    let mut _59: u64;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _63: (&u64, &u64);
+    let mut _64: &u64;
+    let _65: u64;
+    let mut _66: u64;
+    let mut _67: &u64;
+    let _68: u64;
+    let _69: &u64;
+    let _70: &u64;
+    let mut _71: bool;
+    let mut _72: bool;
+    let mut _73: u64;
+    let mut _74: u64;
+    let _76: !;
+    let mut _77: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _78: (&u64, &u64);
+    let mut _79: &u64;
+    let _80: u64;
+    let mut _81: u64;
+    let mut _82: [u8; 8];
+    let mut _83: &u64;
+    let _84: u64;
+    let _85: &u64;
+    let _86: &u64;
+    let mut _87: bool;
+    let mut _88: bool;
+    let mut _89: u64;
+    let mut _90: u64;
+    let _92: !;
+    let mut _93: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _94: (&u64, &u64);
+    let mut _95: &u64;
+    let _96: u64;
+    let mut _97: u64;
+    let mut _98: &u64;
+    let _99: u64;
+    let _100: &u64;
+    let _101: &u64;
+    let mut _102: bool;
+    let mut _103: bool;
+    let mut _104: u64;
+    let mut _105: u64;
+    let _107: !;
+    let mut _108: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _109: (&f64, &f64);
+    let mut _110: &f64;
+    let _111: f64;
+    let mut _112: f64;
+    let mut _113: &f64;
+    let _114: f64;
+    let _115: &f64;
+    let _116: &f64;
+    let mut _117: bool;
+    let mut _118: bool;
+    let mut _119: f64;
+    let mut _120: f64;
+    let _122: !;
+    let mut _123: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _124: (&f64, &f64);
+    let mut _125: &f64;
+    let _126: f64;
+    let mut _127: f64;
+    let mut _128: [u8; 8];
+    let mut _129: &f64;
+    let _130: f64;
+    let _131: &f64;
+    let _132: &f64;
+    let mut _133: bool;
+    let mut _134: bool;
+    let mut _135: f64;
+    let mut _136: f64;
+    let _138: !;
+    let mut _139: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _140: (&f64, &f64);
+    let mut _141: &f64;
+    let _142: f64;
+    let mut _143: f64;
+    let mut _144: &f64;
+    let _145: f64;
+    let _146: &f64;
+    let _147: &f64;
+    let mut _148: bool;
+    let mut _149: bool;
+    let mut _150: f64;
+    let mut _151: f64;
+    let _153: !;
+    let mut _154: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _155: (&f64, &f64);
+    let mut _156: &f64;
+    let _157: f64;
+    let mut _158: f64;
+    let mut _159: [u8; 8];
+    let mut _160: &f64;
+    let _161: f64;
+    let _162: &f64;
+    let _163: &f64;
+    let mut _164: bool;
+    let mut _165: bool;
+    let mut _166: f64;
+    let mut _167: f64;
+    let _169: !;
+    let mut _170: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _171: (&f64, &f64);
+    let mut _172: &f64;
+    let _173: f64;
+    let mut _174: f64;
+    let mut _175: &f64;
+    let _176: f64;
+    let _177: &f64;
+    let _178: &f64;
+    let mut _179: bool;
+    let mut _180: bool;
+    let mut _181: f64;
+    let mut _182: f64;
+    let _184: !;
+    let mut _185: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _186: (&f64, &f64);
+    let mut _187: &f64;
+    let _188: f64;
+    let mut _189: f64;
+    let mut _190: [u8; 8];
+    let mut _191: &f64;
+    let _192: f64;
+    let _193: &f64;
+    let _194: &f64;
+    let mut _195: bool;
+    let mut _196: bool;
+    let mut _197: f64;
+    let mut _198: f64;
+    let _200: !;
+    let mut _201: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _202: (&f64, &f64);
+    let mut _203: &f64;
+    let _204: f64;
+    let mut _205: f64;
+    let mut _206: &f64;
+    let _207: f64;
+    let _208: &f64;
+    let _209: &f64;
+    let mut _210: bool;
+    let mut _211: bool;
+    let mut _212: f64;
+    let mut _213: f64;
+    let _215: !;
+    let mut _216: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _23;
+        debug right_val => _24;
+        let _29: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _29;
+        }
+    }
+    scope 5 {
+        debug left_val => _38;
+        debug right_val => _39;
+        let _44: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _44;
+        }
+    }
+    scope 7 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _60: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _60;
+        }
+    }
+    scope 9 {
+        debug left_val => _69;
+        debug right_val => _70;
+        let _75: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _75;
+        }
+    }
+    scope 11 {
+        debug left_val => _85;
+        debug right_val => _86;
+        let _91: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _91;
+        }
+    }
+    scope 13 {
+        debug left_val => _100;
+        debug right_val => _101;
+        let _106: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _106;
+        }
+    }
+    scope 15 {
+        debug left_val => _115;
+        debug right_val => _116;
+        let _121: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _121;
+        }
+    }
+    scope 17 {
+        debug left_val => _131;
+        debug right_val => _132;
+        let _137: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _137;
+        }
+    }
+    scope 19 {
+        debug left_val => _146;
+        debug right_val => _147;
+        let _152: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _152;
+        }
+    }
+    scope 21 {
+        debug left_val => _162;
+        debug right_val => _163;
+        let _168: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _168;
+        }
+    }
+    scope 23 {
+        debug left_val => _177;
+        debug right_val => _178;
+        let _183: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _183;
+        }
+    }
+    scope 25 {
+        debug left_val => _193;
+        debug right_val => _194;
+        let _199: core::panicking::AssertKind;
+        scope 26 {
+            debug kind => _199;
+        }
+    }
+    scope 27 {
+        debug left_val => _208;
+        debug right_val => _209;
+        let _214: core::panicking::AssertKind;
+        scope 28 {
+            debug kind => _214;
+        }
+    }
+
+    bb0: {
+        _4 = core::f64::<impl f64>::to_bits(const 1f64) -> bb1;
+    }
+
+    bb1: {
+        _3 = nop::<u64>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _6 = nop::<u64>(const 4607182418800017408_u64) -> bb3;
+    }
+
+    bb3: {
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &u64);
+        _8 = (_1.1: &u64);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u64, u64>(move _13, _7, _8, move _15);
+    }
+
+    bb5: {
+        _20 = core::f64::<impl f64>::to_be_bytes(const 1f64) -> bb6;
+    }
+
+    bb6: {
+        _19 = core::num::<impl u64>::from_be_bytes(move _20) -> bb7;
+    }
+
+    bb7: {
+        _18 = nop::<u64>(move _19) -> bb8;
+    }
+
+    bb8: {
+        _17 = &_18;
+        _22 = nop::<u64>(const 4607182418800017408_u64) -> bb9;
+    }
+
+    bb9: {
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _23 = (_16.0: &u64);
+        _24 = (_16.1: &u64);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<u64, u64>(move _29, _23, _24, move _31);
+    }
+
+    bb11: {
+        _35 = core::f64::<impl f64>::to_bits(const 12.5f64) -> bb12;
+    }
+
+    bb12: {
+        _34 = nop::<u64>(move _35) -> bb13;
+    }
+
+    bb13: {
+        _33 = &_34;
+        _37 = nop::<u64>(const 4623226492472524800_u64) -> bb14;
+    }
+
+    bb14: {
+        _36 = &_37;
+        _32 = (move _33, move _36);
+        _38 = (_32.0: &u64);
+        _39 = (_32.1: &u64);
+        _42 = (*_38);
+        _43 = (*_39);
+        _41 = Eq(move _42, move _43);
+        _40 = Not(move _41);
+        switchInt(move _40) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _44 = core::panicking::AssertKind::Eq;
+        _46 = Option::<Arguments<'_>>::None;
+        _45 = core::panicking::assert_failed::<u64, u64>(move _44, _38, _39, move _46);
+    }
+
+    bb16: {
+        _51 = core::f64::<impl f64>::to_le_bytes(const 12.5f64) -> bb17;
+    }
+
+    bb17: {
+        _50 = core::num::<impl u64>::from_le_bytes(move _51) -> bb18;
+    }
+
+    bb18: {
+        _49 = nop::<u64>(move _50) -> bb19;
+    }
+
+    bb19: {
+        _48 = &_49;
+        _53 = nop::<u64>(const 4623226492472524800_u64) -> bb20;
+    }
+
+    bb20: {
+        _52 = &_53;
+        _47 = (move _48, move _52);
+        _54 = (_47.0: &u64);
+        _55 = (_47.1: &u64);
+        _58 = (*_54);
+        _59 = (*_55);
+        _57 = Eq(move _58, move _59);
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<u64, u64>(move _60, _54, _55, move _62);
+    }
+
+    bb22: {
+        _66 = core::f64::<impl f64>::to_bits(const 1337f64) -> bb23;
+    }
+
+    bb23: {
+        _65 = nop::<u64>(move _66) -> bb24;
+    }
+
+    bb24: {
+        _64 = &_65;
+        _68 = nop::<u64>(const 4653595003631697920_u64) -> bb25;
+    }
+
+    bb25: {
+        _67 = &_68;
+        _63 = (move _64, move _67);
+        _69 = (_63.0: &u64);
+        _70 = (_63.1: &u64);
+        _73 = (*_69);
+        _74 = (*_70);
+        _72 = Eq(move _73, move _74);
+        _71 = Not(move _72);
+        switchInt(move _71) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _75 = core::panicking::AssertKind::Eq;
+        _77 = Option::<Arguments<'_>>::None;
+        _76 = core::panicking::assert_failed::<u64, u64>(move _75, _69, _70, move _77);
+    }
+
+    bb27: {
+        _82 = core::f64::<impl f64>::to_ne_bytes(const 1337f64) -> bb28;
+    }
+
+    bb28: {
+        _81 = core::num::<impl u64>::from_ne_bytes(move _82) -> bb29;
+    }
+
+    bb29: {
+        _80 = nop::<u64>(move _81) -> bb30;
+    }
+
+    bb30: {
+        _79 = &_80;
+        _84 = nop::<u64>(const 4653595003631697920_u64) -> bb31;
+    }
+
+    bb31: {
+        _83 = &_84;
+        _78 = (move _79, move _83);
+        _85 = (_78.0: &u64);
+        _86 = (_78.1: &u64);
+        _89 = (*_85);
+        _90 = (*_86);
+        _88 = Eq(move _89, move _90);
+        _87 = Not(move _88);
+        switchInt(move _87) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _91 = core::panicking::AssertKind::Eq;
+        _93 = Option::<Arguments<'_>>::None;
+        _92 = core::panicking::assert_failed::<u64, u64>(move _91, _85, _86, move _93);
+    }
+
+    bb33: {
+        _97 = core::f64::<impl f64>::to_bits(const -14.25f64) -> bb34;
+    }
+
+    bb34: {
+        _96 = nop::<u64>(move _97) -> bb35;
+    }
+
+    bb35: {
+        _95 = &_96;
+        _99 = nop::<u64>(const 13847583691745787904_u64) -> bb36;
+    }
+
+    bb36: {
+        _98 = &_99;
+        _94 = (move _95, move _98);
+        _100 = (_94.0: &u64);
+        _101 = (_94.1: &u64);
+        _104 = (*_100);
+        _105 = (*_101);
+        _103 = Eq(move _104, move _105);
+        _102 = Not(move _103);
+        switchInt(move _102) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _106 = core::panicking::AssertKind::Eq;
+        _108 = Option::<Arguments<'_>>::None;
+        _107 = core::panicking::assert_failed::<u64, u64>(move _106, _100, _101, move _108);
+    }
+
+    bb38: {
+        _112 = core::f64::<impl f64>::from_bits(const 4607182418800017408_u64) -> bb39;
+    }
+
+    bb39: {
+        _111 = nop::<f64>(move _112) -> bb40;
+    }
+
+    bb40: {
+        _110 = &_111;
+        _114 = nop::<f64>(const 1f64) -> bb41;
+    }
+
+    bb41: {
+        _113 = &_114;
+        _109 = (move _110, move _113);
+        _115 = (_109.0: &f64);
+        _116 = (_109.1: &f64);
+        _119 = (*_115);
+        _120 = (*_116);
+        _118 = Eq(move _119, move _120);
+        _117 = Not(move _118);
+        switchInt(move _117) -> [0: bb43, otherwise: bb42];
+    }
+
+    bb42: {
+        _121 = core::panicking::AssertKind::Eq;
+        _123 = Option::<Arguments<'_>>::None;
+        _122 = core::panicking::assert_failed::<f64, f64>(move _121, _115, _116, move _123);
+    }
+
+    bb43: {
+        _128 = core::num::<impl u64>::to_be_bytes(const 4607182418800017408_u64) -> bb44;
+    }
+
+    bb44: {
+        _127 = core::f64::<impl f64>::from_be_bytes(move _128) -> bb45;
+    }
+
+    bb45: {
+        _126 = nop::<f64>(move _127) -> bb46;
+    }
+
+    bb46: {
+        _125 = &_126;
+        _130 = nop::<f64>(const 1f64) -> bb47;
+    }
+
+    bb47: {
+        _129 = &_130;
+        _124 = (move _125, move _129);
+        _131 = (_124.0: &f64);
+        _132 = (_124.1: &f64);
+        _135 = (*_131);
+        _136 = (*_132);
+        _134 = Eq(move _135, move _136);
+        _133 = Not(move _134);
+        switchInt(move _133) -> [0: bb49, otherwise: bb48];
+    }
+
+    bb48: {
+        _137 = core::panicking::AssertKind::Eq;
+        _139 = Option::<Arguments<'_>>::None;
+        _138 = core::panicking::assert_failed::<f64, f64>(move _137, _131, _132, move _139);
+    }
+
+    bb49: {
+        _143 = core::f64::<impl f64>::from_bits(const 4623226492472524800_u64) -> bb50;
+    }
+
+    bb50: {
+        _142 = nop::<f64>(move _143) -> bb51;
+    }
+
+    bb51: {
+        _141 = &_142;
+        _145 = nop::<f64>(const 12.5f64) -> bb52;
+    }
+
+    bb52: {
+        _144 = &_145;
+        _140 = (move _141, move _144);
+        _146 = (_140.0: &f64);
+        _147 = (_140.1: &f64);
+        _150 = (*_146);
+        _151 = (*_147);
+        _149 = Eq(move _150, move _151);
+        _148 = Not(move _149);
+        switchInt(move _148) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb53: {
+        _152 = core::panicking::AssertKind::Eq;
+        _154 = Option::<Arguments<'_>>::None;
+        _153 = core::panicking::assert_failed::<f64, f64>(move _152, _146, _147, move _154);
+    }
+
+    bb54: {
+        _159 = core::num::<impl u64>::to_le_bytes(const 4623226492472524800_u64) -> bb55;
+    }
+
+    bb55: {
+        _158 = core::f64::<impl f64>::from_le_bytes(move _159) -> bb56;
+    }
+
+    bb56: {
+        _157 = nop::<f64>(move _158) -> bb57;
+    }
+
+    bb57: {
+        _156 = &_157;
+        _161 = nop::<f64>(const 12.5f64) -> bb58;
+    }
+
+    bb58: {
+        _160 = &_161;
+        _155 = (move _156, move _160);
+        _162 = (_155.0: &f64);
+        _163 = (_155.1: &f64);
+        _166 = (*_162);
+        _167 = (*_163);
+        _165 = Eq(move _166, move _167);
+        _164 = Not(move _165);
+        switchInt(move _164) -> [0: bb60, otherwise: bb59];
+    }
+
+    bb59: {
+        _168 = core::panicking::AssertKind::Eq;
+        _170 = Option::<Arguments<'_>>::None;
+        _169 = core::panicking::assert_failed::<f64, f64>(move _168, _162, _163, move _170);
+    }
+
+    bb60: {
+        _174 = core::f64::<impl f64>::from_bits(const 4653595003631697920_u64) -> bb61;
+    }
+
+    bb61: {
+        _173 = nop::<f64>(move _174) -> bb62;
+    }
+
+    bb62: {
+        _172 = &_173;
+        _176 = nop::<f64>(const 1337f64) -> bb63;
+    }
+
+    bb63: {
+        _175 = &_176;
+        _171 = (move _172, move _175);
+        _177 = (_171.0: &f64);
+        _178 = (_171.1: &f64);
+        _181 = (*_177);
+        _182 = (*_178);
+        _180 = Eq(move _181, move _182);
+        _179 = Not(move _180);
+        switchInt(move _179) -> [0: bb65, otherwise: bb64];
+    }
+
+    bb64: {
+        _183 = core::panicking::AssertKind::Eq;
+        _185 = Option::<Arguments<'_>>::None;
+        _184 = core::panicking::assert_failed::<f64, f64>(move _183, _177, _178, move _185);
+    }
+
+    bb65: {
+        _190 = core::num::<impl u64>::to_ne_bytes(const 4653595003631697920_u64) -> bb66;
+    }
+
+    bb66: {
+        _189 = core::f64::<impl f64>::from_ne_bytes(move _190) -> bb67;
+    }
+
+    bb67: {
+        _188 = nop::<f64>(move _189) -> bb68;
+    }
+
+    bb68: {
+        _187 = &_188;
+        _192 = nop::<f64>(const 1337f64) -> bb69;
+    }
+
+    bb69: {
+        _191 = &_192;
+        _186 = (move _187, move _191);
+        _193 = (_186.0: &f64);
+        _194 = (_186.1: &f64);
+        _197 = (*_193);
+        _198 = (*_194);
+        _196 = Eq(move _197, move _198);
+        _195 = Not(move _196);
+        switchInt(move _195) -> [0: bb71, otherwise: bb70];
+    }
+
+    bb70: {
+        _199 = core::panicking::AssertKind::Eq;
+        _201 = Option::<Arguments<'_>>::None;
+        _200 = core::panicking::assert_failed::<f64, f64>(move _199, _193, _194, move _201);
+    }
+
+    bb71: {
+        _205 = core::f64::<impl f64>::from_bits(const 13847583691745787904_u64) -> bb72;
+    }
+
+    bb72: {
+        _204 = nop::<f64>(move _205) -> bb73;
+    }
+
+    bb73: {
+        _203 = &_204;
+        _207 = nop::<f64>(const -14.25f64) -> bb74;
+    }
+
+    bb74: {
+        _206 = &_207;
+        _202 = (move _203, move _206);
+        _208 = (_202.0: &f64);
+        _209 = (_202.1: &f64);
+        _212 = (*_208);
+        _213 = (*_209);
+        _211 = Eq(move _212, move _213);
+        _210 = Not(move _211);
+        switchInt(move _210) -> [0: bb76, otherwise: bb75];
+    }
+
+    bb75: {
+        _214 = core::panicking::AssertKind::Eq;
+        _216 = Option::<Arguments<'_>>::None;
+        _215 = core::panicking::assert_failed::<f64, f64>(move _214, _208, _209, move _216);
+    }
+
+    bb76: {
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::to_bits(const 1f64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 4607182418800017408_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (1f64).to_bits() == 0x3ff0000000000000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f64::<impl f64>::to_be_bytes(const 1f64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u64>::from_be_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 4607182418800017408_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u64::from_be_bytes(1f64.to_be_bytes()) == 0x3ff0000000000000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::to_bits(const 12.5f64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 4623226492472524800_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (12.5f64).to_bits() == 0x4029000000000000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f64::<impl f64>::to_le_bytes(const 12.5f64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u64>::from_le_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 4623226492472524800_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u64::from_le_bytes(12.5f64.to_le_bytes()) == 0x4029000000000000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::to_bits(const 1337f64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 4653595003631697920_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (1337f64).to_bits() == 0x4094e40000000000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::f64::<impl f64>::to_ne_bytes(const 1337f64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::num::<impl u64>::from_ne_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 4653595003631697920_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: u64::from_ne_bytes(1337f64.to_ne_bytes()) == 0x4094e40000000000");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: u64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::to_bits(const -14.25f64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 13847583691745787904_u64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: (-14.25f64).to_bits() == 0xc02c800000000000");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_bits(const 4607182418800017408_u64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f64::from_bits(0x3ff0000000000000) == 1.0");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u64>::to_be_bytes(const 4607182418800017408_u64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_be_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f64::from_be_bytes(0x3ff0000000000000u64.to_be_bytes()) == 1.0");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_bits(const 4623226492472524800_u64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 12.5f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f64::from_bits(0x4029000000000000) == 12.5");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u64>::to_le_bytes(const 4623226492472524800_u64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_le_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 12.5f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f64::from_le_bytes(0x4029000000000000u64.to_le_bytes()) == 12.5");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_bits(const 4653595003631697920_u64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const 1337f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f64::from_bits(0x4094e40000000000) == 1337.0");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: [u8; 8];
+    let mut _5: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::num::<impl u64>::to_ne_bytes(const 4653595003631697920_u64) -> bb1;
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_ne_bytes(move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        _2 = Eq(move _3, const 1337f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_5);
+        ConstEvalCounter;
+        _5 = core::panicking::panic(const "assertion failed: f64::from_ne_bytes(0x4094e40000000000u64.to_ne_bytes()) == 1337.0");
+    }
+
+    bb4: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const f64::_: () = {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: f64;
+    let mut _4: !;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = core::f64::<impl f64>::from_bits(const 13847583691745787904_u64) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, const -14.25f64);
+        StorageDead(_3);
+        _1 = Not(move _2);
+        StorageDead(_2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        ConstEvalCounter;
+        _4 = core::panicking::panic(const "assertion failed: f64::from_bits(0xc02c800000000000) == -14.25");
+    }
+
+    bb3: {
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = f32() -> bb1;
+    }
+
+    bb1: {
+        _2 = f64() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

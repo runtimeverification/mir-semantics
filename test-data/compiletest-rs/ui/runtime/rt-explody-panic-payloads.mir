@@ -1,0 +1,249 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/runtime/rt-explody-panic-payloads.rs:11:1: 11:19>::drop(_1: &mut Bomb) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: !;
+
+    bb0: {
+        _2 = panic_any::<Bomb>(const Bomb);
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<std::string::String>;
+    let mut _2: std::env::Args;
+    let mut _4: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _5: &[std::string::String];
+    let _6: &[std::string::String];
+    let mut _7: &std::vec::Vec<std::string::String>;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _12: &mut std::process::Command;
+    let mut _13: &mut std::process::Command;
+    let mut _14: &mut std::process::Command;
+    let mut _15: std::process::Command;
+    let mut _16: &&std::string::String;
+    let mut _17: !;
+    let _18: &str;
+    let _19: ();
+    let mut _20: std::fmt::Arguments<'_>;
+    let mut _21: &[&str];
+    let _22: &[&str; 2];
+    let _23: [&str; 2];
+    let mut _24: &[core::fmt::rt::Argument<'_>];
+    let _25: &[core::fmt::rt::Argument<'_>; 1];
+    let _26: [core::fmt::rt::Argument<'_>; 1];
+    let mut _27: core::fmt::rt::Argument<'_>;
+    let _28: &std::process::Output;
+    let mut _29: &[core::fmt::rt::Placeholder];
+    let _30: &[core::fmt::rt::Placeholder; 1];
+    let _31: [core::fmt::rt::Placeholder; 1];
+    let mut _32: core::fmt::rt::Placeholder;
+    let mut _33: core::fmt::rt::Alignment;
+    let mut _34: core::fmt::rt::Count;
+    let mut _35: core::fmt::rt::Count;
+    let mut _36: core::fmt::rt::UnsafeArg;
+    let mut _38: &[u8];
+    let _39: &[u8];
+    let _40: &std::vec::Vec<u8>;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: std::result::Result<bool, std::str::Utf8Error>;
+    let mut _44: std::result::Result<&str, std::str::Utf8Error>;
+    let mut _45: std::result::Result<&str, std::str::Utf8Error>;
+    let mut _46: !;
+    scope 1 {
+        debug args => _1;
+        let _3: std::process::Output;
+        let _11: &std::string::String;
+        scope 2 {
+            debug output => _3;
+            let _37: std::result::Result<&str, std::str::Utf8Error>;
+            scope 4 {
+            }
+            scope 5 {
+                debug stderr => _37;
+            }
+        }
+        scope 3 {
+            debug me => _11;
+        }
+    }
+
+    bb0: {
+        _2 = args() -> bb1;
+    }
+
+    bb1: {
+        _1 = <Args as Iterator>::collect::<Vec<String>>(move _2) -> bb2;
+    }
+
+    bb2: {
+        _7 = &_1;
+        _6 = <Vec<String> as Index<RangeFull>>::index(move _7, const RangeFull) -> [return: bb3, unwind: bb27];
+    }
+
+    bb3: {
+        _5 = _6;
+        _8 = Len((*_5));
+        _9 = const 1_usize;
+        _10 = Eq(move _8, move _9);
+        switchInt(move _10) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _17 = panic_any::<Bomb>(const Bomb) -> bb27;
+    }
+
+    bb5: {
+        _11 = &(*_5)[0 of 1];
+        _16 = &_11;
+        _15 = Command::new::<&&String>(move _16) -> [return: bb6, unwind: bb27];
+    }
+
+    bb6: {
+        _14 = &mut _15;
+        _13 = Command::arg::<&str>(move _14, const "plant the") -> [return: bb7, unwind: bb26];
+    }
+
+    bb7: {
+        _12 = _13;
+        _4 = Command::output(move _12) -> [return: bb8, unwind: bb26];
+    }
+
+    bb8: {
+        drop(_15) -> [return: bb9, unwind: bb27];
+    }
+
+    bb9: {
+        _18 = const "running the command should have succeeded";
+        _3 = Result::<Output, std::io::Error>::expect(move _4, _18) -> [return: bb10, unwind: bb27];
+    }
+
+    bb10: {
+        _23 = [const "", const "\n"];
+        _22 = &_23;
+        _21 = _22 as &[&str] (Pointer(Unsize));
+        _28 = &_3;
+        _27 = core::fmt::rt::Argument::<'_>::new_debug::<Output>(_28) -> [return: bb11, unwind: bb25];
+    }
+
+    bb11: {
+        _26 = [move _27];
+        _25 = &_26;
+        _24 = _25 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _33 = core::fmt::rt::Alignment::Unknown;
+        _34 = core::fmt::rt::Count::Implied;
+        _35 = core::fmt::rt::Count::Implied;
+        _32 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _33, const 4_u32, move _34, move _35) -> [return: bb12, unwind: bb25];
+    }
+
+    bb12: {
+        _31 = [move _32];
+        _30 = &_31;
+        _29 = _30 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _36 = core::fmt::rt::UnsafeArg::new() -> [return: bb13, unwind: bb25];
+    }
+
+    bb13: {
+        _20 = Arguments::<'_>::new_v1_formatted(move _21, move _24, move _29, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> [return: bb14, unwind: bb25];
+    }
+
+    bb14: {
+        _19 = _print(move _20) -> [return: bb15, unwind: bb25];
+    }
+
+    bb15: {
+        _40 = &(_3.2: std::vec::Vec<u8>);
+        _39 = <Vec<u8> as Deref>::deref(_40) -> [return: bb16, unwind: bb25];
+    }
+
+    bb16: {
+        _38 = _39;
+        _37 = from_utf8(move _38) -> [return: bb17, unwind: bb25];
+    }
+
+    bb17: {
+        _45 = _37;
+        _44 = Result::<&str, Utf8Error>::map::<&str, [closure@ui/runtime/rt-explody-panic-payloads.rs:26:14: 26:17]>(move _45, const ZeroSized: [closure@ui/runtime/rt-explody-panic-payloads.rs:26:14: 26:17]) -> [return: bb18, unwind: bb25];
+    }
+
+    bb18: {
+        _43 = Result::<&str, Utf8Error>::map::<bool, [closure@ui/runtime/rt-explody-panic-payloads.rs:31:14: 31:17]>(move _44, const ZeroSized: [closure@ui/runtime/rt-explody-panic-payloads.rs:31:14: 31:17]) -> [return: bb19, unwind: bb25];
+    }
+
+    bb19: {
+        _42 = Result::<bool, Utf8Error>::unwrap_or(move _43, const false) -> [return: bb20, unwind: bb25];
+    }
+
+    bb20: {
+        _41 = Not(move _42);
+        switchInt(move _41) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _46 = core::panicking::panic(const "assertion failed: stderr.map(|v|\\n                {\\n                    v.strip_suffix(\\\"qemu: uncaught target signal 6 (Aborted) - core dumped\\\\n\\\").unwrap_or(v)\\n                }).map(|v|\\n            {\\n                v.ends_with(\\\"fatal runtime error: drop of the panic payload panicked\\\\n\\\")\\n            }).unwrap_or(false)") -> bb25;
+    }
+
+    bb22: {
+        drop(_3) -> [return: bb23, unwind: bb27];
+    }
+
+    bb23: {
+        drop(_1) -> bb24;
+    }
+
+    bb24: {
+        return;
+    }
+
+    bb25 (cleanup): {
+        drop(_3) -> [return: bb27, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        drop(_15) -> [return: bb27, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        drop(_1) -> [return: bb28, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/runtime/rt-explody-panic-payloads.rs:26:14: 26:17], _2: &str) -> &str {
+    debug v => _2;
+    let mut _0: &str;
+    let mut _3: std::option::Option<&str>;
+
+    bb0: {
+        _3 = core::str::<impl str>::strip_suffix::<'_, &str>(_2, const "qemu: uncaught target signal 6 (Aborted) - core dumped\n") -> bb1;
+    }
+
+    bb1: {
+        _0 = Option::<&str>::unwrap_or(move _3, _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: [closure@ui/runtime/rt-explody-panic-payloads.rs:31:14: 31:17], _2: &str) -> bool {
+    debug v => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = core::str::<impl str>::ends_with::<'_, &str>(_2, const "fatal runtime error: drop of the panic payload panicked\n") -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

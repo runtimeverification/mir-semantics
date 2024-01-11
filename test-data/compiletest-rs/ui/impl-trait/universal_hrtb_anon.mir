@@ -1,0 +1,122 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn hrtb(_1: impl Fn(&u32) -> u32) -> u32 {
+    debug f => _1;
+    let mut _0: u32;
+    let mut _2: u32;
+    let mut _3: &impl Fn(&u32) -> u32;
+    let mut _4: (&u32,);
+    let _5: &u32;
+    let _6: u32;
+    let mut _7: u32;
+    let mut _8: &impl Fn(&u32) -> u32;
+    let mut _9: (&u32,);
+    let _10: &u32;
+    let _11: u32;
+
+    bb0: {
+        _3 = &_1;
+        _6 = const 22_u32;
+        _5 = &_6;
+        _4 = (_5,);
+        _2 = <impl Fn(&u32) -> u32 as Fn<(&u32,)>>::call(move _3, move _4) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        _8 = &_1;
+        _11 = const 44_u32;
+        _10 = &_11;
+        _9 = (_10,);
+        _7 = <impl Fn(&u32) -> u32 as Fn<(&u32,)>>::call(move _8, move _9) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _0 = Add(move _2, move _7);
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u32;
+    let mut _2: (&u32, &u32);
+    let mut _3: &u32;
+    let mut _4: &u32;
+    let _5: u32;
+    let mut _6: u32;
+    let mut _7: u32;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: u32;
+    let mut _13: u32;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug sum => _1;
+        let _8: &u32;
+        let _9: &u32;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = hrtb::<[closure@ui/impl-trait/universal_hrtb_anon.rs:8:20: 8:23]>(const ZeroSized: [closure@ui/impl-trait/universal_hrtb_anon.rs:8:20: 8:23]) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_1;
+        _6 = Mul(const 22_u32, const 2_u32);
+        _7 = Mul(const 44_u32, const 2_u32);
+        _5 = Add(move _6, move _7);
+        _4 = &_5;
+        _2 = (move _3, move _4);
+        _8 = (_2.0: &u32);
+        _9 = (_2.1: &u32);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<u32, u32>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/impl-trait/universal_hrtb_anon.rs:8:20: 8:23], _2: &u32) -> u32 {
+    debug x => _2;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = <&u32 as Mul<u32>>::mul(_2, const 2_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,72 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Parser::parse_mode(_1: &Self, _2: <Self as Parser>::PartialState) -> () {
+    let mut _0: ();
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn expr() -> impl Parser {
+    let mut _0: impl Parser;
+
+    bb0: {
+        return;
+    }
+}
+
+fn parse_mode_impl() -> () {
+    let mut _0: ();
+    let _1: &impl Parser;
+    let _2: impl Parser;
+    let mut _3: <impl Parser as Parser>::PartialState;
+
+    bb0: {
+        _2 = expr::<A>() -> bb1;
+    }
+
+    bb1: {
+        _1 = &_2;
+        _3 = <<impl Parser as Parser>::PartialState as Default>::default() -> bb2;
+    }
+
+    bb2: {
+        _0 = <impl Parser as Parser>::parse_mode(_1, move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn AndThen(_1: PhantomData<(A, B)>) -> AndThen<A, B> {
+    let mut _0: AndThen<A, B>;
+
+    bb0: {
+        _0 = AndThen::<A, B>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn AndThen(_1: PhantomData<(A, B)>) -> AndThen<A, B> {
+    let mut _0: AndThen<A, B>;
+
+    bb0: {
+        _0 = AndThen::<A, B>(move _1);
+        return;
+    }
+}

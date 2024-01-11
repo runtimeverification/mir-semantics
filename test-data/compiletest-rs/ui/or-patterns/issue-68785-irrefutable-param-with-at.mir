@@ -1,0 +1,86 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn my_fn(_1: MyEnum) -> () {
+    let mut _0: ();
+    let _2: MyEnum;
+    let mut _3: isize;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb4, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _2 = move _1;
+        goto -> bb3;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _2 = move _1;
+        goto -> bb3;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: MyEnum;
+
+    bb0: {
+        _2 = MyEnum::FirstCase(const 0_u8);
+        _1 = my_fn(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MyEnum::FirstCase(_1: u8) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::FirstCase(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyEnum::FirstCase(_1: u8) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::FirstCase(move _1);
+        return;
+    }
+}
+
+fn MyEnum::OtherCase(_1: u16) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::OtherCase(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyEnum::OtherCase(_1: u16) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::OtherCase(move _1);
+        return;
+    }
+}

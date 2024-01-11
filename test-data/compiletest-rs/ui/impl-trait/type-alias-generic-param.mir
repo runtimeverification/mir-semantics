@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/type-alias-generic-param.rs:13:1: 13:22>::meow(_1: I) -> <I as Meow>::MeowType {
+    debug self => _1;
+    let mut _0: <I as Meow>::MeowType;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

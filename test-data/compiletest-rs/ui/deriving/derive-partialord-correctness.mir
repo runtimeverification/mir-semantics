@@ -1,0 +1,93 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/derive-partialord-correctness.rs:4:10: 4:20>::partial_cmp(_1: &FloatWrapper, _2: &FloatWrapper) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &f64;
+    let _4: &f64;
+
+    bb0: {
+        _3 = &((*_1).0: f64);
+        _4 = &((*_2).0: f64);
+        _0 = <f64 as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/derive-partialord-correctness.rs:4:22: 4:31>::eq(_1: &FloatWrapper, _2: &FloatWrapper) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: f64;
+    let mut _4: f64;
+
+    bb0: {
+        _3 = ((*_1).0: f64);
+        _4 = ((*_2).0: f64);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: f64;
+    let mut _5: bool;
+    let mut _6: &FloatWrapper;
+    let _7: FloatWrapper;
+    let mut _8: f64;
+    let mut _9: &FloatWrapper;
+    let _10: FloatWrapper;
+    let mut _11: !;
+
+    bb0: {
+        _4 = Div(const 0f64, const 0f64);
+        _3 = Ge(move _4, const 0f64);
+        _8 = Div(const 0f64, const 0f64);
+        _7 = FloatWrapper(move _8);
+        _6 = &_7;
+        _10 = FloatWrapper(const 0f64);
+        _9 = &_10;
+        _5 = <FloatWrapper as PartialOrd>::ge(move _6, move _9) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(move _3, move _5);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _11 = core::panicking::panic(const "assertion failed: (0.0 / 0.0 >= 0.0) == (FloatWrapper(0.0 / 0.0) >= FloatWrapper(0.0))");
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn FloatWrapper(_1: f64) -> FloatWrapper {
+    let mut _0: FloatWrapper;
+
+    bb0: {
+        _0 = FloatWrapper(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn FloatWrapper(_1: f64) -> FloatWrapper {
+    let mut _0: FloatWrapper;
+
+    bb0: {
+        _0 = FloatWrapper(move _1);
+        return;
+    }
+}

@@ -1,0 +1,221 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/autoref-autoderef/autoref-intermediate-types-issue-3585.rs:7:1: 7:27>::foo(_1: &Box<T>) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: std::string::String;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &std::string::String;
+    let _12: std::string::String;
+    let mut _13: &T;
+    let mut _14: std::boxed::Box<T>;
+    let mut _15: *const T;
+    let mut _16: *const ();
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: bool;
+    scope 1 {
+        debug res => _2;
+    }
+
+    bb0: {
+        _6 = [const "box "];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _14 = deref_copy (*_1);
+        _15 = (((_14.0: std::ptr::Unique<T>).0: std::ptr::NonNull<T>).0: *const T);
+        _16 = _15 as *const () (PtrToPtr);
+        _17 = _16 as usize (Transmute);
+        _18 = AlignOf(T);
+        _19 = Sub(_18, const 1_usize);
+        _20 = BitAnd(_17, _19);
+        _21 = Eq(_20, const 0_usize);
+        assert(_21, "misaligned pointer dereference: address must be a multiple of {} but is {}", _18, _17) -> [success: bb9, unwind unreachable];
+    }
+
+    bb1: {
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<String>(_11) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _2 = format(move _3) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        drop(_12) -> [return: bb5, unwind: bb6];
+    }
+
+    bb5: {
+        _0 = move _2;
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb8, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        drop(_12) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9: {
+        _13 = &(*_15);
+        _12 = <T as Foo>::foo(move _13) -> bb1;
+    }
+}
+
+fn <impl at ui/autoref-autoderef/autoref-intermediate-types-issue-3585.rs:13:1: 13:19>::foo(_1: &usize) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: std::string::String;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    scope 1 {
+        debug res => _2;
+    }
+
+    bb0: {
+        _6 = [const ""];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_1) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = format(move _3) -> bb3;
+    }
+
+    bb3: {
+        _0 = move _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<usize>;
+    let mut _2: (&std::string::String, &std::string::String);
+    let mut _3: &std::string::String;
+    let _4: std::string::String;
+    let mut _5: &std::boxed::Box<usize>;
+    let mut _6: &std::string::String;
+    let _7: std::string::String;
+    let _8: &str;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _9: &std::string::String;
+        let _10: &std::string::String;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Box::<usize>::new(const 3_usize) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_1;
+        _4 = <Box<usize> as Foo>::foo(move _5) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _3 = &_4;
+        _8 = const "box 3";
+        _7 = <str as ToString>::to_string(_8) -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _9 = (_2.0: &std::string::String);
+        _10 = (_2.1: &std::string::String);
+        _12 = <String as PartialEq>::eq(_9, _10) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<String, String>(move _13, _9, _10, move _15) -> bb10;
+    }
+
+    bb6: {
+        drop(_7) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        drop(_4) -> [return: bb8, unwind: bb12];
+    }
+
+    bb8: {
+        drop(_1) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_7) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_4) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}

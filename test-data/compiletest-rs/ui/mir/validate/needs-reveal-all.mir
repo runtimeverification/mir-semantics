@@ -1,0 +1,54 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn bar() -> impl Copy + Id {
+    let mut _0: impl std::marker::Copy + Id;
+
+    bb0: {
+        _0 = const 0_u32;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo<fn() -> impl std::marker::Copy + Id {bar}>;
+    let mut _2: Foo<fn() -> impl std::marker::Copy + Id {bar}>;
+    let mut _3: std::option::Option<<impl std::marker::Copy + Id as Id>::Assoc>;
+    let mut _5: Foo<fn() -> impl std::marker::Copy + Id>;
+    let mut _6: fn() -> impl std::marker::Copy + Id;
+    let mut _7: std::option::Option<<impl std::marker::Copy + Id as Id>::Assoc>;
+    let mut _8: std::option::Option<<impl std::marker::Copy + Id as Id>::Assoc>;
+    let _9: Foo<fn() -> impl std::marker::Copy + Id {bar}>;
+    let mut _10: Foo<fn() -> impl std::marker::Copy + Id {bar}>;
+    scope 1 {
+        debug fn_def => _1;
+        let _4: Foo<fn() -> impl std::marker::Copy + Id>;
+        scope 2 {
+            debug fn_ptr => _4;
+        }
+    }
+
+    bb0: {
+        _3 = Option::<<impl Copy + Id as Id>::Assoc>::None;
+        _2 = Foo::<fn() -> impl Copy + Id {bar}> { _func: bar, value: move _3 };
+        _1 = std::hint::black_box::<Foo<fn() -> impl Copy + Id {bar}>>(move _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = bar as fn() -> impl std::marker::Copy + Id (Pointer(ReifyFnPointer));
+        _7 = Option::<<impl Copy + Id as Id>::Assoc>::None;
+        _5 = Foo::<fn() -> impl Copy + Id> { _func: _6, value: move _7 };
+        _4 = std::hint::black_box::<Foo<fn() -> impl Copy + Id>>(move _5) -> bb2;
+    }
+
+    bb2: {
+        _8 = move (_4.1: std::option::Option<<impl std::marker::Copy + Id as Id>::Assoc>);
+        (_1.1: std::option::Option<<impl std::marker::Copy + Id as Id>::Assoc>) = move _8;
+        _10 = move _1;
+        _9 = std::hint::black_box::<Foo<fn() -> impl Copy + Id {bar}>>(move _10) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

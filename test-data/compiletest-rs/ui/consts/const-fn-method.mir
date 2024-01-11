@@ -1,0 +1,115 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-fn-method.rs:5:1: 5:9>::new() -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo { value: const 22_u32 };
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/consts/const-fn-method.rs:5:1: 5:9>::new() -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo { value: const 22_u32 };
+        return;
+    }
+}
+
+const FOO: Foo = {
+    let mut _0: Foo;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Foo::new() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: Foo;
+    let mut _4: &u32;
+    let _5: u32;
+    let _6: &u32;
+    let _7: &u32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u32;
+    let mut _11: u32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &(_3.0: u32);
+        _5 = const 22_u32;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &u32);
+        _7 = (_1.1: &u32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u32, u32>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 22_usize;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: Foo;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = Foo::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = (_2.0: u32);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}

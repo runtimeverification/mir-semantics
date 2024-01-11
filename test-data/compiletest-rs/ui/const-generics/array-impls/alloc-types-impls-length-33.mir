@@ -1,0 +1,221 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn yes_vec() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<i32>;
+    let mut _2: [i32; 33];
+    scope 1 {
+        debug v => _1;
+    }
+
+    bb0: {
+        _2 = [const 0_i32; 33];
+        _1 = <[i32; 33] as Into<Vec<i32>>>::into(move _2) -> bb1;
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+yes_vec::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+fn yes_box() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<[i32]>;
+    let mut _2: std::boxed::Box<[i32; 33]>;
+    let mut _3: [i32; 33];
+    let mut _6: [i32; 33];
+    scope 1 {
+        debug boxed_slice => _1;
+        let _4: std::result::Result<std::boxed::Box<[i32; 33]>, std::boxed::Box<[i32]>>;
+        scope 2 {
+            debug boxed_array => _4;
+            let _5: std::boxed::Box<[i32]>;
+            scope 3 {
+                debug boxed_slice => _5;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 0_i32; 33];
+        _2 = Box::<[i32; 33]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _4 = <Box<[i32; 33]> as TryFrom<Box<[i32]>>>::try_from(move _1) -> bb2;
+    }
+
+    bb2: {
+        _6 = [const 0_i32; 33];
+        _5 = <Box<[i32]> as From<[i32; 33]>>::from(move _6) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        drop(_5) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_4) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_4) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+yes_box::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+yes_box::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+yes_box::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+fn yes_rc() -> () {
+    let mut _0: ();
+    let _1: std::rc::Rc<[i32]>;
+    let mut _2: std::rc::Rc<[i32; 33]>;
+    let mut _3: [i32; 33];
+    scope 1 {
+        debug boxed_slice => _1;
+        let _4: std::result::Result<std::rc::Rc<[i32; 33]>, std::rc::Rc<[i32]>>;
+        scope 2 {
+            debug boxed_array => _4;
+        }
+    }
+
+    bb0: {
+        _3 = [const 0_i32; 33];
+        _2 = Rc::<[i32; 33]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::rc::Rc<[i32]> (Pointer(Unsize));
+        _4 = <Rc<[i32; 33]> as TryFrom<Rc<[i32]>>>::try_from(move _1) -> bb2;
+    }
+
+    bb2: {
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+yes_rc::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+yes_rc::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+fn yes_arc() -> () {
+    let mut _0: ();
+    let _1: std::sync::Arc<[i32]>;
+    let mut _2: std::sync::Arc<[i32; 33]>;
+    let mut _3: [i32; 33];
+    scope 1 {
+        debug boxed_slice => _1;
+        let _4: std::result::Result<std::sync::Arc<[i32; 33]>, std::sync::Arc<[i32]>>;
+        scope 2 {
+            debug boxed_array => _4;
+        }
+    }
+
+    bb0: {
+        _3 = [const 0_i32; 33];
+        _2 = Arc::<[i32; 33]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::sync::Arc<[i32]> (Pointer(Unsize));
+        _4 = <Arc<[i32; 33]> as TryFrom<Arc<[i32]>>>::try_from(move _1) -> bb2;
+    }
+
+    bb2: {
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+yes_arc::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+yes_arc::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 33_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

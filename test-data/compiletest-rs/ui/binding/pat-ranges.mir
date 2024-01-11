@@ -1,0 +1,153 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const NUM1: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 10_i32;
+        return;
+    }
+}
+
+const NUM2: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 16_i32;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: !;
+    let mut _5: i32;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: !;
+    let mut _9: i32;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: !;
+    let mut _13: i32;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: !;
+    let mut _17: i32;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: !;
+    let mut _21: i32;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: !;
+    scope 1 {
+    }
+    scope 2 {
+    }
+    scope 3 {
+    }
+    scope 4 {
+    }
+    scope 5 {
+    }
+    scope 6 {
+    }
+
+    bb0: {
+        _1 = const 10_i32;
+        _2 = Le(const 10_i32, _1);
+        switchInt(move _2) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = Le(_1, const 16_i32);
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = const 11_i32;
+        _6 = Le(const 10_i32, _5);
+        switchInt(move _6) -> [0: bb6, otherwise: bb4];
+    }
+
+    bb3: {
+        _4 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        _7 = Le(_5, const 16_i32);
+        switchInt(move _7) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _9 = const 12_i32;
+        _10 = Le(const -13_i32, _9);
+        switchInt(move _10) -> [0: bb9, otherwise: bb7];
+    }
+
+    bb6: {
+        _8 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb7: {
+        _11 = Le(_9, const -10_i32);
+        switchInt(move _11) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _12 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb9: {
+        _13 = const 10_i32;
+        _14 = Le(const 10_i32, _13);
+        switchInt(move _14) -> [0: bb12, otherwise: bb10];
+    }
+
+    bb10: {
+        _15 = Le(_13, const 16_i32);
+        switchInt(move _15) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _17 = const 11_i32;
+        _18 = Le(const 10_i32, _17);
+        switchInt(move _18) -> [0: bb15, otherwise: bb13];
+    }
+
+    bb12: {
+        _16 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb13: {
+        _19 = Le(_17, const 16_i32);
+        switchInt(move _19) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _21 = const 12_i32;
+        _22 = Le(const -13_i32, _21);
+        switchInt(move _22) -> [0: bb18, otherwise: bb16];
+    }
+
+    bb15: {
+        _20 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb16: {
+        _23 = Le(_21, const -10_i32);
+        switchInt(move _23) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _24 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb18: {
+        return;
+    }
+}

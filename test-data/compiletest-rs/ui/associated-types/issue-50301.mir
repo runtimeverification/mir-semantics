@@ -1,0 +1,84 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/issue-50301.rs:13:1: 13:20>::get(_1: &Impl) -> ImplIntoIter {
+    debug self => _1;
+    let mut _0: ImplIntoIter;
+    let mut _2: std::vec::Vec<u32>;
+    let mut _3: &std::vec::Vec<u32>;
+
+    bb0: {
+        _3 = &((*_1).0: std::vec::Vec<u32>);
+        _2 = <Vec<u32> as Clone>::clone(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = ImplIntoIter(move _2);
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/issue-50301.rs:22:1: 22:43>::into_iter(_1: &ImplIntoIter) -> Cloned<std::slice::Iter<'_, u32>> {
+    debug self => _1;
+    let mut _0: std::iter::Cloned<std::slice::Iter<'_, u32>>;
+    let mut _2: std::slice::Iter<'_, u32>;
+    let _3: &std::vec::Vec<u32>;
+
+    bb0: {
+        _3 = &((*_1).0: std::vec::Vec<u32>);
+        _2 = <&Vec<u32> as IntoIterator>::into_iter(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <std::slice::Iter<'_, u32> as Iterator>::cloned::<'_, u32>(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Impl(_1: Vec<u32>) -> Impl {
+    let mut _0: Impl;
+
+    bb0: {
+        _0 = Impl(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Impl(_1: Vec<u32>) -> Impl {
+    let mut _0: Impl;
+
+    bb0: {
+        _0 = Impl(move _1);
+        return;
+    }
+}
+
+fn ImplIntoIter(_1: Vec<u32>) -> ImplIntoIter {
+    let mut _0: ImplIntoIter;
+
+    bb0: {
+        _0 = ImplIntoIter(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ImplIntoIter(_1: Vec<u32>) -> ImplIntoIter {
+    let mut _0: ImplIntoIter;
+
+    bb0: {
+        _0 = ImplIntoIter(move _1);
+        return;
+    }
+}

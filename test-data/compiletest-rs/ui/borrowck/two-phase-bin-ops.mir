@@ -1,0 +1,224 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::add_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::sub_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::mul_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::div_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::rem_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::bitand_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::bitor_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::bitxor_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::shl_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn <impl at ui/borrowck/two-phase-bin-ops.rs:9:9: 9:31>::shr_assign(_1: &mut A, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let _2: ();
+    let mut _3: &mut A;
+    let mut _4: i32;
+    let _5: ();
+    let mut _6: &mut A;
+    let mut _7: i32;
+    let _8: ();
+    let mut _9: &mut A;
+    let mut _10: i32;
+    let _11: ();
+    let mut _12: &mut A;
+    let mut _13: i32;
+    let _14: ();
+    let mut _15: &mut A;
+    let mut _16: i32;
+    let _17: ();
+    let mut _18: &mut A;
+    let mut _19: i32;
+    let _20: ();
+    let mut _21: &mut A;
+    let mut _22: i32;
+    let _23: ();
+    let mut _24: &mut A;
+    let mut _25: i32;
+    let _26: ();
+    let mut _27: &mut A;
+    let mut _28: i32;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        _1 = A(const 10_i32);
+        _3 = &mut _1;
+        _4 = (_1.0: i32);
+        _2 = <A as AddAssign<i32>>::add_assign(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = &mut _1;
+        _7 = (_1.0: i32);
+        _5 = <A as SubAssign<i32>>::sub_assign(move _6, move _7) -> bb2;
+    }
+
+    bb2: {
+        _9 = &mut _1;
+        _10 = (_1.0: i32);
+        _8 = <A as MulAssign<i32>>::mul_assign(move _9, move _10) -> bb3;
+    }
+
+    bb3: {
+        _12 = &mut _1;
+        _13 = (_1.0: i32);
+        _11 = <A as DivAssign<i32>>::div_assign(move _12, move _13) -> bb4;
+    }
+
+    bb4: {
+        _15 = &mut _1;
+        _16 = (_1.0: i32);
+        _14 = <A as BitAndAssign<i32>>::bitand_assign(move _15, move _16) -> bb5;
+    }
+
+    bb5: {
+        _18 = &mut _1;
+        _19 = (_1.0: i32);
+        _17 = <A as BitOrAssign<i32>>::bitor_assign(move _18, move _19) -> bb6;
+    }
+
+    bb6: {
+        _21 = &mut _1;
+        _22 = (_1.0: i32);
+        _20 = <A as BitXorAssign<i32>>::bitxor_assign(move _21, move _22) -> bb7;
+    }
+
+    bb7: {
+        _24 = &mut _1;
+        _25 = (_1.0: i32);
+        _23 = <A as ShlAssign<i32>>::shl_assign(move _24, move _25) -> bb8;
+    }
+
+    bb8: {
+        _27 = &mut _1;
+        _28 = (_1.0: i32);
+        _26 = <A as ShrAssign<i32>>::shr_assign(move _27, move _28) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn A(_1: i32) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A(_1: i32) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}

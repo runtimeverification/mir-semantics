@@ -1,0 +1,40 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: foo;
+    let mut _2: X;
+    let mut _3: *const foo;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _3 = null::<foo>() -> bb1;
+    }
+
+    bb1: {
+        _2 = X { x: const 0_usize, nxt: move _3 };
+        _1 = foo(move _2);
+        return;
+    }
+}
+
+fn foo(_1: X) -> foo {
+    let mut _0: foo;
+
+    bb0: {
+        _0 = foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo(_1: X) -> foo {
+    let mut _0: foo;
+
+    bb0: {
+        _0 = foo(move _1);
+        return;
+    }
+}

@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f() -> () {
+    let mut _0: ();
+    let _1: Large;
+    scope 1 {
+        debug _foo => _1;
+    }
+
+    bb0: {
+        _1 = Large { a: const 0_isize, b: const 0_isize, c: const 0_isize, d: const 0_isize, e: const 0_isize, f: const 0_isize, g: const 0_isize, h: const 0_isize, i: const 0_isize, j: const 0_isize, k: const 0_isize, l: const 0_isize };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = f() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

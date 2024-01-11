@@ -1,0 +1,2 @@
+thread 'main' panicked at 'not implemented', ui/pattern/usefulness/const-pat-ice.rs:6:11
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

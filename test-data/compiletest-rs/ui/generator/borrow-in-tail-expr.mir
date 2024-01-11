@@ -1,0 +1,86 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16];
+    scope 1 {
+        debug _a => _1;
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16 (#0)];
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16]>, _2: ()) -> GeneratorState<(), usize> {
+    let mut _0: std::ops::GeneratorState<(), usize>;
+    let mut _3: ();
+    let _4: std::string::String;
+    let mut _5: &std::string::String;
+    let mut _6: usize;
+    let mut _7: u32;
+    let mut _8: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16];
+    let mut _9: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16];
+    let mut _10: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16];
+    let mut _11: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16];
+    scope 1 {
+        debug a => _4;
+    }
+
+    bb0: {
+        _8 = deref_copy (_1.0: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16]);
+        _7 = discriminant((*_8));
+        switchInt(move _7) -> [0: bb1, 1: bb9, 2: bb8, 3: bb7, otherwise: bb10];
+    }
+
+    bb1: {
+        _3 = ();
+        _0 = GeneratorState::<(), usize>::Yielded(move _3);
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16]);
+        discriminant((*_9)) = 3;
+        return;
+    }
+
+    bb2: {
+        _5 = &_4;
+        _6 = String::len(move _5) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_4) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        _0 = GeneratorState::<(), usize>::Complete(move _6);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16]);
+        discriminant((*_10)) = 1;
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_4) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/borrow-in-tail-expr.rs:6:14: 6:16]);
+        discriminant((*_11)) = 2;
+        resume;
+    }
+
+    bb7: {
+        _4 = String::new() -> [return: bb2, unwind: bb6];
+    }
+
+    bb8: {
+        assert(const false, "generator resumed after panicking") -> bb8;
+    }
+
+    bb9: {
+        assert(const false, "generator resumed after completion") -> bb9;
+    }
+
+    bb10: {
+        unreachable;
+    }
+}

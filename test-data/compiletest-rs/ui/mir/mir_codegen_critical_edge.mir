@@ -1,0 +1,132 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_codegen_critical_edge.rs:20:1: 20:21>::next(_1: &mut Foo<A, B>) -> Option<<A as Iterator>::Item> {
+    debug self => _1;
+    let mut _0: std::option::Option<<A as std::iter::Iterator>::Item>;
+    let mut _2: isize;
+    let mut _3: std::option::Option<<A as std::iter::Iterator>::Item>;
+    let mut _4: &mut A;
+    let mut _5: isize;
+    let _6: std::option::Option<<A as std::iter::Iterator>::Item>;
+    let mut _7: State;
+    let mut _8: &mut B;
+    let mut _9: &mut A;
+    let mut _10: &mut B;
+    let mut _11: bool;
+    scope 1 {
+        debug elt => _6;
+    }
+
+    bb0: {
+        _11 = const false;
+        _2 = discriminant(((*_1).0: State));
+        switchInt(move _2) -> [0: bb3, 1: bb8, 2: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _10 = &mut ((*_1).2: B);
+        _0 = <B as Iterator>::next(move _10) -> bb9;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &mut ((*_1).1: A);
+        _11 = const true;
+        _3 = <A as Iterator>::next(move _4) -> bb4;
+    }
+
+    bb4: {
+        _5 = discriminant(_3);
+        switchInt(move _5) -> [0: bb5, 1: bb6, otherwise: bb2];
+    }
+
+    bb5: {
+        _7 = State::Back;
+        ((*_1).0: State) = move _7;
+        _8 = &mut ((*_1).2: B);
+        _0 = <B as Iterator>::next(move _8) -> [return: bb14, unwind: bb10];
+    }
+
+    bb6: {
+        _11 = const false;
+        _6 = move _3;
+        _0 = move _6;
+        goto -> bb13;
+    }
+
+    bb7: {
+        _11 = const false;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _9 = &mut ((*_1).1: A);
+        _0 = <A as Iterator>::next(move _9) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12: {
+        drop(_3) -> bb7;
+    }
+
+    bb13: {
+        switchInt(_11) -> [0: bb7, otherwise: bb12];
+    }
+
+    bb14: {
+        goto -> bb13;
+    }
+}
+
+fn do_stuff(_1: Foo<Box<dyn Iterator<Item = u32>>, Box<dyn Iterator<Item = u32>>>) -> () {
+    debug f => _1;
+    let mut _0: ();
+    let _2: std::option::Option<u32>;
+    let mut _3: &mut Foo<std::boxed::Box<dyn std::iter::Iterator<Item = u32>>, std::boxed::Box<dyn std::iter::Iterator<Item = u32>>>;
+    scope 1 {
+        debug _x => _2;
+    }
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = Foo::<Box<dyn Iterator<Item = u32>>, Box<dyn Iterator<Item = u32>>>::next(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

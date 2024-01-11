@@ -1,0 +1,259 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const _ONE_SECOND: Duration = {
+    let mut _0: std::time::Duration;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Duration::from_nanos(const 1000000000_u64) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const _ONE_MILLISECOND: Duration = {
+    let mut _0: std::time::Duration;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Duration::from_nanos(const 1000000_u64) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const _ONE_MICROSECOND: Duration = {
+    let mut _0: std::time::Duration;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Duration::from_nanos(const 1000_u64) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const _ONE_NANOSECOND: Duration = {
+    let mut _0: std::time::Duration;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Duration::from_nanos(const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const _ONE: usize = {
+    let mut _0: usize;
+    let mut _1: u64;
+    let mut _2: &std::time::Duration;
+    let _3: std::time::Duration;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &_3;
+        ConstEvalCounter;
+        _1 = Duration::as_secs(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _TWO: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: &std::time::Duration;
+    let _3: std::time::Duration;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &_3;
+        ConstEvalCounter;
+        _1 = Duration::subsec_millis(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _THREE: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: &std::time::Duration;
+    let _3: std::time::Duration;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &_3;
+        ConstEvalCounter;
+        _1 = Duration::subsec_micros(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _FOUR: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: &std::time::Duration;
+    let _3: std::time::Duration;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &_3;
+        ConstEvalCounter;
+        _1 = Duration::subsec_nanos(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _0: [[u8; 1]; 1] = {
+    let mut _0: [[u8; 1]; 1];
+    let mut _1: [u8; 1];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [const 1_u8; 1];
+        _0 = [move _1; 1];
+        StorageDead(_1);
+        return;
+    }
+}
+
+_0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_0::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_0::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_0::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const _1: [[u8; 1]; 1] = {
+    let mut _0: [[u8; 1]; 1];
+    let mut _1: [u8; 1];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [const 3_u8; 1];
+        _0 = [move _1; 1];
+        StorageDead(_1);
+        return;
+    }
+}
+
+_1::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_1::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_1::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+_1::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}

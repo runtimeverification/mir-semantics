@@ -1,0 +1,1842 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn func() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const STR: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "hello";
+        return;
+    }
+}
+
+const BSTR: &[u8; 5] = {
+    let mut _0: &[u8; 5];
+
+    bb0: {
+        _0 = const b"hello";
+        return;
+    }
+}
+
+alloc1 (size: 5, align: 1) {
+    68 65 6c 6c 6f                                  │ hello
+}
+
+BSTR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn from_ptr() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+    let _1: *const std::string::String;
+    scope 1 {
+        debug f => _1;
+        let _2: isize;
+        scope 2 {
+            debug c1 => _2;
+            let _3: usize;
+            scope 3 {
+                debug c2 => _3;
+                let _4: i8;
+                scope 4 {
+                    debug c3 => _4;
+                    let _5: i16;
+                    scope 5 {
+                        debug c4 => _5;
+                        let _6: i32;
+                        scope 6 {
+                            debug c5 => _6;
+                            let _7: i64;
+                            scope 7 {
+                                debug c6 => _7;
+                                let _8: u8;
+                                scope 8 {
+                                    debug c7 => _8;
+                                    let _9: u16;
+                                    scope 9 {
+                                        debug c8 => _9;
+                                        let _10: u32;
+                                        scope 10 {
+                                            debug c9 => _10;
+                                            let _11: u64;
+                                            scope 11 {
+                                                debug c10 => _11;
+                                                let _12: *const ();
+                                                scope 12 {
+                                                    debug c11 => _12;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _2 = _1 as isize (PointerExposeAddress);
+        _3 = _1 as usize (PointerExposeAddress);
+        _4 = _1 as i8 (PointerExposeAddress);
+        _5 = _1 as i16 (PointerExposeAddress);
+        _6 = _1 as i32 (PointerExposeAddress);
+        _7 = _1 as i64 (PointerExposeAddress);
+        _8 = _1 as u8 (PointerExposeAddress);
+        _9 = _1 as u16 (PointerExposeAddress);
+        _10 = _1 as u32 (PointerExposeAddress);
+        _11 = _1 as u64 (PointerExposeAddress);
+        _12 = _1 as *const () (PtrToPtr);
+        _0 = (_2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
+        return;
+    }
+}
+
+fn from_1() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_isize;
+        _2 = const 1_usize;
+        _3 = const 1_i8;
+        _4 = const 1_i16;
+        _5 = const 1_i32;
+        _6 = const 1_i64;
+        _7 = const 1_u8;
+        _8 = const 1_u16;
+        _9 = const 1_u32;
+        _10 = const 1_u64;
+        _11 = const 1_i32 as f32 (IntToFloat);
+        _12 = const 1_i32 as f64 (IntToFloat);
+        _13 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1usize() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_usize as isize (IntToInt);
+        _2 = const 1_usize;
+        _3 = const 1_usize as i8 (IntToInt);
+        _4 = const 1_usize as i16 (IntToInt);
+        _5 = const 1_usize as i32 (IntToInt);
+        _6 = const 1_usize as i64 (IntToInt);
+        _7 = const 1_usize as u8 (IntToInt);
+        _8 = const 1_usize as u16 (IntToInt);
+        _9 = const 1_usize as u32 (IntToInt);
+        _10 = const 1_usize as u64 (IntToInt);
+        _11 = const 1_usize as f32 (IntToFloat);
+        _12 = const 1_usize as f64 (IntToFloat);
+        _13 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1isize() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_isize;
+        _2 = const 1_isize as usize (IntToInt);
+        _3 = const 1_isize as i8 (IntToInt);
+        _4 = const 1_isize as i16 (IntToInt);
+        _5 = const 1_isize as i32 (IntToInt);
+        _6 = const 1_isize as i64 (IntToInt);
+        _7 = const 1_isize as u8 (IntToInt);
+        _8 = const 1_isize as u16 (IntToInt);
+        _9 = const 1_isize as u32 (IntToInt);
+        _10 = const 1_isize as u64 (IntToInt);
+        _11 = const 1_isize as f32 (IntToFloat);
+        _12 = const 1_isize as f64 (IntToFloat);
+        _13 = const 1_isize as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1u8() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_u8 as isize (IntToInt);
+        _2 = const 1_u8 as usize (IntToInt);
+        _3 = const 1_u8 as i8 (IntToInt);
+        _4 = const 1_u8 as i16 (IntToInt);
+        _5 = const 1_u8 as i32 (IntToInt);
+        _6 = const 1_u8 as i64 (IntToInt);
+        _7 = const 1_u8;
+        _8 = const 1_u8 as u16 (IntToInt);
+        _9 = const 1_u8 as u32 (IntToInt);
+        _10 = const 1_u8 as u64 (IntToInt);
+        _11 = const 1_u8 as f32 (IntToFloat);
+        _12 = const 1_u8 as f64 (IntToFloat);
+        _13 = const 1_u8 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1i8() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_i8 as isize (IntToInt);
+        _2 = const 1_i8 as usize (IntToInt);
+        _3 = const 1_i8;
+        _4 = const 1_i8 as i16 (IntToInt);
+        _5 = const 1_i8 as i32 (IntToInt);
+        _6 = const 1_i8 as i64 (IntToInt);
+        _7 = const 1_i8 as u8 (IntToInt);
+        _8 = const 1_i8 as u16 (IntToInt);
+        _9 = const 1_i8 as u32 (IntToInt);
+        _10 = const 1_i8 as u64 (IntToInt);
+        _11 = const 1_i8 as f32 (IntToFloat);
+        _12 = const 1_i8 as f64 (IntToFloat);
+        _13 = const 1_i8 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1u16() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_u16 as isize (IntToInt);
+        _2 = const 1_u16 as usize (IntToInt);
+        _3 = const 1_u16 as i8 (IntToInt);
+        _4 = const 1_u16 as i16 (IntToInt);
+        _5 = const 1_u16 as i32 (IntToInt);
+        _6 = const 1_u16 as i64 (IntToInt);
+        _7 = const 1_u16 as u8 (IntToInt);
+        _8 = const 1_u16;
+        _9 = const 1_u16 as u32 (IntToInt);
+        _10 = const 1_u16 as u64 (IntToInt);
+        _11 = const 1_u16 as f32 (IntToFloat);
+        _12 = const 1_u16 as f64 (IntToFloat);
+        _13 = const 1_u16 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1i16() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_i16 as isize (IntToInt);
+        _2 = const 1_i16 as usize (IntToInt);
+        _3 = const 1_i16 as i8 (IntToInt);
+        _4 = const 1_i16;
+        _5 = const 1_i16 as i32 (IntToInt);
+        _6 = const 1_i16 as i64 (IntToInt);
+        _7 = const 1_i16 as u8 (IntToInt);
+        _8 = const 1_i16 as u16 (IntToInt);
+        _9 = const 1_i16 as u32 (IntToInt);
+        _10 = const 1_i16 as u64 (IntToInt);
+        _11 = const 1_i16 as f32 (IntToFloat);
+        _12 = const 1_i16 as f64 (IntToFloat);
+        _13 = const 1_i16 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1u32() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_u32 as isize (IntToInt);
+        _2 = const 1_u32 as usize (IntToInt);
+        _3 = const 1_u32 as i8 (IntToInt);
+        _4 = const 1_u32 as i16 (IntToInt);
+        _5 = const 1_u32 as i32 (IntToInt);
+        _6 = const 1_u32 as i64 (IntToInt);
+        _7 = const 1_u32 as u8 (IntToInt);
+        _8 = const 1_u32 as u16 (IntToInt);
+        _9 = const 1_u32;
+        _10 = const 1_u32 as u64 (IntToInt);
+        _11 = const 1_u32 as f32 (IntToFloat);
+        _12 = const 1_u32 as f64 (IntToFloat);
+        _13 = const 1_u32 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1i32() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_i32 as isize (IntToInt);
+        _2 = const 1_i32 as usize (IntToInt);
+        _3 = const 1_i32 as i8 (IntToInt);
+        _4 = const 1_i32 as i16 (IntToInt);
+        _5 = const 1_i32;
+        _6 = const 1_i32 as i64 (IntToInt);
+        _7 = const 1_i32 as u8 (IntToInt);
+        _8 = const 1_i32 as u16 (IntToInt);
+        _9 = const 1_i32 as u32 (IntToInt);
+        _10 = const 1_i32 as u64 (IntToInt);
+        _11 = const 1_i32 as f32 (IntToFloat);
+        _12 = const 1_i32 as f64 (IntToFloat);
+        _13 = const 1_i32 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1u64() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_u64 as isize (IntToInt);
+        _2 = const 1_u64 as usize (IntToInt);
+        _3 = const 1_u64 as i8 (IntToInt);
+        _4 = const 1_u64 as i16 (IntToInt);
+        _5 = const 1_u64 as i32 (IntToInt);
+        _6 = const 1_u64 as i64 (IntToInt);
+        _7 = const 1_u64 as u8 (IntToInt);
+        _8 = const 1_u64 as u16 (IntToInt);
+        _9 = const 1_u64 as u32 (IntToInt);
+        _10 = const 1_u64;
+        _11 = const 1_u64 as f32 (IntToFloat);
+        _12 = const 1_u64 as f64 (IntToFloat);
+        _13 = const 1_u64 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_1i64() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                    let _13: *const std::string::String;
+                                                    scope 13 {
+                                                        debug c13 => _13;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_i64 as isize (IntToInt);
+        _2 = const 1_i64 as usize (IntToInt);
+        _3 = const 1_i64 as i8 (IntToInt);
+        _4 = const 1_i64 as i16 (IntToInt);
+        _5 = const 1_i64 as i32 (IntToInt);
+        _6 = const 1_i64;
+        _7 = const 1_i64 as u8 (IntToInt);
+        _8 = const 1_i64 as u16 (IntToInt);
+        _9 = const 1_i64 as u32 (IntToInt);
+        _10 = const 1_i64 as u64 (IntToInt);
+        _11 = const 1_i64 as f32 (IntToFloat);
+        _12 = const 1_i64 as f64 (IntToFloat);
+        _13 = const 1_i64 as *const std::string::String (PointerFromExposedAddress);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13);
+        return;
+    }
+}
+
+fn from_bool() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const true as isize (IntToInt);
+        _2 = const true as usize (IntToInt);
+        _3 = const true as i8 (IntToInt);
+        _4 = const true as i16 (IntToInt);
+        _5 = const true as i32 (IntToInt);
+        _6 = const true as i64 (IntToInt);
+        _7 = const true as u8 (IntToInt);
+        _8 = const true as u16 (IntToInt);
+        _9 = const true as u32 (IntToInt);
+        _10 = const true as u64 (IntToInt);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10);
+        return;
+    }
+}
+
+fn from_1f32() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1f32 as isize (FloatToInt);
+        _2 = const 1f32 as usize (FloatToInt);
+        _3 = const 1f32 as i8 (FloatToInt);
+        _4 = const 1f32 as i16 (FloatToInt);
+        _5 = const 1f32 as i32 (FloatToInt);
+        _6 = const 1f32 as i64 (FloatToInt);
+        _7 = const 1f32 as u8 (FloatToInt);
+        _8 = const 1f32 as u16 (FloatToInt);
+        _9 = const 1f32 as u32 (FloatToInt);
+        _10 = const 1f32 as u64 (FloatToInt);
+        _11 = const 1f32;
+        _12 = const 1f32 as f64 (FloatToFloat);
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
+        return;
+    }
+}
+
+fn from_1f64() -> (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64) {
+    let mut _0: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let _1: isize;
+    scope 1 {
+        debug c1 => _1;
+        let _2: usize;
+        scope 2 {
+            debug c2 => _2;
+            let _3: i8;
+            scope 3 {
+                debug c3 => _3;
+                let _4: i16;
+                scope 4 {
+                    debug c4 => _4;
+                    let _5: i32;
+                    scope 5 {
+                        debug c5 => _5;
+                        let _6: i64;
+                        scope 6 {
+                            debug c6 => _6;
+                            let _7: u8;
+                            scope 7 {
+                                debug c7 => _7;
+                                let _8: u16;
+                                scope 8 {
+                                    debug c8 => _8;
+                                    let _9: u32;
+                                    scope 9 {
+                                        debug c9 => _9;
+                                        let _10: u64;
+                                        scope 10 {
+                                            debug c10 => _10;
+                                            let _11: f32;
+                                            scope 11 {
+                                                debug c11 => _11;
+                                                let _12: f64;
+                                                scope 12 {
+                                                    debug c12 => _12;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1f64 as isize (FloatToInt);
+        _2 = const 1f64 as usize (FloatToInt);
+        _3 = const 1f64 as i8 (FloatToInt);
+        _4 = const 1f64 as i16 (FloatToInt);
+        _5 = const 1f64 as i32 (FloatToInt);
+        _6 = const 1f64 as i64 (FloatToInt);
+        _7 = const 1f64 as u8 (FloatToInt);
+        _8 = const 1f64 as u16 (FloatToInt);
+        _9 = const 1f64 as u32 (FloatToInt);
+        _10 = const 1f64 as u64 (FloatToInt);
+        _11 = const 1f64 as f32 (FloatToFloat);
+        _12 = const 1f64;
+        _0 = (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12);
+        return;
+    }
+}
+
+fn other_casts() -> (*const u8, *const isize, *const u8, *const u8) {
+    let mut _0: (*const u8, *const isize, *const u8, *const u8);
+    let _1: *const u8;
+    let mut _2: fn();
+    let _5: u32;
+    let mut _7: *const str;
+    let _8: &str;
+    let mut _10: *const [u16];
+    let mut _11: *const [u8];
+    let mut _12: *const [u8; 5];
+    let _13: &[u8; 5];
+    scope 1 {
+        debug c1 => _1;
+        let _3: *const isize;
+        scope 2 {
+            debug c2 => _3;
+            let _4: &u32;
+            scope 3 {
+                debug r => _4;
+                scope 4 {
+                    let _6: *const u8;
+                    scope 5 {
+                        debug c3 => _6;
+                        let _9: *const u8;
+                        scope 6 {
+                            debug c4 => _9;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = func as fn() (Pointer(ReifyFnPointer));
+        _1 = move _2 as *const u8 (FnPtrToPtr);
+        _3 = _1 as *const isize (PtrToPtr);
+        _5 = const 42_u32;
+        _4 = &_5;
+        _8 = const _;
+        _7 = &raw const (*_8);
+        _6 = move _7 as *const u8 (PtrToPtr);
+        _13 = const _;
+        _12 = &raw const (*_13);
+        _11 = move _12 as *const [u8] (Pointer(Unsize));
+        _10 = move _11 as *const [u16] (PtrToPtr);
+        _9 = move _10 as *const u8 (PtrToPtr);
+        _0 = (_1, _3, _6, _9);
+        return;
+    }
+}
+
+fn assert_eq_13(_1: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String), _2: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const String)) -> bool {
+    debug l => _1;
+    debug r => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let _4: usize;
+    let _5: i8;
+    let _6: i16;
+    let _7: i32;
+    let _8: i64;
+    let _9: u8;
+    let _10: u16;
+    let _11: u32;
+    let _12: u64;
+    let _13: f32;
+    let _14: f64;
+    let _15: *const std::string::String;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: bool;
+    let mut _48: bool;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: bool;
+    scope 1 {
+        debug l1 => _3;
+        debug l2 => _4;
+        debug l3 => _5;
+        debug l4 => _6;
+        debug l5 => _7;
+        debug l6 => _8;
+        debug l7 => _9;
+        debug l8 => _10;
+        debug l9 => _11;
+        debug l10 => _12;
+        debug l11 => _13;
+        debug l12 => _14;
+        debug l13 => _15;
+        let _16: isize;
+        let _17: usize;
+        let _18: i8;
+        let _19: i16;
+        let _20: i32;
+        let _21: i64;
+        let _22: u8;
+        let _23: u16;
+        let _24: u32;
+        let _25: u64;
+        let _26: f32;
+        let _27: f64;
+        let _28: *const std::string::String;
+        scope 2 {
+            debug r1 => _16;
+            debug r2 => _17;
+            debug r3 => _18;
+            debug r4 => _19;
+            debug r5 => _20;
+            debug r6 => _21;
+            debug r7 => _22;
+            debug r8 => _23;
+            debug r9 => _24;
+            debug r10 => _25;
+            debug r11 => _26;
+            debug r12 => _27;
+            debug r13 => _28;
+        }
+    }
+
+    bb0: {
+        _3 = (_1.0: isize);
+        _4 = (_1.1: usize);
+        _5 = (_1.2: i8);
+        _6 = (_1.3: i16);
+        _7 = (_1.4: i32);
+        _8 = (_1.5: i64);
+        _9 = (_1.6: u8);
+        _10 = (_1.7: u16);
+        _11 = (_1.8: u32);
+        _12 = (_1.9: u64);
+        _13 = (_1.10: f32);
+        _14 = (_1.11: f64);
+        _15 = (_1.12: *const std::string::String);
+        _16 = (_2.0: isize);
+        _17 = (_2.1: usize);
+        _18 = (_2.2: i8);
+        _19 = (_2.3: i16);
+        _20 = (_2.4: i32);
+        _21 = (_2.5: i64);
+        _22 = (_2.6: u8);
+        _23 = (_2.7: u16);
+        _24 = (_2.8: u32);
+        _25 = (_2.9: u64);
+        _26 = (_2.10: f32);
+        _27 = (_2.11: f64);
+        _28 = (_2.12: *const std::string::String);
+        _40 = Eq(_3, _16);
+        switchInt(move _40) -> [0: bb34, otherwise: bb35];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _52 = Eq(_15, _28);
+        _0 = move _52;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _29 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _51 = Eq(_14, _27);
+        _29 = move _51;
+        goto -> bb6;
+    }
+
+    bb6: {
+        switchInt(move _29) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        _30 = const false;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _50 = Eq(_13, _26);
+        _30 = move _50;
+        goto -> bb9;
+    }
+
+    bb9: {
+        switchInt(move _30) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb10: {
+        _31 = const false;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _49 = Eq(_12, _25);
+        _31 = move _49;
+        goto -> bb12;
+    }
+
+    bb12: {
+        switchInt(move _31) -> [0: bb7, otherwise: bb8];
+    }
+
+    bb13: {
+        _32 = const false;
+        goto -> bb15;
+    }
+
+    bb14: {
+        _48 = Eq(_11, _24);
+        _32 = move _48;
+        goto -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _32) -> [0: bb10, otherwise: bb11];
+    }
+
+    bb16: {
+        _33 = const false;
+        goto -> bb18;
+    }
+
+    bb17: {
+        _47 = Eq(_10, _23);
+        _33 = move _47;
+        goto -> bb18;
+    }
+
+    bb18: {
+        switchInt(move _33) -> [0: bb13, otherwise: bb14];
+    }
+
+    bb19: {
+        _34 = const false;
+        goto -> bb21;
+    }
+
+    bb20: {
+        _46 = Eq(_9, _22);
+        _34 = move _46;
+        goto -> bb21;
+    }
+
+    bb21: {
+        switchInt(move _34) -> [0: bb16, otherwise: bb17];
+    }
+
+    bb22: {
+        _35 = const false;
+        goto -> bb24;
+    }
+
+    bb23: {
+        _45 = Eq(_8, _21);
+        _35 = move _45;
+        goto -> bb24;
+    }
+
+    bb24: {
+        switchInt(move _35) -> [0: bb19, otherwise: bb20];
+    }
+
+    bb25: {
+        _36 = const false;
+        goto -> bb27;
+    }
+
+    bb26: {
+        _44 = Eq(_7, _20);
+        _36 = move _44;
+        goto -> bb27;
+    }
+
+    bb27: {
+        switchInt(move _36) -> [0: bb22, otherwise: bb23];
+    }
+
+    bb28: {
+        _37 = const false;
+        goto -> bb30;
+    }
+
+    bb29: {
+        _43 = Eq(_6, _19);
+        _37 = move _43;
+        goto -> bb30;
+    }
+
+    bb30: {
+        switchInt(move _37) -> [0: bb25, otherwise: bb26];
+    }
+
+    bb31: {
+        _38 = const false;
+        goto -> bb33;
+    }
+
+    bb32: {
+        _42 = Eq(_5, _18);
+        _38 = move _42;
+        goto -> bb33;
+    }
+
+    bb33: {
+        switchInt(move _38) -> [0: bb28, otherwise: bb29];
+    }
+
+    bb34: {
+        _39 = const false;
+        goto -> bb36;
+    }
+
+    bb35: {
+        _41 = Eq(_4, _17);
+        _39 = move _41;
+        goto -> bb36;
+    }
+
+    bb36: {
+        switchInt(move _39) -> [0: bb31, otherwise: bb32];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: *const std::string::String;
+    let _4: bool;
+    let mut _5: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _6: bool;
+    let mut _7: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _8: bool;
+    let mut _9: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _10: bool;
+    let mut _11: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _12: bool;
+    let mut _13: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _14: bool;
+    let mut _15: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _16: bool;
+    let mut _17: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _18: bool;
+    let mut _19: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _20: bool;
+    let mut _21: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _22: bool;
+    let mut _23: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let _24: bool;
+    let mut _25: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+    let mut _26: (&(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64), &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+    let mut _27: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let _28: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let mut _29: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: (&(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64), &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+    let mut _38: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let _39: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let mut _40: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+    let mut _43: bool;
+    let mut _44: bool;
+    let _46: !;
+    let mut _47: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _48: (&(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()), &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()));
+    let mut _49: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+    let _50: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+    let mut _51: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+    let _52: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+    let mut _53: *const ();
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: (&(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64), &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64));
+    let mut _62: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+    let _63: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+    let mut _64: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+    let _65: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+    let mut _68: bool;
+    let mut _69: bool;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: (&(*const u8, *const isize, *const u8, *const u8), &(*const u8, *const isize, *const u8, *const u8));
+    let mut _74: &(*const u8, *const isize, *const u8, *const u8);
+    let _75: (*const u8, *const isize, *const u8, *const u8);
+    let mut _76: &(*const u8, *const isize, *const u8, *const u8);
+    let _77: (*const u8, *const isize, *const u8, *const u8);
+    let mut _78: *const u8;
+    let mut _79: fn();
+    let mut _80: *const isize;
+    let mut _81: fn();
+    let mut _82: *const u8;
+    let mut _83: *const str;
+    let _84: &str;
+    let mut _85: *const u8;
+    let mut _86: *const [u8];
+    let mut _87: *const [u8; 5];
+    let _88: &[u8; 5];
+    let mut _91: bool;
+    let mut _92: bool;
+    let _94: !;
+    let mut _95: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug f => _1;
+        let _2: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, *const std::string::String);
+        scope 2 {
+            debug t13 => _2;
+            let _3: (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+            scope 3 {
+                debug t12 => _3;
+                let _30: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+                let _31: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+                let _41: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+                let _42: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
+                let _54: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+                let _55: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ());
+                let _66: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+                let _67: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64);
+                let _89: &(*const u8, *const isize, *const u8, *const u8);
+                let _90: &(*const u8, *const isize, *const u8, *const u8);
+                scope 4 {
+                    debug left_val => _30;
+                    debug right_val => _31;
+                    let _34: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _34;
+                    }
+                }
+                scope 6 {
+                    debug left_val => _41;
+                    debug right_val => _42;
+                    let _45: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _45;
+                    }
+                }
+                scope 8 {
+                    debug left_val => _54;
+                    debug right_val => _55;
+                    let _58: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _58;
+                    }
+                }
+                scope 10 {
+                    debug left_val => _66;
+                    debug right_val => _67;
+                    let _70: core::panicking::AssertKind;
+                    scope 11 {
+                        debug kind => _70;
+                    }
+                }
+                scope 12 {
+                    debug left_val => _89;
+                    debug right_val => _90;
+                    let _93: core::panicking::AssertKind;
+                    scope 13 {
+                        debug kind => _93;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _2 = (const 1_isize, const 1_usize, const 1_i8, const 1_i16, const 1_i32, const 1_i64, const 1_u8, const 1_u16, const 1_u32, const 1_u64, const 1f32, const 1f64, _1);
+        _3 = (const 1_isize, const 1_usize, const 1_i8, const 1_i16, const 1_i32, const 1_i64, const 1_u8, const 1_u16, const 1_u32, const 1_u64, const 1f32, const 1f64);
+        _5 = from_1() -> bb1;
+    }
+
+    bb1: {
+        _4 = assert_eq_13(move _5, _2) -> bb2;
+    }
+
+    bb2: {
+        _7 = from_1usize() -> bb3;
+    }
+
+    bb3: {
+        _6 = assert_eq_13(move _7, _2) -> bb4;
+    }
+
+    bb4: {
+        _9 = from_1isize() -> bb5;
+    }
+
+    bb5: {
+        _8 = assert_eq_13(move _9, _2) -> bb6;
+    }
+
+    bb6: {
+        _11 = from_1u8() -> bb7;
+    }
+
+    bb7: {
+        _10 = assert_eq_13(move _11, _2) -> bb8;
+    }
+
+    bb8: {
+        _13 = from_1i8() -> bb9;
+    }
+
+    bb9: {
+        _12 = assert_eq_13(move _13, _2) -> bb10;
+    }
+
+    bb10: {
+        _15 = from_1u16() -> bb11;
+    }
+
+    bb11: {
+        _14 = assert_eq_13(move _15, _2) -> bb12;
+    }
+
+    bb12: {
+        _17 = from_1i16() -> bb13;
+    }
+
+    bb13: {
+        _16 = assert_eq_13(move _17, _2) -> bb14;
+    }
+
+    bb14: {
+        _19 = from_1u32() -> bb15;
+    }
+
+    bb15: {
+        _18 = assert_eq_13(move _19, _2) -> bb16;
+    }
+
+    bb16: {
+        _21 = from_1i32() -> bb17;
+    }
+
+    bb17: {
+        _20 = assert_eq_13(move _21, _2) -> bb18;
+    }
+
+    bb18: {
+        _23 = from_1u64() -> bb19;
+    }
+
+    bb19: {
+        _22 = assert_eq_13(move _23, _2) -> bb20;
+    }
+
+    bb20: {
+        _25 = from_1i64() -> bb21;
+    }
+
+    bb21: {
+        _24 = assert_eq_13(move _25, _2) -> bb22;
+    }
+
+    bb22: {
+        _28 = from_1f32() -> bb23;
+    }
+
+    bb23: {
+        _27 = &_28;
+        _29 = &_3;
+        _26 = (move _27, move _29);
+        _30 = (_26.0: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+        _31 = (_26.1: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+        _33 = <(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64) as PartialEq>::eq(_30, _31) -> bb24;
+    }
+
+    bb24: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64), (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64)>(move _34, _30, _31, move _36);
+    }
+
+    bb26: {
+        _39 = from_1f64() -> bb27;
+    }
+
+    bb27: {
+        _38 = &_39;
+        _40 = &_3;
+        _37 = (move _38, move _40);
+        _41 = (_37.0: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+        _42 = (_37.1: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64));
+        _44 = <(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64) as PartialEq>::eq(_41, _42) -> bb28;
+    }
+
+    bb28: {
+        _43 = Not(move _44);
+        switchInt(move _43) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _45 = core::panicking::AssertKind::Eq;
+        _47 = Option::<Arguments<'_>>::None;
+        _46 = core::panicking::assert_failed::<(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64), (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, f32, f64)>(move _45, _41, _42, move _47);
+    }
+
+    bb30: {
+        _50 = from_ptr() -> bb31;
+    }
+
+    bb31: {
+        _49 = &_50;
+        _53 = const 1_usize as *const () (PointerFromExposedAddress);
+        _52 = (const 1_isize, const 1_usize, const 1_i8, const 1_i16, const 1_i32, const 1_i64, const 1_u8, const 1_u16, const 1_u32, const 1_u64, move _53);
+        _51 = &_52;
+        _48 = (move _49, move _51);
+        _54 = (_48.0: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()));
+        _55 = (_48.1: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()));
+        _57 = <(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()) as PartialEq>::eq(_54, _55) -> bb32;
+    }
+
+    bb32: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb34, otherwise: bb33];
+    }
+
+    bb33: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ()), (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64, *const ())>(move _58, _54, _55, move _60);
+    }
+
+    bb34: {
+        _63 = from_bool() -> bb35;
+    }
+
+    bb35: {
+        _62 = &_63;
+        _65 = (const 1_isize, const 1_usize, const 1_i8, const 1_i16, const 1_i32, const 1_i64, const 1_u8, const 1_u16, const 1_u32, const 1_u64);
+        _64 = &_65;
+        _61 = (move _62, move _64);
+        _66 = (_61.0: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64));
+        _67 = (_61.1: &(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64));
+        _69 = <(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64) as PartialEq>::eq(_66, _67) -> bb36;
+    }
+
+    bb36: {
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<(isize, usize, i8, i16, i32, i64, u8, u16, u32, u64), (isize, usize, i8, i16, i32, i64, u8, u16, u32, u64)>(move _70, _66, _67, move _72);
+    }
+
+    bb38: {
+        _75 = other_casts() -> bb39;
+    }
+
+    bb39: {
+        _74 = &_75;
+        _79 = func as fn() (Pointer(ReifyFnPointer));
+        _78 = move _79 as *const u8 (FnPtrToPtr);
+        _81 = func as fn() (Pointer(ReifyFnPointer));
+        _80 = move _81 as *const isize (FnPtrToPtr);
+        _84 = const _;
+        _83 = &raw const (*_84);
+        _82 = move _83 as *const u8 (PtrToPtr);
+        _88 = const _;
+        _87 = &raw const (*_88);
+        _86 = move _87 as *const [u8] (Pointer(Unsize));
+        _85 = move _86 as *const u8 (PtrToPtr);
+        _77 = (move _78, move _80, move _82, move _85);
+        _76 = &_77;
+        _73 = (move _74, move _76);
+        _89 = (_73.0: &(*const u8, *const isize, *const u8, *const u8));
+        _90 = (_73.1: &(*const u8, *const isize, *const u8, *const u8));
+        _92 = <(*const u8, *const isize, *const u8, *const u8) as PartialEq>::eq(_89, _90) -> bb40;
+    }
+
+    bb40: {
+        _91 = Not(move _92);
+        switchInt(move _91) -> [0: bb42, otherwise: bb41];
+    }
+
+    bb41: {
+        _93 = core::panicking::AssertKind::Eq;
+        _95 = Option::<Arguments<'_>>::None;
+        _94 = core::panicking::assert_failed::<(*const u8, *const isize, *const u8, *const u8), (*const u8, *const isize, *const u8, *const u8)>(move _93, _89, _90, move _95);
+    }
+
+    bb42: {
+        return;
+    }
+}

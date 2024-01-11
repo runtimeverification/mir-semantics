@@ -1,0 +1,85 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Array::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/mir/mir-inlining/array-clone-with-generic-size.rs:6:10: 6:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir-inlining/array-clone-with-generic-size.rs:6:10: 6:15>::clone(_1: &Array<T, N>) -> Array<T, N> {
+    debug self => _1;
+    let mut _0: Array<T, N>;
+    let mut _2: [T; N];
+    let _3: &[T; N];
+
+    bb0: {
+        _3 = &((*_1).0: [T; N]);
+        _2 = <[T; N] as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Array::<T, N>(move _2);
+        return;
+    }
+}
+
+<impl at ui/mir/mir-inlining/array-clone-with-generic-size.rs:6:10: 6:15>::clone::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Array<u32, 3>;
+    let mut _2: &Array<u32, 3>;
+    let _3: Array<u32, 3>;
+    let mut _4: [u32; 3];
+    scope 1 {
+    }
+
+    bb0: {
+        _4 = [const 0_u32, const 1_u32, const 2_u32];
+        _3 = Array::<u32, 3>(move _4);
+        _2 = &_3;
+        _1 = <Array<u32, 3> as Clone>::clone(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Array(_1: [T; N]) -> Array<T, N> {
+    let mut _0: Array<T, N>;
+
+    bb0: {
+        _0 = Array::<T, N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Array(_1: [T; N]) -> Array<T, N> {
+    let mut _0: Array<T, N>;
+
+    bb0: {
+        _0 = Array::<T, N>(move _1);
+        return;
+    }
+}

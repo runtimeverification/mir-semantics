@@ -1,0 +1,39 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const UNINIT: Uninit = {
+    let mut _0: Uninit;
+    let mut _1: ();
+
+    bb0: {
+        StorageLive(_1);
+        _1 = ();
+        _0 = Uninit { _never_use: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+const UNINIT2: (Uninit,) = {
+    let mut _0: (Uninit,);
+    let mut _1: Uninit;
+    let mut _2: ();
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = ();
+        _1 = Uninit { _never_use: move _2 };
+        StorageDead(_2);
+        _0 = (move _1,);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

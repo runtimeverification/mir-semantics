@@ -1,0 +1,279 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const CONST_U8: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<u8>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const CONST_STRING: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<String>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const CONST_TRIVIAL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<Trivial>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const CONST_NON_TRIVIAL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<NonTrivial>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static STATIC_U8: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<u8>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static STATIC_STRING: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<String>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static STATIC_TRIVIAL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<Trivial>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static STATIC_NON_TRIVIAL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::needs_drop::<NonTrivial>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: !;
+    let mut _4: bool;
+    let mut _5: !;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: !;
+    let mut _9: bool;
+    let mut _10: !;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: &bool;
+    let mut _15: !;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: &bool;
+    let mut _19: !;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: &bool;
+    let mut _24: !;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: &bool;
+    let mut _28: !;
+
+    bb0: {
+        _2 = Not(const _);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = core::panicking::panic(const "assertion failed: !CONST_U8");
+    }
+
+    bb2: {
+        _4 = Not(const _);
+        switchInt(move _4) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _5 = core::panicking::panic(const "assertion failed: CONST_STRING");
+    }
+
+    bb4: {
+        _7 = Not(const _);
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _8 = core::panicking::panic(const "assertion failed: !CONST_TRIVIAL");
+    }
+
+    bb6: {
+        _9 = Not(const _);
+        switchInt(move _9) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _10 = core::panicking::panic(const "assertion failed: CONST_NON_TRIVIAL");
+    }
+
+    bb8: {
+        _14 = const {alloc1: &bool};
+        _13 = (*_14);
+        _12 = Not(move _13);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _15 = core::panicking::panic(const "assertion failed: !STATIC_U8");
+    }
+
+    bb10: {
+        _18 = const {alloc2: &bool};
+        _17 = (*_18);
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _19 = core::panicking::panic(const "assertion failed: STATIC_STRING");
+    }
+
+    bb12: {
+        _23 = const {alloc3: &bool};
+        _22 = (*_23);
+        _21 = Not(move _22);
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _24 = core::panicking::panic(const "assertion failed: !STATIC_TRIVIAL");
+    }
+
+    bb14: {
+        _27 = const {alloc4: &bool};
+        _26 = (*_27);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _28 = core::panicking::panic(const "assertion failed: STATIC_NON_TRIVIAL");
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+alloc4 (static: STATIC_NON_TRIVIAL, size: 1, align: 1) {
+    01                                              │ .
+}
+
+alloc3 (static: STATIC_TRIVIAL, size: 1, align: 1) {
+    00                                              │ .
+}
+
+alloc2 (static: STATIC_STRING, size: 1, align: 1) {
+    01                                              │ .
+}
+
+alloc1 (static: STATIC_U8, size: 1, align: 1) {
+    00                                              │ .
+}
+
+fn Trivial(_1: u8, _2: f32) -> Trivial {
+    let mut _0: Trivial;
+
+    bb0: {
+        _0 = Trivial(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Trivial(_1: u8, _2: f32) -> Trivial {
+    let mut _0: Trivial;
+
+    bb0: {
+        _0 = Trivial(move _1, move _2);
+        return;
+    }
+}
+
+fn NonTrivial(_1: u8, _2: String) -> NonTrivial {
+    let mut _0: NonTrivial;
+
+    bb0: {
+        _0 = NonTrivial(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NonTrivial(_1: u8, _2: String) -> NonTrivial {
+    let mut _0: NonTrivial;
+
+    bb0: {
+        _0 = NonTrivial(move _1, move _2);
+        return;
+    }
+}

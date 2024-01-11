@@ -1,0 +1,105 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/issue-101696.rs:5:10: 5:17>::default() -> MyType<'_> {
+    let mut _0: MyType<'_>;
+    let mut _1: usize;
+    let mut _2: std::marker::PhantomData<&()>;
+
+    bb0: {
+        _1 = <usize as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _2 = <PhantomData<&()> as Default>::default() -> bb2;
+    }
+
+    bb2: {
+        _0 = MyType::<'_> { field: move _1, _phantom: const PhantomData::<&()> };
+        return;
+    }
+}
+
+fn <impl at ui/closures/issue-101696.rs:11:10: 11:17>::default() -> MyTypeVariant<'_> {
+    let mut _0: MyTypeVariant<'_>;
+    let mut _1: usize;
+    let mut _2: std::marker::PhantomData<&()>;
+
+    bb0: {
+        _1 = <usize as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _2 = <PhantomData<&()> as Default>::default() -> bb2;
+    }
+
+    bb2: {
+        _0 = MyTypeVariant::<'_> { field: move _1, _phantom: const PhantomData::<&()> };
+        return;
+    }
+}
+
+fn foo(_1: F) -> () {
+    debug f => _1;
+    let mut _0: ();
+    let _2: T;
+    let _3: ();
+    let mut _4: F;
+    let mut _5: (T,);
+    let mut _6: T;
+    let mut _7: bool;
+    scope 1 {
+        debug input => _2;
+    }
+
+    bb0: {
+        _7 = const false;
+        _7 = const true;
+        _2 = <T as Default>::default() -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _7 = const false;
+        _4 = move _1;
+        _6 = move _2;
+        _5 = (move _6,);
+        _3 = <F as FnOnce<(T,)>>::call_once(move _4, move _5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        switchInt(_7) -> [0: bb3, otherwise: bb4];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = foo::<MyTypeVariant<'_>, [closure@ui/closures/issue-101696.rs:33:9: 33:46]>(const ZeroSized: [closure@ui/closures/issue-101696.rs:33:9: 33:46]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/closures/issue-101696.rs:33:9: 33:46], _2: MyTypeVariant<'_>) -> () {
+    debug a => _2;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

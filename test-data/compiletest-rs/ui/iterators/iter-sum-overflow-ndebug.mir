@@ -1,0 +1,255 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i32, &i32);
+    let mut _2: &i32;
+    let _3: i32;
+    let mut _4: std::slice::Iter<'_, i32>;
+    let mut _5: &[i32];
+    let mut _6: &[i32; 2];
+    let _7: [i32; 2];
+    let mut _8: &i32;
+    let _9: i32;
+    let _10: &i32;
+    let _11: &i32;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: i32;
+    let mut _15: i32;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&i32, &i32);
+    let mut _20: &i32;
+    let _21: i32;
+    let mut _22: std::slice::Iter<'_, i32>;
+    let mut _23: &[i32];
+    let mut _24: &[i32; 2];
+    let _25: [i32; 2];
+    let mut _26: &i32;
+    let _27: i32;
+    let _28: &i32;
+    let _29: &i32;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: i32;
+    let mut _33: i32;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: (&i32, &i32);
+    let mut _38: &i32;
+    let _39: i32;
+    let mut _40: std::iter::Cloned<std::slice::Iter<'_, i32>>;
+    let mut _41: std::slice::Iter<'_, i32>;
+    let mut _42: &[i32];
+    let mut _43: &[i32; 2];
+    let _44: [i32; 2];
+    let mut _45: &i32;
+    let _46: i32;
+    let _47: &i32;
+    let _48: &i32;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: i32;
+    let mut _52: i32;
+    let _54: !;
+    let mut _55: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _56: (&i32, &i32);
+    let mut _57: &i32;
+    let _58: i32;
+    let mut _59: std::iter::Cloned<std::slice::Iter<'_, i32>>;
+    let mut _60: std::slice::Iter<'_, i32>;
+    let mut _61: &[i32];
+    let mut _62: &[i32; 2];
+    let _63: [i32; 2];
+    let mut _64: &i32;
+    let _65: i32;
+    let _66: &i32;
+    let _67: &i32;
+    let mut _68: bool;
+    let mut _69: bool;
+    let mut _70: i32;
+    let mut _71: i32;
+    let _73: !;
+    let mut _74: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _10;
+        debug right_val => _11;
+        let _16: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _16;
+        }
+    }
+    scope 3 {
+        debug left_val => _28;
+        debug right_val => _29;
+        let _34: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _34;
+        }
+    }
+    scope 5 {
+        debug left_val => _47;
+        debug right_val => _48;
+        let _53: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _53;
+        }
+    }
+    scope 7 {
+        debug left_val => _66;
+        debug right_val => _67;
+        let _72: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _72;
+        }
+    }
+
+    bb0: {
+        _7 = [const 1_i32, const _];
+        _6 = &_7;
+        _5 = move _6 as &[i32] (Pointer(Unsize));
+        _4 = core::slice::<impl [i32]>::iter(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = <std::slice::Iter<'_, i32> as Iterator>::sum::<i32>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _9 = core::num::<impl i32>::wrapping_add(const 1_i32, const _) -> bb3;
+    }
+
+    bb3: {
+        _8 = &_9;
+        _1 = (move _2, move _8);
+        _10 = (_1.0: &i32);
+        _11 = (_1.1: &i32);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<i32, i32>(move _16, _10, _11, move _18);
+    }
+
+    bb5: {
+        _25 = [const 2_i32, const _];
+        _24 = &_25;
+        _23 = move _24 as &[i32] (Pointer(Unsize));
+        _22 = core::slice::<impl [i32]>::iter(move _23) -> bb6;
+    }
+
+    bb6: {
+        _21 = <std::slice::Iter<'_, i32> as Iterator>::product::<i32>(move _22) -> bb7;
+    }
+
+    bb7: {
+        _20 = &_21;
+        _27 = core::num::<impl i32>::wrapping_mul(const 2_i32, const _) -> bb8;
+    }
+
+    bb8: {
+        _26 = &_27;
+        _19 = (move _20, move _26);
+        _28 = (_19.0: &i32);
+        _29 = (_19.1: &i32);
+        _32 = (*_28);
+        _33 = (*_29);
+        _31 = Eq(move _32, move _33);
+        _30 = Not(move _31);
+        switchInt(move _30) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<i32, i32>(move _34, _28, _29, move _36);
+    }
+
+    bb10: {
+        _44 = [const 1_i32, const _];
+        _43 = &_44;
+        _42 = move _43 as &[i32] (Pointer(Unsize));
+        _41 = core::slice::<impl [i32]>::iter(move _42) -> bb11;
+    }
+
+    bb11: {
+        _40 = <std::slice::Iter<'_, i32> as Iterator>::cloned::<'_, i32>(move _41) -> bb12;
+    }
+
+    bb12: {
+        _39 = <Cloned<std::slice::Iter<'_, i32>> as Iterator>::sum::<i32>(move _40) -> bb13;
+    }
+
+    bb13: {
+        _38 = &_39;
+        _46 = core::num::<impl i32>::wrapping_add(const 1_i32, const _) -> bb14;
+    }
+
+    bb14: {
+        _45 = &_46;
+        _37 = (move _38, move _45);
+        _47 = (_37.0: &i32);
+        _48 = (_37.1: &i32);
+        _51 = (*_47);
+        _52 = (*_48);
+        _50 = Eq(move _51, move _52);
+        _49 = Not(move _50);
+        switchInt(move _49) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _53 = core::panicking::AssertKind::Eq;
+        _55 = Option::<Arguments<'_>>::None;
+        _54 = core::panicking::assert_failed::<i32, i32>(move _53, _47, _48, move _55);
+    }
+
+    bb16: {
+        _63 = [const 2_i32, const _];
+        _62 = &_63;
+        _61 = move _62 as &[i32] (Pointer(Unsize));
+        _60 = core::slice::<impl [i32]>::iter(move _61) -> bb17;
+    }
+
+    bb17: {
+        _59 = <std::slice::Iter<'_, i32> as Iterator>::cloned::<'_, i32>(move _60) -> bb18;
+    }
+
+    bb18: {
+        _58 = <Cloned<std::slice::Iter<'_, i32>> as Iterator>::product::<i32>(move _59) -> bb19;
+    }
+
+    bb19: {
+        _57 = &_58;
+        _65 = core::num::<impl i32>::wrapping_mul(const 2_i32, const _) -> bb20;
+    }
+
+    bb20: {
+        _64 = &_65;
+        _56 = (move _57, move _64);
+        _66 = (_56.0: &i32);
+        _67 = (_56.1: &i32);
+        _70 = (*_66);
+        _71 = (*_67);
+        _69 = Eq(move _70, move _71);
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _72 = core::panicking::AssertKind::Eq;
+        _74 = Option::<Arguments<'_>>::None;
+        _73 = core::panicking::assert_failed::<i32, i32>(move _72, _66, _67, move _74);
+    }
+
+    bb22: {
+        return;
+    }
+}

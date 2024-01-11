@@ -1,0 +1,939 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _3: std::boxed::Box<[i32]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[i32; 1]>;
+    let mut _9: std::slice::Iter<'_, i32>;
+    let mut _10: &[i32];
+    let _11: &[i32];
+    let mut _12: &std::vec::Vec<i32>;
+    let mut _13: [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20];
+    let mut _14: &i32;
+    let mut _16: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20]>;
+    let mut _17: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20]>;
+    let mut _18: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>;
+    let mut _19: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>;
+    let mut _20: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>;
+    let mut _21: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>;
+    let mut _22: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>;
+    let mut _23: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>;
+    let mut _24: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>;
+    let mut _25: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>;
+    let mut _26: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>;
+    let mut _27: std::iter::Filter<std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>;
+    let mut _28: std::iter::Filter<std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>;
+    let mut _29: std::iter::Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>;
+    let mut _30: std::vec::IntoIter<i32>;
+    let mut _31: std::vec::Vec<i32>;
+    let mut _32: std::boxed::Box<[i32]>;
+    let mut _33: usize;
+    let mut _34: usize;
+    let mut _35: *mut u8;
+    let mut _36: std::boxed::Box<[i32; 3]>;
+    let mut _37: [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20];
+    let mut _38: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _39: [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20];
+    let mut _40: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _41: [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20];
+    let mut _42: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _43: [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20];
+    let mut _44: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _45: [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20];
+    let mut _46: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _47: [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20];
+    let mut _48: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _49: [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20];
+    let mut _50: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _51: [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20];
+    let mut _52: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _53: [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20];
+    let mut _54: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _55: [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20];
+    let mut _56: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _57: [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20];
+    let mut _58: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _59: [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20];
+    let mut _60: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _61: [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20];
+    let mut _62: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _63: [closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20];
+    let mut _64: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _65: *const [i32; 1];
+    let mut _66: *const [i32; 3];
+    scope 1 {
+        debug c => _1;
+        let _2: std::vec::Vec<i32>;
+        let mut _73: *const ();
+        let mut _74: usize;
+        let mut _75: usize;
+        let mut _76: usize;
+        let mut _77: usize;
+        let mut _78: bool;
+        scope 2 {
+            debug bv => _2;
+            let _8: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+            scope 4 {
+                debug b => _8;
+                let _15: std::collections::VecDeque<i32>;
+                let mut _67: *const ();
+                let mut _68: usize;
+                let mut _69: usize;
+                let mut _70: usize;
+                let mut _71: usize;
+                let mut _72: bool;
+                scope 5 {
+                    debug _a => _15;
+                }
+                scope 6 {
+                }
+            }
+        }
+        scope 3 {
+        }
+    }
+
+    bb0: {
+        _1 = const 2_i32;
+        _4 = SizeOf([i32; 1]);
+        _5 = AlignOf([i32; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [i32; 1]);
+        _65 = (((_7.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _73 = _65 as *const () (PtrToPtr);
+        _74 = _73 as usize (Transmute);
+        _75 = AlignOf(i32);
+        _76 = Sub(_75, const 1_usize);
+        _77 = BitAnd(_74, _76);
+        _78 = Eq(_77, const 0_usize);
+        assert(_78, "misaligned pointer dereference: address must be a multiple of {} but is {}", _75, _74) -> [success: bb29, unwind unreachable];
+    }
+
+    bb2: {
+        _12 = &_2;
+        _11 = <Vec<i32> as Deref>::deref(move _12) -> [return: bb3, unwind: bb26];
+    }
+
+    bb3: {
+        _10 = _11;
+        _9 = core::slice::<impl [i32]>::iter(move _10) -> [return: bb4, unwind: bb26];
+    }
+
+    bb4: {
+        _14 = &_1;
+        _13 = [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20] { c: move _14 };
+        _8 = <std::slice::Iter<'_, i32> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>(move _9, move _13) -> [return: bb5, unwind: bb26];
+    }
+
+    bb5: {
+        _33 = SizeOf([i32; 3]);
+        _34 = AlignOf([i32; 3]);
+        _35 = alloc::alloc::exchange_malloc(move _33, move _34) -> [return: bb6, unwind: bb26];
+    }
+
+    bb6: {
+        _36 = ShallowInitBox(move _35, [i32; 3]);
+        _66 = (((_36.0: std::ptr::Unique<[i32; 3]>).0: std::ptr::NonNull<[i32; 3]>).0: *const [i32; 3]);
+        _67 = _66 as *const () (PtrToPtr);
+        _68 = _67 as usize (Transmute);
+        _69 = AlignOf(i32);
+        _70 = Sub(_69, const 1_usize);
+        _71 = BitAnd(_68, _70);
+        _72 = Eq(_71, const 0_usize);
+        assert(_72, "misaligned pointer dereference: address must be a multiple of {} but is {}", _69, _68) -> [success: bb28, unwind unreachable];
+    }
+
+    bb7: {
+        _30 = <Vec<i32> as IntoIterator>::into_iter(move _31) -> [return: bb8, unwind: bb26];
+    }
+
+    bb8: {
+        _38 = &_8;
+        _37 = [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20] { b: move _38 };
+        _29 = <std::vec::IntoIter<i32> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>(move _30, move _37) -> [return: bb9, unwind: bb26];
+    }
+
+    bb9: {
+        _40 = &_8;
+        _39 = [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20] { b: move _40 };
+        _28 = <Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>(move _29, move _39) -> [return: bb10, unwind: bb26];
+    }
+
+    bb10: {
+        _42 = &_8;
+        _41 = [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20] { b: move _42 };
+        _27 = <Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>(move _28, move _41) -> [return: bb11, unwind: bb26];
+    }
+
+    bb11: {
+        _44 = &_8;
+        _43 = [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20] { b: move _44 };
+        _26 = <Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>(move _27, move _43) -> [return: bb12, unwind: bb26];
+    }
+
+    bb12: {
+        _46 = &_8;
+        _45 = [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20] { b: move _46 };
+        _25 = <Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>(move _26, move _45) -> [return: bb13, unwind: bb26];
+    }
+
+    bb13: {
+        _48 = &_8;
+        _47 = [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20] { b: move _48 };
+        _24 = <Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>(move _25, move _47) -> [return: bb14, unwind: bb26];
+    }
+
+    bb14: {
+        _50 = &_8;
+        _49 = [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20] { b: move _50 };
+        _23 = <Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>(move _24, move _49) -> [return: bb15, unwind: bb26];
+    }
+
+    bb15: {
+        _52 = &_8;
+        _51 = [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20] { b: move _52 };
+        _22 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>(move _23, move _51) -> [return: bb16, unwind: bb26];
+    }
+
+    bb16: {
+        _54 = &_8;
+        _53 = [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20] { b: move _54 };
+        _21 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>(move _22, move _53) -> [return: bb17, unwind: bb26];
+    }
+
+    bb17: {
+        _56 = &_8;
+        _55 = [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20] { b: move _56 };
+        _20 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>(move _21, move _55) -> [return: bb18, unwind: bb26];
+    }
+
+    bb18: {
+        _58 = &_8;
+        _57 = [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20] { b: move _58 };
+        _19 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>(move _20, move _57) -> [return: bb19, unwind: bb26];
+    }
+
+    bb19: {
+        _60 = &_8;
+        _59 = [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20] { b: move _60 };
+        _18 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>(move _19, move _59) -> [return: bb20, unwind: bb26];
+    }
+
+    bb20: {
+        _62 = &_8;
+        _61 = [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20] { b: move _62 };
+        _17 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20]>(move _18, move _61) -> [return: bb21, unwind: bb26];
+    }
+
+    bb21: {
+        _64 = &_8;
+        _63 = [closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20] { b: move _64 };
+        _16 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20]> as Iterator>::filter::<[closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20]>(move _17, move _63) -> [return: bb22, unwind: bb26];
+    }
+
+    bb22: {
+        _15 = <Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<Filter<std::vec::IntoIter<i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20]>, [closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20]> as Iterator>::collect::<VecDeque<i32>>(move _16) -> [return: bb23, unwind: bb26];
+    }
+
+    bb23: {
+        drop(_15) -> [return: bb24, unwind: bb26];
+    }
+
+    bb24: {
+        drop(_2) -> bb25;
+    }
+
+    bb25: {
+        return;
+    }
+
+    bb26 (cleanup): {
+        drop(_2) -> [return: bb27, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        resume;
+    }
+
+    bb28: {
+        (*_66) = [const 1_i32, const 2_i32, const 3_i32];
+        _32 = move _36 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _31 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _32) -> [return: bb7, unwind: bb26];
+    }
+
+    bb29: {
+        (*_65) = [const 2_i32];
+        _3 = move _7 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _2 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20], _2: &&i32) -> bool {
+    debug a => _2;
+    debug c => (*((*_1).0: &i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _5 = deref_copy (*_2);
+        _3 = (*_5);
+        _6 = deref_copy ((*_1).0: &i32);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:19:17: 19:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:19:35: 19:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:19:35: 19:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:19:35: 19:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#1}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:19:35: 19:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:20:17: 20:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:20:35: 20:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:20:35: 20:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:20:35: 20:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#2}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:20:35: 20:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:21:17: 21:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:21:35: 21:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:21:35: 21:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:21:35: 21:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#3}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:21:35: 21:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:22:17: 22:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:22:35: 22:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:22:35: 22:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:22:35: 22:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#4}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:22:35: 22:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:23:17: 23:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:23:35: 23:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:23:35: 23:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:23:35: 23:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#5}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:23:35: 23:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#6}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:24:17: 24:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:24:35: 24:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:24:35: 24:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:24:35: 24:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#6}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:24:35: 24:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#7}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:25:17: 25:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:25:35: 25:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:25:35: 25:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:25:35: 25:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#7}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:25:35: 25:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#8}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:26:17: 26:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:26:35: 26:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:26:35: 26:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:26:35: 26:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#8}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:26:35: 26:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#9}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:27:17: 27:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:27:35: 27:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:27:35: 27:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:27:35: 27:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#9}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:27:35: 27:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#10}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:28:17: 28:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:28:35: 28:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:28:35: 28:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:28:35: 28:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#10}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:28:35: 28:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#11}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:29:17: 29:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:29:35: 29:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:29:35: 29:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:29:35: 29:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#11}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:29:35: 29:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#12}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:30:17: 30:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:30:35: 30:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:30:35: 30:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:30:35: 30:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#12}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:30:35: 30:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#13}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:31:17: 31:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:31:35: 31:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:31:35: 31:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:31:35: 31:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#13}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:31:35: 31:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn main::{closure#14}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:32:17: 32:20], _2: &i32) -> bool {
+    debug a => _2;
+    debug b => (*((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>));
+    let mut _0: bool;
+    let mut _3: &mut std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _4: std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+    let mut _5: [closure@ui/iterators/issue-58952-filter-type-length.rs:32:35: 32:38];
+    let mut _6: &&i32;
+    let mut _7: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::iter::Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]>);
+        _4 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Clone>::clone(_7) -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _6 = &_2;
+        _5 = [closure@ui/iterators/issue-58952-filter-type-length.rs:32:35: 32:38] { a: move _6 };
+        _0 = <Filter<std::slice::Iter<'_, i32>, [closure@ui/iterators/issue-58952-filter-type-length.rs:15:17: 15:20]> as Iterator>::any::<[closure@ui/iterators/issue-58952-filter-type-length.rs:32:35: 32:38]>(move _3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#14}::{closure#0}(_1: &mut [closure@ui/iterators/issue-58952-filter-type-length.rs:32:35: 32:38], _2: &i32) -> bool {
+    debug b => _2;
+    debug a => (*((*_1).0: &&i32));
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+    let mut _5: &&i32;
+    let mut _6: &i32;
+
+    bb0: {
+        _3 = (*_2);
+        _5 = deref_copy ((*_1).0: &&i32);
+        _6 = deref_copy (*_5);
+        _4 = (*_6);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}

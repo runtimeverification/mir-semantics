@@ -1,0 +1,21 @@
+thread '<unnamed>' panicked at 'attempt to divide with overflow', ui/numbers-arithmetic/issue-8460.rs:31:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at 'attempt to divide with overflow', ui/numbers-arithmetic/issue-8460.rs:32:9
+thread '<unnamed>' panicked at 'attempt to divide with overflow', ui/numbers-arithmetic/issue-8460.rs:33:9
+thread '<unnamed>' panicked at 'attempt to divide with overflow', ui/numbers-arithmetic/issue-8460.rs:34:9
+thread '<unnamed>' panicked at 'attempt to divide with overflow', ui/numbers-arithmetic/issue-8460.rs:35:9
+thread '<unnamed>' panicked at 'attempt to divide by zero', ui/numbers-arithmetic/issue-8460.rs:36:9
+thread '<unnamed>' panicked at 'attempt to divide by zero', ui/numbers-arithmetic/issue-8460.rs:37:9
+thread '<unnamed>' panicked at 'attempt to divide by zero', ui/numbers-arithmetic/issue-8460.rs:38:9
+thread '<unnamed>' panicked at 'attempt to divide by zero', ui/numbers-arithmetic/issue-8460.rs:39:9
+thread '<unnamed>' panicked at 'attempt to divide by zero', ui/numbers-arithmetic/issue-8460.rs:40:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with overflow', ui/numbers-arithmetic/issue-8460.rs:41:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with overflow', ui/numbers-arithmetic/issue-8460.rs:42:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with overflow', ui/numbers-arithmetic/issue-8460.rs:43:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with overflow', ui/numbers-arithmetic/issue-8460.rs:44:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with overflow', ui/numbers-arithmetic/issue-8460.rs:45:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/issue-8460.rs:46:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/issue-8460.rs:47:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/issue-8460.rs:48:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/issue-8460.rs:49:9
+thread '<unnamed>' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/issue-8460.rs:50:9

@@ -1,0 +1,102 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/array-slice-vec/show-boxed-slice.rs:3:10: 3:15>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&std::boxed::Box<[u8]>;
+    let _6: &std::boxed::Box<[u8]>;
+
+    bb0: {
+        _3 = const "Foo";
+        _6 = &((*_1).0: std::boxed::Box<[u8]>);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &Foo;
+    let _11: Foo;
+    let mut _12: std::boxed::Box<[u8]>;
+    let mut _13: std::boxed::Box<[u8; 3]>;
+    let mut _14: [u8; 3];
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _14 = [const 0_u8, const 1_u8, const 2_u8];
+        _13 = Box::<[u8; 3]>::new(move _14) -> bb1;
+    }
+
+    bb1: {
+        _12 = move _13 as std::boxed::Box<[u8]> (Pointer(Unsize));
+        _11 = Foo(move _12);
+        _10 = &_11;
+        _9 = core::fmt::rt::Argument::<'_>::new_debug::<Foo>(_10) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _1 = _print(move _2) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_11) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_11) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn Foo(_1: Box<[u8]>) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: Box<[u8]>) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

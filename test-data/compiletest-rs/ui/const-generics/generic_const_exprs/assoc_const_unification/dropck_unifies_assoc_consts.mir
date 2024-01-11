@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/assoc_const_unification/dropck_unifies_assoc_consts.rs:13:1: 13:31>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/assoc_const_unification/dropck_unifies_assoc_consts.rs:13:1: 13:31>::drop(_1: &mut Foo<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: T) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: T) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,251 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/dynamically-sized-types/dst-deref-mut.rs:11:1: 11:19>::deref(_1: &Arr) -> &[usize] {
+    debug self => _1;
+    let mut _0: &[usize];
+    let mut _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn <impl at ui/dynamically-sized-types/dst-deref-mut.rs:19:1: 19:22>::deref_mut(_1: &mut Arr) -> &mut [usize] {
+    debug self => _1;
+    let mut _0: &mut [usize];
+    let mut _2: std::boxed::Box<[usize]>;
+    let mut _3: *const [usize];
+    let mut _4: *const ();
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: std::boxed::Box<[usize]>);
+        _3 = (((_2.0: std::ptr::Unique<[usize]>).0: std::ptr::NonNull<[usize]>).0: *const [usize]);
+        _4 = _3 as *const () (PtrToPtr);
+        _5 = _4 as usize (Transmute);
+        _6 = AlignOf(usize);
+        _7 = Sub(_6, const 1_usize);
+        _8 = BitAnd(_5, _7);
+        _9 = Eq(_8, const 0_usize);
+        assert(_9, "misaligned pointer dereference: address must be a multiple of {} but is {}", _6, _5) -> [success: bb1, unwind unreachable];
+    }
+
+    bb1: {
+        _0 = &mut (*_3);
+        return;
+    }
+}
+
+fn foo(_1: &mut Arr) -> () {
+    debug arr => _1;
+    let mut _0: ();
+    let mut _2: &mut [usize];
+    let mut _3: &mut [usize];
+    let mut _4: (&usize, &usize);
+    let mut _5: &usize;
+    let _6: usize;
+    let mut _7: usize;
+    let mut _8: bool;
+    let mut _9: &usize;
+    let _10: usize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: usize;
+    let mut _16: usize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: (&usize, &usize);
+    let mut _21: &usize;
+    let _22: usize;
+    let mut _23: usize;
+    let mut _24: bool;
+    let mut _25: &usize;
+    let _26: usize;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: usize;
+    let mut _32: usize;
+    let _34: !;
+    let mut _35: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _36: (&usize, &usize);
+    let mut _37: &usize;
+    let _38: usize;
+    let mut _39: usize;
+    let mut _40: bool;
+    let mut _41: &usize;
+    let _42: usize;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: usize;
+    let mut _48: usize;
+    let _50: !;
+    let mut _51: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _2;
+        let _11: &usize;
+        let _12: &usize;
+        let _27: &usize;
+        let _28: &usize;
+        let _43: &usize;
+        let _44: &usize;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+        scope 4 {
+            debug left_val => _27;
+            debug right_val => _28;
+            let _33: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _33;
+            }
+        }
+        scope 6 {
+            debug left_val => _43;
+            debug right_val => _44;
+            let _49: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _49;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = <Arr as DerefMut>::deref_mut(_1) -> bb1;
+    }
+
+    bb1: {
+        _2 = _3;
+        _6 = const 0_usize;
+        _7 = Len((*_2));
+        _8 = Lt(_6, _7);
+        assert(move _8, "index out of bounds: the length is {} but the index is {}", move _7, _6) -> bb2;
+    }
+
+    bb2: {
+        _5 = &(*_2)[_6];
+        _10 = const 1_usize;
+        _9 = &_10;
+        _4 = (move _5, move _9);
+        _11 = (_4.0: &usize);
+        _12 = (_4.1: &usize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<usize, usize>(move _17, _11, _12, move _19);
+    }
+
+    bb4: {
+        _22 = const 1_usize;
+        _23 = Len((*_2));
+        _24 = Lt(_22, _23);
+        assert(move _24, "index out of bounds: the length is {} but the index is {}", move _23, _22) -> bb5;
+    }
+
+    bb5: {
+        _21 = &(*_2)[_22];
+        _26 = const 2_usize;
+        _25 = &_26;
+        _20 = (move _21, move _25);
+        _27 = (_20.0: &usize);
+        _28 = (_20.1: &usize);
+        _31 = (*_27);
+        _32 = (*_28);
+        _30 = Eq(move _31, move _32);
+        _29 = Not(move _30);
+        switchInt(move _29) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _33 = core::panicking::AssertKind::Eq;
+        _35 = Option::<Arguments<'_>>::None;
+        _34 = core::panicking::assert_failed::<usize, usize>(move _33, _27, _28, move _35);
+    }
+
+    bb7: {
+        _38 = const 2_usize;
+        _39 = Len((*_2));
+        _40 = Lt(_38, _39);
+        assert(move _40, "index out of bounds: the length is {} but the index is {}", move _39, _38) -> bb8;
+    }
+
+    bb8: {
+        _37 = &(*_2)[_38];
+        _42 = const 3_usize;
+        _41 = &_42;
+        _36 = (move _37, move _41);
+        _43 = (_36.0: &usize);
+        _44 = (_36.1: &usize);
+        _47 = (*_43);
+        _48 = (*_44);
+        _46 = Eq(move _47, move _48);
+        _45 = Not(move _46);
+        switchInt(move _45) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _49 = core::panicking::AssertKind::Eq;
+        _51 = Option::<Arguments<'_>>::None;
+        _50 = core::panicking::assert_failed::<usize, usize>(move _49, _43, _44, move _51);
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Arr;
+    let mut _2: std::boxed::Box<[usize]>;
+    let mut _3: std::boxed::Box<[usize; 3]>;
+    let mut _4: [usize; 3];
+    let _5: ();
+    let mut _6: &mut Arr;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        _4 = [const 1_usize, const 2_usize, const 3_usize];
+        _3 = Box::<[usize; 3]>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = move _3 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _1 = Arr { ptr: move _2 };
+        _6 = &mut _1;
+        _5 = foo(_6) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}

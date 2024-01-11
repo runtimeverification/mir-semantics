@@ -1,0 +1,249 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/issue-42463.rs:9:1: 9:56>::deref(_1: &CheckedDeref<T, F>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: &F;
+    let mut _5: (&T,);
+    let _6: &T;
+    let mut _7: !;
+
+    bb0: {
+        _4 = &((*_1).1: F);
+        _6 = &((*_1).0: T);
+        _5 = (_6,);
+        _3 = <F as Fn<(&T,)>>::call(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = core::panicking::panic(const "assertion failed: (self.check)(&self.value)");
+    }
+
+    bb3: {
+        _0 = &((*_1).0: T);
+        return;
+    }
+}
+
+fn <impl at ui/closures/issue-42463.rs:17:1: 17:59>::deref_mut(_1: &mut CheckedDeref<T, F>) -> &mut T {
+    debug self => _1;
+    let mut _0: &mut T;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: &F;
+    let mut _5: (&T,);
+    let _6: &T;
+    let mut _7: !;
+
+    bb0: {
+        _4 = &((*_1).1: F);
+        _6 = &((*_1).0: T);
+        _5 = (_6,);
+        _3 = <F as Fn<(&T,)>>::call(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = core::panicking::panic(const "assertion failed: (self.check)(&self.value)");
+    }
+
+    bb3: {
+        _0 = &mut ((*_1).0: T);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: CheckedDeref<std::vec::Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]>;
+    let mut _2: std::vec::Vec<i32>;
+    let mut _3: std::boxed::Box<[i32]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[i32; 1]>;
+    let _8: ();
+    let mut _9: &mut std::vec::Vec<i32>;
+    let mut _10: &mut std::vec::Vec<i32>;
+    let mut _11: &mut CheckedDeref<std::vec::Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]>;
+    let mut _12: (&std::vec::Vec<i32>, &std::vec::Vec<i32>);
+    let mut _13: &std::vec::Vec<i32>;
+    let _14: &std::vec::Vec<i32>;
+    let mut _15: &CheckedDeref<std::vec::Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]>;
+    let mut _16: &std::vec::Vec<i32>;
+    let _17: std::vec::Vec<i32>;
+    let mut _18: std::boxed::Box<[i32]>;
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: *mut u8;
+    let mut _22: std::boxed::Box<[i32; 2]>;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: *const [i32; 1];
+    let mut _31: *const [i32; 2];
+    let mut _38: *const ();
+    let mut _39: usize;
+    let mut _40: usize;
+    let mut _41: usize;
+    let mut _42: usize;
+    let mut _43: bool;
+    scope 1 {
+        debug v => _1;
+        let _23: &std::vec::Vec<i32>;
+        let _24: &std::vec::Vec<i32>;
+        let mut _32: *const ();
+        let mut _33: usize;
+        let mut _34: usize;
+        let mut _35: usize;
+        let mut _36: usize;
+        let mut _37: bool;
+        scope 3 {
+        }
+        scope 4 {
+            debug left_val => _23;
+            debug right_val => _24;
+            let _27: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _27;
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _4 = SizeOf([i32; 1]);
+        _5 = AlignOf([i32; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [i32; 1]);
+        _30 = (((_7.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _38 = _30 as *const () (PtrToPtr);
+        _39 = _38 as usize (Transmute);
+        _40 = AlignOf(i32);
+        _41 = Sub(_40, const 1_usize);
+        _42 = BitAnd(_39, _41);
+        _43 = Eq(_42, const 0_usize);
+        assert(_43, "misaligned pointer dereference: address must be a multiple of {} but is {}", _40, _39) -> [success: bb17, unwind unreachable];
+    }
+
+    bb2: {
+        _1 = CheckedDeref::<Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]> { value: move _2, check: const ZeroSized: [closure@ui/closures/issue-42463.rs:28:16: 28:28] };
+        _11 = &mut _1;
+        _10 = <CheckedDeref<Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]> as DerefMut>::deref_mut(move _11) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _9 = _10;
+        _8 = Vec::<i32>::push(move _9, const 1_i32) -> [return: bb4, unwind: bb14];
+    }
+
+    bb4: {
+        _15 = &_1;
+        _14 = <CheckedDeref<Vec<i32>, [closure@ui/closures/issue-42463.rs:28:16: 28:28]> as Deref>::deref(move _15) -> [return: bb5, unwind: bb14];
+    }
+
+    bb5: {
+        _13 = _14;
+        _19 = SizeOf([i32; 2]);
+        _20 = AlignOf([i32; 2]);
+        _21 = alloc::alloc::exchange_malloc(move _19, move _20) -> [return: bb6, unwind: bb14];
+    }
+
+    bb6: {
+        _22 = ShallowInitBox(move _21, [i32; 2]);
+        _31 = (((_22.0: std::ptr::Unique<[i32; 2]>).0: std::ptr::NonNull<[i32; 2]>).0: *const [i32; 2]);
+        _32 = _31 as *const () (PtrToPtr);
+        _33 = _32 as usize (Transmute);
+        _34 = AlignOf(i32);
+        _35 = Sub(_34, const 1_usize);
+        _36 = BitAnd(_33, _35);
+        _37 = Eq(_36, const 0_usize);
+        assert(_37, "misaligned pointer dereference: address must be a multiple of {} but is {}", _34, _33) -> [success: bb16, unwind unreachable];
+    }
+
+    bb7: {
+        _16 = &_17;
+        _12 = (move _13, move _16);
+        _23 = (_12.0: &std::vec::Vec<i32>);
+        _24 = (_12.1: &std::vec::Vec<i32>);
+        _26 = <Vec<i32> as PartialEq>::eq(_23, _24) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<Vec<i32>, Vec<i32>>(move _27, _23, _24, move _29) -> bb13;
+    }
+
+    bb10: {
+        drop(_17) -> [return: bb11, unwind: bb14];
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_17) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_1) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+
+    bb16: {
+        (*_31) = [const 0_i32, const 1_i32];
+        _18 = move _22 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _17 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _18) -> [return: bb7, unwind: bb14];
+    }
+
+    bb17: {
+        (*_30) = [const 0_i32];
+        _3 = move _7 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _2 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/issue-42463.rs:28:16: 28:28], _2: &Vec<i32>) -> bool {
+    debug v => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+
+    bb0: {
+        _3 = Vec::<i32>::is_empty(_2) -> bb1;
+    }
+
+    bb1: {
+        _0 = Not(move _3);
+        return;
+    }
+}

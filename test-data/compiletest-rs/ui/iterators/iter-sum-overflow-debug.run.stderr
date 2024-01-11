@@ -1,0 +1,2 @@
+thread 'main' panicked at 'assertion failed: r.is_err()', ui/iterators/iter-sum-overflow-debug.rs:11:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

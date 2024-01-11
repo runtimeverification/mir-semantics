@@ -1,0 +1,270 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::result::Result<((), std::option::IntoIter<i32>), ()>;
+    let mut _2: std::option::IntoIter<i32>;
+    let mut _3: std::option::Option<i32>;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = Option::<i32>::Some(const 0_i32);
+        _2 = <Option<i32> as IntoIterator>::into_iter(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = test::<std::option::IntoIter<i32>>(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn Parser::chain(_1: Self, _2: P) -> Chain<Self, P> {
+    debug self => _1;
+    debug p => _2;
+    let mut _0: Chain<Self, P>;
+
+    bb0: {
+        _0 = Chain::<Self, P>(move _1, move _2);
+        return;
+    }
+}
+
+fn <impl at ui/bench/issue-32062.rs:20:1: 20:28>::parse(_1: Token<T>, _2: T) -> Result<(<T as Iterator>::Item, T), ()> {
+    debug self => _1;
+    debug _input => _2;
+    let mut _0: std::result::Result<(<T as std::iter::Iterator>::Item, T), ()>;
+
+    bb0: {
+        _0 = Result::<(<T as Iterator>::Item, T), ()>::Err(const ());
+        drop(_2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/bench/issue-32062.rs:30:1: 30:34>::parse(_1: Chain<L, R>, _2: <L as Parser>::Input) -> Result<((<L as Parser>::Output, <R as Parser>::Output), <L as Parser>::Input), ()> {
+    debug self => _1;
+    debug _input => _2;
+    let mut _0: std::result::Result<((<L as Parser>::Output, <R as Parser>::Output), <L as Parser>::Input), ()>;
+
+    bb0: {
+        _0 = Result::<((<L as Parser>::Output, <R as Parser>::Output), <L as Parser>::Input), ()>::Err(const ());
+        drop(_2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn test(_1: I) -> Result<((), I), ()> {
+    debug i => _1;
+    let mut _0: std::result::Result<((), I), ()>;
+    let mut _2: std::result::Result<((((((((((i32, i32), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), I), ()>;
+    let mut _3: Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _4: Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _5: Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _6: Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _7: Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _8: Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _9: Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>;
+    let mut _10: Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>;
+    let mut _11: Chain<Token<I>, Token<I>>;
+    let mut _12: Token<I>;
+    let mut _13: Token<I>;
+    let mut _14: Chain<Token<I>, Token<I>>;
+    let mut _15: Token<I>;
+    let mut _16: Token<I>;
+    let mut _17: Chain<Token<I>, Token<I>>;
+    let mut _18: Token<I>;
+    let mut _19: Token<I>;
+    let mut _20: Chain<Token<I>, Token<I>>;
+    let mut _21: Token<I>;
+    let mut _22: Token<I>;
+    let mut _23: Chain<Token<I>, Token<I>>;
+    let mut _24: Token<I>;
+    let mut _25: Token<I>;
+    let mut _26: Chain<Token<I>, Token<I>>;
+    let mut _27: Token<I>;
+    let mut _28: Token<I>;
+    let mut _29: Chain<Token<I>, Token<I>>;
+    let mut _30: Token<I>;
+    let mut _31: Token<I>;
+    let mut _32: Chain<Token<I>, Token<I>>;
+    let mut _33: Token<I>;
+    let mut _34: Token<I>;
+    let mut _35: Chain<Token<I>, Token<I>>;
+    let mut _36: Token<I>;
+    let mut _37: Token<I>;
+    let mut _38: I;
+    let mut _39: bool;
+
+    bb0: {
+        _39 = const false;
+        _39 = const true;
+        _12 = Token::<I>(const 0_i32);
+        _13 = Token::<I>(const 1_i32);
+        _11 = Chain::<Token<I>, Token<I>>(move _12, move _13);
+        _15 = Token::<I>(const 0_i32);
+        _16 = Token::<I>(const 1_i32);
+        _14 = Chain::<Token<I>, Token<I>>(move _15, move _16);
+        _10 = <Chain<Token<I>, Token<I>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _11, move _14) -> [return: bb1, unwind: bb13];
+    }
+
+    bb1: {
+        _18 = Token::<I>(const 0_i32);
+        _19 = Token::<I>(const 1_i32);
+        _17 = Chain::<Token<I>, Token<I>>(move _18, move _19);
+        _9 = <Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _10, move _17) -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _21 = Token::<I>(const 0_i32);
+        _22 = Token::<I>(const 1_i32);
+        _20 = Chain::<Token<I>, Token<I>>(move _21, move _22);
+        _8 = <Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _9, move _20) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _24 = Token::<I>(const 0_i32);
+        _25 = Token::<I>(const 1_i32);
+        _23 = Chain::<Token<I>, Token<I>>(move _24, move _25);
+        _7 = <Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _8, move _23) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _27 = Token::<I>(const 0_i32);
+        _28 = Token::<I>(const 1_i32);
+        _26 = Chain::<Token<I>, Token<I>>(move _27, move _28);
+        _6 = <Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _7, move _26) -> [return: bb5, unwind: bb13];
+    }
+
+    bb5: {
+        _30 = Token::<I>(const 0_i32);
+        _31 = Token::<I>(const 1_i32);
+        _29 = Chain::<Token<I>, Token<I>>(move _30, move _31);
+        _5 = <Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _6, move _29) -> [return: bb6, unwind: bb13];
+    }
+
+    bb6: {
+        _33 = Token::<I>(const 0_i32);
+        _34 = Token::<I>(const 1_i32);
+        _32 = Chain::<Token<I>, Token<I>>(move _33, move _34);
+        _4 = <Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _5, move _32) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _36 = Token::<I>(const 0_i32);
+        _37 = Token::<I>(const 1_i32);
+        _35 = Chain::<Token<I>, Token<I>>(move _36, move _37);
+        _3 = <Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::chain::<Chain<Token<I>, Token<I>>>(move _4, move _35) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _39 = const false;
+        _38 = move _1;
+        _2 = <Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Chain<Token<I>, Token<I>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>>, Chain<Token<I>, Token<I>>> as Parser>::parse(move _3, move _38) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        _0 = Result::<((((((((((i32, i32), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), I), ()>::map::<((), I), [closure@ui/bench/issue-32062.rs:49:14: 49:22]>(move _2, const ZeroSized: [closure@ui/bench/issue-32062.rs:49:14: 49:22]) -> [return: bb10, unwind: bb13];
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        switchInt(_39) -> [0: bb11, otherwise: bb12];
+    }
+}
+
+fn test::{closure#0}(_1: [closure@ui/bench/issue-32062.rs:49:14: 49:22], _2: ((((((((((i32, i32), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), (i32, i32)), I)) -> ((), I) {
+    let mut _0: ((), I);
+    let _3: I;
+    scope 1 {
+        debug i => _3;
+    }
+
+    bb0: {
+        _3 = move (_2.1: I);
+        _0 = (const (), move _3);
+        return;
+    }
+}
+
+fn Token(_1: <T as Iterator>::Item) -> Token<T> {
+    let mut _0: Token<T>;
+
+    bb0: {
+        _0 = Token::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Token(_1: <T as Iterator>::Item) -> Token<T> {
+    let mut _0: Token<T>;
+
+    bb0: {
+        _0 = Token::<T>(move _1);
+        return;
+    }
+}
+
+fn Chain(_1: L, _2: R) -> Chain<L, R> {
+    let mut _0: Chain<L, R>;
+
+    bb0: {
+        _0 = Chain::<L, R>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Chain(_1: L, _2: R) -> Chain<L, R> {
+    let mut _0: Chain<L, R>;
+
+    bb0: {
+        _0 = Chain::<L, R>(move _1, move _2);
+        return;
+    }
+}

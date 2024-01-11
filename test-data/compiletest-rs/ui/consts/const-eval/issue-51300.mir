@@ -1,0 +1,146 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-eval/issue-51300.rs:4:10: 4:19>::eq(_1: &Stat, _2: &Stat) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u8;
+    let mut _5: u8;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+
+    bb0: {
+        _4 = ((*_1).0: u8);
+        _5 = ((*_2).0: u8);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: usize);
+        _8 = ((*_2).1: usize);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/issue-51300.rs:4:21: 4:23>::assert_receiver_is_total_eq(_1: &Stat) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/issue-51300.rs:4:25: 4:30>::clone(_1: &Stat) -> Stat {
+    debug self => _1;
+    let mut _0: Stat;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+const <impl at ui/consts/const-eval/issue-51300.rs:10:1: 10:10>::STUDENT_HAPPINESS: Stat = {
+    let mut _0: Stat;
+
+    bb0: {
+        _0 = Stat { id: const 0_u8, index: const 0_usize };
+        return;
+    }
+}
+
+const <impl at ui/consts/const-eval/issue-51300.rs:10:1: 10:10>::STUDENT_HUNGER: Stat = {
+    let mut _0: Stat;
+    let mut _1: usize;
+    let mut _2: usize;
+    let mut _3: Stat;
+    let mut _4: (usize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = (_3.1: usize);
+        _4 = CheckedAdd(_2, const 1_usize);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", move _2, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_4.0: usize);
+        StorageDead(_2);
+        _0 = Stat { id: const 0_u8, index: move _1 };
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn from_index(_1: u8, _2: usize) -> Option<Stat> {
+    debug id => _1;
+    debug index => _2;
+    let mut _0: std::option::Option<Stat>;
+    let _3: Stat;
+    scope 1 {
+        debug stat => _3;
+    }
+
+    bb0: {
+        _3 = Stat { id: _1, index: _2 };
+        switchInt((_3.0: u8)) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        switchInt((_3.1: usize)) -> [0: bb3, 1: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _0 = Option::<Stat>::None;
+        goto -> bb5;
+    }
+
+    bb3: {
+        _0 = Option::<Stat>::Some(const _);
+        goto -> bb5;
+    }
+
+    bb4: {
+        _0 = Option::<Stat>::Some(const _);
+        goto -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

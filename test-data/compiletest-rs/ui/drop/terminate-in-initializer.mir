@@ -1,0 +1,205 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_break() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn test_cont() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: bool;
+    let mut _3: i32;
+    scope 1 {
+        debug i => _1;
+        let _4: std::boxed::Box<isize>;
+        scope 2 {
+            debug _x => _4;
+        }
+    }
+
+    bb0: {
+        _1 = const 0_i32;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _3 = _1;
+        _2 = Lt(move _3, const 1_i32);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _1 = Add(_1, const 1_i32);
+        goto -> bb1;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test_ret() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn test_panic() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+    let mut _2: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _3: std::thread::JoinHandle<()>;
+
+    bb0: {
+        _3 = spawn::<[closure@ui/drop/terminate-in-initializer.rs:19:19: 19:25], ()>(const ZeroSized: [closure@ui/drop/terminate-in-initializer.rs:19:19: 19:25]) -> bb1;
+    }
+
+    bb1: {
+        _2 = JoinHandle::<()>::join(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = Result::<(), Box<dyn Any + Send>>::unwrap_err(move _2) -> bb3;
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn test_panic::f() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    let mut _2: !;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn test_panic::{closure#0}(_1: [closure@ui/drop/terminate-in-initializer.rs:19:19: 19:25]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = test_panic::f() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test_panic_indirect() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+    let mut _2: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _3: std::thread::JoinHandle<()>;
+
+    bb0: {
+        _3 = spawn::<[closure@ui/drop/terminate-in-initializer.rs:25:19: 25:25], ()>(const ZeroSized: [closure@ui/drop/terminate-in-initializer.rs:25:19: 25:25]) -> bb1;
+    }
+
+    bb1: {
+        _2 = JoinHandle::<()>::join(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = Result::<(), Box<dyn Any + Send>>::unwrap_err(move _2) -> bb3;
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn test_panic_indirect::f() -> ! {
+    let mut _0: !;
+    let mut _1: !;
+
+    bb0: {
+        _1 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn g() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    let mut _2: !;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _2 = test_panic_indirect::f();
+    }
+}
+
+fn test_panic_indirect::{closure#0}(_1: [closure@ui/drop/terminate-in-initializer.rs:25:19: 25:25]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = g() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+
+    bb0: {
+        _1 = test_break() -> bb1;
+    }
+
+    bb1: {
+        _2 = test_cont() -> bb2;
+    }
+
+    bb2: {
+        _3 = test_ret() -> bb3;
+    }
+
+    bb3: {
+        _4 = test_panic() -> bb4;
+    }
+
+    bb4: {
+        _5 = test_panic_indirect() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}

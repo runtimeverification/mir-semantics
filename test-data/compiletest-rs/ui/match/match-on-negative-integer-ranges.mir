@@ -1,0 +1,133 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&bool, &bool);
+    let mut _2: &bool;
+    let _3: bool;
+    let mut _4: &bool;
+    let _5: bool;
+    let mut _6: i8;
+    let mut _7: bool;
+    let mut _8: bool;
+    let _9: &bool;
+    let _10: &bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&bool, &bool);
+    let mut _19: &bool;
+    let _20: bool;
+    let mut _21: &bool;
+    let _22: bool;
+    let mut _23: i8;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _26: &bool;
+    let _27: &bool;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: bool;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _15;
+        }
+    }
+    scope 3 {
+    }
+    scope 4 {
+        debug left_val => _26;
+        debug right_val => _27;
+        let _32: core::panicking::AssertKind;
+        scope 5 {
+            debug kind => _32;
+        }
+    }
+
+    bb0: {
+        _3 = const false;
+        _2 = &_3;
+        _6 = const -50_i8;
+        _7 = Le(const i8::MIN, _6);
+        switchInt(move _7) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _8 = Le(_6, const -101_i8);
+        _5 = _8;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _5 = const false;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _9 = (_1.0: &bool);
+        _10 = (_1.1: &bool);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<bool, bool>(move _15, _9, _10, move _17);
+    }
+
+    bb5: {
+        _20 = const false;
+        _19 = &_20;
+        _23 = const -50_i8;
+        _24 = Le(const i8::MIN, _23);
+        switchInt(move _24) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _25 = Le(_23, const -101_i8);
+        _22 = _25;
+        goto -> bb8;
+    }
+
+    bb7: {
+        _22 = const false;
+        goto -> bb8;
+    }
+
+    bb8: {
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _26 = (_18.0: &bool);
+        _27 = (_18.1: &bool);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<bool, bool>(move _32, _26, _27, move _34);
+    }
+
+    bb10: {
+        return;
+    }
+}

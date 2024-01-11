@@ -1,0 +1,107 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-default-box.rs:4:10: 4:17>::default() -> A {
+    let mut _0: A;
+    let mut _1: std::boxed::Box<[bool]>;
+
+    bb0: {
+        _1 = <Box<[bool]> as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = A { foo: move _1 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: A;
+    let mut _3: std::boxed::Box<[bool; 0]>;
+    let mut _4: (&std::boxed::Box<[bool]>, &std::boxed::Box<[bool]>);
+    let mut _5: &std::boxed::Box<[bool]>;
+    let mut _6: &std::boxed::Box<[bool]>;
+    let mut _9: bool;
+    let mut _10: bool;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: std::boxed::Box<[bool]>;
+        scope 2 {
+            debug b => _2;
+            let _7: &std::boxed::Box<[bool]>;
+            let _8: &std::boxed::Box<[bool]>;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _11: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _11;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = <A as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _3 = Box::<[bool; 0]>::new(const []) -> [return: bb2, unwind: bb9];
+    }
+
+    bb2: {
+        _2 = move _3 as std::boxed::Box<[bool]> (Pointer(Unsize));
+        _5 = &(_1.0: std::boxed::Box<[bool]>);
+        _6 = &_2;
+        _4 = (move _5, move _6);
+        _7 = (_4.0: &std::boxed::Box<[bool]>);
+        _8 = (_4.1: &std::boxed::Box<[bool]>);
+        _10 = <Box<[bool]> as PartialEq>::eq(_7, _8) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _11 = core::panicking::AssertKind::Eq;
+        _13 = Option::<Arguments<'_>>::None;
+        _12 = core::panicking::assert_failed::<Box<[bool]>, Box<[bool]>>(move _11, _7, _8, move _13) -> bb8;
+    }
+
+    bb5: {
+        drop(_2) -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        drop(_1) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        resume;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}

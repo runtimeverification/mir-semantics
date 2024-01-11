@@ -1,0 +1,85 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-72455.rs:8:1: 8:51>::err_eprint_and_ignore(_1: Result<O, E>) -> Option<O> {
+    debug self => _1;
+    let mut _0: std::option::Option<O>;
+    let mut _2: isize;
+    let _3: E;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &E;
+    let _14: O;
+    scope 1 {
+        debug e => _3;
+    }
+    scope 2 {
+        debug o => _14;
+    }
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _14 = move ((_1 as Ok).0: O);
+        _0 = Option::<O>::Some(move _14);
+        goto -> bb8;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = move ((_1 as Err).0: E);
+        _8 = [const "", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_3;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<E>(_13) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        _4 = _eprint(move _5) -> [return: bb6, unwind: bb7];
+    }
+
+    bb6: {
+        _0 = Option::<O>::None;
+        drop(_3) -> bb8;
+    }
+
+    bb7 (cleanup): {
+        drop(_3) -> [return: bb9, unwind terminate];
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

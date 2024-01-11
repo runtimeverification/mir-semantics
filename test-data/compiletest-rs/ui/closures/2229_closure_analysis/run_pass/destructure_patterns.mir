@@ -1,0 +1,756 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test1() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    let _5: ();
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:13:13: 13:15];
+        scope 2 {
+            debug c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = <String as From<&str>>::from(const "Hello") -> bb1;
+    }
+
+    bb1: {
+        _3 = <String as From<&str>>::from(const "World") -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:13:13: 13:15] { t: move _1 };
+        _5 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:13:13: 13:15] as FnOnce<()>>::call_once(move _4, const ()) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test1::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:13:13: 13:15]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: std::string::String;
+    scope 1 {
+        debug t1 => _2;
+        debug t2 => _3;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: (std::string::String, std::string::String)).0: std::string::String);
+        _3 = move ((_1.0: (std::string::String, std::string::String)).1: std::string::String);
+        drop(_3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn test2() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    let _5: ();
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:25:13: 25:15];
+        scope 2 {
+            debug c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = <String as From<&str>>::from(const "Hello") -> bb1;
+    }
+
+    bb1: {
+        _3 = <String as From<&str>>::from(const "World") -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:25:13: 25:15] { t: move _1 };
+        _5 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:25:13: 25:15] as FnOnce<()>>::call_once(move _4, const ()) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test2::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:25:13: 25:15]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    scope 1 {
+        debug t1 => _2;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: (std::string::String, std::string::String)).0: std::string::String);
+        drop(_2) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        drop(((_1.0: (std::string::String, std::string::String)).1: std::string::String)) -> bb3;
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(((_1.0: (std::string::String, std::string::String)).1: std::string::String)) -> [return: bb2, unwind terminate];
+    }
+}
+
+fn test3() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    let _5: ();
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:36:13: 36:15];
+        scope 2 {
+            debug c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = <String as From<&str>>::from(const "Hello") -> bb1;
+    }
+
+    bb1: {
+        _3 = <String as From<&str>>::from(const "World") -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:36:13: 36:15] { t: move _1 };
+        _5 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:36:13: 36:15] as FnOnce<()>>::call_once(move _4, const ()) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test3::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:36:13: 36:15]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    scope 1 {
+        debug t2 => _2;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: (std::string::String, std::string::String)).1: std::string::String);
+        drop(_2) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> bb3;
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> [return: bb2, unwind terminate];
+    }
+}
+
+fn test4() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    let mut _5: &(std::string::String, std::string::String);
+    let _6: ();
+    let mut _7: &[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:47:13: 47:15];
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:47:13: 47:15];
+        scope 2 {
+            debug c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = <String as From<&str>>::from(const "Hello") -> bb1;
+    }
+
+    bb1: {
+        _3 = <String as From<&str>>::from(const "World") -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _5 = &_1;
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:47:13: 47:15] { t: move _5 };
+        _7 = &_4;
+        _6 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:47:13: 47:15] as Fn<()>>::call(move _7, const ()) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn test4::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:47:13: 47:15]) -> () {
+    debug t => (*((*_1).0: &(std::string::String, std::string::String)));
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn test5() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:56:14: 56:16];
+        scope 2 {
+            debug _c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = String::new() -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:56:14: 56:16] { t: move _1 };
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test5::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:56:14: 56:16]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: std::string::String;
+    scope 1 {
+        debug _a => _2;
+    }
+    scope 2 {
+        debug t1 => _3;
+    }
+
+    bb0: {
+        _3 = move ((_1.0: (std::string::String, std::string::String)).0: std::string::String);
+        _2 = move _3;
+        drop(_2) -> [return: bb1, unwind: bb2];
+    }
+
+    bb1: {
+        drop(((_1.0: (std::string::String, std::string::String)).1: std::string::String)) -> bb4;
+    }
+
+    bb2 (cleanup): {
+        drop(((_1.0: (std::string::String, std::string::String)).1: std::string::String)) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn test6() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:65:14: 65:16];
+        scope 2 {
+            debug _c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = String::new() -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:65:14: 65:16] { t: move _1 };
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test6::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:65:14: 65:16]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: std::string::String;
+    scope 1 {
+        debug _a => _2;
+    }
+    scope 2 {
+        debug t2 => _3;
+    }
+
+    bb0: {
+        _3 = move ((_1.0: (std::string::String, std::string::String)).1: std::string::String);
+        _2 = move _3;
+        drop(_2) -> [return: bb1, unwind: bb2];
+    }
+
+    bb1: {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> bb4;
+    }
+
+    bb2 (cleanup): {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn test7() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:74:14: 74:16];
+        scope 2 {
+            debug _c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = String::new() -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:74:14: 74:16] { t: move _1 };
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test7::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:74:14: 74:16]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: (std::string::String, std::string::String);
+    let _3: std::string::String;
+    let _4: std::string::String;
+    scope 1 {
+        debug _a => _2;
+    }
+    scope 2 {
+        debug t1 => _3;
+        debug t2 => _4;
+    }
+
+    bb0: {
+        _3 = move ((_1.0: (std::string::String, std::string::String)).0: std::string::String);
+        _4 = move ((_1.0: (std::string::String, std::string::String)).1: std::string::String);
+        _2 = (move _3, move _4);
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test8() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _5: &Point;
+    let mut _6: &i32;
+    let mut _7: &(i32, i32);
+    let _8: ();
+    let mut _9: &[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:86:13: 86:15];
+    scope 1 {
+        debug x => _1;
+        let _2: (i32, i32);
+        scope 2 {
+            debug tup => _2;
+            let _3: Point;
+            scope 3 {
+                debug p => _3;
+                let _4: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:86:13: 86:15];
+                scope 4 {
+                    debug c => _4;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 0_i32;
+        _2 = (const 1_i32, const 2_i32);
+        _3 = Point { x: const 10_u32, y: const 20_u32 };
+        _5 = &_3;
+        _6 = &_1;
+        _7 = &_2;
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:86:13: 86:15] { x: move _5, p: move _6, tup: move _7 };
+        _9 = &_4;
+        _8 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:86:13: 86:15] as Fn<()>>::call(move _9, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test8::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:86:13: 86:15]) -> () {
+    debug p => (*((*_1).0: &Point));
+    debug x => (*((*_1).1: &i32));
+    debug tup => (*((*_1).2: &(i32, i32)));
+    let mut _0: ();
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &u32;
+    let mut _14: &Point;
+    let mut _15: &Point;
+    scope 1 {
+        let _2: u32;
+        let _3: u32;
+        scope 2 {
+            debug x => _2;
+            debug y => _3;
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _14 = deref_copy ((*_1).0: &Point);
+        _2 = ((*_14).0: u32);
+        _15 = deref_copy ((*_1).0: &Point);
+        _3 = ((*_15).1: u32);
+        _8 = [const "", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_3;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_13) -> bb1;
+    }
+
+    bb1: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> bb2;
+    }
+
+    bb2: {
+        _4 = _print(move _5) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test9() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _3: std::string::String;
+    let mut _4: std::string::String;
+    let _6: ();
+    scope 1 {
+        debug _z => _1;
+        let _2: (std::string::String, std::string::String);
+        scope 2 {
+            debug t => _2;
+            let _5: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:101:13: 101:15];
+            scope 3 {
+                debug c => _5;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 9_i32;
+        _3 = <String as From<&str>>::from(const "Hello") -> bb1;
+    }
+
+    bb1: {
+        _4 = <String as From<&str>>::from(const "World") -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _2 = (move _3, move _4);
+        _5 = [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:101:13: 101:15] { t: move _2 };
+        _6 = <[closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:101:13: 101:15] as FnOnce<()>>::call_once(move _5, const ()) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_3) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test9::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/destructure_patterns.rs:101:13: 101:15]) -> () {
+    debug t => (_1.0: (std::string::String, std::string::String));
+    let mut _0: ();
+    let _2: std::string::String;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &std::string::String;
+    scope 1 {
+        debug t => _2;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: (std::string::String, std::string::String)).1: std::string::String);
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_2;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<String>(_12) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _3 = _print(move _4) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_2) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> bb7;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb8, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(((_1.0: (std::string::String, std::string::String)).0: std::string::String)) -> [return: bb6, unwind terminate];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+    let _6: ();
+    let _7: ();
+    let _8: ();
+    let _9: ();
+
+    bb0: {
+        _1 = test1() -> bb1;
+    }
+
+    bb1: {
+        _2 = test2() -> bb2;
+    }
+
+    bb2: {
+        _3 = test3() -> bb3;
+    }
+
+    bb3: {
+        _4 = test4() -> bb4;
+    }
+
+    bb4: {
+        _5 = test5() -> bb5;
+    }
+
+    bb5: {
+        _6 = test6() -> bb6;
+    }
+
+    bb6: {
+        _7 = test7() -> bb7;
+    }
+
+    bb7: {
+        _8 = test8() -> bb8;
+    }
+
+    bb8: {
+        _9 = test9() -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}

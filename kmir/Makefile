@@ -8,7 +8,7 @@ POETRY_RUN := poetry run
         format isort autoflake black    \
         check check-isort check-autoflake check-black check-flake8 check-mypy
 
-default: check test-unit
+default: check build
 
 all: check test
 
@@ -74,7 +74,9 @@ check-k-version:
 .PHONY: kbuild-*
 
 # Tests
-test: test-unit test-integration
+# test: test-unit test-integration
+
+test: test-integration
 
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
@@ -101,9 +103,9 @@ compiletest-parse-fail:
             --tb=line                                                                \
             --no-skip                                                                \
             -k test_compiletest                                                      \
-            --report-file src/tests/integration/test-data/compiletest-parse-fail.tsv \
+            --report-file ../test-data/compiletest-parse-fail.tsv \
             $(TEST_ARGS);
-	sort src/tests/integration/test-data/compiletest-parse-fail.tsv -o src/tests/integration/test-data/compiletest-parse-fail.tsv
+	sort ../test-data/compiletest-parse-fail.tsv -o ../test-data/compiletest-parse-fail.tsv
 .PHONY: compiletest-parse-fail
 
 compiletest-run-fail:
@@ -112,9 +114,9 @@ compiletest-run-fail:
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_compiletest                                                     \
-            --report-file src/tests/integration/test-data/compiletest-run-fail.tsv  \
+            --report-file ../test-data/compiletest-run-fail.tsv  \
             $(TEST_ARGS);
-	sort src/tests/integration/test-data/compiletest-run-fail.tsv -o src/tests/integration/test-data/compiletest-run-fail.tsv
+	sort ../test-data/compiletest-run-fail.tsv -o ../test-data/compiletest-run-fail.tsv
 .PHONY: compiletest-run-fail
 
 handwritten-parse-fail:
@@ -122,9 +124,9 @@ handwritten-parse-fail:
             --tb=line                                                                 \
             --no-skip                                                                 \
             -k test_handwritten_syntax                                                \
-            --report-file src/tests/integration/test-data/handwritten-parse-fail.tsv  \
+            --report-file ../test-data/handwritten-parse-fail.tsv  \
             $(TEST_ARGS);
-	sort src/tests/integration/test-data/handwritten-parse-fail.tsv -o src/tests/integration/test-data/handwritten-parse-fail.tsv
+	sort ../test-data/handwritten-parse-fail.tsv -o ../test-data/handwritten-parse-fail.tsv
 .PHONY: handwritten-test-parse
 
 handwritten-run-fail:
@@ -132,9 +134,9 @@ handwritten-run-fail:
             --tb=line                                                               \
             --no-skip                                                               \
             -k test_handwritten                                                     \
-            --report-file src/tests/integration/test-data/handwritten-run-fail.tsv  \
+            --report-file ../test-data/handwritten-run-fail.tsv  \
             $(TEST_ARGS);
-	sort src/tests/integration/test-data/handwritten-run-fail.tsv -o src/tests/integration/test-data/handwritten-run-fail.tsv
+	sort ../test-data/handwritten-run-fail.tsv -o ../test-data/handwritten-run-fail.tsv
 .PHONY: handwritten-test-run
 
 handwritten-prove-fail:
@@ -142,13 +144,13 @@ handwritten-prove-fail:
 			--tb=line                                                               \
 			--no-skip                                                               \
             -k test_handwritten                                                     \
-            --report-file src/tests/integration/test-data/handwritten-prove-fail.tsv  \
+            --report-file ../test-data/handwritten-prove-fail.tsv  \
             $(TEST_ARGS);
-	sort src/tests/integration/test-data/handwritten-prove-fail.tsv -o src/tests/integration/test-data/handwritten-prove-fail.tsv
+	sort ../test-data/handwritten-prove-fail.tsv -o ../test-data/handwritten-prove-fail.tsv
 .PHONY: handwritten-test-prove
 
 ## compile the handwritten Rust integration tests to Mir
 compile-handwritten-rust:
-	make -C src/tests/integration/test-data/handwritten-rust
+	make -C ../test-data/handwritten-rust
 .PHONY: compile-handwritten-rust
 

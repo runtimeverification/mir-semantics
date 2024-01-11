@@ -1,0 +1,378 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&str, &&str);
+    let mut _2: &&str;
+    let _3: &str;
+    let mut _4: &&str;
+    let _5: &str;
+    let _6: &&str;
+    let _7: &&str;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: (&&str, &&str);
+    let mut _14: &&str;
+    let _15: &str;
+    let mut _16: &&str;
+    let _17: &str;
+    let _18: &&str;
+    let _19: &&str;
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: (&&str, &&str);
+    let mut _26: &&str;
+    let _27: &str;
+    let mut _28: &&str;
+    let _29: &str;
+    let _30: &&str;
+    let _31: &&str;
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: (&&str, &&str);
+    let mut _38: &&str;
+    let _39: &str;
+    let mut _40: &&str;
+    let _41: &str;
+    let _42: &&str;
+    let _43: &&str;
+    let mut _44: bool;
+    let mut _45: bool;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&&str, &&str);
+    let mut _50: &&str;
+    let _51: &str;
+    let mut _52: &&str;
+    let _53: &str;
+    let _54: &&str;
+    let _55: &&str;
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: (&&str, &&str);
+    let mut _62: &&str;
+    let _63: &str;
+    let mut _64: &&str;
+    let _65: &str;
+    let _66: &&str;
+    let _67: &&str;
+    let mut _68: bool;
+    let mut _69: bool;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: (&&str, &&str);
+    let mut _74: &&str;
+    let _75: &str;
+    let mut _76: &&str;
+    let _77: &str;
+    let _78: &&str;
+    let _79: &&str;
+    let mut _80: bool;
+    let mut _81: bool;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _85: (&&str, &&str);
+    let mut _86: &&str;
+    let _87: &str;
+    let mut _88: &&str;
+    let _89: &str;
+    let _90: &&str;
+    let _91: &&str;
+    let mut _92: bool;
+    let mut _93: bool;
+    let _95: !;
+    let mut _96: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _97: (&&str, &&str);
+    let mut _98: &&str;
+    let _99: &str;
+    let mut _100: &&str;
+    let _101: &str;
+    let _102: &&str;
+    let _103: &&str;
+    let mut _104: bool;
+    let mut _105: bool;
+    let _107: !;
+    let mut _108: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _22: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _22;
+        }
+    }
+    scope 5 {
+        debug left_val => _30;
+        debug right_val => _31;
+        let _34: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _34;
+        }
+    }
+    scope 7 {
+        debug left_val => _42;
+        debug right_val => _43;
+        let _46: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _46;
+        }
+    }
+    scope 9 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _58: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _58;
+        }
+    }
+    scope 11 {
+        debug left_val => _66;
+        debug right_val => _67;
+        let _70: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _70;
+        }
+    }
+    scope 13 {
+        debug left_val => _78;
+        debug right_val => _79;
+        let _82: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _82;
+        }
+    }
+    scope 15 {
+        debug left_val => _90;
+        debug right_val => _91;
+        let _94: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _94;
+        }
+    }
+    scope 17 {
+        debug left_val => _102;
+        debug right_val => _103;
+        let _106: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _106;
+        }
+    }
+
+    bb0: {
+        _3 = const "abc";
+        _2 = &_3;
+        _5 = const "abc";
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &&str);
+        _7 = (_1.1: &&str);
+        _9 = <&str as PartialEq>::eq(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<&str, &str>(move _10, _6, _7, move _12);
+    }
+
+    bb3: {
+        _15 = const "abc";
+        _14 = &_15;
+        _17 = const "abc";
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &&str);
+        _19 = (_13.1: &&str);
+        _21 = <&str as PartialEq>::eq(_18, _19) -> bb4;
+    }
+
+    bb4: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<&str, &str>(move _22, _18, _19, move _24);
+    }
+
+    bb6: {
+        _27 = const "###";
+        _26 = &_27;
+        _29 = const "###";
+        _28 = &_29;
+        _25 = (move _26, move _28);
+        _30 = (_25.0: &&str);
+        _31 = (_25.1: &&str);
+        _33 = <&str as PartialEq>::eq(_30, _31) -> bb7;
+    }
+
+    bb7: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<&str, &str>(move _34, _30, _31, move _36);
+    }
+
+    bb9: {
+        _39 = const "\\";
+        _38 = &_39;
+        _41 = const "\\";
+        _40 = &_41;
+        _37 = (move _38, move _40);
+        _42 = (_37.0: &&str);
+        _43 = (_37.1: &&str);
+        _45 = <&str as PartialEq>::eq(_42, _43) -> bb10;
+    }
+
+    bb10: {
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<&str, &str>(move _46, _42, _43, move _48);
+    }
+
+    bb12: {
+        _51 = const "\\\"";
+        _50 = &_51;
+        _53 = const "\\\"";
+        _52 = &_53;
+        _49 = (move _50, move _52);
+        _54 = (_49.0: &&str);
+        _55 = (_49.1: &&str);
+        _57 = <&str as PartialEq>::eq(_54, _55) -> bb13;
+    }
+
+    bb13: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<&str, &str>(move _58, _54, _55, move _60);
+    }
+
+    bb15: {
+        _63 = const "#\"\\n\"";
+        _62 = &_63;
+        _65 = const "#\"\\n\"";
+        _64 = &_65;
+        _61 = (move _62, move _64);
+        _66 = (_61.0: &&str);
+        _67 = (_61.1: &&str);
+        _69 = <&str as PartialEq>::eq(_66, _67) -> bb16;
+    }
+
+    bb16: {
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<&str, &str>(move _70, _66, _67, move _72);
+    }
+
+    bb18: {
+        _75 = const "a\"#\"b";
+        _74 = &_75;
+        _77 = const "a\"#\"b";
+        _76 = &_77;
+        _73 = (move _74, move _76);
+        _78 = (_73.0: &&str);
+        _79 = (_73.1: &&str);
+        _81 = <&str as PartialEq>::eq(_78, _79) -> bb19;
+    }
+
+    bb19: {
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<&str, &str>(move _82, _78, _79, move _84);
+    }
+
+    bb21: {
+        _87 = const "\"%\\(\\d\\+\\$\\)\\=[-+' #0*]*\\(\\d*\\|\\*\\|\\*\\d\\+\\$\\)\\(\\.\\(\\d*\\|\\*\\|\\*\\d\\+\\$\\)\\)\\=\\([hlLjzt]\\|ll\\|hh\\)\\=\\([aAbdiuoxXDOUfFeEgGcCsSpn?]\\|\\[\\^\\=.[^]]*\\]\\)\"";
+        _86 = &_87;
+        _89 = const "\"%\\(\\d\\+\\$\\)\\=[-+' #0*]*\\(\\d*\\|\\*\\|\\*\\d\\+\\$\\)\\(\\.\\(\\d*\\|\\*\\|\\*\\d\\+\\$\\)\\)\\=\\([hlLjzt]\\|ll\\|hh\\)\\=\\([aAbdiuoxXDOUfFeEgGcCsSpn?]\\|\\[\\^\\=.[^]]*\\]\\)\"";
+        _88 = &_89;
+        _85 = (move _86, move _88);
+        _90 = (_85.0: &&str);
+        _91 = (_85.1: &&str);
+        _93 = <&str as PartialEq>::eq(_90, _91) -> bb22;
+    }
+
+    bb22: {
+        _92 = Not(move _93);
+        switchInt(move _92) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _94 = core::panicking::AssertKind::Eq;
+        _96 = Option::<Arguments<'_>>::None;
+        _95 = core::panicking::assert_failed::<&str, &str>(move _94, _90, _91, move _96);
+    }
+
+    bb24: {
+        _99 = const "newline:'\n', tab:'\t', unicode:'●', null:'\0'";
+        _98 = &_99;
+        _101 = const "newline:'\n', tab:'\t', unicode:'●', null:'\0'";
+        _100 = &_101;
+        _97 = (move _98, move _100);
+        _102 = (_97.0: &&str);
+        _103 = (_97.1: &&str);
+        _105 = <&str as PartialEq>::eq(_102, _103) -> bb25;
+    }
+
+    bb25: {
+        _104 = Not(move _105);
+        switchInt(move _104) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _106 = core::panicking::AssertKind::Eq;
+        _108 = Option::<Arguments<'_>>::None;
+        _107 = core::panicking::assert_failed::<&str, &str>(move _106, _102, _103, move _108);
+    }
+
+    bb27: {
+        return;
+    }
+}

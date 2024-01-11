@@ -1,0 +1,315 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/monomorphize-abi-alignment.rs:15:16: 15:21>::clone(_1: &S<T>) -> S<T> {
+    debug self => _1;
+    let mut _0: S<T>;
+    let mut _2: u8;
+    let _3: &u8;
+    let mut _4: T;
+    let _5: &T;
+
+    bb0: {
+        _3 = &((*_1).0: u8);
+        _2 = (*_3);
+        _5 = &((*_1).1: T);
+        _4 = <T as Clone>::clone(_5) -> bb1;
+    }
+
+    bb1: {
+        _0 = S::<T> { i: move _2, t: move _4 };
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:18:1: 18:13>::unwrap(_1: S<T>) -> T {
+    debug self => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move (_1.1: T);
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:24:16: 24:21>::clone(_1: &A) -> A {
+    debug self => _1;
+    let mut _0: A;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:24:23: 24:32>::eq(_1: &A, _2: &A) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &(u32, u32);
+    let mut _4: &(u32, u32);
+
+    bb0: {
+        _3 = &((*_1).0: (u32, u32));
+        _4 = &((*_2).0: (u32, u32));
+        _0 = <(u32, u32) as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:24:34: 24:39>::fmt(_1: &A, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&(u32, u32);
+    let _6: &(u32, u32);
+
+    bb0: {
+        _3 = const "A";
+        _6 = &((*_1).0: (u32, u32));
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:27:16: 27:21>::clone(_1: &B) -> B {
+    debug self => _1;
+    let mut _0: B;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:27:23: 27:32>::eq(_1: &B, _2: &B) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: u64;
+    let mut _4: u64;
+
+    bb0: {
+        _3 = ((*_1).0: u64);
+        _4 = ((*_2).0: u64);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/monomorphize-abi-alignment.rs:27:34: 27:39>::fmt(_1: &B, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&u64;
+    let _6: &u64;
+
+    bb0: {
+        _3 = const "B";
+        _6 = &((*_1).0: u64);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&A, &A);
+    let mut _2: &A;
+    let _3: A;
+    let mut _4: S<A>;
+    let mut _5: &S<A>;
+    let mut _6: &A;
+    let _7: A;
+    let mut _8: (u32, u32);
+    let _9: &A;
+    let _10: &A;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&B, &B);
+    let mut _17: &B;
+    let _18: B;
+    let mut _19: S<B>;
+    let mut _20: &S<B>;
+    let mut _21: &B;
+    let _22: B;
+    let _23: &B;
+    let _24: &B;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _23;
+        debug right_val => _24;
+        let _27: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _27;
+        }
+    }
+
+    bb0: {
+        _5 = const {alloc1: &S<A>};
+        _4 = (*_5);
+        _3 = S::<A>::unwrap(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _8 = (const 13_u32, const 104_u32);
+        _7 = A(move _8);
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _9 = (_1.0: &A);
+        _10 = (_1.1: &A);
+        _12 = <A as PartialEq>::eq(_9, _10) -> bb2;
+    }
+
+    bb2: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<A, A>(move _13, _9, _10, move _15);
+    }
+
+    bb4: {
+        _20 = const {alloc2: &S<B>};
+        _19 = (*_20);
+        _18 = S::<B>::unwrap(move _19) -> bb5;
+    }
+
+    bb5: {
+        _17 = &_18;
+        _22 = B(const 31337_u64);
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _23 = (_16.0: &B);
+        _24 = (_16.1: &B);
+        _26 = <B as PartialEq>::eq(_23, _24) -> bb6;
+    }
+
+    bb6: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<B, B>(move _27, _23, _24, move _29);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+alloc2 (static: Cb, size: 16, align: 8) {
+    69 7a 00 00 00 00 00 00 00 __ __ __ __ __ __ __ │ iz.......░░░░░░░
+}
+
+alloc1 (static: Ca, size: 12, align: 4) {
+    0d 00 00 00 68 00 00 00 00 __ __ __             │ ....h....░░░
+}
+
+static Ca: S<A> = {
+    let mut _0: S<A>;
+    let mut _1: A;
+    let mut _2: (u32, u32);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = (const 13_u32, const 104_u32);
+        _1 = A(move _2);
+        StorageDead(_2);
+        _0 = S::<A> { i: const 0_u8, t: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+static Cb: S<B> = {
+    let mut _0: S<B>;
+    let mut _1: B;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = B(const 31337_u64);
+        _0 = S::<B> { i: const 0_u8, t: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn A(_1: (u32, u32)) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A(_1: (u32, u32)) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}
+
+fn B(_1: u64) -> B {
+    let mut _0: B;
+
+    bb0: {
+        _0 = B(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn B(_1: u64) -> B {
+    let mut _0: B;
+
+    bb0: {
+        _0 = B(move _1);
+        return;
+    }
+}

@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: f64;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: !;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: !;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: !;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: !;
+    scope 1 {
+        debug f => _1;
+        let _8: f64;
+        scope 2 {
+            debug g => _8;
+        }
+    }
+
+    bb0: {
+        _1 = const 4.9999999999989999f64;
+        _3 = Gt(_1, const 4.9000000000000004f64);
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _4 = core::panicking::panic(const "assertion failed: (f > 4.90f64)");
+    }
+
+    bb2: {
+        _6 = Lt(_1, const 5f64);
+        _5 = Not(move _6);
+        switchInt(move _5) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _7 = core::panicking::panic(const "assertion failed: (f < 5.0f64)");
+    }
+
+    bb4: {
+        _8 = const 4.9000000000100002E-10f64;
+        _10 = Gt(_8, const 5.0000000000000002E-11f64);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _11 = core::panicking::panic(const "assertion failed: (g > 5e-11f64)");
+    }
+
+    bb6: {
+        _13 = Lt(_8, const 5.0000000000000001E-9f64);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _14 = core::panicking::panic(const "assertion failed: (g < 5e-9f64)");
+    }
+
+    bb8: {
+        return;
+    }
+}

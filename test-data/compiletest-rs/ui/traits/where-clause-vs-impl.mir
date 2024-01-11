@@ -1,0 +1,99 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/where-clause-vs-impl.rs:21:1: 21:32>::foo(_1: &mut F, _2: M) -> () {
+    debug self => _1;
+    debug msg => _2;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/where-clause-vs-impl.rs:30:1: 30:40>::clone(_1: &Both<M, F>) -> Both<M, F> {
+    debug self => _1;
+    let mut _0: Both<M, F>;
+    let mut _2: std::rc::Rc<(M, F)>;
+    let mut _3: &std::rc::Rc<(M, F)>;
+
+    bb0: {
+        _3 = &((*_1).0: std::rc::Rc<(M, F)>);
+        _2 = <Rc<(M, F)> as Clone>::clone(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Both::<M, F> { inner: move _2 };
+        return;
+    }
+}
+
+fn repro1(_1: Both<M, F>) -> () {
+    debug _both => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn repro2(_1: M, _2: F) -> () {
+    debug msg => _1;
+    debug foo => _2;
+    let mut _0: ();
+    let _3: Both<M, F>;
+    let mut _4: std::rc::Rc<(M, F)>;
+    let mut _5: (M, F);
+    let _6: ();
+    let mut _7: Both<M, F>;
+    let mut _8: &Both<M, F>;
+    scope 1 {
+        debug both => _3;
+    }
+
+    bb0: {
+        _5 = (move _1, move _2);
+        _4 = Rc::<(M, F)>::new(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = Both::<M, F> { inner: move _4 };
+        _8 = &_3;
+        _7 = <Both<M, F> as Clone>::clone(move _8) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _6 = repro1::<M, F>(move _7) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_3) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,156 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/object-safety-sized-self-by-value-self.rs:16:1: 16:26>::tick(_1: &mut CCounter) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+
+    bb0: {
+        ((*_1).0: u32) = Add(((*_1).0: u32), const 1_u32);
+        _0 = ((*_1).0: u32);
+        return;
+    }
+}
+
+fn <impl at ui/self/object-safety-sized-self-by-value-self.rs:16:1: 16:26>::get(_1: CCounter) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = (_1.0: u32);
+        return;
+    }
+}
+
+fn tick1(_1: C) -> u32 {
+    debug c => _1;
+    let mut _0: u32;
+    let _2: ();
+    let mut _3: &mut dyn Counter;
+    let mut _4: &mut C;
+    let mut _5: C;
+    let mut _6: bool;
+
+    bb0: {
+        _6 = const false;
+        _6 = const true;
+        _4 = &mut _1;
+        _3 = _4 as &mut dyn Counter (Pointer(Unsize));
+        _2 = tick2(move _3) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _6 = const false;
+        _5 = move _1;
+        _0 = <C as Counter>::get(move _5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        switchInt(_6) -> [0: bb3, otherwise: bb4];
+    }
+}
+
+fn tick2(_1: &mut dyn Counter) -> () {
+    debug c => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = tick3::<dyn Counter>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn tick3(_1: &mut C) -> () {
+    debug c => _1;
+    let mut _0: ();
+    let _2: u32;
+    let _3: u32;
+
+    bb0: {
+        _2 = <C as Counter>::tick(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = <C as Counter>::tick(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: CCounter;
+    let mut _3: (&u32, &u32);
+    let mut _4: &u32;
+    let mut _5: &u32;
+    let _6: u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug c => _1;
+        let _2: u32;
+        scope 2 {
+            debug value => _2;
+            let _7: &u32;
+            let _8: &u32;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = CCounter { c: const 0_u32 };
+        _2 = tick1::<CCounter>(move _1) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_2;
+        _6 = const 2_u32;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &u32);
+        _8 = (_3.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        return;
+    }
+}

@@ -1,0 +1,243 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/autoref-autoderef/autoderef-privacy.rs:6:10: 6:17>::default() -> Bar2 {
+    let mut _0: Bar2;
+    let mut _1: i32;
+
+    bb0: {
+        _1 = <i32 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Bar2 { i: move _1 };
+        return;
+    }
+}
+
+fn <impl at ui/autoref-autoderef/autoderef-privacy.rs:8:10: 8:17>::default() -> Baz2 {
+    let mut _0: Baz2;
+    let mut _1: i32;
+
+    bb0: {
+        _1 = <i32 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Baz2(move _1);
+        return;
+    }
+}
+
+fn <impl at ui/autoref-autoderef/autoderef-privacy.rs:11:1: 11:10>::f(_1: &Bar2) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn foo::<impl at ui/autoref-autoderef/autoderef-privacy.rs:16:14: 16:21>::default() -> Bar {
+    let mut _0: foo::Bar;
+    let mut _1: Bar2;
+
+    bb0: {
+        _1 = <Bar2 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Bar { i: move _1 };
+        return;
+    }
+}
+
+fn foo::<impl at ui/autoref-autoderef/autoderef-privacy.rs:18:14: 18:21>::default() -> Baz {
+    let mut _0: foo::Baz;
+    let mut _1: Baz2;
+
+    bb0: {
+        _1 = <Baz2 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Baz(move _1);
+        return;
+    }
+}
+
+fn foo::<impl at ui/autoref-autoderef/autoderef-privacy.rs:21:5: 21:13>::f(_1: &Bar) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn foo::<impl at ui/autoref-autoderef/autoderef-privacy.rs:25:5: 25:35>::deref(_1: &Bar) -> &Bar2 {
+    debug self => _1;
+    let mut _0: &Bar2;
+
+    bb0: {
+        _0 = &((*_1).0: Bar2);
+        return;
+    }
+}
+
+fn foo::<impl at ui/autoref-autoderef/autoderef-privacy.rs:30:5: 30:35>::deref(_1: &Baz) -> &Baz2 {
+    debug self => _1;
+    let mut _0: &Baz2;
+
+    bb0: {
+        _0 = &((*_1).0: Baz2);
+        return;
+    }
+}
+
+fn f(_1: &Bar, _2: &Baz) -> () {
+    debug bar => _1;
+    debug baz => _2;
+    let mut _0: ();
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: !;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _5 = Bar::f(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = Not(move _5);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = core::panicking::panic(const "assertion failed: !bar.f()");
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: foo::Bar;
+    let _3: ();
+    let _4: &foo::Bar;
+    let _5: &foo::Baz;
+    let mut _6: &Bar2;
+    let mut _7: &foo::Bar;
+    let mut _8: &Baz2;
+    let mut _9: &foo::Baz;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: &Bar2;
+    let _13: &Bar2;
+    let mut _14: &foo::Bar;
+    let mut _15: !;
+    scope 1 {
+        debug bar => _1;
+        let _2: foo::Baz;
+        scope 2 {
+            debug baz => _2;
+            scope 3 {
+                scope 4 {
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = <Bar as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _2 = <Baz as Default>::default() -> bb2;
+    }
+
+    bb2: {
+        _4 = &_1;
+        _5 = &_2;
+        _3 = f(_4, _5) -> bb3;
+    }
+
+    bb3: {
+        _7 = &_1;
+        _6 = <Bar as Deref>::deref(move _7) -> bb4;
+    }
+
+    bb4: {
+        _9 = &_2;
+        _8 = <Baz as Deref>::deref(move _9) -> bb5;
+    }
+
+    bb5: {
+        _14 = &_1;
+        _13 = <Bar as Deref>::deref(move _14) -> bb6;
+    }
+
+    bb6: {
+        _12 = _13;
+        _11 = Bar2::f(move _12) -> bb7;
+    }
+
+    bb7: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _15 = core::panicking::panic(const "assertion failed: bar.f()");
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn Baz2(_1: i32) -> Baz2 {
+    let mut _0: Baz2;
+
+    bb0: {
+        _0 = Baz2(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz2(_1: i32) -> Baz2 {
+    let mut _0: Baz2;
+
+    bb0: {
+        _0 = Baz2(move _1);
+        return;
+    }
+}
+
+fn Baz(_1: Baz2) -> Baz {
+    let mut _0: foo::Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz(_1: Baz2) -> Baz {
+    let mut _0: foo::Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}

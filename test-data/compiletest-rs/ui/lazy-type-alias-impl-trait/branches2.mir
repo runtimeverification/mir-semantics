@@ -1,0 +1,453 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: bool) -> Foo {
+    debug b => _1;
+    let mut _0: Foo;
+    let mut _2: std::boxed::Box<[i32]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[i32; 1]>;
+    let mut _7: std::iter::Empty<i32>;
+    let mut _8: *const [i32; 1];
+    let mut _9: *const ();
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: bool;
+    scope 1 {
+    }
+
+    bb0: {
+        switchInt(_1) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = SizeOf([i32; 1]);
+        _4 = AlignOf([i32; 1]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb2;
+    }
+
+    bb2: {
+        _6 = ShallowInitBox(move _5, [i32; 1]);
+        _8 = (((_6.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _9 = _8 as *const () (PtrToPtr);
+        _10 = _9 as usize (Transmute);
+        _11 = AlignOf(i32);
+        _12 = Sub(_11, const 1_usize);
+        _13 = BitAnd(_10, _12);
+        _14 = Eq(_13, const 0_usize);
+        assert(_14, "misaligned pointer dereference: address must be a multiple of {} but is {}", _11, _10) -> [success: bb6, unwind unreachable];
+    }
+
+    bb3: {
+        _7 = std::iter::empty::<i32>() -> bb4;
+    }
+
+    bb4: {
+        _0 = <std::iter::Empty<i32> as Iterator>::collect::<Vec<i32>>(const std::iter::Empty::<i32>(PhantomData::<fn() -> i32>)) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        (*_8) = [const 42_i32];
+        _2 = move _6 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _0 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _2) -> bb5;
+    }
+}
+
+fn bar(_1: bool) -> impl PartialEq<Vec<i32>> + Debug {
+    debug b => _1;
+    let mut _0: impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let mut _2: std::boxed::Box<[i32]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[i32; 1]>;
+    let mut _7: std::iter::Empty<i32>;
+    let mut _8: *const [i32; 1];
+    let mut _9: *const ();
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: bool;
+    scope 1 {
+    }
+
+    bb0: {
+        switchInt(_1) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = SizeOf([i32; 1]);
+        _4 = AlignOf([i32; 1]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb2;
+    }
+
+    bb2: {
+        _6 = ShallowInitBox(move _5, [i32; 1]);
+        _8 = (((_6.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _9 = _8 as *const () (PtrToPtr);
+        _10 = _9 as usize (Transmute);
+        _11 = AlignOf(i32);
+        _12 = Sub(_11, const 1_usize);
+        _13 = BitAnd(_10, _12);
+        _14 = Eq(_13, const 0_usize);
+        assert(_14, "misaligned pointer dereference: address must be a multiple of {} but is {}", _11, _10) -> [success: bb6, unwind unreachable];
+    }
+
+    bb3: {
+        _7 = std::iter::empty::<i32>() -> bb4;
+    }
+
+    bb4: {
+        _0 = <std::iter::Empty<i32> as Iterator>::collect::<Vec<i32>>(const std::iter::Empty::<i32>(PhantomData::<fn() -> i32>)) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        (*_8) = [const 42_i32];
+        _2 = move _6 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _0 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _2) -> bb5;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&Foo, &std::vec::Vec<i32>);
+    let mut _2: &Foo;
+    let _3: Foo;
+    let mut _4: &std::vec::Vec<i32>;
+    let _5: std::vec::Vec<i32>;
+    let mut _6: std::boxed::Box<[i32]>;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: *mut u8;
+    let mut _10: std::boxed::Box<[i32; 1]>;
+    let _11: &Foo;
+    let _12: &std::vec::Vec<i32>;
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&Foo, &std::vec::Vec<i32>);
+    let mut _19: &Foo;
+    let _20: Foo;
+    let mut _21: &std::vec::Vec<i32>;
+    let _22: std::vec::Vec<i32>;
+    let _23: &Foo;
+    let _24: &std::vec::Vec<i32>;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug, &std::vec::Vec<i32>);
+    let mut _31: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let _32: impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let mut _33: &std::vec::Vec<i32>;
+    let _34: std::vec::Vec<i32>;
+    let mut _35: std::boxed::Box<[i32]>;
+    let mut _36: usize;
+    let mut _37: usize;
+    let mut _38: *mut u8;
+    let mut _39: std::boxed::Box<[i32; 1]>;
+    let _40: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let _41: &std::vec::Vec<i32>;
+    let mut _42: bool;
+    let mut _43: bool;
+    let _45: !;
+    let mut _46: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _47: (&impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug, &std::vec::Vec<i32>);
+    let mut _48: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let _49: impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let mut _50: &std::vec::Vec<i32>;
+    let _51: std::vec::Vec<i32>;
+    let _52: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug;
+    let _53: &std::vec::Vec<i32>;
+    let mut _54: bool;
+    let mut _55: bool;
+    let _57: !;
+    let mut _58: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _59: *const [i32; 1];
+    let mut _60: *const [i32; 1];
+    let mut _61: *const ();
+    let mut _62: usize;
+    let mut _63: usize;
+    let mut _64: usize;
+    let mut _65: usize;
+    let mut _66: bool;
+    let mut _67: *const ();
+    let mut _68: usize;
+    let mut _69: usize;
+    let mut _70: usize;
+    let mut _71: usize;
+    let mut _72: bool;
+    scope 1 {
+    }
+    scope 2 {
+        debug left_val => _11;
+        debug right_val => _12;
+        let _15: core::panicking::AssertKind;
+        scope 3 {
+            debug kind => _15;
+        }
+    }
+    scope 4 {
+        debug left_val => _23;
+        debug right_val => _24;
+        let _27: core::panicking::AssertKind;
+        scope 5 {
+            debug kind => _27;
+        }
+    }
+    scope 6 {
+    }
+    scope 7 {
+        debug left_val => _40;
+        debug right_val => _41;
+        let _44: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _44;
+        }
+    }
+    scope 9 {
+        debug left_val => _52;
+        debug right_val => _53;
+        let _56: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _56;
+        }
+    }
+
+    bb0: {
+        _3 = foo(const true) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = SizeOf([i32; 1]);
+        _8 = AlignOf([i32; 1]);
+        _9 = alloc::alloc::exchange_malloc(move _7, move _8) -> [return: bb2, unwind: bb38];
+    }
+
+    bb2: {
+        _10 = ShallowInitBox(move _9, [i32; 1]);
+        _59 = (((_10.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _67 = _59 as *const () (PtrToPtr);
+        _68 = _67 as usize (Transmute);
+        _69 = AlignOf(i32);
+        _70 = Sub(_69, const 1_usize);
+        _71 = BitAnd(_68, _70);
+        _72 = Eq(_71, const 0_usize);
+        assert(_72, "misaligned pointer dereference: address must be a multiple of {} but is {}", _69, _68) -> [success: bb41, unwind unreachable];
+    }
+
+    bb3: {
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _11 = (_1.0: &Foo);
+        _12 = (_1.1: &std::vec::Vec<i32>);
+        _14 = <Foo as PartialEq<Vec<i32>>>::eq(_11, _12) -> [return: bb4, unwind: bb37];
+    }
+
+    bb4: {
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<Foo, Vec<i32>>(move _15, _11, _12, move _17) -> bb37;
+    }
+
+    bb6: {
+        drop(_5) -> [return: bb7, unwind: bb38];
+    }
+
+    bb7: {
+        drop(_3) -> bb8;
+    }
+
+    bb8: {
+        _20 = foo(const false) -> bb9;
+    }
+
+    bb9: {
+        _19 = &_20;
+        _22 = Vec::<i32>::new() -> [return: bb10, unwind: bb36];
+    }
+
+    bb10: {
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _23 = (_18.0: &Foo);
+        _24 = (_18.1: &std::vec::Vec<i32>);
+        _26 = <Foo as PartialEq<Vec<i32>>>::eq(_23, _24) -> [return: bb11, unwind: bb35];
+    }
+
+    bb11: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<Foo, Vec<i32>>(move _27, _23, _24, move _29) -> bb35;
+    }
+
+    bb13: {
+        drop(_22) -> [return: bb14, unwind: bb36];
+    }
+
+    bb14: {
+        drop(_20) -> bb15;
+    }
+
+    bb15: {
+        _32 = bar(const true) -> bb16;
+    }
+
+    bb16: {
+        _31 = &_32;
+        _36 = SizeOf([i32; 1]);
+        _37 = AlignOf([i32; 1]);
+        _38 = alloc::alloc::exchange_malloc(move _36, move _37) -> [return: bb17, unwind: bb34];
+    }
+
+    bb17: {
+        _39 = ShallowInitBox(move _38, [i32; 1]);
+        _60 = (((_39.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _61 = _60 as *const () (PtrToPtr);
+        _62 = _61 as usize (Transmute);
+        _63 = AlignOf(i32);
+        _64 = Sub(_63, const 1_usize);
+        _65 = BitAnd(_62, _64);
+        _66 = Eq(_65, const 0_usize);
+        assert(_66, "misaligned pointer dereference: address must be a multiple of {} but is {}", _63, _62) -> [success: bb40, unwind unreachable];
+    }
+
+    bb18: {
+        _33 = &_34;
+        _30 = (move _31, move _33);
+        _40 = (_30.0: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug);
+        _41 = (_30.1: &std::vec::Vec<i32>);
+        _43 = <impl PartialEq<Vec<i32>> + Debug as PartialEq<Vec<i32>>>::eq(_40, _41) -> [return: bb19, unwind: bb33];
+    }
+
+    bb19: {
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _44 = core::panicking::AssertKind::Eq;
+        _46 = Option::<Arguments<'_>>::None;
+        _45 = core::panicking::assert_failed::<impl PartialEq<Vec<i32>> + Debug, Vec<i32>>(move _44, _40, _41, move _46) -> bb33;
+    }
+
+    bb21: {
+        drop(_34) -> [return: bb22, unwind: bb34];
+    }
+
+    bb22: {
+        drop(_32) -> bb23;
+    }
+
+    bb23: {
+        _49 = bar(const false) -> bb24;
+    }
+
+    bb24: {
+        _48 = &_49;
+        _51 = Vec::<i32>::new() -> [return: bb25, unwind: bb32];
+    }
+
+    bb25: {
+        _50 = &_51;
+        _47 = (move _48, move _50);
+        _52 = (_47.0: &impl std::cmp::PartialEq<std::vec::Vec<i32>> + std::fmt::Debug);
+        _53 = (_47.1: &std::vec::Vec<i32>);
+        _55 = <impl PartialEq<Vec<i32>> + Debug as PartialEq<Vec<i32>>>::eq(_52, _53) -> [return: bb26, unwind: bb31];
+    }
+
+    bb26: {
+        _54 = Not(move _55);
+        switchInt(move _54) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _56 = core::panicking::AssertKind::Eq;
+        _58 = Option::<Arguments<'_>>::None;
+        _57 = core::panicking::assert_failed::<impl PartialEq<Vec<i32>> + Debug, Vec<i32>>(move _56, _52, _53, move _58) -> bb31;
+    }
+
+    bb28: {
+        drop(_51) -> [return: bb29, unwind: bb32];
+    }
+
+    bb29: {
+        drop(_49) -> bb30;
+    }
+
+    bb30: {
+        return;
+    }
+
+    bb31 (cleanup): {
+        drop(_51) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_49) -> [return: bb39, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_34) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_32) -> [return: bb39, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_22) -> [return: bb36, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        drop(_20) -> [return: bb39, unwind terminate];
+    }
+
+    bb37 (cleanup): {
+        drop(_5) -> [return: bb38, unwind terminate];
+    }
+
+    bb38 (cleanup): {
+        drop(_3) -> [return: bb39, unwind terminate];
+    }
+
+    bb39 (cleanup): {
+        resume;
+    }
+
+    bb40: {
+        (*_60) = [const 42_i32];
+        _35 = move _39 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _34 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _35) -> [return: bb18, unwind: bb34];
+    }
+
+    bb41: {
+        (*_59) = [const 42_i32];
+        _6 = move _10 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _5 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _6) -> [return: bb3, unwind: bb38];
+    }
+}

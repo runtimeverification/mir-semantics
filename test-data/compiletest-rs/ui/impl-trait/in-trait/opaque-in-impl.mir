@@ -1,0 +1,226 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/in-trait/opaque-in-impl.rs:12:1: 12:16>::foo(_1: &()) -> impl Debug {
+    debug self => _1;
+    let mut _0: impl std::fmt::Debug;
+
+    bb0: {
+        _0 = const "Hello, world";
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/in-trait/opaque-in-impl.rs:18:1: 18:61>::foo(_1: &PhantomData<T>) -> impl Debug {
+    debug self => _1;
+    let mut _0: impl std::fmt::Debug;
+
+    bb0: {
+        _0 = <T as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/in-trait/opaque-in-impl.rs:28:1: 28:16>::bar(_1: &()) -> impl Debug {
+    debug self => _1;
+    let mut _0: impl std::fmt::Debug;
+    let _2: std::string::String;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+    let _12: &str;
+    scope 1 {
+        debug res => _2;
+    }
+
+    bb0: {
+        _6 = [const "Hello with generic "];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _12 = std::any::type_name::<T>() -> bb1;
+    }
+
+    bb1: {
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb2;
+    }
+
+    bb2: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb3;
+    }
+
+    bb3: {
+        _2 = format(move _3) -> bb4;
+    }
+
+    bb4: {
+        _0 = move _2;
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/in-trait/opaque-in-impl.rs:38:1: 38:20>::baz(_1: &String) -> impl Debug + '_ {
+    debug self => _1;
+    let mut _0: impl std::fmt::Debug + '_;
+
+    bb0: {
+        _0 = (_1,);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &impl std::fmt::Debug;
+    let _11: impl std::fmt::Debug;
+    let mut _12: &();
+    let _13: ();
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 2];
+    let _18: [&str; 2];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 1];
+    let _21: [core::fmt::rt::Argument<'_>; 1];
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let _23: &impl std::fmt::Debug;
+    let _24: impl std::fmt::Debug;
+    let mut _25: &();
+    let _26: ();
+    let _27: ();
+    let mut _28: std::fmt::Arguments<'_>;
+    let mut _29: &[&str];
+    let _30: &[&str; 2];
+    let _31: [&str; 2];
+    let mut _32: &[core::fmt::rt::Argument<'_>];
+    let _33: &[core::fmt::rt::Argument<'_>; 1];
+    let _34: [core::fmt::rt::Argument<'_>; 1];
+    let mut _35: core::fmt::rt::Argument<'_>;
+    let _36: &impl std::fmt::Debug + '_;
+    let _37: impl std::fmt::Debug + '_;
+    let mut _38: &std::string::String;
+    let _39: std::string::String;
+    let _40: &str;
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _12 = &_13;
+        _11 = <() as Foo>::foo(move _12) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_11;
+        _9 = core::fmt::rt::Argument::<'_>::new_debug::<impl Debug>(_10) -> bb2;
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb3;
+    }
+
+    bb3: {
+        _1 = _print(move _2) -> bb4;
+    }
+
+    bb4: {
+        _18 = [const "", const "\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _25 = &_26;
+        _24 = <() as Bar>::bar::<u64>(move _25) -> bb5;
+    }
+
+    bb5: {
+        _23 = &_24;
+        _22 = core::fmt::rt::Argument::<'_>::new_debug::<impl Debug>(_23) -> [return: bb6, unwind: bb17];
+    }
+
+    bb6: {
+        _21 = [move _22];
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> [return: bb7, unwind: bb17];
+    }
+
+    bb7: {
+        _14 = _print(move _15) -> [return: bb8, unwind: bb17];
+    }
+
+    bb8: {
+        drop(_24) -> bb9;
+    }
+
+    bb9: {
+        _31 = [const "", const "\n"];
+        _30 = &_31;
+        _29 = _30 as &[&str] (Pointer(Unsize));
+        _40 = const "hi";
+        _39 = <str as ToString>::to_string(_40) -> bb10;
+    }
+
+    bb10: {
+        _38 = &_39;
+        _37 = <String as Baz>::baz(move _38) -> [return: bb11, unwind: bb16];
+    }
+
+    bb11: {
+        _36 = &_37;
+        _35 = core::fmt::rt::Argument::<'_>::new_debug::<impl Debug + '_>(_36) -> [return: bb12, unwind: bb16];
+    }
+
+    bb12: {
+        _34 = [move _35];
+        _33 = &_34;
+        _32 = _33 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _28 = Arguments::<'_>::new_v1(move _29, move _32) -> [return: bb13, unwind: bb16];
+    }
+
+    bb13: {
+        _27 = _print(move _28) -> [return: bb14, unwind: bb16];
+    }
+
+    bb14: {
+        drop(_39) -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16 (cleanup): {
+        drop(_39) -> [return: bb18, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop(_24) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        resume;
+    }
+}

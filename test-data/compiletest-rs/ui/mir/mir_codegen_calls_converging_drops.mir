@@ -1,0 +1,127 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_codegen_calls_converging_drops.rs:8:1: 8:24>::drop(_1: &mut Droppable) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &u8;
+
+    bb0: {
+        _6 = [const "", const " dropped\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: u8);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<u8>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _eprint(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn converging_fn() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+
+    bb0: {
+        _5 = [const "converging_fn called\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _eprint(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn mir(_1: Droppable) -> () {
+    debug d => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = converging_fn() -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Droppable;
+    let _2: ();
+    let _3: !;
+    scope 1 {
+        debug d => _1;
+    }
+
+    bb0: {
+        _1 = Droppable(const 0_u8);
+        _2 = mir(move _1) -> bb1;
+    }
+
+    bb1: {
+        _3 = begin_panic::<&str>(const "exit");
+    }
+}
+
+fn Droppable(_1: u8) -> Droppable {
+    let mut _0: Droppable;
+
+    bb0: {
+        _0 = Droppable(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Droppable(_1: u8) -> Droppable {
+    let mut _0: Droppable;
+
+    bb0: {
+        _0 = Droppable(move _1);
+        return;
+    }
+}

@@ -1,0 +1,51 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Test::foo(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn a(_1: &MyBox<dyn Test>, _2: SomeStruct<'_>) -> () {
+    debug t => _1;
+    debug ss => _2;
+    let mut _0: ();
+
+    bb0: {
+        (_2.0: &MyBox<dyn Test>) = _1;
+        return;
+    }
+}
+
+fn b(_1: &MyBox<dyn Test>, _2: SomeStruct<'_>) -> () {
+    debug t => _1;
+    debug ss => _2;
+    let mut _0: ();
+
+    bb0: {
+        (_2.1: &MyBox<dyn Test>) = _1;
+        return;
+    }
+}
+
+fn d(_1: &MyBox<dyn Test>, _2: SomeStruct<'_>) -> () {
+    debug t => _1;
+    debug ss => _2;
+    let mut _0: ();
+
+    bb0: {
+        (_2.1: &MyBox<dyn Test>) = _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,131 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: i32;
+    let mut _4: (&[u8; 9], &[u8; 9]);
+    let mut _5: &[u8; 9];
+    let mut _6: &[u8; 9];
+    let _7: [u8; 9];
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: i16;
+    let mut _18: (&[u8; 4], &[u8; 4]);
+    let mut _19: &[u8; 4];
+    let mut _20: &[u8; 4];
+    let _21: [u8; 4];
+    let mut _24: bool;
+    let mut _25: bool;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        let _1: S<u32, i32>;
+        scope 2 {
+            debug s => _1;
+            let _3: [u8; 9];
+            scope 3 {
+                debug transd => _3;
+                let _8: &[u8; 9];
+                let _9: &[u8; 9];
+                let _15: S<u8, i16>;
+                scope 4 {
+                    debug left_val => _8;
+                    debug right_val => _9;
+                    let _12: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _12;
+                    }
+                }
+                scope 6 {
+                    debug s => _15;
+                    let _17: [u8; 4];
+                    scope 7 {
+                        debug transd => _17;
+                        let _22: &[u8; 4];
+                        let _23: &[u8; 4];
+                        scope 8 {
+                            debug left_val => _22;
+                            debug right_val => _23;
+                            let _26: core::panicking::AssertKind;
+                            scope 9 {
+                                debug kind => _26;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const -1431655766_i32;
+        _1 = S::<u32, i32> { a: const u32::MAX, b: const 1_u8, c: move _2 };
+        _3 = move _1 as [u8; 9] (Transmute);
+        _5 = &_3;
+        _7 = [const u8::MAX, const u8::MAX, const u8::MAX, const u8::MAX, const 1_u8, const 170_u8, const 170_u8, const 170_u8, const 170_u8];
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &[u8; 9]);
+        _9 = (_4.1: &[u8; 9]);
+        _11 = <[u8; 9] as PartialEq>::eq(_8, _9) -> bb1;
+    }
+
+    bb1: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<[u8; 9], [u8; 9]>(move _12, _8, _9, move _14);
+    }
+
+    bb3: {
+        _16 = const -32383_i16;
+        _15 = S::<u8, i16> { a: const 1_u8, b: const 2_u8, c: move _16 };
+        _17 = move _15 as [u8; 4] (Transmute);
+        _19 = &_17;
+        _21 = [const 1_u8, const 2_u8, const 129_u8, const 129_u8];
+        _20 = &_21;
+        _18 = (move _19, move _20);
+        _22 = (_18.0: &[u8; 4]);
+        _23 = (_18.1: &[u8; 4]);
+        _25 = <[u8; 4] as PartialEq>::eq(_22, _23) -> bb4;
+    }
+
+    bb4: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<[u8; 4], [u8; 4]>(move _26, _22, _23, move _28);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 9_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

@@ -1,0 +1,68 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-86535-2.rs:11:1: 11:42>::{constant#0}: &() = {
+    let mut _0: &();
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-86535-2.rs:11:1: 11:42>::ASSOC_C: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-86535-2.rs:11:1: 11:42>::foo() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-86535-2.rs:11:1: 11:42>::foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-86535-2.rs:11:1: 11:42>::foo::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,126 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const A_I8_T: [u32; 126] = {
+    let mut _0: [u32; 126];
+
+    bb0: {
+        _0 = [const 0_u32; 126];
+        return;
+    }
+}
+
+A_I8_T::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: i8;
+    let mut _2: i8;
+    let mut _3: (i8, bool);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _3 = CheckedSub(_2, const 1_i8);
+        assert(!move (_3.1: bool), "attempt to compute `{} - {}`, which would overflow", move _2, const 1_i8) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_3.0: i8);
+        StorageDead(_2);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+A_I8_T::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: (usize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _ as usize (IntToInt);
+        _2 = CheckedSub(_1, const 1_usize);
+        assert(!move (_2.1: bool), "attempt to compute `{} - {}`, which would overflow", move _1, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_2.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: &[u32];
+    let _3: &[u32];
+    let mut _4: &[u32; 126];
+    let _5: [u32; 126];
+
+    bb0: {
+        _5 = const _;
+        _4 = &_5;
+        _3 = <[u32; 126] as Index<RangeFull>>::index(move _4, const RangeFull) -> bb1;
+    }
+
+    bb1: {
+        _2 = _3;
+        _1 = foo::<&[u32]>(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn foo(_1: T) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &T;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<T>(_11) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}

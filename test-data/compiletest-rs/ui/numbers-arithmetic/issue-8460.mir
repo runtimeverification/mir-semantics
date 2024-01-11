@@ -1,0 +1,1423 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::zero() -> i8 {
+    let mut _0: i8;
+
+    bb0: {
+        _0 = const 0_i8;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::one() -> i8 {
+    let mut _0: i8;
+
+    bb0: {
+        _0 = const 1_i8;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::zero() -> i16 {
+    let mut _0: i16;
+
+    bb0: {
+        _0 = const 0_i16;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::one() -> i16 {
+    let mut _0: i16;
+
+    bb0: {
+        _0 = const 1_i16;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::zero() -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::one() -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::zero() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const 0_i64;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::one() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const 1_i64;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::zero() -> isize {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 0_isize;
+        return;
+    }
+}
+
+fn <impl at ui/numbers-arithmetic/issue-8460.rs:14:26: 14:41>::one() -> isize {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 1_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _4: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _5: std::thread::JoinHandle<()>;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _10: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _11: std::thread::JoinHandle<()>;
+    let mut _12: !;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _16: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _17: std::thread::JoinHandle<()>;
+    let mut _18: !;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _22: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _23: std::thread::JoinHandle<()>;
+    let mut _24: !;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _28: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _29: std::thread::JoinHandle<()>;
+    let mut _30: !;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _34: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _35: std::thread::JoinHandle<()>;
+    let mut _36: !;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _40: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _41: std::thread::JoinHandle<()>;
+    let mut _42: !;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _46: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _47: std::thread::JoinHandle<()>;
+    let mut _48: !;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _52: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _53: std::thread::JoinHandle<()>;
+    let mut _54: !;
+    let mut _55: bool;
+    let mut _56: bool;
+    let mut _57: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _58: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _59: std::thread::JoinHandle<()>;
+    let mut _60: !;
+    let mut _61: bool;
+    let mut _62: bool;
+    let mut _63: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _64: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _65: std::thread::JoinHandle<()>;
+    let mut _66: !;
+    let mut _67: bool;
+    let mut _68: bool;
+    let mut _69: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _70: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _71: std::thread::JoinHandle<()>;
+    let mut _72: !;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _76: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _77: std::thread::JoinHandle<()>;
+    let mut _78: !;
+    let mut _79: bool;
+    let mut _80: bool;
+    let mut _81: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _82: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _83: std::thread::JoinHandle<()>;
+    let mut _84: !;
+    let mut _85: bool;
+    let mut _86: bool;
+    let mut _87: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _88: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _89: std::thread::JoinHandle<()>;
+    let mut _90: !;
+    let mut _91: bool;
+    let mut _92: bool;
+    let mut _93: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _94: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _95: std::thread::JoinHandle<()>;
+    let mut _96: !;
+    let mut _97: bool;
+    let mut _98: bool;
+    let mut _99: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _100: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _101: std::thread::JoinHandle<()>;
+    let mut _102: !;
+    let mut _103: bool;
+    let mut _104: bool;
+    let mut _105: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _106: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _107: std::thread::JoinHandle<()>;
+    let mut _108: !;
+    let mut _109: bool;
+    let mut _110: bool;
+    let mut _111: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _112: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _113: std::thread::JoinHandle<()>;
+    let mut _114: !;
+    let mut _115: bool;
+    let mut _116: bool;
+    let mut _117: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _118: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _119: std::thread::JoinHandle<()>;
+    let mut _120: !;
+
+    bb0: {
+        _5 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb1;
+    }
+
+    bb1: {
+        _4 = JoinHandle::<()>::join(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _2 = Result::<(), Box<dyn Any + Send>>::is_err(move _3) -> [return: bb3, unwind: bb140];
+    }
+
+    bb3: {
+        _1 = Not(move _2);
+        drop(_4) -> bb4;
+    }
+
+    bb4: {
+        switchInt(move _1) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { isize::MIN / -isize::one(); } }).join().is_err()");
+    }
+
+    bb6: {
+        _11 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb7;
+    }
+
+    bb7: {
+        _10 = JoinHandle::<()>::join(move _11) -> bb8;
+    }
+
+    bb8: {
+        _9 = &_10;
+        _8 = Result::<(), Box<dyn Any + Send>>::is_err(move _9) -> [return: bb9, unwind: bb139];
+    }
+
+    bb9: {
+        _7 = Not(move _8);
+        drop(_10) -> bb10;
+    }
+
+    bb10: {
+        switchInt(move _7) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _12 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i8::MIN / -i8::one(); } }).join().is_err()");
+    }
+
+    bb12: {
+        _17 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb13;
+    }
+
+    bb13: {
+        _16 = JoinHandle::<()>::join(move _17) -> bb14;
+    }
+
+    bb14: {
+        _15 = &_16;
+        _14 = Result::<(), Box<dyn Any + Send>>::is_err(move _15) -> [return: bb15, unwind: bb138];
+    }
+
+    bb15: {
+        _13 = Not(move _14);
+        drop(_16) -> bb16;
+    }
+
+    bb16: {
+        switchInt(move _13) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _18 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i16::MIN / -i16::one(); } }).join().is_err()");
+    }
+
+    bb18: {
+        _23 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb19;
+    }
+
+    bb19: {
+        _22 = JoinHandle::<()>::join(move _23) -> bb20;
+    }
+
+    bb20: {
+        _21 = &_22;
+        _20 = Result::<(), Box<dyn Any + Send>>::is_err(move _21) -> [return: bb21, unwind: bb137];
+    }
+
+    bb21: {
+        _19 = Not(move _20);
+        drop(_22) -> bb22;
+    }
+
+    bb22: {
+        switchInt(move _19) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _24 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i32::MIN / -i32::one(); } }).join().is_err()");
+    }
+
+    bb24: {
+        _29 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb25;
+    }
+
+    bb25: {
+        _28 = JoinHandle::<()>::join(move _29) -> bb26;
+    }
+
+    bb26: {
+        _27 = &_28;
+        _26 = Result::<(), Box<dyn Any + Send>>::is_err(move _27) -> [return: bb27, unwind: bb136];
+    }
+
+    bb27: {
+        _25 = Not(move _26);
+        drop(_28) -> bb28;
+    }
+
+    bb28: {
+        switchInt(move _25) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _30 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i64::MIN / -i64::one(); } }).join().is_err()");
+    }
+
+    bb30: {
+        _35 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb31;
+    }
+
+    bb31: {
+        _34 = JoinHandle::<()>::join(move _35) -> bb32;
+    }
+
+    bb32: {
+        _33 = &_34;
+        _32 = Result::<(), Box<dyn Any + Send>>::is_err(move _33) -> [return: bb33, unwind: bb135];
+    }
+
+    bb33: {
+        _31 = Not(move _32);
+        drop(_34) -> bb34;
+    }
+
+    bb34: {
+        switchInt(move _31) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _36 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1isize / isize::zero(); } }).join().is_err()");
+    }
+
+    bb36: {
+        _41 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb37;
+    }
+
+    bb37: {
+        _40 = JoinHandle::<()>::join(move _41) -> bb38;
+    }
+
+    bb38: {
+        _39 = &_40;
+        _38 = Result::<(), Box<dyn Any + Send>>::is_err(move _39) -> [return: bb39, unwind: bb134];
+    }
+
+    bb39: {
+        _37 = Not(move _38);
+        drop(_40) -> bb40;
+    }
+
+    bb40: {
+        switchInt(move _37) -> [0: bb42, otherwise: bb41];
+    }
+
+    bb41: {
+        _42 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i8 / i8::zero(); } }).join().is_err()");
+    }
+
+    bb42: {
+        _47 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb43;
+    }
+
+    bb43: {
+        _46 = JoinHandle::<()>::join(move _47) -> bb44;
+    }
+
+    bb44: {
+        _45 = &_46;
+        _44 = Result::<(), Box<dyn Any + Send>>::is_err(move _45) -> [return: bb45, unwind: bb133];
+    }
+
+    bb45: {
+        _43 = Not(move _44);
+        drop(_46) -> bb46;
+    }
+
+    bb46: {
+        switchInt(move _43) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb47: {
+        _48 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i16 / i16::zero(); } }).join().is_err()");
+    }
+
+    bb48: {
+        _53 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb49;
+    }
+
+    bb49: {
+        _52 = JoinHandle::<()>::join(move _53) -> bb50;
+    }
+
+    bb50: {
+        _51 = &_52;
+        _50 = Result::<(), Box<dyn Any + Send>>::is_err(move _51) -> [return: bb51, unwind: bb132];
+    }
+
+    bb51: {
+        _49 = Not(move _50);
+        drop(_52) -> bb52;
+    }
+
+    bb52: {
+        switchInt(move _49) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb53: {
+        _54 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i32 / i32::zero(); } }).join().is_err()");
+    }
+
+    bb54: {
+        _59 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb55;
+    }
+
+    bb55: {
+        _58 = JoinHandle::<()>::join(move _59) -> bb56;
+    }
+
+    bb56: {
+        _57 = &_58;
+        _56 = Result::<(), Box<dyn Any + Send>>::is_err(move _57) -> [return: bb57, unwind: bb131];
+    }
+
+    bb57: {
+        _55 = Not(move _56);
+        drop(_58) -> bb58;
+    }
+
+    bb58: {
+        switchInt(move _55) -> [0: bb60, otherwise: bb59];
+    }
+
+    bb59: {
+        _60 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i64 / i64::zero(); } }).join().is_err()");
+    }
+
+    bb60: {
+        _65 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb61;
+    }
+
+    bb61: {
+        _64 = JoinHandle::<()>::join(move _65) -> bb62;
+    }
+
+    bb62: {
+        _63 = &_64;
+        _62 = Result::<(), Box<dyn Any + Send>>::is_err(move _63) -> [return: bb63, unwind: bb130];
+    }
+
+    bb63: {
+        _61 = Not(move _62);
+        drop(_64) -> bb64;
+    }
+
+    bb64: {
+        switchInt(move _61) -> [0: bb66, otherwise: bb65];
+    }
+
+    bb65: {
+        _66 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { isize::MIN % -isize::one(); } }).join().is_err()");
+    }
+
+    bb66: {
+        _71 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb67;
+    }
+
+    bb67: {
+        _70 = JoinHandle::<()>::join(move _71) -> bb68;
+    }
+
+    bb68: {
+        _69 = &_70;
+        _68 = Result::<(), Box<dyn Any + Send>>::is_err(move _69) -> [return: bb69, unwind: bb129];
+    }
+
+    bb69: {
+        _67 = Not(move _68);
+        drop(_70) -> bb70;
+    }
+
+    bb70: {
+        switchInt(move _67) -> [0: bb72, otherwise: bb71];
+    }
+
+    bb71: {
+        _72 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i8::MIN % -i8::one(); } }).join().is_err()");
+    }
+
+    bb72: {
+        _77 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb73;
+    }
+
+    bb73: {
+        _76 = JoinHandle::<()>::join(move _77) -> bb74;
+    }
+
+    bb74: {
+        _75 = &_76;
+        _74 = Result::<(), Box<dyn Any + Send>>::is_err(move _75) -> [return: bb75, unwind: bb128];
+    }
+
+    bb75: {
+        _73 = Not(move _74);
+        drop(_76) -> bb76;
+    }
+
+    bb76: {
+        switchInt(move _73) -> [0: bb78, otherwise: bb77];
+    }
+
+    bb77: {
+        _78 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i16::MIN % -i16::one(); } }).join().is_err()");
+    }
+
+    bb78: {
+        _83 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb79;
+    }
+
+    bb79: {
+        _82 = JoinHandle::<()>::join(move _83) -> bb80;
+    }
+
+    bb80: {
+        _81 = &_82;
+        _80 = Result::<(), Box<dyn Any + Send>>::is_err(move _81) -> [return: bb81, unwind: bb127];
+    }
+
+    bb81: {
+        _79 = Not(move _80);
+        drop(_82) -> bb82;
+    }
+
+    bb82: {
+        switchInt(move _79) -> [0: bb84, otherwise: bb83];
+    }
+
+    bb83: {
+        _84 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i32::MIN % -i32::one(); } }).join().is_err()");
+    }
+
+    bb84: {
+        _89 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb85;
+    }
+
+    bb85: {
+        _88 = JoinHandle::<()>::join(move _89) -> bb86;
+    }
+
+    bb86: {
+        _87 = &_88;
+        _86 = Result::<(), Box<dyn Any + Send>>::is_err(move _87) -> [return: bb87, unwind: bb126];
+    }
+
+    bb87: {
+        _85 = Not(move _86);
+        drop(_88) -> bb88;
+    }
+
+    bb88: {
+        switchInt(move _85) -> [0: bb90, otherwise: bb89];
+    }
+
+    bb89: {
+        _90 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { i64::MIN % -i64::one(); } }).join().is_err()");
+    }
+
+    bb90: {
+        _95 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb91;
+    }
+
+    bb91: {
+        _94 = JoinHandle::<()>::join(move _95) -> bb92;
+    }
+
+    bb92: {
+        _93 = &_94;
+        _92 = Result::<(), Box<dyn Any + Send>>::is_err(move _93) -> [return: bb93, unwind: bb125];
+    }
+
+    bb93: {
+        _91 = Not(move _92);
+        drop(_94) -> bb94;
+    }
+
+    bb94: {
+        switchInt(move _91) -> [0: bb96, otherwise: bb95];
+    }
+
+    bb95: {
+        _96 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1isize % isize::zero(); } }).join().is_err()");
+    }
+
+    bb96: {
+        _101 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb97;
+    }
+
+    bb97: {
+        _100 = JoinHandle::<()>::join(move _101) -> bb98;
+    }
+
+    bb98: {
+        _99 = &_100;
+        _98 = Result::<(), Box<dyn Any + Send>>::is_err(move _99) -> [return: bb99, unwind: bb124];
+    }
+
+    bb99: {
+        _97 = Not(move _98);
+        drop(_100) -> bb100;
+    }
+
+    bb100: {
+        switchInt(move _97) -> [0: bb102, otherwise: bb101];
+    }
+
+    bb101: {
+        _102 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i8 % i8::zero(); } }).join().is_err()");
+    }
+
+    bb102: {
+        _107 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb103;
+    }
+
+    bb103: {
+        _106 = JoinHandle::<()>::join(move _107) -> bb104;
+    }
+
+    bb104: {
+        _105 = &_106;
+        _104 = Result::<(), Box<dyn Any + Send>>::is_err(move _105) -> [return: bb105, unwind: bb123];
+    }
+
+    bb105: {
+        _103 = Not(move _104);
+        drop(_106) -> bb106;
+    }
+
+    bb106: {
+        switchInt(move _103) -> [0: bb108, otherwise: bb107];
+    }
+
+    bb107: {
+        _108 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i16 % i16::zero(); } }).join().is_err()");
+    }
+
+    bb108: {
+        _113 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb109;
+    }
+
+    bb109: {
+        _112 = JoinHandle::<()>::join(move _113) -> bb110;
+    }
+
+    bb110: {
+        _111 = &_112;
+        _110 = Result::<(), Box<dyn Any + Send>>::is_err(move _111) -> [return: bb111, unwind: bb122];
+    }
+
+    bb111: {
+        _109 = Not(move _110);
+        drop(_112) -> bb112;
+    }
+
+    bb112: {
+        switchInt(move _109) -> [0: bb114, otherwise: bb113];
+    }
+
+    bb113: {
+        _114 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i32 % i32::zero(); } }).join().is_err()");
+    }
+
+    bb114: {
+        _119 = spawn::<[closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19], ()>(const ZeroSized: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> bb115;
+    }
+
+    bb115: {
+        _118 = JoinHandle::<()>::join(move _119) -> bb116;
+    }
+
+    bb116: {
+        _117 = &_118;
+        _116 = Result::<(), Box<dyn Any + Send>>::is_err(move _117) -> [return: bb117, unwind: bb121];
+    }
+
+    bb117: {
+        _115 = Not(move _116);
+        drop(_118) -> bb118;
+    }
+
+    bb118: {
+        switchInt(move _115) -> [0: bb120, otherwise: bb119];
+    }
+
+    bb119: {
+        _120 = core::panicking::panic(const "assertion failed: thread::spawn({ move || { 1i64 % i64::zero(); } }).join().is_err()");
+    }
+
+    bb120: {
+        return;
+    }
+
+    bb121 (cleanup): {
+        drop(_118) -> [return: bb141, unwind terminate];
+    }
+
+    bb122 (cleanup): {
+        drop(_112) -> [return: bb141, unwind terminate];
+    }
+
+    bb123 (cleanup): {
+        drop(_106) -> [return: bb141, unwind terminate];
+    }
+
+    bb124 (cleanup): {
+        drop(_100) -> [return: bb141, unwind terminate];
+    }
+
+    bb125 (cleanup): {
+        drop(_94) -> [return: bb141, unwind terminate];
+    }
+
+    bb126 (cleanup): {
+        drop(_88) -> [return: bb141, unwind terminate];
+    }
+
+    bb127 (cleanup): {
+        drop(_82) -> [return: bb141, unwind terminate];
+    }
+
+    bb128 (cleanup): {
+        drop(_76) -> [return: bb141, unwind terminate];
+    }
+
+    bb129 (cleanup): {
+        drop(_70) -> [return: bb141, unwind terminate];
+    }
+
+    bb130 (cleanup): {
+        drop(_64) -> [return: bb141, unwind terminate];
+    }
+
+    bb131 (cleanup): {
+        drop(_58) -> [return: bb141, unwind terminate];
+    }
+
+    bb132 (cleanup): {
+        drop(_52) -> [return: bb141, unwind terminate];
+    }
+
+    bb133 (cleanup): {
+        drop(_46) -> [return: bb141, unwind terminate];
+    }
+
+    bb134 (cleanup): {
+        drop(_40) -> [return: bb141, unwind terminate];
+    }
+
+    bb135 (cleanup): {
+        drop(_34) -> [return: bb141, unwind terminate];
+    }
+
+    bb136 (cleanup): {
+        drop(_28) -> [return: bb141, unwind terminate];
+    }
+
+    bb137 (cleanup): {
+        drop(_22) -> [return: bb141, unwind terminate];
+    }
+
+    bb138 (cleanup): {
+        drop(_16) -> [return: bb141, unwind terminate];
+    }
+
+    bb139 (cleanup): {
+        drop(_10) -> [return: bb141, unwind terminate];
+    }
+
+    bb140 (cleanup): {
+        drop(_4) -> [return: bb141, unwind terminate];
+    }
+
+    bb141 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: isize;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <isize as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_isize);
+        assert(!move _4, "attempt to divide `{}` by zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_isize);
+        _6 = Eq(const _, const isize::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i8;
+    let mut _3: i8;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i8 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i8);
+        assert(!move _4, "attempt to divide `{}` by zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i8);
+        _6 = Eq(const _, const i8::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i16;
+    let mut _3: i16;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i16 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i16);
+        assert(!move _4, "attempt to divide `{}` by zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i16);
+        _6 = Eq(const _, const i16::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i32;
+    let mut _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i32 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i32);
+        assert(!move _4, "attempt to divide `{}` by zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i32);
+        _6 = Eq(const _, const i32::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i64;
+    let mut _3: i64;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i64 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i64);
+        assert(!move _4, "attempt to divide `{}` by zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i64);
+        _6 = Eq(const _, const i64::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <isize as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_isize);
+        assert(!move _3, "attempt to divide `{}` by zero", const 1_isize) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_isize);
+        _5 = Eq(const 1_isize, const isize::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute `{} / {}`, which would overflow", const 1_isize, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#6}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i8;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i8 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i8);
+        assert(!move _3, "attempt to divide `{}` by zero", const 1_i8) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i8);
+        _5 = Eq(const 1_i8, const i8::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute `{} / {}`, which would overflow", const 1_i8, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#7}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i16;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i16 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i16);
+        assert(!move _3, "attempt to divide `{}` by zero", const 1_i16) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i16);
+        _5 = Eq(const 1_i16, const i16::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute `{} / {}`, which would overflow", const 1_i16, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#8}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i32;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i32 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i32);
+        assert(!move _3, "attempt to divide `{}` by zero", const 1_i32) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i32);
+        _5 = Eq(const 1_i32, const i32::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute `{} / {}`, which would overflow", const 1_i32, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#9}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i64;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i64 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i64);
+        assert(!move _3, "attempt to divide `{}` by zero", const 1_i64) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i64);
+        _5 = Eq(const 1_i64, const i64::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute `{} / {}`, which would overflow", const 1_i64, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#10}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: isize;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <isize as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_isize);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_isize);
+        _6 = Eq(const _, const isize::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#11}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i8;
+    let mut _3: i8;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i8 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i8);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i8);
+        _6 = Eq(const _, const i8::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#12}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i16;
+    let mut _3: i16;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i16 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i16);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i16);
+        _6 = Eq(const _, const i16::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#13}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i32;
+    let mut _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i32 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i32);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i32);
+        _6 = Eq(const _, const i32::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#14}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i64;
+    let mut _3: i64;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = <i64 as Int>::one() -> bb1;
+    }
+
+    bb1: {
+        _2 = Neg(move _3);
+        _4 = Eq(_2, const 0_i64);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", const _) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(_2, const -1_i64);
+        _6 = Eq(const _, const i64::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", const _, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#15}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <isize as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_isize);
+        assert(!move _3, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_isize) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_isize);
+        _5 = Eq(const 1_isize, const isize::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_isize, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#16}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i8;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i8 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i8);
+        assert(!move _3, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_i8) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i8);
+        _5 = Eq(const 1_i8, const i8::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_i8, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#17}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i16;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i16 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i16);
+        assert(!move _3, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_i16) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i16);
+        _5 = Eq(const 1_i16, const i16::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_i16, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#18}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i32;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i32 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i32);
+        assert(!move _3, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_i32) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i32);
+        _5 = Eq(const 1_i32, const i32::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_i32, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#19}(_1: [closure@ui/numbers-arithmetic/issue-8460.rs:24:13: 24:19]) -> () {
+    let mut _0: ();
+    let mut _2: i64;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+
+    bb0: {
+        _2 = <i64 as Int>::zero() -> bb1;
+    }
+
+    bb1: {
+        _3 = Eq(_2, const 0_i64);
+        assert(!move _3, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_i64) -> bb2;
+    }
+
+    bb2: {
+        _4 = Eq(_2, const -1_i64);
+        _5 = Eq(const 1_i64, const i64::MIN);
+        _6 = BitAnd(move _4, move _5);
+        assert(!move _6, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_i64, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

@@ -1,0 +1,95 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: T) -> isize {
+    debug t => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let _3: isize;
+    let _4: usize;
+    let mut _5: isize;
+    scope 1 {
+        debug y => _3;
+    }
+    scope 2 {
+        debug y => _4;
+    }
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _4 = ((_1 as B).0: usize);
+        _5 = _4 as isize (IntToInt);
+        _0 = Add(const 10_isize, move _5);
+        goto -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = ((_1 as A).0: isize);
+        _0 = Add(const 10_isize, _3);
+        goto -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    let mut _2: T;
+
+    bb0: {
+        _2 = T::A(const 20_isize);
+        _1 = foo(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn T::A(_1: isize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn T::A(_1: isize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::A(move _1);
+        return;
+    }
+}
+
+fn T::B(_1: usize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::B(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn T::B(_1: usize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::B(move _1);
+        return;
+    }
+}

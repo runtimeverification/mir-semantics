@@ -1,0 +1,144 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N as usize (IntToInt);
+        return;
+    }
+}
+
+Foo::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N as usize (IntToInt);
+        return;
+    }
+}
+
+Bar::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: u8;
+    let mut _2: (u8, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _2 = CheckedAdd(const N, const 2_u8);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 2_u8) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_2.0: u8);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+Bar::0::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: u8;
+    let mut _2: (u8, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _2 = CheckedAdd(const N, const 2_u8);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 2_u8) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_2.0: u8);
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn foo() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+foo::{constant#0}: u16 = {
+    let mut _0: u16;
+    let mut _1: usize;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const N as usize (IntToInt);
+        _0 = move _1 as u16 (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+foo::{constant#2}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+foo::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N as usize (IntToInt);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: [u8; N as usize]) -> Foo<N> {
+    let mut _0: Foo<N>;
+
+    bb0: {
+        _0 = Foo::<N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: [u8; N as usize]) -> Foo<N> {
+    let mut _0: Foo<N>;
+
+    bb0: {
+        _0 = Foo::<N>(move _1);
+        return;
+    }
+}
+
+fn Bar(_1: [u8; (N + 2) as usize]) -> Bar<N> {
+    let mut _0: Bar<N>;
+
+    bb0: {
+        _0 = Bar::<N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Bar(_1: [u8; (N + 2) as usize]) -> Bar<N> {
+    let mut _0: Bar<N>;
+
+    bb0: {
+        _0 = Bar::<N>(move _1);
+        return;
+    }
+}

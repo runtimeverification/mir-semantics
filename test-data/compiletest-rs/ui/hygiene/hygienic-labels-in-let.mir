@@ -1,0 +1,330 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let mut _3: isize;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: std::ops::Range<i32>;
+    let mut _19: std::ops::Range<i32>;
+    let mut _21: std::option::Option<i32>;
+    let mut _22: &mut std::ops::Range<i32>;
+    let mut _23: isize;
+    let mut _24: isize;
+    let mut _25: (&isize, &isize);
+    let mut _26: &isize;
+    let mut _27: &isize;
+    let _28: isize;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: isize;
+    let mut _34: isize;
+    let _36: !;
+    let mut _37: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: std::ops::Range<i32>;
+    let mut _40: std::ops::Range<i32>;
+    let mut _42: std::option::Option<i32>;
+    let mut _43: &mut std::ops::Range<i32>;
+    let mut _44: isize;
+    let mut _45: i32;
+    let mut _46: isize;
+    let mut _47: (&isize, &isize);
+    let mut _48: &isize;
+    let mut _49: &isize;
+    let _50: isize;
+    let mut _53: bool;
+    let mut _54: bool;
+    let mut _55: isize;
+    let mut _56: isize;
+    let _58: !;
+    let mut _59: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: std::ops::Range<i32>;
+    let mut _62: std::ops::Range<i32>;
+    let mut _64: std::option::Option<i32>;
+    let mut _65: &mut std::ops::Range<i32>;
+    let mut _66: isize;
+    let mut _67: std::ops::Range<i32>;
+    let mut _68: std::ops::Range<i32>;
+    let mut _70: std::option::Option<i32>;
+    let mut _71: &mut std::ops::Range<i32>;
+    let mut _72: isize;
+    let mut _73: isize;
+    let mut _74: (&isize, &isize);
+    let mut _75: &isize;
+    let mut _76: &isize;
+    let _77: isize;
+    let mut _80: bool;
+    let mut _81: bool;
+    let mut _82: isize;
+    let mut _83: isize;
+    let _85: !;
+    let mut _86: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug i => _1;
+        let _2: isize;
+        scope 2 {
+            debug j => _2;
+            let _8: &isize;
+            let _9: &isize;
+            let _17: isize;
+            let mut _20: std::ops::Range<i32>;
+            scope 3 {
+                debug left_val => _8;
+                debug right_val => _9;
+                let _14: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _14;
+                }
+            }
+            scope 5 {
+                debug k => _17;
+                let _29: &isize;
+                let _30: &isize;
+                let _38: isize;
+                let mut _41: std::ops::Range<i32>;
+                scope 7 {
+                    debug left_val => _29;
+                    debug right_val => _30;
+                    let _35: core::panicking::AssertKind;
+                    scope 8 {
+                        debug kind => _35;
+                    }
+                }
+                scope 9 {
+                    debug l => _38;
+                    let _51: &isize;
+                    let _52: &isize;
+                    let _60: isize;
+                    let mut _63: std::ops::Range<i32>;
+                    scope 11 {
+                        debug left_val => _51;
+                        debug right_val => _52;
+                        let _57: core::panicking::AssertKind;
+                        scope 12 {
+                            debug kind => _57;
+                        }
+                    }
+                    scope 13 {
+                        debug n => _60;
+                        let _78: &isize;
+                        let _79: &isize;
+                        scope 16 {
+                            debug left_val => _78;
+                            debug right_val => _79;
+                            let _84: core::panicking::AssertKind;
+                            scope 17 {
+                                debug kind => _84;
+                            }
+                        }
+                    }
+                    scope 14 {
+                        debug iter => _63;
+                        let mut _69: std::ops::Range<i32>;
+                        scope 15 {
+                            debug iter => _69;
+                        }
+                    }
+                }
+                scope 10 {
+                    debug iter => _41;
+                }
+            }
+            scope 6 {
+                debug iter => _20;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 0_isize;
+        _3 = _1;
+        _2 = Add(move _3, const 1_isize);
+        _5 = &_2;
+        _7 = const 1_isize;
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &isize);
+        _9 = (_4.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _19 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _18 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _19) -> bb4;
+    }
+
+    bb4: {
+        _20 = move _18;
+        _22 = &mut _20;
+        _21 = <std::ops::Range<i32> as Iterator>::next(_22) -> bb5;
+    }
+
+    bb5: {
+        _23 = discriminant(_21);
+        switchInt(move _23) -> [0: bb6, 1: bb6, otherwise: bb1];
+    }
+
+    bb6: {
+        _24 = _1;
+        _17 = Add(move _24, const 1_isize);
+        _26 = &_17;
+        _28 = const 1_isize;
+        _27 = &_28;
+        _25 = (move _26, move _27);
+        _29 = (_25.0: &isize);
+        _30 = (_25.1: &isize);
+        _33 = (*_29);
+        _34 = (*_30);
+        _32 = Eq(move _33, move _34);
+        _31 = Not(move _32);
+        switchInt(move _31) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _35 = core::panicking::AssertKind::Eq;
+        _37 = Option::<Arguments<'_>>::None;
+        _36 = core::panicking::assert_failed::<isize, isize>(move _35, _29, _30, move _37);
+    }
+
+    bb8: {
+        _40 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _39 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _40) -> bb9;
+    }
+
+    bb9: {
+        _41 = move _39;
+        goto -> bb10;
+    }
+
+    bb10: {
+        _43 = &mut _41;
+        _42 = <std::ops::Range<i32> as Iterator>::next(_43) -> bb11;
+    }
+
+    bb11: {
+        _44 = discriminant(_42);
+        switchInt(move _44) -> [0: bb14, 1: bb12, otherwise: bb1];
+    }
+
+    bb12: {
+        _45 = Add(const 1_i32, const 1_i32);
+        switchInt(move _45) -> [2: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _1 = Add(_1, const 1_isize);
+        goto -> bb10;
+    }
+
+    bb14: {
+        _46 = _1;
+        _38 = Add(move _46, const 1_isize);
+        _48 = &_38;
+        _50 = const 1_isize;
+        _49 = &_50;
+        _47 = (move _48, move _49);
+        _51 = (_47.0: &isize);
+        _52 = (_47.1: &isize);
+        _55 = (*_51);
+        _56 = (*_52);
+        _54 = Eq(move _55, move _56);
+        _53 = Not(move _54);
+        switchInt(move _53) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _57 = core::panicking::AssertKind::Eq;
+        _59 = Option::<Arguments<'_>>::None;
+        _58 = core::panicking::assert_failed::<isize, isize>(move _57, _51, _52, move _59);
+    }
+
+    bb16: {
+        _62 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _61 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _62) -> bb17;
+    }
+
+    bb17: {
+        _63 = move _61;
+        goto -> bb18;
+    }
+
+    bb18: {
+        _65 = &mut _63;
+        _64 = <std::ops::Range<i32> as Iterator>::next(_65) -> bb19;
+    }
+
+    bb19: {
+        _66 = discriminant(_64);
+        switchInt(move _66) -> [0: bb21, 1: bb20, otherwise: bb1];
+    }
+
+    bb20: {
+        _68 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _67 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _68) -> bb22;
+    }
+
+    bb21: {
+        _73 = _1;
+        _60 = Add(move _73, const 1_isize);
+        _75 = &_60;
+        _77 = const 1_isize;
+        _76 = &_77;
+        _74 = (move _75, move _76);
+        _78 = (_74.0: &isize);
+        _79 = (_74.1: &isize);
+        _82 = (*_78);
+        _83 = (*_79);
+        _81 = Eq(move _82, move _83);
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb22: {
+        _69 = move _67;
+        _71 = &mut _69;
+        _70 = <std::ops::Range<i32> as Iterator>::next(_71) -> bb23;
+    }
+
+    bb23: {
+        _72 = discriminant(_70);
+        switchInt(move _72) -> [0: bb24, 1: bb18, otherwise: bb1];
+    }
+
+    bb24: {
+        _1 = Add(_1, const 1_isize);
+        goto -> bb18;
+    }
+
+    bb25: {
+        _84 = core::panicking::AssertKind::Eq;
+        _86 = Option::<Arguments<'_>>::None;
+        _85 = core::panicking::assert_failed::<isize, isize>(move _84, _78, _79, move _86);
+    }
+
+    bb26: {
+        return;
+    }
+}

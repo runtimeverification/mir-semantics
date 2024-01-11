@@ -1,0 +1,97 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+    let _2: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _3: std::panic::AssertUnwindSafe<[closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51]>;
+    let mut _4: [closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51];
+    let mut _5: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+    let _6: std::ops::GeneratorState<(), ()>;
+    let mut _7: std::pin::Pin<&mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]>;
+    let mut _8: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+    scope 1 {
+        debug g => _1;
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19 (#0)];
+        _5 = &mut _1;
+        _4 = [closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51] { g: move _5 };
+        _3 = AssertUnwindSafe::<[closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51]>(move _4);
+        _2 = catch_unwind::<AssertUnwindSafe<[closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51]>, ()>(move _3) -> bb1;
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        _8 = &mut _1;
+        _7 = Pin::<&mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]>::new(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = <[generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19] as Generator>::resume(move _7, const ()) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: !;
+    let mut _4: u32;
+    let mut _5: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+    let mut _6: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+
+    bb0: {
+        _5 = deref_copy (_1.0: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]);
+        _4 = discriminant((*_5));
+        switchInt(move _4) -> [0: bb1, 2: bb3, otherwise: bb4];
+    }
+
+    bb1: {
+        _3 = begin_panic::<&str>(const "explicit panic") -> bb2;
+    }
+
+    bb2 (cleanup): {
+        _6 = deref_copy (_1.0: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]);
+        discriminant((*_6)) = 2;
+        resume;
+    }
+
+    bb3: {
+        assert(const false, "generator resumed after panicking") -> bb3;
+    }
+
+    bb4: {
+        unreachable;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/generator/generator-resume-after-panic.rs:21:49: 21:51]) -> () {
+    debug g => (*((*_1).0: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]));
+    let mut _0: ();
+    let _2: std::ops::GeneratorState<(), ()>;
+    let mut _3: std::pin::Pin<&mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]>;
+    let mut _4: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19];
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]);
+        _3 = Pin::<&mut [generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19]>::new(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <[generator@ui/generator/generator-resume-after-panic.rs:17:17: 17:19] as Generator>::resume(move _3, const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

@@ -1,0 +1,105 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn filter_fold(_1: PRED, _2: FOLD) -> impl FnMut(Acc, T) -> Acc {
+    debug predicate => _1;
+    debug fold => _2;
+    let mut _0: impl FnMut(Acc, T) -> Acc;
+
+    bb0: {
+        _0 = [closure@ui/lazy-type-alias-impl-trait/opaque_vs_opaque.rs:9:5: 9:21] { predicate: move _1, fold: move _2 };
+        return;
+    }
+}
+
+fn filter_fold::{closure#0}(_1: &mut [closure@ui/lazy-type-alias-impl-trait/opaque_vs_opaque.rs:9:5: 9:21], _2: Acc, _3: T) -> Acc {
+    debug acc => _2;
+    debug item => _3;
+    debug predicate => ((*_1).0: PRED);
+    debug fold => ((*_1).1: FOLD);
+    let mut _0: Acc;
+    let mut _4: bool;
+    let mut _5: &mut PRED;
+    let mut _6: (&T,);
+    let _7: &T;
+    let mut _8: &mut FOLD;
+    let mut _9: (Acc, T);
+    let mut _10: Acc;
+    let mut _11: T;
+    let mut _12: bool;
+    let mut _13: bool;
+
+    bb0: {
+        _13 = const false;
+        _12 = const false;
+        _13 = const true;
+        _12 = const true;
+        _5 = &mut ((*_1).0: PRED);
+        _7 = &_3;
+        _6 = (_7,);
+        _4 = <PRED as FnMut<(&T,)>>::call_mut(move _5, move _6) -> [return: bb1, unwind: bb10];
+    }
+
+    bb1: {
+        switchInt(move _4) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = &mut ((*_1).1: FOLD);
+        _13 = const false;
+        _10 = move _2;
+        _12 = const false;
+        _11 = move _3;
+        _9 = (move _10, move _11);
+        _0 = <FOLD as FnMut<(Acc, T)>>::call_mut(move _8, move _9) -> [return: bb12, unwind: bb10];
+    }
+
+    bb3: {
+        _13 = const false;
+        _0 = move _2;
+        goto -> bb4;
+    }
+
+    bb4: {
+        switchInt(_12) -> [0: bb5, otherwise: bb8];
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        switchInt(_13) -> [0: bb7, otherwise: bb11];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+
+    bb8: {
+        drop(_3) -> [return: bb5, unwind: bb6];
+    }
+
+    bb9 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        switchInt(_12) -> [0: bb6, otherwise: bb9];
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb12: {
+        goto -> bb4;
+    }
+}

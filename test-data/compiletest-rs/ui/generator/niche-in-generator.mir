@@ -1,0 +1,152 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn take(_1: T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _3: &bool;
+    let mut _4: (&usize, &usize);
+    let mut _5: &usize;
+    let _6: usize;
+    let _7: &[generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _8: &usize;
+    let _9: usize;
+    let _10: &std::option::Option<[generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>;
+    let _11: std::option::Option<[generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>;
+    let mut _12: [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: usize;
+    let mut _18: usize;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _2: [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+        scope 2 {
+            debug gen1 => _2;
+            let _13: &usize;
+            let _14: &usize;
+            scope 3 {
+                debug left_val => _13;
+                debug right_val => _14;
+                let _19: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _19;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const false;
+        _3 = &_1;
+        _2 = [generator@ui/generator/niche-in-generator.rs:13:16: 13:18 (#0)] { x: move _3 };
+        _7 = &_2;
+        _6 = std::mem::size_of_val::<[generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>(_7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _12 = move _2;
+        _11 = Option::<[generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>::Some(move _12);
+        _10 = &_11;
+        _9 = std::mem::size_of_val::<Option<[generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>>(_10) -> bb2;
+    }
+
+    bb2: {
+        _8 = &_9;
+        _4 = (move _5, move _8);
+        _13 = (_4.0: &usize);
+        _14 = (_4.1: &usize);
+        _17 = (*_13);
+        _18 = (*_14);
+        _16 = Eq(move _17, move _18);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<usize, usize>(move _19, _13, _14, move _21);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]>, _2: ()) -> GeneratorState<(), ()> {
+    debug x => (*((*(_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18])).0: &bool));
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: ();
+    let _4: ();
+    let mut _5: bool;
+    let mut _6: &bool;
+    let mut _7: ();
+    let mut _8: u32;
+    let mut _9: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _10: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _11: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _12: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+    let mut _13: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18];
+
+    bb0: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]);
+        _8 = discriminant((*_9));
+        switchInt(move _8) -> [0: bb1, 1: bb6, 2: bb5, 3: bb4, otherwise: bb7];
+    }
+
+    bb1: {
+        _3 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _3);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]);
+        discriminant((*_10)) = 3;
+        return;
+    }
+
+    bb2: {
+        _7 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _7);
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]);
+        discriminant((*_12)) = 1;
+        return;
+    }
+
+    bb3 (cleanup): {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]);
+        discriminant((*_13)) = 2;
+        resume;
+    }
+
+    bb4: {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/niche-in-generator.rs:13:16: 13:18]);
+        _6 = deref_copy ((*_11).0: &bool);
+        _5 = (*_6);
+        _4 = take::<bool>(move _5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb5: {
+        assert(const false, "generator resumed after panicking") -> bb5;
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after completion") -> bb6;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}

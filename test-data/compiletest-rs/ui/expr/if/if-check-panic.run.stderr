@@ -1,0 +1,2 @@
+thread 'main' panicked at 'Number is odd', ui/expr/if/if-check-panic.rs:19:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

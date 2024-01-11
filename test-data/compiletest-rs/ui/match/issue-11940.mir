@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const TEST_STR: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "abcd";
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _2: bool;
+    let mut _3: !;
+    scope 1 {
+        debug s => _1;
+    }
+
+    bb0: {
+        _1 = const "abcd";
+        _2 = <str as PartialEq>::eq(_1, const "abcd") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _2) -> [0: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _3 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb3: {
+        return;
+    }
+}

@@ -1,0 +1,67 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _2: &std::vec::Vec<usize>;
+    let _3: std::vec::Vec<usize>;
+    let mut _4: std::boxed::Box<[usize]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[usize; 3]>;
+    let mut _9: *const [usize; 3];
+    let mut _10: *const ();
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: bool;
+    scope 1 {
+    }
+
+    bb0: {
+        _5 = SizeOf([usize; 3]);
+        _6 = AlignOf([usize; 3]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [usize; 3]);
+        _9 = (((_8.0: std::ptr::Unique<[usize; 3]>).0: std::ptr::NonNull<[usize; 3]>).0: *const [usize; 3]);
+        _10 = _9 as *const () (PtrToPtr);
+        _11 = _10 as usize (Transmute);
+        _12 = AlignOf(usize);
+        _13 = Sub(_12, const 1_usize);
+        _14 = BitAnd(_11, _13);
+        _15 = Eq(_14, const 0_usize);
+        assert(_15, "misaligned pointer dereference: address must be a multiple of {} but is {}", _12, _11) -> [success: bb7, unwind unreachable];
+    }
+
+    bb2: {
+        _2 = &_3;
+        _1 = Vec::<usize>::len(move _2) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_3) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        (*_9) = [const 1_usize, const 2_usize, const 3_usize];
+        _4 = move _8 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _3 = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _4) -> bb2;
+    }
+}

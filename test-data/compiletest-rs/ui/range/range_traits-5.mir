@@ -1,0 +1,39 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/range/range_traits-5.rs:5:16: 5:21>::clone(_1: &R) -> R {
+    debug self => _1;
+    let mut _0: R;
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn R(_1: std::ops::RangeFull) -> R {
+    let mut _0: R;
+
+    bb0: {
+        _0 = R(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn R(_1: std::ops::RangeFull) -> R {
+    let mut _0: R;
+
+    bb0: {
+        _0 = R(move _1);
+        return;
+    }
+}

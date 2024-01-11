@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f(_1: Vec<isize>) -> () {
+    debug _a => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::vec::Vec<isize>;
+    let mut _3: std::boxed::Box<[isize]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[isize; 5]>;
+    let mut _8: *const [isize; 5];
+    let mut _9: *const ();
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: bool;
+    scope 1 {
+    }
+
+    bb0: {
+        _4 = SizeOf([isize; 5]);
+        _5 = AlignOf([isize; 5]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [isize; 5]);
+        _8 = (((_7.0: std::ptr::Unique<[isize; 5]>).0: std::ptr::NonNull<[isize; 5]>).0: *const [isize; 5]);
+        _9 = _8 as *const () (PtrToPtr);
+        _10 = _9 as usize (Transmute);
+        _11 = AlignOf(isize);
+        _12 = Sub(_11, const 1_usize);
+        _13 = BitAnd(_10, _12);
+        _14 = Eq(_13, const 0_usize);
+        assert(_14, "misaligned pointer dereference: address must be a multiple of {} but is {}", _11, _10) -> [success: bb4, unwind unreachable];
+    }
+
+    bb2: {
+        _1 = f(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        (*_8) = [const 1_isize, const 2_isize, const 3_isize, const 4_isize, const 5_isize];
+        _3 = move _7 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _2 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}

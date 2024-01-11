@@ -1,0 +1,581 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+B::B1::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 4_isize;
+        return;
+    }
+}
+
+B::B2::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 2_isize;
+        return;
+    }
+}
+
+Aligned::Zero::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 0_isize;
+        return;
+    }
+}
+
+Aligned::One::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 1_isize;
+        return;
+    }
+}
+
+const X: u8 = {
+    let mut _0: u8;
+    let _1: Aligned;
+    let _2: Aligned;
+    let mut _3: isize;
+    scope 1 {
+        debug aligned => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Aligned::Zero;
+        StorageLive(_2);
+        _2 = move _1;
+        _3 = discriminant(_2);
+        _0 = move _3 as u8 (IntToInt);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    let mut _3: isize;
+    let mut _4: (&isize, &isize);
+    let _5: &isize;
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&isize, &isize);
+    let _18: &isize;
+    let mut _19: &isize;
+    let _20: isize;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: isize;
+    let mut _26: isize;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&isize, &isize);
+    let mut _31: &isize;
+    let mut _32: &isize;
+    let _33: isize;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: isize;
+    let mut _39: isize;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&isize, &isize);
+    let mut _44: &isize;
+    let mut _45: &isize;
+    let _46: isize;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: isize;
+    let mut _52: isize;
+    let _54: !;
+    let mut _55: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _58: isize;
+    let mut _59: u8;
+    let mut _60: bool;
+    let mut _63: isize;
+    let mut _64: u8;
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: (&isize, &isize);
+    let _69: &isize;
+    let mut _70: &isize;
+    let _71: isize;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: isize;
+    let mut _77: isize;
+    let _79: !;
+    let mut _80: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _81: (&isize, &isize);
+    let _82: &isize;
+    let mut _83: &isize;
+    let _84: isize;
+    let mut _87: bool;
+    let mut _88: bool;
+    let mut _89: isize;
+    let mut _90: isize;
+    let _92: !;
+    let mut _93: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _94: (&isize, &isize);
+    let mut _95: &isize;
+    let mut _96: &isize;
+    let _97: isize;
+    let mut _100: bool;
+    let mut _101: bool;
+    let mut _102: isize;
+    let mut _103: isize;
+    let _105: !;
+    let mut _106: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _107: (&isize, &isize);
+    let mut _108: &isize;
+    let mut _109: &isize;
+    let _110: isize;
+    let mut _113: bool;
+    let mut _114: bool;
+    let mut _115: isize;
+    let mut _116: isize;
+    let _118: !;
+    let mut _119: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _120: (&u8, &u8);
+    let mut _121: &u8;
+    let _122: u8;
+    let mut _123: &u8;
+    let _124: u8;
+    let mut _127: bool;
+    let mut _128: bool;
+    let mut _129: u8;
+    let mut _130: u8;
+    let _132: !;
+    let mut _133: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a1 => _1;
+        let _2: isize;
+        scope 2 {
+            debug a2 => _2;
+            let _8: &isize;
+            let _9: &isize;
+            let _21: &isize;
+            let _22: &isize;
+            let _34: &isize;
+            let _35: &isize;
+            let _47: &isize;
+            let _48: &isize;
+            let _56: isize;
+            let _57: A;
+            scope 3 {
+                debug left_val => _8;
+                debug right_val => _9;
+                let _14: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _14;
+                }
+            }
+            scope 5 {
+                debug left_val => _21;
+                debug right_val => _22;
+                let _27: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _27;
+                }
+            }
+            scope 7 {
+                debug left_val => _34;
+                debug right_val => _35;
+                let _40: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _40;
+                }
+            }
+            scope 9 {
+                debug left_val => _47;
+                debug right_val => _48;
+                let _53: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _53;
+                }
+            }
+            scope 11 {
+                debug a1_2 => _56;
+                let _61: isize;
+                let _62: B;
+                scope 13 {
+                    debug a2_2 => _61;
+                    let _72: &isize;
+                    let _73: &isize;
+                    let _85: &isize;
+                    let _86: &isize;
+                    let _98: &isize;
+                    let _99: &isize;
+                    let _111: &isize;
+                    let _112: &isize;
+                    let _125: &u8;
+                    let _126: &u8;
+                    scope 15 {
+                        debug left_val => _72;
+                        debug right_val => _73;
+                        let _78: core::panicking::AssertKind;
+                        scope 16 {
+                            debug kind => _78;
+                        }
+                    }
+                    scope 17 {
+                        debug left_val => _85;
+                        debug right_val => _86;
+                        let _91: core::panicking::AssertKind;
+                        scope 18 {
+                            debug kind => _91;
+                        }
+                    }
+                    scope 19 {
+                        debug left_val => _98;
+                        debug right_val => _99;
+                        let _104: core::panicking::AssertKind;
+                        scope 20 {
+                            debug kind => _104;
+                        }
+                    }
+                    scope 21 {
+                        debug left_val => _111;
+                        debug right_val => _112;
+                        let _117: core::panicking::AssertKind;
+                        scope 22 {
+                            debug kind => _117;
+                        }
+                    }
+                    scope 23 {
+                        debug left_val => _125;
+                        debug right_val => _126;
+                        let _131: core::panicking::AssertKind;
+                        scope 24 {
+                            debug kind => _131;
+                        }
+                    }
+                }
+                scope 14 {
+                    debug v => _62;
+                }
+            }
+            scope 12 {
+                debug v => _57;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_isize;
+        _3 = Add(const _, const 0_isize);
+        _2 = move _3;
+        _5 = const {alloc5: &isize};
+        _7 = const 1_isize;
+        _6 = &_7;
+        _4 = (_5, move _6);
+        _8 = (_4.0: &isize);
+        _9 = (_4.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        _18 = const {alloc6: &isize};
+        _20 = const 2_isize;
+        _19 = &_20;
+        _17 = (_18, move _19);
+        _21 = (_17.0: &isize);
+        _22 = (_17.1: &isize);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<isize, isize>(move _27, _21, _22, move _29);
+    }
+
+    bb4: {
+        _31 = &_1;
+        _33 = const 1_isize;
+        _32 = &_33;
+        _30 = (move _31, move _32);
+        _34 = (_30.0: &isize);
+        _35 = (_30.1: &isize);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<isize, isize>(move _40, _34, _35, move _42);
+    }
+
+    bb6: {
+        _44 = &_2;
+        _46 = const 2_isize;
+        _45 = &_46;
+        _43 = (move _44, move _45);
+        _47 = (_43.0: &isize);
+        _48 = (_43.1: &isize);
+        _51 = (*_47);
+        _52 = (*_48);
+        _50 = Eq(move _51, move _52);
+        _49 = Not(move _50);
+        switchInt(move _49) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _53 = core::panicking::AssertKind::Eq;
+        _55 = Option::<Arguments<'_>>::None;
+        _54 = core::panicking::assert_failed::<isize, isize>(move _53, _47, _48, move _55);
+    }
+
+    bb8: {
+        _57 = A::A1;
+        _58 = discriminant(_57);
+        _59 = _58 as u8 (IntToInt);
+        _60 = Le(_59, const 1_u8);
+        assume(move _60);
+        _56 = move _58;
+        _62 = B::B1;
+        _63 = discriminant(_62);
+        _64 = _63 as u8 (IntToInt);
+        _65 = Ge(_64, const 2_u8);
+        _66 = Le(_64, const 4_u8);
+        _67 = BitAnd(move _65, move _66);
+        assume(move _67);
+        _61 = move _63;
+        _69 = const {alloc7: &isize};
+        _71 = const 0_isize;
+        _70 = &_71;
+        _68 = (_69, move _70);
+        _72 = (_68.0: &isize);
+        _73 = (_68.1: &isize);
+        _76 = (*_72);
+        _77 = (*_73);
+        _75 = Eq(move _76, move _77);
+        _74 = Not(move _75);
+        switchInt(move _74) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _78 = core::panicking::AssertKind::Eq;
+        _80 = Option::<Arguments<'_>>::None;
+        _79 = core::panicking::assert_failed::<isize, isize>(move _78, _72, _73, move _80);
+    }
+
+    bb10: {
+        _82 = const {alloc8: &isize};
+        _84 = const 4_isize;
+        _83 = &_84;
+        _81 = (_82, move _83);
+        _85 = (_81.0: &isize);
+        _86 = (_81.1: &isize);
+        _89 = (*_85);
+        _90 = (*_86);
+        _88 = Eq(move _89, move _90);
+        _87 = Not(move _88);
+        switchInt(move _87) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _91 = core::panicking::AssertKind::Eq;
+        _93 = Option::<Arguments<'_>>::None;
+        _92 = core::panicking::assert_failed::<isize, isize>(move _91, _85, _86, move _93);
+    }
+
+    bb12: {
+        _95 = &_56;
+        _97 = const 0_isize;
+        _96 = &_97;
+        _94 = (move _95, move _96);
+        _98 = (_94.0: &isize);
+        _99 = (_94.1: &isize);
+        _102 = (*_98);
+        _103 = (*_99);
+        _101 = Eq(move _102, move _103);
+        _100 = Not(move _101);
+        switchInt(move _100) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _104 = core::panicking::AssertKind::Eq;
+        _106 = Option::<Arguments<'_>>::None;
+        _105 = core::panicking::assert_failed::<isize, isize>(move _104, _98, _99, move _106);
+    }
+
+    bb14: {
+        _108 = &_61;
+        _110 = const 4_isize;
+        _109 = &_110;
+        _107 = (move _108, move _109);
+        _111 = (_107.0: &isize);
+        _112 = (_107.1: &isize);
+        _115 = (*_111);
+        _116 = (*_112);
+        _114 = Eq(move _115, move _116);
+        _113 = Not(move _114);
+        switchInt(move _113) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _117 = core::panicking::AssertKind::Eq;
+        _119 = Option::<Arguments<'_>>::None;
+        _118 = core::panicking::assert_failed::<isize, isize>(move _117, _111, _112, move _119);
+    }
+
+    bb16: {
+        _122 = const _;
+        _121 = &_122;
+        _124 = const 0_u8;
+        _123 = &_124;
+        _120 = (move _121, move _123);
+        _125 = (_120.0: &u8);
+        _126 = (_120.1: &u8);
+        _129 = (*_125);
+        _130 = (*_126);
+        _128 = Eq(move _129, move _130);
+        _127 = Not(move _128);
+        switchInt(move _127) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _131 = core::panicking::AssertKind::Eq;
+        _133 = Option::<Arguments<'_>>::None;
+        _132 = core::panicking::assert_failed::<u8, u8>(move _131, _125, _126, move _133);
+    }
+
+    bb18: {
+        return;
+    }
+}
+
+alloc8 (static: c2_2, size: 8, align: 8) {
+    04 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc7 (static: c1_2, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc6 (static: c2, size: 8, align: 8) {
+    02 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc5 (static: c1, size: 8, align: 8) {
+    01 00 00 00 00 00 00 00                         │ ........
+}
+
+static c1: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 1_isize as isize (IntToInt);
+        return;
+    }
+}
+
+static c2: isize = {
+    let mut _0: isize;
+    let mut _1: isize;
+    let mut _2: (isize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _2 = CheckedAdd(const _, const 0_isize);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", const _, const 0_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_2.0: isize);
+        _0 = move _1 as isize (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static c1_2: isize = {
+    let mut _0: isize;
+    let _1: A;
+    let _2: A;
+    let mut _3: isize;
+    let mut _4: u8;
+    let mut _5: bool;
+    scope 1 {
+        debug v => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = A::A1;
+        StorageLive(_2);
+        _2 = move _1;
+        _3 = discriminant(_2);
+        _4 = _3 as u8 (IntToInt);
+        _5 = Le(_4, const 1_u8);
+        assume(move _5);
+        _0 = move _3 as isize (IntToInt);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static c2_2: isize = {
+    let mut _0: isize;
+    let _1: B;
+    let _2: B;
+    let mut _3: isize;
+    let mut _4: u8;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    scope 1 {
+        debug v => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = B::B1;
+        StorageLive(_2);
+        _2 = move _1;
+        _3 = discriminant(_2);
+        _4 = _3 as u8 (IntToInt);
+        _5 = Ge(_4, const 2_u8);
+        _6 = Le(_4, const 4_u8);
+        _7 = BitAnd(move _5, move _6);
+        assume(move _7);
+        _0 = move _3 as isize (IntToInt);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}

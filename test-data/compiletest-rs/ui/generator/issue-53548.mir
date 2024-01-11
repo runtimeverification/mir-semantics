@@ -1,0 +1,88 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<[static generator@ui/generator/issue-53548.rs:32:14: 32:28]>;
+    let mut _2: [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+
+    bb0: {
+        _2 = [generator@ui/generator/issue-53548.rs:32:14: 32:28 (#0)];
+        _1 = Box::<[static generator@ui/generator/issue-53548.rs:32:14: 32:28]>::new(move _2) -> bb1;
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: std::rc::Rc<std::cell::RefCell<std::option::Option<std::boxed::Box<dyn Trait>>>>;
+    let mut _4: ();
+    let mut _5: ();
+    let mut _6: u32;
+    let mut _7: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    let mut _8: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    let mut _9: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    let mut _10: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    let mut _11: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    let mut _12: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28];
+    scope 1 {
+        debug store => (((*(_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28])) as variant#3).0: Store<std::boxed::Box<dyn Trait>>);
+    }
+
+    bb0: {
+        _7 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        _6 = discriminant((*_7));
+        switchInt(move _6) -> [0: bb1, 1: bb7, 2: bb6, 3: bb5, otherwise: bb8];
+    }
+
+    bb1: {
+        _3 = <Rc<RefCell<Option<Box<dyn Trait>>>> as Default>::default() -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _8 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        (((*_8) as variant#3).0: Store<std::boxed::Box<dyn Trait>>) = Store::<Box<dyn Trait>> { inner: move _3 };
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _9 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        discriminant((*_9)) = 3;
+        return;
+    }
+
+    bb3: {
+        _0 = GeneratorState::<(), ()>::Complete(move _5);
+        _11 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        discriminant((*_11)) = 1;
+        return;
+    }
+
+    bb4 (cleanup): {
+        _12 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        discriminant((*_12)) = 2;
+        resume;
+    }
+
+    bb5: {
+        _5 = const ();
+        _10 = deref_copy (_1.0: &mut [static generator@ui/generator/issue-53548.rs:32:14: 32:28]);
+        drop((((*_10) as variant#3).0: Store<std::boxed::Box<dyn Trait>>)) -> [return: bb3, unwind: bb4];
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after panicking") -> bb6;
+    }
+
+    bb7: {
+        assert(const false, "generator resumed after completion") -> bb7;
+    }
+
+    bb8: {
+        unreachable;
+    }
+}

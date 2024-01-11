@@ -1,0 +1,76 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: main::Foo;
+    let _2: std::string::String;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &main::Foo;
+    scope 1 {
+        debug f => _1;
+        let _3: std::string::String;
+        scope 2 {
+            debug res => _3;
+        }
+    }
+
+    bb0: {
+        _1 = Foo { foo: const 10_isize };
+        _7 = [const ""];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_1;
+        _11 = core::fmt::rt::Argument::<'_>::new_debug::<Foo>(_12) -> bb1;
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = format(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = move _3;
+        drop(_2) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::<impl at ui/deriving/deriving-in-fn.rs:6:14: 6:19>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&isize;
+    let _7: &isize;
+
+    bb0: {
+        _3 = const "Foo";
+        _4 = const "foo";
+        _7 = &((*_1).0: isize);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

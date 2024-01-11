@@ -1,4 +1,4 @@
-requires "../kmir/k-src/mir.md"
+requires "../semantic/mir.md"
 
 module VERIFY
     imports K-EQUAL

@@ -1,0 +1,114 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-18412.rs:12:1: 12:7>::bar(_1: &A) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = ((*_1).0: usize);
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-18412.rs:16:1: 16:15>::foo(_1: &A) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = A::bar(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let _5: &A;
+    let mut _6: &usize;
+    let _7: usize;
+    let _8: &A;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug f => A::bar;
+        scope 2 {
+            debug g => <A as Foo>::foo;
+            let _1: A;
+            scope 3 {
+                debug a => _1;
+                let _9: &usize;
+                let _10: &usize;
+                scope 4 {
+                    debug left_val => _9;
+                    debug right_val => _10;
+                    let _15: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _15;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = A(const 42_usize);
+        _5 = &_1;
+        _4 = A::bar(_5) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _8 = &_1;
+        _7 = <A as Foo>::foo(_8) -> bb2;
+    }
+
+    bb2: {
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _9 = (_2.0: &usize);
+        _10 = (_2.1: &usize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<usize, usize>(move _15, _9, _10, move _17);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn A(_1: usize) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A(_1: usize) -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A(move _1);
+        return;
+    }
+}

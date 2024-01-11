@@ -1,0 +1,407 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test1_only_copy_types() -> () {
+    let mut _0: ();
+    let _1: (i32, i32);
+    let mut _3: &(i32, i32);
+    let _4: ();
+    let mut _5: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:13:13: 13:15];
+    scope 1 {
+        debug t => _1;
+        let _2: [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:13:13: 13:15];
+        scope 2 {
+            debug c => _2;
+        }
+    }
+
+    bb0: {
+        _1 = (const 0_i32, const 0_i32);
+        _3 = &_1;
+        _2 = [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:13:13: 13:15] { t: move _3 };
+        _5 = &_2;
+        _4 = <[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:13:13: 13:15] as Fn<()>>::call(move _5, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test1_only_copy_types::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:13:13: 13:15]) -> () {
+    debug t => (*((*_1).0: &(i32, i32)));
+    let mut _0: ();
+    let _2: i32;
+    let mut _3: &(i32, i32);
+    scope 1 {
+        debug _t => _2;
+    }
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &(i32, i32));
+        _2 = ((*_3).0: i32);
+        return;
+    }
+}
+
+fn test2_only_copy_types_move_closure() -> () {
+    let mut _0: ();
+    let _1: (i32, i32);
+    let _3: ();
+    let mut _4: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:24:13: 24:20];
+    scope 1 {
+        debug t => _1;
+        let _2: [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:24:13: 24:20];
+        scope 2 {
+            debug c => _2;
+        }
+    }
+
+    bb0: {
+        _1 = (const 0_i32, const 0_i32);
+        _2 = [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:24:13: 24:20] { t: _1 };
+        _4 = &_2;
+        _3 = <[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:24:13: 24:20] as Fn<()>>::call(move _4, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test2_only_copy_types_move_closure::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:24:13: 24:20]) -> () {
+    debug t => ((*_1).0: (i32, i32));
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &(((*_1).0: (i32, i32)).0: i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test3_only_copy_types_move_closure() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, std::string::String);
+    let mut _2: std::string::String;
+    let mut _3: std::string::String;
+    let mut _5: &(std::string::String, std::string::String);
+    let _6: ();
+    let mut _7: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:35:13: 35:15];
+    scope 1 {
+        debug t => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:35:13: 35:15];
+        scope 2 {
+            debug c => _4;
+        }
+    }
+
+    bb0: {
+        _2 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = String::new() -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _1 = (move _2, move _3);
+        _5 = &_1;
+        _4 = [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:35:13: 35:15] { t: move _5 };
+        _7 = &_4;
+        _6 = <[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:35:13: 35:15] as Fn<()>>::call(move _7, const ()) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn test3_only_copy_types_move_closure::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:35:13: 35:15]) -> () {
+    debug t => (*((*_1).0: &(std::string::String, std::string::String)));
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &std::string::String;
+    let mut _12: &(std::string::String, std::string::String);
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _12 = deref_copy ((*_1).0: &(std::string::String, std::string::String));
+        _11 = &((*_12).0: std::string::String);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<String>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test4_insignificant_drop_non_drop_aggregate() -> () {
+    let mut _0: ();
+    let _1: (std::string::String, i32);
+    let mut _2: std::string::String;
+    let mut _4: &(std::string::String, i32);
+    let _5: ();
+    let mut _6: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:48:13: 48:15];
+    scope 1 {
+        debug t => _1;
+        let _3: [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:48:13: 48:15];
+        scope 2 {
+            debug c => _3;
+        }
+    }
+
+    bb0: {
+        _2 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = (move _2, const 0_i32);
+        _4 = &_1;
+        _3 = [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:48:13: 48:15] { t: move _4 };
+        _6 = &_3;
+        _5 = <[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:48:13: 48:15] as Fn<()>>::call(move _6, const ()) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn test4_insignificant_drop_non_drop_aggregate::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:48:13: 48:15]) -> () {
+    debug t => (*((*_1).0: &(std::string::String, i32)));
+    let mut _0: ();
+    let _2: i32;
+    let mut _3: &(std::string::String, i32);
+    scope 1 {
+        debug _t => _2;
+    }
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &(std::string::String, i32));
+        _2 = ((*_3).1: i32);
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/migrations/no_migrations.rs:56:1: 56:18>::drop(_1: &mut Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+
+    bb0: {
+        _6 = [const "", const " dropped\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test5_significant_drop_non_drop_aggregate() -> () {
+    let mut _0: ();
+    let _1: (Foo, i32);
+    let mut _2: Foo;
+    let mut _4: &(Foo, i32);
+    let _5: ();
+    let mut _6: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:68:13: 68:15];
+    scope 1 {
+        debug t => _1;
+        let _3: [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:68:13: 68:15];
+        scope 2 {
+            debug c => _3;
+        }
+    }
+
+    bb0: {
+        _2 = Foo(const 0_i32);
+        _1 = (move _2, const 0_i32);
+        _4 = &_1;
+        _3 = [closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:68:13: 68:15] { t: move _4 };
+        _6 = &_3;
+        _5 = <[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:68:13: 68:15] as Fn<()>>::call(move _6, const ()) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn test5_significant_drop_non_drop_aggregate::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/migrations/no_migrations.rs:68:13: 68:15]) -> () {
+    debug t => (*((*_1).0: &(Foo, i32)));
+    let mut _0: ();
+    let _2: i32;
+    let mut _3: &(Foo, i32);
+    scope 1 {
+        debug _t => _2;
+    }
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &(Foo, i32));
+        _2 = ((*_3).1: i32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+
+    bb0: {
+        _1 = test1_only_copy_types() -> bb1;
+    }
+
+    bb1: {
+        _2 = test2_only_copy_types_move_closure() -> bb2;
+    }
+
+    bb2: {
+        _3 = test3_only_copy_types_move_closure() -> bb3;
+    }
+
+    bb3: {
+        _4 = test4_insignificant_drop_non_drop_aggregate() -> bb4;
+    }
+
+    bb4: {
+        _5 = test5_significant_drop_non_drop_aggregate() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn Foo(_1: i32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: i32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

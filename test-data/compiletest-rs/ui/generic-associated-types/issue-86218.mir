@@ -1,0 +1,17 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generic-associated-types/issue-86218.rs:18:1: 18:28>::foo() -> <() as Yay<&()>>::InnerStream<'_> {
+    let mut _0: <() as Yay<&()>>::InnerStream<'_>;
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

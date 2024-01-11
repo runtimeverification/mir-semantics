@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn duplicate(_1: <T as Op>::Output) -> (<T as Op>::Output, <T as Op>::Output) {
+    debug x => _1;
+    let mut _0: (<T as Op>::Output, <T as Op>::Output);
+
+    bb0: {
+        _0 = (_1, _1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

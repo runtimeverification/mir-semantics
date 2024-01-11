@@ -1,0 +1,131 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::boxed::Box<dyn Foo>;
+    let mut _3: std::boxed::Box<Output>;
+    let mut _4: Output;
+    let _5: ();
+    let mut _6: std::boxed::Box<dyn Foo>;
+    let mut _7: std::boxed::Box<Output>;
+    let mut _8: Output;
+    let _9: ();
+    let mut _10: &Test<std::boxed::Box<dyn Foo>>;
+    let _11: Test<std::boxed::Box<dyn Foo>>;
+    let mut _12: std::boxed::Box<dyn Foo>;
+    let mut _13: std::boxed::Box<Output>;
+    let mut _14: Output;
+
+    bb0: {
+        _4 = Output(const 0_isize);
+        _3 = Box::<Output>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = move _3 as std::boxed::Box<dyn Foo> (Pointer(Unsize));
+        _1 = send::<Box<dyn Foo>>(move _2) -> bb2;
+    }
+
+    bb2: {
+        _8 = Output(const 0_isize);
+        _7 = Box::<Output>::new(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = move _7 as std::boxed::Box<dyn Foo> (Pointer(Unsize));
+        _5 = Test::<Box<dyn Foo>>::foo(move _6) -> bb4;
+    }
+
+    bb4: {
+        _11 = Test::<Box<dyn Foo>>::new() -> bb5;
+    }
+
+    bb5: {
+        _10 = &_11;
+        _14 = Output(const 0_isize);
+        _13 = Box::<Output>::new(move _14) -> bb6;
+    }
+
+    bb6: {
+        _12 = move _13 as std::boxed::Box<dyn Foo> (Pointer(Unsize));
+        _9 = Test::<Box<dyn Foo>>::send(move _10, move _12) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn send(_1: T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/coercion/issue-14589.rs:16:1: 16:16>::new() -> Test<T> {
+    let mut _0: Test<T>;
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/coercion/issue-14589.rs:16:1: 16:16>::foo(_1: T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/coercion/issue-14589.rs:16:1: 16:16>::send(_1: &Test<T>, _2: T) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Foo::dummy(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Output(_1: isize) -> Output {
+    let mut _0: Output;
+
+    bb0: {
+        _0 = Output(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Output(_1: isize) -> Output {
+    let mut _0: Output;
+
+    bb0: {
+        _0 = Output(move _1);
+        return;
+    }
+}

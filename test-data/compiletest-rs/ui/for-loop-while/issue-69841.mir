@@ -1,0 +1,123 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [u8; 2];
+    let mut _3: std::slice::Iter<'_, u8>;
+    let mut _4: &[u8; 2];
+    let mut _6: std::option::Option<&u8>;
+    let mut _7: &mut std::slice::Iter<'_, u8>;
+    let mut _8: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: u64;
+    let mut _13: u64;
+    let mut _14: u8;
+    let mut _15: !;
+    let mut _16: u64;
+    let _17: ();
+    let mut _18: std::fmt::Arguments<'_>;
+    let mut _19: &[&str];
+    let _20: &[&str; 1];
+    let _21: [&str; 1];
+    let _22: !;
+    scope 1 {
+        debug buffer => _1;
+        let mut _2: u64;
+        scope 2 {
+            debug a => _2;
+            let mut _5: std::slice::Iter<'_, u8>;
+            scope 3 {
+                debug iter => _5;
+                let _9: &u8;
+                scope 4 {
+                    debug c => _9;
+                    scope 5 {
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 49_u8, const 10_u8];
+        _2 = const 0_u64;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _4 = &_1;
+        _3 = <&[u8; 2] as IntoIterator>::into_iter(move _4) -> bb2;
+    }
+
+    bb2: {
+        _5 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::slice::Iter<'_, u8> as Iterator>::next(_7) -> bb4;
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb1, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = ((_6 as Some).0: &u8);
+        _10 = Le(const 48_u8, (*_9));
+        switchInt(move _10) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _11 = Le((*_9), const 57_u8);
+        switchInt(move _11) -> [0: bb8, otherwise: bb10];
+    }
+
+    bb8: {
+        switchInt((*_9)) -> [10: bb11, otherwise: bb9];
+    }
+
+    bb9: {
+        _15 = unreachable_unchecked();
+    }
+
+    bb10: {
+        _2 = Mul(_2, const 10_u64);
+        _14 = (*_9);
+        _13 = move _14 as u64 (IntToInt);
+        _12 = Sub(move _13, const 48_u64);
+        _2 = Add(_2, move _12);
+        goto -> bb3;
+    }
+
+    bb11: {
+        _16 = _2;
+        switchInt(move _16) -> [1: bb12, otherwise: bb13];
+    }
+
+    bb12: {
+        _21 = [const "What did you expect?\n"];
+        _20 = &_21;
+        _19 = _20 as &[&str] (Pointer(Unsize));
+        _18 = Arguments::<'_>::new_const(move _19) -> bb14;
+    }
+
+    bb13: {
+        _22 = begin_panic::<&str>(const "this should be unreachable.");
+    }
+
+    bb14: {
+        _17 = _print(move _18) -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+}

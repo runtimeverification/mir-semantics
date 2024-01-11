@@ -1,0 +1,468 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static mut S: *const u8 = {
+    let mut _0: *const u8;
+    let mut _1: *const *const u8;
+    let _2: &*const u8;
+    let _3: *mut *const u8;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const {alloc1: *mut *const u8};
+        _2 = &(*_3);
+        _1 = &raw const (*_2);
+        _0 = move _1 as *const u8 (PtrToPtr);
+        StorageDead(_1);
+        StorageDead(_2);
+        return;
+    }
+}
+
+alloc1 (static: S, size: 8, align: 8) {
+    ╾───────alloc1────────╼                         │ ╾──────╼
+}
+
+static L1: StaticDoubleLinked = {
+    let mut _0: StaticDoubleLinked;
+    let mut _1: &StaticDoubleLinked;
+    let _2: &StaticDoubleLinked;
+    let _3: &StaticDoubleLinked;
+    let mut _4: &StaticDoubleLinked;
+    let _5: &StaticDoubleLinked;
+    let _6: &StaticDoubleLinked;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const {alloc2: &StaticDoubleLinked};
+        _2 = &(*_3);
+        _1 = &(*_2);
+        StorageLive(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = const {alloc3: &StaticDoubleLinked};
+        _5 = &(*_6);
+        _4 = &(*_5);
+        _0 = StaticDoubleLinked { prev: move _1, next: move _4, data: const 1_i32, head: const true };
+        StorageDead(_5);
+        StorageDead(_4);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc3 (static: L2, size: 24, align: 8) {
+    0x00 │ ╾───────alloc4────────╼ ╾───────alloc2────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 02 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+alloc4 (static: L1, size: 24, align: 8) {
+    0x00 │ ╾───────alloc2────────╼ ╾───────alloc3────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 01 00 00 00 01 __ __ __                         │ .....░░░
+}
+
+alloc2 (static: L3, size: 24, align: 8) {
+    0x00 │ ╾───────alloc3────────╼ ╾───────alloc4────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 03 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+static L2: StaticDoubleLinked = {
+    let mut _0: StaticDoubleLinked;
+    let mut _1: &StaticDoubleLinked;
+    let _2: &StaticDoubleLinked;
+    let _3: &StaticDoubleLinked;
+    let mut _4: &StaticDoubleLinked;
+    let _5: &StaticDoubleLinked;
+    let _6: &StaticDoubleLinked;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const {alloc4: &StaticDoubleLinked};
+        _2 = &(*_3);
+        _1 = &(*_2);
+        StorageLive(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = const {alloc2: &StaticDoubleLinked};
+        _5 = &(*_6);
+        _4 = &(*_5);
+        _0 = StaticDoubleLinked { prev: move _1, next: move _4, data: const 2_i32, head: const false };
+        StorageDead(_5);
+        StorageDead(_4);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc4 (static: L1, size: 24, align: 8) {
+    0x00 │ ╾───────alloc2────────╼ ╾───────alloc3────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 01 00 00 00 01 __ __ __                         │ .....░░░
+}
+
+alloc3 (static: L2, size: 24, align: 8) {
+    0x00 │ ╾───────alloc4────────╼ ╾───────alloc2────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 02 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+alloc2 (static: L3, size: 24, align: 8) {
+    0x00 │ ╾───────alloc3────────╼ ╾───────alloc4────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 03 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+static L3: StaticDoubleLinked = {
+    let mut _0: StaticDoubleLinked;
+    let mut _1: &StaticDoubleLinked;
+    let _2: &StaticDoubleLinked;
+    let _3: &StaticDoubleLinked;
+    let mut _4: &StaticDoubleLinked;
+    let _5: &StaticDoubleLinked;
+    let _6: &StaticDoubleLinked;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const {alloc3: &StaticDoubleLinked};
+        _2 = &(*_3);
+        _1 = &(*_2);
+        StorageLive(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = const {alloc4: &StaticDoubleLinked};
+        _5 = &(*_6);
+        _4 = &(*_5);
+        _0 = StaticDoubleLinked { prev: move _1, next: move _4, data: const 3_i32, head: const false };
+        StorageDead(_5);
+        StorageDead(_4);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc4 (static: L1, size: 24, align: 8) {
+    0x00 │ ╾───────alloc2────────╼ ╾───────alloc3────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 01 00 00 00 01 __ __ __                         │ .....░░░
+}
+
+alloc2 (static: L3, size: 24, align: 8) {
+    0x00 │ ╾───────alloc3────────╼ ╾───────alloc4────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 03 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+alloc3 (static: L2, size: 24, align: 8) {
+    0x00 │ ╾───────alloc4────────╼ ╾───────alloc2────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 02 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&*const u8, &*const u8);
+    let mut _2: &*const u8;
+    let _3: *mut *const u8;
+    let mut _4: &*const u8;
+    let _5: *const *const u8;
+    let mut _6: *const u8;
+    let mut _7: *mut *const u8;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: *const u8;
+    let mut _13: *const u8;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: std::vec::Vec<i32>;
+    let _19: &StaticDoubleLinked;
+    let _20: ();
+    let mut _21: &mut std::vec::Vec<i32>;
+    let mut _22: i32;
+    let mut _23: bool;
+    let mut _24: (&&std::vec::Vec<i32>, &&[i32; 3]);
+    let mut _25: &&std::vec::Vec<i32>;
+    let _26: &std::vec::Vec<i32>;
+    let mut _27: &&[i32; 3];
+    let _28: &[i32; 3];
+    let _29: [i32; 3];
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let _39: &StaticDoubleLinked;
+    let _40: ();
+    let mut _41: &mut std::vec::Vec<i32>;
+    let mut _42: i32;
+    let mut _43: bool;
+    let mut _44: (&&std::vec::Vec<i32>, &&[i32; 3]);
+    let mut _45: &&std::vec::Vec<i32>;
+    let _46: &std::vec::Vec<i32>;
+    let mut _47: &&[i32; 3];
+    let _48: &[i32; 3];
+    let _49: [i32; 3];
+    let mut _52: bool;
+    let mut _53: bool;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: &StaticDoubleLinked;
+    let mut _58: &StaticDoubleLinked;
+    scope 1 {
+        let _8: &*const u8;
+        let _9: &*const u8;
+        let mut _59: *const ();
+        let mut _60: usize;
+        let mut _61: usize;
+        let mut _62: usize;
+        let mut _63: usize;
+        let mut _64: bool;
+        let mut _65: *const ();
+        let mut _66: usize;
+        let mut _67: usize;
+        let mut _68: usize;
+        let mut _69: usize;
+        let mut _70: bool;
+        let mut _71: *const ();
+        let mut _72: usize;
+        let mut _73: usize;
+        let mut _74: usize;
+        let mut _75: usize;
+        let mut _76: bool;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+    }
+    scope 4 {
+        debug test_vec => _17;
+        let mut _18: &StaticDoubleLinked;
+        scope 5 {
+            debug cur => _18;
+            let _30: &&std::vec::Vec<i32>;
+            let _31: &&[i32; 3];
+            let mut _37: std::vec::Vec<i32>;
+            scope 6 {
+                debug left_val => _30;
+                debug right_val => _31;
+                let _34: core::panicking::AssertKind;
+                scope 7 {
+                    debug kind => _34;
+                }
+            }
+            scope 8 {
+                debug test_vec => _37;
+                let mut _38: &StaticDoubleLinked;
+                scope 9 {
+                    debug cur => _38;
+                    let _50: &&std::vec::Vec<i32>;
+                    let _51: &&[i32; 3];
+                    scope 10 {
+                        debug left_val => _50;
+                        debug right_val => _51;
+                        let _54: core::panicking::AssertKind;
+                        scope 11 {
+                            debug kind => _54;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = const {alloc1: *mut *const u8};
+        _71 = _3 as *const () (PtrToPtr);
+        _72 = _71 as usize (Transmute);
+        _73 = AlignOf(*const u8);
+        _74 = Sub(_73, const 1_usize);
+        _75 = BitAnd(_72, _74);
+        _76 = Eq(_75, const 0_usize);
+        assert(_76, "misaligned pointer dereference: address must be a multiple of {} but is {}", _73, _72) -> [success: bb24, unwind unreachable];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<*const u8, *const u8>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        _17 = Vec::<i32>::new() -> bb3;
+    }
+
+    bb3: {
+        _19 = const {alloc4: &StaticDoubleLinked};
+        _18 = _19;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _21 = &mut _17;
+        _22 = ((*_18).2: i32);
+        _20 = Vec::<i32>::push(move _21, move _22) -> [return: bb5, unwind: bb20];
+    }
+
+    bb5: {
+        _57 = deref_copy ((*_18).1: &StaticDoubleLinked);
+        _18 = _57;
+        _23 = ((*_18).3: bool);
+        switchInt(move _23) -> [0: bb4, otherwise: bb6];
+    }
+
+    bb6: {
+        _26 = &_17;
+        _25 = &_26;
+        _29 = [const 1_i32, const 2_i32, const 3_i32];
+        _28 = &_29;
+        _27 = &_28;
+        _24 = (move _25, move _27);
+        _30 = (_24.0: &&std::vec::Vec<i32>);
+        _31 = (_24.1: &&[i32; 3]);
+        _33 = <&Vec<i32> as PartialEq<&[i32; 3]>>::eq(_30, _31) -> [return: bb7, unwind: bb20];
+    }
+
+    bb7: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<&Vec<i32>, &[i32; 3]>(move _34, _30, _31, move _36) -> bb20;
+    }
+
+    bb9: {
+        _37 = Vec::<i32>::new() -> [return: bb10, unwind: bb20];
+    }
+
+    bb10: {
+        _39 = const {alloc4: &StaticDoubleLinked};
+        _38 = _39;
+        goto -> bb11;
+    }
+
+    bb11: {
+        _58 = deref_copy ((*_38).0: &StaticDoubleLinked);
+        _38 = _58;
+        _41 = &mut _37;
+        _42 = ((*_38).2: i32);
+        _40 = Vec::<i32>::push(move _41, move _42) -> [return: bb12, unwind: bb19];
+    }
+
+    bb12: {
+        _43 = ((*_38).3: bool);
+        switchInt(move _43) -> [0: bb11, otherwise: bb13];
+    }
+
+    bb13: {
+        _46 = &_37;
+        _45 = &_46;
+        _49 = [const 3_i32, const 2_i32, const 1_i32];
+        _48 = &_49;
+        _47 = &_48;
+        _44 = (move _45, move _47);
+        _50 = (_44.0: &&std::vec::Vec<i32>);
+        _51 = (_44.1: &&[i32; 3]);
+        _53 = <&Vec<i32> as PartialEq<&[i32; 3]>>::eq(_50, _51) -> [return: bb14, unwind: bb19];
+    }
+
+    bb14: {
+        _52 = Not(move _53);
+        switchInt(move _52) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<&Vec<i32>, &[i32; 3]>(move _54, _50, _51, move _56) -> bb19;
+    }
+
+    bb16: {
+        drop(_37) -> [return: bb17, unwind: bb20];
+    }
+
+    bb17: {
+        drop(_17) -> bb18;
+    }
+
+    bb18: {
+        return;
+    }
+
+    bb19 (cleanup): {
+        drop(_37) -> [return: bb20, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        drop(_17) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        resume;
+    }
+
+    bb22: {
+        _4 = &(*_5);
+        _1 = (move _2, move _4);
+        _8 = (_1.0: &*const u8);
+        _9 = (_1.1: &*const u8);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb23: {
+        _6 = (*_7);
+        _5 = move _6 as *const *const u8 (PtrToPtr);
+        _59 = _5 as *const () (PtrToPtr);
+        _60 = _59 as usize (Transmute);
+        _61 = AlignOf(*const u8);
+        _62 = Sub(_61, const 1_usize);
+        _63 = BitAnd(_60, _62);
+        _64 = Eq(_63, const 0_usize);
+        assert(_64, "misaligned pointer dereference: address must be a multiple of {} but is {}", _61, _60) -> [success: bb22, unwind unreachable];
+    }
+
+    bb24: {
+        _2 = &(*_3);
+        _7 = const {alloc1: *mut *const u8};
+        _65 = _7 as *const () (PtrToPtr);
+        _66 = _65 as usize (Transmute);
+        _67 = AlignOf(*const u8);
+        _68 = Sub(_67, const 1_usize);
+        _69 = BitAnd(_66, _68);
+        _70 = Eq(_69, const 0_usize);
+        assert(_70, "misaligned pointer dereference: address must be a multiple of {} but is {}", _67, _66) -> [success: bb23, unwind unreachable];
+    }
+}
+
+alloc4 (static: L1, size: 24, align: 8) {
+    0x00 │ ╾───────alloc2────────╼ ╾───────alloc3────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 01 00 00 00 01 __ __ __                         │ .....░░░
+}
+
+alloc2 (static: L3, size: 24, align: 8) {
+    0x00 │ ╾───────alloc3────────╼ ╾───────alloc4────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 03 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+alloc3 (static: L2, size: 24, align: 8) {
+    0x00 │ ╾───────alloc4────────╼ ╾───────alloc2────────╼ │ ╾──────╼╾──────╼
+    0x10 │ 02 00 00 00 00 __ __ __                         │ .....░░░
+}
+
+alloc1 (static: S, size: 8, align: 8) {
+    ╾───────alloc1────────╼                         │ ╾──────╼
+}

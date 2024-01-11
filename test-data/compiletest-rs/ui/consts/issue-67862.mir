@@ -1,0 +1,126 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn e220() -> (i64, i64) {
+    let mut _0: (i64, i64);
+    let _1: [i64; 2];
+    let mut _2: (&i64, &i64);
+    let mut _3: &i64;
+    let _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: &i64;
+    let _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _13: i64;
+    let mut _14: i64;
+    scope 1 {
+        debug res => _1;
+        let _11: &i64;
+        let _12: &i64;
+        scope 2 {
+            debug arg0 => _11;
+            debug arg1 => _12;
+        }
+    }
+
+    bb0: {
+        _1 = get_displacement() -> bb1;
+    }
+
+    bb1: {
+        _4 = const 0_usize;
+        _5 = const 2_usize;
+        _6 = Lt(_4, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _4) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_1[_4];
+        _8 = const 1_usize;
+        _9 = const 2_usize;
+        _10 = Lt(_8, _9);
+        assert(move _10, "index out of bounds: the length is {} but the index is {}", move _9, _8) -> bb3;
+    }
+
+    bb3: {
+        _7 = &_1[_8];
+        _2 = (move _3, move _7);
+        _11 = (_2.0: &i64);
+        _12 = (_2.1: &i64);
+        _13 = (*_11);
+        _14 = (*_12);
+        _0 = (move _13, move _14);
+        return;
+    }
+}
+
+fn get_displacement() -> [i64; 2] {
+    let mut _0: [i64; 2];
+
+    bb0: {
+        _0 = [const 139776_i64, const 963904_i64];
+        return;
+    }
+}
+
+get_displacement::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&(i64, i64), &(i64, i64));
+    let mut _2: &(i64, i64);
+    let _3: (i64, i64);
+    let mut _4: &(i64, i64);
+    let _5: (i64, i64);
+    let _6: &(i64, i64);
+    let _7: &(i64, i64);
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+
+    bb0: {
+        _3 = e220() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = (const 139776_i64, const 963904_i64);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &(i64, i64));
+        _7 = (_1.1: &(i64, i64));
+        _9 = <(i64, i64) as PartialEq>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<(i64, i64), (i64, i64)>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        return;
+    }
+}

@@ -1,0 +1,181 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inheritance/cast.rs:18:1: 18:15>::f(_1: &A) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 10_isize;
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/cast.rs:22:1: 22:15>::g(_1: &A) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 20_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &A;
+    let _2: A;
+    let mut _3: &dyn Foo;
+    let mut _4: &dyn Bar;
+    let mut _5: (&isize, &isize);
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _8: &isize;
+    let _9: isize;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: isize;
+    let mut _15: isize;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&isize, &isize);
+    let mut _20: &isize;
+    let _21: isize;
+    let mut _22: &isize;
+    let _23: isize;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: isize;
+    let mut _29: isize;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: (&isize, &isize);
+    let mut _34: &isize;
+    let _35: isize;
+    let mut _36: &isize;
+    let _37: isize;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: isize;
+    let mut _43: isize;
+    let _45: !;
+    let mut _46: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        scope 2 {
+            debug afoo => _3;
+            scope 3 {
+                debug abar => _4;
+                let _10: &isize;
+                let _11: &isize;
+                let _24: &isize;
+                let _25: &isize;
+                let _38: &isize;
+                let _39: &isize;
+                scope 4 {
+                    debug left_val => _10;
+                    debug right_val => _11;
+                    let _16: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _16;
+                    }
+                }
+                scope 6 {
+                    debug left_val => _24;
+                    debug right_val => _25;
+                    let _30: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _30;
+                    }
+                }
+                scope 8 {
+                    debug left_val => _38;
+                    debug right_val => _39;
+                    let _44: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _44;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = A { x: const 3_isize };
+        _1 = &_2;
+        _3 = _1 as &dyn Foo (Pointer(Unsize));
+        _4 = _1 as &dyn Bar (Pointer(Unsize));
+        _7 = <dyn Foo as Foo>::f(_3) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_7;
+        _9 = const 10_isize;
+        _8 = &_9;
+        _5 = (move _6, move _8);
+        _10 = (_5.0: &isize);
+        _11 = (_5.1: &isize);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<isize, isize>(move _16, _10, _11, move _18);
+    }
+
+    bb3: {
+        _21 = <dyn Bar as Bar>::g(_4) -> bb4;
+    }
+
+    bb4: {
+        _20 = &_21;
+        _23 = const 20_isize;
+        _22 = &_23;
+        _19 = (move _20, move _22);
+        _24 = (_19.0: &isize);
+        _25 = (_19.1: &isize);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<isize, isize>(move _30, _24, _25, move _32);
+    }
+
+    bb6: {
+        _35 = <dyn Bar as Foo>::f(_4) -> bb7;
+    }
+
+    bb7: {
+        _34 = &_35;
+        _37 = const 10_isize;
+        _36 = &_37;
+        _33 = (move _34, move _36);
+        _38 = (_33.0: &isize);
+        _39 = (_33.1: &isize);
+        _42 = (*_38);
+        _43 = (*_39);
+        _41 = Eq(move _42, move _43);
+        _40 = Not(move _41);
+        switchInt(move _40) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _44 = core::panicking::AssertKind::Eq;
+        _46 = Option::<Arguments<'_>>::None;
+        _45 = core::panicking::assert_failed::<isize, isize>(move _44, _38, _39, move _46);
+    }
+
+    bb9: {
+        return;
+    }
+}

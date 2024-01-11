@@ -1,0 +1,48 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn hide(_1: T) -> impl Sized {
+    debug t => _1;
+    let mut _0: impl Sized;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: impl Sized;
+    let mut _2: X<i32>;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _2 = X::<i32>(const 0_i32);
+        _1 = hide::<X<i32>>(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn X(_1: T) -> X<T> {
+    let mut _0: X<T>;
+
+    bb0: {
+        _0 = X::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn X(_1: T) -> X<T> {
+    let mut _0: X<T>;
+
+    bb0: {
+        _0 = X::<T>(move _1);
+        return;
+    }
+}

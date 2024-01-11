@@ -1,0 +1,45 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn inner(_1: String, _2: bool) -> () {
+    debug dummy => _1;
+    debug b => _2;
+    let mut _0: ();
+    let mut _3: std::string::String;
+
+    bb0: {
+        switchInt(_2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = move _1;
+        _0 = inner(move _3, const false) -> bb3;
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::string::String;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "hi";
+        _2 = <str as ToString>::to_string(_3) -> bb1;
+    }
+
+    bb1: {
+        _1 = inner(move _2, const true) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

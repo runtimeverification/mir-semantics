@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+const FOO: NonZeroU64 = {
+    let mut _0: std::num::NonZeroU64;
+    scope 1 {
+    }
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = NonZeroU64::new_unchecked(const 2_u64) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

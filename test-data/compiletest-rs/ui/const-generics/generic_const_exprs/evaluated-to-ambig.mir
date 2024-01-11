@@ -1,0 +1,72 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:11:1: 11:29>::{constant#0}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#0}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = Gt(const N, const 1_usize);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#1}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = Gt(const M, const 1_usize);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#4}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/evaluated-to-ambig.rs:15:1: 15:61>::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

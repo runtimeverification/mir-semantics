@@ -1,0 +1,45 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn make_identity() -> impl Sized {
+    let mut _0: impl Sized;
+
+    bb0: {
+        return;
+    }
+}
+
+fn make_identity::{closure#0}(_1: &[closure@ui/impl-trait/can-return-unconstrained-closure.rs:16:5: 16:22], _2: &i32) -> &i32 {
+    debug x => _2;
+    let mut _0: &i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn make_identity_static() -> impl Sized + 'static {
+    let mut _0: impl Sized + 'static;
+
+    bb0: {
+        return;
+    }
+}
+
+fn make_identity_static::{closure#0}(_1: &[closure@ui/impl-trait/can-return-unconstrained-closure.rs:20:5: 20:22], _2: &i32) -> &i32 {
+    debug x => _2;
+    let mut _0: &i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

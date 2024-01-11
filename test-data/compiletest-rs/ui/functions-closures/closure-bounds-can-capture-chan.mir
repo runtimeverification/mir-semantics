@@ -1,0 +1,113 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: F) -> () {
+    debug blk => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = <F as FnOnce<()>>::call_once(move _1, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::sync::mpsc::Sender<()>;
+    let _2: std::sync::mpsc::Receiver<()>;
+    let mut _3: (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
+    let _4: ();
+    let mut _5: [closure@ui/functions-closures/closure-bounds-can-capture-chan.rs:12:9: 12:16];
+    let _6: ();
+    let mut _7: std::result::Result<(), std::sync::mpsc::RecvError>;
+    let mut _8: &std::sync::mpsc::Receiver<()>;
+    let mut _9: bool;
+    scope 1 {
+        debug tx => _1;
+        debug rx => _2;
+    }
+
+    bb0: {
+        _9 = const false;
+        _3 = channel::<()>() -> bb1;
+    }
+
+    bb1: {
+        _9 = const true;
+        _1 = move (_3.0: std::sync::mpsc::Sender<()>);
+        _2 = move (_3.1: std::sync::mpsc::Receiver<()>);
+        _9 = const false;
+        _5 = [closure@ui/functions-closures/closure-bounds-can-capture-chan.rs:12:9: 12:16] { tx: move _1 };
+        _4 = foo::<[closure@ui/functions-closures/closure-bounds-can-capture-chan.rs:12:9: 12:16]>(move _5) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _8 = &_2;
+        _7 = std::sync::mpsc::Receiver::<()>::recv(move _8) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _6 = Result::<(), RecvError>::unwrap(move _7) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_2) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        _9 = const false;
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+
+    bb8 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        switchInt(_9) -> [0: bb7, otherwise: bb8];
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/functions-closures/closure-bounds-can-capture-chan.rs:12:9: 12:16]) -> () {
+    debug tx => (_1.0: std::sync::mpsc::Sender<()>);
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::result::Result<(), std::sync::mpsc::SendError<()>>;
+    let mut _4: &std::sync::mpsc::Sender<()>;
+
+    bb0: {
+        _4 = &(_1.0: std::sync::mpsc::Sender<()>);
+        _3 = Sender::<()>::send(move _4, const ()) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        _2 = Result::<(), SendError<()>>::unwrap(move _3) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}

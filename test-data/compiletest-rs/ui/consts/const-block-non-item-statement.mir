@@ -1,0 +1,113 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::Bar::{constant#0}: isize = {
+    let mut _0: isize;
+    let _1: i32;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 1_i32;
+        _0 = const 3_isize;
+        StorageDead(_1);
+        return;
+    }
+}
+
+const A: usize = {
+    let mut _0: usize;
+    let _1: i32;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 1_i32;
+        StorageDead(_1);
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+const B: usize = {
+    let mut _0: usize;
+    let _1: ();
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const ();
+        StorageDead(_1);
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+const C: usize = {
+    let mut _0: usize;
+    let _1: ();
+
+    bb0: {
+        StorageLive(_1);
+        _1 = ();
+        StorageDead(_1);
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+const D: usize = {
+    let mut _0: usize;
+    let _1: i32;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 4_i32;
+        _0 = const 2_usize;
+        StorageDead(_1);
+        return;
+    }
+}
+
+Array::{constant#0}: usize = {
+    let mut _0: usize;
+    let _1: i32;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 2_i32;
+        _0 = const 5_usize;
+        StorageDead(_1);
+        return;
+    }
+}
+
+Array2::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 2_usize;
+        _1 = const 3_usize;
+        _0 = _1;
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

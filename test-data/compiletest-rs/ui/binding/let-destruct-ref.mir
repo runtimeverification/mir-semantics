@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _3: (&usize, &usize);
+    let mut _4: &usize;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: usize;
+    let mut _10: usize;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _2: &usize;
+        scope 2 {
+            debug y => _2;
+            let _5: &usize;
+            let _6: &usize;
+            scope 3 {
+                debug left_val => _5;
+                debug right_val => _6;
+                let _11: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _11;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3_usize;
+        _2 = &_1;
+        _4 = &_1;
+        _3 = (move _4, _2);
+        _5 = (_3.0: &usize);
+        _6 = (_3.1: &usize);
+        _9 = (*_5);
+        _10 = (*_6);
+        _8 = Eq(move _9, move _10);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _11 = core::panicking::AssertKind::Eq;
+        _13 = Option::<Arguments<'_>>::None;
+        _12 = core::panicking::assert_failed::<usize, usize>(move _11, _5, _6, move _13);
+    }
+
+    bb2: {
+        return;
+    }
+}

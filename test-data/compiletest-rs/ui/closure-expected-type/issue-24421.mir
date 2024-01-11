@@ -1,0 +1,82 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: F) -> () {
+    debug f => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+
+    bb0: {
+        _1 = test::<[closure@ui/closure-expected-type/issue-24421.rs:6:10: 6:26]>(const ZeroSized: [closure@ui/closure-expected-type/issue-24421.rs:6:10: 6:26]) -> bb1;
+    }
+
+    bb1: {
+        _2 = test::<[closure@ui/closure-expected-type/issue-24421.rs:7:10: 7:26]>(const ZeroSized: [closure@ui/closure-expected-type/issue-24421.rs:7:10: 7:26]) -> bb2;
+    }
+
+    bb2: {
+        _3 = test::<[closure@ui/closure-expected-type/issue-24421.rs:8:10: 8:26]>(const ZeroSized: [closure@ui/closure-expected-type/issue-24421.rs:8:10: 8:26]) -> bb3;
+    }
+
+    bb3: {
+        _4 = test::<[closure@ui/closure-expected-type/issue-24421.rs:9:10: 9:26]>(const ZeroSized: [closure@ui/closure-expected-type/issue-24421.rs:9:10: 9:26]) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closure-expected-type/issue-24421.rs:6:10: 6:26], _2: &u64, _3: &u64) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/closure-expected-type/issue-24421.rs:7:10: 7:26], _2: &u64, _3: &u64) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &[closure@ui/closure-expected-type/issue-24421.rs:8:10: 8:26], _2: &u64, _3: &u64) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &[closure@ui/closure-expected-type/issue-24421.rs:9:10: 9:26], _2: &u64, _3: &u64) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

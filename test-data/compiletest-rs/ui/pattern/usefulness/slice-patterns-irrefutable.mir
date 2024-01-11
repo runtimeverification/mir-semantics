@@ -1,0 +1,119 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &[bool];
+    let _2: &[bool; 0];
+    let _3: [bool; 0];
+    let _4: &[bool; 0];
+    let _5: [bool; 0];
+    let _6: &[bool; 1];
+    let _7: [bool; 1];
+    let _8: &[bool; 2];
+    let _9: [bool; 2];
+    scope 1 {
+        debug s => _1;
+        scope 2 {
+            debug s0 => _4;
+            scope 3 {
+                debug s1 => _6;
+                scope 4 {
+                    debug s2 => _8;
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                    scope 9 {
+                                        scope 10 {
+                                            scope 11 {
+                                                scope 12 {
+                                                    scope 13 {
+                                                        scope 14 {
+                                                            scope 15 {
+                                                                scope 16 {
+                                                                    scope 17 {
+                                                                        scope 18 {
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &_3;
+        _1 = _2 as &[bool] (Pointer(Unsize));
+        _4 = &_5;
+        _7 = [const false; 1];
+        _6 = &_7;
+        _9 = [const false; 2];
+        _8 = &_9;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}

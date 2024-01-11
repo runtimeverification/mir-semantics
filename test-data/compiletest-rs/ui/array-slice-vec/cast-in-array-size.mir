@@ -1,0 +1,100 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const SIZE: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 25_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [bool; 1];
+    scope 1 {
+        debug _a => _1;
+        let _2: [isize; 25];
+        scope 2 {
+            debug _b => _2;
+            let _3: [bool; 10];
+            scope 3 {
+                debug _c => _3;
+                let _4: [bool; 1];
+                scope 4 {
+                    debug _d => _4;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = [const 1_isize; 25];
+        _3 = [const true; 10];
+        _4 = [const true; 1];
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _ as usize (IntToInt);
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _ as usize (IntToInt);
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const '\n' as usize (IntToInt);
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const '\n' as usize (IntToInt);
+        return;
+    }
+}
+
+main::{constant#6}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const true as usize (IntToInt);
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const true as usize (IntToInt);
+        return;
+    }
+}

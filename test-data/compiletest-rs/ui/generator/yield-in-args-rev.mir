@@ -1,0 +1,93 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: (), _2: &bool) -> () {
+    debug _a => const ();
+    debug _b => _2;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn bar() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn bar::{closure#0}(_1: Pin<&mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: ();
+    let mut _4: ();
+    let _5: &bool;
+    let mut _6: ();
+    let mut _7: u32;
+    let mut _8: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    let mut _9: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    let mut _10: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    let mut _11: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    let mut _12: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    let mut _13: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7];
+    scope 1 {
+        debug b => (((*(_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7])) as variant#3).0: bool);
+    }
+
+    bb0: {
+        _8 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        _7 = discriminant((*_8));
+        switchInt(move _7) -> [0: bb1, 1: bb6, 2: bb5, 3: bb4, otherwise: bb7];
+    }
+
+    bb1: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        (((*_9) as variant#3).0: bool) = const true;
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        discriminant((*_10)) = 3;
+        return;
+    }
+
+    bb2: {
+        _6 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _6);
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        discriminant((*_12)) = 1;
+        return;
+    }
+
+    bb3 (cleanup): {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        discriminant((*_13)) = 2;
+        resume;
+    }
+
+    bb4: {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/yield-in-args-rev.rs:13:5: 13:7]);
+        _5 = &(((*_11) as variant#3).0: bool);
+        _3 = foo(move _2, _5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb5: {
+        assert(const false, "generator resumed after panicking") -> bb5;
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after completion") -> bb6;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

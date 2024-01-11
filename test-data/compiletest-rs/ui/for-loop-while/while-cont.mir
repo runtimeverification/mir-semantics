@@ -1,0 +1,75 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: bool;
+    let mut _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: i32;
+    let mut _7: !;
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 2];
+    let _12: [&str; 2];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 1];
+    let _15: [core::fmt::rt::Argument<'_>; 1];
+    let mut _16: core::fmt::rt::Argument<'_>;
+    let _17: &i32;
+    scope 1 {
+        debug i => _1;
+    }
+
+    bb0: {
+        _1 = const 1_i32;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _3 = _1;
+        _2 = Gt(move _3, const 0_i32);
+        switchInt(move _2) -> [0: bb8, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = _1;
+        _5 = Gt(move _6, const 0_i32);
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _7 = core::panicking::panic(const "assertion failed: (i > 0)");
+    }
+
+    bb4: {
+        _12 = [const "", const "\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _17 = &_1;
+        _16 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_17) -> bb5;
+    }
+
+    bb5: {
+        _15 = [move _16];
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb6;
+    }
+
+    bb6: {
+        _8 = _print(move _9) -> bb7;
+    }
+
+    bb7: {
+        _1 = Sub(_1, const 1_i32);
+        goto -> bb1;
+    }
+
+    bb8: {
+        return;
+    }
+}

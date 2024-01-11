@@ -1,0 +1,190 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [[bool; 1]; 512];
+    let mut _2: [bool; 1];
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 1];
+    let _8: [&str; 1];
+    let mut _9: std::slice::Iter<'_, [bool; 1]>;
+    let mut _10: &[[bool; 1]];
+    let _11: &[[bool; 1]];
+    let mut _12: &[[bool; 1]; 512];
+    let mut _14: std::option::Option<&[bool; 1]>;
+    let mut _15: &mut std::slice::Iter<'_, [bool; 1]>;
+    let mut _16: isize;
+    let _18: ();
+    let mut _19: std::fmt::Arguments<'_>;
+    let mut _20: &[&str];
+    let _21: &[&str; 2];
+    let _22: [&str; 2];
+    let mut _23: &[core::fmt::rt::Argument<'_>];
+    let _24: &[core::fmt::rt::Argument<'_>; 1];
+    let _25: [core::fmt::rt::Argument<'_>; 1];
+    let mut _26: core::fmt::rt::Argument<'_>;
+    let _27: &&[bool];
+    let _28: &[bool];
+    let _29: &[bool];
+    let _30: ();
+    let mut _31: std::fmt::Arguments<'_>;
+    let mut _32: &[&str];
+    let _33: &[&str; 1];
+    let _34: [&str; 1];
+    let _35: ();
+    let mut _36: std::fmt::Arguments<'_>;
+    let mut _37: &[&str];
+    let _38: &[&str; 2];
+    let _39: [&str; 2];
+    let mut _40: &[core::fmt::rt::Argument<'_>];
+    let _41: &[core::fmt::rt::Argument<'_>; 1];
+    let _42: [core::fmt::rt::Argument<'_>; 1];
+    let mut _43: core::fmt::rt::Argument<'_>;
+    let _44: &&[i32];
+    let _45: &[i32];
+    let _46: &[i32];
+    let mut _47: &[i32; 1];
+    scope 1 {
+        debug x => _1;
+        let _3: [i32; 1];
+        scope 2 {
+            debug y => _3;
+            let mut _13: std::slice::Iter<'_, [bool; 1]>;
+            scope 3 {
+                debug iter => _13;
+                let _17: &[bool; 1];
+                scope 4 {
+                    debug xi => _17;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = [const true];
+        _1 = [move _2; 512];
+        _3 = [const 0_i32; 1];
+        _8 = [const "["];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_const(move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = _print(move _5) -> bb2;
+    }
+
+    bb2: {
+        _12 = &_1;
+        _11 = <[[bool; 1]; 512] as Index<RangeFull>>::index(move _12, const RangeFull) -> bb3;
+    }
+
+    bb3: {
+        _10 = _11;
+        _9 = <&[[bool; 1]] as IntoIterator>::into_iter(move _10) -> bb4;
+    }
+
+    bb4: {
+        _13 = move _9;
+        goto -> bb5;
+    }
+
+    bb5: {
+        _15 = &mut _13;
+        _14 = <std::slice::Iter<'_, [bool; 1]> as Iterator>::next(_15) -> bb6;
+    }
+
+    bb6: {
+        _16 = discriminant(_14);
+        switchInt(move _16) -> [0: bb9, 1: bb7, otherwise: bb8];
+    }
+
+    bb7: {
+        _17 = ((_14 as Some).0: &[bool; 1]);
+        _22 = [const "", const ", "];
+        _21 = &_22;
+        _20 = _21 as &[&str] (Pointer(Unsize));
+        _29 = <[bool; 1] as Index<RangeFull>>::index(_17, const RangeFull) -> bb10;
+    }
+
+    bb8: {
+        unreachable;
+    }
+
+    bb9: {
+        _34 = [const "]\n"];
+        _33 = &_34;
+        _32 = _33 as &[&str] (Pointer(Unsize));
+        _31 = Arguments::<'_>::new_const(move _32) -> bb13;
+    }
+
+    bb10: {
+        _28 = _29;
+        _27 = &_28;
+        _26 = core::fmt::rt::Argument::<'_>::new_debug::<&[bool]>(_27) -> bb11;
+    }
+
+    bb11: {
+        _25 = [move _26];
+        _24 = &_25;
+        _23 = _24 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _19 = Arguments::<'_>::new_v1(move _20, move _23) -> bb12;
+    }
+
+    bb12: {
+        _18 = _print(move _19) -> bb5;
+    }
+
+    bb13: {
+        _30 = _print(move _31) -> bb14;
+    }
+
+    bb14: {
+        _39 = [const "", const "\n"];
+        _38 = &_39;
+        _37 = _38 as &[&str] (Pointer(Unsize));
+        _47 = &_3;
+        _46 = <[i32; 1] as Index<RangeFull>>::index(move _47, const RangeFull) -> bb15;
+    }
+
+    bb15: {
+        _45 = _46;
+        _44 = &_45;
+        _43 = core::fmt::rt::Argument::<'_>::new_debug::<&[i32]>(_44) -> bb16;
+    }
+
+    bb16: {
+        _42 = [move _43];
+        _41 = &_42;
+        _40 = _41 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _36 = Arguments::<'_>::new_v1(move _37, move _40) -> bb17;
+    }
+
+    bb17: {
+        _35 = _print(move _36) -> bb18;
+    }
+
+    bb18: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 512_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}

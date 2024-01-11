@@ -1,0 +1,206 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn make_nans() -> (f64, f64, f32, f32) {
+    let mut _0: (f64, f64, f32, f32);
+    let _1: f64;
+    scope 1 {
+        debug nan1 => _1;
+        let _2: f64;
+        scope 3 {
+            debug nan2 => _2;
+            let _3: f32;
+            scope 5 {
+                debug nan1_32 => _3;
+                let _4: f32;
+                scope 6 {
+                    debug nan2_32 => _4;
+                }
+            }
+        }
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _1 = const 9218868441522372609_u64 as f64 (Transmute);
+        _2 = const 9218868437227405313_u64 as f64 (Transmute);
+        _3 = _1 as f32 (FloatToFloat);
+        _4 = _2 as f32 (FloatToFloat);
+        _0 = (_1, _2, _3, _4);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn make_nans() -> (f64, f64, f32, f32) {
+    let mut _0: (f64, f64, f32, f32);
+    let _1: f64;
+    let mut _4: f64;
+    let mut _6: f64;
+    let mut _7: f64;
+    let mut _8: f64;
+    let mut _9: f32;
+    let mut _10: f32;
+    scope 1 {
+        debug nan1 => _1;
+        let _2: f64;
+        scope 3 {
+            debug nan2 => _2;
+            let _3: f32;
+            scope 5 {
+                debug nan1_32 => _3;
+                let _5: f32;
+                scope 6 {
+                    debug nan2_32 => _5;
+                }
+            }
+        }
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 9218868441522372609_u64 as f64 (Transmute);
+        StorageLive(_2);
+        _2 = const 9218868437227405313_u64 as f64 (Transmute);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = _1;
+        _3 = move _4 as f32 (FloatToFloat);
+        StorageDead(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = _2;
+        _5 = move _6 as f32 (FloatToFloat);
+        StorageDead(_6);
+        StorageLive(_7);
+        _7 = _1;
+        StorageLive(_8);
+        _8 = _2;
+        StorageLive(_9);
+        _9 = _3;
+        StorageLive(_10);
+        _10 = _5;
+        _0 = (move _7, move _8, move _9, move _10);
+        StorageDead(_10);
+        StorageDead(_9);
+        StorageDead(_8);
+        StorageDead(_7);
+        StorageDead(_5);
+        StorageDead(_3);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static NANS: (f64, f64, f32, f32) = {
+    let mut _0: (f64, f64, f32, f32);
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = make_nans() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: f64;
+    let _2: f64;
+    let _3: f32;
+    let _4: f32;
+    let mut _5: &(f64, f64, f32, f32);
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: !;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: !;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: !;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: !;
+    scope 1 {
+        debug nan1 => _1;
+        debug nan2 => _2;
+        debug nan1_32 => _3;
+        debug nan2_32 => _4;
+    }
+
+    bb0: {
+        _5 = const {alloc1: &(f64, f64, f32, f32)};
+        _1 = ((*_5).0: f64);
+        _2 = ((*_5).1: f64);
+        _3 = ((*_5).2: f32);
+        _4 = ((*_5).3: f32);
+        _7 = core::f64::<impl f64>::is_nan(_1) -> bb1;
+    }
+
+    bb1: {
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = core::panicking::panic(const "assertion failed: nan1.is_nan()");
+    }
+
+    bb3: {
+        _10 = core::f64::<impl f64>::is_nan(_2) -> bb4;
+    }
+
+    bb4: {
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _11 = core::panicking::panic(const "assertion failed: nan2.is_nan()");
+    }
+
+    bb6: {
+        _13 = core::f32::<impl f32>::is_nan(_3) -> bb7;
+    }
+
+    bb7: {
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _14 = core::panicking::panic(const "assertion failed: nan1_32.is_nan()");
+    }
+
+    bb9: {
+        _16 = core::f32::<impl f32>::is_nan(_4) -> bb10;
+    }
+
+    bb10: {
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _17 = core::panicking::panic(const "assertion failed: nan2_32.is_nan()");
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+alloc1 (static: NANS, size: 24, align: 8) {
+    0x00 │ 01 00 00 00 01 00 f0 7f 01 00 00 00 00 00 f0 7f │ ................
+    0x10 │ 08 00 c0 7f 00 00 c0 7f                         │ ........
+}

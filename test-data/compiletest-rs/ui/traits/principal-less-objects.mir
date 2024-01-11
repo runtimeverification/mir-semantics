@@ -1,0 +1,336 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+SetOnDrop::1::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 64_usize;
+        return;
+    }
+}
+
+fn <impl at ui/traits/principal-less-objects.rs:11:1: 11:32>::drop(_1: &mut SetOnDrop<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: std::sync::atomic::Ordering;
+    let mut _6: std::sync::atomic::Ordering;
+    let mut _7: &std::sync::atomic::AtomicUsize;
+    let mut _8: &std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        _7 = deref_copy ((*_1).0: &std::sync::atomic::AtomicUsize);
+        _8 = deref_copy ((*_1).0: &std::sync::atomic::AtomicUsize);
+        _5 = Relaxed;
+        _4 = AtomicUsize::load(_8, move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = Add(move _4, const 1_usize);
+        _6 = Relaxed;
+        _2 = AtomicUsize::store(_7, move _3, move _6) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn assert_types_eq() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: std::sync::atomic::AtomicUsize;
+    let mut _6: std::boxed::Box<SetOnDrop<'_>>;
+    let mut _7: SetOnDrop<'_>;
+    let _8: &std::sync::atomic::AtomicUsize;
+    let mut _9: [u8; 64];
+    let mut _10: (&usize, &usize);
+    let mut _11: &usize;
+    let _12: usize;
+    let _13: &dyn std::marker::Sync;
+    let mut _14: &usize;
+    let _15: usize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: (&usize, &usize);
+    let mut _26: &usize;
+    let _27: usize;
+    let _28: &dyn std::marker::Sync;
+    let mut _29: &usize;
+    let _30: usize;
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: usize;
+    let mut _36: usize;
+    let _38: !;
+    let mut _39: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _40: (&usize, &usize);
+    let mut _41: &usize;
+    let _42: usize;
+    let mut _43: &std::sync::atomic::AtomicUsize;
+    let mut _44: std::sync::atomic::Ordering;
+    let mut _45: &usize;
+    let _46: usize;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: usize;
+    let mut _52: usize;
+    let _54: !;
+    let mut _55: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _56: (&usize, &usize);
+    let mut _57: &usize;
+    let _58: usize;
+    let mut _59: &std::sync::atomic::AtomicUsize;
+    let mut _60: std::sync::atomic::Ordering;
+    let mut _61: &usize;
+    let _62: usize;
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: usize;
+    let mut _68: usize;
+    let _70: !;
+    let mut _71: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _72: *const dyn std::marker::Sync;
+    let mut _73: *const dyn std::marker::Sync;
+    scope 1 {
+        debug c => _4;
+        let _5: std::boxed::Box<dyn std::marker::Sync>;
+        let _63: &usize;
+        let _64: &usize;
+        scope 2 {
+            debug d => _5;
+            let _16: &usize;
+            let _17: &usize;
+            let _31: &usize;
+            let _32: &usize;
+            let _47: &usize;
+            let _48: &usize;
+            scope 3 {
+                debug left_val => _16;
+                debug right_val => _17;
+                let _22: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _22;
+                }
+            }
+            scope 5 {
+                debug left_val => _31;
+                debug right_val => _32;
+                let _37: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _37;
+                }
+            }
+            scope 7 {
+                debug left_val => _47;
+                debug right_val => _48;
+                let _53: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _53;
+                }
+            }
+        }
+        scope 9 {
+            debug left_val => _63;
+            debug right_val => _64;
+            let _69: core::panicking::AssertKind;
+            scope 10 {
+                debug kind => _69;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = assert_types_eq::<dyn Sync, dyn Sync>() -> bb1;
+    }
+
+    bb1: {
+        _2 = assert_types_eq::<dyn Send + Sync, dyn Send + Sync>() -> bb2;
+    }
+
+    bb2: {
+        _3 = assert_types_eq::<dyn Send + Sync, dyn Send + Sync>() -> bb3;
+    }
+
+    bb3: {
+        _4 = AtomicUsize::new(const 0_usize) -> bb4;
+    }
+
+    bb4: {
+        _8 = &_4;
+        _9 = [const 0_u8; 64];
+        _7 = SetOnDrop::<'_>(_8, move _9);
+        _6 = Box::<SetOnDrop<'_>>::new(move _7) -> bb5;
+    }
+
+    bb5: {
+        _5 = move _6 as std::boxed::Box<dyn std::marker::Sync> (Pointer(Unsize));
+        _72 = (((_5.0: std::ptr::Unique<dyn std::marker::Sync>).0: std::ptr::NonNull<dyn std::marker::Sync>).0: *const dyn std::marker::Sync);
+        _13 = &(*_72);
+        _12 = std::mem::size_of_val::<dyn Sync>(_13) -> [return: bb6, unwind: bb21];
+    }
+
+    bb6: {
+        _11 = &_12;
+        _15 = std::mem::size_of::<SetOnDrop<'_>>() -> [return: bb7, unwind: bb21];
+    }
+
+    bb7: {
+        _14 = &_15;
+        _10 = (move _11, move _14);
+        _16 = (_10.0: &usize);
+        _17 = (_10.1: &usize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<usize, usize>(move _22, _16, _17, move _24) -> bb21;
+    }
+
+    bb9: {
+        _73 = (((_5.0: std::ptr::Unique<dyn std::marker::Sync>).0: std::ptr::NonNull<dyn std::marker::Sync>).0: *const dyn std::marker::Sync);
+        _28 = &(*_73);
+        _27 = align_of_val::<dyn Sync>(_28) -> [return: bb10, unwind: bb21];
+    }
+
+    bb10: {
+        _26 = &_27;
+        _30 = align_of::<SetOnDrop<'_>>() -> [return: bb11, unwind: bb21];
+    }
+
+    bb11: {
+        _29 = &_30;
+        _25 = (move _26, move _29);
+        _31 = (_25.0: &usize);
+        _32 = (_25.1: &usize);
+        _35 = (*_31);
+        _36 = (*_32);
+        _34 = Eq(move _35, move _36);
+        _33 = Not(move _34);
+        switchInt(move _33) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _37 = core::panicking::AssertKind::Eq;
+        _39 = Option::<Arguments<'_>>::None;
+        _38 = core::panicking::assert_failed::<usize, usize>(move _37, _31, _32, move _39) -> bb21;
+    }
+
+    bb13: {
+        _43 = &_4;
+        _44 = Relaxed;
+        _42 = AtomicUsize::load(move _43, move _44) -> [return: bb14, unwind: bb21];
+    }
+
+    bb14: {
+        _41 = &_42;
+        _46 = const 0_usize;
+        _45 = &_46;
+        _40 = (move _41, move _45);
+        _47 = (_40.0: &usize);
+        _48 = (_40.1: &usize);
+        _51 = (*_47);
+        _52 = (*_48);
+        _50 = Eq(move _51, move _52);
+        _49 = Not(move _50);
+        switchInt(move _49) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _53 = core::panicking::AssertKind::Eq;
+        _55 = Option::<Arguments<'_>>::None;
+        _54 = core::panicking::assert_failed::<usize, usize>(move _53, _47, _48, move _55) -> bb21;
+    }
+
+    bb16: {
+        drop(_5) -> bb17;
+    }
+
+    bb17: {
+        _59 = &_4;
+        _60 = Relaxed;
+        _58 = AtomicUsize::load(move _59, move _60) -> bb18;
+    }
+
+    bb18: {
+        _57 = &_58;
+        _62 = const 1_usize;
+        _61 = &_62;
+        _56 = (move _57, move _61);
+        _63 = (_56.0: &usize);
+        _64 = (_56.1: &usize);
+        _67 = (*_63);
+        _68 = (*_64);
+        _66 = Eq(move _67, move _68);
+        _65 = Not(move _66);
+        switchInt(move _65) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _69 = core::panicking::AssertKind::Eq;
+        _71 = Option::<Arguments<'_>>::None;
+        _70 = core::panicking::assert_failed::<usize, usize>(move _69, _63, _64, move _71);
+    }
+
+    bb20: {
+        return;
+    }
+
+    bb21 (cleanup): {
+        drop(_5) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        resume;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 64_usize;
+        return;
+    }
+}
+
+fn SetOnDrop(_1: &AtomicUsize, _2: [u8; 64]) -> SetOnDrop<'_> {
+    let mut _0: SetOnDrop<'_>;
+
+    bb0: {
+        _0 = SetOnDrop::<'_>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn SetOnDrop(_1: &AtomicUsize, _2: [u8; 64]) -> SetOnDrop<'_> {
+    let mut _0: SetOnDrop<'_>;
+
+    bb0: {
+        _0 = SetOnDrop::<'_>(move _1, move _2);
+        return;
+    }
+}

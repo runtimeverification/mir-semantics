@@ -1,0 +1,342 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_me(_1: usize, _2: usize) -> usize {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: usize;
+    let mut _3: bool;
+
+    bb0: {
+        _3 = Lt(_1, _2);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = std::mem::size_of::<T>() -> bb3;
+    }
+
+    bb2: {
+        _0 = const _;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn test_me(_1: usize, _2: usize) -> usize {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: usize;
+    let mut _3: bool;
+    let mut _4: usize;
+    let mut _5: usize;
+
+    bb0: {
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = _1;
+        StorageLive(_5);
+        _5 = _2;
+        _3 = Lt(move _4, move _5);
+        StorageDead(_5);
+        StorageDead(_4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb3;
+    }
+
+    bb2: {
+        _0 = const _;
+        goto -> bb3;
+    }
+
+    bb3: {
+        StorageDead(_3);
+        return;
+    }
+}
+
+fn test_simple() -> [u8; std::mem::size_of::<T>()] {
+    let mut _0: [u8; std::mem::size_of::<T>()];
+
+    bb0: {
+        _0 = [const 0_u8; std::mem::size_of::<T>()];
+        return;
+    }
+}
+
+test_simple::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+test_simple::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+test_simple::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test_with_args() -> [u8; test_me::<T>(N, N + 1) + N] {
+    let mut _0: [u8; test_me::<T>(N, N + 1) + N];
+
+    bb0: {
+        _0 = [const 0_u8; test_me::<T>(N, N + 1) + N];
+        return;
+    }
+}
+
+test_with_args::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: usize;
+    let mut _3: (usize, bool);
+    let mut _4: (usize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _3 = CheckedAdd(const N, const 1_usize);
+        assert(!move (_3.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _2 = move (_3.0: usize);
+        ConstEvalCounter;
+        _1 = test_me::<T>(const N, move _2) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_2);
+        _4 = CheckedAdd(_1, const N);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", move _1, const N) -> bb3;
+    }
+
+    bb3: {
+        _0 = move (_4.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+test_with_args::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: usize;
+    let mut _3: (usize, bool);
+    let mut _4: (usize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _3 = CheckedAdd(const N, const 1_usize);
+        assert(!move (_3.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _2 = move (_3.0: usize);
+        ConstEvalCounter;
+        _1 = test_me::<T>(const N, move _2) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_2);
+        _4 = CheckedAdd(_1, const N);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", move _1, const N) -> bb3;
+    }
+
+    bb3: {
+        _0 = move (_4.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+test_with_args::{constant#2}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: usize;
+    let mut _3: (usize, bool);
+    let mut _4: (usize, bool);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _3 = CheckedAdd(const N, const 1_usize);
+        assert(!move (_3.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _2 = move (_3.0: usize);
+        ConstEvalCounter;
+        _1 = test_me::<T>(const N, move _2) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_2);
+        _4 = CheckedAdd(_1, const N);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", move _1, const N) -> bb3;
+    }
+
+    bb3: {
+        _0 = move (_4.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&[u8; 8], &[u8; std::mem::size_of::<T>()]);
+    let mut _2: &[u8; 8];
+    let _3: [u8; 8];
+    let mut _4: &[u8; std::mem::size_of::<T>()];
+    let _5: [u8; std::mem::size_of::<T>()];
+    let _6: &[u8; 8];
+    let _7: &[u8; std::mem::size_of::<T>()];
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: (&[u8; 12], &[u8; test_me::<T>(N, N + 1) + N]);
+    let mut _14: &[u8; 12];
+    let _15: [u8; 12];
+    let mut _16: &[u8; test_me::<T>(N, N + 1) + N];
+    let _17: [u8; test_me::<T>(N, N + 1) + N];
+    let _18: &[u8; 12];
+    let _19: &[u8; test_me::<T>(N, N + 1) + N];
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _22: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _22;
+        }
+    }
+
+    bb0: {
+        _3 = [const 0_u8; 8];
+        _2 = &_3;
+        _5 = test_simple::<u64>() -> bb1;
+    }
+
+    bb1: {
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &[u8; 8]);
+        _7 = (_1.1: &[u8; std::mem::size_of::<T>()]);
+        _9 = <[u8; 8] as PartialEq<[u8; std::mem::size_of::<T>()]>>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<[u8; 8], [u8; std::mem::size_of::<T>()]>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        _15 = [const 0_u8; 12];
+        _14 = &_15;
+        _17 = test_with_args::<u64, 4>() -> bb5;
+    }
+
+    bb5: {
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &[u8; 12]);
+        _19 = (_13.1: &[u8; test_me::<T>(N, N + 1) + N]);
+        _21 = <[u8; 12] as PartialEq<[u8; test_me::<T>(N, N + 1) + N]>>::eq(_18, _19) -> bb6;
+    }
+
+    bb6: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<[u8; 12], [u8; test_me::<T>(N, N + 1) + N]>(move _22, _18, _19, move _24);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 12_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

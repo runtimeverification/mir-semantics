@@ -1,0 +1,65 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo1(_1: &dyn A<T> + Send) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo2(_1: Box<dyn A<T> + Send + Sync>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo3(_1: Box<dyn B<isize, usize>>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo4(_1: Box<dyn C<'_, T> + Send>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo5(_1: Box<dyn D<'_, T> + Send>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

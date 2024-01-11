@@ -1,0 +1,127 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = run() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn run() -> () {
+    let mut _0: ();
+    let _1: i64;
+    let mut _3: u32;
+    let mut _4: i64;
+    let mut _6: std::ops::Range<u32>;
+    let mut _8: &mut std::process::Command;
+    let mut _9: &mut std::process::Command;
+    let mut _10: &mut std::process::Command;
+    let mut _11: std::process::Command;
+    let _12: &[u32];
+    let _13: &[u32];
+    let mut _14: &std::vec::Vec<u32>;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: &std::result::Result<std::process::Child, std::io::Error>;
+    let mut _18: !;
+    scope 1 {
+        debug max_ngroups => _1;
+        let _2: u32;
+        scope 3 {
+            debug max_ngroups => _2;
+            let _5: std::vec::Vec<u32>;
+            scope 4 {
+                debug vec => _5;
+                let _7: std::result::Result<std::process::Child, std::io::Error>;
+                scope 5 {
+                    debug p => _7;
+                }
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _1 = sysconf(const _) -> bb1;
+    }
+
+    bb1: {
+        _4 = _1;
+        _3 = move _4 as u32 (IntToInt);
+        _2 = Add(move _3, const 1_u32);
+        _6 = std::ops::Range::<u32> { start: const 0_u32, end: _2 };
+        _5 = <std::ops::Range<u32> as Iterator>::collect::<Vec<u32>>(move _6) -> bb2;
+    }
+
+    bb2: {
+        _11 = Command::new::<&str>(const "/bin/id") -> [return: bb3, unwind: bb15];
+    }
+
+    bb3: {
+        _10 = &mut _11;
+        _14 = &_5;
+        _13 = <Vec<u32> as Index<RangeFull>>::index(move _14, const RangeFull) -> [return: bb4, unwind: bb14];
+    }
+
+    bb4: {
+        _12 = _13;
+        _9 = <Command as std::os::unix::process::CommandExt>::groups(move _10, _12) -> [return: bb5, unwind: bb14];
+    }
+
+    bb5: {
+        _8 = _9;
+        _7 = Command::spawn(move _8) -> [return: bb6, unwind: bb14];
+    }
+
+    bb6: {
+        drop(_11) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _17 = &_7;
+        _16 = Result::<Child, std::io::Error>::is_err(move _17) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _18 = core::panicking::panic(const "assertion failed: p.is_err()") -> bb13;
+    }
+
+    bb10: {
+        drop(_7) -> [return: bb11, unwind: bb15];
+    }
+
+    bb11: {
+        drop(_5) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_7) -> [return: bb15, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_11) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_5) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        resume;
+    }
+}

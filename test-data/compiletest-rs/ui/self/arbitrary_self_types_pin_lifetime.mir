@@ -1,0 +1,228 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:8:1: 8:9>::pin_ref(_1: Pin<&Foo>) -> Pin<&Foo> {
+    debug self => _1;
+    let mut _0: std::pin::Pin<&Foo>;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:8:1: 8:9>::pin_mut(_1: Pin<&mut Foo>) -> Pin<&mut Foo> {
+    debug self => _1;
+    let mut _0: std::pin::Pin<&mut Foo>;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:8:1: 8:9>::pin_pin_pin_ref(_1: Pin<Pin<Pin<&Foo>>>) -> Pin<Pin<Pin<&Foo>>> {
+    debug self => _1;
+    let mut _0: std::pin::Pin<std::pin::Pin<std::pin::Pin<&Foo>>>;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:8:1: 8:9>::pin_ref_impl_trait(_1: Pin<&Foo>) -> impl Clone + '_ {
+    debug self => _1;
+    let mut _0: impl std::clone::Clone + '_;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:8:1: 8:9>::b(_1: Pin<&Foo>, _2: &Foo) -> Pin<&Foo> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::pin::Pin<&Foo>;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:21:1: 21:9>::bar(_1: Pin<&Foo>, _2: &()) -> Pin<&Foo> {
+    debug self => _1;
+    debug arg => _2;
+    let mut _0: std::pin::Pin<&Foo>;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:30:1: 30:35>::fields(_1: Pin<&mut Bar<T, U>>) -> (Pin<&mut T>, Pin<&mut U>) {
+    debug self => _1;
+    let mut _0: (std::pin::Pin<&mut T>, std::pin::Pin<&mut U>);
+    let _2: &mut Bar<T, U>;
+    let mut _3: std::pin::Pin<&mut T>;
+    let mut _4: &mut T;
+    let mut _5: std::pin::Pin<&mut U>;
+    let mut _6: &mut U;
+    scope 1 {
+        debug this => _2;
+    }
+
+    bb0: {
+        _2 = Pin::<&mut Bar<T, U>>::get_mut(move _1) -> bb1;
+    }
+
+    bb1: {
+        _4 = &mut ((*_2).0: T);
+        _3 = Pin::<&mut T>::new(_4) -> bb2;
+    }
+
+    bb2: {
+        _6 = &mut ((*_2).1: U);
+        _5 = Pin::<&mut U>::new(_6) -> bb3;
+    }
+
+    bb3: {
+        _0 = (move _3, move _5);
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_pin_lifetime.rs:44:1: 44:26>::poll_fill_buf(_1: Pin<&mut Baz>, _2: &mut Context<'_>) -> Poll<Result<&[u8], std::io::Error>> {
+    debug self => _1;
+    debug cx => _2;
+    let mut _0: std::task::Poll<std::result::Result<&[u8], std::io::Error>>;
+    let mut _3: std::result::Result<&[u8], std::io::Error>;
+    let mut _4: &[u8];
+    let _5: &[u8];
+    let _6: &std::vec::Vec<u8>;
+    let _7: &mut Baz;
+
+    bb0: {
+        _7 = Pin::<&mut Baz>::get_mut(move _1) -> bb1;
+    }
+
+    bb1: {
+        _6 = &((*_7).0: std::vec::Vec<u8>);
+        _5 = <Vec<u8> as Deref>::deref(_6) -> bb2;
+    }
+
+    bb2: {
+        _4 = _5;
+        _3 = Result::<&[u8], std::io::Error>::Ok(move _4);
+        _0 = Poll::<Result<&[u8], std::io::Error>>::Ready(move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo;
+    let _2: std::pin::Pin<&Foo>;
+    let mut _3: std::pin::Pin<&Foo>;
+    let mut _4: &Foo;
+    let _5: std::pin::Pin<&mut Foo>;
+    let mut _6: std::pin::Pin<&mut Foo>;
+    let mut _7: &mut Foo;
+    let _8: std::pin::Pin<std::pin::Pin<std::pin::Pin<&Foo>>>;
+    let mut _9: std::pin::Pin<std::pin::Pin<std::pin::Pin<&Foo>>>;
+    let mut _10: std::pin::Pin<std::pin::Pin<&Foo>>;
+    let mut _11: std::pin::Pin<&Foo>;
+    let mut _12: &Foo;
+    let _13: impl std::clone::Clone + '_;
+    let mut _14: std::pin::Pin<&Foo>;
+    let mut _15: &Foo;
+    let _17: (std::pin::Pin<&mut u8>, std::pin::Pin<&mut u8>);
+    let mut _18: std::pin::Pin<&mut Bar<u8, u8>>;
+    let mut _19: &mut Bar<u8, u8>;
+    scope 1 {
+        debug foo => const Foo;
+        let mut _16: Bar<u8, u8>;
+        scope 2 {
+            debug bar => _16;
+        }
+    }
+
+    bb0: {
+        _4 = &_1;
+        _3 = Pin::<&Foo>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = Foo::pin_ref(move _3) -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _1;
+        _6 = Pin::<&mut Foo>::new(move _7) -> bb3;
+    }
+
+    bb3: {
+        _5 = Foo::pin_mut(move _6) -> bb4;
+    }
+
+    bb4: {
+        _12 = &_1;
+        _11 = Pin::<&Foo>::new(move _12) -> bb5;
+    }
+
+    bb5: {
+        _10 = Pin::<Pin<&Foo>>::new(move _11) -> bb6;
+    }
+
+    bb6: {
+        _9 = Pin::<Pin<Pin<&Foo>>>::new(move _10) -> bb7;
+    }
+
+    bb7: {
+        _8 = Foo::pin_pin_pin_ref(move _9) -> bb8;
+    }
+
+    bb8: {
+        _15 = &_1;
+        _14 = Pin::<&Foo>::new(move _15) -> bb9;
+    }
+
+    bb9: {
+        _13 = Foo::pin_ref_impl_trait(move _14) -> bb10;
+    }
+
+    bb10: {
+        _16 = Bar::<u8, u8> { field1: const 0_u8, field2: const 1_u8 };
+        _19 = &mut _16;
+        _18 = Pin::<&mut Bar<u8, u8>>::new(move _19) -> bb11;
+    }
+
+    bb11: {
+        _17 = Bar::<u8, u8>::fields(move _18) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+fn Baz(_1: Vec<u8>) -> Baz {
+    let mut _0: Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz(_1: Vec<u8>) -> Baz {
+    let mut _0: Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}

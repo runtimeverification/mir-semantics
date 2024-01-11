@@ -1,0 +1,113 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Both::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+Both::arr::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+BothTrait::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+BothEnum::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+BothEnum::Dummy::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+OppOrder::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+OppOrder::arr::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn BothEnum::Dummy(_1: [T; N]) -> BothEnum<T, N> {
+    let mut _0: BothEnum<T, N>;
+
+    bb0: {
+        _0 = BothEnum::<T, N>::Dummy(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn BothEnum::Dummy(_1: [T; N]) -> BothEnum<T, N> {
+    let mut _0: BothEnum<T, N>;
+
+    bb0: {
+        _0 = BothEnum::<T, N>::Dummy(move _1);
+        return;
+    }
+}

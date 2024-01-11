@@ -1,0 +1,706 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: fn(u8) -> u8 = {
+    let mut _0: fn(u8) -> u8;
+    let mut _1: [closure@ui/functions-closures/closure-to-fn-coercion.rs:4:27: 4:34];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:4:27: 4:34];
+        _0 = move _1 as fn(u8) -> u8 (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn FOO::{closure#0}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:4:27: 4:34], _2: u8) -> u8 {
+    debug v => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+const BAR: [for<'a> fn(&'a mut u32); 5] = {
+    let mut _0: [for<'a> fn(&'a mut u32); 5];
+    let mut _1: for<'a> fn(&'a mut u32);
+    let mut _2: [closure@ui/functions-closures/closure-to-fn-coercion.rs:7:5: 7:18];
+    let mut _3: for<'a> fn(&'a mut u32);
+    let mut _4: [closure@ui/functions-closures/closure-to-fn-coercion.rs:8:5: 8:18];
+    let mut _5: for<'a> fn(&'a mut u32);
+    let mut _6: [closure@ui/functions-closures/closure-to-fn-coercion.rs:9:5: 9:18];
+    let mut _7: for<'a> fn(&'a mut u32);
+    let mut _8: [closure@ui/functions-closures/closure-to-fn-coercion.rs:10:5: 10:18];
+    let mut _9: for<'a> fn(&'a mut u32);
+    let mut _10: [closure@ui/functions-closures/closure-to-fn-coercion.rs:11:5: 11:18];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:7:5: 7:18];
+        _1 = move _2 as for<'a> fn(&'a mut u32) (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:8:5: 8:18];
+        _3 = move _4 as for<'a> fn(&'a mut u32) (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:9:5: 9:18];
+        _5 = move _6 as for<'a> fn(&'a mut u32) (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_6);
+        StorageLive(_7);
+        StorageLive(_8);
+        _8 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:10:5: 10:18];
+        _7 = move _8 as for<'a> fn(&'a mut u32) (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_8);
+        StorageLive(_9);
+        StorageLive(_10);
+        _10 = [closure@ui/functions-closures/closure-to-fn-coercion.rs:11:5: 11:18];
+        _9 = move _10 as for<'a> fn(&'a mut u32) (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_10);
+        _0 = [move _1, move _3, move _5, move _7, move _9];
+        StorageDead(_9);
+        StorageDead(_7);
+        StorageDead(_5);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+BAR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn BAR::{closure#0}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:7:5: 7:18], _2: &mut u32) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn BAR::{closure#1}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:8:5: 8:18], _2: &mut u32) -> () {
+    debug v => _2;
+    let mut _0: ();
+
+    bb0: {
+        (*_2) = Add((*_2), const 1_u32);
+        return;
+    }
+}
+
+fn BAR::{closure#2}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:9:5: 9:18], _2: &mut u32) -> () {
+    debug v => _2;
+    let mut _0: ();
+
+    bb0: {
+        (*_2) = Add((*_2), const 2_u32);
+        return;
+    }
+}
+
+fn BAR::{closure#3}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:10:5: 10:18], _2: &mut u32) -> () {
+    debug v => _2;
+    let mut _0: ();
+
+    bb0: {
+        (*_2) = Add((*_2), const 3_u32);
+        return;
+    }
+}
+
+fn BAR::{closure#4}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:11:5: 11:18], _2: &mut u32) -> () {
+    debug v => _2;
+    let mut _0: ();
+
+    bb0: {
+        (*_2) = Add((*_2), const 4_u32);
+        return;
+    }
+}
+
+fn func_specific() -> fn() -> u32 {
+    let mut _0: fn() -> u32;
+
+    bb0: {
+        _0 = const ZeroSized: [closure@ui/functions-closures/closure-to-fn-coercion.rs:14:5: 14:7] as fn() -> u32 (Pointer(ClosureFnPointer(Normal)));
+        return;
+    }
+}
+
+fn func_specific::{closure#0}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:14:5: 14:7]) -> u32 {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 42_u32;
+        return;
+    }
+}
+
+fn generic(_1: T) -> fn() -> usize {
+    let mut _0: fn() -> usize;
+
+    bb0: {
+        _0 = const ZeroSized: [closure@ui/functions-closures/closure-to-fn-coercion.rs:18:5: 18:7] as fn() -> usize (Pointer(ClosureFnPointer(Normal)));
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn generic::{closure#0}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:18:5: 18:7]) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: fn() -> u32;
+    let mut _5: &u32;
+    let _6: u32;
+    let _7: &u32;
+    let _8: &u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _16: fn(u8) -> u8;
+    let mut _17: (&u8, &u8);
+    let mut _18: &u8;
+    let _19: u8;
+    let mut _20: &u8;
+    let _21: u8;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: u8;
+    let mut _27: u8;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&u8, &u8);
+    let mut _32: &u8;
+    let _33: u8;
+    let mut _34: &u8;
+    let _35: u8;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: u8;
+    let mut _41: u8;
+    let _43: !;
+    let mut _44: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _46: (&u32, &u32);
+    let mut _47: &u32;
+    let _48: u32;
+    let _49: ();
+    let mut _50: for<'a> fn(&'a mut u32);
+    let mut _51: [for<'a> fn(&'a mut u32); 5];
+    let _52: usize;
+    let mut _53: usize;
+    let mut _54: bool;
+    let mut _55: &mut u32;
+    let mut _56: &u32;
+    let _57: u32;
+    let mut _60: bool;
+    let mut _61: bool;
+    let mut _62: u32;
+    let mut _63: u32;
+    let _65: !;
+    let mut _66: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _67: (&u32, &u32);
+    let mut _68: &u32;
+    let _69: u32;
+    let _70: ();
+    let mut _71: for<'a> fn(&'a mut u32);
+    let mut _72: [for<'a> fn(&'a mut u32); 5];
+    let _73: usize;
+    let mut _74: usize;
+    let mut _75: bool;
+    let mut _76: &mut u32;
+    let mut _77: &u32;
+    let _78: u32;
+    let mut _81: bool;
+    let mut _82: bool;
+    let mut _83: u32;
+    let mut _84: u32;
+    let _86: !;
+    let mut _87: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _88: (&u32, &u32);
+    let mut _89: &u32;
+    let _90: u32;
+    let _91: ();
+    let mut _92: for<'a> fn(&'a mut u32);
+    let mut _93: [for<'a> fn(&'a mut u32); 5];
+    let _94: usize;
+    let mut _95: usize;
+    let mut _96: bool;
+    let mut _97: &mut u32;
+    let mut _98: &u32;
+    let _99: u32;
+    let mut _102: bool;
+    let mut _103: bool;
+    let mut _104: u32;
+    let mut _105: u32;
+    let _107: !;
+    let mut _108: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _109: (&u32, &u32);
+    let mut _110: &u32;
+    let _111: u32;
+    let _112: ();
+    let mut _113: for<'a> fn(&'a mut u32);
+    let mut _114: [for<'a> fn(&'a mut u32); 5];
+    let _115: usize;
+    let mut _116: usize;
+    let mut _117: bool;
+    let mut _118: &mut u32;
+    let mut _119: &u32;
+    let _120: u32;
+    let mut _123: bool;
+    let mut _124: bool;
+    let mut _125: u32;
+    let mut _126: u32;
+    let _128: !;
+    let mut _129: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _130: (&u32, &u32);
+    let mut _131: &u32;
+    let _132: u32;
+    let _133: ();
+    let mut _134: for<'a> fn(&'a mut u32);
+    let mut _135: [for<'a> fn(&'a mut u32); 5];
+    let _136: usize;
+    let mut _137: usize;
+    let mut _138: bool;
+    let mut _139: &mut u32;
+    let mut _140: &u32;
+    let _141: u32;
+    let mut _144: bool;
+    let mut _145: bool;
+    let mut _146: u32;
+    let mut _147: u32;
+    let _149: !;
+    let mut _150: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _151: (&usize, &usize);
+    let mut _152: &usize;
+    let _153: usize;
+    let mut _154: fn() -> usize;
+    let mut _155: &usize;
+    let _156: usize;
+    let mut _159: bool;
+    let mut _160: bool;
+    let mut _161: usize;
+    let mut _162: usize;
+    let _164: !;
+    let mut _165: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug foo => _16;
+        let _22: &u8;
+        let _23: &u8;
+        let _36: &u8;
+        let _37: &u8;
+        let mut _45: u32;
+        scope 4 {
+            debug left_val => _22;
+            debug right_val => _23;
+            let _28: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _28;
+            }
+        }
+        scope 6 {
+            debug left_val => _36;
+            debug right_val => _37;
+            let _42: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _42;
+            }
+        }
+        scope 8 {
+            debug a => _45;
+            let _58: &u32;
+            let _59: &u32;
+            let _79: &u32;
+            let _80: &u32;
+            let _100: &u32;
+            let _101: &u32;
+            let _121: &u32;
+            let _122: &u32;
+            let _142: &u32;
+            let _143: &u32;
+            let _157: &usize;
+            let _158: &usize;
+            scope 9 {
+                debug left_val => _58;
+                debug right_val => _59;
+                let _64: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _64;
+                }
+            }
+            scope 11 {
+                debug left_val => _79;
+                debug right_val => _80;
+                let _85: core::panicking::AssertKind;
+                scope 12 {
+                    debug kind => _85;
+                }
+            }
+            scope 13 {
+                debug left_val => _100;
+                debug right_val => _101;
+                let _106: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _106;
+                }
+            }
+            scope 15 {
+                debug left_val => _121;
+                debug right_val => _122;
+                let _127: core::panicking::AssertKind;
+                scope 16 {
+                    debug kind => _127;
+                }
+            }
+            scope 17 {
+                debug left_val => _142;
+                debug right_val => _143;
+                let _148: core::panicking::AssertKind;
+                scope 18 {
+                    debug kind => _148;
+                }
+            }
+            scope 19 {
+                debug left_val => _157;
+                debug right_val => _158;
+                let _163: core::panicking::AssertKind;
+                scope 20 {
+                    debug kind => _163;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = func_specific() -> bb1;
+    }
+
+    bb1: {
+        _3 = move _4() -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _6 = const 42_u32;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &u32);
+        _8 = (_1.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb4: {
+        _16 = const ZeroSized: [closure@ui/functions-closures/closure-to-fn-coercion.rs:24:29: 24:36] as fn(u8) -> u8 (Pointer(ClosureFnPointer(Normal)));
+        _19 = _16(const 31_u8) -> bb5;
+    }
+
+    bb5: {
+        _18 = &_19;
+        _21 = const 31_u8;
+        _20 = &_21;
+        _17 = (move _18, move _20);
+        _22 = (_17.0: &u8);
+        _23 = (_17.1: &u8);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<u8, u8>(move _28, _22, _23, move _30);
+    }
+
+    bb7: {
+        _33 = const _(const 31_u8) -> bb8;
+    }
+
+    bb8: {
+        _32 = &_33;
+        _35 = const 31_u8;
+        _34 = &_35;
+        _31 = (move _32, move _34);
+        _36 = (_31.0: &u8);
+        _37 = (_31.1: &u8);
+        _40 = (*_36);
+        _41 = (*_37);
+        _39 = Eq(move _40, move _41);
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _42 = core::panicking::AssertKind::Eq;
+        _44 = Option::<Arguments<'_>>::None;
+        _43 = core::panicking::assert_failed::<u8, u8>(move _42, _36, _37, move _44);
+    }
+
+    bb10: {
+        _45 = const 0_u32;
+        _51 = const _;
+        _52 = const 0_usize;
+        _53 = const 5_usize;
+        _54 = Lt(_52, _53);
+        assert(move _54, "index out of bounds: the length is {} but the index is {}", move _53, _52) -> bb11;
+    }
+
+    bb11: {
+        _50 = _51[_52];
+        _55 = &mut _45;
+        _49 = move _50(_55) -> bb12;
+    }
+
+    bb12: {
+        _48 = _45;
+        _47 = &_48;
+        _57 = const 0_u32;
+        _56 = &_57;
+        _46 = (move _47, move _56);
+        _58 = (_46.0: &u32);
+        _59 = (_46.1: &u32);
+        _62 = (*_58);
+        _63 = (*_59);
+        _61 = Eq(move _62, move _63);
+        _60 = Not(move _61);
+        switchInt(move _60) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _64 = core::panicking::AssertKind::Eq;
+        _66 = Option::<Arguments<'_>>::None;
+        _65 = core::panicking::assert_failed::<u32, u32>(move _64, _58, _59, move _66);
+    }
+
+    bb14: {
+        _72 = const _;
+        _73 = const 1_usize;
+        _74 = const 5_usize;
+        _75 = Lt(_73, _74);
+        assert(move _75, "index out of bounds: the length is {} but the index is {}", move _74, _73) -> bb15;
+    }
+
+    bb15: {
+        _71 = _72[_73];
+        _76 = &mut _45;
+        _70 = move _71(_76) -> bb16;
+    }
+
+    bb16: {
+        _69 = _45;
+        _68 = &_69;
+        _78 = const 1_u32;
+        _77 = &_78;
+        _67 = (move _68, move _77);
+        _79 = (_67.0: &u32);
+        _80 = (_67.1: &u32);
+        _83 = (*_79);
+        _84 = (*_80);
+        _82 = Eq(move _83, move _84);
+        _81 = Not(move _82);
+        switchInt(move _81) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _85 = core::panicking::AssertKind::Eq;
+        _87 = Option::<Arguments<'_>>::None;
+        _86 = core::panicking::assert_failed::<u32, u32>(move _85, _79, _80, move _87);
+    }
+
+    bb18: {
+        _93 = const _;
+        _94 = const 2_usize;
+        _95 = const 5_usize;
+        _96 = Lt(_94, _95);
+        assert(move _96, "index out of bounds: the length is {} but the index is {}", move _95, _94) -> bb19;
+    }
+
+    bb19: {
+        _92 = _93[_94];
+        _97 = &mut _45;
+        _91 = move _92(_97) -> bb20;
+    }
+
+    bb20: {
+        _90 = _45;
+        _89 = &_90;
+        _99 = const 3_u32;
+        _98 = &_99;
+        _88 = (move _89, move _98);
+        _100 = (_88.0: &u32);
+        _101 = (_88.1: &u32);
+        _104 = (*_100);
+        _105 = (*_101);
+        _103 = Eq(move _104, move _105);
+        _102 = Not(move _103);
+        switchInt(move _102) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _106 = core::panicking::AssertKind::Eq;
+        _108 = Option::<Arguments<'_>>::None;
+        _107 = core::panicking::assert_failed::<u32, u32>(move _106, _100, _101, move _108);
+    }
+
+    bb22: {
+        _114 = const _;
+        _115 = const 3_usize;
+        _116 = const 5_usize;
+        _117 = Lt(_115, _116);
+        assert(move _117, "index out of bounds: the length is {} but the index is {}", move _116, _115) -> bb23;
+    }
+
+    bb23: {
+        _113 = _114[_115];
+        _118 = &mut _45;
+        _112 = move _113(_118) -> bb24;
+    }
+
+    bb24: {
+        _111 = _45;
+        _110 = &_111;
+        _120 = const 6_u32;
+        _119 = &_120;
+        _109 = (move _110, move _119);
+        _121 = (_109.0: &u32);
+        _122 = (_109.1: &u32);
+        _125 = (*_121);
+        _126 = (*_122);
+        _124 = Eq(move _125, move _126);
+        _123 = Not(move _124);
+        switchInt(move _123) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _127 = core::panicking::AssertKind::Eq;
+        _129 = Option::<Arguments<'_>>::None;
+        _128 = core::panicking::assert_failed::<u32, u32>(move _127, _121, _122, move _129);
+    }
+
+    bb26: {
+        _135 = const _;
+        _136 = const 4_usize;
+        _137 = const 5_usize;
+        _138 = Lt(_136, _137);
+        assert(move _138, "index out of bounds: the length is {} but the index is {}", move _137, _136) -> bb27;
+    }
+
+    bb27: {
+        _134 = _135[_136];
+        _139 = &mut _45;
+        _133 = move _134(_139) -> bb28;
+    }
+
+    bb28: {
+        _132 = _45;
+        _131 = &_132;
+        _141 = const 10_u32;
+        _140 = &_141;
+        _130 = (move _131, move _140);
+        _142 = (_130.0: &u32);
+        _143 = (_130.1: &u32);
+        _146 = (*_142);
+        _147 = (*_143);
+        _145 = Eq(move _146, move _147);
+        _144 = Not(move _145);
+        switchInt(move _144) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _148 = core::panicking::AssertKind::Eq;
+        _150 = Option::<Arguments<'_>>::None;
+        _149 = core::panicking::assert_failed::<u32, u32>(move _148, _142, _143, move _150);
+    }
+
+    bb30: {
+        _154 = generic::<i8>(const 0_i8) -> bb31;
+    }
+
+    bb31: {
+        _153 = move _154() -> bb32;
+    }
+
+    bb32: {
+        _152 = &_153;
+        _156 = const 1_usize;
+        _155 = &_156;
+        _151 = (move _152, move _155);
+        _157 = (_151.0: &usize);
+        _158 = (_151.1: &usize);
+        _161 = (*_157);
+        _162 = (*_158);
+        _160 = Eq(move _161, move _162);
+        _159 = Not(move _160);
+        switchInt(move _159) -> [0: bb34, otherwise: bb33];
+    }
+
+    bb33: {
+        _163 = core::panicking::AssertKind::Eq;
+        _165 = Option::<Arguments<'_>>::None;
+        _164 = core::panicking::assert_failed::<usize, usize>(move _163, _157, _158, move _165);
+    }
+
+    bb34: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/functions-closures/closure-to-fn-coercion.rs:24:29: 24:36], _2: u8) -> u8 {
+    debug v => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}

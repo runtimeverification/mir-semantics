@@ -1,0 +1,70 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-67185-1.rs:6:1: 6:16>::Quaks::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-67185-1.rs:11:1: 11:22>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-67185-1.rs:12:1: 12:27>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-67185-1.rs:12:1: 12:27>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn f(_1: impl Foo) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = f::<FooImpl>(const FooImpl) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

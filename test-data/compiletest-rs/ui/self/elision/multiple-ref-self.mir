@@ -1,0 +1,105 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/elision/multiple-ref-self.rs:14:1: 14:32>::deref(_1: &Wrap<T, P>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+
+    bb0: {
+        _0 = &((*_1).0: T);
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/multiple-ref-self.rs:19:1: 19:12>::wrap_ref_Self_ref_Self(_1: Wrap<&Struct, &Struct>, _2: &u8) -> &u8 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u8;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/multiple-ref-self.rs:19:1: 19:12>::box_wrap_ref_Self_ref_Self(_1: Box<Wrap<&Struct, &Struct>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/multiple-ref-self.rs:19:1: 19:12>::pin_wrap_ref_Self_ref_Self(_1: Pin<Wrap<&Struct, &Struct>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/multiple-ref-self.rs:19:1: 19:12>::box_box_wrap_ref_Self_ref_Self(_1: Box<Box<Wrap<&Struct, &Struct>>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/multiple-ref-self.rs:19:1: 19:12>::box_pin_wrap_ref_Self_ref_Self(_1: Box<Pin<Wrap<&Struct, &Struct>>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Wrap(_1: T, _2: PhantomData<P>) -> Wrap<T, P> {
+    let mut _0: Wrap<T, P>;
+
+    bb0: {
+        _0 = Wrap::<T, P>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Wrap(_1: T, _2: PhantomData<P>) -> Wrap<T, P> {
+    let mut _0: Wrap<T, P>;
+
+    bb0: {
+        _0 = Wrap::<T, P>(move _1, move _2);
+        return;
+    }
+}

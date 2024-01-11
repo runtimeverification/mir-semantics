@@ -1,0 +1,91 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const X: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 5_u32;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u32;
+    let mut _2: bool;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &u32;
+    let _13: u32;
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 2];
+    let _18: [&str; 2];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 1];
+    let _21: [core::fmt::rt::Argument<'_>; 1];
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let _23: &u32;
+    let _24: u32;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = const _;
+        _2 = Gt(_1, const 10_u32);
+        switchInt(move _2) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _13 = Sub(_1, const 10_u32);
+        _12 = &_13;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_12) -> bb2;
+    }
+
+    bb2: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb3;
+    }
+
+    bb3: {
+        _3 = _print(move _4) -> bb7;
+    }
+
+    bb4: {
+        _18 = [const "", const "\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _24 = Sub(const 10_u32, _1);
+        _23 = &_24;
+        _22 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_23) -> bb5;
+    }
+
+    bb5: {
+        _21 = [move _22];
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> bb6;
+    }
+
+    bb6: {
+        _14 = _print(move _15) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}

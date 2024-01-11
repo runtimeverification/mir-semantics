@@ -1,0 +1,70 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::option::Option<i32>;
+    let mut _2: isize;
+    let mut _3: std::option::Option<i32>;
+    let mut _4: (&std::option::Option<i32>, &std::option::Option<i32>);
+    let mut _5: &std::option::Option<i32>;
+    let mut _6: &std::option::Option<i32>;
+    let _7: std::option::Option<i32>;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _8: &std::option::Option<i32>;
+        let _9: &std::option::Option<i32>;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Option::<i32>::None;
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb2, 1: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _3 = Option::<i32>::Some(const 0_i32);
+        _1 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _5 = &_1;
+        _7 = Option::<i32>::Some(const 0_i32);
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &std::option::Option<i32>);
+        _9 = (_4.1: &std::option::Option<i32>);
+        _11 = <Option<i32> as PartialEq>::eq(_8, _9) -> bb4;
+    }
+
+    bb4: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<Option<i32>, Option<i32>>(move _12, _8, _9, move _14);
+    }
+
+    bb6: {
+        return;
+    }
+}

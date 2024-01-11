@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::boxed::Box<()>;
+    let mut _2: *const ();
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+    scope 1 {
+        debug x => const ();
+    }
+
+    bb0: {
+        _1 = Box::<()>::new(const ()) -> bb1;
+    }
+
+    bb1: {
+        _2 = (((_1.0: std::ptr::Unique<()>).0: std::ptr::NonNull<()>).0: *const ());
+        _3 = _2 as usize (Transmute);
+        _4 = AlignOf(());
+        _5 = Sub(_4, const 1_usize);
+        _6 = BitAnd(_3, _5);
+        _7 = Eq(_6, const 0_usize);
+        assert(_7, "misaligned pointer dereference: address must be a multiple of {} but is {}", _4, _3) -> [success: bb3, unwind unreachable];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3: {
+        drop(_1) -> bb2;
+    }
+}

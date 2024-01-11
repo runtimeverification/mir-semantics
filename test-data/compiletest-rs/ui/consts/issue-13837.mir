@@ -1,0 +1,40 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+TestStruct::x::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+static TEST_VALUE: TestStruct = {
+    let mut _0: TestStruct;
+    let mut _1: *const [isize; 2];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const 4660_usize as *const [isize; 2] (PointerFromExposedAddress);
+        _0 = TestStruct { x: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+TEST_VALUE::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

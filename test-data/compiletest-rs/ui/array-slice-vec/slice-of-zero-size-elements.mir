@@ -1,0 +1,567 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &[T]) -> Option<&[T]> {
+    debug v => _1;
+    let mut _0: std::option::Option<&[T]>;
+    let mut _2: std::slice::Iter<'_, T>;
+    let mut _3: std::ops::Range<i32>;
+    let mut _4: std::ops::Range<i32>;
+    let mut _6: std::option::Option<i32>;
+    let mut _7: &mut std::ops::Range<i32>;
+    let mut _8: isize;
+    let mut _9: std::option::Option<&T>;
+    let mut _10: &mut std::slice::Iter<'_, T>;
+    let mut _11: &[T];
+    let _12: &[T];
+    let mut _13: &std::slice::Iter<'_, T>;
+    scope 1 {
+        debug it => _2;
+        let mut _5: std::ops::Range<i32>;
+        scope 2 {
+            debug iter => _5;
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _2 = core::slice::<impl [T]>::iter(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = std::ops::Range::<i32> { start: const 0_i32, end: const 5_i32 };
+        _3 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _4) -> bb2;
+    }
+
+    bb2: {
+        _5 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::ops::Range<i32> as Iterator>::next(_7) -> bb4;
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _10 = &mut _2;
+        _9 = <std::slice::Iter<'_, T> as Iterator>::next(move _10) -> bb3;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _13 = &_2;
+        _12 = std::slice::Iter::<'_, T>::as_slice(move _13) -> bb8;
+    }
+
+    bb8: {
+        _11 = _12;
+        _0 = Option::<&[T]>::Some(move _11);
+        return;
+    }
+}
+
+fn foo_mut(_1: &mut [T]) -> Option<&mut [T]> {
+    debug v => _1;
+    let mut _0: std::option::Option<&mut [T]>;
+    let mut _2: std::slice::IterMut<'_, T>;
+    let mut _3: std::ops::Range<i32>;
+    let mut _4: std::ops::Range<i32>;
+    let mut _6: std::option::Option<i32>;
+    let mut _7: &mut std::ops::Range<i32>;
+    let mut _8: isize;
+    let mut _9: std::option::Option<&mut T>;
+    let mut _10: &mut std::slice::IterMut<'_, T>;
+    let mut _11: &mut [T];
+    let mut _12: &mut [T];
+    let mut _13: std::slice::IterMut<'_, T>;
+    scope 1 {
+        debug it => _2;
+        let mut _5: std::ops::Range<i32>;
+        scope 2 {
+            debug iter => _5;
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _2 = core::slice::<impl [T]>::iter_mut(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = std::ops::Range::<i32> { start: const 0_i32, end: const 5_i32 };
+        _3 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _4) -> bb2;
+    }
+
+    bb2: {
+        _5 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::ops::Range<i32> as Iterator>::next(_7) -> bb4;
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _10 = &mut _2;
+        _9 = <std::slice::IterMut<'_, T> as Iterator>::next(move _10) -> bb3;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _13 = move _2;
+        _12 = std::slice::IterMut::<'_, T>::into_slice(move _13) -> bb8;
+    }
+
+    bb8: {
+        _11 = _12;
+        _0 = Option::<&mut [T]>::Some(move _11);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &[()];
+    let _2: &[()];
+    let mut _3: *const ();
+    let mut _4: (&usize, &usize);
+    let mut _5: &usize;
+    let _6: usize;
+    let mut _7: &usize;
+    let _8: usize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&usize, &usize);
+    let mut _19: &usize;
+    let _20: usize;
+    let mut _21: std::slice::Iter<'_, ()>;
+    let mut _22: &usize;
+    let _23: usize;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: usize;
+    let mut _29: usize;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: &std::option::Option<&()>;
+    let _37: std::option::Option<&()>;
+    let mut _38: &mut std::slice::Iter<'_, ()>;
+    let mut _39: !;
+    let mut _40: (&usize, &usize);
+    let mut _41: &usize;
+    let _42: usize;
+    let mut _43: std::slice::Iter<'_, ()>;
+    let mut _44: &usize;
+    let _45: usize;
+    let mut _48: bool;
+    let mut _49: bool;
+    let mut _50: usize;
+    let mut _51: usize;
+    let _53: !;
+    let mut _54: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _55: bool;
+    let mut _56: bool;
+    let mut _57: &std::option::Option<&[()]>;
+    let _58: std::option::Option<&[()]>;
+    let mut _59: !;
+    let mut _60: &mut [()];
+    let mut _61: &mut [()];
+    let mut _62: *mut ();
+    let mut _63: (&usize, &usize);
+    let mut _64: &usize;
+    let _65: usize;
+    let mut _66: &[()];
+    let mut _67: &usize;
+    let _68: usize;
+    let mut _71: bool;
+    let mut _72: bool;
+    let mut _73: usize;
+    let mut _74: usize;
+    let _76: !;
+    let mut _77: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _78: (&usize, &usize);
+    let mut _79: &usize;
+    let _80: usize;
+    let mut _81: std::slice::IterMut<'_, ()>;
+    let mut _82: &usize;
+    let _83: usize;
+    let mut _86: bool;
+    let mut _87: bool;
+    let mut _88: usize;
+    let mut _89: usize;
+    let _91: !;
+    let mut _92: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _94: bool;
+    let mut _95: bool;
+    let mut _96: &std::option::Option<&mut ()>;
+    let _97: std::option::Option<&mut ()>;
+    let mut _98: &mut std::slice::IterMut<'_, ()>;
+    let mut _99: !;
+    let mut _100: (&usize, &usize);
+    let mut _101: &usize;
+    let _102: usize;
+    let mut _103: std::slice::IterMut<'_, ()>;
+    let mut _104: &usize;
+    let _105: usize;
+    let mut _108: bool;
+    let mut _109: bool;
+    let mut _110: usize;
+    let mut _111: usize;
+    let _113: !;
+    let mut _114: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _115: bool;
+    let mut _116: bool;
+    let mut _117: &std::option::Option<&mut [()]>;
+    let _118: std::option::Option<&mut [()]>;
+    let mut _119: !;
+    scope 1 {
+        debug slice => _1;
+        let _9: &usize;
+        let _10: &usize;
+        let _24: &usize;
+        let _25: &usize;
+        let mut _33: std::slice::Iter<'_, ()>;
+        scope 3 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _15;
+            }
+        }
+        scope 5 {
+            debug left_val => _24;
+            debug right_val => _25;
+            let _30: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _30;
+            }
+        }
+        scope 7 {
+            debug it => _33;
+            let _46: &usize;
+            let _47: &usize;
+            scope 8 {
+                debug left_val => _46;
+                debug right_val => _47;
+                let _52: core::panicking::AssertKind;
+                scope 9 {
+                    debug kind => _52;
+                }
+            }
+            scope 10 {
+                debug slice => _60;
+                let _69: &usize;
+                let _70: &usize;
+                let _84: &usize;
+                let _85: &usize;
+                let mut _93: std::slice::IterMut<'_, ()>;
+                scope 12 {
+                    debug left_val => _69;
+                    debug right_val => _70;
+                    let _75: core::panicking::AssertKind;
+                    scope 13 {
+                        debug kind => _75;
+                    }
+                }
+                scope 14 {
+                    debug left_val => _84;
+                    debug right_val => _85;
+                    let _90: core::panicking::AssertKind;
+                    scope 15 {
+                        debug kind => _90;
+                    }
+                }
+                scope 16 {
+                    debug it => _93;
+                    let _106: &usize;
+                    let _107: &usize;
+                    scope 17 {
+                        debug left_val => _106;
+                        debug right_val => _107;
+                        let _112: core::panicking::AssertKind;
+                        scope 18 {
+                            debug kind => _112;
+                        }
+                    }
+                }
+            }
+            scope 11 {
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = const -5_isize as *const () (PointerFromExposedAddress);
+        _2 = std::slice::from_raw_parts::<'_, ()>(move _3, const 10_usize) -> bb1;
+    }
+
+    bb1: {
+        _1 = _2;
+        _6 = Len((*_1));
+        _5 = &_6;
+        _8 = const 10_usize;
+        _7 = &_8;
+        _4 = (move _5, move _7);
+        _9 = (_4.0: &usize);
+        _10 = (_4.1: &usize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<usize, usize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _21 = core::slice::<impl [()]>::iter(_1) -> bb4;
+    }
+
+    bb4: {
+        _20 = <std::slice::Iter<'_, ()> as Iterator>::count(move _21) -> bb5;
+    }
+
+    bb5: {
+        _19 = &_20;
+        _23 = const 10_usize;
+        _22 = &_23;
+        _18 = (move _19, move _22);
+        _24 = (_18.0: &usize);
+        _25 = (_18.1: &usize);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<usize, usize>(move _30, _24, _25, move _32);
+    }
+
+    bb7: {
+        _33 = core::slice::<impl [()]>::iter(_1) -> bb8;
+    }
+
+    bb8: {
+        _38 = &mut _33;
+        _37 = <std::slice::Iter<'_, ()> as Iterator>::nth(move _38, const 5_usize) -> bb9;
+    }
+
+    bb9: {
+        _36 = &_37;
+        _35 = Option::<&()>::is_some(move _36) -> bb10;
+    }
+
+    bb10: {
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _39 = core::panicking::panic(const "assertion failed: it.nth(5).is_some()");
+    }
+
+    bb12: {
+        _43 = move _33;
+        _42 = <std::slice::Iter<'_, ()> as Iterator>::count(move _43) -> bb13;
+    }
+
+    bb13: {
+        _41 = &_42;
+        _45 = const 4_usize;
+        _44 = &_45;
+        _40 = (move _41, move _44);
+        _46 = (_40.0: &usize);
+        _47 = (_40.1: &usize);
+        _50 = (*_46);
+        _51 = (*_47);
+        _49 = Eq(move _50, move _51);
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _52 = core::panicking::AssertKind::Eq;
+        _54 = Option::<Arguments<'_>>::None;
+        _53 = core::panicking::assert_failed::<usize, usize>(move _52, _46, _47, move _54);
+    }
+
+    bb15: {
+        _58 = foo::<()>(_1) -> bb16;
+    }
+
+    bb16: {
+        _57 = &_58;
+        _56 = Option::<&[()]>::is_some(move _57) -> bb17;
+    }
+
+    bb17: {
+        _55 = Not(move _56);
+        switchInt(move _55) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _59 = core::panicking::panic(const "assertion failed: foo(slice).is_some()");
+    }
+
+    bb19: {
+        _62 = const -5_isize as *mut () (PointerFromExposedAddress);
+        _61 = std::slice::from_raw_parts_mut::<'_, ()>(move _62, const 10_usize) -> bb20;
+    }
+
+    bb20: {
+        _60 = _61;
+        _66 = &(*_60);
+        _65 = Len((*_66));
+        _64 = &_65;
+        _68 = const 10_usize;
+        _67 = &_68;
+        _63 = (move _64, move _67);
+        _69 = (_63.0: &usize);
+        _70 = (_63.1: &usize);
+        _73 = (*_69);
+        _74 = (*_70);
+        _72 = Eq(move _73, move _74);
+        _71 = Not(move _72);
+        switchInt(move _71) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _75 = core::panicking::AssertKind::Eq;
+        _77 = Option::<Arguments<'_>>::None;
+        _76 = core::panicking::assert_failed::<usize, usize>(move _75, _69, _70, move _77);
+    }
+
+    bb22: {
+        _81 = core::slice::<impl [()]>::iter_mut(_60) -> bb23;
+    }
+
+    bb23: {
+        _80 = <std::slice::IterMut<'_, ()> as Iterator>::count(move _81) -> bb24;
+    }
+
+    bb24: {
+        _79 = &_80;
+        _83 = const 10_usize;
+        _82 = &_83;
+        _78 = (move _79, move _82);
+        _84 = (_78.0: &usize);
+        _85 = (_78.1: &usize);
+        _88 = (*_84);
+        _89 = (*_85);
+        _87 = Eq(move _88, move _89);
+        _86 = Not(move _87);
+        switchInt(move _86) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _90 = core::panicking::AssertKind::Eq;
+        _92 = Option::<Arguments<'_>>::None;
+        _91 = core::panicking::assert_failed::<usize, usize>(move _90, _84, _85, move _92);
+    }
+
+    bb26: {
+        _93 = core::slice::<impl [()]>::iter_mut(_60) -> bb27;
+    }
+
+    bb27: {
+        _98 = &mut _93;
+        _97 = <std::slice::IterMut<'_, ()> as Iterator>::nth(move _98, const 5_usize) -> bb28;
+    }
+
+    bb28: {
+        _96 = &_97;
+        _95 = Option::<&mut ()>::is_some(move _96) -> bb29;
+    }
+
+    bb29: {
+        _94 = Not(move _95);
+        switchInt(move _94) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb30: {
+        _99 = core::panicking::panic(const "assertion failed: it.nth(5).is_some()");
+    }
+
+    bb31: {
+        _103 = move _93;
+        _102 = <std::slice::IterMut<'_, ()> as Iterator>::count(move _103) -> bb32;
+    }
+
+    bb32: {
+        _101 = &_102;
+        _105 = const 4_usize;
+        _104 = &_105;
+        _100 = (move _101, move _104);
+        _106 = (_100.0: &usize);
+        _107 = (_100.1: &usize);
+        _110 = (*_106);
+        _111 = (*_107);
+        _109 = Eq(move _110, move _111);
+        _108 = Not(move _109);
+        switchInt(move _108) -> [0: bb34, otherwise: bb33];
+    }
+
+    bb33: {
+        _112 = core::panicking::AssertKind::Eq;
+        _114 = Option::<Arguments<'_>>::None;
+        _113 = core::panicking::assert_failed::<usize, usize>(move _112, _106, _107, move _114);
+    }
+
+    bb34: {
+        _118 = foo_mut::<()>(_60) -> bb35;
+    }
+
+    bb35: {
+        _117 = &_118;
+        _116 = Option::<&mut [()]>::is_some(move _117) -> bb36;
+    }
+
+    bb36: {
+        _115 = Not(move _116);
+        switchInt(move _115) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _119 = core::panicking::panic(const "assertion failed: foo_mut(slice).is_some()");
+    }
+
+    bb38: {
+        return;
+    }
+}

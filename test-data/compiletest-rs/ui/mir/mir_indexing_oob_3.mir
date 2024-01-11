@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const C: &[u8; 5] = {
+    let mut _0: &[u8; 5];
+
+    bb0: {
+        _0 = const b"hello";
+        return;
+    }
+}
+
+alloc1 (size: 5, align: 1) {
+    68 65 6c 6c 6f                                  │ hello
+}
+
+C::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn mir() -> u8 {
+    let mut _0: u8;
+    let mut _1: &[u8; 5];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        _1 = const _;
+        _2 = const 10_usize;
+        _3 = const 5_usize;
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_1)[_2];
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u8;
+
+    bb0: {
+        _1 = mir() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

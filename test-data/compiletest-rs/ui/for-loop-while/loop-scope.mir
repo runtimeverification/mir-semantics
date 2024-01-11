@@ -1,0 +1,153 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<i32>;
+    let mut _2: std::boxed::Box<[i32]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[i32; 3]>;
+    let mut _8: std::slice::Iter<'_, i32>;
+    let mut _9: &std::vec::Vec<i32>;
+    let mut _11: std::option::Option<&i32>;
+    let mut _12: &mut std::slice::Iter<'_, i32>;
+    let mut _13: isize;
+    let mut _15: i32;
+    let mut _16: (&i32, &i32);
+    let mut _17: &i32;
+    let mut _18: &i32;
+    let _19: i32;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: i32;
+    let mut _25: i32;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: *const [i32; 3];
+    let mut _30: *const ();
+    let mut _31: usize;
+    let mut _32: usize;
+    let mut _33: usize;
+    let mut _34: usize;
+    let mut _35: bool;
+    scope 1 {
+        debug x => _1;
+        let mut _7: i32;
+        scope 3 {
+            debug sum => _7;
+            let mut _10: std::slice::Iter<'_, i32>;
+            let _20: &i32;
+            let _21: &i32;
+            scope 4 {
+                debug iter => _10;
+                let _14: &i32;
+                scope 5 {
+                    debug x => _14;
+                }
+            }
+            scope 6 {
+                debug left_val => _20;
+                debug right_val => _21;
+                let _26: core::panicking::AssertKind;
+                scope 7 {
+                    debug kind => _26;
+                }
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([i32; 3]);
+        _4 = AlignOf([i32; 3]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [i32; 3]);
+        _29 = (((_6.0: std::ptr::Unique<[i32; 3]>).0: std::ptr::NonNull<[i32; 3]>).0: *const [i32; 3]);
+        _30 = _29 as *const () (PtrToPtr);
+        _31 = _30 as usize (Transmute);
+        _32 = AlignOf(i32);
+        _33 = Sub(_32, const 1_usize);
+        _34 = BitAnd(_31, _33);
+        _35 = Eq(_34, const 0_usize);
+        assert(_35, "misaligned pointer dereference: address must be a multiple of {} but is {}", _32, _31) -> [success: bb14, unwind unreachable];
+    }
+
+    bb2: {
+        _7 = const 0_i32;
+        _9 = &_1;
+        _8 = <&Vec<i32> as IntoIterator>::into_iter(move _9) -> [return: bb3, unwind: bb12];
+    }
+
+    bb3: {
+        _10 = move _8;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _12 = &mut _10;
+        _11 = <std::slice::Iter<'_, i32> as Iterator>::next(_12) -> [return: bb5, unwind: bb12];
+    }
+
+    bb5: {
+        _13 = discriminant(_11);
+        switchInt(move _13) -> [0: bb8, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _14 = ((_11 as Some).0: &i32);
+        _15 = (*_14);
+        _7 = Add(_7, move _15);
+        goto -> bb4;
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        _17 = &_7;
+        _19 = const 60_i32;
+        _18 = &_19;
+        _16 = (move _17, move _18);
+        _20 = (_16.0: &i32);
+        _21 = (_16.1: &i32);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<i32, i32>(move _26, _20, _21, move _28) -> bb12;
+    }
+
+    bb10: {
+        drop(_1) -> bb11;
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14: {
+        (*_29) = [const 10_i32, const 20_i32, const 30_i32];
+        _2 = move _6 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _1 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}

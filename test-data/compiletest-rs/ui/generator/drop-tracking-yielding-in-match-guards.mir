@@ -1,0 +1,91 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]>, _2: u8) -> GeneratorState<(), ()> {
+    debug x => (((*(_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27])) as variant#3).1: u8);
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: u8;
+    let mut _4: bool;
+    let mut _5: ();
+    let mut _6: u8;
+    let mut _7: u8;
+    let mut _8: ();
+    let mut _9: u32;
+    let mut _10: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _11: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _12: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _13: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _14: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _15: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _16: &u8;
+    let mut _17: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    let mut _18: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27];
+    scope 1 {
+        debug y => _3;
+        debug y => (((*(_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27])) as variant#3).0: &u8);
+    }
+
+    bb0: {
+        _10 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        _9 = discriminant((*_10));
+        switchInt(move _9) -> [0: bb1, 1: bb6, 3: bb5, otherwise: bb7];
+    }
+
+    bb1: {
+        _11 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        (((*_11) as variant#3).1: u8) = move _2;
+        _12 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        _13 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        (((*_12) as variant#3).0: &u8) = &(((*_13) as variant#3).1: u8);
+        _5 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _5);
+        _14 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        discriminant((*_14)) = 3;
+        return;
+    }
+
+    bb2: {
+        _17 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        _3 = (((*_17) as variant#3).1: u8);
+        _8 = ();
+        goto -> bb4;
+    }
+
+    bb3: {
+        _8 = ();
+        goto -> bb4;
+    }
+
+    bb4: {
+        _0 = GeneratorState::<(), ()>::Complete(move _8);
+        _18 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        discriminant((*_18)) = 1;
+        return;
+    }
+
+    bb5: {
+        _15 = deref_copy (_1.0: &mut [static generator@ui/generator/drop-tracking-yielding-in-match-guards.rs:10:13: 10:27]);
+        _16 = deref_copy (((*_15) as variant#3).0: &u8);
+        _7 = (*_16);
+        _6 = Add(move _7, const 1_u8);
+        _4 = Eq(move _2, move _6);
+        switchInt(move _4) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after completion") -> bb6;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}

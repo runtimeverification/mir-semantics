@@ -1,0 +1,357 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/array-slice-vec/destructure-array-1.rs:8:1: 8:16>::drop(_1: &mut D) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: D;
+    let mut _2: [D; 4];
+    let mut _3: D;
+    let mut _4: D;
+    let mut _5: D;
+    let mut _6: D;
+    let mut _8: [D; 4];
+    let mut _9: D;
+    let mut _10: D;
+    let mut _11: D;
+    let mut _12: D;
+    let mut _13: (&u8, &u8);
+    let mut _14: &u8;
+    let mut _15: &u8;
+    let _16: u8;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: u8;
+    let mut _22: u8;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _26: (&u8, &u8);
+    let mut _27: &u8;
+    let mut _28: &u8;
+    let _29: u8;
+    let mut _32: bool;
+    let mut _33: bool;
+    let mut _34: u8;
+    let mut _35: u8;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug d1 => _1;
+        let _7: D;
+        scope 2 {
+            debug d3 => _7;
+            let _17: &u8;
+            let _18: &u8;
+            let _30: &u8;
+            let _31: &u8;
+            scope 3 {
+                debug left_val => _17;
+                debug right_val => _18;
+                let _23: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _23;
+                }
+            }
+            scope 5 {
+                debug left_val => _30;
+                debug right_val => _31;
+                let _36: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _36;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = d(const 1_u8) -> bb1;
+    }
+
+    bb1: {
+        _4 = d(const 2_u8) -> [return: bb2, unwind: bb24];
+    }
+
+    bb2: {
+        _5 = d(const 3_u8) -> [return: bb3, unwind: bb23];
+    }
+
+    bb3: {
+        _6 = d(const 4_u8) -> [return: bb4, unwind: bb22];
+    }
+
+    bb4: {
+        _2 = [move _3, move _4, move _5, move _6];
+        _1 = foo(move _2, const 1_usize) -> bb5;
+    }
+
+    bb5: {
+        _9 = d(const 5_u8) -> [return: bb6, unwind: bb21];
+    }
+
+    bb6: {
+        _10 = d(const 6_u8) -> [return: bb7, unwind: bb20];
+    }
+
+    bb7: {
+        _11 = d(const 7_u8) -> [return: bb8, unwind: bb19];
+    }
+
+    bb8: {
+        _12 = d(const 8_u8) -> [return: bb9, unwind: bb18];
+    }
+
+    bb9: {
+        _8 = [move _9, move _10, move _11, move _12];
+        _7 = foo(move _8, const 3_usize) -> [return: bb10, unwind: bb21];
+    }
+
+    bb10: {
+        _14 = &(_1.0: u8);
+        _16 = const 2_u8;
+        _15 = &_16;
+        _13 = (move _14, move _15);
+        _17 = (_13.0: &u8);
+        _18 = (_13.1: &u8);
+        _21 = (*_17);
+        _22 = (*_18);
+        _20 = Eq(move _21, move _22);
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<u8, u8>(move _23, _17, _18, move _25) -> bb17;
+    }
+
+    bb12: {
+        _27 = &(_7.0: u8);
+        _29 = const 8_u8;
+        _28 = &_29;
+        _26 = (move _27, move _28);
+        _30 = (_26.0: &u8);
+        _31 = (_26.1: &u8);
+        _34 = (*_30);
+        _35 = (*_31);
+        _33 = Eq(move _34, move _35);
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<u8, u8>(move _36, _30, _31, move _38) -> bb17;
+    }
+
+    bb14: {
+        drop(_7) -> [return: bb15, unwind: bb21];
+    }
+
+    bb15: {
+        drop(_1) -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+
+    bb17 (cleanup): {
+        drop(_7) -> [return: bb21, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        drop(_11) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        drop(_10) -> [return: bb20, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        drop(_9) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_1) -> [return: bb25, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_5) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_4) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_3) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+}
+
+fn d(_1: u8) -> D {
+    debug x => _1;
+    let mut _0: D;
+
+    bb0: {
+        _0 = D { x: _1 };
+        return;
+    }
+}
+
+fn foo(_1: [D; 4], _2: usize) -> D {
+    debug i => _2;
+    let mut _0: D;
+    let _3: D;
+    let _4: D;
+    let _5: D;
+    let _6: D;
+    let _7: !;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    scope 1 {
+        debug a => _3;
+        debug b => _4;
+        debug c => _5;
+        debug d => _6;
+    }
+
+    bb0: {
+        _11 = const false;
+        _10 = const false;
+        _9 = const false;
+        _8 = const false;
+        _11 = const true;
+        _3 = move _1[0 of 4];
+        _10 = const true;
+        _4 = move _1[1 of 4];
+        _9 = const true;
+        _5 = move _1[2 of 4];
+        _8 = const true;
+        _6 = move _1[3 of 4];
+        switchInt(_2) -> [0: bb2, 1: bb3, 2: bb4, 3: bb5, otherwise: bb1];
+    }
+
+    bb1: {
+        _7 = begin_panic::<&str>(const "unmatched") -> bb10;
+    }
+
+    bb2: {
+        _11 = const false;
+        _0 = move _3;
+        goto -> bb15;
+    }
+
+    bb3: {
+        _10 = const false;
+        _0 = move _4;
+        goto -> bb15;
+    }
+
+    bb4: {
+        _9 = const false;
+        _0 = move _5;
+        goto -> bb15;
+    }
+
+    bb5: {
+        _8 = const false;
+        _0 = move _6;
+        goto -> bb15;
+    }
+
+    bb6: {
+        _8 = const false;
+        switchInt(_9) -> [0: bb7, otherwise: bb16];
+    }
+
+    bb7: {
+        _9 = const false;
+        switchInt(_10) -> [0: bb8, otherwise: bb17];
+    }
+
+    bb8: {
+        _10 = const false;
+        switchInt(_11) -> [0: bb9, otherwise: bb18];
+    }
+
+    bb9: {
+        _11 = const false;
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_6) -> [return: bb20, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        switchInt(_10) -> [0: bb12, otherwise: bb21];
+    }
+
+    bb12 (cleanup): {
+        switchInt(_11) -> [0: bb13, otherwise: bb22];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14: {
+        drop(_6) -> [return: bb6, unwind: bb20];
+    }
+
+    bb15: {
+        switchInt(_8) -> [0: bb6, otherwise: bb14];
+    }
+
+    bb16: {
+        drop(_5) -> [return: bb7, unwind: bb11];
+    }
+
+    bb17: {
+        drop(_4) -> [return: bb8, unwind: bb12];
+    }
+
+    bb18: {
+        drop(_3) -> bb9;
+    }
+
+    bb19 (cleanup): {
+        drop(_5) -> [return: bb11, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        switchInt(_9) -> [0: bb11, otherwise: bb19];
+    }
+
+    bb21 (cleanup): {
+        drop(_4) -> [return: bb12, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_3) -> [return: bb13, unwind terminate];
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

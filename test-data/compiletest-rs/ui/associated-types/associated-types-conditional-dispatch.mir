@@ -1,0 +1,206 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/associated-types-conditional-dispatch.rs:17:1: 17:29>::eq(_1: &[A], _2: &[B]) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: &mut std::iter::Zip<std::slice::Iter<'_, A>, std::slice::Iter<'_, B>>;
+    let mut _8: std::iter::Zip<std::slice::Iter<'_, A>, std::slice::Iter<'_, B>>;
+    let mut _9: std::slice::Iter<'_, A>;
+
+    bb0: {
+        _4 = Len((*_1));
+        _5 = Len((*_2));
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _9 = core::slice::<impl [A]>::iter(_1) -> bb4;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _8 = <std::slice::Iter<'_, A> as Iterator>::zip::<&[B]>(move _9, _2) -> bb5;
+    }
+
+    bb5: {
+        _7 = &mut _8;
+        _6 = <Zip<std::slice::Iter<'_, A>, std::slice::Iter<'_, B>> as Iterator>::all::<[closure@ui/associated-types/associated-types-conditional-dispatch.rs:22:40: 22:48]>(move _7, const ZeroSized: [closure@ui/associated-types/associated-types-conditional-dispatch.rs:22:40: 22:48]) -> bb6;
+    }
+
+    bb6: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-conditional-dispatch.rs:17:1: 17:29>::eq::{closure#0}(_1: &mut [closure@ui/associated-types/associated-types-conditional-dispatch.rs:22:40: 22:48], _2: (&A, &B)) -> bool {
+    let mut _0: bool;
+    let _3: &A;
+    let _4: &B;
+    scope 1 {
+        debug a => _3;
+        debug b => _4;
+    }
+
+    bb0: {
+        _3 = (_2.0: &A);
+        _4 = (_2.1: &B);
+        _0 = <A as MyEq<B>>::eq(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/associated-types/associated-types-conditional-dispatch.rs:28:1: 28:41>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-conditional-dispatch.rs:28:1: 28:41>::eq(_1: &Lhs, _2: &[B; 0]) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: &[A];
+    let _4: &[A];
+    let mut _5: &[B];
+
+    bb0: {
+        _4 = <Lhs as Deref>::deref(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _5 = _2 as &[B] (Pointer(Unsize));
+        _0 = <[A] as MyEq<[B]>>::eq(_3, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+<impl at ui/associated-types/associated-types-conditional-dispatch.rs:28:1: 28:41>::eq::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-conditional-dispatch.rs:45:1: 45:32>::helper_borrow(_1: &Option<T>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+    let _2: &T;
+    let mut _3: std::option::Option<&T>;
+
+    bb0: {
+        _3 = Option::<T>::as_ref(_1) -> bb1;
+    }
+
+    bb1: {
+        _2 = Option::<&T>::unwrap(move _3) -> bb2;
+    }
+
+    bb2: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-conditional-dispatch.rs:51:1: 51:54>::deref(_1: &DerefWithHelper<H, T>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+    let _2: &T;
+    let mut _3: &H;
+
+    bb0: {
+        _3 = &((*_1).0: H);
+        _2 = <H as Helper<T>>::helper_borrow(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn check(_1: T, _2: T) -> bool {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: bool;
+    let _3: DerefWithHelper<std::option::Option<T>, T>;
+    let mut _4: std::option::Option<T>;
+    let mut _5: &T;
+    let _6: &T;
+    let mut _7: &DerefWithHelper<std::option::Option<T>, T>;
+    let _8: &T;
+    scope 1 {
+        debug d => _3;
+    }
+
+    bb0: {
+        _4 = Option::<T>::Some(move _1);
+        _3 = DerefWithHelper::<Option<T>, T> { helper: move _4, marker: const ZeroSized: PhantomData<T> };
+        _7 = &_3;
+        _6 = <DerefWithHelper<Option<T>, T> as Deref>::deref(move _7) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _5 = _6;
+        _8 = &_2;
+        _0 = <T as MyEq>::eq(move _5, _8) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        drop(_3) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        drop(_2) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

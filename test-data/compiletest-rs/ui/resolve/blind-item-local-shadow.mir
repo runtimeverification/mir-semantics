@@ -1,0 +1,78 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [closure@ui/resolve/blind-item-local-shadow.rs:10:15: 10:17];
+    let mut _2: (&bool, &bool);
+    let mut _3: &bool;
+    let _4: bool;
+    let mut _5: &[closure@ui/resolve/blind-item-local-shadow.rs:10:15: 10:17];
+    let mut _6: &bool;
+    let _7: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug foo => const ZeroSized: [closure@ui/resolve/blind-item-local-shadow.rs:10:15: 10:17];
+        let _8: &bool;
+        let _9: &bool;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+    }
+
+    bb0: {
+        _5 = &_1;
+        _4 = <[closure@ui/resolve/blind-item-local-shadow.rs:10:15: 10:17] as Fn<()>>::call(move _5, const ()) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _7 = const false;
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _8 = (_2.0: &bool);
+        _9 = (_2.1: &bool);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<bool, bool>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/resolve/blind-item-local-shadow.rs:10:15: 10:17]) -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}

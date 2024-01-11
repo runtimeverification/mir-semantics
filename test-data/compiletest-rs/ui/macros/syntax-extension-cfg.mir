@@ -1,0 +1,152 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: !;
+    let mut _3: bool;
+    let mut _4: !;
+    let mut _5: bool;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: !;
+    let mut _9: bool;
+    let mut _10: !;
+    let mut _11: bool;
+    let mut _12: !;
+    let mut _13: bool;
+    let mut _14: !;
+    let mut _15: bool;
+    let mut _16: !;
+    let mut _17: bool;
+    let mut _18: !;
+    let mut _19: bool;
+    let mut _20: !;
+    let mut _21: bool;
+    let mut _22: !;
+    let mut _23: bool;
+    let mut _24: !;
+    let mut _25: bool;
+    let mut _26: !;
+
+    bb0: {
+        _1 = Not(const false);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb2: {
+        _3 = const true;
+        switchInt(move _3) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _4 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        _5 = Not(const false);
+        switchInt(move _5) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb6: {
+        _7 = const true;
+        switchInt(move _7) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _8 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb8: {
+        _9 = Not(const false);
+        switchInt(move _9) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _10 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb10: {
+        _11 = const true;
+        switchInt(move _11) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _12 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb12: {
+        _13 = const true;
+        switchInt(move _13) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _14 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb14: {
+        _15 = const false;
+        switchInt(move _15) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _16 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb16: {
+        _17 = const false;
+        switchInt(move _17) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _18 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb18: {
+        _19 = const false;
+        switchInt(move _19) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _20 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb20: {
+        _21 = Not(const false);
+        switchInt(move _21) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _22 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb22: {
+        _23 = Not(const true);
+        switchInt(move _23) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _24 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb24: {
+        _25 = Not(const false);
+        switchInt(move _25) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _26 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb26: {
+        return;
+    }
+}

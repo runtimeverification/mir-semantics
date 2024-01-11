@@ -1,0 +1,106 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Big::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}
+
+const x: &[u64; 8] = {
+    let mut _0: &[u64; 8];
+    let _1: &[u64; 8];
+    let _2: [u64; 8];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = [const 13_u64, const 14_u64, const 10_u64, const 13_u64, const 11_u64, const 14_u64, const 14_u64, const 15_u64];
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const y: &Pair<'_> = {
+    let mut _0: &Pair<'_>;
+    let _1: &Pair<'_>;
+    let _2: Pair<'_>;
+    let mut _3: &[u64; 8];
+    let _4: &[u64; 8];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = const _;
+        _3 = &(*_4);
+        _2 = Pair::<'_> { a: const 15_isize, b: move _3 };
+        StorageDead(_3);
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_4);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&*const [u64; 8], &*const [u64; 8]);
+    let mut _2: &*const [u64; 8];
+    let _3: *const [u64; 8];
+    let _4: &[u64; 8];
+    let mut _5: &*const [u64; 8];
+    let _6: *const [u64; 8];
+    let _7: &Pair<'_>;
+    let _8: &*const [u64; 8];
+    let _9: &*const [u64; 8];
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: *const [u64; 8];
+    let mut _13: *const [u64; 8];
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: &[u64; 8];
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+
+    bb0: {
+        _4 = const _;
+        _3 = &raw const (*_4);
+        _2 = &_3;
+        _7 = const _;
+        _17 = deref_copy ((*_7).1: &[u64; 8]);
+        _6 = &raw const (*_17);
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _8 = (_1.0: &*const [u64; 8]);
+        _9 = (_1.1: &*const [u64; 8]);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<*const [u64; 8], *const [u64; 8]>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        return;
+    }
+}

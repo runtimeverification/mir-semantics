@@ -1,0 +1,20 @@
+[ui/consts/const_in_pattern/accept_structural.rs:33] FIELD1 = 1
+[ui/consts/const_in_pattern/accept_structural.rs:35] FIELD2 = 1
+[ui/consts/const_in_pattern/accept_structural.rs:39] ONE_CAST = 1
+[ui/consts/const_in_pattern/accept_structural.rs:43] INDIRECT = None
+[ui/consts/const_in_pattern/accept_structural.rs:46] TUPLE = (
+    None,
+    None,
+)
+[ui/consts/const_in_pattern/accept_structural.rs:49] TYPE_ASCRIPTION = None
+[ui/consts/const_in_pattern/accept_structural.rs:52] ARRAY = [
+    None,
+    None,
+]
+[ui/consts/const_in_pattern/accept_structural.rs:55] REPEAT = [
+    None,
+    None,
+]
+[ui/consts/const_in_pattern/accept_structural.rs:59] NoDerive::ASSOC = None
+[ui/consts/const_in_pattern/accept_structural.rs:62] BLOCK = None
+[ui/consts/const_in_pattern/accept_structural.rs:65] ADDR_OF = None

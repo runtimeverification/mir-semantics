@@ -1,0 +1,221 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: Vec<isize>) -> () {
+    debug c => _1;
+    let mut _0: ();
+    let _2: isize;
+    let mut _4: t<isize>;
+    let mut _5: isize;
+    let mut _6: std::slice::Iter<'_, isize>;
+    let mut _7: &std::vec::Vec<isize>;
+    let mut _9: std::option::Option<&isize>;
+    let mut _10: &mut std::slice::Iter<'_, isize>;
+    let mut _11: isize;
+    let _13: ();
+    let mut _14: std::fmt::Arguments<'_>;
+    let mut _15: &[&str];
+    let _16: &[&str; 2];
+    let _17: [&str; 2];
+    let mut _18: &[core::fmt::rt::Argument<'_>];
+    let _19: &[core::fmt::rt::Argument<'_>; 1];
+    let _20: [core::fmt::rt::Argument<'_>; 1];
+    let mut _21: core::fmt::rt::Argument<'_>;
+    let _22: &isize;
+    let _24: ();
+    let mut _25: &mut std::vec::Vec<isize>;
+    scope 1 {
+        debug a => _2;
+        let mut _3: std::vec::Vec<isize>;
+        scope 2 {
+            debug b => _3;
+            let mut _8: std::slice::Iter<'_, isize>;
+            scope 3 {
+                debug iter => _8;
+                let _12: &isize;
+                scope 4 {
+                    debug _i => _12;
+                    let _23: isize;
+                    scope 5 {
+                        debug a => _23;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const 5_isize;
+        _3 = Vec::<isize>::new() -> [return: bb1, unwind: bb15];
+    }
+
+    bb1: {
+        _4 = t::<isize>::none;
+        _5 = discriminant(_4);
+        switchInt(move _5) -> [1: bb2, otherwise: bb11];
+    }
+
+    bb2: {
+        _7 = &_1;
+        _6 = <&Vec<isize> as IntoIterator>::into_iter(move _7) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _8 = move _6;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _10 = &mut _8;
+        _9 = <std::slice::Iter<'_, isize> as Iterator>::next(_10) -> [return: bb5, unwind: bb14];
+    }
+
+    bb5: {
+        _11 = discriminant(_9);
+        switchInt(move _11) -> [0: bb11, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _12 = ((_9 as Some).0: &isize);
+        _17 = [const "", const "\n"];
+        _16 = &_17;
+        _15 = _16 as &[&str] (Pointer(Unsize));
+        _22 = &_2;
+        _21 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_22) -> [return: bb8, unwind: bb14];
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        _20 = [move _21];
+        _19 = &_20;
+        _18 = _19 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _14 = Arguments::<'_>::new_v1(move _15, move _18) -> [return: bb9, unwind: bb14];
+    }
+
+    bb9: {
+        _13 = _print(move _14) -> [return: bb10, unwind: bb14];
+    }
+
+    bb10: {
+        _23 = const 17_isize;
+        _25 = &mut _3;
+        _24 = Vec::<isize>::push(move _25, _23) -> [return: bb17, unwind: bb14];
+    }
+
+    bb11: {
+        drop(_3) -> [return: bb12, unwind: bb15];
+    }
+
+    bb12: {
+        drop(_1) -> bb13;
+    }
+
+    bb13: {
+        return;
+    }
+
+    bb14 (cleanup): {
+        drop(_3) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_1) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        resume;
+    }
+
+    bb17: {
+        goto -> bb4;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _3: (&i32, &i32);
+    let mut _4: &i32;
+    let mut _5: &i32;
+    let _6: i32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: i32;
+    let mut _12: i32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _16: ();
+    let mut _17: std::vec::Vec<isize>;
+    scope 1 {
+        debug x => _1;
+        let _2: i32;
+        scope 2 {
+            debug x => _2;
+            let _7: &i32;
+            let _8: &i32;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 10_i32;
+        _2 = Add(_1, const 20_i32);
+        _4 = &_2;
+        _6 = const 30_i32;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &i32);
+        _8 = (_3.1: &i32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<i32, i32>(move _13, _7, _8, move _15);
+    }
+
+    bb2: {
+        _17 = Vec::<isize>::new() -> bb3;
+    }
+
+    bb3: {
+        _16 = foo(move _17) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn t::some(_1: T) -> t<T> {
+    let mut _0: t<T>;
+
+    bb0: {
+        _0 = t::<T>::some(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn t::some(_1: T) -> t<T> {
+    let mut _0: t<T>;
+
+    bb0: {
+        _0 = t::<T>::some(move _1);
+        return;
+    }
+}

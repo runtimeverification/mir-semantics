@@ -1,0 +1,402 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const_in_pattern/warn_corner_cases.rs:17:16: 17:21>::clone(_1: &NoDerive) -> NoDerive {
+    debug self => _1;
+    let mut _0: NoDerive;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/consts/const_in_pattern/warn_corner_cases.rs:17:23: 17:28>::fmt(_1: &NoDerive, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&u32;
+    let _6: &u32;
+
+    bb0: {
+        _3 = const "NoDerive";
+        _6 = &((*_1).0: u32);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/const_in_pattern/warn_corner_cases.rs:21:1: 21:28>::eq(_1: &NoDerive, _2: &NoDerive) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::option::Option<NoDerive>;
+    let mut _2: isize;
+    let _3: !;
+    let mut _4: std::option::Option<NoDerive>;
+    let _5: std::option::Option<NoDerive>;
+    let _6: ();
+    let mut _7: std::fmt::Arguments<'_>;
+    let mut _8: &[&str];
+    let _9: &[&str; 2];
+    let _10: [&str; 2];
+    let mut _11: &[core::fmt::rt::Argument<'_>];
+    let _12: &[core::fmt::rt::Argument<'_>; 1];
+    let _13: [core::fmt::rt::Argument<'_>; 1];
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &&std::option::Option<NoDerive>;
+    let _16: &std::option::Option<NoDerive>;
+    let mut _17: &[core::fmt::rt::Placeholder];
+    let _18: &[core::fmt::rt::Placeholder; 1];
+    let _19: [core::fmt::rt::Placeholder; 1];
+    let mut _20: core::fmt::rt::Placeholder;
+    let mut _21: core::fmt::rt::Alignment;
+    let mut _22: core::fmt::rt::Count;
+    let mut _23: core::fmt::rt::Count;
+    let mut _24: core::fmt::rt::UnsafeArg;
+    let mut _25: std::option::Option<NoDerive>;
+    let mut _26: isize;
+    let _27: !;
+    let mut _28: std::option::Option<NoDerive>;
+    let _29: std::option::Option<NoDerive>;
+    let _30: ();
+    let mut _31: std::fmt::Arguments<'_>;
+    let mut _32: &[&str];
+    let _33: &[&str; 2];
+    let _34: [&str; 2];
+    let mut _35: &[core::fmt::rt::Argument<'_>];
+    let _36: &[core::fmt::rt::Argument<'_>; 1];
+    let _37: [core::fmt::rt::Argument<'_>; 1];
+    let mut _38: core::fmt::rt::Argument<'_>;
+    let _39: &&std::option::Option<NoDerive>;
+    let _40: &std::option::Option<NoDerive>;
+    let mut _41: &[core::fmt::rt::Placeholder];
+    let _42: &[core::fmt::rt::Placeholder; 1];
+    let _43: [core::fmt::rt::Placeholder; 1];
+    let mut _44: core::fmt::rt::Placeholder;
+    let mut _45: core::fmt::rt::Alignment;
+    let mut _46: core::fmt::rt::Count;
+    let mut _47: core::fmt::rt::Count;
+    let mut _48: core::fmt::rt::UnsafeArg;
+    let mut _49: std::option::Option<NoDerive>;
+    let mut _50: isize;
+    let _51: !;
+    let mut _52: std::option::Option<NoDerive>;
+    let _53: std::option::Option<NoDerive>;
+    let _54: ();
+    let mut _55: std::fmt::Arguments<'_>;
+    let mut _56: &[&str];
+    let _57: &[&str; 2];
+    let _58: [&str; 2];
+    let mut _59: &[core::fmt::rt::Argument<'_>];
+    let _60: &[core::fmt::rt::Argument<'_>; 1];
+    let _61: [core::fmt::rt::Argument<'_>; 1];
+    let mut _62: core::fmt::rt::Argument<'_>;
+    let _63: &&std::option::Option<NoDerive>;
+    let _64: &std::option::Option<NoDerive>;
+    let mut _65: &[core::fmt::rt::Placeholder];
+    let _66: &[core::fmt::rt::Placeholder; 1];
+    let _67: [core::fmt::rt::Placeholder; 1];
+    let mut _68: core::fmt::rt::Placeholder;
+    let mut _69: core::fmt::rt::Alignment;
+    let mut _70: core::fmt::rt::Count;
+    let mut _71: core::fmt::rt::Count;
+    let mut _72: core::fmt::rt::UnsafeArg;
+    scope 1 {
+        debug tmp => _5;
+        scope 2 {
+        }
+    }
+    scope 3 {
+        debug tmp => _29;
+        scope 4 {
+        }
+    }
+    scope 5 {
+        debug tmp => _53;
+        scope 6 {
+        }
+    }
+
+    bb0: {
+        _1 = Option::<NoDerive>::None;
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _4 = const _;
+        _5 = _4;
+        _10 = [const "[ui/consts/const_in_pattern/warn_corner_cases.rs:26] INDEX = ", const "\n"];
+        _9 = &_10;
+        _8 = _9 as &[&str] (Pointer(Unsize));
+        _16 = &_5;
+        _15 = &_16;
+        _14 = core::fmt::rt::Argument::<'_>::new_debug::<&Option<NoDerive>>(_15) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = begin_panic::<&str>(const "whoops");
+    }
+
+    bb4: {
+        _13 = [move _14];
+        _12 = &_13;
+        _11 = _12 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _21 = core::fmt::rt::Alignment::Unknown;
+        _22 = core::fmt::rt::Count::Implied;
+        _23 = core::fmt::rt::Count::Implied;
+        _20 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _21, const 4_u32, move _22, move _23) -> bb5;
+    }
+
+    bb5: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _24 = core::fmt::rt::UnsafeArg::new() -> bb6;
+    }
+
+    bb6: {
+        _7 = Arguments::<'_>::new_v1_formatted(move _8, move _11, move _17, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb7;
+    }
+
+    bb7: {
+        _6 = _eprint(move _7) -> bb8;
+    }
+
+    bb8: {
+        _25 = Option::<NoDerive>::None;
+        _26 = discriminant(_25);
+        switchInt(move _26) -> [0: bb9, 1: bb10, otherwise: bb2];
+    }
+
+    bb9: {
+        _28 = const _;
+        _29 = _28;
+        _34 = [const "[ui/consts/const_in_pattern/warn_corner_cases.rs:32] CALL = ", const "\n"];
+        _33 = &_34;
+        _32 = _33 as &[&str] (Pointer(Unsize));
+        _40 = &_29;
+        _39 = &_40;
+        _38 = core::fmt::rt::Argument::<'_>::new_debug::<&Option<NoDerive>>(_39) -> bb11;
+    }
+
+    bb10: {
+        _27 = begin_panic::<&str>(const "whoops");
+    }
+
+    bb11: {
+        _37 = [move _38];
+        _36 = &_37;
+        _35 = _36 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _45 = core::fmt::rt::Alignment::Unknown;
+        _46 = core::fmt::rt::Count::Implied;
+        _47 = core::fmt::rt::Count::Implied;
+        _44 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _45, const 4_u32, move _46, move _47) -> bb12;
+    }
+
+    bb12: {
+        _43 = [move _44];
+        _42 = &_43;
+        _41 = _42 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _48 = core::fmt::rt::UnsafeArg::new() -> bb13;
+    }
+
+    bb13: {
+        _31 = Arguments::<'_>::new_v1_formatted(move _32, move _35, move _41, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb14;
+    }
+
+    bb14: {
+        _30 = _eprint(move _31) -> bb15;
+    }
+
+    bb15: {
+        _49 = Option::<NoDerive>::None;
+        _50 = discriminant(_49);
+        switchInt(move _50) -> [0: bb16, 1: bb17, otherwise: bb2];
+    }
+
+    bb16: {
+        _52 = const _;
+        _53 = _52;
+        _58 = [const "[ui/consts/const_in_pattern/warn_corner_cases.rs:38] METHOD_CALL = ", const "\n"];
+        _57 = &_58;
+        _56 = _57 as &[&str] (Pointer(Unsize));
+        _64 = &_53;
+        _63 = &_64;
+        _62 = core::fmt::rt::Argument::<'_>::new_debug::<&Option<NoDerive>>(_63) -> bb18;
+    }
+
+    bb17: {
+        _51 = begin_panic::<&str>(const "whoops");
+    }
+
+    bb18: {
+        _61 = [move _62];
+        _60 = &_61;
+        _59 = _60 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _69 = core::fmt::rt::Alignment::Unknown;
+        _70 = core::fmt::rt::Count::Implied;
+        _71 = core::fmt::rt::Count::Implied;
+        _68 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _69, const 4_u32, move _70, move _71) -> bb19;
+    }
+
+    bb19: {
+        _67 = [move _68];
+        _66 = &_67;
+        _65 = _66 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _72 = core::fmt::rt::UnsafeArg::new() -> bb20;
+    }
+
+    bb20: {
+        _55 = Arguments::<'_>::new_v1_formatted(move _56, move _59, move _65, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb21;
+    }
+
+    bb21: {
+        _54 = _eprint(move _55) -> bb22;
+    }
+
+    bb22: {
+        return;
+    }
+}
+
+const main::INDEX: Option<NoDerive> = {
+    let mut _0: std::option::Option<NoDerive>;
+    let mut _1: [std::option::Option<NoDerive>; 2];
+    let mut _2: std::option::Option<NoDerive>;
+    let mut _3: std::option::Option<NoDerive>;
+    let mut _4: NoDerive;
+    let _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = Option::<NoDerive>::None;
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = NoDerive(const 10_u32);
+        _3 = Option::<NoDerive>::Some(move _4);
+        StorageDead(_4);
+        _1 = [move _2, move _3];
+        StorageDead(_3);
+        StorageDead(_2);
+        StorageLive(_5);
+        _5 = const 0_usize;
+        _6 = Len(_1);
+        _7 = Lt(_5, _6);
+        assert(move _7, "index out of bounds: the length is {} but the index is {}", move _6, _5) -> bb1;
+    }
+
+    bb1: {
+        _0 = _1[_5];
+        StorageDead(_5);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn build() -> Option<NoDerive> {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        _0 = Option::<NoDerive>::None;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn build() -> Option<NoDerive> {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        _0 = Option::<NoDerive>::None;
+        return;
+    }
+}
+
+const CALL: Option<NoDerive> = {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = build() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::<impl at ui/consts/const_in_pattern/warn_corner_cases.rs:36:5: 36:18>::none() -> Option<NoDerive> {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        _0 = Option::<NoDerive>::None;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn main::<impl at ui/consts/const_in_pattern/warn_corner_cases.rs:36:5: 36:18>::none() -> Option<NoDerive> {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        _0 = Option::<NoDerive>::None;
+        return;
+    }
+}
+
+const METHOD_CALL: Option<NoDerive> = {
+    let mut _0: std::option::Option<NoDerive>;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = main::<impl NoDerive>::none() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NoDerive(_1: u32) -> NoDerive {
+    let mut _0: NoDerive;
+
+    bb0: {
+        _0 = NoDerive(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NoDerive(_1: u32) -> NoDerive {
+    let mut _0: NoDerive;
+
+    bb0: {
+        _0 = NoDerive(move _1);
+        return;
+    }
+}

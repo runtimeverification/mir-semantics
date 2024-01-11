@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/inference/issue-36053.rs:11:1: 11:32>::next(_1: &mut Thing<'_>) -> Option<&str> {
+    debug self => _1;
+    let mut _0: std::option::Option<&str>;
+
+    bb0: {
+        _0 = Option::<&str>::None;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _2: std::iter::Filter<std::iter::Fuse<Thing<'_>>, [closure@ui/inference/issue-36053.rs:21:33: 21:36]>;
+    let mut _3: std::iter::Fuse<Thing<'_>>;
+    let mut _4: Thing<'_>;
+    let _5: &str;
+
+    bb0: {
+        _5 = const "test";
+        _4 = Thing::<'_>(_5);
+        _3 = <Thing<'_> as Iterator>::fuse(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <Fuse<Thing<'_>> as Iterator>::filter::<[closure@ui/inference/issue-36053.rs:21:33: 21:36]>(move _3, const ZeroSized: [closure@ui/inference/issue-36053.rs:21:33: 21:36]) -> bb2;
+    }
+
+    bb2: {
+        _1 = <Filter<Fuse<Thing<'_>>, [closure@ui/inference/issue-36053.rs:21:33: 21:36]> as Iterator>::count(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/inference/issue-36053.rs:21:33: 21:36], _2: &&str) -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn Thing(_1: &str) -> Thing<'_> {
+    let mut _0: Thing<'_>;
+
+    bb0: {
+        _0 = Thing::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Thing(_1: &str) -> Thing<'_> {
+    let mut _0: Thing<'_>;
+
+    bb0: {
+        _0 = Thing::<'_>(move _1);
+        return;
+    }
+}

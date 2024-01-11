@@ -1,0 +1,420 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FLOAT1_AS_I32: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1065353216_i32;
+        return;
+    }
+}
+
+const UNION: DummyUnion = {
+    let mut _0: DummyUnion;
+    let mut _1: (i32, u32);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = (const _, const 0_u32);
+        _0 = DummyUnion { field1: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn read_field1() -> (i32, u32) {
+    let mut _0: (i32, u32);
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn read_field1() -> (i32, u32) {
+    let mut _0: (i32, u32);
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const FIELD1: (i32, u32) = {
+    let mut _0: (i32, u32);
+    let mut _1: DummyUnion;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (_1.0: (i32, u32));
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn read_field2() -> f32 {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn read_field2() -> f32 {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const FIELD2: f32 = {
+    let mut _0: f32;
+    let mut _1: DummyUnion;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (_1.1: f32);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn read_field3() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn read_field3() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const FIELD3: i64 = {
+    let mut _0: i64;
+    let mut _1: DummyUnion;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (_1.2: i64);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _2: (&i32, &i32);
+    let mut _3: &i32;
+    let _4: (i32, u32);
+    let mut _5: &i32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: i32;
+    let mut _11: i32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&i32, &i32);
+    let mut _16: &i32;
+    let _17: (i32, u32);
+    let mut _18: &i32;
+    let _19: i32;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: i32;
+    let mut _25: i32;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&f32, &f32);
+    let mut _31: &f32;
+    let _32: f32;
+    let mut _33: &f32;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: f32;
+    let mut _39: f32;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&f32, &f32);
+    let mut _44: &f32;
+    let _45: f32;
+    let mut _46: &f32;
+    let _47: f32;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: f32;
+    let mut _53: f32;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&i64, &i64);
+    let mut _58: &i64;
+    let _59: i64;
+    let mut _60: &i64;
+    let _61: i64;
+    let mut _62: DummyUnion;
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: i64;
+    let mut _68: i64;
+    let _70: !;
+    let mut _71: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: DummyUnion;
+    let mut _74: (&i64, &i64);
+    let mut _75: &i64;
+    let _76: i64;
+    let mut _77: &i64;
+    let mut _80: bool;
+    let mut _81: bool;
+    let mut _82: i64;
+    let mut _83: i64;
+    let _85: !;
+    let mut _86: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug foo => _1;
+        let _6: &i32;
+        let _7: &i32;
+        let _20: &i32;
+        let _21: &i32;
+        let _29: f32;
+        scope 2 {
+            debug left_val => _6;
+            debug right_val => _7;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+        scope 4 {
+            debug left_val => _20;
+            debug right_val => _21;
+            let _26: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _26;
+            }
+        }
+        scope 6 {
+            debug foo => _29;
+            let _34: &f32;
+            let _35: &f32;
+            let _48: &f32;
+            let _49: &f32;
+            let _63: &i64;
+            let _64: &i64;
+            let _72: i64;
+            scope 7 {
+                debug left_val => _34;
+                debug right_val => _35;
+                let _40: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _40;
+                }
+            }
+            scope 9 {
+                debug left_val => _48;
+                debug right_val => _49;
+                let _54: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _54;
+                }
+            }
+            scope 11 {
+            }
+            scope 12 {
+                debug left_val => _63;
+                debug right_val => _64;
+                let _69: core::panicking::AssertKind;
+                scope 13 {
+                    debug kind => _69;
+                }
+            }
+            scope 14 {
+                debug foo => _72;
+                let _78: &i64;
+                let _79: &i64;
+                scope 16 {
+                    debug left_val => _78;
+                    debug right_val => _79;
+                    let _84: core::panicking::AssertKind;
+                    scope 17 {
+                        debug kind => _84;
+                    }
+                }
+            }
+            scope 15 {
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const _;
+        _4 = read_field1() -> bb1;
+    }
+
+    bb1: {
+        _3 = &(_4.0: i32);
+        _5 = &_1;
+        _2 = (move _3, move _5);
+        _6 = (_2.0: &i32);
+        _7 = (_2.1: &i32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<i32, i32>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        _17 = read_field1() -> bb4;
+    }
+
+    bb4: {
+        _16 = &(_17.0: i32);
+        _19 = const _;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &i32);
+        _21 = (_15.1: &i32);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<i32, i32>(move _26, _20, _21, move _28);
+    }
+
+    bb6: {
+        _29 = const 1f32;
+        _32 = read_field2() -> bb7;
+    }
+
+    bb7: {
+        _31 = &_32;
+        _33 = &_29;
+        _30 = (move _31, move _33);
+        _34 = (_30.0: &f32);
+        _35 = (_30.1: &f32);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<f32, f32>(move _40, _34, _35, move _42);
+    }
+
+    bb9: {
+        _45 = read_field2() -> bb10;
+    }
+
+    bb10: {
+        _44 = &_45;
+        _47 = const 1f32;
+        _46 = &_47;
+        _43 = (move _44, move _46);
+        _48 = (_43.0: &f32);
+        _49 = (_43.1: &f32);
+        _52 = (*_48);
+        _53 = (*_49);
+        _51 = Eq(move _52, move _53);
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<f32, f32>(move _54, _48, _49, move _56);
+    }
+
+    bb12: {
+        _59 = read_field3() -> bb13;
+    }
+
+    bb13: {
+        _58 = &_59;
+        _62 = const _;
+        _61 = (_62.2: i64);
+        _60 = &_61;
+        _57 = (move _58, move _60);
+        _63 = (_57.0: &i64);
+        _64 = (_57.1: &i64);
+        _67 = (*_63);
+        _68 = (*_64);
+        _66 = Eq(move _67, move _68);
+        _65 = Not(move _66);
+        switchInt(move _65) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _69 = core::panicking::AssertKind::Eq;
+        _71 = Option::<Arguments<'_>>::None;
+        _70 = core::panicking::assert_failed::<i64, i64>(move _69, _63, _64, move _71);
+    }
+
+    bb15: {
+        _73 = const _;
+        _72 = (_73.2: i64);
+        _76 = read_field3() -> bb16;
+    }
+
+    bb16: {
+        _75 = &_76;
+        _77 = &_72;
+        _74 = (move _75, move _77);
+        _78 = (_74.0: &i64);
+        _79 = (_74.1: &i64);
+        _82 = (*_78);
+        _83 = (*_79);
+        _81 = Eq(move _82, move _83);
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _84 = core::panicking::AssertKind::Eq;
+        _86 = Option::<Arguments<'_>>::None;
+        _85 = core::panicking::assert_failed::<i64, i64>(move _84, _78, _79, move _86);
+    }
+
+    bb18: {
+        return;
+    }
+}

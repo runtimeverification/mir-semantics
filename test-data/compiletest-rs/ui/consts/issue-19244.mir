@@ -1,0 +1,620 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const STRUCT: MyStruct = {
+    let mut _0: MyStruct;
+
+    bb0: {
+        _0 = MyStruct { field: const 42_usize };
+        return;
+    }
+}
+
+const TUP: (usize,) = {
+    let mut _0: (usize,);
+
+    bb0: {
+        _0 = (const 43_usize,);
+        return;
+    }
+}
+
+const NESTED_S: Nested = {
+    let mut _0: Nested;
+    let mut _1: MyStruct;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = MyStruct { field: const 5_usize };
+        _0 = Nested { nested: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+const NESTED_T: ((usize,),) = {
+    let mut _0: ((usize,),);
+    let mut _1: (usize,);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = (const 4_usize,);
+        _0 = (move _1,);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const MIX_1: ((Nested,),) = {
+    let mut _0: ((Nested,),);
+    let mut _1: (Nested,);
+    let mut _2: Nested;
+    let mut _3: MyStruct;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = MyStruct { field: const 3_usize };
+        _2 = Nested { nested: move _3 };
+        StorageDead(_3);
+        _1 = (move _2,);
+        StorageDead(_2);
+        _0 = (move _1,);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const MIX_2: Mix2 = {
+    let mut _0: Mix2;
+    let mut _1: ((usize,),);
+    let mut _2: (usize,);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = (const 2_usize,);
+        _1 = (move _2,);
+        StorageDead(_2);
+        _0 = Mix2 { nested: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+const INSTANT_1: usize = {
+    let mut _0: usize;
+    let mut _1: MyStruct;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = MyStruct { field: const 1_usize };
+        _0 = (_1.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const INSTANT_2: usize = {
+    let mut _0: usize;
+    let mut _1: (usize,);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = (const 0_usize,);
+        _0 = (_1.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [i32; 42];
+    let mut _9: (&usize, &usize);
+    let mut _10: &usize;
+    let _11: usize;
+    let mut _12: &[i32];
+    let mut _13: &[i32; 42];
+    let mut _14: &usize;
+    let _15: usize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: (&usize, &usize);
+    let mut _26: &usize;
+    let _27: usize;
+    let mut _28: &[i32];
+    let mut _29: &[i32; 43];
+    let mut _30: &usize;
+    let _31: usize;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: usize;
+    let mut _37: usize;
+    let _39: !;
+    let mut _40: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _41: (&usize, &usize);
+    let mut _42: &usize;
+    let _43: usize;
+    let mut _44: &[i32];
+    let mut _45: &[i32; 5];
+    let mut _46: &usize;
+    let _47: usize;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: usize;
+    let mut _53: usize;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&usize, &usize);
+    let mut _58: &usize;
+    let _59: usize;
+    let mut _60: &[i32];
+    let mut _61: &[i32; 4];
+    let mut _62: &usize;
+    let _63: usize;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: usize;
+    let mut _69: usize;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: (&usize, &usize);
+    let mut _74: &usize;
+    let _75: usize;
+    let mut _76: &[i32];
+    let mut _77: &[i32; 3];
+    let mut _78: &usize;
+    let _79: usize;
+    let mut _82: bool;
+    let mut _83: bool;
+    let mut _84: usize;
+    let mut _85: usize;
+    let _87: !;
+    let mut _88: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _89: (&usize, &usize);
+    let mut _90: &usize;
+    let _91: usize;
+    let mut _92: &[i32];
+    let mut _93: &[i32; 2];
+    let mut _94: &usize;
+    let _95: usize;
+    let mut _98: bool;
+    let mut _99: bool;
+    let mut _100: usize;
+    let mut _101: usize;
+    let _103: !;
+    let mut _104: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _105: (&usize, &usize);
+    let mut _106: &usize;
+    let _107: usize;
+    let mut _108: &[i32];
+    let mut _109: &[i32; 1];
+    let mut _110: &usize;
+    let _111: usize;
+    let mut _114: bool;
+    let mut _115: bool;
+    let mut _116: usize;
+    let mut _117: usize;
+    let _119: !;
+    let mut _120: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _121: (&usize, &usize);
+    let mut _122: &usize;
+    let _123: usize;
+    let mut _124: &[i32];
+    let mut _125: &[i32; 0];
+    let mut _126: &usize;
+    let _127: usize;
+    let mut _130: bool;
+    let mut _131: bool;
+    let mut _132: usize;
+    let mut _133: usize;
+    let _135: !;
+    let mut _136: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: [i32; 43];
+        scope 2 {
+            debug b => _2;
+            let _3: [i32; 5];
+            scope 3 {
+                debug c => _3;
+                let _4: [i32; 4];
+                scope 4 {
+                    debug d => _4;
+                    let _5: [i32; 3];
+                    scope 5 {
+                        debug e => _5;
+                        let _6: [i32; 2];
+                        scope 6 {
+                            debug f => _6;
+                            let _7: [i32; 1];
+                            scope 7 {
+                                debug g => _7;
+                                let _8: [i32; 0];
+                                scope 8 {
+                                    debug h => const [];
+                                    let _16: &usize;
+                                    let _17: &usize;
+                                    let _32: &usize;
+                                    let _33: &usize;
+                                    let _48: &usize;
+                                    let _49: &usize;
+                                    let _64: &usize;
+                                    let _65: &usize;
+                                    let _80: &usize;
+                                    let _81: &usize;
+                                    let _96: &usize;
+                                    let _97: &usize;
+                                    let _112: &usize;
+                                    let _113: &usize;
+                                    let _128: &usize;
+                                    let _129: &usize;
+                                    scope 9 {
+                                        debug left_val => _16;
+                                        debug right_val => _17;
+                                        let _22: core::panicking::AssertKind;
+                                        scope 10 {
+                                            debug kind => _22;
+                                        }
+                                    }
+                                    scope 11 {
+                                        debug left_val => _32;
+                                        debug right_val => _33;
+                                        let _38: core::panicking::AssertKind;
+                                        scope 12 {
+                                            debug kind => _38;
+                                        }
+                                    }
+                                    scope 13 {
+                                        debug left_val => _48;
+                                        debug right_val => _49;
+                                        let _54: core::panicking::AssertKind;
+                                        scope 14 {
+                                            debug kind => _54;
+                                        }
+                                    }
+                                    scope 15 {
+                                        debug left_val => _64;
+                                        debug right_val => _65;
+                                        let _70: core::panicking::AssertKind;
+                                        scope 16 {
+                                            debug kind => _70;
+                                        }
+                                    }
+                                    scope 17 {
+                                        debug left_val => _80;
+                                        debug right_val => _81;
+                                        let _86: core::panicking::AssertKind;
+                                        scope 18 {
+                                            debug kind => _86;
+                                        }
+                                    }
+                                    scope 19 {
+                                        debug left_val => _96;
+                                        debug right_val => _97;
+                                        let _102: core::panicking::AssertKind;
+                                        scope 20 {
+                                            debug kind => _102;
+                                        }
+                                    }
+                                    scope 21 {
+                                        debug left_val => _112;
+                                        debug right_val => _113;
+                                        let _118: core::panicking::AssertKind;
+                                        scope 22 {
+                                            debug kind => _118;
+                                        }
+                                    }
+                                    scope 23 {
+                                        debug left_val => _128;
+                                        debug right_val => _129;
+                                        let _134: core::panicking::AssertKind;
+                                        scope 24 {
+                                            debug kind => _134;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 0_i32; 42];
+        _2 = [const 0_i32; 43];
+        _3 = [const 0_i32; 5];
+        _4 = [const 0_i32; 4];
+        _5 = [const 0_i32; 3];
+        _6 = [const 0_i32; 2];
+        _7 = [const 0_i32; 1];
+        _13 = &_1;
+        _12 = move _13 as &[i32] (Pointer(Unsize));
+        _11 = Len((*_12));
+        _10 = &_11;
+        _15 = const 42_usize;
+        _14 = &_15;
+        _9 = (move _10, move _14);
+        _16 = (_9.0: &usize);
+        _17 = (_9.1: &usize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<usize, usize>(move _22, _16, _17, move _24);
+    }
+
+    bb2: {
+        _29 = &_2;
+        _28 = move _29 as &[i32] (Pointer(Unsize));
+        _27 = Len((*_28));
+        _26 = &_27;
+        _31 = const 43_usize;
+        _30 = &_31;
+        _25 = (move _26, move _30);
+        _32 = (_25.0: &usize);
+        _33 = (_25.1: &usize);
+        _36 = (*_32);
+        _37 = (*_33);
+        _35 = Eq(move _36, move _37);
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _38 = core::panicking::AssertKind::Eq;
+        _40 = Option::<Arguments<'_>>::None;
+        _39 = core::panicking::assert_failed::<usize, usize>(move _38, _32, _33, move _40);
+    }
+
+    bb4: {
+        _45 = &_3;
+        _44 = move _45 as &[i32] (Pointer(Unsize));
+        _43 = Len((*_44));
+        _42 = &_43;
+        _47 = const 5_usize;
+        _46 = &_47;
+        _41 = (move _42, move _46);
+        _48 = (_41.0: &usize);
+        _49 = (_41.1: &usize);
+        _52 = (*_48);
+        _53 = (*_49);
+        _51 = Eq(move _52, move _53);
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<usize, usize>(move _54, _48, _49, move _56);
+    }
+
+    bb6: {
+        _61 = &_4;
+        _60 = move _61 as &[i32] (Pointer(Unsize));
+        _59 = Len((*_60));
+        _58 = &_59;
+        _63 = const 4_usize;
+        _62 = &_63;
+        _57 = (move _58, move _62);
+        _64 = (_57.0: &usize);
+        _65 = (_57.1: &usize);
+        _68 = (*_64);
+        _69 = (*_65);
+        _67 = Eq(move _68, move _69);
+        _66 = Not(move _67);
+        switchInt(move _66) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<usize, usize>(move _70, _64, _65, move _72);
+    }
+
+    bb8: {
+        _77 = &_5;
+        _76 = move _77 as &[i32] (Pointer(Unsize));
+        _75 = Len((*_76));
+        _74 = &_75;
+        _79 = const 3_usize;
+        _78 = &_79;
+        _73 = (move _74, move _78);
+        _80 = (_73.0: &usize);
+        _81 = (_73.1: &usize);
+        _84 = (*_80);
+        _85 = (*_81);
+        _83 = Eq(move _84, move _85);
+        _82 = Not(move _83);
+        switchInt(move _82) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _86 = core::panicking::AssertKind::Eq;
+        _88 = Option::<Arguments<'_>>::None;
+        _87 = core::panicking::assert_failed::<usize, usize>(move _86, _80, _81, move _88);
+    }
+
+    bb10: {
+        _93 = &_6;
+        _92 = move _93 as &[i32] (Pointer(Unsize));
+        _91 = Len((*_92));
+        _90 = &_91;
+        _95 = const 2_usize;
+        _94 = &_95;
+        _89 = (move _90, move _94);
+        _96 = (_89.0: &usize);
+        _97 = (_89.1: &usize);
+        _100 = (*_96);
+        _101 = (*_97);
+        _99 = Eq(move _100, move _101);
+        _98 = Not(move _99);
+        switchInt(move _98) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _102 = core::panicking::AssertKind::Eq;
+        _104 = Option::<Arguments<'_>>::None;
+        _103 = core::panicking::assert_failed::<usize, usize>(move _102, _96, _97, move _104);
+    }
+
+    bb12: {
+        _109 = &_7;
+        _108 = move _109 as &[i32] (Pointer(Unsize));
+        _107 = Len((*_108));
+        _106 = &_107;
+        _111 = const 1_usize;
+        _110 = &_111;
+        _105 = (move _106, move _110);
+        _112 = (_105.0: &usize);
+        _113 = (_105.1: &usize);
+        _116 = (*_112);
+        _117 = (*_113);
+        _115 = Eq(move _116, move _117);
+        _114 = Not(move _115);
+        switchInt(move _114) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _118 = core::panicking::AssertKind::Eq;
+        _120 = Option::<Arguments<'_>>::None;
+        _119 = core::panicking::assert_failed::<usize, usize>(move _118, _112, _113, move _120);
+    }
+
+    bb14: {
+        _125 = &_8;
+        _124 = move _125 as &[i32] (Pointer(Unsize));
+        _123 = Len((*_124));
+        _122 = &_123;
+        _127 = const 0_usize;
+        _126 = &_127;
+        _121 = (move _122, move _126);
+        _128 = (_121.0: &usize);
+        _129 = (_121.1: &usize);
+        _132 = (*_128);
+        _133 = (*_129);
+        _131 = Eq(move _132, move _133);
+        _130 = Not(move _131);
+        switchInt(move _130) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _134 = core::panicking::AssertKind::Eq;
+        _136 = Option::<Arguments<'_>>::None;
+        _135 = core::panicking::assert_failed::<usize, usize>(move _134, _128, _129, move _136);
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: MyStruct;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (_1.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize,);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (_1.0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+    let mut _1: Nested;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = ((_1.0: MyStruct).0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+    let mut _1: ((usize,),);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = ((_1.0: (usize,)).0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+    let mut _1: ((Nested,),);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = ((((_1.0: (Nested,)).0: Nested).0: MyStruct).0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+    let mut _1: Mix2;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = (((_1.0: ((usize,),)).0: (usize,)).0: usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#6}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}

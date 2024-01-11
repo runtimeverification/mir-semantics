@@ -1,0 +1,483 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/overloaded/overloaded-autoderef-order.rs:8:16: 8:21>::clone(_1: &DerefWrapper<X, Y>) -> DerefWrapper<X, Y> {
+    debug self => _1;
+    let mut _0: DerefWrapper<X, Y>;
+    let mut _2: X;
+    let _3: &X;
+    let mut _4: Y;
+    let _5: &Y;
+
+    bb0: {
+        _3 = &((*_1).0: X);
+        _2 = <X as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: Y);
+        _4 = <Y as Clone>::clone(_5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = DerefWrapper::<X, Y> { x: move _2, y: move _4 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-order.rs:14:1: 14:30>::get_x(_1: DerefWrapper<X, Y>) -> X {
+    debug self => _1;
+    let mut _0: X;
+
+    bb0: {
+        _0 = move (_1.0: X);
+        drop((_1.1: Y)) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-order.rs:20:1: 20:40>::deref(_1: &DerefWrapper<X, Y>) -> &Y {
+    debug self => _1;
+    let mut _0: &Y;
+
+    bb0: {
+        _0 = &((*_1).1: Y);
+        return;
+    }
+}
+
+fn priv_test::<impl at ui/overloaded/overloaded-autoderef-order.rs:31:20: 31:25>::clone(_1: &DerefWrapperHideX<X, Y>) -> DerefWrapperHideX<X, Y> {
+    debug self => _1;
+    let mut _0: priv_test::DerefWrapperHideX<X, Y>;
+    let mut _2: X;
+    let _3: &X;
+    let mut _4: Y;
+    let _5: &Y;
+
+    bb0: {
+        _3 = &((*_1).0: X);
+        _2 = <X as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: Y);
+        _4 = <Y as Clone>::clone(_5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = DerefWrapperHideX::<X, Y> { x: move _2, y: move _4 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn priv_test::<impl at ui/overloaded/overloaded-autoderef-order.rs:37:5: 37:39>::new(_1: X, _2: Y) -> DerefWrapperHideX<X, Y> {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: priv_test::DerefWrapperHideX<X, Y>;
+
+    bb0: {
+        _0 = DerefWrapperHideX::<X, Y> { x: move _1, y: move _2 };
+        return;
+    }
+}
+
+fn priv_test::<impl at ui/overloaded/overloaded-autoderef-order.rs:46:5: 46:49>::deref(_1: &DerefWrapperHideX<X, Y>) -> &Y {
+    debug self => _1;
+    let mut _0: &Y;
+
+    bb0: {
+        _0 = &((*_1).1: Y);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _2: DerefWrapper<i32, i32>;
+    let mut _3: (&bool, &bool);
+    let mut _4: &bool;
+    let mut _5: &bool;
+    let _6: bool;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&i32, &i32);
+    let mut _17: &i32;
+    let _18: &DerefWrapper<i32, i32>;
+    let mut _19: &DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _20: &i32;
+    let _21: i32;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: i32;
+    let mut _27: i32;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&bool, &bool);
+    let mut _32: &bool;
+    let _33: bool;
+    let mut _34: DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _35: &bool;
+    let _36: bool;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: bool;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _46: (&i32, &i32);
+    let mut _47: &i32;
+    let _48: i32;
+    let mut _49: DerefWrapper<i32, i32>;
+    let mut _50: &DerefWrapper<i32, i32>;
+    let mut _51: &DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _52: &i32;
+    let _53: i32;
+    let mut _56: bool;
+    let mut _57: bool;
+    let mut _58: i32;
+    let mut _59: i32;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _63: (&bool, &bool);
+    let mut _64: &bool;
+    let _65: &DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _66: &std::rc::Rc<DerefWrapper<bool, DerefWrapper<i32, i32>>>;
+    let _67: std::rc::Rc<DerefWrapper<bool, DerefWrapper<i32, i32>>>;
+    let mut _68: DerefWrapper<bool, DerefWrapper<i32, i32>>;
+    let mut _69: &bool;
+    let _70: bool;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: bool;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _81: DerefWrapper<i32, i32>;
+    let mut _82: (&i32, &i32);
+    let mut _83: &i32;
+    let _84: &DerefWrapper<i32, i32>;
+    let mut _85: &priv_test::DerefWrapperHideX<bool, DerefWrapper<i32, i32>>;
+    let mut _86: &i32;
+    let _87: i32;
+    let mut _90: bool;
+    let mut _91: bool;
+    let mut _92: i32;
+    let mut _93: i32;
+    let _95: !;
+    let mut _96: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _97: (&i32, &i32);
+    let mut _98: &i32;
+    let _99: &DerefWrapper<i32, i32>;
+    let mut _100: &priv_test::DerefWrapperHideX<bool, DerefWrapper<i32, i32>>;
+    let mut _101: &i32;
+    let _102: i32;
+    let mut _105: bool;
+    let mut _106: bool;
+    let mut _107: i32;
+    let mut _108: i32;
+    let _110: !;
+    let mut _111: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug nested => _1;
+        let _7: &bool;
+        let _8: &bool;
+        let _22: &i32;
+        let _23: &i32;
+        let _37: &bool;
+        let _38: &bool;
+        let _54: &i32;
+        let _55: &i32;
+        let _71: &bool;
+        let _72: &bool;
+        let _80: priv_test::DerefWrapperHideX<bool, DerefWrapper<i32, i32>>;
+        scope 2 {
+            debug left_val => _7;
+            debug right_val => _8;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+        scope 4 {
+            debug left_val => _22;
+            debug right_val => _23;
+            let _28: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _28;
+            }
+        }
+        scope 6 {
+            debug left_val => _37;
+            debug right_val => _38;
+            let _43: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _43;
+            }
+        }
+        scope 8 {
+            debug left_val => _54;
+            debug right_val => _55;
+            let _60: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _60;
+            }
+        }
+        scope 10 {
+            debug left_val => _71;
+            debug right_val => _72;
+            let _77: core::panicking::AssertKind;
+            scope 11 {
+                debug kind => _77;
+            }
+        }
+        scope 12 {
+            debug nested_priv => _80;
+            let _88: &i32;
+            let _89: &i32;
+            let _103: &i32;
+            let _104: &i32;
+            scope 13 {
+                debug left_val => _88;
+                debug right_val => _89;
+                let _94: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _94;
+                }
+            }
+            scope 15 {
+                debug left_val => _103;
+                debug right_val => _104;
+                let _109: core::panicking::AssertKind;
+                scope 16 {
+                    debug kind => _109;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = DerefWrapper::<i32, i32> { x: const 0_i32, y: const 1_i32 };
+        _1 = DerefWrapper::<bool, DerefWrapper<i32, i32>> { x: const true, y: move _2 };
+        _4 = &(_1.0: bool);
+        _6 = const true;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &bool);
+        _8 = (_3.1: &bool);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<bool, bool>(move _13, _7, _8, move _15);
+    }
+
+    bb2: {
+        _19 = &_1;
+        _18 = <DerefWrapper<bool, DerefWrapper<i32, i32>> as Deref>::deref(move _19) -> bb3;
+    }
+
+    bb3: {
+        _17 = &((*_18).0: i32);
+        _21 = const 0_i32;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &i32);
+        _23 = (_16.1: &i32);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<i32, i32>(move _28, _22, _23, move _30);
+    }
+
+    bb5: {
+        _34 = _1;
+        _33 = DerefWrapper::<bool, DerefWrapper<i32, i32>>::get_x(move _34) -> bb6;
+    }
+
+    bb6: {
+        _32 = &_33;
+        _36 = const true;
+        _35 = &_36;
+        _31 = (move _32, move _35);
+        _37 = (_31.0: &bool);
+        _38 = (_31.1: &bool);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<bool, bool>(move _43, _37, _38, move _45);
+    }
+
+    bb8: {
+        _51 = &_1;
+        _50 = <DerefWrapper<bool, DerefWrapper<i32, i32>> as Deref>::deref(move _51) -> bb9;
+    }
+
+    bb9: {
+        _49 = (*_50);
+        _48 = DerefWrapper::<i32, i32>::get_x(move _49) -> bb10;
+    }
+
+    bb10: {
+        _47 = &_48;
+        _53 = const 0_i32;
+        _52 = &_53;
+        _46 = (move _47, move _52);
+        _54 = (_46.0: &i32);
+        _55 = (_46.1: &i32);
+        _58 = (*_54);
+        _59 = (*_55);
+        _57 = Eq(move _58, move _59);
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<i32, i32>(move _60, _54, _55, move _62);
+    }
+
+    bb12: {
+        _68 = _1;
+        _67 = Rc::<DerefWrapper<bool, DerefWrapper<i32, i32>>>::new(move _68) -> bb13;
+    }
+
+    bb13: {
+        _66 = &_67;
+        _65 = <Rc<DerefWrapper<bool, DerefWrapper<i32, i32>>> as Deref>::deref(move _66) -> [return: bb14, unwind: bb25];
+    }
+
+    bb14: {
+        _64 = &((*_65).0: bool);
+        _70 = const true;
+        _69 = &_70;
+        _63 = (move _64, move _69);
+        _71 = (_63.0: &bool);
+        _72 = (_63.1: &bool);
+        _75 = (*_71);
+        _76 = (*_72);
+        _74 = Eq(move _75, move _76);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<bool, bool>(move _77, _71, _72, move _79) -> bb25;
+    }
+
+    bb16: {
+        drop(_67) -> bb17;
+    }
+
+    bb17: {
+        _81 = DerefWrapper::<i32, i32> { x: const 0_i32, y: const 1_i32 };
+        _80 = DerefWrapperHideX::<bool, DerefWrapper<i32, i32>>::new(const true, move _81) -> bb18;
+    }
+
+    bb18: {
+        _85 = &_80;
+        _84 = <DerefWrapperHideX<bool, DerefWrapper<i32, i32>> as Deref>::deref(move _85) -> bb19;
+    }
+
+    bb19: {
+        _83 = &((*_84).0: i32);
+        _87 = const 0_i32;
+        _86 = &_87;
+        _82 = (move _83, move _86);
+        _88 = (_82.0: &i32);
+        _89 = (_82.1: &i32);
+        _92 = (*_88);
+        _93 = (*_89);
+        _91 = Eq(move _92, move _93);
+        _90 = Not(move _91);
+        switchInt(move _90) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _94 = core::panicking::AssertKind::Eq;
+        _96 = Option::<Arguments<'_>>::None;
+        _95 = core::panicking::assert_failed::<i32, i32>(move _94, _88, _89, move _96);
+    }
+
+    bb21: {
+        _100 = &_80;
+        _99 = <DerefWrapperHideX<bool, DerefWrapper<i32, i32>> as Deref>::deref(move _100) -> bb22;
+    }
+
+    bb22: {
+        _98 = &((*_99).0: i32);
+        _102 = const 0_i32;
+        _101 = &_102;
+        _97 = (move _98, move _101);
+        _103 = (_97.0: &i32);
+        _104 = (_97.1: &i32);
+        _107 = (*_103);
+        _108 = (*_104);
+        _106 = Eq(move _107, move _108);
+        _105 = Not(move _106);
+        switchInt(move _105) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _109 = core::panicking::AssertKind::Eq;
+        _111 = Option::<Arguments<'_>>::None;
+        _110 = core::panicking::assert_failed::<i32, i32>(move _109, _103, _104, move _111);
+    }
+
+    bb24: {
+        return;
+    }
+
+    bb25 (cleanup): {
+        drop(_67) -> [return: bb26, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        resume;
+    }
+}

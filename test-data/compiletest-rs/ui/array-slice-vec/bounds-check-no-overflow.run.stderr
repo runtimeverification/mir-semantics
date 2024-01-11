@@ -1,0 +1,2 @@
+thread 'main' panicked at 'index out of bounds: the len is 3 but the index is 2305843009213693952', ui/array-slice-vec/bounds-check-no-overflow.rs:9:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

@@ -1,0 +1,33 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo;
+    let mut _2: std::option::Option<isize>;
+    let mut _3: isize;
+    let mut _4: isize;
+
+    bb0: {
+        _2 = Option::<isize>::Some(const 10_isize);
+        _1 = Foo { foo: const true, bar: move _2, baz: const 20_isize };
+        switchInt((_1.0: bool)) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = discriminant((_1.1: std::option::Option<isize>));
+        switchInt(move _3) -> [0: bb4, 1: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = discriminant((_1.1: std::option::Option<isize>));
+        switchInt(move _4) -> [0: bb4, 1: bb4, otherwise: bb2];
+    }
+
+    bb4: {
+        return;
+    }
+}

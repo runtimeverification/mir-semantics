@@ -1,0 +1,203 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn scalar_layout() -> () {
+    let mut _0: ();
+    let _1: &(u8, [(); 13]);
+    let _2: (u8, [(); 13]);
+    let mut _4: (&*const (), &*const ());
+    let mut _5: &*const ();
+    let _6: *const ();
+    let mut _7: &[()];
+    let mut _8: &[(); 13];
+    let mut _9: &*const ();
+    let _10: *const ();
+    let mut _11: &[()];
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: *const ();
+    let mut _17: *const ();
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug sized => _1;
+        let _3: &(u8, [()]);
+        scope 2 {
+            debug unsize => _3;
+            let _12: &*const ();
+            let _13: &*const ();
+            scope 3 {
+                debug left_val => _12;
+                debug right_val => _13;
+                let _18: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _18;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = (const 123_u8, const [(), (), (), (), (), (), (), (), (), (), (), (), ()]);
+        _1 = &_2;
+        _3 = _1 as &(u8, [()]) (Pointer(Unsize));
+        _8 = &((*_1).1: [(); 13]);
+        _7 = move _8 as &[()] (Pointer(Unsize));
+        _6 = core::slice::<impl [()]>::as_ptr(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _11 = &((*_3).1: [()]);
+        _10 = core::slice::<impl [()]>::as_ptr(move _11) -> bb2;
+    }
+
+    bb2: {
+        _9 = &_10;
+        _4 = (move _5, move _9);
+        _12 = (_4.0: &*const ());
+        _13 = (_4.1: &*const ());
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<*const (), *const ()>(move _18, _12, _13, move _20);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+scalar_layout::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+scalar_layout::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+fn scalarpair_layout() -> () {
+    let mut _0: ();
+    let _1: &(u8, u16, [(); 13]);
+    let _2: (u8, u16, [(); 13]);
+    let mut _4: (&*const (), &*const ());
+    let mut _5: &*const ();
+    let _6: *const ();
+    let mut _7: &[()];
+    let mut _8: &[(); 13];
+    let mut _9: &*const ();
+    let _10: *const ();
+    let mut _11: &[()];
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: *const ();
+    let mut _17: *const ();
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug sized => _1;
+        let _3: &(u8, u16, [()]);
+        scope 2 {
+            debug unsize => _3;
+            let _12: &*const ();
+            let _13: &*const ();
+            scope 3 {
+                debug left_val => _12;
+                debug right_val => _13;
+                let _18: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _18;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = (const 123_u8, const 456_u16, const [(), (), (), (), (), (), (), (), (), (), (), (), ()]);
+        _1 = &_2;
+        _3 = _1 as &(u8, u16, [()]) (Pointer(Unsize));
+        _8 = &((*_1).2: [(); 13]);
+        _7 = move _8 as &[()] (Pointer(Unsize));
+        _6 = core::slice::<impl [()]>::as_ptr(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _11 = &((*_3).2: [()]);
+        _10 = core::slice::<impl [()]>::as_ptr(move _11) -> bb2;
+    }
+
+    bb2: {
+        _9 = &_10;
+        _4 = (move _5, move _9);
+        _12 = (_4.0: &*const ());
+        _13 = (_4.1: &*const ());
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<*const (), *const ()>(move _18, _12, _13, move _20);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+scalarpair_layout::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+scalarpair_layout::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = scalar_layout() -> bb1;
+    }
+
+    bb1: {
+        _2 = scalarpair_layout() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

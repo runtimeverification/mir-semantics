@@ -1,0 +1,68 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn with_closure(_1: F) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = with_closure::<[closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:11:18: 11:29], u32>(const ZeroSized: [closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:11:18: 11:29]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo::{closure#0}(_1: [closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:11:18: 11:29], _2: u32, _3: &u32) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn bar(_1: &u32) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = with_closure::<[closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:16:18: 16:33], &u32>(const ZeroSized: [closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:16:18: 16:33]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar::{closure#0}(_1: [closure@ui/closure-expected-type/expect-infer-var-supply-ty-with-free-region.rs:16:18: 16:33], _2: &u32, _3: &u32) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

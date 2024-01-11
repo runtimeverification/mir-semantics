@@ -1,0 +1,109 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:9:1: 9:35>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:9:1: 9:35>::test() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:9:1: 9:35>::test::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:19:1: 19:46>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:19:1: 19:46>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:19:1: 19:46>::test_me() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/impl-bounds.rs:19:1: 19:46>::test_me::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: T) -> Foo<T, N> {
+    let mut _0: Foo<T, N>;
+
+    bb0: {
+        _0 = Foo::<T, N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: T) -> Foo<T, N> {
+    let mut _0: Foo<T, N>;
+
+    bb0: {
+        _0 = Foo::<T, N>(move _1);
+        return;
+    }
+}

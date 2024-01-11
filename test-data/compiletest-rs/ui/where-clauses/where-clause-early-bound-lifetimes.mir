@@ -1,0 +1,61 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn TheTrait::dummy(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo(_1: &T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn bar(_1: &T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: &isize;
+    let _3: ();
+    let _4: &isize;
+
+    bb0: {
+        _2 = const {alloc1: &isize};
+        _1 = foo::<'_, isize>(_2) -> bb1;
+    }
+
+    bb1: {
+        _4 = const {alloc1: &isize};
+        _3 = bar::<isize>(_4) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+alloc1 (static: x, size: 8, align: 8) {
+    01 00 00 00 00 00 00 00                         │ ........
+}
+
+static x: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 1_isize;
+        return;
+    }
+}

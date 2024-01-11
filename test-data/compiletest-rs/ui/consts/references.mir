@@ -1,0 +1,223 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: &[u8] = {
+    let mut _0: &[u8];
+    let mut _1: &[u8; 3];
+    let _2: &[u8; 3];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const b"foo";
+        _1 = &(*_2);
+        _0 = move _1 as &[u8] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (size: 3, align: 1) {
+    66 6f 6f                                        │ foo
+}
+
+const BAR: &[u8] = {
+    let mut _0: &[u8];
+    let mut _1: &[u8; 3];
+    let _2: &[u8; 3];
+    let _3: [u8; 3];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = [const 1_u8, const 2_u8, const 3_u8];
+        _2 = &_3;
+        _1 = &(*_2);
+        _0 = move _1 as &[u8] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const BOO: &i32 = {
+    let mut _0: &i32;
+    let _1: &i32;
+    let _2: i32;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const 42_i32;
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &[u8];
+    let _2: &[u8; 3];
+    let _3: [u8; 3];
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let _7: !;
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 1];
+    let _12: [&str; 1];
+    let _13: !;
+    let mut _14: &[u8];
+    let _15: &[u8; 3];
+    let mut _16: usize;
+    let mut _17: usize;
+    let mut _18: bool;
+    let _19: ();
+    let mut _20: std::fmt::Arguments<'_>;
+    let mut _21: &[&str];
+    let _22: &[&str; 1];
+    let _23: [&str; 1];
+    let _24: !;
+    let _25: !;
+    let mut _26: &i32;
+    let _27: i32;
+    let mut _28: !;
+    let _29: ();
+    let mut _30: std::fmt::Arguments<'_>;
+    let mut _31: &[&str];
+    let _32: &[&str; 1];
+    let _33: [&str; 1];
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = [const 1_u8, const 2_u8, const 3_u8];
+        _2 = &_3;
+        _1 = _2 as &[u8] (Pointer(Unsize));
+        _4 = Len((*_1));
+        _5 = const 3_usize;
+        _6 = Eq(move _4, move _5);
+        switchInt(move _6) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        switchInt((*_1)[0 of 3]) -> [102: bb2, 1: bb5, otherwise: bb4];
+    }
+
+    bb2: {
+        switchInt((*_1)[1 of 3]) -> [111: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        switchInt((*_1)[2 of 3]) -> [111: bb7, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = begin_panic::<&str>(const "c");
+    }
+
+    bb5: {
+        switchInt((*_1)[1 of 3]) -> [2: bb6, otherwise: bb4];
+    }
+
+    bb6: {
+        switchInt((*_1)[2 of 3]) -> [3: bb8, otherwise: bb4];
+    }
+
+    bb7: {
+        _7 = begin_panic::<&str>(const "a");
+    }
+
+    bb8: {
+        _12 = [const "b\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_const(move _10) -> bb9;
+    }
+
+    bb9: {
+        _8 = _print(move _9) -> bb10;
+    }
+
+    bb10: {
+        _15 = const b"foo";
+        _14 = _15 as &[u8] (Pointer(Unsize));
+        _16 = Len((*_14));
+        _17 = const 3_usize;
+        _18 = Eq(move _16, move _17);
+        switchInt(move _18) -> [0: bb14, otherwise: bb11];
+    }
+
+    bb11: {
+        switchInt((*_14)[0 of 3]) -> [102: bb12, 1: bb15, otherwise: bb14];
+    }
+
+    bb12: {
+        switchInt((*_14)[1 of 3]) -> [111: bb13, otherwise: bb14];
+    }
+
+    bb13: {
+        switchInt((*_14)[2 of 3]) -> [111: bb17, otherwise: bb14];
+    }
+
+    bb14: {
+        _25 = begin_panic::<&str>(const "c");
+    }
+
+    bb15: {
+        switchInt((*_14)[1 of 3]) -> [2: bb16, otherwise: bb14];
+    }
+
+    bb16: {
+        switchInt((*_14)[2 of 3]) -> [3: bb20, otherwise: bb14];
+    }
+
+    bb17: {
+        _23 = [const "a\n"];
+        _22 = &_23;
+        _21 = _22 as &[&str] (Pointer(Unsize));
+        _20 = Arguments::<'_>::new_const(move _21) -> bb18;
+    }
+
+    bb18: {
+        _19 = _print(move _20) -> bb19;
+    }
+
+    bb19: {
+        _27 = const 43_i32;
+        _26 = &_27;
+        switchInt((*_26)) -> [42: bb22, otherwise: bb21];
+    }
+
+    bb20: {
+        _24 = begin_panic::<&str>(const "b");
+    }
+
+    bb21: {
+        _33 = [const "d\n"];
+        _32 = &_33;
+        _31 = _32 as &[&str] (Pointer(Unsize));
+        _30 = Arguments::<'_>::new_const(move _31) -> bb23;
+    }
+
+    bb22: {
+        _28 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb23: {
+        _29 = _print(move _30) -> bb24;
+    }
+
+    bb24: {
+        return;
+    }
+}
+
+alloc7 (size: 3, align: 1) {
+    66 6f 6f                                        │ foo
+}

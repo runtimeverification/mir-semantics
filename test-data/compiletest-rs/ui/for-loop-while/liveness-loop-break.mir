@@ -1,0 +1,56 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+    scope 1 {
+        debug v => _1;
+    }
+
+    bb0: {
+        _1 = const 3_i32;
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = test() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

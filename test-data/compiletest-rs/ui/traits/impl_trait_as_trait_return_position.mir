@@ -1,0 +1,22 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> impl Borrow<<u8 as A>::Foo> {
+    let mut _0: impl std::borrow::Borrow<<u8 as A>::Foo>;
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: impl std::borrow::Borrow<<u8 as A>::Foo>;
+
+    bb0: {
+        _1 = foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

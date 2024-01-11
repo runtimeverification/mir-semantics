@@ -1,0 +1,185 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_autoderef.rs:6:1: 6:21>::deref(_1: &MyRef) -> &u32 {
+    debug self => _1;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = &((*_1).0: u32);
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_autoderef.rs:11:1: 11:24>::deref_mut(_1: &mut MyRef) -> &mut u32 {
+    debug self => _1;
+    let mut _0: &mut u32;
+
+    bb0: {
+        _0 = &mut ((*_1).0: u32);
+        return;
+    }
+}
+
+fn deref(_1: &MyRef) -> &u32 {
+    debug x => _1;
+    let mut _0: &u32;
+    let _2: &u32;
+
+    bb0: {
+        _2 = <MyRef as Deref>::deref(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn deref_mut(_1: &mut MyRef) -> &mut u32 {
+    debug x => _1;
+    let mut _0: &mut u32;
+    let mut _2: &mut u32;
+
+    bb0: {
+        _2 = <MyRef as DerefMut>::deref_mut(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: MyRef;
+    let mut _2: (&*const u32, &*const u32);
+    let mut _3: &*const u32;
+    let _4: *const u32;
+    let _5: &u32;
+    let _6: &MyRef;
+    let mut _7: &*const u32;
+    let _8: *const u32;
+    let _9: &u32;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: *const u32;
+    let mut _15: *const u32;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&*mut u32, &*mut u32);
+    let mut _20: &*mut u32;
+    let _21: *mut u32;
+    let mut _22: &mut u32;
+    let mut _23: &mut MyRef;
+    let mut _24: &*mut u32;
+    let _25: *mut u32;
+    let mut _26: &mut u32;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: *mut u32;
+    let mut _32: *mut u32;
+    let _34: !;
+    let mut _35: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug r => _1;
+        let _10: &*const u32;
+        let _11: &*const u32;
+        let _27: &*mut u32;
+        let _28: &*mut u32;
+        scope 2 {
+            debug left_val => _10;
+            debug right_val => _11;
+            let _16: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _16;
+            }
+        }
+        scope 4 {
+            debug left_val => _27;
+            debug right_val => _28;
+            let _33: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _33;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = MyRef(const 2_u32);
+        _6 = &_1;
+        _5 = deref(_6) -> bb1;
+    }
+
+    bb1: {
+        _4 = &raw const (*_5);
+        _3 = &_4;
+        _9 = &(_1.0: u32);
+        _8 = &raw const (*_9);
+        _7 = &_8;
+        _2 = (move _3, move _7);
+        _10 = (_2.0: &*const u32);
+        _11 = (_2.1: &*const u32);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<*const u32, *const u32>(move _16, _10, _11, move _18);
+    }
+
+    bb3: {
+        _23 = &mut _1;
+        _22 = deref_mut(_23) -> bb4;
+    }
+
+    bb4: {
+        _21 = &raw mut (*_22);
+        _20 = &_21;
+        _26 = &mut (_1.0: u32);
+        _25 = &raw mut (*_26);
+        _24 = &_25;
+        _19 = (move _20, move _24);
+        _27 = (_19.0: &*mut u32);
+        _28 = (_19.1: &*mut u32);
+        _31 = (*_27);
+        _32 = (*_28);
+        _30 = Eq(move _31, move _32);
+        _29 = Not(move _30);
+        switchInt(move _29) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _33 = core::panicking::AssertKind::Eq;
+        _35 = Option::<Arguments<'_>>::None;
+        _34 = core::panicking::assert_failed::<*mut u32, *mut u32>(move _33, _27, _28, move _35);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn MyRef(_1: u32) -> MyRef {
+    let mut _0: MyRef;
+
+    bb0: {
+        _0 = MyRef(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyRef(_1: u32) -> MyRef {
+    let mut _0: MyRef;
+
+    bb0: {
+        _0 = MyRef(move _1);
+        return;
+    }
+}

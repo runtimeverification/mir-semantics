@@ -1,0 +1,104 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:9:1: 9:9>::baz(_1: Foo, _2: Baz) -> Baz {
+    debug self => _1;
+    debug v => _2;
+    let mut _0: Baz;
+    let mut _3: [closure@ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:11:10: 11:12];
+
+    bb0: {
+        _3 = [closure@ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:11:10: 11:12] { v: move _2 };
+        _0 = <[closure@ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:11:10: 11:12] as FnOnce<()>>::call_once(move _3, const ()) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:9:1: 9:9>::baz::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/issue-92724-needsdrop-query-cycle.rs:11:10: 11:12]) -> Baz {
+    debug v => (_1.0: Baz);
+    let mut _0: Baz;
+
+    bb0: {
+        _0 = move (_1.0: Baz);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: Bar) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: Bar) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+fn Bar(_1: Baz) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Bar(_1: Baz) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar(move _1);
+        return;
+    }
+}
+
+fn Baz(_1: Vec<Foo>) -> Baz {
+    let mut _0: Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz(_1: Vec<Foo>) -> Baz {
+    let mut _0: Baz;
+
+    bb0: {
+        _0 = Baz(move _1);
+        return;
+    }
+}

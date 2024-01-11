@@ -1,0 +1,914 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-cmp-generic-struct-enum.rs:2:10: 2:19>::eq(_1: &ES<T>, _2: &ES<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&ES<T>, &ES<T>);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: &ES<T>;
+    let mut _20: &ES<T>;
+    let mut _21: &ES<T>;
+    let mut _22: &ES<T>;
+    let mut _23: &ES<T>;
+    let mut _24: &ES<T>;
+    let mut _25: &ES<T>;
+    let mut _26: &ES<T>;
+    let mut _27: &ES<T>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &T;
+            let _12: &T;
+            let _13: &T;
+            let _14: &T;
+            let _15: &T;
+            let _16: &T;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+            scope 4 {
+                debug __self_0 => _13;
+                debug __self_1 => _14;
+                debug __arg1_0 => _15;
+                debug __arg1_1 => _16;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _19 = deref_copy (_7.0: &ES<T>);
+        _10 = discriminant((*_19));
+        switchInt(move _10) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _20 = deref_copy (_7.1: &ES<T>);
+        _8 = discriminant((*_20));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _21 = deref_copy (_7.1: &ES<T>);
+        _9 = discriminant((*_21));
+        switchInt(move _9) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _22 = deref_copy (_7.0: &ES<T>);
+        _11 = &(((*_22) as ES1).0: T);
+        _23 = deref_copy (_7.1: &ES<T>);
+        _12 = &(((*_23) as ES1).0: T);
+        _6 = <T as PartialEq>::eq(_11, _12) -> bb13;
+    }
+
+    bb8: {
+        _24 = deref_copy (_7.0: &ES<T>);
+        _13 = &(((*_24) as ES2).0: T);
+        _25 = deref_copy (_7.0: &ES<T>);
+        _14 = &(((*_25) as ES2).1: T);
+        _26 = deref_copy (_7.1: &ES<T>);
+        _15 = &(((*_26) as ES2).0: T);
+        _27 = deref_copy (_7.1: &ES<T>);
+        _16 = &(((*_27) as ES2).1: T);
+        _17 = <T as PartialEq>::eq(_13, _15) -> bb11;
+    }
+
+    bb9: {
+        _6 = const false;
+        goto -> bb13;
+    }
+
+    bb10: {
+        _18 = <T as PartialEq>::eq(_14, _16) -> bb12;
+    }
+
+    bb11: {
+        switchInt(move _17) -> [0: bb9, otherwise: bb10];
+    }
+
+    bb12: {
+        _6 = move _18;
+        goto -> bb13;
+    }
+
+    bb13: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/deriving/deriving-cmp-generic-struct-enum.rs:2:21: 2:23>::assert_receiver_is_total_eq(_1: &ES<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-cmp-generic-struct-enum.rs:2:25: 2:35>::partial_cmp(_1: &ES<T>, _2: &ES<T>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: isize;
+    let mut _5: (&ES<T>, &ES<T>);
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let mut _15: std::option::Option<std::cmp::Ordering>;
+    let mut _16: i8;
+    let mut _17: isize;
+    let _19: &isize;
+    let _20: &isize;
+    let mut _21: &ES<T>;
+    let mut _22: &ES<T>;
+    let mut _23: &ES<T>;
+    let mut _24: &ES<T>;
+    let mut _25: &ES<T>;
+    let mut _26: &ES<T>;
+    let mut _27: &ES<T>;
+    let mut _28: &ES<T>;
+    let mut _29: &ES<T>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _9: &T;
+            let _10: &T;
+            let _11: &T;
+            let _12: &T;
+            let _13: &T;
+            let _14: &T;
+            scope 3 {
+                debug __self_0 => _9;
+                debug __arg1_0 => _10;
+            }
+            scope 4 {
+                debug __self_0 => _11;
+                debug __self_1 => _12;
+                debug __arg1_0 => _13;
+                debug __arg1_1 => _14;
+                let _18: std::option::Option<std::cmp::Ordering>;
+                scope 5 {
+                    debug cmp => _18;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = (_1, _2);
+        _21 = deref_copy (_5.0: &ES<T>);
+        _8 = discriminant((*_21));
+        switchInt(move _8) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _22 = deref_copy (_5.1: &ES<T>);
+        _6 = discriminant((*_22));
+        switchInt(move _6) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _19 = &_3;
+        _20 = &_4;
+        _0 = <isize as PartialOrd>::partial_cmp(_19, _20) -> bb10;
+    }
+
+    bb3: {
+        _23 = deref_copy (_5.1: &ES<T>);
+        _7 = discriminant((*_23));
+        switchInt(move _7) -> [1: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _24 = deref_copy (_5.0: &ES<T>);
+        _9 = &(((*_24) as ES1).0: T);
+        _25 = deref_copy (_5.1: &ES<T>);
+        _10 = &(((*_25) as ES1).0: T);
+        _0 = <T as PartialOrd>::partial_cmp(_9, _10) -> bb10;
+    }
+
+    bb5: {
+        _26 = deref_copy (_5.0: &ES<T>);
+        _11 = &(((*_26) as ES2).0: T);
+        _27 = deref_copy (_5.0: &ES<T>);
+        _12 = &(((*_27) as ES2).1: T);
+        _28 = deref_copy (_5.1: &ES<T>);
+        _13 = &(((*_28) as ES2).0: T);
+        _29 = deref_copy (_5.1: &ES<T>);
+        _14 = &(((*_29) as ES2).1: T);
+        _15 = <T as PartialOrd>::partial_cmp(_11, _13) -> bb6;
+    }
+
+    bb6: {
+        _17 = discriminant(_15);
+        switchInt(move _17) -> [1: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _18 = _15;
+        _0 = _18;
+        goto -> bb10;
+    }
+
+    bb8: {
+        _16 = discriminant(((_15 as Some).0: std::cmp::Ordering));
+        switchInt(move _16) -> [0: bb9, otherwise: bb7];
+    }
+
+    bb9: {
+        _0 = <T as PartialOrd>::partial_cmp(_12, _14) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-cmp-generic-struct-enum.rs:2:37: 2:40>::cmp(_1: &ES<T>, _2: &ES<T>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: isize;
+    let mut _5: std::cmp::Ordering;
+    let _6: &isize;
+    let _7: &isize;
+    let mut _8: i8;
+    let mut _9: (&ES<T>, &ES<T>);
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let mut _19: std::cmp::Ordering;
+    let mut _20: i8;
+    let mut _23: &ES<T>;
+    let mut _24: &ES<T>;
+    let mut _25: &ES<T>;
+    let mut _26: &ES<T>;
+    let mut _27: &ES<T>;
+    let mut _28: &ES<T>;
+    let mut _29: &ES<T>;
+    let mut _30: &ES<T>;
+    let mut _31: &ES<T>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _13: &T;
+            let _14: &T;
+            let _15: &T;
+            let _16: &T;
+            let _17: &T;
+            let _18: &T;
+            let _22: std::cmp::Ordering;
+            scope 3 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 4 {
+                debug __self_0 => _15;
+                debug __self_1 => _16;
+                debug __arg1_0 => _17;
+                debug __arg1_1 => _18;
+                let _21: std::cmp::Ordering;
+                scope 5 {
+                    debug cmp => _21;
+                }
+            }
+            scope 6 {
+            }
+            scope 7 {
+                debug cmp => _22;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _6 = &_3;
+        _7 = &_4;
+        _5 = <isize as Ord>::cmp(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = discriminant(_5);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _22 = _5;
+        _0 = _22;
+        goto -> bb12;
+    }
+
+    bb3: {
+        _9 = (_1, _2);
+        _23 = deref_copy (_9.0: &ES<T>);
+        _12 = discriminant((*_23));
+        switchInt(move _12) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb4: {
+        _24 = deref_copy (_9.1: &ES<T>);
+        _10 = discriminant((*_24));
+        switchInt(move _10) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _25 = deref_copy (_9.1: &ES<T>);
+        _11 = discriminant((*_25));
+        switchInt(move _11) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _26 = deref_copy (_9.0: &ES<T>);
+        _13 = &(((*_26) as ES1).0: T);
+        _27 = deref_copy (_9.1: &ES<T>);
+        _14 = &(((*_27) as ES1).0: T);
+        _0 = <T as Ord>::cmp(_13, _14) -> bb12;
+    }
+
+    bb8: {
+        _28 = deref_copy (_9.0: &ES<T>);
+        _15 = &(((*_28) as ES2).0: T);
+        _29 = deref_copy (_9.0: &ES<T>);
+        _16 = &(((*_29) as ES2).1: T);
+        _30 = deref_copy (_9.1: &ES<T>);
+        _17 = &(((*_30) as ES2).0: T);
+        _31 = deref_copy (_9.1: &ES<T>);
+        _18 = &(((*_31) as ES2).1: T);
+        _19 = <T as Ord>::cmp(_15, _17) -> bb9;
+    }
+
+    bb9: {
+        _20 = discriminant(_19);
+        switchInt(move _20) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _21 = _19;
+        _0 = _21;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _0 = <T as Ord>::cmp(_16, _18) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ES<i32>;
+    let _2: ES<i32>;
+    let _3: ES<i32>;
+    let _4: ES<i32>;
+    let mut _5: (ES<i32>, ES<i32>, ES<i32>, ES<i32>);
+    let mut _6: ES<i32>;
+    let mut _7: ES<i32>;
+    let mut _8: ES<i32>;
+    let mut _9: ES<i32>;
+    let mut _11: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _12: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _13: std::slice::Iter<'_, ES<i32>>;
+    let mut _14: &[ES<i32>];
+    let mut _15: &[ES<i32>; 4];
+    let mut _17: std::option::Option<(usize, &ES<i32>)>;
+    let mut _18: &mut std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _19: isize;
+    let mut _22: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _23: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _24: std::slice::Iter<'_, ES<i32>>;
+    let mut _25: &[ES<i32>];
+    let mut _26: &[ES<i32>; 4];
+    let mut _28: std::option::Option<(usize, &ES<i32>)>;
+    let mut _29: &mut std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+    let mut _30: isize;
+    let mut _34: &usize;
+    let _35: &usize;
+    let mut _37: usize;
+    let mut _38: usize;
+    let mut _41: (bool, bool);
+    let mut _42: bool;
+    let mut _43: usize;
+    let mut _44: usize;
+    let mut _45: bool;
+    let mut _46: usize;
+    let mut _47: usize;
+    let mut _50: (bool, bool);
+    let mut _51: bool;
+    let mut _52: usize;
+    let mut _53: usize;
+    let mut _54: bool;
+    let mut _55: usize;
+    let mut _56: usize;
+    let mut _57: (&bool, &bool);
+    let mut _58: &bool;
+    let _59: bool;
+    let mut _60: &bool;
+    let mut _63: bool;
+    let mut _64: bool;
+    let mut _65: bool;
+    let mut _66: bool;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _70: (&bool, &bool);
+    let mut _71: &bool;
+    let _72: bool;
+    let mut _73: &bool;
+    let _74: bool;
+    let mut _75: bool;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: bool;
+    let mut _81: bool;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _85: (&bool, &bool);
+    let mut _86: &bool;
+    let _87: bool;
+    let mut _88: &bool;
+    let mut _91: bool;
+    let mut _92: bool;
+    let mut _93: bool;
+    let mut _94: bool;
+    let _96: !;
+    let mut _97: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _98: (&bool, &bool);
+    let mut _99: &bool;
+    let _100: bool;
+    let mut _101: &bool;
+    let mut _104: bool;
+    let mut _105: bool;
+    let mut _106: bool;
+    let mut _107: bool;
+    let _109: !;
+    let mut _110: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _111: (&bool, &bool);
+    let mut _112: &bool;
+    let _113: bool;
+    let mut _114: &bool;
+    let mut _117: bool;
+    let mut _118: bool;
+    let mut _119: bool;
+    let mut _120: bool;
+    let _122: !;
+    let mut _123: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _124: (&bool, &bool);
+    let mut _125: &bool;
+    let _126: bool;
+    let mut _127: &bool;
+    let mut _130: bool;
+    let mut _131: bool;
+    let mut _132: bool;
+    let mut _133: bool;
+    let _135: !;
+    let mut _136: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _137: (&std::cmp::Ordering, &std::cmp::Ordering);
+    let mut _138: &std::cmp::Ordering;
+    let _139: std::cmp::Ordering;
+    let mut _140: &std::cmp::Ordering;
+    let mut _143: bool;
+    let mut _144: bool;
+    let _146: !;
+    let mut _147: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug es11 => _1;
+        debug es12 => _2;
+        debug es21 => _3;
+        debug es22 => _4;
+        let _10: [ES<i32>; 4];
+        scope 2 {
+            debug ess => _10;
+            let mut _16: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+            scope 3 {
+                debug iter => _16;
+                let _20: usize;
+                let _21: &ES<i32>;
+                scope 4 {
+                    debug i => _20;
+                    debug es1 => _21;
+                    let mut _27: std::iter::Enumerate<std::slice::Iter<'_, ES<i32>>>;
+                    scope 5 {
+                        debug iter => _27;
+                        let _31: usize;
+                        let _32: &ES<i32>;
+                        scope 6 {
+                            debug j => _31;
+                            debug es2 => _32;
+                            let _33: std::cmp::Ordering;
+                            scope 7 {
+                                debug ord => _33;
+                                let _36: bool;
+                                scope 8 {
+                                    debug eq => _36;
+                                    let _39: bool;
+                                    let _40: bool;
+                                    scope 9 {
+                                        debug lt => _39;
+                                        debug le => _40;
+                                        let _48: bool;
+                                        let _49: bool;
+                                        scope 10 {
+                                            debug gt => _48;
+                                            debug ge => _49;
+                                            let _61: &bool;
+                                            let _62: &bool;
+                                            let _76: &bool;
+                                            let _77: &bool;
+                                            let _89: &bool;
+                                            let _90: &bool;
+                                            let _102: &bool;
+                                            let _103: &bool;
+                                            let _115: &bool;
+                                            let _116: &bool;
+                                            let _128: &bool;
+                                            let _129: &bool;
+                                            let _141: &std::cmp::Ordering;
+                                            let _142: &std::cmp::Ordering;
+                                            scope 11 {
+                                                debug left_val => _61;
+                                                debug right_val => _62;
+                                                let _67: core::panicking::AssertKind;
+                                                scope 12 {
+                                                    debug kind => _67;
+                                                }
+                                            }
+                                            scope 13 {
+                                                debug left_val => _76;
+                                                debug right_val => _77;
+                                                let _82: core::panicking::AssertKind;
+                                                scope 14 {
+                                                    debug kind => _82;
+                                                }
+                                            }
+                                            scope 15 {
+                                                debug left_val => _89;
+                                                debug right_val => _90;
+                                                let _95: core::panicking::AssertKind;
+                                                scope 16 {
+                                                    debug kind => _95;
+                                                }
+                                            }
+                                            scope 17 {
+                                                debug left_val => _102;
+                                                debug right_val => _103;
+                                                let _108: core::panicking::AssertKind;
+                                                scope 18 {
+                                                    debug kind => _108;
+                                                }
+                                            }
+                                            scope 19 {
+                                                debug left_val => _115;
+                                                debug right_val => _116;
+                                                let _121: core::panicking::AssertKind;
+                                                scope 20 {
+                                                    debug kind => _121;
+                                                }
+                                            }
+                                            scope 21 {
+                                                debug left_val => _128;
+                                                debug right_val => _129;
+                                                let _134: core::panicking::AssertKind;
+                                                scope 22 {
+                                                    debug kind => _134;
+                                                }
+                                            }
+                                            scope 23 {
+                                                debug left_val => _141;
+                                                debug right_val => _142;
+                                                let _145: core::panicking::AssertKind;
+                                                scope 24 {
+                                                    debug kind => _145;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _6 = ES::<i32>::ES1 { x: const 1_i32 };
+        _7 = ES::<i32>::ES1 { x: const 2_i32 };
+        _8 = ES::<i32>::ES2 { x: const 1_i32, y: const 1_i32 };
+        _9 = ES::<i32>::ES2 { x: const 1_i32, y: const 2_i32 };
+        _5 = (move _6, move _7, move _8, move _9);
+        _1 = move (_5.0: ES<i32>);
+        _2 = move (_5.1: ES<i32>);
+        _3 = move (_5.2: ES<i32>);
+        _4 = move (_5.3: ES<i32>);
+        _10 = [move _1, move _2, move _3, move _4];
+        _15 = &_10;
+        _14 = move _15 as &[ES<i32>] (Pointer(Unsize));
+        _13 = core::slice::<impl [ES<i32>]>::iter(move _14) -> bb1;
+    }
+
+    bb1: {
+        _12 = <std::slice::Iter<'_, ES<i32>> as Iterator>::enumerate(move _13) -> bb2;
+    }
+
+    bb2: {
+        _11 = <Enumerate<std::slice::Iter<'_, ES<i32>>> as IntoIterator>::into_iter(move _12) -> bb3;
+    }
+
+    bb3: {
+        _16 = move _11;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _18 = &mut _16;
+        _17 = <Enumerate<std::slice::Iter<'_, ES<i32>>> as Iterator>::next(_18) -> bb5;
+    }
+
+    bb5: {
+        _19 = discriminant(_17);
+        switchInt(move _19) -> [0: bb8, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _20 = (((_17 as Some).0: (usize, &ES<i32>)).0: usize);
+        _21 = (((_17 as Some).0: (usize, &ES<i32>)).1: &ES<i32>);
+        _26 = &_10;
+        _25 = move _26 as &[ES<i32>] (Pointer(Unsize));
+        _24 = core::slice::<impl [ES<i32>]>::iter(move _25) -> bb9;
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9: {
+        _23 = <std::slice::Iter<'_, ES<i32>> as Iterator>::enumerate(move _24) -> bb10;
+    }
+
+    bb10: {
+        _22 = <Enumerate<std::slice::Iter<'_, ES<i32>>> as IntoIterator>::into_iter(move _23) -> bb11;
+    }
+
+    bb11: {
+        _27 = move _22;
+        goto -> bb12;
+    }
+
+    bb12: {
+        _29 = &mut _27;
+        _28 = <Enumerate<std::slice::Iter<'_, ES<i32>>> as Iterator>::next(_29) -> bb13;
+    }
+
+    bb13: {
+        _30 = discriminant(_28);
+        switchInt(move _30) -> [0: bb4, 1: bb14, otherwise: bb7];
+    }
+
+    bb14: {
+        _31 = (((_28 as Some).0: (usize, &ES<i32>)).0: usize);
+        _32 = (((_28 as Some).0: (usize, &ES<i32>)).1: &ES<i32>);
+        _34 = &_20;
+        _35 = &_31;
+        _33 = <usize as Ord>::cmp(move _34, _35) -> bb15;
+    }
+
+    bb15: {
+        _37 = _20;
+        _38 = _31;
+        _36 = Eq(move _37, move _38);
+        _43 = _20;
+        _44 = _31;
+        _42 = Lt(move _43, move _44);
+        _46 = _20;
+        _47 = _31;
+        _45 = Le(move _46, move _47);
+        _41 = (move _42, move _45);
+        _39 = (_41.0: bool);
+        _40 = (_41.1: bool);
+        _52 = _20;
+        _53 = _31;
+        _51 = Gt(move _52, move _53);
+        _55 = _20;
+        _56 = _31;
+        _54 = Ge(move _55, move _56);
+        _50 = (move _51, move _54);
+        _48 = (_50.0: bool);
+        _49 = (_50.1: bool);
+        _59 = <ES<i32> as PartialEq>::eq(_21, _32) -> bb16;
+    }
+
+    bb16: {
+        _58 = &_59;
+        _60 = &_36;
+        _57 = (move _58, move _60);
+        _61 = (_57.0: &bool);
+        _62 = (_57.1: &bool);
+        _65 = (*_61);
+        _66 = (*_62);
+        _64 = Eq(move _65, move _66);
+        _63 = Not(move _64);
+        switchInt(move _63) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<bool, bool>(move _67, _61, _62, move _69);
+    }
+
+    bb18: {
+        _72 = <ES<i32> as PartialEq>::ne(_21, _32) -> bb19;
+    }
+
+    bb19: {
+        _71 = &_72;
+        _75 = _36;
+        _74 = Not(move _75);
+        _73 = &_74;
+        _70 = (move _71, move _73);
+        _76 = (_70.0: &bool);
+        _77 = (_70.1: &bool);
+        _80 = (*_76);
+        _81 = (*_77);
+        _79 = Eq(move _80, move _81);
+        _78 = Not(move _79);
+        switchInt(move _78) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<bool, bool>(move _82, _76, _77, move _84);
+    }
+
+    bb21: {
+        _87 = <ES<i32> as PartialOrd>::lt(_21, _32) -> bb22;
+    }
+
+    bb22: {
+        _86 = &_87;
+        _88 = &_39;
+        _85 = (move _86, move _88);
+        _89 = (_85.0: &bool);
+        _90 = (_85.1: &bool);
+        _93 = (*_89);
+        _94 = (*_90);
+        _92 = Eq(move _93, move _94);
+        _91 = Not(move _92);
+        switchInt(move _91) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _95 = core::panicking::AssertKind::Eq;
+        _97 = Option::<Arguments<'_>>::None;
+        _96 = core::panicking::assert_failed::<bool, bool>(move _95, _89, _90, move _97);
+    }
+
+    bb24: {
+        _100 = <ES<i32> as PartialOrd>::gt(_21, _32) -> bb25;
+    }
+
+    bb25: {
+        _99 = &_100;
+        _101 = &_48;
+        _98 = (move _99, move _101);
+        _102 = (_98.0: &bool);
+        _103 = (_98.1: &bool);
+        _106 = (*_102);
+        _107 = (*_103);
+        _105 = Eq(move _106, move _107);
+        _104 = Not(move _105);
+        switchInt(move _104) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _108 = core::panicking::AssertKind::Eq;
+        _110 = Option::<Arguments<'_>>::None;
+        _109 = core::panicking::assert_failed::<bool, bool>(move _108, _102, _103, move _110);
+    }
+
+    bb27: {
+        _113 = <ES<i32> as PartialOrd>::le(_21, _32) -> bb28;
+    }
+
+    bb28: {
+        _112 = &_113;
+        _114 = &_40;
+        _111 = (move _112, move _114);
+        _115 = (_111.0: &bool);
+        _116 = (_111.1: &bool);
+        _119 = (*_115);
+        _120 = (*_116);
+        _118 = Eq(move _119, move _120);
+        _117 = Not(move _118);
+        switchInt(move _117) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _121 = core::panicking::AssertKind::Eq;
+        _123 = Option::<Arguments<'_>>::None;
+        _122 = core::panicking::assert_failed::<bool, bool>(move _121, _115, _116, move _123);
+    }
+
+    bb30: {
+        _126 = <ES<i32> as PartialOrd>::ge(_21, _32) -> bb31;
+    }
+
+    bb31: {
+        _125 = &_126;
+        _127 = &_49;
+        _124 = (move _125, move _127);
+        _128 = (_124.0: &bool);
+        _129 = (_124.1: &bool);
+        _132 = (*_128);
+        _133 = (*_129);
+        _131 = Eq(move _132, move _133);
+        _130 = Not(move _131);
+        switchInt(move _130) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _134 = core::panicking::AssertKind::Eq;
+        _136 = Option::<Arguments<'_>>::None;
+        _135 = core::panicking::assert_failed::<bool, bool>(move _134, _128, _129, move _136);
+    }
+
+    bb33: {
+        _139 = <ES<i32> as Ord>::cmp(_21, _32) -> bb34;
+    }
+
+    bb34: {
+        _138 = &_139;
+        _140 = &_33;
+        _137 = (move _138, move _140);
+        _141 = (_137.0: &std::cmp::Ordering);
+        _142 = (_137.1: &std::cmp::Ordering);
+        _144 = <std::cmp::Ordering as PartialEq>::eq(_141, _142) -> bb35;
+    }
+
+    bb35: {
+        _143 = Not(move _144);
+        switchInt(move _143) -> [0: bb12, otherwise: bb36];
+    }
+
+    bb36: {
+        _145 = core::panicking::AssertKind::Eq;
+        _147 = Option::<Arguments<'_>>::None;
+        _146 = core::panicking::assert_failed::<std::cmp::Ordering, std::cmp::Ordering>(move _145, _141, _142, move _147);
+    }
+}

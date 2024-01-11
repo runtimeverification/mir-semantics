@@ -1,0 +1,105 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-eval/ice-packed.rs:5:16: 5:21>::clone(_1: &Num) -> Num {
+    debug self => _1;
+    let mut _0: Num;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/ice-packed.rs:5:23: 5:32>::eq(_1: &Num, _2: &Num) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: u64;
+    let mut _4: u64;
+
+    bb0: {
+        _3 = ((*_1).0: u64);
+        _4 = ((*_2).0: u64);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/ice-packed.rs:5:34: 5:36>::assert_receiver_is_total_eq(_1: &Num) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+const <impl at ui/consts/const-eval/ice-packed.rs:9:1: 9:9>::ZERO: Num = {
+    let mut _0: Num;
+
+    bb0: {
+        _0 = Num(const 0_u64);
+        return;
+    }
+}
+
+fn decrement(_1: Num) -> Num {
+    debug a => _1;
+    let mut _0: Num;
+    let mut _2: u64;
+    let mut _3: u64;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        switchInt((_1.0: u64)) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = (_1.0: u64);
+        _2 = Sub(move _3, const 1_u64);
+        _0 = Num(move _2);
+        goto -> bb3;
+    }
+
+    bb2: {
+        _0 = const _;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Num(_1: u64) -> Num {
+    let mut _0: Num;
+
+    bb0: {
+        _0 = Num(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Num(_1: u64) -> Num {
+    let mut _0: Num;
+
+    bb0: {
+        _0 = Num(move _1);
+        return;
+    }
+}

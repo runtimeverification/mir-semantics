@@ -1,0 +1,91 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&str, &&str);
+    let mut _2: &&str;
+    let _3: &str;
+    let mut _4: &&str;
+    let _5: &str;
+    let _6: &&str;
+    let _7: &&str;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: (&&str, &&str);
+    let mut _14: &&str;
+    let _15: &str;
+    let mut _16: &&str;
+    let _17: &str;
+    let _18: &&str;
+    let _19: &&str;
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _22: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _22;
+        }
+    }
+
+    bb0: {
+        _3 = const "isize";
+        _2 = &_3;
+        _5 = const "isize";
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &&str);
+        _7 = (_1.1: &&str);
+        _9 = <&str as PartialEq>::eq(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<&str, &str>(move _10, _6, _7, move _12);
+    }
+
+    bb3: {
+        _15 = const "std::option";
+        _14 = &_15;
+        _17 = const "std::option";
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &&str);
+        _19 = (_13.1: &&str);
+        _21 = <&str as PartialEq>::eq(_18, _19) -> bb4;
+    }
+
+    bb4: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<&str, &str>(move _22, _18, _19, move _24);
+    }
+
+    bb6: {
+        return;
+    }
+}

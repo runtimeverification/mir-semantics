@@ -1,0 +1,58 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-69654-run-pass.rs:3:1: 3:27>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 7_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-69654-run-pass.rs:6:1: 6:28>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-69654-run-pass.rs:6:1: 6:28>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-69654-run-pass.rs:6:1: 6:28>::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-69654-run-pass.rs:6:1: 6:28>::foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = Foo::<7>::foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

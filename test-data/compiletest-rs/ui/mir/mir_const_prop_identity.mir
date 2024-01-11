@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: !;
+    scope 1 {
+        debug a => _1;
+        scope 2 {
+            let mut _2: bool;
+            scope 3 {
+                debug b => _2;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const true;
+        _2 = const false;
+        _2 = BitOr(_2, _1);
+        _4 = _2;
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = core::panicking::panic(const "assertion failed: b");
+    }
+
+    bb2: {
+        return;
+    }
+}

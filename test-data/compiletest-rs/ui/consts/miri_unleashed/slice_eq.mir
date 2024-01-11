@@ -1,0 +1,167 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const EMPTY_SLICE: &[i32] = {
+    let mut _0: &[i32];
+    let mut _1: &[i32; 0];
+    let _2: &[i32; 0];
+    let _3: [i32; 0];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = [];
+        _2 = &_3;
+        _1 = &(*_2);
+        _0 = move _1 as &[i32] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const EMPTY_EQ: Option<bool> = {
+    let mut _0: std::option::Option<bool>;
+    let mut _1: *const i32;
+    let mut _2: &[i32];
+    let _3: &[i32];
+    let mut _4: *const i32;
+    let mut _5: *const i32;
+    let mut _6: *const [i32; 0];
+    let _7: &[i32; 0];
+    let _8: [i32; 0];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &(*_3);
+        ConstEvalCounter;
+        _1 = core::slice::<impl [i32]>::as_ptr(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageLive(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        StorageLive(_7);
+        StorageLive(_8);
+        _8 = [];
+        _7 = &_8;
+        _6 = &raw const (*_7);
+        _5 = move _6 as *const i32 (Pointer(ArrayToPointer));
+        _4 = _5;
+        StorageDead(_6);
+        ConstEvalCounter;
+        _0 = ptr::const_ptr::<impl *const i32>::guaranteed_eq(move _1, move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_8);
+        StorageDead(_7);
+        StorageDead(_5);
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const EMPTY_EQ2: Option<bool> = {
+    let mut _0: std::option::Option<bool>;
+    let mut _1: *const i32;
+    let mut _2: &[i32];
+    let _3: &[i32];
+    let mut _4: *const i32;
+    let mut _5: *const i32;
+    let mut _6: *const [i32; 1];
+    let _7: &[i32; 1];
+    let _8: [i32; 1];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &(*_3);
+        ConstEvalCounter;
+        _1 = core::slice::<impl [i32]>::as_ptr(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageLive(_4);
+        StorageLive(_5);
+        StorageLive(_6);
+        StorageLive(_7);
+        StorageLive(_8);
+        _8 = [const 1_i32];
+        _7 = &_8;
+        _6 = &raw const (*_7);
+        _5 = move _6 as *const i32 (Pointer(ArrayToPointer));
+        _4 = _5;
+        StorageDead(_6);
+        ConstEvalCounter;
+        _0 = ptr::const_ptr::<impl *const i32>::guaranteed_eq(move _1, move _4) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_8);
+        StorageDead(_7);
+        StorageDead(_5);
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &std::option::Option<bool>;
+    let _4: std::option::Option<bool>;
+    let mut _5: !;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: &std::option::Option<bool>;
+    let _9: std::option::Option<bool>;
+    let mut _10: !;
+
+    bb0: {
+        _4 = const _;
+        _3 = &_4;
+        _2 = Option::<bool>::is_none(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = core::panicking::panic(const "assertion failed: EMPTY_EQ.is_none()");
+    }
+
+    bb3: {
+        _9 = const _;
+        _8 = &_9;
+        _7 = Option::<bool>::is_none(move _8) -> bb4;
+    }
+
+    bb4: {
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _10 = core::panicking::panic(const "assertion failed: EMPTY_EQ2.is_none()");
+    }
+
+    bb6: {
+        return;
+    }
+}

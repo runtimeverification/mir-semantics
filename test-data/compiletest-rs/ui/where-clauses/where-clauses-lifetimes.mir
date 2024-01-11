@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: I) -> () {
+    debug it => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::slice::Iter<'_, isize>;
+    let mut _3: &[isize];
+    let mut _4: &[isize; 2];
+    let _5: [isize; 2];
+
+    bb0: {
+        _5 = [const 1_isize, const 2_isize];
+        _4 = &_5;
+        _3 = move _4 as &[isize] (Pointer(Unsize));
+        _2 = core::slice::<impl [isize]>::iter(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = foo::<'_, std::slice::Iter<'_, isize>>(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

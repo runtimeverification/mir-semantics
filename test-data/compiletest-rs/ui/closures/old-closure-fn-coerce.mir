@@ -1,0 +1,139 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn force(_1: F) -> isize {
+    debug f => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = <F as FnOnce<()>>::call_once(move _1, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&isize, &isize);
+    let mut _2: &isize;
+    let _3: isize;
+    let mut _4: &isize;
+    let _5: isize;
+    let _6: &isize;
+    let _7: &isize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: isize;
+    let mut _11: isize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let _15: [closure@ui/closures/old-closure-fn-coerce.rs:9:14: 9:16];
+    let mut _16: (&isize, &isize);
+    let mut _17: &isize;
+    let _18: isize;
+    let mut _19: &[closure@ui/closures/old-closure-fn-coerce.rs:9:14: 9:16];
+    let mut _20: &isize;
+    let _21: isize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: isize;
+    let mut _27: isize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug g => const ZeroSized: [closure@ui/closures/old-closure-fn-coerce.rs:9:14: 9:16];
+        let _22: &isize;
+        let _23: &isize;
+        scope 4 {
+            debug left_val => _22;
+            debug right_val => _23;
+            let _28: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _28;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = force::<fn() -> isize {f}>(f) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const 7_isize;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &isize);
+        _7 = (_1.1: &isize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<isize, isize>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        _19 = &_15;
+        _18 = <[closure@ui/closures/old-closure-fn-coerce.rs:9:14: 9:16] as Fn<()>>::call(move _19, const ()) -> bb4;
+    }
+
+    bb4: {
+        _17 = &_18;
+        _21 = const 7_isize;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &isize);
+        _23 = (_16.1: &isize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<isize, isize>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn f() -> isize {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 7_isize;
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/old-closure-fn-coerce.rs:9:14: 9:16]) -> isize {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = force::<fn() -> isize {f}>(f) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

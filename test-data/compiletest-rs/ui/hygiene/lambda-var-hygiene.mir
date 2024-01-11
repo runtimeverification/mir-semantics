@@ -1,0 +1,89 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn takes_x(_1: isize) -> () {
+    debug _x => _1;
+    let mut _0: ();
+    let mut _2: (&isize, &isize);
+    let mut _3: &isize;
+    let _4: isize;
+    let mut _5: &[closure@ui/hygiene/lambda-var-hygiene.rs:4:22: 4:26];
+    let _6: [closure@ui/hygiene/lambda-var-hygiene.rs:4:22: 4:26];
+    let mut _7: &isize;
+    let mut _8: (i32,);
+    let mut _9: &isize;
+    let _10: isize;
+    let _11: &isize;
+    let _12: &isize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: isize;
+    let mut _16: isize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _11;
+        debug right_val => _12;
+        let _17: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _17;
+        }
+    }
+
+    bb0: {
+        _7 = &_1;
+        _6 = [closure@ui/hygiene/lambda-var-hygiene.rs:4:22: 4:26] { _x: move _7 };
+        _5 = &_6;
+        _8 = (const 9_i32,);
+        _4 = <[closure@ui/hygiene/lambda-var-hygiene.rs:4:22: 4:26] as Fn<(i32,)>>::call(move _5, move _8) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _10 = const 8_isize;
+        _9 = &_10;
+        _2 = (move _3, move _9);
+        _11 = (_2.0: &isize);
+        _12 = (_2.1: &isize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<isize, isize>(move _17, _11, _12, move _19);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn takes_x::{closure#0}(_1: &[closure@ui/hygiene/lambda-var-hygiene.rs:4:22: 4:26], _2: i32) -> isize {
+    debug _x => _2;
+    debug _x => (*((*_1).0: &isize));
+    let mut _0: isize;
+    let mut _3: &isize;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &isize);
+        _0 = (*_3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = takes_x(const 8_isize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

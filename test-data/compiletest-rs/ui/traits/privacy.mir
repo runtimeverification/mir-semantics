@@ -1,0 +1,89 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn T::f(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn g() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: &();
+    let _3: ();
+
+    bb0: {
+        _2 = &_3;
+        _1 = <() as T>::f(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn f() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+    let mut _2: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _3: std::thread::JoinHandle<()>;
+    let _4: std::any::TypeId;
+    let mut _5: &dyn std::any::Any + std::marker::Send;
+    let mut _6: *const dyn std::any::Any + std::marker::Send;
+    scope 1 {
+        debug error => _1;
+    }
+
+    bb0: {
+        _3 = spawn::<[closure@ui/traits/privacy.rs:19:38: 19:40], ()>(const ZeroSized: [closure@ui/traits/privacy.rs:19:38: 19:40]) -> bb1;
+    }
+
+    bb1: {
+        _2 = JoinHandle::<()>::join(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = Result::<(), Box<dyn Any + Send>>::unwrap_err(move _2) -> bb3;
+    }
+
+    bb3: {
+        _6 = (((_1.0: std::ptr::Unique<dyn std::any::Any + std::marker::Send>).0: std::ptr::NonNull<dyn std::any::Any + std::marker::Send>).0: *const dyn std::any::Any + std::marker::Send);
+        _5 = &(*_6);
+        _4 = <dyn Any + Send as Any>::type_id(move _5) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_1) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn f::{closure#0}(_1: [closure@ui/traits/privacy.rs:19:38: 19:40]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

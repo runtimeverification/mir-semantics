@@ -1,0 +1,97 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: std::slice::Iter<'_, ()>;
+    let mut _2: &[(); 1];
+    let _3: [(); 1];
+    let mut _4: std::slice::Iter<'_, ()>;
+    let mut _5: std::option::Option<&()>;
+    let mut _6: &mut std::slice::Iter<'_, ()>;
+    let mut _7: isize;
+    scope 1 {
+        debug iter => _4;
+    }
+
+    bb0: {
+        _2 = &_3;
+        _1 = <&[(); 1] as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = move _1;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _6 = &mut _4;
+        _5 = <std::slice::Iter<'_, ()> as Iterator>::next(_6) -> bb3;
+    }
+
+    bb3: {
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [0: bb5, 1: bb2, otherwise: bb4];
+    }
+
+    bb4: {
+        unreachable;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn bar() -> std::option::Option<()> {
+    let mut _0: std::option::Option<()>;
+    let mut _1: std::ops::ControlFlow<std::option::Option<std::convert::Infallible>, std::option::Option<()>>;
+    let mut _2: std::option::Option<std::option::Option<()>>;
+    let mut _3: isize;
+    let _4: std::option::Option<()>;
+    scope 1 {
+        debug residual => const std::option::Option::<Infallible>::None;
+        scope 2 {
+        }
+    }
+    scope 3 {
+        debug val => _4;
+        scope 4 {
+        }
+    }
+
+    bb0: {
+        _2 = std::option::Option::<std::option::Option<()>>::None;
+        _1 = <std::option::Option<std::option::Option<()>> as Try>::branch(move _2) -> bb1;
+    }
+
+    bb1: {
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb2, 1: bb4, otherwise: bb3];
+    }
+
+    bb2: {
+        _4 = ((_1 as Continue).0: std::option::Option<()>);
+        _0 = _4;
+        goto -> bb5;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _0 = <std::option::Option<()> as FromResidual<std::option::Option<Infallible>>>::from_residual(const std::option::Option::<Infallible>::None) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,829 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/typeclasses-eq-example-static.rs:16:10: 16:15>::clone(_1: &Color) -> Color {
+    debug self => _1;
+    let mut _0: Color;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/typeclasses-eq-example-static.rs:19:1: 19:21>::isEq(_1: &Color, _2: &Color) -> bool {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: bool;
+    let mut _3: (Color, Color);
+    let mut _4: Color;
+    let mut _5: Color;
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+
+    bb0: {
+        _4 = (*_1);
+        _5 = (*_2);
+        _3 = (move _4, move _5);
+        _10 = discriminant((_3.0: Color));
+        switchInt(move _10) -> [0: bb1, 1: bb2, 2: bb3, 3: bb4, otherwise: bb6];
+    }
+
+    bb1: {
+        _6 = discriminant((_3.1: Color));
+        _0 = Eq(_6, const 0_isize);
+        goto -> bb5;
+    }
+
+    bb2: {
+        _7 = discriminant((_3.1: Color));
+        _0 = Eq(_7, const 1_isize);
+        goto -> bb5;
+    }
+
+    bb3: {
+        _8 = discriminant((_3.1: Color));
+        _0 = Eq(_8, const 2_isize);
+        goto -> bb5;
+    }
+
+    bb4: {
+        _9 = discriminant((_3.1: Color));
+        _0 = Eq(_9, const 3_isize);
+        goto -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        unreachable;
+    }
+}
+
+fn <impl at ui/traits/typeclasses-eq-example-static.rs:31:10: 31:15>::clone(_1: &ColorTree) -> ColorTree {
+    debug self => _1;
+    let mut _0: ColorTree;
+    let mut _2: isize;
+    let _3: &Color;
+    let mut _4: Color;
+    let _5: &std::boxed::Box<ColorTree>;
+    let _6: &std::boxed::Box<ColorTree>;
+    let mut _7: std::boxed::Box<ColorTree>;
+    let mut _8: std::boxed::Box<ColorTree>;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+    scope 2 {
+        debug __self_0 => _5;
+        debug __self_1 => _6;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _5 = &(((*_1) as branch).0: std::boxed::Box<ColorTree>);
+        _6 = &(((*_1) as branch).1: std::boxed::Box<ColorTree>);
+        _7 = <Box<ColorTree> as Clone>::clone(_5) -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = &(((*_1) as leaf).0: Color);
+        _4 = <Color as Clone>::clone(_3) -> bb4;
+    }
+
+    bb4: {
+        _0 = ColorTree::leaf(move _4);
+        goto -> bb7;
+    }
+
+    bb5: {
+        _8 = <Box<ColorTree> as Clone>::clone(_6) -> [return: bb6, unwind: bb8];
+    }
+
+    bb6: {
+        _0 = ColorTree::branch(move _7, move _8);
+        goto -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_7) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/traits/typeclasses-eq-example-static.rs:37:1: 37:25>::isEq(_1: &ColorTree, _2: &ColorTree) -> bool {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: bool;
+    let mut _3: (&ColorTree, &ColorTree);
+    let mut _4: isize;
+    let mut _5: isize;
+    let mut _6: isize;
+    let _7: &Color;
+    let _8: &Color;
+    let _9: &Color;
+    let _10: Color;
+    let _11: &Color;
+    let _12: Color;
+    let _13: &std::boxed::Box<ColorTree>;
+    let _14: &std::boxed::Box<ColorTree>;
+    let _15: &std::boxed::Box<ColorTree>;
+    let _16: &std::boxed::Box<ColorTree>;
+    let mut _17: bool;
+    let _18: &ColorTree;
+    let _19: ColorTree;
+    let mut _20: &ColorTree;
+    let _21: &ColorTree;
+    let _22: ColorTree;
+    let mut _23: &ColorTree;
+    let mut _24: bool;
+    let _25: &ColorTree;
+    let _26: ColorTree;
+    let mut _27: &ColorTree;
+    let _28: &ColorTree;
+    let _29: ColorTree;
+    let mut _30: &ColorTree;
+    let mut _31: &ColorTree;
+    let mut _32: &ColorTree;
+    let mut _33: &ColorTree;
+    let mut _34: &ColorTree;
+    let mut _35: &ColorTree;
+    let mut _36: &ColorTree;
+    let mut _37: &ColorTree;
+    let mut _38: &ColorTree;
+    let mut _39: &ColorTree;
+    let mut _40: std::boxed::Box<ColorTree>;
+    let mut _41: std::boxed::Box<ColorTree>;
+    let mut _42: std::boxed::Box<ColorTree>;
+    let mut _43: std::boxed::Box<ColorTree>;
+    let mut _44: *const ColorTree;
+    let mut _45: *const ColorTree;
+    let mut _46: *const ColorTree;
+    let mut _47: *const ColorTree;
+    scope 1 {
+        debug x => _7;
+        debug y => _8;
+    }
+    scope 2 {
+        debug l1 => _13;
+        debug r1 => _14;
+        debug l2 => _15;
+        debug r2 => _16;
+        let mut _48: *const ();
+        let mut _49: usize;
+        let mut _50: usize;
+        let mut _51: usize;
+        let mut _52: usize;
+        let mut _53: bool;
+        let mut _54: *const ();
+        let mut _55: usize;
+        let mut _56: usize;
+        let mut _57: usize;
+        let mut _58: usize;
+        let mut _59: bool;
+        let mut _60: *const ();
+        let mut _61: usize;
+        let mut _62: usize;
+        let mut _63: usize;
+        let mut _64: usize;
+        let mut _65: bool;
+        let mut _66: *const ();
+        let mut _67: usize;
+        let mut _68: usize;
+        let mut _69: usize;
+        let mut _70: usize;
+        let mut _71: bool;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _31 = deref_copy (_3.0: &ColorTree);
+        _6 = discriminant((*_31));
+        switchInt(move _6) -> [0: bb1, 1: bb3, otherwise: bb30];
+    }
+
+    bb1: {
+        _32 = deref_copy (_3.1: &ColorTree);
+        _4 = discriminant((*_32));
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _0 = const false;
+        goto -> bb20;
+    }
+
+    bb3: {
+        _33 = deref_copy (_3.1: &ColorTree);
+        _5 = discriminant((*_33));
+        switchInt(move _5) -> [1: bb7, otherwise: bb2];
+    }
+
+    bb4: {
+        _34 = deref_copy (_3.0: &ColorTree);
+        _7 = &(((*_34) as leaf).0: Color);
+        _35 = deref_copy (_3.1: &ColorTree);
+        _8 = &(((*_35) as leaf).0: Color);
+        _10 = <Color as Clone>::clone(_7) -> bb5;
+    }
+
+    bb5: {
+        _9 = &_10;
+        _12 = <Color as Clone>::clone(_8) -> bb6;
+    }
+
+    bb6: {
+        _11 = &_12;
+        _0 = <Color as Equal>::isEq(_9, _11) -> bb20;
+    }
+
+    bb7: {
+        _36 = deref_copy (_3.0: &ColorTree);
+        _13 = &(((*_36) as branch).0: std::boxed::Box<ColorTree>);
+        _37 = deref_copy (_3.0: &ColorTree);
+        _14 = &(((*_37) as branch).1: std::boxed::Box<ColorTree>);
+        _38 = deref_copy (_3.1: &ColorTree);
+        _15 = &(((*_38) as branch).0: std::boxed::Box<ColorTree>);
+        _39 = deref_copy (_3.1: &ColorTree);
+        _16 = &(((*_39) as branch).1: std::boxed::Box<ColorTree>);
+        _40 = deref_copy (*_13);
+        _44 = (((_40.0: std::ptr::Unique<ColorTree>).0: std::ptr::NonNull<ColorTree>).0: *const ColorTree);
+        _66 = _44 as *const () (PtrToPtr);
+        _67 = _66 as usize (Transmute);
+        _68 = AlignOf(ColorTree);
+        _69 = Sub(_68, const 1_usize);
+        _70 = BitAnd(_67, _69);
+        _71 = Eq(_70, const 0_usize);
+        assert(_71, "misaligned pointer dereference: address must be a multiple of {} but is {}", _68, _67) -> [success: bb29, unwind unreachable];
+    }
+
+    bb8: {
+        _0 = const false;
+        goto -> bb20;
+    }
+
+    bb9: {
+        _41 = deref_copy (*_14);
+        _45 = (((_41.0: std::ptr::Unique<ColorTree>).0: std::ptr::NonNull<ColorTree>).0: *const ColorTree);
+        _60 = _45 as *const () (PtrToPtr);
+        _61 = _60 as usize (Transmute);
+        _62 = AlignOf(ColorTree);
+        _63 = Sub(_62, const 1_usize);
+        _64 = BitAnd(_61, _63);
+        _65 = Eq(_64, const 0_usize);
+        assert(_65, "misaligned pointer dereference: address must be a multiple of {} but is {}", _62, _61) -> [success: bb28, unwind unreachable];
+    }
+
+    bb10: {
+        _18 = &_19;
+        _42 = deref_copy (*_15);
+        _46 = (((_42.0: std::ptr::Unique<ColorTree>).0: std::ptr::NonNull<ColorTree>).0: *const ColorTree);
+        _54 = _46 as *const () (PtrToPtr);
+        _55 = _54 as usize (Transmute);
+        _56 = AlignOf(ColorTree);
+        _57 = Sub(_56, const 1_usize);
+        _58 = BitAnd(_55, _57);
+        _59 = Eq(_58, const 0_usize);
+        assert(_59, "misaligned pointer dereference: address must be a multiple of {} but is {}", _56, _55) -> [success: bb27, unwind unreachable];
+    }
+
+    bb11: {
+        _21 = &_22;
+        _17 = <ColorTree as Equal>::isEq(_18, _21) -> [return: bb12, unwind: bb23];
+    }
+
+    bb12: {
+        drop(_22) -> [return: bb13, unwind: bb24];
+    }
+
+    bb13: {
+        drop(_19) -> bb14;
+    }
+
+    bb14: {
+        switchInt(move _17) -> [0: bb8, otherwise: bb9];
+    }
+
+    bb15: {
+        _25 = &_26;
+        _43 = deref_copy (*_16);
+        _47 = (((_43.0: std::ptr::Unique<ColorTree>).0: std::ptr::NonNull<ColorTree>).0: *const ColorTree);
+        _48 = _47 as *const () (PtrToPtr);
+        _49 = _48 as usize (Transmute);
+        _50 = AlignOf(ColorTree);
+        _51 = Sub(_50, const 1_usize);
+        _52 = BitAnd(_49, _51);
+        _53 = Eq(_52, const 0_usize);
+        assert(_53, "misaligned pointer dereference: address must be a multiple of {} but is {}", _50, _49) -> [success: bb26, unwind unreachable];
+    }
+
+    bb16: {
+        _28 = &_29;
+        _24 = <ColorTree as Equal>::isEq(_25, _28) -> [return: bb17, unwind: bb21];
+    }
+
+    bb17: {
+        drop(_29) -> [return: bb18, unwind: bb22];
+    }
+
+    bb18: {
+        drop(_26) -> bb19;
+    }
+
+    bb19: {
+        _0 = move _24;
+        goto -> bb20;
+    }
+
+    bb20: {
+        return;
+    }
+
+    bb21 (cleanup): {
+        drop(_29) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_26) -> [return: bb25, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_22) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_19) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+
+    bb26: {
+        _30 = &(*_47);
+        _29 = <ColorTree as Clone>::clone(move _30) -> [return: bb16, unwind: bb22];
+    }
+
+    bb27: {
+        _23 = &(*_46);
+        _22 = <ColorTree as Clone>::clone(move _23) -> [return: bb11, unwind: bb24];
+    }
+
+    bb28: {
+        _27 = &(*_45);
+        _26 = <ColorTree as Clone>::clone(move _27) -> bb15;
+    }
+
+    bb29: {
+        _20 = &(*_44);
+        _19 = <ColorTree as Clone>::clone(move _20) -> bb10;
+    }
+
+    bb30: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let _3: &Color;
+    let _4: Color;
+    let _5: &Color;
+    let _6: Color;
+    let mut _7: !;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _10: &Color;
+    let _11: Color;
+    let _12: &Color;
+    let _13: Color;
+    let mut _14: !;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: bool;
+    let _18: &Color;
+    let _19: Color;
+    let _20: &Color;
+    let _21: Color;
+    let mut _22: !;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _26: &Color;
+    let _27: Color;
+    let _28: &Color;
+    let _29: Color;
+    let mut _30: !;
+    let mut _31: bool;
+    let mut _32: bool;
+    let _33: &ColorTree;
+    let _34: ColorTree;
+    let mut _35: Color;
+    let _36: &ColorTree;
+    let _37: ColorTree;
+    let mut _38: Color;
+    let mut _39: !;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: bool;
+    let _43: &ColorTree;
+    let _44: ColorTree;
+    let mut _45: Color;
+    let _46: &ColorTree;
+    let _47: ColorTree;
+    let mut _48: Color;
+    let mut _49: !;
+    let mut _50: bool;
+    let mut _51: bool;
+    let _52: &ColorTree;
+    let _53: ColorTree;
+    let mut _54: std::boxed::Box<ColorTree>;
+    let mut _55: ColorTree;
+    let mut _56: Color;
+    let mut _57: std::boxed::Box<ColorTree>;
+    let mut _58: ColorTree;
+    let mut _59: Color;
+    let _60: &ColorTree;
+    let _61: ColorTree;
+    let mut _62: std::boxed::Box<ColorTree>;
+    let mut _63: ColorTree;
+    let mut _64: Color;
+    let mut _65: std::boxed::Box<ColorTree>;
+    let mut _66: ColorTree;
+    let mut _67: Color;
+    let mut _68: !;
+    let mut _69: bool;
+    let mut _70: bool;
+    let mut _71: bool;
+    let _72: &ColorTree;
+    let _73: ColorTree;
+    let mut _74: std::boxed::Box<ColorTree>;
+    let mut _75: ColorTree;
+    let mut _76: Color;
+    let mut _77: std::boxed::Box<ColorTree>;
+    let mut _78: ColorTree;
+    let mut _79: Color;
+    let _80: &ColorTree;
+    let _81: ColorTree;
+    let mut _82: std::boxed::Box<ColorTree>;
+    let mut _83: ColorTree;
+    let mut _84: Color;
+    let mut _85: std::boxed::Box<ColorTree>;
+    let mut _86: ColorTree;
+    let mut _87: Color;
+    let mut _88: !;
+    let _89: ();
+    let mut _90: std::fmt::Arguments<'_>;
+    let mut _91: &[&str];
+    let _92: &[&str; 1];
+    let _93: [&str; 1];
+
+    bb0: {
+        _4 = Color::cyan;
+        _3 = &_4;
+        _6 = Color::cyan;
+        _5 = &_6;
+        _2 = <Color as Equal>::isEq(_3, _5) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = core::panicking::panic(const "assertion failed: Equal::isEq(&cyan, &cyan)");
+    }
+
+    bb3: {
+        _11 = Color::magenta;
+        _10 = &_11;
+        _13 = Color::magenta;
+        _12 = &_13;
+        _9 = <Color as Equal>::isEq(_10, _12) -> bb4;
+    }
+
+    bb4: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _14 = core::panicking::panic(const "assertion failed: Equal::isEq(&magenta, &magenta)");
+    }
+
+    bb6: {
+        _19 = Color::cyan;
+        _18 = &_19;
+        _21 = Color::yellow;
+        _20 = &_21;
+        _17 = <Color as Equal>::isEq(_18, _20) -> bb7;
+    }
+
+    bb7: {
+        _16 = Not(move _17);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _22 = core::panicking::panic(const "assertion failed: !Equal::isEq(&cyan, &yellow)");
+    }
+
+    bb9: {
+        _27 = Color::magenta;
+        _26 = &_27;
+        _29 = Color::cyan;
+        _28 = &_29;
+        _25 = <Color as Equal>::isEq(_26, _28) -> bb10;
+    }
+
+    bb10: {
+        _24 = Not(move _25);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _30 = core::panicking::panic(const "assertion failed: !Equal::isEq(&magenta, &cyan)");
+    }
+
+    bb12: {
+        _35 = Color::cyan;
+        _34 = ColorTree::leaf(move _35);
+        _33 = &_34;
+        _38 = Color::cyan;
+        _37 = ColorTree::leaf(move _38);
+        _36 = &_37;
+        _32 = <ColorTree as Equal>::isEq(_33, _36) -> [return: bb13, unwind: bb53];
+    }
+
+    bb13: {
+        _31 = Not(move _32);
+        drop(_37) -> [return: bb14, unwind: bb54];
+    }
+
+    bb14: {
+        drop(_34) -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _31) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _39 = core::panicking::panic(const "assertion failed: Equal::isEq(&leaf(cyan), &leaf(cyan))");
+    }
+
+    bb17: {
+        _45 = Color::cyan;
+        _44 = ColorTree::leaf(move _45);
+        _43 = &_44;
+        _48 = Color::yellow;
+        _47 = ColorTree::leaf(move _48);
+        _46 = &_47;
+        _42 = <ColorTree as Equal>::isEq(_43, _46) -> [return: bb18, unwind: bb51];
+    }
+
+    bb18: {
+        _41 = Not(move _42);
+        _40 = Not(move _41);
+        drop(_47) -> [return: bb19, unwind: bb52];
+    }
+
+    bb19: {
+        drop(_44) -> bb20;
+    }
+
+    bb20: {
+        switchInt(move _40) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _49 = core::panicking::panic(const "assertion failed: !Equal::isEq(&leaf(cyan), &leaf(yellow))");
+    }
+
+    bb22: {
+        _56 = Color::magenta;
+        _55 = ColorTree::leaf(move _56);
+        _54 = Box::<ColorTree>::new(move _55) -> bb23;
+    }
+
+    bb23: {
+        _59 = Color::cyan;
+        _58 = ColorTree::leaf(move _59);
+        _57 = Box::<ColorTree>::new(move _58) -> [return: bb24, unwind: bb50];
+    }
+
+    bb24: {
+        _53 = ColorTree::branch(move _54, move _57);
+        _52 = &_53;
+        _64 = Color::magenta;
+        _63 = ColorTree::leaf(move _64);
+        _62 = Box::<ColorTree>::new(move _63) -> [return: bb25, unwind: bb49];
+    }
+
+    bb25: {
+        _67 = Color::cyan;
+        _66 = ColorTree::leaf(move _67);
+        _65 = Box::<ColorTree>::new(move _66) -> [return: bb26, unwind: bb48];
+    }
+
+    bb26: {
+        _61 = ColorTree::branch(move _62, move _65);
+        _60 = &_61;
+        _51 = <ColorTree as Equal>::isEq(_52, _60) -> [return: bb27, unwind: bb47];
+    }
+
+    bb27: {
+        _50 = Not(move _51);
+        drop(_61) -> [return: bb28, unwind: bb49];
+    }
+
+    bb28: {
+        drop(_53) -> bb29;
+    }
+
+    bb29: {
+        switchInt(move _50) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb30: {
+        _68 = core::panicking::panic(const "assertion failed: Equal::isEq(&branch(Box::new(leaf(magenta)), Box::new(leaf(cyan))),\\n    &branch(Box::new(leaf(magenta)), Box::new(leaf(cyan))))");
+    }
+
+    bb31: {
+        _76 = Color::magenta;
+        _75 = ColorTree::leaf(move _76);
+        _74 = Box::<ColorTree>::new(move _75) -> bb32;
+    }
+
+    bb32: {
+        _79 = Color::cyan;
+        _78 = ColorTree::leaf(move _79);
+        _77 = Box::<ColorTree>::new(move _78) -> [return: bb33, unwind: bb46];
+    }
+
+    bb33: {
+        _73 = ColorTree::branch(move _74, move _77);
+        _72 = &_73;
+        _84 = Color::magenta;
+        _83 = ColorTree::leaf(move _84);
+        _82 = Box::<ColorTree>::new(move _83) -> [return: bb34, unwind: bb45];
+    }
+
+    bb34: {
+        _87 = Color::magenta;
+        _86 = ColorTree::leaf(move _87);
+        _85 = Box::<ColorTree>::new(move _86) -> [return: bb35, unwind: bb44];
+    }
+
+    bb35: {
+        _81 = ColorTree::branch(move _82, move _85);
+        _80 = &_81;
+        _71 = <ColorTree as Equal>::isEq(_72, _80) -> [return: bb36, unwind: bb43];
+    }
+
+    bb36: {
+        _70 = Not(move _71);
+        _69 = Not(move _70);
+        drop(_81) -> [return: bb37, unwind: bb45];
+    }
+
+    bb37: {
+        drop(_73) -> bb38;
+    }
+
+    bb38: {
+        switchInt(move _69) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _88 = core::panicking::panic(const "assertion failed: !Equal::isEq(&branch(Box::new(leaf(magenta)), Box::new(leaf(cyan))),\\n        &branch(Box::new(leaf(magenta)), Box::new(leaf(magenta))))");
+    }
+
+    bb40: {
+        _93 = [const "Assertions all succeeded!\n"];
+        _92 = &_93;
+        _91 = _92 as &[&str] (Pointer(Unsize));
+        _90 = Arguments::<'_>::new_const(move _91) -> bb41;
+    }
+
+    bb41: {
+        _89 = _print(move _90) -> bb42;
+    }
+
+    bb42: {
+        return;
+    }
+
+    bb43 (cleanup): {
+        drop(_81) -> [return: bb45, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_82) -> [return: bb45, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_73) -> [return: bb55, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_74) -> [return: bb55, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_61) -> [return: bb49, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_62) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        drop(_53) -> [return: bb55, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_54) -> [return: bb55, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_47) -> [return: bb52, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_44) -> [return: bb55, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_37) -> [return: bb54, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_34) -> [return: bb55, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        resume;
+    }
+}
+
+fn ColorTree::leaf(_1: Color) -> ColorTree {
+    let mut _0: ColorTree;
+
+    bb0: {
+        _0 = ColorTree::leaf(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ColorTree::leaf(_1: Color) -> ColorTree {
+    let mut _0: ColorTree;
+
+    bb0: {
+        _0 = ColorTree::leaf(move _1);
+        return;
+    }
+}
+
+fn ColorTree::branch(_1: Box<ColorTree>, _2: Box<ColorTree>) -> ColorTree {
+    let mut _0: ColorTree;
+
+    bb0: {
+        _0 = ColorTree::branch(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ColorTree::branch(_1: Box<ColorTree>, _2: Box<ColorTree>) -> ColorTree {
+    let mut _0: ColorTree;
+
+    bb0: {
+        _0 = ColorTree::branch(move _1, move _2);
+        return;
+    }
+}

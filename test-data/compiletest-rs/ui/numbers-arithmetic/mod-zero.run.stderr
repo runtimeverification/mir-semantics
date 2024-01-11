@@ -1,0 +1,2 @@
+thread 'main' panicked at 'attempt to calculate the remainder with a divisor of zero', ui/numbers-arithmetic/mod-zero.rs:8:14
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: u8;
+    scope 1 {
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _1 = add(const _, const 1_u8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn add(_1: u8, _2: u8) -> u8 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = Add(_1, _2);
+        return;
+    }
+}

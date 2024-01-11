@@ -1,0 +1,178 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (main::U, main::U, main::U);
+    let mut _5: &&main::U;
+    let mut _6: &mut &mut main::U;
+    let _7: ();
+    let mut _9: &&main::U;
+    let mut _10: &mut &mut main::U;
+    let _11: ();
+    let mut _13: &&main::U;
+    let _14: ();
+    scope 1 {
+        debug tup => const (U, U, U);
+        let _2: &main::U;
+        let _3: &mut main::U;
+        scope 2 {
+            debug _x0 => _2;
+            debug _x1 => const U;
+            debug _x2 => _3;
+            let _4: [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:13:14: 13:16];
+            scope 3 {
+                debug c1 => _4;
+                let _8: [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:20:14: 20:16];
+                scope 4 {
+                    debug c2 => _8;
+                    let _12: [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:26:14: 26:16];
+                    scope 5 {
+                        debug c3 => _12;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &(_1.0: main::U);
+        _3 = &mut (_1.2: main::U);
+        _5 = &_2;
+        _6 = &mut _3;
+        _4 = [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:13:14: 13:16] { _x0: move _5, _x1: const U, _x2: move _6 };
+        _7 = accept_fn_once::<[closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:13:14: 13:16]>(move _4) -> bb1;
+    }
+
+    bb1: {
+        _9 = &_2;
+        _10 = &mut _3;
+        _8 = [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:20:14: 20:16] { _x0: move _9, _x2: move _10 };
+        _11 = accept_fn_mut::<[closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:20:14: 20:16]>(move _8) -> bb2;
+    }
+
+    bb2: {
+        _13 = &_2;
+        _12 = [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:26:14: 26:16] { _x0: move _13 };
+        _14 = accept_fn::<[closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:26:14: 26:16]>(_12) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn accept_fn_once(_1: impl FnOnce()) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn accept_fn_mut(_1: impl FnMut()) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn accept_fn(_1: impl Fn()) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:13:14: 13:16]) -> () {
+    debug _x0 => (*(_1.0: &&main::U));
+    debug _x1 => const U;
+    debug _x2 => (*(_1.2: &mut &mut main::U));
+    let mut _0: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let mut _5: &&main::U;
+    let mut _6: &main::U;
+    let mut _7: &mut &mut main::U;
+    let mut _8: &mut main::U;
+
+    bb0: {
+        _5 = deref_copy (_1.0: &&main::U);
+        _6 = deref_copy (*_5);
+        _2 = std::mem::drop::<&U>(_6) -> bb1;
+    }
+
+    bb1: {
+        _3 = std::mem::drop::<U>(const U) -> bb2;
+    }
+
+    bb2: {
+        _7 = deref_copy (_1.2: &mut &mut main::U);
+        _8 = deref_copy (*_7);
+        _4 = std::mem::drop::<&mut U>(_8) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:20:14: 20:16]) -> () {
+    debug _x0 => (*((*_1).0: &&main::U));
+    debug _x2 => (*((*_1).1: &mut &mut main::U));
+    let mut _0: ();
+    let _2: ();
+    let _3: ();
+    let mut _4: &&main::U;
+    let mut _5: &main::U;
+    let mut _6: &mut &mut main::U;
+    let mut _7: &mut main::U;
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &&main::U);
+        _5 = deref_copy (*_4);
+        _2 = std::mem::drop::<&U>(_5) -> bb1;
+    }
+
+    bb1: {
+        _6 = deref_copy ((*_1).1: &mut &mut main::U);
+        _7 = deref_copy (*_6);
+        _3 = std::mem::drop::<&mut U>(_7) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &[closure@ui/pattern/move-ref-patterns/move-ref-patterns-closure-captures-pass.rs:26:14: 26:16]) -> () {
+    debug _x0 => (*((*_1).0: &&main::U));
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &&main::U;
+    let mut _4: &main::U;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &&main::U);
+        _4 = deref_copy (*_3);
+        _2 = std::mem::drop::<&U>(_4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,954 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [isize; 3];
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+    let mut _8: &isize;
+    let _9: isize;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: isize;
+    let mut _15: isize;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&isize, &isize);
+    let mut _20: &isize;
+    let _21: usize;
+    let mut _22: usize;
+    let mut _23: bool;
+    let mut _24: &isize;
+    let _25: isize;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: isize;
+    let mut _31: isize;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: (&isize, &isize);
+    let mut _36: &isize;
+    let _37: usize;
+    let mut _38: usize;
+    let mut _39: bool;
+    let mut _40: &isize;
+    let _41: isize;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: isize;
+    let mut _47: isize;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let _51: usize;
+    let mut _52: usize;
+    let mut _53: bool;
+    let mut _54: (&isize, &isize);
+    let mut _55: &isize;
+    let _56: usize;
+    let mut _57: usize;
+    let mut _58: bool;
+    let mut _59: &isize;
+    let _60: isize;
+    let mut _63: bool;
+    let mut _64: bool;
+    let mut _65: isize;
+    let mut _66: isize;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _70: (&isize, &isize);
+    let mut _71: &isize;
+    let _72: usize;
+    let mut _73: usize;
+    let mut _74: bool;
+    let mut _75: &isize;
+    let _76: isize;
+    let mut _79: bool;
+    let mut _80: bool;
+    let mut _81: isize;
+    let mut _82: isize;
+    let _84: !;
+    let mut _85: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _86: (&isize, &isize);
+    let mut _87: &isize;
+    let _88: usize;
+    let mut _89: usize;
+    let mut _90: bool;
+    let mut _91: &isize;
+    let _92: isize;
+    let mut _95: bool;
+    let mut _96: bool;
+    let mut _97: isize;
+    let mut _98: isize;
+    let _100: !;
+    let mut _101: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _103: &mut [isize; 3];
+    let mut _104: (&isize, &isize);
+    let mut _105: &isize;
+    let _106: usize;
+    let mut _107: usize;
+    let mut _108: bool;
+    let mut _109: &isize;
+    let _110: isize;
+    let mut _113: bool;
+    let mut _114: bool;
+    let mut _115: isize;
+    let mut _116: isize;
+    let _118: !;
+    let mut _119: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _120: (&isize, &isize);
+    let mut _121: &isize;
+    let _122: usize;
+    let mut _123: usize;
+    let mut _124: bool;
+    let mut _125: &isize;
+    let _126: isize;
+    let mut _129: bool;
+    let mut _130: bool;
+    let mut _131: isize;
+    let mut _132: isize;
+    let _134: !;
+    let mut _135: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _136: (&isize, &isize);
+    let mut _137: &isize;
+    let _138: usize;
+    let mut _139: usize;
+    let mut _140: bool;
+    let mut _141: &isize;
+    let _142: isize;
+    let mut _145: bool;
+    let mut _146: bool;
+    let mut _147: isize;
+    let mut _148: isize;
+    let _150: !;
+    let mut _151: std::option::Option<std::fmt::Arguments<'_>>;
+    let _152: usize;
+    let mut _153: usize;
+    let mut _154: bool;
+    let mut _155: (&isize, &isize);
+    let mut _156: &isize;
+    let _157: usize;
+    let mut _158: usize;
+    let mut _159: bool;
+    let mut _160: &isize;
+    let _161: isize;
+    let mut _164: bool;
+    let mut _165: bool;
+    let mut _166: isize;
+    let mut _167: isize;
+    let _169: !;
+    let mut _170: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _171: (&isize, &isize);
+    let mut _172: &isize;
+    let _173: usize;
+    let mut _174: usize;
+    let mut _175: bool;
+    let mut _176: &isize;
+    let _177: isize;
+    let mut _180: bool;
+    let mut _181: bool;
+    let mut _182: isize;
+    let mut _183: isize;
+    let _185: !;
+    let mut _186: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _187: (&isize, &isize);
+    let mut _188: &isize;
+    let _189: usize;
+    let mut _190: usize;
+    let mut _191: bool;
+    let mut _192: &isize;
+    let _193: isize;
+    let mut _196: bool;
+    let mut _197: bool;
+    let mut _198: isize;
+    let mut _199: isize;
+    let _201: !;
+    let mut _202: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _203: *const [isize; 3];
+    let mut _204: *const [isize; 3];
+    let mut _205: *const [isize; 3];
+    let mut _206: *const [isize; 3];
+    let mut _207: *const [isize; 3];
+    let mut _208: *const [isize; 3];
+    let mut _209: *const [isize; 3];
+    let mut _210: *const [isize; 3];
+    let mut _211: *const [isize; 3];
+    let mut _212: *const [isize; 3];
+    let mut _213: *const [isize; 3];
+    let mut _214: *const [isize; 3];
+    let mut _215: *const [isize; 3];
+    let mut _216: *const [isize; 3];
+    scope 1 {
+        debug x => _1;
+        let mut _2: std::boxed::Box<[isize; 3]>;
+        scope 2 {
+            debug x => _2;
+            let _10: &isize;
+            let _11: &isize;
+            let _26: &isize;
+            let _27: &isize;
+            let _42: &isize;
+            let _43: &isize;
+            let _61: &isize;
+            let _62: &isize;
+            let _77: &isize;
+            let _78: &isize;
+            let _93: &isize;
+            let _94: &isize;
+            let mut _102: [isize; 3];
+            let mut _217: *const ();
+            let mut _218: usize;
+            let mut _219: usize;
+            let mut _220: usize;
+            let mut _221: usize;
+            let mut _222: bool;
+            let mut _223: *const ();
+            let mut _224: usize;
+            let mut _225: usize;
+            let mut _226: usize;
+            let mut _227: usize;
+            let mut _228: bool;
+            let mut _229: *const ();
+            let mut _230: usize;
+            let mut _231: usize;
+            let mut _232: usize;
+            let mut _233: usize;
+            let mut _234: bool;
+            let mut _235: *const ();
+            let mut _236: usize;
+            let mut _237: usize;
+            let mut _238: usize;
+            let mut _239: usize;
+            let mut _240: bool;
+            let mut _241: *const ();
+            let mut _242: usize;
+            let mut _243: usize;
+            let mut _244: usize;
+            let mut _245: usize;
+            let mut _246: bool;
+            let mut _247: *const ();
+            let mut _248: usize;
+            let mut _249: usize;
+            let mut _250: usize;
+            let mut _251: usize;
+            let mut _252: bool;
+            let mut _253: *const ();
+            let mut _254: usize;
+            let mut _255: usize;
+            let mut _256: usize;
+            let mut _257: usize;
+            let mut _258: bool;
+            let mut _259: *const ();
+            let mut _260: usize;
+            let mut _261: usize;
+            let mut _262: usize;
+            let mut _263: usize;
+            let mut _264: bool;
+            let mut _265: *const ();
+            let mut _266: usize;
+            let mut _267: usize;
+            let mut _268: usize;
+            let mut _269: usize;
+            let mut _270: bool;
+            let mut _271: *const ();
+            let mut _272: usize;
+            let mut _273: usize;
+            let mut _274: usize;
+            let mut _275: usize;
+            let mut _276: bool;
+            let mut _277: *const ();
+            let mut _278: usize;
+            let mut _279: usize;
+            let mut _280: usize;
+            let mut _281: usize;
+            let mut _282: bool;
+            let mut _283: *const ();
+            let mut _284: usize;
+            let mut _285: usize;
+            let mut _286: usize;
+            let mut _287: usize;
+            let mut _288: bool;
+            let mut _289: *const ();
+            let mut _290: usize;
+            let mut _291: usize;
+            let mut _292: usize;
+            let mut _293: usize;
+            let mut _294: bool;
+            let mut _295: *const ();
+            let mut _296: usize;
+            let mut _297: usize;
+            let mut _298: usize;
+            let mut _299: usize;
+            let mut _300: bool;
+            scope 3 {
+                debug left_val => _10;
+                debug right_val => _11;
+                let _16: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _16;
+                }
+            }
+            scope 5 {
+                debug left_val => _26;
+                debug right_val => _27;
+                let _32: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _32;
+                }
+            }
+            scope 7 {
+                debug left_val => _42;
+                debug right_val => _43;
+                let _48: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _48;
+                }
+            }
+            scope 9 {
+                debug left_val => _61;
+                debug right_val => _62;
+                let _67: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _67;
+                }
+            }
+            scope 11 {
+                debug left_val => _77;
+                debug right_val => _78;
+                let _83: core::panicking::AssertKind;
+                scope 12 {
+                    debug kind => _83;
+                }
+            }
+            scope 13 {
+                debug left_val => _93;
+                debug right_val => _94;
+                let _99: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _99;
+                }
+            }
+            scope 15 {
+                debug x => _102;
+                scope 16 {
+                    debug x => _103;
+                    let _111: &isize;
+                    let _112: &isize;
+                    let _127: &isize;
+                    let _128: &isize;
+                    let _143: &isize;
+                    let _144: &isize;
+                    let _162: &isize;
+                    let _163: &isize;
+                    let _178: &isize;
+                    let _179: &isize;
+                    let _194: &isize;
+                    let _195: &isize;
+                    scope 17 {
+                        debug left_val => _111;
+                        debug right_val => _112;
+                        let _117: core::panicking::AssertKind;
+                        scope 18 {
+                            debug kind => _117;
+                        }
+                    }
+                    scope 19 {
+                        debug left_val => _127;
+                        debug right_val => _128;
+                        let _133: core::panicking::AssertKind;
+                        scope 20 {
+                            debug kind => _133;
+                        }
+                    }
+                    scope 21 {
+                        debug left_val => _143;
+                        debug right_val => _144;
+                        let _149: core::panicking::AssertKind;
+                        scope 22 {
+                            debug kind => _149;
+                        }
+                    }
+                    scope 23 {
+                        debug left_val => _162;
+                        debug right_val => _163;
+                        let _168: core::panicking::AssertKind;
+                        scope 24 {
+                            debug kind => _168;
+                        }
+                    }
+                    scope 25 {
+                        debug left_val => _178;
+                        debug right_val => _179;
+                        let _184: core::panicking::AssertKind;
+                        scope 26 {
+                            debug kind => _184;
+                        }
+                    }
+                    scope 27 {
+                        debug left_val => _194;
+                        debug right_val => _195;
+                        let _200: core::panicking::AssertKind;
+                        scope 28 {
+                            debug kind => _200;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 1_isize, const 2_isize, const 3_isize];
+        _2 = <[isize; 3] as Into<Box<[isize; 3]>>>::into(_1) -> bb1;
+    }
+
+    bb1: {
+        _5 = const 0_usize;
+        _203 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _295 = _203 as *const () (PtrToPtr);
+        _296 = _295 as usize (Transmute);
+        _297 = AlignOf(isize);
+        _298 = Sub(_297, const 1_usize);
+        _299 = BitAnd(_296, _298);
+        _300 = Eq(_299, const 0_usize);
+        assert(_300, "misaligned pointer dereference: address must be a multiple of {} but is {}", _297, _296) -> [success: bb56, unwind unreachable];
+    }
+
+    bb2: {
+        _204 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _289 = _204 as *const () (PtrToPtr);
+        _290 = _289 as usize (Transmute);
+        _291 = AlignOf(isize);
+        _292 = Sub(_291, const 1_usize);
+        _293 = BitAnd(_290, _292);
+        _294 = Eq(_293, const 0_usize);
+        assert(_294, "misaligned pointer dereference: address must be a multiple of {} but is {}", _291, _290) -> [success: bb55, unwind unreachable];
+    }
+
+    bb3: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<isize, isize>(move _16, _10, _11, move _18) -> bb41;
+    }
+
+    bb4: {
+        _21 = const 1_usize;
+        _205 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _283 = _205 as *const () (PtrToPtr);
+        _284 = _283 as usize (Transmute);
+        _285 = AlignOf(isize);
+        _286 = Sub(_285, const 1_usize);
+        _287 = BitAnd(_284, _286);
+        _288 = Eq(_287, const 0_usize);
+        assert(_288, "misaligned pointer dereference: address must be a multiple of {} but is {}", _285, _284) -> [success: bb54, unwind unreachable];
+    }
+
+    bb5: {
+        _206 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _277 = _206 as *const () (PtrToPtr);
+        _278 = _277 as usize (Transmute);
+        _279 = AlignOf(isize);
+        _280 = Sub(_279, const 1_usize);
+        _281 = BitAnd(_278, _280);
+        _282 = Eq(_281, const 0_usize);
+        assert(_282, "misaligned pointer dereference: address must be a multiple of {} but is {}", _279, _278) -> [success: bb53, unwind unreachable];
+    }
+
+    bb6: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<isize, isize>(move _32, _26, _27, move _34) -> bb41;
+    }
+
+    bb7: {
+        _37 = const 2_usize;
+        _207 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _271 = _207 as *const () (PtrToPtr);
+        _272 = _271 as usize (Transmute);
+        _273 = AlignOf(isize);
+        _274 = Sub(_273, const 1_usize);
+        _275 = BitAnd(_272, _274);
+        _276 = Eq(_275, const 0_usize);
+        assert(_276, "misaligned pointer dereference: address must be a multiple of {} but is {}", _273, _272) -> [success: bb52, unwind unreachable];
+    }
+
+    bb8: {
+        _208 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _265 = _208 as *const () (PtrToPtr);
+        _266 = _265 as usize (Transmute);
+        _267 = AlignOf(isize);
+        _268 = Sub(_267, const 1_usize);
+        _269 = BitAnd(_266, _268);
+        _270 = Eq(_269, const 0_usize);
+        assert(_270, "misaligned pointer dereference: address must be a multiple of {} but is {}", _267, _266) -> [success: bb51, unwind unreachable];
+    }
+
+    bb9: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<isize, isize>(move _48, _42, _43, move _50) -> bb41;
+    }
+
+    bb10: {
+        _51 = const 1_usize;
+        _209 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _259 = _209 as *const () (PtrToPtr);
+        _260 = _259 as usize (Transmute);
+        _261 = AlignOf(isize);
+        _262 = Sub(_261, const 1_usize);
+        _263 = BitAnd(_260, _262);
+        _264 = Eq(_263, const 0_usize);
+        assert(_264, "misaligned pointer dereference: address must be a multiple of {} but is {}", _261, _260) -> [success: bb50, unwind unreachable];
+    }
+
+    bb11: {
+        _210 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _253 = _210 as *const () (PtrToPtr);
+        _254 = _253 as usize (Transmute);
+        _255 = AlignOf(isize);
+        _256 = Sub(_255, const 1_usize);
+        _257 = BitAnd(_254, _256);
+        _258 = Eq(_257, const 0_usize);
+        assert(_258, "misaligned pointer dereference: address must be a multiple of {} but is {}", _255, _254) -> [success: bb49, unwind unreachable];
+    }
+
+    bb12: {
+        _212 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _241 = _212 as *const () (PtrToPtr);
+        _242 = _241 as usize (Transmute);
+        _243 = AlignOf(isize);
+        _244 = Sub(_243, const 1_usize);
+        _245 = BitAnd(_242, _244);
+        _246 = Eq(_245, const 0_usize);
+        assert(_246, "misaligned pointer dereference: address must be a multiple of {} but is {}", _243, _242) -> [success: bb47, unwind unreachable];
+    }
+
+    bb13: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<isize, isize>(move _67, _61, _62, move _69) -> bb41;
+    }
+
+    bb14: {
+        _72 = const 1_usize;
+        _213 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _235 = _213 as *const () (PtrToPtr);
+        _236 = _235 as usize (Transmute);
+        _237 = AlignOf(isize);
+        _238 = Sub(_237, const 1_usize);
+        _239 = BitAnd(_236, _238);
+        _240 = Eq(_239, const 0_usize);
+        assert(_240, "misaligned pointer dereference: address must be a multiple of {} but is {}", _237, _236) -> [success: bb46, unwind unreachable];
+    }
+
+    bb15: {
+        _214 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _229 = _214 as *const () (PtrToPtr);
+        _230 = _229 as usize (Transmute);
+        _231 = AlignOf(isize);
+        _232 = Sub(_231, const 1_usize);
+        _233 = BitAnd(_230, _232);
+        _234 = Eq(_233, const 0_usize);
+        assert(_234, "misaligned pointer dereference: address must be a multiple of {} but is {}", _231, _230) -> [success: bb45, unwind unreachable];
+    }
+
+    bb16: {
+        _83 = core::panicking::AssertKind::Eq;
+        _85 = Option::<Arguments<'_>>::None;
+        _84 = core::panicking::assert_failed::<isize, isize>(move _83, _77, _78, move _85) -> bb41;
+    }
+
+    bb17: {
+        _88 = const 2_usize;
+        _215 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _223 = _215 as *const () (PtrToPtr);
+        _224 = _223 as usize (Transmute);
+        _225 = AlignOf(isize);
+        _226 = Sub(_225, const 1_usize);
+        _227 = BitAnd(_224, _226);
+        _228 = Eq(_227, const 0_usize);
+        assert(_228, "misaligned pointer dereference: address must be a multiple of {} but is {}", _225, _224) -> [success: bb44, unwind unreachable];
+    }
+
+    bb18: {
+        _216 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _217 = _216 as *const () (PtrToPtr);
+        _218 = _217 as usize (Transmute);
+        _219 = AlignOf(isize);
+        _220 = Sub(_219, const 1_usize);
+        _221 = BitAnd(_218, _220);
+        _222 = Eq(_221, const 0_usize);
+        assert(_222, "misaligned pointer dereference: address must be a multiple of {} but is {}", _219, _218) -> [success: bb43, unwind unreachable];
+    }
+
+    bb19: {
+        _99 = core::panicking::AssertKind::Eq;
+        _101 = Option::<Arguments<'_>>::None;
+        _100 = core::panicking::assert_failed::<isize, isize>(move _99, _93, _94, move _101) -> bb41;
+    }
+
+    bb20: {
+        _102 = [const 1_isize, const 2_isize, const 3_isize];
+        _103 = &mut _102;
+        _106 = const 0_usize;
+        _107 = const 3_usize;
+        _108 = Lt(_106, _107);
+        assert(move _108, "index out of bounds: the length is {} but the index is {}", move _107, _106) -> [success: bb21, unwind: bb41];
+    }
+
+    bb21: {
+        _105 = &(*_103)[_106];
+        _110 = const 1_isize;
+        _109 = &_110;
+        _104 = (move _105, move _109);
+        _111 = (_104.0: &isize);
+        _112 = (_104.1: &isize);
+        _115 = (*_111);
+        _116 = (*_112);
+        _114 = Eq(move _115, move _116);
+        _113 = Not(move _114);
+        switchInt(move _113) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _117 = core::panicking::AssertKind::Eq;
+        _119 = Option::<Arguments<'_>>::None;
+        _118 = core::panicking::assert_failed::<isize, isize>(move _117, _111, _112, move _119) -> bb41;
+    }
+
+    bb23: {
+        _122 = const 1_usize;
+        _123 = const 3_usize;
+        _124 = Lt(_122, _123);
+        assert(move _124, "index out of bounds: the length is {} but the index is {}", move _123, _122) -> [success: bb24, unwind: bb41];
+    }
+
+    bb24: {
+        _121 = &(*_103)[_122];
+        _126 = const 2_isize;
+        _125 = &_126;
+        _120 = (move _121, move _125);
+        _127 = (_120.0: &isize);
+        _128 = (_120.1: &isize);
+        _131 = (*_127);
+        _132 = (*_128);
+        _130 = Eq(move _131, move _132);
+        _129 = Not(move _130);
+        switchInt(move _129) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _133 = core::panicking::AssertKind::Eq;
+        _135 = Option::<Arguments<'_>>::None;
+        _134 = core::panicking::assert_failed::<isize, isize>(move _133, _127, _128, move _135) -> bb41;
+    }
+
+    bb26: {
+        _138 = const 2_usize;
+        _139 = const 3_usize;
+        _140 = Lt(_138, _139);
+        assert(move _140, "index out of bounds: the length is {} but the index is {}", move _139, _138) -> [success: bb27, unwind: bb41];
+    }
+
+    bb27: {
+        _137 = &(*_103)[_138];
+        _142 = const 3_isize;
+        _141 = &_142;
+        _136 = (move _137, move _141);
+        _143 = (_136.0: &isize);
+        _144 = (_136.1: &isize);
+        _147 = (*_143);
+        _148 = (*_144);
+        _146 = Eq(move _147, move _148);
+        _145 = Not(move _146);
+        switchInt(move _145) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb28: {
+        _149 = core::panicking::AssertKind::Eq;
+        _151 = Option::<Arguments<'_>>::None;
+        _150 = core::panicking::assert_failed::<isize, isize>(move _149, _143, _144, move _151) -> bb41;
+    }
+
+    bb29: {
+        _152 = const 1_usize;
+        _153 = const 3_usize;
+        _154 = Lt(_152, _153);
+        assert(move _154, "index out of bounds: the length is {} but the index is {}", move _153, _152) -> [success: bb30, unwind: bb41];
+    }
+
+    bb30: {
+        (*_103)[_152] = const 45_isize;
+        _157 = const 0_usize;
+        _158 = const 3_usize;
+        _159 = Lt(_157, _158);
+        assert(move _159, "index out of bounds: the length is {} but the index is {}", move _158, _157) -> [success: bb31, unwind: bb41];
+    }
+
+    bb31: {
+        _156 = &(*_103)[_157];
+        _161 = const 1_isize;
+        _160 = &_161;
+        _155 = (move _156, move _160);
+        _162 = (_155.0: &isize);
+        _163 = (_155.1: &isize);
+        _166 = (*_162);
+        _167 = (*_163);
+        _165 = Eq(move _166, move _167);
+        _164 = Not(move _165);
+        switchInt(move _164) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _168 = core::panicking::AssertKind::Eq;
+        _170 = Option::<Arguments<'_>>::None;
+        _169 = core::panicking::assert_failed::<isize, isize>(move _168, _162, _163, move _170) -> bb41;
+    }
+
+    bb33: {
+        _173 = const 1_usize;
+        _174 = const 3_usize;
+        _175 = Lt(_173, _174);
+        assert(move _175, "index out of bounds: the length is {} but the index is {}", move _174, _173) -> [success: bb34, unwind: bb41];
+    }
+
+    bb34: {
+        _172 = &(*_103)[_173];
+        _177 = const 45_isize;
+        _176 = &_177;
+        _171 = (move _172, move _176);
+        _178 = (_171.0: &isize);
+        _179 = (_171.1: &isize);
+        _182 = (*_178);
+        _183 = (*_179);
+        _181 = Eq(move _182, move _183);
+        _180 = Not(move _181);
+        switchInt(move _180) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _184 = core::panicking::AssertKind::Eq;
+        _186 = Option::<Arguments<'_>>::None;
+        _185 = core::panicking::assert_failed::<isize, isize>(move _184, _178, _179, move _186) -> bb41;
+    }
+
+    bb36: {
+        _189 = const 2_usize;
+        _190 = const 3_usize;
+        _191 = Lt(_189, _190);
+        assert(move _191, "index out of bounds: the length is {} but the index is {}", move _190, _189) -> [success: bb37, unwind: bb41];
+    }
+
+    bb37: {
+        _188 = &(*_103)[_189];
+        _193 = const 3_isize;
+        _192 = &_193;
+        _187 = (move _188, move _192);
+        _194 = (_187.0: &isize);
+        _195 = (_187.1: &isize);
+        _198 = (*_194);
+        _199 = (*_195);
+        _197 = Eq(move _198, move _199);
+        _196 = Not(move _197);
+        switchInt(move _196) -> [0: bb39, otherwise: bb38];
+    }
+
+    bb38: {
+        _200 = core::panicking::AssertKind::Eq;
+        _202 = Option::<Arguments<'_>>::None;
+        _201 = core::panicking::assert_failed::<isize, isize>(move _200, _194, _195, move _202) -> bb41;
+    }
+
+    bb39: {
+        drop(_2) -> bb40;
+    }
+
+    bb40: {
+        return;
+    }
+
+    bb41 (cleanup): {
+        drop(_2) -> [return: bb42, unwind terminate];
+    }
+
+    bb42 (cleanup): {
+        resume;
+    }
+
+    bb43: {
+        _87 = &(*_216)[_88];
+        _92 = const 3_isize;
+        _91 = &_92;
+        _86 = (move _87, move _91);
+        _93 = (_86.0: &isize);
+        _94 = (_86.1: &isize);
+        _97 = (*_93);
+        _98 = (*_94);
+        _96 = Eq(move _97, move _98);
+        _95 = Not(move _96);
+        switchInt(move _95) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb44: {
+        _89 = const 3_usize;
+        _90 = Lt(_88, _89);
+        assert(move _90, "index out of bounds: the length is {} but the index is {}", move _89, _88) -> [success: bb18, unwind: bb41];
+    }
+
+    bb45: {
+        _71 = &(*_214)[_72];
+        _76 = const 45_isize;
+        _75 = &_76;
+        _70 = (move _71, move _75);
+        _77 = (_70.0: &isize);
+        _78 = (_70.1: &isize);
+        _81 = (*_77);
+        _82 = (*_78);
+        _80 = Eq(move _81, move _82);
+        _79 = Not(move _80);
+        switchInt(move _79) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb46: {
+        _73 = const 3_usize;
+        _74 = Lt(_72, _73);
+        assert(move _74, "index out of bounds: the length is {} but the index is {}", move _73, _72) -> [success: bb15, unwind: bb41];
+    }
+
+    bb47: {
+        _55 = &(*_212)[_56];
+        _60 = const 1_isize;
+        _59 = &_60;
+        _54 = (move _55, move _59);
+        _61 = (_54.0: &isize);
+        _62 = (_54.1: &isize);
+        _65 = (*_61);
+        _66 = (*_62);
+        _64 = Eq(move _65, move _66);
+        _63 = Not(move _64);
+        switchInt(move _63) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb48: {
+        _57 = const 3_usize;
+        _58 = Lt(_56, _57);
+        assert(move _58, "index out of bounds: the length is {} but the index is {}", move _57, _56) -> [success: bb12, unwind: bb41];
+    }
+
+    bb49: {
+        (*_210)[_51] = const 45_isize;
+        _56 = const 0_usize;
+        _211 = (((_2.0: std::ptr::Unique<[isize; 3]>).0: std::ptr::NonNull<[isize; 3]>).0: *const [isize; 3]);
+        _247 = _211 as *const () (PtrToPtr);
+        _248 = _247 as usize (Transmute);
+        _249 = AlignOf(isize);
+        _250 = Sub(_249, const 1_usize);
+        _251 = BitAnd(_248, _250);
+        _252 = Eq(_251, const 0_usize);
+        assert(_252, "misaligned pointer dereference: address must be a multiple of {} but is {}", _249, _248) -> [success: bb48, unwind unreachable];
+    }
+
+    bb50: {
+        _52 = const 3_usize;
+        _53 = Lt(_51, _52);
+        assert(move _53, "index out of bounds: the length is {} but the index is {}", move _52, _51) -> [success: bb11, unwind: bb41];
+    }
+
+    bb51: {
+        _36 = &(*_208)[_37];
+        _41 = const 3_isize;
+        _40 = &_41;
+        _35 = (move _36, move _40);
+        _42 = (_35.0: &isize);
+        _43 = (_35.1: &isize);
+        _46 = (*_42);
+        _47 = (*_43);
+        _45 = Eq(move _46, move _47);
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb52: {
+        _38 = const 3_usize;
+        _39 = Lt(_37, _38);
+        assert(move _39, "index out of bounds: the length is {} but the index is {}", move _38, _37) -> [success: bb8, unwind: bb41];
+    }
+
+    bb53: {
+        _20 = &(*_206)[_21];
+        _25 = const 2_isize;
+        _24 = &_25;
+        _19 = (move _20, move _24);
+        _26 = (_19.0: &isize);
+        _27 = (_19.1: &isize);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb54: {
+        _22 = const 3_usize;
+        _23 = Lt(_21, _22);
+        assert(move _23, "index out of bounds: the length is {} but the index is {}", move _22, _21) -> [success: bb5, unwind: bb41];
+    }
+
+    bb55: {
+        _4 = &(*_204)[_5];
+        _9 = const 1_isize;
+        _8 = &_9;
+        _3 = (move _4, move _8);
+        _10 = (_3.0: &isize);
+        _11 = (_3.1: &isize);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb56: {
+        _6 = const 3_usize;
+        _7 = Lt(_5, _6);
+        assert(move _7, "index out of bounds: the length is {} but the index is {}", move _6, _5) -> [success: bb2, unwind: bb41];
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

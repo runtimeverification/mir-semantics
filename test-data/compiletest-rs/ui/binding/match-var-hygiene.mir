@@ -1,0 +1,61 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: (&i32, &i32);
+    let mut _3: &i32;
+    let _4: i32;
+    let mut _5: i32;
+    let mut _6: &i32;
+    let _7: i32;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: i32;
+    let mut _13: i32;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug _x => _1;
+        let _8: &i32;
+        let _9: &i32;
+        scope 2 {
+            debug _x => _5;
+        }
+        scope 3 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _14;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 8_i32;
+        _5 = const 9_i32;
+        _4 = _1;
+        _3 = &_4;
+        _7 = const 8_i32;
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _8 = (_2.0: &i32);
+        _9 = (_2.1: &i32);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<i32, i32>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        return;
+    }
+}

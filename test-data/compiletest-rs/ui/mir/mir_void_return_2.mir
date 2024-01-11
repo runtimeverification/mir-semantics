@@ -1,0 +1,34 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn nil() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn mir() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = nil() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = mir() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

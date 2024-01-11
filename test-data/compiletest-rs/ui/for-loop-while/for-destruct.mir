@@ -1,0 +1,148 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::slice::Iter<'_, Pair>;
+    let mut _2: &std::vec::Vec<Pair>;
+    let _3: std::vec::Vec<Pair>;
+    let mut _4: std::boxed::Box<[Pair]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[Pair; 2]>;
+    let mut _9: Pair;
+    let mut _10: Pair;
+    let mut _11: std::slice::Iter<'_, Pair>;
+    let mut _12: std::option::Option<&Pair>;
+    let mut _13: &mut std::slice::Iter<'_, Pair>;
+    let mut _14: isize;
+    let mut _16: (&isize, &isize);
+    let mut _17: &isize;
+    let _18: isize;
+    let mut _19: isize;
+    let mut _20: isize;
+    let mut _21: &isize;
+    let _22: isize;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: isize;
+    let mut _28: isize;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: *const [Pair; 2];
+    let mut _33: *const ();
+    let mut _34: usize;
+    let mut _35: usize;
+    let mut _36: usize;
+    let mut _37: usize;
+    let mut _38: bool;
+    scope 1 {
+    }
+    scope 2 {
+        debug iter => _11;
+        let _15: &Pair;
+        scope 3 {
+            debug elt => _15;
+            let _23: &isize;
+            let _24: &isize;
+            scope 4 {
+                debug left_val => _23;
+                debug right_val => _24;
+                let _29: core::panicking::AssertKind;
+                scope 5 {
+                    debug kind => _29;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _5 = SizeOf([Pair; 2]);
+        _6 = AlignOf([Pair; 2]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [Pair; 2]);
+        _9 = Pair { x: const 10_isize, y: const 20_isize };
+        _10 = Pair { x: const 30_isize, y: const 0_isize };
+        _32 = (((_8.0: std::ptr::Unique<[Pair; 2]>).0: std::ptr::NonNull<[Pair; 2]>).0: *const [Pair; 2]);
+        _33 = _32 as *const () (PtrToPtr);
+        _34 = _33 as usize (Transmute);
+        _35 = AlignOf(Pair);
+        _36 = Sub(_35, const 1_usize);
+        _37 = BitAnd(_34, _36);
+        _38 = Eq(_37, const 0_usize);
+        assert(_38, "misaligned pointer dereference: address must be a multiple of {} but is {}", _35, _34) -> [success: bb13, unwind unreachable];
+    }
+
+    bb2: {
+        _2 = &_3;
+        _1 = <&Vec<Pair> as IntoIterator>::into_iter(move _2) -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _11 = move _1;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _13 = &mut _11;
+        _12 = <std::slice::Iter<'_, Pair> as Iterator>::next(_13) -> [return: bb5, unwind: bb11];
+    }
+
+    bb5: {
+        _14 = discriminant(_12);
+        switchInt(move _14) -> [0: bb8, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _15 = ((_12 as Some).0: &Pair);
+        _19 = ((*_15).0: isize);
+        _20 = ((*_15).1: isize);
+        _18 = Add(move _19, move _20);
+        _17 = &_18;
+        _22 = const 30_isize;
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _23 = (_16.0: &isize);
+        _24 = (_16.1: &isize);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb4, otherwise: bb9];
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        drop(_3) -> bb10;
+    }
+
+    bb9: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<isize, isize>(move _29, _23, _24, move _31) -> bb11;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_3) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+
+    bb13: {
+        (*_32) = [move _9, move _10];
+        _4 = move _8 as std::boxed::Box<[Pair]> (Pointer(Unsize));
+        _3 = slice::<impl [Pair]>::into_vec::<std::alloc::Global>(move _4) -> bb2;
+    }
+}

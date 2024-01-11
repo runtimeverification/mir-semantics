@@ -1,0 +1,60 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn parse(_1: ()) -> () {
+    debug version => const ();
+    let mut _0: ();
+    let _2: ();
+    let _3: &u8;
+    let _4: u8;
+    let mut _5: &[u8];
+    let _6: &[u8; 1];
+
+    bb0: {
+        _4 = const 46_u8;
+        _3 = &_4;
+        _6 = const b"0";
+        _5 = _6 as &[u8] (Pointer(Unsize));
+        _2 = p(_3, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (size: 1, align: 1) {
+    30                                              │ 0
+}
+
+fn p(_1: &u8, _2: &[u8]) -> () {
+    debug byte => _1;
+    debug s => _2;
+    let mut _0: ();
+    let _3: usize;
+    let mut _4: usize;
+    let mut _5: bool;
+
+    bb0: {
+        _3 = const 0_usize;
+        _4 = Len((*_2));
+        _5 = Lt(_3, _4);
+        assert(move _5, "index out of bounds: the length is {} but the index is {}", move _4, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = parse(const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

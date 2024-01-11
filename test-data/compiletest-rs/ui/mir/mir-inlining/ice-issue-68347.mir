@@ -1,0 +1,78 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: fn();
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _1 = handle_debug_column as fn() (Pointer(ReifyFnPointer));
+        return;
+    }
+}
+
+fn handle_debug_column() -> () {
+    let mut _0: ();
+    let _1: impl Sampler;
+    let mut _3: &impl Sampler;
+    let _4: ();
+    let mut _5: &[closure@ui/mir/mir-inlining/ice-issue-68347.rs:10:15: 10:17];
+    scope 1 {
+        debug sampler => const ZeroSized: impl Sampler;
+        let _2: [closure@ui/mir/mir-inlining/ice-issue-68347.rs:10:15: 10:17];
+        scope 2 {
+            debug foo => _2;
+        }
+    }
+
+    bb0: {
+        _1 = sample_columns() -> bb1;
+    }
+
+    bb1: {
+        _3 = &_1;
+        _2 = [closure@ui/mir/mir-inlining/ice-issue-68347.rs:10:15: 10:17] { sampler: move _3 };
+        _5 = &_2;
+        _4 = <[closure@ui/mir/mir-inlining/ice-issue-68347.rs:10:15: 10:17] as Fn<()>>::call(move _5, const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn handle_debug_column::{closure#0}(_1: &[closure@ui/mir/mir-inlining/ice-issue-68347.rs:10:15: 10:17]) -> () {
+    debug sampler => const ZeroSized: impl Sampler;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &impl Sampler;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &impl Sampler);
+        _2 = <impl Sampler as Sampler>::get(_3, const 17_i32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn sample_columns() -> impl Sampler {
+    let mut _0: impl Sampler;
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir-inlining/ice-issue-68347.rs:26:1: 26:27>::get(_1: &ColumnGen, _2: i32) -> () {
+    debug self => _1;
+    debug _index => _2;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

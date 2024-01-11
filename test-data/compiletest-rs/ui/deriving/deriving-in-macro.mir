@@ -1,0 +1,20 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo::<impl at ui/deriving/deriving-in-macro.rs:8:22: 8:31>::eq(_1: &bar, _2: &bar) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

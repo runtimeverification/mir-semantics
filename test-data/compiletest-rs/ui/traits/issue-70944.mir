@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn do_stuff(_1: &impl FooBuilder) -> () {
+    debug foo => _1;
+    let mut _0: ();
+    let _2: &<impl FooBuilder as FooBuilder>::Inner;
+    let _3: &<<impl FooBuilder as FooBuilder>::Inner as std::ops::Index<KeyA>>::Output;
+    let mut _4: &<impl FooBuilder as FooBuilder>::Inner;
+    let _5: &<<impl FooBuilder as FooBuilder>::Inner as std::ops::Index<KeyB>>::Output;
+    let mut _6: &<impl FooBuilder as FooBuilder>::Inner;
+    let _7: &<<impl FooBuilder as FooBuilder>::Inner as std::ops::Index<KeyC>>::Output;
+    let mut _8: &<impl FooBuilder as FooBuilder>::Inner;
+    scope 1 {
+        debug inner => _2;
+    }
+
+    bb0: {
+        _2 = <impl FooBuilder as FooBuilder>::inner(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = _2;
+        _3 = <<impl FooBuilder as FooBuilder>::Inner as Index<KeyA>>::index(move _4, const KeyA) -> bb2;
+    }
+
+    bb2: {
+        _6 = _2;
+        _5 = <<impl FooBuilder as FooBuilder>::Inner as Index<KeyB>>::index(move _6, const KeyB) -> bb3;
+    }
+
+    bb3: {
+        _8 = _2;
+        _7 = <<impl FooBuilder as FooBuilder>::Inner as Index<KeyC>>::index(move _8, const KeyC) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

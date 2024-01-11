@@ -1,0 +1,44 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: F) -> Box<dyn Fn(T) -> U> {
+    debug f => _1;
+    let mut _0: std::boxed::Box<dyn std::ops::Fn(T) -> U>;
+    let mut _2: std::boxed::Box<[closure@ui/closures/issue-97607.rs:9:14: 9:22]>;
+    let mut _3: [closure@ui/closures/issue-97607.rs:9:14: 9:22];
+
+    bb0: {
+        _3 = [closure@ui/closures/issue-97607.rs:9:14: 9:22] { f: move _1 };
+        _2 = Box::<[closure@ui/closures/issue-97607.rs:9:14: 9:22]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = move _2 as std::boxed::Box<dyn std::ops::Fn(T) -> U> (Pointer(Unsize));
+        return;
+    }
+}
+
+fn test::{closure#0}(_1: &[closure@ui/closures/issue-97607.rs:9:14: 9:22], _2: T) -> U {
+    debug t => _2;
+    debug f => ((*_1).0: F);
+    let mut _0: U;
+    let mut _3: &F;
+    let mut _4: (T,);
+
+    bb0: {
+        _3 = &((*_1).0: F);
+        _4 = (move _2,);
+        _0 = <F as Fn<(T,)>>::call(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

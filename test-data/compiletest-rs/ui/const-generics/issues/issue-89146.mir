@@ -1,0 +1,74 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::to_bytes::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn bar(_1: &G) -> u8 {
+    debug a => _1;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = deeper_bar::<G>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+bar::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn deeper_bar(_1: &G) -> u8 {
+    debug a => _1;
+    let mut _0: u8;
+    let mut _2: [u8; Self::SIZE];
+    let _3: usize;
+    let mut _4: usize;
+    let mut _5: bool;
+
+    bb0: {
+        _2 = <G as Foo>::to_bytes(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = const 0_usize;
+        _4 = const _;
+        _5 = Lt(_3, _4);
+        assert(move _5, "index out of bounds: the length is {} but the index is {}", move _4, _3) -> bb2;
+    }
+
+    bb2: {
+        _0 = _2[_3];
+        return;
+    }
+}
+
+deeper_bar::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/traits/with-dst.rs:12:1: 12:55>::VTABLE: &VTable<DST> = {
+    let mut _0: &VTable<DST>;
+    let _1: &VTable<DST>;
+    let _2: VTable<DST>;
+    let mut _3: fn(*mut ()) -> *mut DST;
+    let mut _4: [closure@ui/traits/with-dst.rs:14:22: 14:34];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = [closure@ui/traits/with-dst.rs:14:22: 14:34];
+        _3 = move _4 as fn(*mut ()) -> *mut DST (Pointer(ClosureFnPointer(Normal)));
+        StorageDead(_4);
+        _2 = VTable::<DST> { _to_dst_ptr: move _3 };
+        StorageDead(_3);
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/with-dst.rs:12:1: 12:55>::VTABLE::{closure#0}(_1: &[closure@ui/traits/with-dst.rs:14:22: 14:34], _2: *mut ()) -> *mut DST {
+    let mut _0: *mut DST;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = zeroed::<*mut DST>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn push() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

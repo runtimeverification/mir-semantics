@@ -1,0 +1,81 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn start(_1: isize, _2: *const *const u8) -> isize {
+    debug _argc => _1;
+    debug _argv => _2;
+    let mut _0: isize;
+    let _3: other::vec::Vec<u8>;
+    let mut _4: other::boxed::Box<[u8]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: other::boxed::Box<[u8; 3]>;
+    let mut _9: core::option::Option<&u8>;
+    let mut _10: &[u8];
+    let _11: &[u8];
+    let mut _12: &other::vec::Vec<u8>;
+    let mut _13: isize;
+    let mut _14: !;
+    let mut _15: &u8;
+    let mut _16: *const [u8; 3];
+    scope 1 {
+        debug x => _3;
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _5 = SizeOf([u8; 3]);
+        _6 = AlignOf([u8; 3]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [u8; 3]);
+        _16 = (((_8.0: core::ptr::Unique<[u8; 3]>).0: core::ptr::NonNull<[u8; 3]>).0: *const [u8; 3]);
+        (*_16) = [const 0_u8, const 1_u8, const 2_u8];
+        _4 = move _8 as other::boxed::Box<[u8]> (Pointer(Unsize));
+        _3 = other::slice::<impl [u8]>::into_vec::<other::alloc::Global>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _12 = &_3;
+        _11 = <Vec<u8> as Deref>::deref(move _12) -> [return: bb3, unwind: bb9];
+    }
+
+    bb3: {
+        _10 = _11;
+        _9 = core::slice::<impl [u8]>::last(move _10) -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        _13 = discriminant(_9);
+        switchInt(move _13) -> [1: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _14 = panic(const "explicit panic") -> bb9;
+    }
+
+    bb6: {
+        _15 = deref_copy ((_9 as Some).0: &u8);
+        switchInt((*_15)) -> [2: bb7, otherwise: bb5];
+    }
+
+    bb7: {
+        _0 = const 0_isize;
+        drop(_3) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_3) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        resume;
+    }
+}

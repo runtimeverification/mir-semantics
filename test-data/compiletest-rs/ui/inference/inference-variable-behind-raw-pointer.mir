@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: *const ();
+    let mut _2: bool;
+    let mut _3: *const ();
+    scope 1 {
+        debug data => _1;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _1 = null::<()>() -> bb1;
+    }
+
+    bb1: {
+        _3 = _1;
+        _2 = ptr::const_ptr::<impl *const ()>::is_null(move _3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

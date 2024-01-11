@@ -9,7 +9,7 @@ from subprocess import CalledProcessError, CompletedProcess
 from typing import Callable, Final, Iterable, Iterator, Optional, final
 
 from pyk.cterm import CTerm
-from pyk.kast.inner import KInner
+from pyk.kast import KInner
 from pyk.kast.outer import KClaim
 from pyk.kcfg import KCFG, KCFGExplore
 from pyk.kore.parser import KoreParser

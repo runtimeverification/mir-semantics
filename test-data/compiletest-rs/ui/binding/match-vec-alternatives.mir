@@ -1,0 +1,1780 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn match_vecs(_1: &[T], _2: &[T]) -> &str {
+    debug l1 => _1;
+    debug l2 => _2;
+    let mut _0: &str;
+    let mut _3: (&[T], &[T]);
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let mut _13: &[T];
+    let mut _14: &[T];
+    let mut _15: &[T];
+
+    bb0: {
+        _3 = (_1, _2);
+        _13 = deref_copy (_3.0: &[T]);
+        _10 = Len((*_13));
+        _11 = const 0_usize;
+        _12 = Eq(move _10, move _11);
+        switchInt(move _12) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = deref_copy (_3.1: &[T]);
+        _4 = Len((*_14));
+        _5 = const 0_usize;
+        _6 = Eq(move _4, move _5);
+        switchInt(move _6) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb2: {
+        _15 = deref_copy (_3.1: &[T]);
+        _7 = Len((*_15));
+        _8 = const 0_usize;
+        _9 = Eq(move _7, move _8);
+        switchInt(move _9) -> [0: bb3, otherwise: bb5];
+    }
+
+    bb3: {
+        _0 = const "both non-empty";
+        goto -> bb6;
+    }
+
+    bb4: {
+        _0 = const "both empty";
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = const "one empty";
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn match_vecs_cons(_1: &[T], _2: &[T]) -> &str {
+    debug l1 => _1;
+    debug l2 => _2;
+    let mut _0: &str;
+    let mut _3: (&[T], &[T]);
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: bool;
+    let mut _16: usize;
+    let mut _17: usize;
+    let mut _18: bool;
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: bool;
+    let mut _22: &[T];
+    let mut _23: &[T];
+    let mut _24: &[T];
+    let mut _25: &[T];
+    let mut _26: &[T];
+    let mut _27: &[T];
+
+    bb0: {
+        _3 = (_1, _2);
+        _22 = deref_copy (_3.0: &[T]);
+        _19 = Len((*_22));
+        _20 = const 0_usize;
+        _21 = Eq(move _19, move _20);
+        switchInt(move _21) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _23 = deref_copy (_3.1: &[T]);
+        _7 = Len((*_23));
+        _8 = const 0_usize;
+        _9 = Eq(move _7, move _8);
+        switchInt(move _9) -> [0: bb2, otherwise: bb8];
+    }
+
+    bb2: {
+        _24 = deref_copy (_3.1: &[T]);
+        _4 = Len((*_24));
+        _5 = const 1_usize;
+        _6 = Ge(move _4, move _5);
+        switchInt(move _6) -> [0: bb3, otherwise: bb9];
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _25 = deref_copy (_3.0: &[T]);
+        _16 = Len((*_25));
+        _17 = const 1_usize;
+        _18 = Ge(move _16, move _17);
+        switchInt(move _18) -> [0: bb3, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = deref_copy (_3.1: &[T]);
+        _13 = Len((*_26));
+        _14 = const 0_usize;
+        _15 = Eq(move _13, move _14);
+        switchInt(move _15) -> [0: bb6, otherwise: bb9];
+    }
+
+    bb6: {
+        _27 = deref_copy (_3.1: &[T]);
+        _10 = Len((*_27));
+        _11 = const 1_usize;
+        _12 = Ge(move _10, move _11);
+        switchInt(move _12) -> [0: bb3, otherwise: bb7];
+    }
+
+    bb7: {
+        _0 = const "both non-empty";
+        goto -> bb10;
+    }
+
+    bb8: {
+        _0 = const "both empty";
+        goto -> bb10;
+    }
+
+    bb9: {
+        _0 = const "one empty";
+        goto -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn match_vecs_snoc(_1: &[T], _2: &[T]) -> &str {
+    debug l1 => _1;
+    debug l2 => _2;
+    let mut _0: &str;
+    let mut _3: (&[T], &[T]);
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: bool;
+    let mut _16: usize;
+    let mut _17: usize;
+    let mut _18: bool;
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: bool;
+    let mut _22: &[T];
+    let mut _23: &[T];
+    let mut _24: &[T];
+    let mut _25: &[T];
+    let mut _26: &[T];
+    let mut _27: &[T];
+
+    bb0: {
+        _3 = (_1, _2);
+        _22 = deref_copy (_3.0: &[T]);
+        _19 = Len((*_22));
+        _20 = const 0_usize;
+        _21 = Eq(move _19, move _20);
+        switchInt(move _21) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _23 = deref_copy (_3.1: &[T]);
+        _7 = Len((*_23));
+        _8 = const 0_usize;
+        _9 = Eq(move _7, move _8);
+        switchInt(move _9) -> [0: bb2, otherwise: bb8];
+    }
+
+    bb2: {
+        _24 = deref_copy (_3.1: &[T]);
+        _4 = Len((*_24));
+        _5 = const 1_usize;
+        _6 = Ge(move _4, move _5);
+        switchInt(move _6) -> [0: bb3, otherwise: bb9];
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _25 = deref_copy (_3.0: &[T]);
+        _16 = Len((*_25));
+        _17 = const 1_usize;
+        _18 = Ge(move _16, move _17);
+        switchInt(move _18) -> [0: bb3, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = deref_copy (_3.1: &[T]);
+        _13 = Len((*_26));
+        _14 = const 0_usize;
+        _15 = Eq(move _13, move _14);
+        switchInt(move _15) -> [0: bb6, otherwise: bb9];
+    }
+
+    bb6: {
+        _27 = deref_copy (_3.1: &[T]);
+        _10 = Len((*_27));
+        _11 = const 1_usize;
+        _12 = Ge(move _10, move _11);
+        switchInt(move _12) -> [0: bb3, otherwise: bb7];
+    }
+
+    bb7: {
+        _0 = const "both non-empty";
+        goto -> bb10;
+    }
+
+    bb8: {
+        _0 = const "both empty";
+        goto -> bb10;
+    }
+
+    bb9: {
+        _0 = const "one empty";
+        goto -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn match_nested_vecs_cons(_1: Option<&[T]>, _2: Result<&[T], ()>) -> &str {
+    debug l1 => _1;
+    debug l2 => _2;
+    let mut _0: &str;
+    let mut _3: (std::option::Option<&[T]>, std::result::Result<&[T], ()>);
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: usize;
+    let mut _15: usize;
+    let mut _16: bool;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: bool;
+    let mut _23: usize;
+    let mut _24: usize;
+    let mut _25: bool;
+    let mut _26: isize;
+    let mut _27: isize;
+    let mut _28: &[T];
+    let mut _29: &[T];
+    let mut _30: &[T];
+    let mut _31: &[T];
+    let mut _32: &[T];
+    let mut _33: &[T];
+    let mut _34: &[T];
+
+    bb0: {
+        _3 = (_1, _2);
+        _27 = discriminant((_3.0: std::option::Option<&[T]>));
+        switchInt(move _27) -> [0: bb1, 1: bb6, otherwise: bb16];
+    }
+
+    bb1: {
+        _13 = discriminant((_3.1: std::result::Result<&[T], ()>));
+        switchInt(move _13) -> [0: bb2, 1: bb13, otherwise: bb16];
+    }
+
+    bb2: {
+        _28 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _10 = Len((*_28));
+        _11 = const 0_usize;
+        _12 = Eq(move _10, move _11);
+        switchInt(move _12) -> [0: bb3, otherwise: bb13];
+    }
+
+    bb3: {
+        _29 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _7 = Len((*_29));
+        _8 = const 1_usize;
+        _9 = Eq(move _7, move _8);
+        switchInt(move _9) -> [0: bb4, otherwise: bb13];
+    }
+
+    bb4: {
+        _30 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _4 = Len((*_30));
+        _5 = const 2_usize;
+        _6 = Ge(move _4, move _5);
+        switchInt(move _6) -> [0: bb5, otherwise: bb14];
+    }
+
+    bb5: {
+        _0 = const "other";
+        goto -> bb15;
+    }
+
+    bb6: {
+        _26 = discriminant((_3.1: std::result::Result<&[T], ()>));
+        switchInt(move _26) -> [0: bb7, 1: bb10, otherwise: bb16];
+    }
+
+    bb7: {
+        _31 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _20 = Len((*_31));
+        _21 = const 0_usize;
+        _22 = Eq(move _20, move _21);
+        switchInt(move _22) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _32 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _14 = Len((*_32));
+        _15 = const 0_usize;
+        _16 = Eq(move _14, move _15);
+        switchInt(move _16) -> [0: bb5, otherwise: bb11];
+    }
+
+    bb9: {
+        _33 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _17 = Len((*_33));
+        _18 = const 1_usize;
+        _19 = Ge(move _17, move _18);
+        switchInt(move _19) -> [0: bb5, otherwise: bb12];
+    }
+
+    bb10: {
+        _34 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _23 = Len((*_34));
+        _24 = const 1_usize;
+        _25 = Ge(move _23, move _24);
+        switchInt(move _25) -> [0: bb5, otherwise: bb12];
+    }
+
+    bb11: {
+        _0 = const "Some(empty), Ok(empty)";
+        goto -> bb15;
+    }
+
+    bb12: {
+        _0 = const "Some(non-empty), any";
+        goto -> bb15;
+    }
+
+    bb13: {
+        _0 = const "None, Ok(less than one element)";
+        goto -> bb15;
+    }
+
+    bb14: {
+        _0 = const "None, Ok(at least two elements)";
+        goto -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16: {
+        unreachable;
+    }
+}
+
+fn match_nested_vecs_snoc(_1: Option<&[T]>, _2: Result<&[T], ()>) -> &str {
+    debug l1 => _1;
+    debug l2 => _2;
+    let mut _0: &str;
+    let mut _3: (std::option::Option<&[T]>, std::result::Result<&[T], ()>);
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: usize;
+    let mut _15: usize;
+    let mut _16: bool;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: bool;
+    let mut _23: usize;
+    let mut _24: usize;
+    let mut _25: bool;
+    let mut _26: isize;
+    let mut _27: isize;
+    let mut _28: &[T];
+    let mut _29: &[T];
+    let mut _30: &[T];
+    let mut _31: &[T];
+    let mut _32: &[T];
+    let mut _33: &[T];
+    let mut _34: &[T];
+
+    bb0: {
+        _3 = (_1, _2);
+        _27 = discriminant((_3.0: std::option::Option<&[T]>));
+        switchInt(move _27) -> [0: bb1, 1: bb6, otherwise: bb16];
+    }
+
+    bb1: {
+        _13 = discriminant((_3.1: std::result::Result<&[T], ()>));
+        switchInt(move _13) -> [0: bb2, 1: bb13, otherwise: bb16];
+    }
+
+    bb2: {
+        _28 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _10 = Len((*_28));
+        _11 = const 0_usize;
+        _12 = Eq(move _10, move _11);
+        switchInt(move _12) -> [0: bb3, otherwise: bb13];
+    }
+
+    bb3: {
+        _29 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _7 = Len((*_29));
+        _8 = const 1_usize;
+        _9 = Eq(move _7, move _8);
+        switchInt(move _9) -> [0: bb4, otherwise: bb13];
+    }
+
+    bb4: {
+        _30 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _4 = Len((*_30));
+        _5 = const 2_usize;
+        _6 = Ge(move _4, move _5);
+        switchInt(move _6) -> [0: bb5, otherwise: bb14];
+    }
+
+    bb5: {
+        _0 = const "other";
+        goto -> bb15;
+    }
+
+    bb6: {
+        _26 = discriminant((_3.1: std::result::Result<&[T], ()>));
+        switchInt(move _26) -> [0: bb7, 1: bb10, otherwise: bb16];
+    }
+
+    bb7: {
+        _31 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _20 = Len((*_31));
+        _21 = const 0_usize;
+        _22 = Eq(move _20, move _21);
+        switchInt(move _22) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _32 = deref_copy (((_3.1: std::result::Result<&[T], ()>) as Ok).0: &[T]);
+        _14 = Len((*_32));
+        _15 = const 0_usize;
+        _16 = Eq(move _14, move _15);
+        switchInt(move _16) -> [0: bb5, otherwise: bb11];
+    }
+
+    bb9: {
+        _33 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _17 = Len((*_33));
+        _18 = const 1_usize;
+        _19 = Ge(move _17, move _18);
+        switchInt(move _19) -> [0: bb5, otherwise: bb12];
+    }
+
+    bb10: {
+        _34 = deref_copy (((_3.0: std::option::Option<&[T]>) as Some).0: &[T]);
+        _23 = Len((*_34));
+        _24 = const 1_usize;
+        _25 = Ge(move _23, move _24);
+        switchInt(move _25) -> [0: bb5, otherwise: bb12];
+    }
+
+    bb11: {
+        _0 = const "Some(empty), Ok(empty)";
+        goto -> bb15;
+    }
+
+    bb12: {
+        _0 = const "Some(non-empty), any";
+        goto -> bb15;
+    }
+
+    bb13: {
+        _0 = const "None, Ok(less than one element)";
+        goto -> bb15;
+    }
+
+    bb14: {
+        _0 = const "None, Ok(at least two elements)";
+        goto -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&str, &&str);
+    let mut _2: &&str;
+    let _3: &str;
+    let mut _4: &[i32];
+    let _5: &[i32; 2];
+    let _6: [i32; 2];
+    let mut _7: &[i32];
+    let _8: &[i32; 2];
+    let _9: [i32; 2];
+    let mut _10: &&str;
+    let _11: &str;
+    let _12: &&str;
+    let _13: &&str;
+    let mut _14: bool;
+    let mut _15: bool;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&&str, &&str);
+    let mut _20: &&str;
+    let _21: &str;
+    let mut _22: &[i32];
+    let _23: &[i32; 0];
+    let _24: [i32; 0];
+    let mut _25: &[i32];
+    let _26: &[i32; 4];
+    let _27: [i32; 4];
+    let mut _28: &&str;
+    let _29: &str;
+    let _30: &&str;
+    let _31: &&str;
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: (&&str, &&str);
+    let mut _38: &&str;
+    let _39: &str;
+    let mut _40: &[usize];
+    let _41: &[usize; 0];
+    let _42: [usize; 0];
+    let mut _43: &[usize];
+    let _44: &[usize; 0];
+    let _45: [usize; 0];
+    let mut _46: &&str;
+    let _47: &str;
+    let _48: &&str;
+    let _49: &&str;
+    let mut _50: bool;
+    let mut _51: bool;
+    let _53: !;
+    let mut _54: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _55: (&&str, &&str);
+    let mut _56: &&str;
+    let _57: &str;
+    let mut _58: &[i32];
+    let _59: &[i32; 3];
+    let _60: [i32; 3];
+    let mut _61: &[i32];
+    let _62: &[i32; 0];
+    let _63: [i32; 0];
+    let mut _64: &&str;
+    let _65: &str;
+    let _66: &&str;
+    let _67: &&str;
+    let mut _68: bool;
+    let mut _69: bool;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: (&&str, &&str);
+    let mut _74: &&str;
+    let _75: &str;
+    let mut _76: &[i32];
+    let _77: &[i32; 2];
+    let _78: [i32; 2];
+    let mut _79: &[i32];
+    let _80: &[i32; 2];
+    let _81: [i32; 2];
+    let mut _82: &&str;
+    let _83: &str;
+    let _84: &&str;
+    let _85: &&str;
+    let mut _86: bool;
+    let mut _87: bool;
+    let _89: !;
+    let mut _90: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _91: (&&str, &&str);
+    let mut _92: &&str;
+    let _93: &str;
+    let mut _94: &[i32];
+    let _95: &[i32; 0];
+    let _96: [i32; 0];
+    let mut _97: &[i32];
+    let _98: &[i32; 4];
+    let _99: [i32; 4];
+    let mut _100: &&str;
+    let _101: &str;
+    let _102: &&str;
+    let _103: &&str;
+    let mut _104: bool;
+    let mut _105: bool;
+    let _107: !;
+    let mut _108: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _109: (&&str, &&str);
+    let mut _110: &&str;
+    let _111: &str;
+    let mut _112: &[usize];
+    let _113: &[usize; 0];
+    let _114: [usize; 0];
+    let mut _115: &[usize];
+    let _116: &[usize; 0];
+    let _117: [usize; 0];
+    let mut _118: &&str;
+    let _119: &str;
+    let _120: &&str;
+    let _121: &&str;
+    let mut _122: bool;
+    let mut _123: bool;
+    let _125: !;
+    let mut _126: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _127: (&&str, &&str);
+    let mut _128: &&str;
+    let _129: &str;
+    let mut _130: &[i32];
+    let _131: &[i32; 3];
+    let _132: [i32; 3];
+    let mut _133: &[i32];
+    let _134: &[i32; 0];
+    let _135: [i32; 0];
+    let mut _136: &&str;
+    let _137: &str;
+    let _138: &&str;
+    let _139: &&str;
+    let mut _140: bool;
+    let mut _141: bool;
+    let _143: !;
+    let mut _144: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _145: (&&str, &&str);
+    let mut _146: &&str;
+    let _147: &str;
+    let mut _148: &[i32];
+    let _149: &[i32; 2];
+    let _150: [i32; 2];
+    let mut _151: &[i32];
+    let _152: &[i32; 2];
+    let _153: [i32; 2];
+    let mut _154: &&str;
+    let _155: &str;
+    let _156: &&str;
+    let _157: &&str;
+    let mut _158: bool;
+    let mut _159: bool;
+    let _161: !;
+    let mut _162: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _163: (&&str, &&str);
+    let mut _164: &&str;
+    let _165: &str;
+    let mut _166: &[i32];
+    let _167: &[i32; 0];
+    let _168: [i32; 0];
+    let mut _169: &[i32];
+    let _170: &[i32; 4];
+    let _171: [i32; 4];
+    let mut _172: &&str;
+    let _173: &str;
+    let _174: &&str;
+    let _175: &&str;
+    let mut _176: bool;
+    let mut _177: bool;
+    let _179: !;
+    let mut _180: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _181: (&&str, &&str);
+    let mut _182: &&str;
+    let _183: &str;
+    let mut _184: &[usize];
+    let _185: &[usize; 0];
+    let _186: [usize; 0];
+    let mut _187: &[usize];
+    let _188: &[usize; 0];
+    let _189: [usize; 0];
+    let mut _190: &&str;
+    let _191: &str;
+    let _192: &&str;
+    let _193: &&str;
+    let mut _194: bool;
+    let mut _195: bool;
+    let _197: !;
+    let mut _198: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _199: (&&str, &&str);
+    let mut _200: &&str;
+    let _201: &str;
+    let mut _202: &[i32];
+    let _203: &[i32; 3];
+    let _204: [i32; 3];
+    let mut _205: &[i32];
+    let _206: &[i32; 0];
+    let _207: [i32; 0];
+    let mut _208: &&str;
+    let _209: &str;
+    let _210: &&str;
+    let _211: &&str;
+    let mut _212: bool;
+    let mut _213: bool;
+    let _215: !;
+    let mut _216: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _217: (&&str, &&str);
+    let mut _218: &&str;
+    let _219: &str;
+    let mut _220: std::option::Option<&[usize]>;
+    let mut _221: std::result::Result<&[usize], ()>;
+    let mut _222: &[usize];
+    let _223: &[usize; 2];
+    let _224: [usize; 2];
+    let mut _225: &&str;
+    let _226: &str;
+    let _227: &&str;
+    let _228: &&str;
+    let mut _229: bool;
+    let mut _230: bool;
+    let _232: !;
+    let mut _233: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _234: (&&str, &&str);
+    let mut _235: &&str;
+    let _236: &str;
+    let mut _237: std::option::Option<&[usize]>;
+    let mut _238: std::result::Result<&[usize], ()>;
+    let mut _239: &&str;
+    let _240: &str;
+    let _241: &&str;
+    let _242: &&str;
+    let mut _243: bool;
+    let mut _244: bool;
+    let _246: !;
+    let mut _247: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _248: (&&str, &&str);
+    let mut _249: &&str;
+    let _250: &str;
+    let mut _251: std::option::Option<&[bool]>;
+    let mut _252: &[bool];
+    let _253: &[bool; 0];
+    let _254: [bool; 0];
+    let mut _255: std::result::Result<&[bool], ()>;
+    let mut _256: &[bool];
+    let _257: &[bool; 0];
+    let _258: [bool; 0];
+    let mut _259: &&str;
+    let _260: &str;
+    let _261: &&str;
+    let _262: &&str;
+    let mut _263: bool;
+    let mut _264: bool;
+    let _266: !;
+    let mut _267: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _268: (&&str, &&str);
+    let mut _269: &&str;
+    let _270: &str;
+    let mut _271: std::option::Option<&[i32]>;
+    let mut _272: &[i32];
+    let _273: &[i32; 1];
+    let _274: [i32; 1];
+    let mut _275: std::result::Result<&[i32], ()>;
+    let mut _276: &&str;
+    let _277: &str;
+    let _278: &&str;
+    let _279: &&str;
+    let mut _280: bool;
+    let mut _281: bool;
+    let _283: !;
+    let mut _284: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _285: (&&str, &&str);
+    let mut _286: &&str;
+    let _287: &str;
+    let mut _288: std::option::Option<&[(i32, ())]>;
+    let mut _289: &[(i32, ())];
+    let _290: &[(i32, ()); 1];
+    let _291: [(i32, ()); 1];
+    let mut _292: (i32, ());
+    let mut _293: std::result::Result<&[(i32, ())], ()>;
+    let mut _294: &[(i32, ())];
+    let _295: &[(i32, ()); 1];
+    let _296: [(i32, ()); 1];
+    let mut _297: (i32, ());
+    let mut _298: &&str;
+    let _299: &str;
+    let _300: &&str;
+    let _301: &&str;
+    let mut _302: bool;
+    let mut _303: bool;
+    let _305: !;
+    let mut _306: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _307: (&&str, &&str);
+    let mut _308: &&str;
+    let _309: &str;
+    let mut _310: std::option::Option<&[usize]>;
+    let mut _311: std::result::Result<&[usize], ()>;
+    let mut _312: &[usize];
+    let _313: &[usize; 2];
+    let _314: [usize; 2];
+    let mut _315: &&str;
+    let _316: &str;
+    let _317: &&str;
+    let _318: &&str;
+    let mut _319: bool;
+    let mut _320: bool;
+    let _322: !;
+    let mut _323: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _324: (&&str, &&str);
+    let mut _325: &&str;
+    let _326: &str;
+    let mut _327: std::option::Option<&[usize]>;
+    let mut _328: std::result::Result<&[usize], ()>;
+    let mut _329: &&str;
+    let _330: &str;
+    let _331: &&str;
+    let _332: &&str;
+    let mut _333: bool;
+    let mut _334: bool;
+    let _336: !;
+    let mut _337: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _338: (&&str, &&str);
+    let mut _339: &&str;
+    let _340: &str;
+    let mut _341: std::option::Option<&[bool]>;
+    let mut _342: &[bool];
+    let _343: &[bool; 0];
+    let _344: [bool; 0];
+    let mut _345: std::result::Result<&[bool], ()>;
+    let mut _346: &[bool];
+    let _347: &[bool; 0];
+    let _348: [bool; 0];
+    let mut _349: &&str;
+    let _350: &str;
+    let _351: &&str;
+    let _352: &&str;
+    let mut _353: bool;
+    let mut _354: bool;
+    let _356: !;
+    let mut _357: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _358: (&&str, &&str);
+    let mut _359: &&str;
+    let _360: &str;
+    let mut _361: std::option::Option<&[i32]>;
+    let mut _362: &[i32];
+    let _363: &[i32; 1];
+    let _364: [i32; 1];
+    let mut _365: std::result::Result<&[i32], ()>;
+    let mut _366: &&str;
+    let _367: &str;
+    let _368: &&str;
+    let _369: &&str;
+    let mut _370: bool;
+    let mut _371: bool;
+    let _373: !;
+    let mut _374: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _375: (&&str, &&str);
+    let mut _376: &&str;
+    let _377: &str;
+    let mut _378: std::option::Option<&[(i32, ())]>;
+    let mut _379: &[(i32, ())];
+    let _380: &[(i32, ()); 1];
+    let _381: [(i32, ()); 1];
+    let mut _382: (i32, ());
+    let mut _383: std::result::Result<&[(i32, ())], ()>;
+    let mut _384: &[(i32, ())];
+    let _385: &[(i32, ()); 1];
+    let _386: [(i32, ()); 1];
+    let mut _387: (i32, ());
+    let mut _388: &&str;
+    let _389: &str;
+    let _390: &&str;
+    let _391: &&str;
+    let mut _392: bool;
+    let mut _393: bool;
+    let _395: !;
+    let mut _396: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _12;
+        debug right_val => _13;
+        let _16: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _16;
+        }
+    }
+    scope 3 {
+        debug left_val => _30;
+        debug right_val => _31;
+        let _34: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _34;
+        }
+    }
+    scope 5 {
+        debug left_val => _48;
+        debug right_val => _49;
+        let _52: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _52;
+        }
+    }
+    scope 7 {
+        debug left_val => _66;
+        debug right_val => _67;
+        let _70: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _70;
+        }
+    }
+    scope 9 {
+        debug left_val => _84;
+        debug right_val => _85;
+        let _88: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _88;
+        }
+    }
+    scope 11 {
+        debug left_val => _102;
+        debug right_val => _103;
+        let _106: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _106;
+        }
+    }
+    scope 13 {
+        debug left_val => _120;
+        debug right_val => _121;
+        let _124: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _124;
+        }
+    }
+    scope 15 {
+        debug left_val => _138;
+        debug right_val => _139;
+        let _142: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _142;
+        }
+    }
+    scope 17 {
+        debug left_val => _156;
+        debug right_val => _157;
+        let _160: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _160;
+        }
+    }
+    scope 19 {
+        debug left_val => _174;
+        debug right_val => _175;
+        let _178: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _178;
+        }
+    }
+    scope 21 {
+        debug left_val => _192;
+        debug right_val => _193;
+        let _196: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _196;
+        }
+    }
+    scope 23 {
+        debug left_val => _210;
+        debug right_val => _211;
+        let _214: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _214;
+        }
+    }
+    scope 25 {
+        debug left_val => _227;
+        debug right_val => _228;
+        let _231: core::panicking::AssertKind;
+        scope 26 {
+            debug kind => _231;
+        }
+    }
+    scope 27 {
+        debug left_val => _241;
+        debug right_val => _242;
+        let _245: core::panicking::AssertKind;
+        scope 28 {
+            debug kind => _245;
+        }
+    }
+    scope 29 {
+        debug left_val => _261;
+        debug right_val => _262;
+        let _265: core::panicking::AssertKind;
+        scope 30 {
+            debug kind => _265;
+        }
+    }
+    scope 31 {
+        debug left_val => _278;
+        debug right_val => _279;
+        let _282: core::panicking::AssertKind;
+        scope 32 {
+            debug kind => _282;
+        }
+    }
+    scope 33 {
+        debug left_val => _300;
+        debug right_val => _301;
+        let _304: core::panicking::AssertKind;
+        scope 34 {
+            debug kind => _304;
+        }
+    }
+    scope 35 {
+        debug left_val => _317;
+        debug right_val => _318;
+        let _321: core::panicking::AssertKind;
+        scope 36 {
+            debug kind => _321;
+        }
+    }
+    scope 37 {
+        debug left_val => _331;
+        debug right_val => _332;
+        let _335: core::panicking::AssertKind;
+        scope 38 {
+            debug kind => _335;
+        }
+    }
+    scope 39 {
+        debug left_val => _351;
+        debug right_val => _352;
+        let _355: core::panicking::AssertKind;
+        scope 40 {
+            debug kind => _355;
+        }
+    }
+    scope 41 {
+        debug left_val => _368;
+        debug right_val => _369;
+        let _372: core::panicking::AssertKind;
+        scope 42 {
+            debug kind => _372;
+        }
+    }
+    scope 43 {
+        debug left_val => _390;
+        debug right_val => _391;
+        let _394: core::panicking::AssertKind;
+        scope 44 {
+            debug kind => _394;
+        }
+    }
+
+    bb0: {
+        _6 = [const 1_i32, const 2_i32];
+        _5 = &_6;
+        _4 = _5 as &[i32] (Pointer(Unsize));
+        _9 = [const 2_i32, const 3_i32];
+        _8 = &_9;
+        _7 = _8 as &[i32] (Pointer(Unsize));
+        _3 = match_vecs::<i32>(move _4, move _7) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _11 = const "both non-empty";
+        _10 = &_11;
+        _1 = (move _2, move _10);
+        _12 = (_1.0: &&str);
+        _13 = (_1.1: &&str);
+        _15 = <&str as PartialEq>::eq(_12, _13) -> bb2;
+    }
+
+    bb2: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<&str, &str>(move _16, _12, _13, move _18);
+    }
+
+    bb4: {
+        _23 = &_24;
+        _22 = _23 as &[i32] (Pointer(Unsize));
+        _27 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _26 = &_27;
+        _25 = _26 as &[i32] (Pointer(Unsize));
+        _21 = match_vecs::<i32>(move _22, move _25) -> bb5;
+    }
+
+    bb5: {
+        _20 = &_21;
+        _29 = const "one empty";
+        _28 = &_29;
+        _19 = (move _20, move _28);
+        _30 = (_19.0: &&str);
+        _31 = (_19.1: &&str);
+        _33 = <&str as PartialEq>::eq(_30, _31) -> bb6;
+    }
+
+    bb6: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<&str, &str>(move _34, _30, _31, move _36);
+    }
+
+    bb8: {
+        _41 = &_42;
+        _40 = _41 as &[usize] (Pointer(Unsize));
+        _44 = &_45;
+        _43 = _44 as &[usize] (Pointer(Unsize));
+        _39 = match_vecs::<usize>(move _40, move _43) -> bb9;
+    }
+
+    bb9: {
+        _38 = &_39;
+        _47 = const "both empty";
+        _46 = &_47;
+        _37 = (move _38, move _46);
+        _48 = (_37.0: &&str);
+        _49 = (_37.1: &&str);
+        _51 = <&str as PartialEq>::eq(_48, _49) -> bb10;
+    }
+
+    bb10: {
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _52 = core::panicking::AssertKind::Eq;
+        _54 = Option::<Arguments<'_>>::None;
+        _53 = core::panicking::assert_failed::<&str, &str>(move _52, _48, _49, move _54);
+    }
+
+    bb12: {
+        _60 = [const 1_i32, const 2_i32, const 3_i32];
+        _59 = &_60;
+        _58 = _59 as &[i32] (Pointer(Unsize));
+        _62 = &_63;
+        _61 = _62 as &[i32] (Pointer(Unsize));
+        _57 = match_vecs::<i32>(move _58, move _61) -> bb13;
+    }
+
+    bb13: {
+        _56 = &_57;
+        _65 = const "one empty";
+        _64 = &_65;
+        _55 = (move _56, move _64);
+        _66 = (_55.0: &&str);
+        _67 = (_55.1: &&str);
+        _69 = <&str as PartialEq>::eq(_66, _67) -> bb14;
+    }
+
+    bb14: {
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<&str, &str>(move _70, _66, _67, move _72);
+    }
+
+    bb16: {
+        _78 = [const 1_i32, const 2_i32];
+        _77 = &_78;
+        _76 = _77 as &[i32] (Pointer(Unsize));
+        _81 = [const 2_i32, const 3_i32];
+        _80 = &_81;
+        _79 = _80 as &[i32] (Pointer(Unsize));
+        _75 = match_vecs_cons::<i32>(move _76, move _79) -> bb17;
+    }
+
+    bb17: {
+        _74 = &_75;
+        _83 = const "both non-empty";
+        _82 = &_83;
+        _73 = (move _74, move _82);
+        _84 = (_73.0: &&str);
+        _85 = (_73.1: &&str);
+        _87 = <&str as PartialEq>::eq(_84, _85) -> bb18;
+    }
+
+    bb18: {
+        _86 = Not(move _87);
+        switchInt(move _86) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _88 = core::panicking::AssertKind::Eq;
+        _90 = Option::<Arguments<'_>>::None;
+        _89 = core::panicking::assert_failed::<&str, &str>(move _88, _84, _85, move _90);
+    }
+
+    bb20: {
+        _95 = &_96;
+        _94 = _95 as &[i32] (Pointer(Unsize));
+        _99 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _98 = &_99;
+        _97 = _98 as &[i32] (Pointer(Unsize));
+        _93 = match_vecs_cons::<i32>(move _94, move _97) -> bb21;
+    }
+
+    bb21: {
+        _92 = &_93;
+        _101 = const "one empty";
+        _100 = &_101;
+        _91 = (move _92, move _100);
+        _102 = (_91.0: &&str);
+        _103 = (_91.1: &&str);
+        _105 = <&str as PartialEq>::eq(_102, _103) -> bb22;
+    }
+
+    bb22: {
+        _104 = Not(move _105);
+        switchInt(move _104) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _106 = core::panicking::AssertKind::Eq;
+        _108 = Option::<Arguments<'_>>::None;
+        _107 = core::panicking::assert_failed::<&str, &str>(move _106, _102, _103, move _108);
+    }
+
+    bb24: {
+        _113 = &_114;
+        _112 = _113 as &[usize] (Pointer(Unsize));
+        _116 = &_117;
+        _115 = _116 as &[usize] (Pointer(Unsize));
+        _111 = match_vecs_cons::<usize>(move _112, move _115) -> bb25;
+    }
+
+    bb25: {
+        _110 = &_111;
+        _119 = const "both empty";
+        _118 = &_119;
+        _109 = (move _110, move _118);
+        _120 = (_109.0: &&str);
+        _121 = (_109.1: &&str);
+        _123 = <&str as PartialEq>::eq(_120, _121) -> bb26;
+    }
+
+    bb26: {
+        _122 = Not(move _123);
+        switchInt(move _122) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _124 = core::panicking::AssertKind::Eq;
+        _126 = Option::<Arguments<'_>>::None;
+        _125 = core::panicking::assert_failed::<&str, &str>(move _124, _120, _121, move _126);
+    }
+
+    bb28: {
+        _132 = [const 1_i32, const 2_i32, const 3_i32];
+        _131 = &_132;
+        _130 = _131 as &[i32] (Pointer(Unsize));
+        _134 = &_135;
+        _133 = _134 as &[i32] (Pointer(Unsize));
+        _129 = match_vecs_cons::<i32>(move _130, move _133) -> bb29;
+    }
+
+    bb29: {
+        _128 = &_129;
+        _137 = const "one empty";
+        _136 = &_137;
+        _127 = (move _128, move _136);
+        _138 = (_127.0: &&str);
+        _139 = (_127.1: &&str);
+        _141 = <&str as PartialEq>::eq(_138, _139) -> bb30;
+    }
+
+    bb30: {
+        _140 = Not(move _141);
+        switchInt(move _140) -> [0: bb32, otherwise: bb31];
+    }
+
+    bb31: {
+        _142 = core::panicking::AssertKind::Eq;
+        _144 = Option::<Arguments<'_>>::None;
+        _143 = core::panicking::assert_failed::<&str, &str>(move _142, _138, _139, move _144);
+    }
+
+    bb32: {
+        _150 = [const 1_i32, const 2_i32];
+        _149 = &_150;
+        _148 = _149 as &[i32] (Pointer(Unsize));
+        _153 = [const 2_i32, const 3_i32];
+        _152 = &_153;
+        _151 = _152 as &[i32] (Pointer(Unsize));
+        _147 = match_vecs_snoc::<i32>(move _148, move _151) -> bb33;
+    }
+
+    bb33: {
+        _146 = &_147;
+        _155 = const "both non-empty";
+        _154 = &_155;
+        _145 = (move _146, move _154);
+        _156 = (_145.0: &&str);
+        _157 = (_145.1: &&str);
+        _159 = <&str as PartialEq>::eq(_156, _157) -> bb34;
+    }
+
+    bb34: {
+        _158 = Not(move _159);
+        switchInt(move _158) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _160 = core::panicking::AssertKind::Eq;
+        _162 = Option::<Arguments<'_>>::None;
+        _161 = core::panicking::assert_failed::<&str, &str>(move _160, _156, _157, move _162);
+    }
+
+    bb36: {
+        _167 = &_168;
+        _166 = _167 as &[i32] (Pointer(Unsize));
+        _171 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _170 = &_171;
+        _169 = _170 as &[i32] (Pointer(Unsize));
+        _165 = match_vecs_snoc::<i32>(move _166, move _169) -> bb37;
+    }
+
+    bb37: {
+        _164 = &_165;
+        _173 = const "one empty";
+        _172 = &_173;
+        _163 = (move _164, move _172);
+        _174 = (_163.0: &&str);
+        _175 = (_163.1: &&str);
+        _177 = <&str as PartialEq>::eq(_174, _175) -> bb38;
+    }
+
+    bb38: {
+        _176 = Not(move _177);
+        switchInt(move _176) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _178 = core::panicking::AssertKind::Eq;
+        _180 = Option::<Arguments<'_>>::None;
+        _179 = core::panicking::assert_failed::<&str, &str>(move _178, _174, _175, move _180);
+    }
+
+    bb40: {
+        _185 = &_186;
+        _184 = _185 as &[usize] (Pointer(Unsize));
+        _188 = &_189;
+        _187 = _188 as &[usize] (Pointer(Unsize));
+        _183 = match_vecs_snoc::<usize>(move _184, move _187) -> bb41;
+    }
+
+    bb41: {
+        _182 = &_183;
+        _191 = const "both empty";
+        _190 = &_191;
+        _181 = (move _182, move _190);
+        _192 = (_181.0: &&str);
+        _193 = (_181.1: &&str);
+        _195 = <&str as PartialEq>::eq(_192, _193) -> bb42;
+    }
+
+    bb42: {
+        _194 = Not(move _195);
+        switchInt(move _194) -> [0: bb44, otherwise: bb43];
+    }
+
+    bb43: {
+        _196 = core::panicking::AssertKind::Eq;
+        _198 = Option::<Arguments<'_>>::None;
+        _197 = core::panicking::assert_failed::<&str, &str>(move _196, _192, _193, move _198);
+    }
+
+    bb44: {
+        _204 = [const 1_i32, const 2_i32, const 3_i32];
+        _203 = &_204;
+        _202 = _203 as &[i32] (Pointer(Unsize));
+        _206 = &_207;
+        _205 = _206 as &[i32] (Pointer(Unsize));
+        _201 = match_vecs_snoc::<i32>(move _202, move _205) -> bb45;
+    }
+
+    bb45: {
+        _200 = &_201;
+        _209 = const "one empty";
+        _208 = &_209;
+        _199 = (move _200, move _208);
+        _210 = (_199.0: &&str);
+        _211 = (_199.1: &&str);
+        _213 = <&str as PartialEq>::eq(_210, _211) -> bb46;
+    }
+
+    bb46: {
+        _212 = Not(move _213);
+        switchInt(move _212) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb47: {
+        _214 = core::panicking::AssertKind::Eq;
+        _216 = Option::<Arguments<'_>>::None;
+        _215 = core::panicking::assert_failed::<&str, &str>(move _214, _210, _211, move _216);
+    }
+
+    bb48: {
+        _220 = Option::<&[usize]>::None;
+        _224 = [const 4_usize, const 2_usize];
+        _223 = &_224;
+        _222 = _223 as &[usize] (Pointer(Unsize));
+        _221 = Result::<&[usize], ()>::Ok(move _222);
+        _219 = match_nested_vecs_cons::<usize>(move _220, move _221) -> bb49;
+    }
+
+    bb49: {
+        _218 = &_219;
+        _226 = const "None, Ok(at least two elements)";
+        _225 = &_226;
+        _217 = (move _218, move _225);
+        _227 = (_217.0: &&str);
+        _228 = (_217.1: &&str);
+        _230 = <&str as PartialEq>::eq(_227, _228) -> bb50;
+    }
+
+    bb50: {
+        _229 = Not(move _230);
+        switchInt(move _229) -> [0: bb52, otherwise: bb51];
+    }
+
+    bb51: {
+        _231 = core::panicking::AssertKind::Eq;
+        _233 = Option::<Arguments<'_>>::None;
+        _232 = core::panicking::assert_failed::<&str, &str>(move _231, _227, _228, move _233);
+    }
+
+    bb52: {
+        _237 = Option::<&[usize]>::None;
+        _238 = Result::<&[usize], ()>::Err(const ());
+        _236 = match_nested_vecs_cons::<usize>(move _237, move _238) -> bb53;
+    }
+
+    bb53: {
+        _235 = &_236;
+        _240 = const "None, Ok(less than one element)";
+        _239 = &_240;
+        _234 = (move _235, move _239);
+        _241 = (_234.0: &&str);
+        _242 = (_234.1: &&str);
+        _244 = <&str as PartialEq>::eq(_241, _242) -> bb54;
+    }
+
+    bb54: {
+        _243 = Not(move _244);
+        switchInt(move _243) -> [0: bb56, otherwise: bb55];
+    }
+
+    bb55: {
+        _245 = core::panicking::AssertKind::Eq;
+        _247 = Option::<Arguments<'_>>::None;
+        _246 = core::panicking::assert_failed::<&str, &str>(move _245, _241, _242, move _247);
+    }
+
+    bb56: {
+        _253 = &_254;
+        _252 = _253 as &[bool] (Pointer(Unsize));
+        _251 = Option::<&[bool]>::Some(move _252);
+        _257 = &_258;
+        _256 = _257 as &[bool] (Pointer(Unsize));
+        _255 = Result::<&[bool], ()>::Ok(move _256);
+        _250 = match_nested_vecs_cons::<bool>(move _251, move _255) -> bb57;
+    }
+
+    bb57: {
+        _249 = &_250;
+        _260 = const "Some(empty), Ok(empty)";
+        _259 = &_260;
+        _248 = (move _249, move _259);
+        _261 = (_248.0: &&str);
+        _262 = (_248.1: &&str);
+        _264 = <&str as PartialEq>::eq(_261, _262) -> bb58;
+    }
+
+    bb58: {
+        _263 = Not(move _264);
+        switchInt(move _263) -> [0: bb60, otherwise: bb59];
+    }
+
+    bb59: {
+        _265 = core::panicking::AssertKind::Eq;
+        _267 = Option::<Arguments<'_>>::None;
+        _266 = core::panicking::assert_failed::<&str, &str>(move _265, _261, _262, move _267);
+    }
+
+    bb60: {
+        _274 = [const 1_i32];
+        _273 = &_274;
+        _272 = _273 as &[i32] (Pointer(Unsize));
+        _271 = Option::<&[i32]>::Some(move _272);
+        _275 = Result::<&[i32], ()>::Err(const ());
+        _270 = match_nested_vecs_cons::<i32>(move _271, move _275) -> bb61;
+    }
+
+    bb61: {
+        _269 = &_270;
+        _277 = const "Some(non-empty), any";
+        _276 = &_277;
+        _268 = (move _269, move _276);
+        _278 = (_268.0: &&str);
+        _279 = (_268.1: &&str);
+        _281 = <&str as PartialEq>::eq(_278, _279) -> bb62;
+    }
+
+    bb62: {
+        _280 = Not(move _281);
+        switchInt(move _280) -> [0: bb64, otherwise: bb63];
+    }
+
+    bb63: {
+        _282 = core::panicking::AssertKind::Eq;
+        _284 = Option::<Arguments<'_>>::None;
+        _283 = core::panicking::assert_failed::<&str, &str>(move _282, _278, _279, move _284);
+    }
+
+    bb64: {
+        _292 = (const 42_i32, const ());
+        _291 = [move _292];
+        _290 = &_291;
+        _289 = _290 as &[(i32, ())] (Pointer(Unsize));
+        _288 = Option::<&[(i32, ())]>::Some(move _289);
+        _297 = (const 1_i32, const ());
+        _296 = [move _297];
+        _295 = &_296;
+        _294 = _295 as &[(i32, ())] (Pointer(Unsize));
+        _293 = Result::<&[(i32, ())], ()>::Ok(move _294);
+        _287 = match_nested_vecs_cons::<(i32, ())>(move _288, move _293) -> bb65;
+    }
+
+    bb65: {
+        _286 = &_287;
+        _299 = const "Some(non-empty), any";
+        _298 = &_299;
+        _285 = (move _286, move _298);
+        _300 = (_285.0: &&str);
+        _301 = (_285.1: &&str);
+        _303 = <&str as PartialEq>::eq(_300, _301) -> bb66;
+    }
+
+    bb66: {
+        _302 = Not(move _303);
+        switchInt(move _302) -> [0: bb68, otherwise: bb67];
+    }
+
+    bb67: {
+        _304 = core::panicking::AssertKind::Eq;
+        _306 = Option::<Arguments<'_>>::None;
+        _305 = core::panicking::assert_failed::<&str, &str>(move _304, _300, _301, move _306);
+    }
+
+    bb68: {
+        _310 = Option::<&[usize]>::None;
+        _314 = [const 4_usize, const 2_usize];
+        _313 = &_314;
+        _312 = _313 as &[usize] (Pointer(Unsize));
+        _311 = Result::<&[usize], ()>::Ok(move _312);
+        _309 = match_nested_vecs_snoc::<usize>(move _310, move _311) -> bb69;
+    }
+
+    bb69: {
+        _308 = &_309;
+        _316 = const "None, Ok(at least two elements)";
+        _315 = &_316;
+        _307 = (move _308, move _315);
+        _317 = (_307.0: &&str);
+        _318 = (_307.1: &&str);
+        _320 = <&str as PartialEq>::eq(_317, _318) -> bb70;
+    }
+
+    bb70: {
+        _319 = Not(move _320);
+        switchInt(move _319) -> [0: bb72, otherwise: bb71];
+    }
+
+    bb71: {
+        _321 = core::panicking::AssertKind::Eq;
+        _323 = Option::<Arguments<'_>>::None;
+        _322 = core::panicking::assert_failed::<&str, &str>(move _321, _317, _318, move _323);
+    }
+
+    bb72: {
+        _327 = Option::<&[usize]>::None;
+        _328 = Result::<&[usize], ()>::Err(const ());
+        _326 = match_nested_vecs_snoc::<usize>(move _327, move _328) -> bb73;
+    }
+
+    bb73: {
+        _325 = &_326;
+        _330 = const "None, Ok(less than one element)";
+        _329 = &_330;
+        _324 = (move _325, move _329);
+        _331 = (_324.0: &&str);
+        _332 = (_324.1: &&str);
+        _334 = <&str as PartialEq>::eq(_331, _332) -> bb74;
+    }
+
+    bb74: {
+        _333 = Not(move _334);
+        switchInt(move _333) -> [0: bb76, otherwise: bb75];
+    }
+
+    bb75: {
+        _335 = core::panicking::AssertKind::Eq;
+        _337 = Option::<Arguments<'_>>::None;
+        _336 = core::panicking::assert_failed::<&str, &str>(move _335, _331, _332, move _337);
+    }
+
+    bb76: {
+        _343 = &_344;
+        _342 = _343 as &[bool] (Pointer(Unsize));
+        _341 = Option::<&[bool]>::Some(move _342);
+        _347 = &_348;
+        _346 = _347 as &[bool] (Pointer(Unsize));
+        _345 = Result::<&[bool], ()>::Ok(move _346);
+        _340 = match_nested_vecs_snoc::<bool>(move _341, move _345) -> bb77;
+    }
+
+    bb77: {
+        _339 = &_340;
+        _350 = const "Some(empty), Ok(empty)";
+        _349 = &_350;
+        _338 = (move _339, move _349);
+        _351 = (_338.0: &&str);
+        _352 = (_338.1: &&str);
+        _354 = <&str as PartialEq>::eq(_351, _352) -> bb78;
+    }
+
+    bb78: {
+        _353 = Not(move _354);
+        switchInt(move _353) -> [0: bb80, otherwise: bb79];
+    }
+
+    bb79: {
+        _355 = core::panicking::AssertKind::Eq;
+        _357 = Option::<Arguments<'_>>::None;
+        _356 = core::panicking::assert_failed::<&str, &str>(move _355, _351, _352, move _357);
+    }
+
+    bb80: {
+        _364 = [const 1_i32];
+        _363 = &_364;
+        _362 = _363 as &[i32] (Pointer(Unsize));
+        _361 = Option::<&[i32]>::Some(move _362);
+        _365 = Result::<&[i32], ()>::Err(const ());
+        _360 = match_nested_vecs_snoc::<i32>(move _361, move _365) -> bb81;
+    }
+
+    bb81: {
+        _359 = &_360;
+        _367 = const "Some(non-empty), any";
+        _366 = &_367;
+        _358 = (move _359, move _366);
+        _368 = (_358.0: &&str);
+        _369 = (_358.1: &&str);
+        _371 = <&str as PartialEq>::eq(_368, _369) -> bb82;
+    }
+
+    bb82: {
+        _370 = Not(move _371);
+        switchInt(move _370) -> [0: bb84, otherwise: bb83];
+    }
+
+    bb83: {
+        _372 = core::panicking::AssertKind::Eq;
+        _374 = Option::<Arguments<'_>>::None;
+        _373 = core::panicking::assert_failed::<&str, &str>(move _372, _368, _369, move _374);
+    }
+
+    bb84: {
+        _382 = (const 42_i32, const ());
+        _381 = [move _382];
+        _380 = &_381;
+        _379 = _380 as &[(i32, ())] (Pointer(Unsize));
+        _378 = Option::<&[(i32, ())]>::Some(move _379);
+        _387 = (const 1_i32, const ());
+        _386 = [move _387];
+        _385 = &_386;
+        _384 = _385 as &[(i32, ())] (Pointer(Unsize));
+        _383 = Result::<&[(i32, ())], ()>::Ok(move _384);
+        _377 = match_nested_vecs_snoc::<(i32, ())>(move _378, move _383) -> bb85;
+    }
+
+    bb85: {
+        _376 = &_377;
+        _389 = const "Some(non-empty), any";
+        _388 = &_389;
+        _375 = (move _376, move _388);
+        _390 = (_375.0: &&str);
+        _391 = (_375.1: &&str);
+        _393 = <&str as PartialEq>::eq(_390, _391) -> bb86;
+    }
+
+    bb86: {
+        _392 = Not(move _393);
+        switchInt(move _392) -> [0: bb88, otherwise: bb87];
+    }
+
+    bb87: {
+        _394 = core::panicking::AssertKind::Eq;
+        _396 = Option::<Arguments<'_>>::None;
+        _395 = core::panicking::assert_failed::<&str, &str>(move _394, _390, _391, move _396);
+    }
+
+    bb88: {
+        return;
+    }
+}

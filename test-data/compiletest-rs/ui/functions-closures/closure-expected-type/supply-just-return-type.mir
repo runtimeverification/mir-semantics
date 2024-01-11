@@ -1,0 +1,229 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn with_closure(_1: F) -> Result<char, R> {
+    debug f => _1;
+    let mut _0: std::result::Result<char, R>;
+    let mut _2: (&char,);
+    let _3: &char;
+    let _4: char;
+
+    bb0: {
+        _4 = const 'a';
+        _3 = &_4;
+        _2 = (_3,);
+        _0 = <F as FnOnce<(&char,)>>::call_once(move _1, move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::result::Result<char, ()>;
+    let mut _2: (&char, &char);
+    let mut _3: &char;
+    let _4: char;
+    let mut _5: std::result::Result<char, ()>;
+    let mut _6: &char;
+    let _7: char;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: char;
+    let mut _13: char;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&char, &char);
+    let mut _19: &char;
+    let _20: char;
+    let mut _21: std::result::Result<char, ()>;
+    let mut _22: &char;
+    let _23: char;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: char;
+    let mut _29: char;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: (&char, &char);
+    let mut _35: &char;
+    let _36: char;
+    let mut _37: std::result::Result<char, ()>;
+    let mut _38: &char;
+    let _39: char;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: char;
+    let mut _45: char;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug z => _1;
+        let _8: &char;
+        let _9: &char;
+        let _17: std::result::Result<char, ()>;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug z => _17;
+            let _24: &char;
+            let _25: &char;
+            let _33: std::result::Result<char, ()>;
+            scope 5 {
+                debug left_val => _24;
+                debug right_val => _25;
+                let _30: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _30;
+                }
+            }
+            scope 7 {
+                debug z => _33;
+                let _40: &char;
+                let _41: &char;
+                scope 8 {
+                    debug left_val => _40;
+                    debug right_val => _41;
+                    let _46: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _46;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = with_closure::<[closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:16:26: 16:49], ()>(const ZeroSized: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:16:26: 16:49]) -> bb1;
+    }
+
+    bb1: {
+        _5 = _1;
+        _4 = Result::<char, ()>::unwrap(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _7 = const 'a';
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _8 = (_2.0: &char);
+        _9 = (_2.1: &char);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<char, char>(move _14, _8, _9, move _16);
+    }
+
+    bb4: {
+        _17 = with_closure::<[closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:20:26: 20:52], ()>(const ZeroSized: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:20:26: 20:52]) -> bb5;
+    }
+
+    bb5: {
+        _21 = _17;
+        _20 = Result::<char, ()>::unwrap(move _21) -> bb6;
+    }
+
+    bb6: {
+        _19 = &_20;
+        _23 = const 'a';
+        _22 = &_23;
+        _18 = (move _19, move _22);
+        _24 = (_18.0: &char);
+        _25 = (_18.1: &char);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<char, char>(move _30, _24, _25, move _32);
+    }
+
+    bb8: {
+        _33 = with_closure::<[closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:24:26: 24:53], ()>(const ZeroSized: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:24:26: 24:53]) -> bb9;
+    }
+
+    bb9: {
+        _37 = _33;
+        _36 = Result::<char, ()>::unwrap(move _37) -> bb10;
+    }
+
+    bb10: {
+        _35 = &_36;
+        _39 = const 'a';
+        _38 = &_39;
+        _34 = (move _35, move _38);
+        _40 = (_34.0: &char);
+        _41 = (_34.1: &char);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<char, char>(move _46, _40, _41, move _48);
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:16:26: 16:49], _2: &char) -> Result<char, ()> {
+    debug x => _2;
+    let mut _0: std::result::Result<char, ()>;
+    let mut _3: char;
+
+    bb0: {
+        _3 = (*_2);
+        _0 = Result::<char, ()>::Ok(move _3);
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:20:26: 20:52], _2: &char) -> Result<char, ()> {
+    debug x => _2;
+    let mut _0: std::result::Result<char, ()>;
+    let mut _3: char;
+
+    bb0: {
+        _3 = (*_2);
+        _0 = Result::<char, ()>::Ok(move _3);
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: [closure@ui/functions-closures/closure-expected-type/supply-just-return-type.rs:24:26: 24:53], _2: &char) -> Result<char, ()> {
+    debug x => _2;
+    let mut _0: std::result::Result<char, ()>;
+    let mut _3: char;
+
+    bb0: {
+        _3 = (*_2);
+        _0 = Result::<char, ()>::Ok(move _3);
+        return;
+    }
+}

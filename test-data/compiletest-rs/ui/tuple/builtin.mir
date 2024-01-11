@@ -1,0 +1,79 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn assert_is_tuple() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn from_param_env() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = assert_is_tuple::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+    let _6: ();
+
+    bb0: {
+        _1 = assert_is_tuple::<()>() -> bb1;
+    }
+
+    bb1: {
+        _2 = assert_is_tuple::<(i32,)>() -> bb2;
+    }
+
+    bb2: {
+        _3 = assert_is_tuple::<(Unsized,)>() -> bb3;
+    }
+
+    bb3: {
+        _4 = from_param_env::<()>() -> bb4;
+    }
+
+    bb4: {
+        _5 = from_param_env::<(i32,)>() -> bb5;
+    }
+
+    bb5: {
+        _6 = from_param_env::<(Unsized,)>() -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn Unsized(_1: [u8]) -> Unsized {
+    let mut _0: Unsized;
+
+    bb0: {
+        _0 = Unsized(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Unsized(_1: [u8]) -> Unsized {
+    let mut _0: Unsized;
+
+    bb0: {
+        _0 = Unsized(move _1);
+        return;
+    }
+}

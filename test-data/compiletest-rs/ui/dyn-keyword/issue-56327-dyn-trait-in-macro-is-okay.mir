@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn generated_foo() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::ops::Drop>;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = generated_foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

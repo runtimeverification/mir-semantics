@@ -1,0 +1,273 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/generic_const_exprs/abstract-const-as-cast-4.rs:9:1: 9:68>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const O;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/abstract-const-as-cast-4.rs:9:1: 9:68>::{constant#0}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const O as u128 (IntToInt);
+        return;
+    }
+}
+
+fn use_trait_impl() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+
+    bb0: {
+        _1 = use_trait_impl::assert_impl::<HasCastInTraitImpl<N, { N as u128 }>>() -> bb1;
+    }
+
+    bb1: {
+        _2 = use_trait_impl::assert_impl::<HasCastInTraitImpl<N, { N as _ }>>() -> bb2;
+    }
+
+    bb2: {
+        _3 = use_trait_impl::assert_impl::<HasCastInTraitImpl<12, { 12 as u128 }>>() -> bb3;
+    }
+
+    bb3: {
+        _4 = use_trait_impl::assert_impl::<HasCastInTraitImpl<13, 13>>() -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+use_trait_impl::{constant#0}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const N as u128 (IntToInt);
+        return;
+    }
+}
+
+fn use_trait_impl::assert_impl() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+use_trait_impl::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+use_trait_impl::{constant#1}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const N as u128 (IntToInt);
+        return;
+    }
+}
+
+use_trait_impl::{constant#8}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+use_trait_impl::{constant#2}: u128 = {
+    let mut _0: u128;
+    let mut _1: u128;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const N as u128 (IntToInt);
+        _0 = _1;
+        StorageDead(_1);
+        return;
+    }
+}
+
+use_trait_impl::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 12_usize;
+        return;
+    }
+}
+
+use_trait_impl::{constant#4}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 12_u128;
+        return;
+    }
+}
+
+use_trait_impl::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+use_trait_impl::{constant#6}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 13_u128;
+        return;
+    }
+}
+
+fn use_trait_impl_2() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+
+    bb0: {
+        _1 = use_trait_impl_2::assert_impl::<HasCastInTraitImpl<N, { N as u128 }>>() -> bb1;
+    }
+
+    bb1: {
+        _2 = use_trait_impl_2::assert_impl::<HasCastInTraitImpl<N, { N as _ }>>() -> bb2;
+    }
+
+    bb2: {
+        _3 = use_trait_impl_2::assert_impl::<HasCastInTraitImpl<12, { 12 as u128 }>>() -> bb3;
+    }
+
+    bb3: {
+        _4 = use_trait_impl_2::assert_impl::<HasCastInTraitImpl<13, 13>>() -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#0}: u128 = {
+    let mut _0: u128;
+    let mut _1: u128;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const N as u128 (IntToInt);
+        _0 = _1;
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn use_trait_impl_2::assert_impl() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#1}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const N as u128 (IntToInt);
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#8}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#2}: u128 = {
+    let mut _0: u128;
+    let mut _1: u128;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const N as u128 (IntToInt);
+        _0 = _1;
+        StorageDead(_1);
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 12_usize;
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#4}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 12_u128;
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+use_trait_impl_2::{constant#6}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 13_u128;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

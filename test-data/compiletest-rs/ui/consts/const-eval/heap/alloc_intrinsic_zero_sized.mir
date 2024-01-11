@@ -1,0 +1,34 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+main::{constant#0}: () = {
+    let mut _0: ();
+    let mut _1: *mut ZST;
+    let mut _2: *mut u8;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = const_allocate(const 0_usize, const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as *mut ZST (PtrToPtr);
+        StorageDead(_2);
+        StorageDead(_1);
+        _0 = const ();
+        return;
+    }
+}

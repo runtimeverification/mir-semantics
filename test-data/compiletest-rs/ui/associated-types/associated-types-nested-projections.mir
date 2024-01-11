@@ -1,0 +1,77 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/associated-types/associated-types-nested-projections.rs:19:1: 19:40>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-nested-projections.rs:19:1: 19:40>::into_iter(_1: &[T; 3]) -> std::slice::Iter<'_, T> {
+    debug self => _1;
+    let mut _0: std::slice::Iter<'_, T>;
+    let mut _2: &[T];
+
+    bb0: {
+        _2 = _1 as &[T] (Pointer(Unsize));
+        _0 = core::slice::<impl [T]>::iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo(_1: X) -> () {
+    debug x => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar(_1: X) -> () {
+    debug x => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: &[i32; 3];
+    let _3: [i32; 3];
+    let _4: ();
+    let mut _5: &[i32; 3];
+    let _6: [i32; 3];
+
+    bb0: {
+        _3 = [const 0_i32, const 1_i32, const 2_i32];
+        _2 = &_3;
+        _1 = foo::<&[i32; 3]>(move _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = [const 0_i32, const 1_i32, const 2_i32];
+        _5 = &_6;
+        _4 = bar::<&i32, std::slice::Iter<'_, i32>, &[i32; 3]>(move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

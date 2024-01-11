@@ -1,0 +1,22 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn boo() -> impl Bar<Empty> {
+    let mut _0: impl Bar<Empty>;
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: impl Bar<Empty>;
+
+    bb0: {
+        _1 = boo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

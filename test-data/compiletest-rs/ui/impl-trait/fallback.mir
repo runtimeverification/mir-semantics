@@ -1,0 +1,44 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn take_edge_counters(_1: &mut Option<Vec<i32>>) -> Option<impl Iterator<Item = i32>> {
+    debug x => _1;
+    let mut _0: std::option::Option<impl std::iter::Iterator<Item = i32>>;
+    let mut _2: std::option::Option<std::vec::Vec<i32>>;
+    let mut _3: std::option::Option<std::vec::IntoIter<i32>>;
+
+    bb0: {
+        _2 = Option::<Vec<i32>>::take(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = Option::<std::vec::IntoIter<i32>>::None;
+        _0 = Option::<Vec<i32>>::map_or::<Option<std::vec::IntoIter<i32>>, [closure@ui/impl-trait/fallback.rs:6:27: 6:30]>(move _2, move _3, const ZeroSized: [closure@ui/impl-trait/fallback.rs:6:27: 6:30]) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn take_edge_counters::{closure#0}(_1: [closure@ui/impl-trait/fallback.rs:6:27: 6:30], _2: Vec<i32>) -> Option<std::vec::IntoIter<i32>> {
+    debug m => _2;
+    let mut _0: std::option::Option<std::vec::IntoIter<i32>>;
+    let mut _3: std::vec::IntoIter<i32>;
+
+    bb0: {
+        _3 = <Vec<i32> as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = Option::<std::vec::IntoIter<i32>>::Some(move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

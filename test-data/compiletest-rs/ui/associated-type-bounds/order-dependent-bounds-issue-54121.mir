@@ -1,0 +1,74 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = <<S as P>::T as Tr<u8, u8>>::exec(const 0_u8, const 0_u8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn g() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = <<S as Q>::T as Tr<u8, u8>>::exec(const 0_u8, const 0_u8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo(_1: <T as Trait>::Type) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: <T as Trait>::Type1;
+    scope 1 {
+        debug _1 => _2;
+        let _3: <T as Trait>::Type2;
+        scope 2 {
+            debug _2 => _3;
+        }
+    }
+
+    bb0: {
+        _2 = <<T as Trait>::Type as Into<<T as Trait>::Type1>>::into(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = <<T as Trait>::Type as Into<<T as Trait>::Type2>>::into(_1) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        drop(_3) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_2) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

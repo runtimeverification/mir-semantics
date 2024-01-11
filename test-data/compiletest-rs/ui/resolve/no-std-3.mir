@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test() -> Option<i32> {
+    let mut _0: core::option::Option<i32>;
+
+    bb0: {
+        _0 = Option::<i32>::Some(const 2_i32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: core::option::Option<&str>;
+    let _2: &str;
+    let _3: i32;
+    let mut _4: core::option::Option<i32>;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        _1 = Option::<&str>::Some(const "foo");
+        _2 = Option::<&str>::unwrap(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = test() -> bb2;
+    }
+
+    bb2: {
+        _3 = Option::<i32>::unwrap(move _4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

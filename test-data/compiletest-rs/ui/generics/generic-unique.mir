@@ -1,0 +1,102 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn box_it(_1: Triple<T>) -> Box<Triple<T>> {
+    debug x => _1;
+    let mut _0: std::boxed::Box<Triple<T>>;
+
+    bb0: {
+        _0 = Box::<Triple<T>>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<Triple<isize>>;
+    let mut _2: Triple<isize>;
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: isize;
+    let mut _12: isize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: *const Triple<isize>;
+    scope 1 {
+        debug x => _1;
+        let _7: &isize;
+        let _8: &isize;
+        let mut _17: *const ();
+        let mut _18: usize;
+        let mut _19: usize;
+        let mut _20: usize;
+        let mut _21: usize;
+        let mut _22: bool;
+        scope 2 {
+            debug left_val => _7;
+            debug right_val => _8;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Triple::<isize> { x: const 1_isize, y: const 2_isize, z: const 3_isize };
+        _1 = box_it::<isize>(move _2) -> bb1;
+    }
+
+    bb1: {
+        _16 = (((_1.0: std::ptr::Unique<Triple<isize>>).0: std::ptr::NonNull<Triple<isize>>).0: *const Triple<isize>);
+        _17 = _16 as *const () (PtrToPtr);
+        _18 = _17 as usize (Transmute);
+        _19 = AlignOf(Triple<isize>);
+        _20 = Sub(_19, const 1_usize);
+        _21 = BitAnd(_18, _20);
+        _22 = Eq(_21, const 0_usize);
+        assert(_22, "misaligned pointer dereference: address must be a multiple of {} but is {}", _19, _18) -> [success: bb7, unwind unreachable];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<isize, isize>(move _13, _7, _8, move _15) -> bb5;
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        _4 = &((*_16).1: isize);
+        _6 = const 2_isize;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &isize);
+        _8 = (_3.1: &isize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+}

@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn _Recursive::Variant(_1: MyCow<'_, _Recursive<'_>>) -> _Recursive<'_> {
+    let mut _0: _Recursive<'_>;
+
+    bb0: {
+        _0 = _Recursive::<'_>::Variant(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn _Recursive::Variant(_1: MyCow<'_, _Recursive<'_>>) -> _Recursive<'_> {
+    let mut _0: _Recursive<'_>;
+
+    bb0: {
+        _0 = _Recursive::<'_>::Variant(move _1);
+        return;
+    }
+}
+
+fn Wrapper(_1: T) -> Wrapper<T> {
+    let mut _0: Wrapper<T>;
+
+    bb0: {
+        _0 = Wrapper::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Wrapper(_1: T) -> Wrapper<T> {
+    let mut _0: Wrapper<T>;
+
+    bb0: {
+        _0 = Wrapper::<T>(move _1);
+        return;
+    }
+}
+
+fn MyCow(_1: Wrapper<Cow<'_, T>>) -> MyCow<'_, T> {
+    let mut _0: MyCow<'_, T>;
+
+    bb0: {
+        _0 = MyCow::<'_, T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyCow(_1: Wrapper<Cow<'_, T>>) -> MyCow<'_, T> {
+    let mut _0: MyCow<'_, T>;
+
+    bb0: {
+        _0 = MyCow::<'_, T>(move _1);
+        return;
+    }
+}

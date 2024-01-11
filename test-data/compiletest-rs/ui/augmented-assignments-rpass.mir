@@ -1,0 +1,1291 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/augmented-assignments-rpass.rs:12:10: 12:15>::fmt(_1: &Int, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&i32;
+    let _6: &i32;
+
+    bb0: {
+        _3 = const "Int";
+        _6 = &((*_1).0: i32);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:12:17: 12:26>::eq(_1: &Int, _2: &Int) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: i32;
+    let mut _4: i32;
+
+    bb0: {
+        _3 = ((*_1).0: i32);
+        _4 = ((*_2).0: i32);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:17:1: 17:11>::new(_1: &mut [i32]) -> &mut Slice {
+    debug slice => _1;
+    let mut _0: &mut Slice;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = move _1 as &mut Slice (Transmute);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Int;
+    let _2: ();
+    let mut _3: &mut Int;
+    let mut _4: Int;
+    let mut _5: (&Int, &Int);
+    let mut _6: &Int;
+    let mut _7: &Int;
+    let _8: Int;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _16: ();
+    let mut _17: &mut Int;
+    let mut _18: Int;
+    let mut _19: (&Int, &Int);
+    let mut _20: &Int;
+    let mut _21: &Int;
+    let _22: Int;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let _30: ();
+    let mut _31: &mut Int;
+    let mut _32: Int;
+    let mut _33: (&Int, &Int);
+    let mut _34: &Int;
+    let mut _35: &Int;
+    let _36: Int;
+    let mut _39: bool;
+    let mut _40: bool;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    let _44: ();
+    let mut _45: &mut Int;
+    let mut _46: Int;
+    let mut _47: (&Int, &Int);
+    let mut _48: &Int;
+    let mut _49: &Int;
+    let _50: Int;
+    let mut _53: bool;
+    let mut _54: bool;
+    let _56: !;
+    let mut _57: std::option::Option<std::fmt::Arguments<'_>>;
+    let _58: ();
+    let mut _59: &mut Int;
+    let mut _60: Int;
+    let mut _61: (&Int, &Int);
+    let mut _62: &Int;
+    let mut _63: &Int;
+    let _64: Int;
+    let mut _67: bool;
+    let mut _68: bool;
+    let _70: !;
+    let mut _71: std::option::Option<std::fmt::Arguments<'_>>;
+    let _72: ();
+    let mut _73: &mut Int;
+    let mut _74: Int;
+    let mut _75: (&Int, &Int);
+    let mut _76: &Int;
+    let mut _77: &Int;
+    let _78: Int;
+    let mut _81: bool;
+    let mut _82: bool;
+    let _84: !;
+    let mut _85: std::option::Option<std::fmt::Arguments<'_>>;
+    let _86: ();
+    let mut _87: &mut Int;
+    let mut _88: Int;
+    let mut _89: (&Int, &Int);
+    let mut _90: &Int;
+    let mut _91: &Int;
+    let _92: Int;
+    let mut _95: bool;
+    let mut _96: bool;
+    let _98: !;
+    let mut _99: std::option::Option<std::fmt::Arguments<'_>>;
+    let _100: ();
+    let mut _101: &mut Int;
+    let mut _102: (&Int, &Int);
+    let mut _103: &Int;
+    let mut _104: &Int;
+    let _105: Int;
+    let mut _108: bool;
+    let mut _109: bool;
+    let _111: !;
+    let mut _112: std::option::Option<std::fmt::Arguments<'_>>;
+    let _113: ();
+    let mut _114: &mut Int;
+    let mut _115: (&Int, &Int);
+    let mut _116: &Int;
+    let mut _117: &Int;
+    let _118: Int;
+    let mut _121: bool;
+    let mut _122: bool;
+    let _124: !;
+    let mut _125: std::option::Option<std::fmt::Arguments<'_>>;
+    let _126: ();
+    let mut _127: &mut Int;
+    let mut _128: (&Int, &Int);
+    let mut _129: &Int;
+    let mut _130: &Int;
+    let _131: Int;
+    let mut _134: bool;
+    let mut _135: bool;
+    let _137: !;
+    let mut _138: std::option::Option<std::fmt::Arguments<'_>>;
+    let _139: ();
+    let mut _140: &mut Int;
+    let mut _141: (&Int, &Int);
+    let mut _142: &Int;
+    let mut _143: &Int;
+    let _144: Int;
+    let mut _147: bool;
+    let mut _148: bool;
+    let _150: !;
+    let mut _151: std::option::Option<std::fmt::Arguments<'_>>;
+    let _152: ();
+    let mut _153: &mut Int;
+    let mut _154: Int;
+    let mut _155: (&Int, &Int);
+    let mut _156: &Int;
+    let mut _157: &Int;
+    let _158: Int;
+    let mut _161: bool;
+    let mut _162: bool;
+    let _164: !;
+    let mut _165: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _167: std::boxed::Box<[Int]>;
+    let mut _168: usize;
+    let mut _169: usize;
+    let mut _170: *mut u8;
+    let mut _171: std::boxed::Box<[Int; 2]>;
+    let mut _172: Int;
+    let mut _173: Int;
+    let _174: ();
+    let mut _175: &mut Int;
+    let mut _176: &mut Int;
+    let mut _177: &mut std::vec::Vec<Int>;
+    let mut _178: Int;
+    let mut _179: (&Int, &Int);
+    let mut _180: &Int;
+    let _181: &Int;
+    let mut _182: &std::vec::Vec<Int>;
+    let mut _183: &Int;
+    let _184: Int;
+    let mut _187: bool;
+    let mut _188: bool;
+    let _190: !;
+    let mut _191: std::option::Option<std::fmt::Arguments<'_>>;
+    let _193: ();
+    let mut _194: &mut Slice;
+    let mut _195: &mut Slice;
+    let mut _196: &mut [i32];
+    let mut _197: &mut [i32; 3];
+    let mut _198: (&i32, &i32);
+    let mut _199: &i32;
+    let _200: usize;
+    let mut _201: usize;
+    let mut _202: bool;
+    let mut _203: &i32;
+    let _204: i32;
+    let mut _207: bool;
+    let mut _208: bool;
+    let mut _209: i32;
+    let mut _210: i32;
+    let _212: !;
+    let mut _213: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _214: (&i32, &i32);
+    let mut _215: &i32;
+    let _216: usize;
+    let mut _217: usize;
+    let mut _218: bool;
+    let mut _219: &i32;
+    let _220: i32;
+    let mut _223: bool;
+    let mut _224: bool;
+    let mut _225: i32;
+    let mut _226: i32;
+    let _228: !;
+    let mut _229: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _230: (&i32, &i32);
+    let mut _231: &i32;
+    let _232: usize;
+    let mut _233: usize;
+    let mut _234: bool;
+    let mut _235: &i32;
+    let _236: i32;
+    let mut _239: bool;
+    let mut _240: bool;
+    let mut _241: i32;
+    let mut _242: i32;
+    let _244: !;
+    let mut _245: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _248: &mut [i32];
+    let mut _249: &mut [i32; 3];
+    let _250: ();
+    let mut _251: &mut View<'_>;
+    let mut _252: *const [Int; 2];
+    scope 1 {
+        debug x => _1;
+        let _9: &Int;
+        let _10: &Int;
+        let _23: &Int;
+        let _24: &Int;
+        let _37: &Int;
+        let _38: &Int;
+        let _51: &Int;
+        let _52: &Int;
+        let _65: &Int;
+        let _66: &Int;
+        let _79: &Int;
+        let _80: &Int;
+        let _93: &Int;
+        let _94: &Int;
+        let _106: &Int;
+        let _107: &Int;
+        let _119: &Int;
+        let _120: &Int;
+        let _132: &Int;
+        let _133: &Int;
+        let _145: &Int;
+        let _146: &Int;
+        let _159: &Int;
+        let _160: &Int;
+        let mut _166: std::vec::Vec<Int>;
+        let mut _253: *const ();
+        let mut _254: usize;
+        let mut _255: usize;
+        let mut _256: usize;
+        let mut _257: usize;
+        let mut _258: bool;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+        scope 4 {
+            debug left_val => _23;
+            debug right_val => _24;
+            let _27: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _27;
+            }
+        }
+        scope 6 {
+            debug left_val => _37;
+            debug right_val => _38;
+            let _41: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _41;
+            }
+        }
+        scope 8 {
+            debug left_val => _51;
+            debug right_val => _52;
+            let _55: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _55;
+            }
+        }
+        scope 10 {
+            debug left_val => _65;
+            debug right_val => _66;
+            let _69: core::panicking::AssertKind;
+            scope 11 {
+                debug kind => _69;
+            }
+        }
+        scope 12 {
+            debug left_val => _79;
+            debug right_val => _80;
+            let _83: core::panicking::AssertKind;
+            scope 13 {
+                debug kind => _83;
+            }
+        }
+        scope 14 {
+            debug left_val => _93;
+            debug right_val => _94;
+            let _97: core::panicking::AssertKind;
+            scope 15 {
+                debug kind => _97;
+            }
+        }
+        scope 16 {
+            debug left_val => _106;
+            debug right_val => _107;
+            let _110: core::panicking::AssertKind;
+            scope 17 {
+                debug kind => _110;
+            }
+        }
+        scope 18 {
+            debug left_val => _119;
+            debug right_val => _120;
+            let _123: core::panicking::AssertKind;
+            scope 19 {
+                debug kind => _123;
+            }
+        }
+        scope 20 {
+            debug left_val => _132;
+            debug right_val => _133;
+            let _136: core::panicking::AssertKind;
+            scope 21 {
+                debug kind => _136;
+            }
+        }
+        scope 22 {
+            debug left_val => _145;
+            debug right_val => _146;
+            let _149: core::panicking::AssertKind;
+            scope 23 {
+                debug kind => _149;
+            }
+        }
+        scope 24 {
+            debug left_val => _159;
+            debug right_val => _160;
+            let _163: core::panicking::AssertKind;
+            scope 25 {
+                debug kind => _163;
+            }
+        }
+        scope 26 {
+            debug v => _166;
+            let _185: &Int;
+            let _186: &Int;
+            let mut _192: [i32; 3];
+            scope 28 {
+                debug left_val => _185;
+                debug right_val => _186;
+                let _189: core::panicking::AssertKind;
+                scope 29 {
+                    debug kind => _189;
+                }
+            }
+            scope 30 {
+                debug array => _192;
+                let _205: &i32;
+                let _206: &i32;
+                let _221: &i32;
+                let _222: &i32;
+                let _237: &i32;
+                let _238: &i32;
+                let mut _246: [i32; 3];
+                scope 31 {
+                    debug left_val => _205;
+                    debug right_val => _206;
+                    let _211: core::panicking::AssertKind;
+                    scope 32 {
+                        debug kind => _211;
+                    }
+                }
+                scope 33 {
+                    debug left_val => _221;
+                    debug right_val => _222;
+                    let _227: core::panicking::AssertKind;
+                    scope 34 {
+                        debug kind => _227;
+                    }
+                }
+                scope 35 {
+                    debug left_val => _237;
+                    debug right_val => _238;
+                    let _243: core::panicking::AssertKind;
+                    scope 36 {
+                        debug kind => _243;
+                    }
+                }
+                scope 37 {
+                    debug array => _246;
+                    let mut _247: View<'_>;
+                    scope 38 {
+                        debug view => _247;
+                    }
+                }
+            }
+        }
+        scope 27 {
+        }
+    }
+
+    bb0: {
+        _1 = Int(const 1_i32);
+        _3 = &mut _1;
+        _4 = Int(const 2_i32);
+        _2 = <Int as AddAssign>::add_assign(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_1;
+        _8 = Int(const 3_i32);
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &Int);
+        _10 = (_5.1: &Int);
+        _12 = <Int as PartialEq>::eq(_9, _10) -> bb2;
+    }
+
+    bb2: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<Int, Int>(move _13, _9, _10, move _15);
+    }
+
+    bb4: {
+        _17 = &mut _1;
+        _18 = Int(const 1_i32);
+        _16 = <Int as BitAndAssign>::bitand_assign(move _17, move _18) -> bb5;
+    }
+
+    bb5: {
+        _20 = &_1;
+        _22 = Int(const 1_i32);
+        _21 = &_22;
+        _19 = (move _20, move _21);
+        _23 = (_19.0: &Int);
+        _24 = (_19.1: &Int);
+        _26 = <Int as PartialEq>::eq(_23, _24) -> bb6;
+    }
+
+    bb6: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<Int, Int>(move _27, _23, _24, move _29);
+    }
+
+    bb8: {
+        _31 = &mut _1;
+        _32 = Int(const 2_i32);
+        _30 = <Int as BitOrAssign>::bitor_assign(move _31, move _32) -> bb9;
+    }
+
+    bb9: {
+        _34 = &_1;
+        _36 = Int(const 3_i32);
+        _35 = &_36;
+        _33 = (move _34, move _35);
+        _37 = (_33.0: &Int);
+        _38 = (_33.1: &Int);
+        _40 = <Int as PartialEq>::eq(_37, _38) -> bb10;
+    }
+
+    bb10: {
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<Int, Int>(move _41, _37, _38, move _43);
+    }
+
+    bb12: {
+        _45 = &mut _1;
+        _46 = Int(const 1_i32);
+        _44 = <Int as BitXorAssign>::bitxor_assign(move _45, move _46) -> bb13;
+    }
+
+    bb13: {
+        _48 = &_1;
+        _50 = Int(const 2_i32);
+        _49 = &_50;
+        _47 = (move _48, move _49);
+        _51 = (_47.0: &Int);
+        _52 = (_47.1: &Int);
+        _54 = <Int as PartialEq>::eq(_51, _52) -> bb14;
+    }
+
+    bb14: {
+        _53 = Not(move _54);
+        switchInt(move _53) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _55 = core::panicking::AssertKind::Eq;
+        _57 = Option::<Arguments<'_>>::None;
+        _56 = core::panicking::assert_failed::<Int, Int>(move _55, _51, _52, move _57);
+    }
+
+    bb16: {
+        _59 = &mut _1;
+        _60 = Int(const 2_i32);
+        _58 = <Int as DivAssign>::div_assign(move _59, move _60) -> bb17;
+    }
+
+    bb17: {
+        _62 = &_1;
+        _64 = Int(const 1_i32);
+        _63 = &_64;
+        _61 = (move _62, move _63);
+        _65 = (_61.0: &Int);
+        _66 = (_61.1: &Int);
+        _68 = <Int as PartialEq>::eq(_65, _66) -> bb18;
+    }
+
+    bb18: {
+        _67 = Not(move _68);
+        switchInt(move _67) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _69 = core::panicking::AssertKind::Eq;
+        _71 = Option::<Arguments<'_>>::None;
+        _70 = core::panicking::assert_failed::<Int, Int>(move _69, _65, _66, move _71);
+    }
+
+    bb20: {
+        _73 = &mut _1;
+        _74 = Int(const 3_i32);
+        _72 = <Int as MulAssign>::mul_assign(move _73, move _74) -> bb21;
+    }
+
+    bb21: {
+        _76 = &_1;
+        _78 = Int(const 3_i32);
+        _77 = &_78;
+        _75 = (move _76, move _77);
+        _79 = (_75.0: &Int);
+        _80 = (_75.1: &Int);
+        _82 = <Int as PartialEq>::eq(_79, _80) -> bb22;
+    }
+
+    bb22: {
+        _81 = Not(move _82);
+        switchInt(move _81) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _83 = core::panicking::AssertKind::Eq;
+        _85 = Option::<Arguments<'_>>::None;
+        _84 = core::panicking::assert_failed::<Int, Int>(move _83, _79, _80, move _85);
+    }
+
+    bb24: {
+        _87 = &mut _1;
+        _88 = Int(const 2_i32);
+        _86 = <Int as RemAssign>::rem_assign(move _87, move _88) -> bb25;
+    }
+
+    bb25: {
+        _90 = &_1;
+        _92 = Int(const 1_i32);
+        _91 = &_92;
+        _89 = (move _90, move _91);
+        _93 = (_89.0: &Int);
+        _94 = (_89.1: &Int);
+        _96 = <Int as PartialEq>::eq(_93, _94) -> bb26;
+    }
+
+    bb26: {
+        _95 = Not(move _96);
+        switchInt(move _95) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _97 = core::panicking::AssertKind::Eq;
+        _99 = Option::<Arguments<'_>>::None;
+        _98 = core::panicking::assert_failed::<Int, Int>(move _97, _93, _94, move _99);
+    }
+
+    bb28: {
+        _101 = &mut _1;
+        _100 = <Int as ShlAssign<u8>>::shl_assign(move _101, const 1_u8) -> bb29;
+    }
+
+    bb29: {
+        _103 = &_1;
+        _105 = Int(const 2_i32);
+        _104 = &_105;
+        _102 = (move _103, move _104);
+        _106 = (_102.0: &Int);
+        _107 = (_102.1: &Int);
+        _109 = <Int as PartialEq>::eq(_106, _107) -> bb30;
+    }
+
+    bb30: {
+        _108 = Not(move _109);
+        switchInt(move _108) -> [0: bb32, otherwise: bb31];
+    }
+
+    bb31: {
+        _110 = core::panicking::AssertKind::Eq;
+        _112 = Option::<Arguments<'_>>::None;
+        _111 = core::panicking::assert_failed::<Int, Int>(move _110, _106, _107, move _112);
+    }
+
+    bb32: {
+        _114 = &mut _1;
+        _113 = <Int as ShlAssign<u16>>::shl_assign(move _114, const 1_u16) -> bb33;
+    }
+
+    bb33: {
+        _116 = &_1;
+        _118 = Int(const 4_i32);
+        _117 = &_118;
+        _115 = (move _116, move _117);
+        _119 = (_115.0: &Int);
+        _120 = (_115.1: &Int);
+        _122 = <Int as PartialEq>::eq(_119, _120) -> bb34;
+    }
+
+    bb34: {
+        _121 = Not(move _122);
+        switchInt(move _121) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _123 = core::panicking::AssertKind::Eq;
+        _125 = Option::<Arguments<'_>>::None;
+        _124 = core::panicking::assert_failed::<Int, Int>(move _123, _119, _120, move _125);
+    }
+
+    bb36: {
+        _127 = &mut _1;
+        _126 = <Int as ShrAssign<u8>>::shr_assign(move _127, const 1_u8) -> bb37;
+    }
+
+    bb37: {
+        _129 = &_1;
+        _131 = Int(const 2_i32);
+        _130 = &_131;
+        _128 = (move _129, move _130);
+        _132 = (_128.0: &Int);
+        _133 = (_128.1: &Int);
+        _135 = <Int as PartialEq>::eq(_132, _133) -> bb38;
+    }
+
+    bb38: {
+        _134 = Not(move _135);
+        switchInt(move _134) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _136 = core::panicking::AssertKind::Eq;
+        _138 = Option::<Arguments<'_>>::None;
+        _137 = core::panicking::assert_failed::<Int, Int>(move _136, _132, _133, move _138);
+    }
+
+    bb40: {
+        _140 = &mut _1;
+        _139 = <Int as ShrAssign<u16>>::shr_assign(move _140, const 1_u16) -> bb41;
+    }
+
+    bb41: {
+        _142 = &_1;
+        _144 = Int(const 1_i32);
+        _143 = &_144;
+        _141 = (move _142, move _143);
+        _145 = (_141.0: &Int);
+        _146 = (_141.1: &Int);
+        _148 = <Int as PartialEq>::eq(_145, _146) -> bb42;
+    }
+
+    bb42: {
+        _147 = Not(move _148);
+        switchInt(move _147) -> [0: bb44, otherwise: bb43];
+    }
+
+    bb43: {
+        _149 = core::panicking::AssertKind::Eq;
+        _151 = Option::<Arguments<'_>>::None;
+        _150 = core::panicking::assert_failed::<Int, Int>(move _149, _145, _146, move _151);
+    }
+
+    bb44: {
+        _153 = &mut _1;
+        _154 = Int(const 1_i32);
+        _152 = <Int as SubAssign>::sub_assign(move _153, move _154) -> bb45;
+    }
+
+    bb45: {
+        _156 = &_1;
+        _158 = Int(const 0_i32);
+        _157 = &_158;
+        _155 = (move _156, move _157);
+        _159 = (_155.0: &Int);
+        _160 = (_155.1: &Int);
+        _162 = <Int as PartialEq>::eq(_159, _160) -> bb46;
+    }
+
+    bb46: {
+        _161 = Not(move _162);
+        switchInt(move _161) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb47: {
+        _163 = core::panicking::AssertKind::Eq;
+        _165 = Option::<Arguments<'_>>::None;
+        _164 = core::panicking::assert_failed::<Int, Int>(move _163, _159, _160, move _165);
+    }
+
+    bb48: {
+        _168 = SizeOf([Int; 2]);
+        _169 = AlignOf([Int; 2]);
+        _170 = alloc::alloc::exchange_malloc(move _168, move _169) -> bb49;
+    }
+
+    bb49: {
+        _171 = ShallowInitBox(move _170, [Int; 2]);
+        _172 = Int(const 1_i32);
+        _173 = Int(const 2_i32);
+        _252 = (((_171.0: std::ptr::Unique<[Int; 2]>).0: std::ptr::NonNull<[Int; 2]>).0: *const [Int; 2]);
+        _253 = _252 as *const () (PtrToPtr);
+        _254 = _253 as usize (Transmute);
+        _255 = AlignOf(Int);
+        _256 = Sub(_255, const 1_usize);
+        _257 = BitAnd(_254, _256);
+        _258 = Eq(_257, const 0_usize);
+        assert(_258, "misaligned pointer dereference: address must be a multiple of {} but is {}", _255, _254) -> [success: bb72, unwind unreachable];
+    }
+
+    bb50: {
+        _177 = &mut _166;
+        _176 = <Vec<Int> as IndexMut<usize>>::index_mut(move _177, const 0_usize) -> [return: bb51, unwind: bb70];
+    }
+
+    bb51: {
+        _175 = _176;
+        _178 = Int(const 2_i32);
+        _174 = <Int as AddAssign>::add_assign(move _175, move _178) -> [return: bb52, unwind: bb70];
+    }
+
+    bb52: {
+        _182 = &_166;
+        _181 = <Vec<Int> as Index<usize>>::index(move _182, const 0_usize) -> [return: bb53, unwind: bb70];
+    }
+
+    bb53: {
+        _180 = _181;
+        _184 = Int(const 3_i32);
+        _183 = &_184;
+        _179 = (move _180, move _183);
+        _185 = (_179.0: &Int);
+        _186 = (_179.1: &Int);
+        _188 = <Int as PartialEq>::eq(_185, _186) -> [return: bb54, unwind: bb70];
+    }
+
+    bb54: {
+        _187 = Not(move _188);
+        switchInt(move _187) -> [0: bb56, otherwise: bb55];
+    }
+
+    bb55: {
+        _189 = core::panicking::AssertKind::Eq;
+        _191 = Option::<Arguments<'_>>::None;
+        _190 = core::panicking::assert_failed::<Int, Int>(move _189, _185, _186, move _191) -> bb70;
+    }
+
+    bb56: {
+        _192 = [const 0_i32, const 1_i32, const 2_i32];
+        _197 = &mut _192;
+        _196 = _197 as &mut [i32] (Pointer(Unsize));
+        _195 = Slice::new(move _196) -> [return: bb57, unwind: bb70];
+    }
+
+    bb57: {
+        _194 = _195;
+        _193 = <Slice as AddAssign<i32>>::add_assign(move _194, const 1_i32) -> [return: bb58, unwind: bb70];
+    }
+
+    bb58: {
+        _200 = const 0_usize;
+        _201 = const 3_usize;
+        _202 = Lt(_200, _201);
+        assert(move _202, "index out of bounds: the length is {} but the index is {}", move _201, _200) -> [success: bb59, unwind: bb70];
+    }
+
+    bb59: {
+        _199 = &_192[_200];
+        _204 = const 1_i32;
+        _203 = &_204;
+        _198 = (move _199, move _203);
+        _205 = (_198.0: &i32);
+        _206 = (_198.1: &i32);
+        _209 = (*_205);
+        _210 = (*_206);
+        _208 = Eq(move _209, move _210);
+        _207 = Not(move _208);
+        switchInt(move _207) -> [0: bb61, otherwise: bb60];
+    }
+
+    bb60: {
+        _211 = core::panicking::AssertKind::Eq;
+        _213 = Option::<Arguments<'_>>::None;
+        _212 = core::panicking::assert_failed::<i32, i32>(move _211, _205, _206, move _213) -> bb70;
+    }
+
+    bb61: {
+        _216 = const 1_usize;
+        _217 = const 3_usize;
+        _218 = Lt(_216, _217);
+        assert(move _218, "index out of bounds: the length is {} but the index is {}", move _217, _216) -> [success: bb62, unwind: bb70];
+    }
+
+    bb62: {
+        _215 = &_192[_216];
+        _220 = const 2_i32;
+        _219 = &_220;
+        _214 = (move _215, move _219);
+        _221 = (_214.0: &i32);
+        _222 = (_214.1: &i32);
+        _225 = (*_221);
+        _226 = (*_222);
+        _224 = Eq(move _225, move _226);
+        _223 = Not(move _224);
+        switchInt(move _223) -> [0: bb64, otherwise: bb63];
+    }
+
+    bb63: {
+        _227 = core::panicking::AssertKind::Eq;
+        _229 = Option::<Arguments<'_>>::None;
+        _228 = core::panicking::assert_failed::<i32, i32>(move _227, _221, _222, move _229) -> bb70;
+    }
+
+    bb64: {
+        _232 = const 2_usize;
+        _233 = const 3_usize;
+        _234 = Lt(_232, _233);
+        assert(move _234, "index out of bounds: the length is {} but the index is {}", move _233, _232) -> [success: bb65, unwind: bb70];
+    }
+
+    bb65: {
+        _231 = &_192[_232];
+        _236 = const 3_i32;
+        _235 = &_236;
+        _230 = (move _231, move _235);
+        _237 = (_230.0: &i32);
+        _238 = (_230.1: &i32);
+        _241 = (*_237);
+        _242 = (*_238);
+        _240 = Eq(move _241, move _242);
+        _239 = Not(move _240);
+        switchInt(move _239) -> [0: bb67, otherwise: bb66];
+    }
+
+    bb66: {
+        _243 = core::panicking::AssertKind::Eq;
+        _245 = Option::<Arguments<'_>>::None;
+        _244 = core::panicking::assert_failed::<i32, i32>(move _243, _237, _238, move _245) -> bb70;
+    }
+
+    bb67: {
+        _246 = [const 0_i32, const 1_i32, const 2_i32];
+        _249 = &mut _246;
+        _248 = _249 as &mut [i32] (Pointer(Unsize));
+        _247 = View::<'_>(move _248);
+        _251 = &mut _247;
+        _250 = <View<'_> as AddAssign<i32>>::add_assign(move _251, const 1_i32) -> [return: bb68, unwind: bb70];
+    }
+
+    bb68: {
+        drop(_166) -> bb69;
+    }
+
+    bb69: {
+        return;
+    }
+
+    bb70 (cleanup): {
+        drop(_166) -> [return: bb71, unwind terminate];
+    }
+
+    bb71 (cleanup): {
+        resume;
+    }
+
+    bb72: {
+        (*_252) = [move _172, move _173];
+        _167 = move _171 as std::boxed::Box<[Int]> (Pointer(Unsize));
+        _166 = slice::<impl [Int]>::into_vec::<std::alloc::Global>(move _167) -> bb50;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:86:1: 86:23>::add_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = Add(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:92:1: 92:26>::bitand_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = BitAnd(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:98:1: 98:25>::bitor_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = BitOr(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:104:1: 104:26>::bitxor_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = BitXor(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:110:1: 110:23>::div_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        _4 = Eq(_3, const 0_i32);
+        assert(!move _4, "attempt to divide `{}` by zero", ((*_1).0: i32)) -> bb1;
+    }
+
+    bb1: {
+        _5 = Eq(_3, const -1_i32);
+        _6 = Eq(((*_1).0: i32), const i32::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute `{} / {}`, which would overflow", ((*_1).0: i32), _3) -> bb2;
+    }
+
+    bb2: {
+        ((*_1).0: i32) = Div(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:116:1: 116:23>::mul_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = Mul(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:122:1: 122:23>::rem_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        _4 = Eq(_3, const 0_i32);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", ((*_1).0: i32)) -> bb1;
+    }
+
+    bb1: {
+        _5 = Eq(_3, const -1_i32);
+        _6 = Eq(((*_1).0: i32), const i32::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", ((*_1).0: i32), _3) -> bb2;
+    }
+
+    bb2: {
+        ((*_1).0: i32) = Rem(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:128:1: 128:27>::shl_assign(_1: &mut Int, _2: u8) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = Shl(((*_1).0: i32), _2);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:134:1: 134:28>::shl_assign(_1: &mut Int, _2: u16) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = Shl(((*_1).0: i32), _2);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:140:1: 140:27>::shr_assign(_1: &mut Int, _2: u8) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = Shr(((*_1).0: i32), _2);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:146:1: 146:28>::shr_assign(_1: &mut Int, _2: u16) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: i32) = Shr(((*_1).0: i32), _2);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:152:1: 152:23>::sub_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (_2.0: i32);
+        ((*_1).0: i32) = Sub(((*_1).0: i32), move _3);
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:158:1: 158:30>::add_assign(_1: &mut Slice, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: std::slice::IterMut<'_, i32>;
+    let mut _4: &mut [i32];
+    let mut _5: std::slice::IterMut<'_, i32>;
+    let mut _6: std::option::Option<&mut i32>;
+    let mut _7: &mut std::slice::IterMut<'_, i32>;
+    let mut _8: isize;
+    scope 1 {
+        debug iter => _5;
+        let _9: &mut i32;
+        scope 2 {
+            debug lhs => _9;
+        }
+    }
+
+    bb0: {
+        _4 = &mut ((*_1).0: [i32]);
+        _3 = <&mut [i32] as IntoIterator>::into_iter(move _4) -> bb1;
+    }
+
+    bb1: {
+        _5 = move _3;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _5;
+        _6 = <std::slice::IterMut<'_, i32> as Iterator>::next(_7) -> bb3;
+    }
+
+    bb3: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _9 = move ((_6 as Some).0: &mut i32);
+        (*_9) = Add((*_9), _2);
+        goto -> bb2;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/augmented-assignments-rpass.rs:166:1: 166:37>::add_assign(_1: &mut View<'_>, _2: i32) -> () {
+    debug self => _1;
+    debug rhs => _2;
+    let mut _0: ();
+    let mut _3: std::slice::IterMut<'_, i32>;
+    let mut _4: std::slice::IterMut<'_, i32>;
+    let mut _5: std::slice::IterMut<'_, i32>;
+    let mut _6: std::option::Option<&mut i32>;
+    let mut _7: &mut std::slice::IterMut<'_, i32>;
+    let mut _8: isize;
+    let mut _10: &mut [i32];
+    scope 1 {
+        debug iter => _5;
+        let _9: &mut i32;
+        scope 2 {
+            debug lhs => _9;
+        }
+    }
+
+    bb0: {
+        _10 = deref_copy ((*_1).0: &mut [i32]);
+        _4 = core::slice::<impl [i32]>::iter_mut(_10) -> bb1;
+    }
+
+    bb1: {
+        _3 = <std::slice::IterMut<'_, i32> as IntoIterator>::into_iter(move _4) -> bb2;
+    }
+
+    bb2: {
+        _5 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::slice::IterMut<'_, i32> as Iterator>::next(_7) -> bb4;
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = move ((_6 as Some).0: &mut i32);
+        (*_9) = Add((*_9), _2);
+        goto -> bb3;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn Int(_1: i32) -> Int {
+    let mut _0: Int;
+
+    bb0: {
+        _0 = Int(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Int(_1: i32) -> Int {
+    let mut _0: Int;
+
+    bb0: {
+        _0 = Int(move _1);
+        return;
+    }
+}
+
+fn Slice(_1: [i32]) -> Slice {
+    let mut _0: Slice;
+
+    bb0: {
+        _0 = Slice(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Slice(_1: [i32]) -> Slice {
+    let mut _0: Slice;
+
+    bb0: {
+        _0 = Slice(move _1);
+        return;
+    }
+}
+
+fn View(_1: &mut [i32]) -> View<'_> {
+    let mut _0: View<'_>;
+
+    bb0: {
+        _0 = View::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn View(_1: &mut [i32]) -> View<'_> {
+    let mut _0: View<'_>;
+
+    bb0: {
+        _0 = View::<'_>(move _1);
+        return;
+    }
+}

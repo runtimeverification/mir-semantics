@@ -1,0 +1,391 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<std::string::String>;
+    let mut _2: std::env::Args;
+    let mut _3: bool;
+    let mut _4: usize;
+    let mut _5: &std::vec::Vec<std::string::String>;
+    let _6: ();
+    let mut _7: std::fmt::Arguments<'_>;
+    let mut _8: &[&str];
+    let _9: &[&str; 2];
+    let _10: [&str; 2];
+    let mut _11: &[core::fmt::rt::Argument<'_>];
+    let _12: &[core::fmt::rt::Argument<'_>; 1];
+    let _13: [core::fmt::rt::Argument<'_>; 1];
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &std::backtrace::Backtrace;
+    let _16: std::backtrace::Backtrace;
+    let mut _18: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _19: &mut std::process::Command;
+    let mut _20: &mut std::process::Command;
+    let mut _21: &mut std::process::Command;
+    let mut _22: &mut std::process::Command;
+    let mut _23: &mut std::process::Command;
+    let mut _24: std::process::Command;
+    let mut _25: &std::string::String;
+    let _26: &std::string::String;
+    let mut _27: &std::vec::Vec<std::string::String>;
+    let mut _30: std::fmt::Arguments<'_>;
+    let mut _31: &[&str];
+    let _32: &[&str; 2];
+    let _33: [&str; 2];
+    let mut _34: &[core::fmt::rt::Argument<'_>];
+    let _35: &[core::fmt::rt::Argument<'_>; 2];
+    let _36: [core::fmt::rt::Argument<'_>; 2];
+    let mut _37: core::fmt::rt::Argument<'_>;
+    let _38: &&str;
+    let _39: &str;
+    let mut _40: std::result::Result<&str, std::str::Utf8Error>;
+    let mut _41: &[u8];
+    let _42: &[u8];
+    let _43: &std::vec::Vec<u8>;
+    let mut _44: core::fmt::rt::Argument<'_>;
+    let _45: &&str;
+    let _46: &str;
+    let mut _47: std::result::Result<&str, std::str::Utf8Error>;
+    let mut _48: &[u8];
+    let _49: &[u8];
+    let _50: &std::vec::Vec<u8>;
+    let mut _51: bool;
+    let mut _52: bool;
+    let mut _53: &std::process::ExitStatus;
+    let mut _54: bool;
+    let mut _55: &str;
+    let _56: &str;
+    let mut _57: &std::string::String;
+    let _58: ();
+    let mut _59: std::fmt::Arguments<'_>;
+    let mut _60: &[&str];
+    let _61: &[&str; 2];
+    let _62: [&str; 2];
+    let mut _63: &[core::fmt::rt::Argument<'_>];
+    let _64: &[core::fmt::rt::Argument<'_>; 1];
+    let _65: [core::fmt::rt::Argument<'_>; 1];
+    let mut _66: core::fmt::rt::Argument<'_>;
+    let _67: &std::process::ExitStatus;
+    let _68: ();
+    let mut _69: std::fmt::Arguments<'_>;
+    let mut _70: &[&str];
+    let _71: &[&str; 2];
+    let _72: [&str; 2];
+    let mut _73: &[core::fmt::rt::Argument<'_>];
+    let _74: &[core::fmt::rt::Argument<'_>; 1];
+    let _75: [core::fmt::rt::Argument<'_>; 1];
+    let mut _76: core::fmt::rt::Argument<'_>;
+    let _77: &std::string::String;
+    let _78: std::string::String;
+    let mut _79: &str;
+    let _80: &str;
+    let mut _81: &std::string::String;
+    let _82: &str;
+    let _83: !;
+    let mut _84: std::fmt::Arguments<'_>;
+    let mut _85: &[&str];
+    let _86: &[&str; 2];
+    let _87: [&str; 2];
+    let mut _88: &[core::fmt::rt::Argument<'_>];
+    let _89: &[core::fmt::rt::Argument<'_>; 1];
+    let _90: [core::fmt::rt::Argument<'_>; 1];
+    let mut _91: core::fmt::rt::Argument<'_>;
+    let _92: &&str;
+    let _93: &str;
+    scope 1 {
+        debug args => _1;
+        let _17: std::process::Output;
+        scope 2 {
+            debug out => _17;
+            let _28: std::string::String;
+            let _29: std::string::String;
+            scope 3 {
+                debug output => _28;
+            }
+            scope 4 {
+                debug res => _29;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = args() -> bb1;
+    }
+
+    bb1: {
+        _1 = <Args as Iterator>::collect::<Vec<String>>(move _2) -> bb2;
+    }
+
+    bb2: {
+        _5 = &_1;
+        _4 = Vec::<String>::len(move _5) -> [return: bb3, unwind: bb54];
+    }
+
+    bb3: {
+        _3 = Ge(move _4, const 2_usize);
+        switchInt(move _3) -> [0: bb9, otherwise: bb4];
+    }
+
+    bb4: {
+        _10 = [const "", const "\n"];
+        _9 = &_10;
+        _8 = _9 as &[&str] (Pointer(Unsize));
+        _16 = Backtrace::force_capture() -> [return: bb5, unwind: bb54];
+    }
+
+    bb5: {
+        _15 = &_16;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<Backtrace>(_15) -> [return: bb6, unwind: bb53];
+    }
+
+    bb6: {
+        _13 = [move _14];
+        _12 = &_13;
+        _11 = _12 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _7 = Arguments::<'_>::new_v1(move _8, move _11) -> [return: bb7, unwind: bb53];
+    }
+
+    bb7: {
+        _6 = _print(move _7) -> [return: bb8, unwind: bb53];
+    }
+
+    bb8: {
+        drop(_16) -> [return: bb47, unwind: bb54];
+    }
+
+    bb9: {
+        _27 = &_1;
+        _26 = <Vec<String> as Index<usize>>::index(move _27, const 0_usize) -> [return: bb10, unwind: bb54];
+    }
+
+    bb10: {
+        _25 = _26;
+        _24 = Command::new::<&String>(move _25) -> [return: bb11, unwind: bb54];
+    }
+
+    bb11: {
+        _23 = &mut _24;
+        _22 = Command::env::<&str, &str>(move _23, const "RUST_BACKTRACE", const "1") -> [return: bb12, unwind: bb52];
+    }
+
+    bb12: {
+        _21 = _22;
+        _20 = Command::arg::<&str>(move _21, const "foo") -> [return: bb13, unwind: bb52];
+    }
+
+    bb13: {
+        _19 = _20;
+        _18 = Command::output(move _19) -> [return: bb14, unwind: bb52];
+    }
+
+    bb14: {
+        _17 = Result::<Output, std::io::Error>::unwrap(move _18) -> [return: bb15, unwind: bb52];
+    }
+
+    bb15: {
+        drop(_24) -> [return: bb16, unwind: bb51];
+    }
+
+    bb16: {
+        _33 = [const "", const "\n"];
+        _32 = &_33;
+        _31 = _32 as &[&str] (Pointer(Unsize));
+        _43 = &(_17.1: std::vec::Vec<u8>);
+        _42 = <Vec<u8> as Deref>::deref(_43) -> [return: bb17, unwind: bb51];
+    }
+
+    bb17: {
+        _41 = _42;
+        _40 = from_utf8(move _41) -> [return: bb18, unwind: bb51];
+    }
+
+    bb18: {
+        _39 = Result::<&str, Utf8Error>::unwrap(move _40) -> [return: bb19, unwind: bb51];
+    }
+
+    bb19: {
+        _38 = &_39;
+        _37 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_38) -> [return: bb20, unwind: bb51];
+    }
+
+    bb20: {
+        _50 = &(_17.2: std::vec::Vec<u8>);
+        _49 = <Vec<u8> as Deref>::deref(_50) -> [return: bb21, unwind: bb51];
+    }
+
+    bb21: {
+        _48 = _49;
+        _47 = from_utf8(move _48) -> [return: bb22, unwind: bb51];
+    }
+
+    bb22: {
+        _46 = Result::<&str, Utf8Error>::unwrap(move _47) -> [return: bb23, unwind: bb51];
+    }
+
+    bb23: {
+        _45 = &_46;
+        _44 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_45) -> [return: bb24, unwind: bb51];
+    }
+
+    bb24: {
+        _36 = [move _37, move _44];
+        _35 = &_36;
+        _34 = _35 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _30 = Arguments::<'_>::new_v1(move _31, move _34) -> [return: bb25, unwind: bb51];
+    }
+
+    bb25: {
+        _29 = format(move _30) -> [return: bb26, unwind: bb51];
+    }
+
+    bb26: {
+        _28 = move _29;
+        _53 = &(_17.0: std::process::ExitStatus);
+        _52 = ExitStatus::success(move _53) -> [return: bb30, unwind: bb50];
+    }
+
+    bb27: {
+        _51 = const false;
+        goto -> bb29;
+    }
+
+    bb28: {
+        _57 = &_28;
+        _56 = <String as Deref>::deref(move _57) -> [return: bb31, unwind: bb50];
+    }
+
+    bb29: {
+        switchInt(move _51) -> [0: bb34, otherwise: bb33];
+    }
+
+    bb30: {
+        switchInt(move _52) -> [0: bb27, otherwise: bb28];
+    }
+
+    bb31: {
+        _55 = _56;
+        _54 = core::str::<impl str>::contains::<'_, &str>(move _55, const "ui/backtrace-apple-no-dsymutil.rs") -> [return: bb32, unwind: bb50];
+    }
+
+    bb32: {
+        _51 = move _54;
+        goto -> bb29;
+    }
+
+    bb33: {
+        drop(_28) -> [return: bb46, unwind: bb51];
+    }
+
+    bb34: {
+        _62 = [const "status: ", const "\n"];
+        _61 = &_62;
+        _60 = _61 as &[&str] (Pointer(Unsize));
+        _67 = &(_17.0: std::process::ExitStatus);
+        _66 = core::fmt::rt::Argument::<'_>::new_display::<ExitStatus>(_67) -> [return: bb35, unwind: bb50];
+    }
+
+    bb35: {
+        _65 = [move _66];
+        _64 = &_65;
+        _63 = _64 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _59 = Arguments::<'_>::new_v1(move _60, move _63) -> [return: bb36, unwind: bb50];
+    }
+
+    bb36: {
+        _58 = _print(move _59) -> [return: bb37, unwind: bb50];
+    }
+
+    bb37: {
+        _72 = [const "child output:\n\t", const "\n"];
+        _71 = &_72;
+        _70 = _71 as &[&str] (Pointer(Unsize));
+        _81 = &_28;
+        _80 = <String as Deref>::deref(move _81) -> [return: bb38, unwind: bb50];
+    }
+
+    bb38: {
+        _79 = _80;
+        _82 = const "\n\t";
+        _78 = str::<impl str>::replace::<'_, &str>(move _79, const "\n", _82) -> [return: bb39, unwind: bb50];
+    }
+
+    bb39: {
+        _77 = &_78;
+        _76 = core::fmt::rt::Argument::<'_>::new_display::<String>(_77) -> [return: bb40, unwind: bb49];
+    }
+
+    bb40: {
+        _75 = [move _76];
+        _74 = &_75;
+        _73 = _74 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _69 = Arguments::<'_>::new_v1(move _70, move _73) -> [return: bb41, unwind: bb49];
+    }
+
+    bb41: {
+        _68 = _print(move _69) -> [return: bb42, unwind: bb49];
+    }
+
+    bb42: {
+        drop(_78) -> [return: bb43, unwind: bb50];
+    }
+
+    bb43: {
+        _87 = [const "failed to find ", const " in output"];
+        _86 = &_87;
+        _85 = _86 as &[&str] (Pointer(Unsize));
+        _93 = const "ui/backtrace-apple-no-dsymutil.rs";
+        _92 = &_93;
+        _91 = core::fmt::rt::Argument::<'_>::new_debug::<&str>(_92) -> [return: bb44, unwind: bb50];
+    }
+
+    bb44: {
+        _90 = [move _91];
+        _89 = &_90;
+        _88 = _89 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _84 = Arguments::<'_>::new_v1(move _85, move _88) -> [return: bb45, unwind: bb50];
+    }
+
+    bb45: {
+        _83 = panic_fmt(move _84) -> bb50;
+    }
+
+    bb46: {
+        drop(_17) -> [return: bb47, unwind: bb54];
+    }
+
+    bb47: {
+        drop(_1) -> bb48;
+    }
+
+    bb48: {
+        return;
+    }
+
+    bb49 (cleanup): {
+        drop(_78) -> [return: bb50, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_28) -> [return: bb51, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_17) -> [return: bb54, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_24) -> [return: bb54, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_16) -> [return: bb54, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_1) -> [return: bb55, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        resume;
+    }
+}

@@ -1,0 +1,508 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static mut ORDER: [usize; 3] = {
+    let mut _0: [usize; 3];
+
+    bb0: {
+        _0 = [const 0_usize, const 0_usize, const 0_usize];
+        return;
+    }
+}
+
+ORDER::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+static mut INDEX: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn <impl at ui/binding/order-drop-with-match.rs:13:1: 13:16>::drop(_1: &mut A) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut [usize; 3];
+    let _3: usize;
+    let mut _4: *mut usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: *mut usize;
+    let mut _9: *mut usize;
+    scope 1 {
+        let mut _10: *const ();
+        let mut _11: usize;
+        let mut _12: usize;
+        let mut _13: usize;
+        let mut _14: usize;
+        let mut _15: bool;
+        let mut _16: *const ();
+        let mut _17: usize;
+        let mut _18: usize;
+        let mut _19: usize;
+        let mut _20: usize;
+        let mut _21: bool;
+        let mut _22: *const ();
+        let mut _23: usize;
+        let mut _24: usize;
+        let mut _25: usize;
+        let mut _26: usize;
+        let mut _27: bool;
+        let mut _28: *const ();
+        let mut _29: usize;
+        let mut _30: usize;
+        let mut _31: usize;
+        let mut _32: usize;
+        let mut _33: bool;
+        let mut _34: *const ();
+        let mut _35: usize;
+        let mut _36: usize;
+        let mut _37: usize;
+        let mut _38: usize;
+        let mut _39: bool;
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut [usize; 3]};
+        _4 = const {alloc2: *mut usize};
+        _34 = _4 as *const () (PtrToPtr);
+        _35 = _34 as usize (Transmute);
+        _36 = AlignOf(usize);
+        _37 = Sub(_36, const 1_usize);
+        _38 = BitAnd(_35, _37);
+        _39 = Eq(_38, const 0_usize);
+        assert(_39, "misaligned pointer dereference: address must be a multiple of {} but is {}", _36, _35) -> [success: bb6, unwind unreachable];
+    }
+
+    bb1: {
+        _22 = _2 as *const () (PtrToPtr);
+        _23 = _22 as usize (Transmute);
+        _24 = AlignOf(usize);
+        _25 = Sub(_24, const 1_usize);
+        _26 = BitAnd(_23, _25);
+        _27 = Eq(_26, const 0_usize);
+        assert(_27, "misaligned pointer dereference: address must be a multiple of {} but is {}", _24, _23) -> [success: bb4, unwind unreachable];
+    }
+
+    bb2: {
+        (*_9) = Add(move _7, const 1_usize);
+        return;
+    }
+
+    bb3: {
+        _7 = (*_8);
+        _9 = const {alloc2: *mut usize};
+        _10 = _9 as *const () (PtrToPtr);
+        _11 = _10 as usize (Transmute);
+        _12 = AlignOf(usize);
+        _13 = Sub(_12, const 1_usize);
+        _14 = BitAnd(_11, _13);
+        _15 = Eq(_14, const 0_usize);
+        assert(_15, "misaligned pointer dereference: address must be a multiple of {} but is {}", _12, _11) -> [success: bb2, unwind unreachable];
+    }
+
+    bb4: {
+        (*_2)[_3] = const 1_usize;
+        _8 = const {alloc2: *mut usize};
+        _16 = _8 as *const () (PtrToPtr);
+        _17 = _16 as usize (Transmute);
+        _18 = AlignOf(usize);
+        _19 = Sub(_18, const 1_usize);
+        _20 = BitAnd(_17, _19);
+        _21 = Eq(_20, const 0_usize);
+        assert(_21, "misaligned pointer dereference: address must be a multiple of {} but is {}", _18, _17) -> [success: bb3, unwind unreachable];
+    }
+
+    bb5: {
+        _5 = const 3_usize;
+        _6 = Lt(_3, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _3) -> bb1;
+    }
+
+    bb6: {
+        _3 = (*_4);
+        _28 = _2 as *const () (PtrToPtr);
+        _29 = _28 as usize (Transmute);
+        _30 = AlignOf(usize);
+        _31 = Sub(_30, const 1_usize);
+        _32 = BitAnd(_29, _31);
+        _33 = Eq(_32, const 0_usize);
+        assert(_33, "misaligned pointer dereference: address must be a multiple of {} but is {}", _30, _29) -> [success: bb5, unwind unreachable];
+    }
+}
+
+alloc2 (static: INDEX, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc1 (static: ORDER, size: 24, align: 8) {
+    0x00 │ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/binding/order-drop-with-match.rs:23:1: 23:16>::drop(_1: &mut B) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut [usize; 3];
+    let _3: usize;
+    let mut _4: *mut usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: *mut usize;
+    let mut _9: *mut usize;
+    scope 1 {
+        let mut _10: *const ();
+        let mut _11: usize;
+        let mut _12: usize;
+        let mut _13: usize;
+        let mut _14: usize;
+        let mut _15: bool;
+        let mut _16: *const ();
+        let mut _17: usize;
+        let mut _18: usize;
+        let mut _19: usize;
+        let mut _20: usize;
+        let mut _21: bool;
+        let mut _22: *const ();
+        let mut _23: usize;
+        let mut _24: usize;
+        let mut _25: usize;
+        let mut _26: usize;
+        let mut _27: bool;
+        let mut _28: *const ();
+        let mut _29: usize;
+        let mut _30: usize;
+        let mut _31: usize;
+        let mut _32: usize;
+        let mut _33: bool;
+        let mut _34: *const ();
+        let mut _35: usize;
+        let mut _36: usize;
+        let mut _37: usize;
+        let mut _38: usize;
+        let mut _39: bool;
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut [usize; 3]};
+        _4 = const {alloc2: *mut usize};
+        _34 = _4 as *const () (PtrToPtr);
+        _35 = _34 as usize (Transmute);
+        _36 = AlignOf(usize);
+        _37 = Sub(_36, const 1_usize);
+        _38 = BitAnd(_35, _37);
+        _39 = Eq(_38, const 0_usize);
+        assert(_39, "misaligned pointer dereference: address must be a multiple of {} but is {}", _36, _35) -> [success: bb6, unwind unreachable];
+    }
+
+    bb1: {
+        _22 = _2 as *const () (PtrToPtr);
+        _23 = _22 as usize (Transmute);
+        _24 = AlignOf(usize);
+        _25 = Sub(_24, const 1_usize);
+        _26 = BitAnd(_23, _25);
+        _27 = Eq(_26, const 0_usize);
+        assert(_27, "misaligned pointer dereference: address must be a multiple of {} but is {}", _24, _23) -> [success: bb4, unwind unreachable];
+    }
+
+    bb2: {
+        (*_9) = Add(move _7, const 1_usize);
+        return;
+    }
+
+    bb3: {
+        _7 = (*_8);
+        _9 = const {alloc2: *mut usize};
+        _10 = _9 as *const () (PtrToPtr);
+        _11 = _10 as usize (Transmute);
+        _12 = AlignOf(usize);
+        _13 = Sub(_12, const 1_usize);
+        _14 = BitAnd(_11, _13);
+        _15 = Eq(_14, const 0_usize);
+        assert(_15, "misaligned pointer dereference: address must be a multiple of {} but is {}", _12, _11) -> [success: bb2, unwind unreachable];
+    }
+
+    bb4: {
+        (*_2)[_3] = const 2_usize;
+        _8 = const {alloc2: *mut usize};
+        _16 = _8 as *const () (PtrToPtr);
+        _17 = _16 as usize (Transmute);
+        _18 = AlignOf(usize);
+        _19 = Sub(_18, const 1_usize);
+        _20 = BitAnd(_17, _19);
+        _21 = Eq(_20, const 0_usize);
+        assert(_21, "misaligned pointer dereference: address must be a multiple of {} but is {}", _18, _17) -> [success: bb3, unwind unreachable];
+    }
+
+    bb5: {
+        _5 = const 3_usize;
+        _6 = Lt(_3, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _3) -> bb1;
+    }
+
+    bb6: {
+        _3 = (*_4);
+        _28 = _2 as *const () (PtrToPtr);
+        _29 = _28 as usize (Transmute);
+        _30 = AlignOf(usize);
+        _31 = Sub(_30, const 1_usize);
+        _32 = BitAnd(_29, _31);
+        _33 = Eq(_32, const 0_usize);
+        assert(_33, "misaligned pointer dereference: address must be a multiple of {} but is {}", _30, _29) -> [success: bb5, unwind unreachable];
+    }
+}
+
+alloc2 (static: INDEX, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc1 (static: ORDER, size: 24, align: 8) {
+    0x00 │ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/binding/order-drop-with-match.rs:33:1: 33:16>::drop(_1: &mut C) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut [usize; 3];
+    let _3: usize;
+    let mut _4: *mut usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: *mut usize;
+    let mut _9: *mut usize;
+    scope 1 {
+        let mut _10: *const ();
+        let mut _11: usize;
+        let mut _12: usize;
+        let mut _13: usize;
+        let mut _14: usize;
+        let mut _15: bool;
+        let mut _16: *const ();
+        let mut _17: usize;
+        let mut _18: usize;
+        let mut _19: usize;
+        let mut _20: usize;
+        let mut _21: bool;
+        let mut _22: *const ();
+        let mut _23: usize;
+        let mut _24: usize;
+        let mut _25: usize;
+        let mut _26: usize;
+        let mut _27: bool;
+        let mut _28: *const ();
+        let mut _29: usize;
+        let mut _30: usize;
+        let mut _31: usize;
+        let mut _32: usize;
+        let mut _33: bool;
+        let mut _34: *const ();
+        let mut _35: usize;
+        let mut _36: usize;
+        let mut _37: usize;
+        let mut _38: usize;
+        let mut _39: bool;
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut [usize; 3]};
+        _4 = const {alloc2: *mut usize};
+        _34 = _4 as *const () (PtrToPtr);
+        _35 = _34 as usize (Transmute);
+        _36 = AlignOf(usize);
+        _37 = Sub(_36, const 1_usize);
+        _38 = BitAnd(_35, _37);
+        _39 = Eq(_38, const 0_usize);
+        assert(_39, "misaligned pointer dereference: address must be a multiple of {} but is {}", _36, _35) -> [success: bb6, unwind unreachable];
+    }
+
+    bb1: {
+        _22 = _2 as *const () (PtrToPtr);
+        _23 = _22 as usize (Transmute);
+        _24 = AlignOf(usize);
+        _25 = Sub(_24, const 1_usize);
+        _26 = BitAnd(_23, _25);
+        _27 = Eq(_26, const 0_usize);
+        assert(_27, "misaligned pointer dereference: address must be a multiple of {} but is {}", _24, _23) -> [success: bb4, unwind unreachable];
+    }
+
+    bb2: {
+        (*_9) = Add(move _7, const 1_usize);
+        return;
+    }
+
+    bb3: {
+        _7 = (*_8);
+        _9 = const {alloc2: *mut usize};
+        _10 = _9 as *const () (PtrToPtr);
+        _11 = _10 as usize (Transmute);
+        _12 = AlignOf(usize);
+        _13 = Sub(_12, const 1_usize);
+        _14 = BitAnd(_11, _13);
+        _15 = Eq(_14, const 0_usize);
+        assert(_15, "misaligned pointer dereference: address must be a multiple of {} but is {}", _12, _11) -> [success: bb2, unwind unreachable];
+    }
+
+    bb4: {
+        (*_2)[_3] = const 3_usize;
+        _8 = const {alloc2: *mut usize};
+        _16 = _8 as *const () (PtrToPtr);
+        _17 = _16 as usize (Transmute);
+        _18 = AlignOf(usize);
+        _19 = Sub(_18, const 1_usize);
+        _20 = BitAnd(_17, _19);
+        _21 = Eq(_20, const 0_usize);
+        assert(_21, "misaligned pointer dereference: address must be a multiple of {} but is {}", _18, _17) -> [success: bb3, unwind unreachable];
+    }
+
+    bb5: {
+        _5 = const 3_usize;
+        _6 = Lt(_3, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _3) -> bb1;
+    }
+
+    bb6: {
+        _3 = (*_4);
+        _28 = _2 as *const () (PtrToPtr);
+        _29 = _28 as usize (Transmute);
+        _30 = AlignOf(usize);
+        _31 = Sub(_30, const 1_usize);
+        _32 = BitAnd(_29, _31);
+        _33 = Eq(_32, const 0_usize);
+        assert(_33, "misaligned pointer dereference: address must be a multiple of {} but is {}", _30, _29) -> [success: bb5, unwind unreachable];
+    }
+}
+
+alloc2 (static: INDEX, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc1 (static: ORDER, size: 24, align: 8) {
+    0x00 │ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _5: &[usize; 3];
+    let _6: [usize; 3];
+    let mut _7: (&&[usize], &[usize; 3]);
+    let mut _8: &&[usize];
+    let mut _9: &[usize; 3];
+    let _10: *mut [usize; 3];
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug matched => const A;
+        let _1: C;
+        scope 2 {
+            debug _outer => const C;
+            let _2: A;
+            let _3: B;
+            scope 3 {
+                debug _s => const A;
+            }
+            scope 4 {
+                debug _inner => const B;
+            }
+        }
+    }
+    scope 5 {
+        let _4: &[usize];
+        scope 6 {
+            debug expected => _4;
+            let _11: &&[usize];
+            let _12: &[usize; 3];
+            let mut _18: *const ();
+            let mut _19: usize;
+            let mut _20: usize;
+            let mut _21: usize;
+            let mut _22: usize;
+            let mut _23: bool;
+            scope 7 {
+                debug left_val => _11;
+                debug right_val => _12;
+                let _15: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _15;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        drop(_2) -> [return: bb1, unwind: bb7];
+    }
+
+    bb1: {
+        drop(_3) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        _6 = [const 1_usize, const 2_usize, const 3_usize];
+        _5 = &_6;
+        _4 = _5 as &[usize] (Pointer(Unsize));
+        _8 = &_4;
+        _10 = const {alloc1: *mut [usize; 3]};
+        _18 = _10 as *const () (PtrToPtr);
+        _19 = _18 as usize (Transmute);
+        _20 = AlignOf(usize);
+        _21 = Sub(_20, const 1_usize);
+        _22 = BitAnd(_19, _21);
+        _23 = Eq(_22, const 0_usize);
+        assert(_23, "misaligned pointer dereference: address must be a multiple of {} but is {}", _20, _19) -> [success: bb9, unwind unreachable];
+    }
+
+    bb4: {
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<&[usize], [usize; 3]>(move _15, _11, _12, move _17);
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9: {
+        _9 = &(*_10);
+        _7 = (move _8, move _9);
+        _11 = (_7.0: &&[usize]);
+        _12 = (_7.1: &[usize; 3]);
+        _14 = <&[usize] as PartialEq<[usize; 3]>>::eq(_11, _12) -> bb4;
+    }
+}
+
+alloc1 (static: ORDER, size: 24, align: 8) {
+    0x00 │ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00                         │ ........
+}

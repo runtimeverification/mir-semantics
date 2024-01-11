@@ -1,0 +1,334 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:3:10: 3:19>::eq(_1: &Bar, _2: &Bar) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:3:21: 3:26>::fmt(_1: &Bar, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Bar";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:5:10: 5:15>::fmt(_1: &Baz, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Baz";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:7:10: 7:15>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Foo";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:9:10: 9:15>::fmt(_1: &Fu, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Fu";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:12:1: 12:23>::eq(_1: &Baz, _2: &Baz) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:14:1: 14:27>::eq(_1: &Foo, _2: &Fu) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:15:1: 15:27>::eq(_1: &Fu, _2: &Foo) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:17:1: 17:28>::eq(_1: &Foo, _2: &Bar) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/eq-multidispatch.rs:18:1: 18:28>::eq(_1: &Bar, _2: &Foo) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &Bar;
+    let _4: Bar;
+    let mut _5: &Foo;
+    let _6: Foo;
+    let mut _7: !;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: &Foo;
+    let _11: Foo;
+    let mut _12: &Bar;
+    let _13: Bar;
+    let mut _14: !;
+    let mut _15: (&Bar, &Bar);
+    let mut _16: &Bar;
+    let _17: Bar;
+    let mut _18: &Bar;
+    let _19: Bar;
+    let _20: &Bar;
+    let _21: &Bar;
+    let mut _22: bool;
+    let mut _23: bool;
+    let _25: !;
+    let mut _26: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _27: (&Baz, &Baz);
+    let mut _28: &Baz;
+    let _29: Baz;
+    let mut _30: &Baz;
+    let _31: Baz;
+    let _32: &Baz;
+    let _33: &Baz;
+    let mut _34: bool;
+    let mut _35: bool;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: (&Foo, &Fu);
+    let mut _40: &Foo;
+    let _41: Foo;
+    let mut _42: &Fu;
+    let _43: Fu;
+    let _44: &Foo;
+    let _45: &Fu;
+    let mut _46: bool;
+    let mut _47: bool;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: (&Fu, &Foo);
+    let mut _52: &Fu;
+    let _53: Fu;
+    let mut _54: &Foo;
+    let _55: Foo;
+    let _56: &Fu;
+    let _57: &Foo;
+    let mut _58: bool;
+    let mut _59: bool;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _24: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _24;
+        }
+    }
+    scope 3 {
+        debug left_val => _32;
+        debug right_val => _33;
+        let _36: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _36;
+        }
+    }
+    scope 5 {
+        debug left_val => _44;
+        debug right_val => _45;
+        let _48: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _48;
+        }
+    }
+    scope 7 {
+        debug left_val => _56;
+        debug right_val => _57;
+        let _60: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _60;
+        }
+    }
+
+    bb0: {
+        _3 = &_4;
+        _5 = &_6;
+        _2 = <Bar as PartialEq<Foo>>::ne(move _3, move _5) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = core::panicking::panic(const "assertion failed: Bar != Foo");
+    }
+
+    bb3: {
+        _10 = &_11;
+        _12 = &_13;
+        _9 = <Foo as PartialEq<Bar>>::ne(move _10, move _12) -> bb4;
+    }
+
+    bb4: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _14 = core::panicking::panic(const "assertion failed: Foo != Bar");
+    }
+
+    bb6: {
+        _16 = &_17;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &Bar);
+        _21 = (_15.1: &Bar);
+        _23 = <Bar as PartialEq>::eq(_20, _21) -> bb7;
+    }
+
+    bb7: {
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _24 = core::panicking::AssertKind::Eq;
+        _26 = Option::<Arguments<'_>>::None;
+        _25 = core::panicking::assert_failed::<Bar, Bar>(move _24, _20, _21, move _26);
+    }
+
+    bb9: {
+        _28 = &_29;
+        _30 = &_31;
+        _27 = (move _28, move _30);
+        _32 = (_27.0: &Baz);
+        _33 = (_27.1: &Baz);
+        _35 = <Baz as PartialEq>::eq(_32, _33) -> bb10;
+    }
+
+    bb10: {
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<Baz, Baz>(move _36, _32, _33, move _38);
+    }
+
+    bb12: {
+        _40 = &_41;
+        _42 = &_43;
+        _39 = (move _40, move _42);
+        _44 = (_39.0: &Foo);
+        _45 = (_39.1: &Fu);
+        _47 = <Foo as PartialEq<Fu>>::eq(_44, _45) -> bb13;
+    }
+
+    bb13: {
+        _46 = Not(move _47);
+        switchInt(move _46) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<Foo, Fu>(move _48, _44, _45, move _50);
+    }
+
+    bb15: {
+        _52 = &_53;
+        _54 = &_55;
+        _51 = (move _52, move _54);
+        _56 = (_51.0: &Fu);
+        _57 = (_51.1: &Foo);
+        _59 = <Fu as PartialEq<Foo>>::eq(_56, _57) -> bb16;
+    }
+
+    bb16: {
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<Fu, Foo>(move _60, _56, _57, move _62);
+    }
+
+    bb18: {
+        return;
+    }
+}

@@ -1,0 +1,51 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: fn(Vec<u32>) -> usize) -> () {
+    debug f => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: fn(std::vec::Vec<u32>) -> usize;
+
+    bb0: {
+        _1 = const ZeroSized: [closure@ui/functions-closures/closure_to_fn_coercion-expected-types.rs:8:9: 8:12] as fn(std::vec::Vec<u32>) -> usize (Pointer(ClosureFnPointer(Normal)));
+        _0 = foo(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/functions-closures/closure_to_fn_coercion-expected-types.rs:8:9: 8:12], _2: Vec<u32>) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+    let mut _3: &std::vec::Vec<u32>;
+
+    bb0: {
+        _3 = &_2;
+        _0 = Vec::<u32>::len(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}

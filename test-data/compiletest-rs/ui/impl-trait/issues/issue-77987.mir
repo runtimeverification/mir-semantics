@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn infer_scope() -> Scope {
+    let mut _0: Scope;
+
+    bb0: {
+        return;
+    }
+}
+
+fn ice() -> impl Foo<Scope> {
+    let mut _0: impl Foo<Scope>;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,97 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+VectorLike::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const SIZE;
+        return;
+    }
+}
+
+<impl at ui/hygiene/issue-61574-const-parameters.rs:13:9: 13:74>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const SIZE;
+        return;
+    }
+}
+
+<impl at ui/hygiene/issue-61574-const-parameters.rs:13:9: 13:74>::Output::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const SIZE;
+        return;
+    }
+}
+
+fn <impl at ui/hygiene/issue-61574-const-parameters.rs:13:9: 13:74>::add(_1: VectorLike<T, SIZE>, _2: VectorLike<T, SIZE>) -> VectorLike<T, SIZE> {
+    debug self => _1;
+    let mut _0: VectorLike<T, SIZE>;
+    let mut _3: !;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = core::panicking::panic(const "not implemented") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_2) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+<impl at ui/hygiene/issue-61574-const-parameters.rs:13:9: 13:74>::add::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const SIZE;
+        return;
+    }
+}
+
+<impl at ui/hygiene/issue-61574-const-parameters.rs:13:9: 13:74>::add::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const SIZE;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn VectorLike(_1: [T; SIZE]) -> VectorLike<T, SIZE> {
+    let mut _0: VectorLike<T, SIZE>;
+
+    bb0: {
+        _0 = VectorLike::<T, SIZE>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn VectorLike(_1: [T; SIZE]) -> VectorLike<T, SIZE> {
+    let mut _0: VectorLike<T, SIZE>;
+
+    bb0: {
+        _0 = VectorLike::<T, SIZE>(move _1);
+        return;
+    }
+}

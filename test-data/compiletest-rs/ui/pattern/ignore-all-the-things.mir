@@ -1,0 +1,128 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _3: Foo;
+    let mut _5: Foo;
+    let mut _8: (i32, i32, i32, i32);
+    let mut _11: (i32, i32, i32, i32);
+    let mut _13: Bar;
+    let mut _14: [i32; 4];
+    let mut _16: [i32; 4];
+    let mut _18: [i32; 4];
+    let mut _21: [i32; 3];
+    let mut _23: [i32; 3];
+    let mut _25: [i32; 3];
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    let _1: isize;
+                    let _2: isize;
+                    scope 5 {
+                        debug a => _1;
+                        debug b => _2;
+                        let _4: isize;
+                        scope 6 {
+                            debug d => _4;
+                            let _6: i32;
+                            let _7: i32;
+                            scope 7 {
+                                debug a => _6;
+                                debug b => _7;
+                                let _9: i32;
+                                let _10: i32;
+                                scope 8 {
+                                    debug c => _9;
+                                    debug d => _10;
+                                    let _12: isize;
+                                    scope 9 {
+                                        debug b => _12;
+                                        let _15: i32;
+                                        let _17: i32;
+                                        let _19: i32;
+                                        let _20: i32;
+                                        let _22: i32;
+                                        let _24: i32;
+                                        let _26: i32;
+                                        let _27: i32;
+                                        scope 10 {
+                                            debug a => _15;
+                                        }
+                                        scope 11 {
+                                            debug b => _17;
+                                        }
+                                        scope 12 {
+                                            debug a => _19;
+                                            debug b => _20;
+                                        }
+                                        scope 13 {
+                                            debug a => _22;
+                                        }
+                                        scope 14 {
+                                            debug a => _24;
+                                        }
+                                        scope 15 {
+                                            debug a => _26;
+                                            debug b => _27;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Foo(const 5_isize, const 5_isize, const 5_isize, const 5_isize);
+        _1 = (_3.0: isize);
+        _2 = (_3.1: isize);
+        _5 = Foo(const 5_isize, const 5_isize, const 5_isize, const 5_isize);
+        _4 = (_5.3: isize);
+        _8 = (const 5_i32, const 5_i32, const 5_i32, const 5_i32);
+        _6 = (_8.0: i32);
+        _7 = (_8.1: i32);
+        _11 = (const 5_i32, const 5_i32, const 5_i32, const 5_i32);
+        _9 = (_11.2: i32);
+        _10 = (_11.3: i32);
+        _13 = Bar { a: const 5_isize, b: const 5_isize, c: const 5_isize, d: const 5_isize };
+        _12 = (_13.1: isize);
+        _14 = [const 5_i32, const 5_i32, const 5_i32, const 5_i32];
+        _15 = _14[0 of 4];
+        _16 = [const 5_i32, const 5_i32, const 5_i32, const 5_i32];
+        _17 = _16[3 of 4];
+        _18 = [const 5_i32, const 5_i32, const 5_i32, const 5_i32];
+        _19 = _18[0 of 4];
+        _20 = _18[3 of 4];
+        _21 = [const 5_i32, const 5_i32, const 5_i32];
+        _22 = _21[0 of 3];
+        _23 = [const 5_i32, const 5_i32, const 5_i32];
+        _24 = _23[2 of 3];
+        _25 = [const 5_i32, const 5_i32, const 5_i32];
+        _26 = _25[0 of 3];
+        _27 = _25[2 of 3];
+        return;
+    }
+}
+
+fn Foo(_1: isize, _2: isize, _3: isize, _4: isize) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1, move _2, move _3, move _4);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: isize, _2: isize, _3: isize, _4: isize) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1, move _2, move _3, move _4);
+        return;
+    }
+}

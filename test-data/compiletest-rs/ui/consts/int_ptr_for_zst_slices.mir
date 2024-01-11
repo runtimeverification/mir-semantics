@@ -1,0 +1,44 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: &str = {
+    let mut _0: &str;
+    let _1: &str;
+    let _2: *const str;
+    let mut _3: *const [u8];
+    let mut _4: *const [u8; 0];
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = const 1_usize as *const [u8; 0] (PointerFromExposedAddress);
+        _3 = move _4 as *const [u8] (Pointer(Unsize));
+        StorageDead(_4);
+        _2 = move _3 as *const str (PtrToPtr);
+        StorageDead(_3);
+        _1 = &(*_2);
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+FOO::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

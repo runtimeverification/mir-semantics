@@ -1,0 +1,461 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn child() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+    let _6: ();
+    let mut _7: std::fmt::Arguments<'_>;
+    let mut _8: &[&str];
+    let _9: &[&str; 1];
+    let _10: [&str; 1];
+    let mut _11: &[core::fmt::rt::Argument<'_>];
+    let _12: &[core::fmt::rt::Argument<'_>; 0];
+    let _13: [core::fmt::rt::Argument<'_>; 0];
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 1];
+    let _18: [&str; 1];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 0];
+    let _21: [core::fmt::rt::Argument<'_>; 0];
+    let _22: ();
+    let mut _23: std::fmt::Arguments<'_>;
+    let mut _24: &[&str];
+    let _25: &[&str; 1];
+    let _26: [&str; 1];
+    let _27: ();
+    let mut _28: std::fmt::Arguments<'_>;
+    let mut _29: &[&str];
+    let _30: &[&str; 1];
+    let _31: [&str; 1];
+    let _32: ();
+    let mut _33: std::fmt::Arguments<'_>;
+    let mut _34: &[&str];
+    let _35: &[&str; 1];
+    let _36: [&str; 1];
+    let mut _37: &[core::fmt::rt::Argument<'_>];
+    let _38: &[core::fmt::rt::Argument<'_>; 0];
+    let _39: [core::fmt::rt::Argument<'_>; 0];
+    let _40: ();
+    let mut _41: std::fmt::Arguments<'_>;
+    let mut _42: &[&str];
+    let _43: &[&str; 1];
+    let _44: [&str; 1];
+    let mut _45: &[core::fmt::rt::Argument<'_>];
+    let _46: &[core::fmt::rt::Argument<'_>; 0];
+    let _47: [core::fmt::rt::Argument<'_>; 0];
+    let _48: ();
+    let mut _49: std::fmt::Arguments<'_>;
+    let mut _50: &[&str];
+    let _51: &[&str; 1];
+    let _52: [&str; 1];
+
+    bb0: {
+        _5 = [const "[stdout 0]"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _print(move _2) -> bb2;
+    }
+
+    bb2: {
+        _10 = [const "[stdout 1]"];
+        _9 = &_10;
+        _8 = _9 as &[&str] (Pointer(Unsize));
+        _13 = core::fmt::rt::Argument::<'_>::none() -> bb3;
+    }
+
+    bb3: {
+        _12 = &_13;
+        _11 = _12 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _7 = Arguments::<'_>::new_v1(move _8, move _11) -> bb4;
+    }
+
+    bb4: {
+        _6 = _print(move _7) -> bb5;
+    }
+
+    bb5: {
+        _18 = [const "[stdout 2]\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _21 = core::fmt::rt::Argument::<'_>::none() -> bb6;
+    }
+
+    bb6: {
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> bb7;
+    }
+
+    bb7: {
+        _14 = _print(move _15) -> bb8;
+    }
+
+    bb8: {
+        _26 = [const "\n"];
+        _25 = &_26;
+        _24 = _25 as &[&str] (Pointer(Unsize));
+        _23 = Arguments::<'_>::new_const(move _24) -> bb9;
+    }
+
+    bb9: {
+        _22 = _print(move _23) -> bb10;
+    }
+
+    bb10: {
+        _31 = [const "[stderr 0]"];
+        _30 = &_31;
+        _29 = _30 as &[&str] (Pointer(Unsize));
+        _28 = Arguments::<'_>::new_const(move _29) -> bb11;
+    }
+
+    bb11: {
+        _27 = _eprint(move _28) -> bb12;
+    }
+
+    bb12: {
+        _36 = [const "[stderr 1]"];
+        _35 = &_36;
+        _34 = _35 as &[&str] (Pointer(Unsize));
+        _39 = core::fmt::rt::Argument::<'_>::none() -> bb13;
+    }
+
+    bb13: {
+        _38 = &_39;
+        _37 = _38 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _33 = Arguments::<'_>::new_v1(move _34, move _37) -> bb14;
+    }
+
+    bb14: {
+        _32 = _eprint(move _33) -> bb15;
+    }
+
+    bb15: {
+        _44 = [const "[stderr 2]\n"];
+        _43 = &_44;
+        _42 = _43 as &[&str] (Pointer(Unsize));
+        _47 = core::fmt::rt::Argument::<'_>::none() -> bb16;
+    }
+
+    bb16: {
+        _46 = &_47;
+        _45 = _46 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _41 = Arguments::<'_>::new_v1(move _42, move _45) -> bb17;
+    }
+
+    bb17: {
+        _40 = _eprint(move _41) -> bb18;
+    }
+
+    bb18: {
+        _52 = [const "\n"];
+        _51 = &_52;
+        _50 = _51 as &[&str] (Pointer(Unsize));
+        _49 = Arguments::<'_>::new_const(move _50) -> bb19;
+    }
+
+    bb19: {
+        _48 = _eprint(move _49) -> bb20;
+    }
+
+    bb20: {
+        return;
+    }
+}
+
+fn parent() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let mut _2: std::option::Option<std::string::String>;
+    let mut _3: &mut std::env::Args;
+    let mut _4: std::env::Args;
+    let mut _6: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _7: &mut std::process::Command;
+    let mut _8: &mut std::process::Command;
+    let mut _9: &mut std::process::Command;
+    let mut _10: std::process::Command;
+    let mut _11: std::string::String;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: &std::process::ExitStatus;
+    let mut _15: !;
+    let mut _17: std::result::Result<std::string::String, std::string::FromUtf8Error>;
+    let mut _18: std::vec::Vec<u8>;
+    let mut _20: std::result::Result<std::string::String, std::string::FromUtf8Error>;
+    let mut _21: std::vec::Vec<u8>;
+    let mut _22: (&std::string::String, &&str);
+    let mut _23: &std::string::String;
+    let mut _24: &&str;
+    let _25: &str;
+    let mut _28: bool;
+    let mut _29: bool;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: (&std::string::String, &&str);
+    let mut _34: &std::string::String;
+    let mut _35: &&str;
+    let _36: &str;
+    let mut _39: bool;
+    let mut _40: bool;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: bool;
+    scope 1 {
+        debug this => _1;
+        let _5: std::process::Output;
+        scope 2 {
+            debug output => _5;
+            let _16: std::string::String;
+            scope 3 {
+                debug stdout => _16;
+                let _19: std::string::String;
+                scope 4 {
+                    debug stderr => _19;
+                    let _26: &std::string::String;
+                    let _27: &&str;
+                    let _37: &std::string::String;
+                    let _38: &&str;
+                    scope 5 {
+                        debug left_val => _26;
+                        debug right_val => _27;
+                        let _30: core::panicking::AssertKind;
+                        scope 6 {
+                            debug kind => _30;
+                        }
+                    }
+                    scope 7 {
+                        debug left_val => _37;
+                        debug right_val => _38;
+                        let _41: core::panicking::AssertKind;
+                        scope 8 {
+                            debug kind => _41;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _46 = const false;
+        _45 = const false;
+        _44 = const false;
+        _4 = args() -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _2 = <Args as Iterator>::next(move _3) -> [return: bb2, unwind: bb28];
+    }
+
+    bb2: {
+        _1 = Option::<String>::unwrap(move _2) -> [return: bb3, unwind: bb28];
+    }
+
+    bb3: {
+        _46 = const true;
+        drop(_4) -> [return: bb4, unwind: bb35];
+    }
+
+    bb4: {
+        _46 = const false;
+        _11 = move _1;
+        _10 = Command::new::<String>(move _11) -> [return: bb5, unwind: bb35];
+    }
+
+    bb5: {
+        _9 = &mut _10;
+        _8 = Command::arg::<&str>(move _9, const "-") -> [return: bb6, unwind: bb27];
+    }
+
+    bb6: {
+        _7 = _8;
+        _6 = Command::output(move _7) -> [return: bb7, unwind: bb27];
+    }
+
+    bb7: {
+        _5 = Result::<Output, std::io::Error>::unwrap(move _6) -> [return: bb8, unwind: bb27];
+    }
+
+    bb8: {
+        _44 = const true;
+        _45 = const true;
+        drop(_10) -> [return: bb9, unwind: bb33];
+    }
+
+    bb9: {
+        _14 = &(_5.0: std::process::ExitStatus);
+        _13 = ExitStatus::success(move _14) -> [return: bb10, unwind: bb33];
+    }
+
+    bb10: {
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _15 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb33;
+    }
+
+    bb12: {
+        _45 = const false;
+        _18 = move (_5.1: std::vec::Vec<u8>);
+        _17 = String::from_utf8(move _18) -> [return: bb13, unwind: bb33];
+    }
+
+    bb13: {
+        _16 = Result::<String, FromUtf8Error>::unwrap(move _17) -> [return: bb14, unwind: bb33];
+    }
+
+    bb14: {
+        _44 = const false;
+        _21 = move (_5.2: std::vec::Vec<u8>);
+        _20 = String::from_utf8(move _21) -> [return: bb15, unwind: bb26];
+    }
+
+    bb15: {
+        _19 = Result::<String, FromUtf8Error>::unwrap(move _20) -> [return: bb16, unwind: bb26];
+    }
+
+    bb16: {
+        _23 = &_16;
+        _25 = const "[stdout 0][stdout 1][stdout 2]\n\n";
+        _24 = &_25;
+        _22 = (move _23, move _24);
+        _26 = (_22.0: &std::string::String);
+        _27 = (_22.1: &&str);
+        _29 = <String as PartialEq<&str>>::eq(_26, _27) -> [return: bb17, unwind: bb25];
+    }
+
+    bb17: {
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<String, &str>(move _30, _26, _27, move _32) -> bb25;
+    }
+
+    bb19: {
+        _34 = &_19;
+        _36 = const "[stderr 0][stderr 1][stderr 2]\n\n";
+        _35 = &_36;
+        _33 = (move _34, move _35);
+        _37 = (_33.0: &std::string::String);
+        _38 = (_33.1: &&str);
+        _40 = <String as PartialEq<&str>>::eq(_37, _38) -> [return: bb20, unwind: bb25];
+    }
+
+    bb20: {
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<String, &str>(move _41, _37, _38, move _43) -> bb25;
+    }
+
+    bb22: {
+        drop(_19) -> [return: bb23, unwind: bb26];
+    }
+
+    bb23: {
+        drop(_16) -> [return: bb24, unwind: bb33];
+    }
+
+    bb24: {
+        _44 = const false;
+        _45 = const false;
+        _46 = const false;
+        return;
+    }
+
+    bb25 (cleanup): {
+        drop(_19) -> [return: bb26, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        drop(_16) -> [return: bb33, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        drop(_10) -> [return: bb35, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        drop(_4) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        resume;
+    }
+
+    bb30 (cleanup): {
+        switchInt(_44) -> [0: bb35, otherwise: bb31];
+    }
+
+    bb31 (cleanup): {
+        drop((_5.2: std::vec::Vec<u8>)) -> [return: bb35, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop((_5.1: std::vec::Vec<u8>)) -> [return: bb30, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        switchInt(_45) -> [0: bb30, otherwise: bb32];
+    }
+
+    bb34 (cleanup): {
+        drop(_1) -> [return: bb29, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        switchInt(_46) -> [0: bb29, otherwise: bb34];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: usize;
+    let mut _2: std::env::Args;
+
+    bb0: {
+        _2 = args() -> bb1;
+    }
+
+    bb1: {
+        _1 = <Args as Iterator>::count(move _2) -> bb2;
+    }
+
+    bb2: {
+        switchInt(move _1) -> [2: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        _0 = child() -> bb5;
+    }
+
+    bb4: {
+        _0 = parent() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}

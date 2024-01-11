@@ -1,0 +1,22 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn no_new_warn() -> () {
+    let mut _0: ();
+    let _1: u8;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = const 0_u8;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

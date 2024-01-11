@@ -1,0 +1,61 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&isize, &isize);
+    let mut _2: &isize;
+    let _3: isize;
+    let mut _4: Foo;
+    let _5: isize;
+    let _6: isize;
+    let mut _7: &isize;
+    let _8: isize;
+    let _9: &isize;
+    let _10: &isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug b2 => _5;
+        debug bb2 => _6;
+    }
+    scope 2 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 3 {
+            debug kind => _15;
+        }
+    }
+
+    bb0: {
+        _4 = Foo::B { b1: const 29_isize, bb1: const 100_isize };
+        _5 = ((_4 as B).0: isize);
+        _6 = ((_4 as B).1: isize);
+        _3 = Add(_5, _6);
+        _2 = &_3;
+        _8 = const 129_isize;
+        _7 = &_8;
+        _1 = (move _2, move _7);
+        _9 = (_1.0: &isize);
+        _10 = (_1.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17);
+    }
+
+    bb2: {
+        return;
+    }
+}

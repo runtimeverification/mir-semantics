@@ -1,0 +1,393 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+List::data::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+ListImpl::data::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/issue-91827-extern-types.rs:29:1: 29:16>::as_slice(_1: &List<T>) -> &[T] {
+    debug self => _1;
+    let mut _0: &[T];
+    let mut _3: *const Opaque;
+    let _4: &[T];
+    let mut _5: usize;
+    scope 1 {
+        let _2: *const T;
+        scope 2 {
+            debug ptr => _2;
+        }
+    }
+
+    bb0: {
+        _3 = &raw const ((*_1).2: Opaque);
+        _2 = move _3 as *const T (PtrToPtr);
+        _5 = ((*_1).0: usize);
+        _4 = std::slice::from_raw_parts::<'_, T>(_2, move _5) -> bb1;
+    }
+
+    bb1: {
+        _0 = _4;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/consts/const-eval/issue-91827-extern-types.rs:29:1: 29:16>::as_slice(_1: &List<T>) -> &[T] {
+    debug self => _1;
+    let mut _0: &[T];
+    let mut _3: *const Opaque;
+    let _4: &[T];
+    let mut _5: *const T;
+    let mut _6: usize;
+    scope 1 {
+        let _2: *const T;
+        scope 2 {
+            debug ptr => _2;
+        }
+    }
+
+    bb0: {
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = &raw const ((*_1).2: Opaque);
+        _2 = move _3 as *const T (PtrToPtr);
+        StorageDead(_3);
+        StorageLive(_4);
+        StorageLive(_5);
+        _5 = _2;
+        StorageLive(_6);
+        _6 = ((*_1).0: usize);
+        ConstEvalCounter;
+        _4 = std::slice::from_raw_parts::<'_, T>(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _0 = &(*_4);
+        StorageDead(_6);
+        StorageDead(_5);
+        StorageDead(_2);
+        StorageDead(_4);
+        return;
+    }
+}
+
+<impl at ui/consts/const-eval/issue-91827-extern-types.rs:38:1: 38:39>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-eval/issue-91827-extern-types.rs:38:1: 38:39>::as_list(_1: &ListImpl<T, N>) -> &List<T> {
+    debug self => _1;
+    let mut _0: &List<T>;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = _1 as &List<T> (Transmute);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/consts/const-eval/issue-91827-extern-types.rs:38:1: 38:39>::as_list(_1: &ListImpl<T, N>) -> &List<T> {
+    debug self => _1;
+    let mut _0: &List<T>;
+    let mut _2: &ListImpl<T, N>;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_2);
+        _2 = _1;
+        _0 = move _2 as &List<T> (Transmute);
+        StorageDead(_2);
+        return;
+    }
+}
+
+static A: ListImpl<u128, 3> = {
+    let mut _0: ListImpl<u128, 3>;
+    let mut _1: [u128; 3];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [const 5_u128, const 6_u128, const 7_u128];
+        _0 = ListImpl::<u128, 3> { len: const 3_usize, data: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+A::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+static A_REF: &List<u128> = {
+    let mut _0: &List<u128>;
+    let _1: &List<u128>;
+    let mut _2: &ListImpl<u128, 3>;
+    let _3: &ListImpl<u128, 3>;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const {alloc1: &ListImpl<u128, 3>};
+        _2 = &(*_3);
+        ConstEvalCounter;
+        _1 = ListImpl::<u128, 3>::as_list(move _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = &(*_1);
+        StorageDead(_3);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (static: A, size: 56, align: 8) {
+    0x00 │ 03 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 │ ................
+    0x20 │ 00 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 │ ................
+    0x30 │ 00 00 00 00 00 00 00 00                         │ ........
+}
+
+static A_TAIL_OFFSET: isize = {
+    let mut _0: isize;
+    let mut _1: &List<u128>;
+    let _2: &List<u128>;
+    let mut _3: &ListImpl<u128, 3>;
+    let _4: &ListImpl<u128, 3>;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = const {alloc1: &ListImpl<u128, 3>};
+        _3 = &(*_4);
+        ConstEvalCounter;
+        _2 = ListImpl::<u128, 3>::as_list(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = &(*_2);
+        StorageDead(_3);
+        ConstEvalCounter;
+        _0 = tail_offset::<u128>(move _1) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_4);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (static: A, size: 56, align: 8) {
+    0x00 │ 03 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 │ ................
+    0x20 │ 00 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 │ ................
+    0x30 │ 00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn tail_offset(_1: &List<T>) -> isize {
+    debug list => _1;
+    let mut _0: isize;
+    let mut _2: *const u8;
+    let mut _3: *const Opaque;
+    let mut _4: *const u8;
+    let mut _5: *const List<T>;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = &raw const ((*_1).2: Opaque);
+        _2 = move _3 as *const u8 (PtrToPtr);
+        _5 = &raw const (*_1);
+        _4 = move _5 as *const u8 (PtrToPtr);
+        _0 = ptr::const_ptr::<impl *const u8>::offset_from(move _2, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn tail_offset(_1: &List<T>) -> isize {
+    debug list => _1;
+    let mut _0: isize;
+    let mut _2: *const u8;
+    let mut _3: *const Opaque;
+    let mut _4: *const u8;
+    let mut _5: *const List<T>;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = &raw const ((*_1).2: Opaque);
+        _2 = move _3 as *const u8 (PtrToPtr);
+        StorageDead(_3);
+        StorageLive(_4);
+        StorageLive(_5);
+        _5 = &raw const (*_1);
+        _4 = move _5 as *const u8 (PtrToPtr);
+        StorageDead(_5);
+        ConstEvalCounter;
+        _0 = ptr::const_ptr::<impl *const u8>::offset_from(move _2, move _4) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_4);
+        StorageDead(_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&[u128], &&[u128; 3]);
+    let mut _2: &&[u128];
+    let _3: &[u128];
+    let _4: &&List<u128>;
+    let mut _5: &&[u128; 3];
+    let _6: &[u128; 3];
+    let _7: [u128; 3];
+    let _8: &&[u128];
+    let _9: &&[u128; 3];
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&isize, &isize);
+    let _16: &isize;
+    let mut _17: &isize;
+    let _18: isize;
+    let _19: &&List<u128>;
+    let _20: &isize;
+    let _21: &isize;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: isize;
+    let mut _25: isize;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: &List<u128>;
+    let mut _30: &List<u128>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+
+    bb0: {
+        _4 = const {alloc2: &&List<u128>};
+        _29 = deref_copy (*_4);
+        _3 = List::<u128>::as_slice(_29) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = [const 5_u128, const 6_u128, const 7_u128];
+        _6 = &_7;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _8 = (_1.0: &&[u128]);
+        _9 = (_1.1: &&[u128; 3]);
+        _11 = <&[u128] as PartialEq<&[u128; 3]>>::eq(_8, _9) -> bb2;
+    }
+
+    bb2: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<&[u128], &[u128; 3]>(move _12, _8, _9, move _14);
+    }
+
+    bb4: {
+        _16 = const {alloc3: &isize};
+        _19 = const {alloc2: &&List<u128>};
+        _30 = deref_copy (*_19);
+        _18 = tail_offset::<u128>(_30) -> bb5;
+    }
+
+    bb5: {
+        _17 = &_18;
+        _15 = (_16, move _17);
+        _20 = (_15.0: &isize);
+        _21 = (_15.1: &isize);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<isize, isize>(move _26, _20, _21, move _28);
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+alloc3 (static: A_TAIL_OFFSET, size: 8, align: 8) {
+    08 00 00 00 00 00 00 00                         │ ........
+}
+
+alloc2 (static: A_REF, size: 8, align: 8) {
+    ╾───────alloc1────────╼                         │ ╾──────╼
+}
+
+alloc1 (static: A, size: 56, align: 8) {
+    0x00 │ 03 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 │ ................
+    0x10 │ 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 │ ................
+    0x20 │ 00 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 │ ................
+    0x30 │ 00 00 00 00 00 00 00 00                         │ ........
+}

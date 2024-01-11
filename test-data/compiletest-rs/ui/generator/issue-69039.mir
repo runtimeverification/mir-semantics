@@ -1,0 +1,461 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn mkstr(_1: String, _2: String) -> String {
+    debug my_name => _1;
+    debug my_mood => _2;
+    let mut _0: std::string::String;
+    let _3: std::string::String;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 2];
+    let _10: [core::fmt::rt::Argument<'_>; 2];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &&str;
+    let _13: &str;
+    let mut _14: &str;
+    let _15: &str;
+    let mut _16: &std::string::String;
+    let mut _17: core::fmt::rt::Argument<'_>;
+    let _18: &&str;
+    let _19: &str;
+    let mut _20: &str;
+    let _21: &str;
+    let mut _22: &std::string::String;
+    scope 1 {
+        debug res => _3;
+    }
+
+    bb0: {
+        _7 = [const "", const " is "];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _16 = &_1;
+        _15 = <String as Deref>::deref(move _16) -> [return: bb1, unwind: bb11];
+    }
+
+    bb1: {
+        _14 = _15;
+        _13 = core::str::<impl str>::trim(move _14) -> [return: bb2, unwind: bb11];
+    }
+
+    bb2: {
+        _12 = &_13;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_12) -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _22 = &_2;
+        _21 = <String as Deref>::deref(move _22) -> [return: bb4, unwind: bb11];
+    }
+
+    bb4: {
+        _20 = _21;
+        _19 = core::str::<impl str>::trim(move _20) -> [return: bb5, unwind: bb11];
+    }
+
+    bb5: {
+        _18 = &_19;
+        _17 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_18) -> [return: bb6, unwind: bb11];
+    }
+
+    bb6: {
+        _10 = [move _11, move _17];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        _3 = format(move _4) -> [return: bb8, unwind: bb11];
+    }
+
+    bb8: {
+        _0 = move _3;
+        drop(_2) -> [return: bb9, unwind: bb12];
+    }
+
+    bb9: {
+        drop(_1) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
+
+fn my_scenario() -> impl Generator<String, Yield = &'static str, Return = String> {
+    let mut _0: impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>;
+
+    bb0: {
+        _0 = [generator@ui/generator/issue-69039.rs:12:5: 12:19 (#0)];
+        return;
+    }
+}
+
+fn my_scenario::{closure#0}(_1: Pin<&mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]>, _2: String) -> GeneratorState<&str, String> {
+    debug _arg => (((*(_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19])) as variant#3).0: std::string::String);
+    let mut _0: std::ops::GeneratorState<&str, std::string::String>;
+    let _3: &str;
+    let mut _4: std::string::String;
+    let mut _5: std::string::String;
+    let mut _6: u32;
+    let mut _7: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _8: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _9: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _10: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _11: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _12: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _13: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _14: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _15: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    let mut _16: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19];
+    scope 1 {
+        debug my_name => (((*(_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19])) as variant#4).0: std::string::String);
+        scope 2 {
+            debug my_mood => _2;
+        }
+    }
+
+    bb0: {
+        _7 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        _6 = discriminant((*_7));
+        switchInt(move _6) -> [0: bb1, 1: bb9, 2: bb8, 3: bb6, 4: bb7, otherwise: bb10];
+    }
+
+    bb1: {
+        _8 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        (((*_8) as variant#3).0: std::string::String) = move _2;
+        _0 = GeneratorState::<&str, String>::Yielded(const "What is your name?");
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        discriminant((*_9)) = 3;
+        return;
+    }
+
+    bb2: {
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        drop((((*_12) as variant#3).0: std::string::String)) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        _0 = GeneratorState::<&str, String>::Complete(move _5);
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        discriminant((*_13)) = 1;
+        return;
+    }
+
+    bb4 (cleanup): {
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        drop((((*_14) as variant#3).0: std::string::String)) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        discriminant((*_15)) = 2;
+        resume;
+    }
+
+    bb6: {
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        (((*_16) as variant#4).0: std::string::String) = move _2;
+        _3 = const "How are you feeling?";
+        _0 = GeneratorState::<&str, String>::Yielded(_3);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        discriminant((*_10)) = 4;
+        return;
+    }
+
+    bb7: {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/issue-69039.rs:12:5: 12:19]);
+        _4 = move (((*_11) as variant#4).0: std::string::String);
+        _5 = mkstr(move _4, move _2) -> [return: bb2, unwind: bb4];
+    }
+
+    bb8: {
+        assert(const false, "generator resumed after panicking") -> bb8;
+    }
+
+    bb9: {
+        assert(const false, "generator resumed after completion") -> bb9;
+    }
+
+    bb10: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::pin::Pin<std::boxed::Box<impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>>;
+    let mut _2: impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>;
+    let mut _3: (&std::ops::GeneratorState<&str, std::string::String>, &std::ops::GeneratorState<&str, std::string::String>);
+    let mut _4: &std::ops::GeneratorState<&str, std::string::String>;
+    let _5: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _6: std::pin::Pin<&mut impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>;
+    let mut _7: &mut std::pin::Pin<std::boxed::Box<impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>>;
+    let mut _8: std::string::String;
+    let _9: &str;
+    let mut _10: &std::ops::GeneratorState<&str, std::string::String>;
+    let _11: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _14: bool;
+    let mut _15: bool;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&std::ops::GeneratorState<&str, std::string::String>, &std::ops::GeneratorState<&str, std::string::String>);
+    let mut _20: &std::ops::GeneratorState<&str, std::string::String>;
+    let _21: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _22: std::pin::Pin<&mut impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>;
+    let mut _23: &mut std::pin::Pin<std::boxed::Box<impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>>;
+    let mut _24: std::string::String;
+    let _25: &str;
+    let mut _26: &std::ops::GeneratorState<&str, std::string::String>;
+    let _27: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _30: bool;
+    let mut _31: bool;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: (&std::ops::GeneratorState<&str, std::string::String>, &std::ops::GeneratorState<&str, std::string::String>);
+    let mut _36: &std::ops::GeneratorState<&str, std::string::String>;
+    let _37: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _38: std::pin::Pin<&mut impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>;
+    let mut _39: &mut std::pin::Pin<std::boxed::Box<impl std::ops::Generator<std::string::String, Yield = &'static str, Return = std::string::String>>>;
+    let mut _40: std::string::String;
+    let _41: &str;
+    let mut _42: &std::ops::GeneratorState<&str, std::string::String>;
+    let _43: std::ops::GeneratorState<&str, std::string::String>;
+    let mut _44: std::string::String;
+    let _45: &str;
+    let mut _48: bool;
+    let mut _49: bool;
+    let _51: !;
+    let mut _52: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug my_session => _1;
+        let _12: &std::ops::GeneratorState<&str, std::string::String>;
+        let _13: &std::ops::GeneratorState<&str, std::string::String>;
+        let _28: &std::ops::GeneratorState<&str, std::string::String>;
+        let _29: &std::ops::GeneratorState<&str, std::string::String>;
+        let _46: &std::ops::GeneratorState<&str, std::string::String>;
+        let _47: &std::ops::GeneratorState<&str, std::string::String>;
+        scope 2 {
+            debug left_val => _12;
+            debug right_val => _13;
+            let _16: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _16;
+            }
+        }
+        scope 4 {
+            debug left_val => _28;
+            debug right_val => _29;
+            let _32: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _32;
+            }
+        }
+        scope 6 {
+            debug left_val => _46;
+            debug right_val => _47;
+            let _50: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _50;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = my_scenario() -> bb1;
+    }
+
+    bb1: {
+        _1 = Box::<impl Generator<String, Yield = &'static str, Return = String>>::pin(move _2) -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _1;
+        _6 = Pin::<Box<impl Generator<String, Yield = &'static str, Return = String>>>::as_mut(move _7) -> [return: bb3, unwind: bb35];
+    }
+
+    bb3: {
+        _9 = const "_arg";
+        _8 = <str as ToString>::to_string(_9) -> [return: bb4, unwind: bb35];
+    }
+
+    bb4: {
+        _5 = <impl Generator<String, Yield = &'static str, Return = String> as Generator<String>>::resume(move _6, move _8) -> [return: bb5, unwind: bb35];
+    }
+
+    bb5: {
+        _4 = &_5;
+        _11 = GeneratorState::<&str, String>::Yielded(const "What is your name?");
+        _10 = &_11;
+        _3 = (move _4, move _10);
+        _12 = (_3.0: &std::ops::GeneratorState<&str, std::string::String>);
+        _13 = (_3.1: &std::ops::GeneratorState<&str, std::string::String>);
+        _15 = <GeneratorState<&str, String> as PartialEq>::eq(_12, _13) -> [return: bb6, unwind: bb33];
+    }
+
+    bb6: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<GeneratorState<&str, String>, GeneratorState<&str, String>>(move _16, _12, _13, move _18) -> bb33;
+    }
+
+    bb8: {
+        drop(_11) -> [return: bb9, unwind: bb34];
+    }
+
+    bb9: {
+        drop(_5) -> [return: bb10, unwind: bb35];
+    }
+
+    bb10: {
+        _23 = &mut _1;
+        _22 = Pin::<Box<impl Generator<String, Yield = &'static str, Return = String>>>::as_mut(move _23) -> [return: bb11, unwind: bb35];
+    }
+
+    bb11: {
+        _25 = const "Your Name";
+        _24 = <str as ToString>::to_string(_25) -> [return: bb12, unwind: bb35];
+    }
+
+    bb12: {
+        _21 = <impl Generator<String, Yield = &'static str, Return = String> as Generator<String>>::resume(move _22, move _24) -> [return: bb13, unwind: bb35];
+    }
+
+    bb13: {
+        _20 = &_21;
+        _27 = GeneratorState::<&str, String>::Yielded(const "How are you feeling?");
+        _26 = &_27;
+        _19 = (move _20, move _26);
+        _28 = (_19.0: &std::ops::GeneratorState<&str, std::string::String>);
+        _29 = (_19.1: &std::ops::GeneratorState<&str, std::string::String>);
+        _31 = <GeneratorState<&str, String> as PartialEq>::eq(_28, _29) -> [return: bb14, unwind: bb31];
+    }
+
+    bb14: {
+        _30 = Not(move _31);
+        switchInt(move _30) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<GeneratorState<&str, String>, GeneratorState<&str, String>>(move _32, _28, _29, move _34) -> bb31;
+    }
+
+    bb16: {
+        drop(_27) -> [return: bb17, unwind: bb32];
+    }
+
+    bb17: {
+        drop(_21) -> [return: bb18, unwind: bb35];
+    }
+
+    bb18: {
+        _39 = &mut _1;
+        _38 = Pin::<Box<impl Generator<String, Yield = &'static str, Return = String>>>::as_mut(move _39) -> [return: bb19, unwind: bb35];
+    }
+
+    bb19: {
+        _41 = const "Sensory Organs";
+        _40 = <str as ToString>::to_string(_41) -> [return: bb20, unwind: bb35];
+    }
+
+    bb20: {
+        _37 = <impl Generator<String, Yield = &'static str, Return = String> as Generator<String>>::resume(move _38, move _40) -> [return: bb21, unwind: bb35];
+    }
+
+    bb21: {
+        _36 = &_37;
+        _45 = const "Your Name is Sensory Organs";
+        _44 = <str as ToString>::to_string(_45) -> [return: bb22, unwind: bb30];
+    }
+
+    bb22: {
+        _43 = GeneratorState::<&str, String>::Complete(move _44);
+        _42 = &_43;
+        _35 = (move _36, move _42);
+        _46 = (_35.0: &std::ops::GeneratorState<&str, std::string::String>);
+        _47 = (_35.1: &std::ops::GeneratorState<&str, std::string::String>);
+        _49 = <GeneratorState<&str, String> as PartialEq>::eq(_46, _47) -> [return: bb23, unwind: bb29];
+    }
+
+    bb23: {
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _50 = core::panicking::AssertKind::Eq;
+        _52 = Option::<Arguments<'_>>::None;
+        _51 = core::panicking::assert_failed::<GeneratorState<&str, String>, GeneratorState<&str, String>>(move _50, _46, _47, move _52) -> bb29;
+    }
+
+    bb25: {
+        drop(_43) -> [return: bb26, unwind: bb30];
+    }
+
+    bb26: {
+        drop(_37) -> [return: bb27, unwind: bb35];
+    }
+
+    bb27: {
+        drop(_1) -> bb28;
+    }
+
+    bb28: {
+        return;
+    }
+
+    bb29 (cleanup): {
+        drop(_43) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_37) -> [return: bb35, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_27) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_21) -> [return: bb35, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_11) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_5) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_1) -> [return: bb36, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        resume;
+    }
+}

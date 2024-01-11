@@ -1,0 +1,98 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/dyn-star/method.rs:10:1: 10:19>::get(_1: &usize) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn invoke_dyn_star(_1: dyn* Foo) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let mut _2: &dyn* Foo;
+
+    bb0: {
+        _2 = &_1;
+        _0 = <dyn* Foo as Foo>::get(move _2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn make_and_invoke_dyn_star(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let _2: dyn* Foo;
+    scope 1 {
+        debug dyn_i => _2;
+    }
+
+    bb0: {
+        _2 = _1 as dyn* Foo (DynStar);
+        _0 = invoke_dyn_star(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &usize;
+    let _11: usize;
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _11 = make_and_invoke_dyn_star(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_11;
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_10) -> bb2;
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb3;
+    }
+
+    bb3: {
+        _1 = _print(move _2) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

@@ -1,0 +1,371 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/union/union-overwrite.rs:6:16: 6:21>::clone(_1: &Pair<T, U>) -> Pair<T, U> {
+    debug self => _1;
+    let mut _0: Pair<T, U>;
+    let mut _2: T;
+    let _3: &T;
+    let mut _4: U;
+    let _5: &U;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: U);
+        _4 = <U as Clone>::clone(_5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = Pair::<T, U>(move _2, move _4);
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/union/union-overwrite.rs:9:16: 9:21>::clone(_1: &Triple<T>) -> Triple<T> {
+    debug self => _1;
+    let mut _0: Triple<T>;
+    let mut _2: T;
+    let _3: &T;
+    let mut _4: T;
+    let _5: &T;
+    let mut _6: T;
+    let _7: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: T);
+        _4 = <T as Clone>::clone(_5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _7 = &((*_1).2: T);
+        _6 = <T as Clone>::clone(_7) -> [return: bb3, unwind: bb4];
+    }
+
+    bb3: {
+        _0 = Triple::<T>(move _2, move _4, move _6);
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_4) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn check() -> () {
+    let mut _0: ();
+    let mut _1: U<u8, u16>;
+    let mut _2: (&u16, &u16);
+    let mut _3: &u16;
+    let mut _4: &u16;
+    let _5: u16;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u16;
+    let mut _11: u16;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&u32, &u32);
+    let mut _17: &u32;
+    let mut _18: &u32;
+    let _19: u32;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: u32;
+    let mut _25: u32;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&u64, &u64);
+    let mut _31: &u64;
+    let mut _32: &u64;
+    let _33: u64;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: u64;
+    let mut _39: u64;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _44: Triple<u8>;
+    let mut _45: (&u32, &u32);
+    let mut _46: &u32;
+    let mut _47: &u32;
+    let _48: u32;
+    let mut _51: bool;
+    let mut _52: bool;
+    let mut _53: u32;
+    let mut _54: u32;
+    let _56: !;
+    let mut _57: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _59: Triple<u8>;
+    let mut _60: (&u32, &u32);
+    let mut _61: &u32;
+    let mut _62: &u32;
+    let _63: u32;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: u32;
+    let mut _69: u32;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug u => _1;
+        let _6: &u16;
+        let _7: &u16;
+        let mut _15: U<u16, u32>;
+        scope 2 {
+            debug left_val => _6;
+            debug right_val => _7;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+        scope 4 {
+            debug u => _15;
+            let _20: &u32;
+            let _21: &u32;
+            let mut _29: U<u32, u64>;
+            scope 5 {
+                debug left_val => _20;
+                debug right_val => _21;
+                let _26: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _26;
+                }
+            }
+            scope 7 {
+                debug u => _29;
+                let _34: &u64;
+                let _35: &u64;
+                let mut _43: W<Pair<Triple<u8>, u8>, u32>;
+                scope 8 {
+                    debug left_val => _34;
+                    debug right_val => _35;
+                    let _40: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _40;
+                    }
+                }
+                scope 10 {
+                    debug w => _43;
+                    let _49: &u32;
+                    let _50: &u32;
+                    let mut _58: W<Pair<u8, Triple<u8>>, u32>;
+                    scope 11 {
+                        debug left_val => _49;
+                        debug right_val => _50;
+                        let _55: core::panicking::AssertKind;
+                        scope 12 {
+                            debug kind => _55;
+                        }
+                    }
+                    scope 13 {
+                        debug w => _58;
+                        let _64: &u32;
+                        let _65: &u32;
+                        scope 14 {
+                            debug left_val => _64;
+                            debug right_val => _65;
+                            let _70: core::panicking::AssertKind;
+                            scope 15 {
+                                debug kind => _70;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = U::<u8, u16> { a: const 57054_u16 };
+        ((_1.0: Pair<u8, u8>).0: u8) = const 190_u8;
+        _3 = &(_1.1: u16);
+        _5 = const 57022_u16;
+        _4 = &_5;
+        _2 = (move _3, move _4);
+        _6 = (_2.0: &u16);
+        _7 = (_2.1: &u16);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u16, u16>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        _15 = U::<u16, u32> { a: const 3735936685_u32 };
+        ((_15.0: Pair<u16, u16>).0: u16) = const 48879_u16;
+        _17 = &(_15.1: u32);
+        _19 = const 3735928559_u32;
+        _18 = &_19;
+        _16 = (move _17, move _18);
+        _20 = (_16.0: &u32);
+        _21 = (_16.1: &u32);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<u32, u32>(move _26, _20, _21, move _28);
+    }
+
+    bb4: {
+        _29 = U::<u32, u64> { a: const 16045690984833335023_u64 };
+        ((_29.0: Pair<u32, u32>).0: u32) = const 3131961357_u32;
+        _31 = &(_29.1: u64);
+        _33 = const 16045690984229367821_u64;
+        _32 = &_33;
+        _30 = (move _31, move _32);
+        _34 = (_30.0: &u64);
+        _35 = (_30.1: &u64);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<u64, u64>(move _40, _34, _35, move _42);
+    }
+
+    bb6: {
+        _43 = W::<Pair<Triple<u8>, u8>, u32> { a: const 3735936685_u32 };
+        _44 = Triple::<u8>(const 0_u8, const 0_u8, const 0_u8);
+        ((_43.0: Pair<Triple<u8>, u8>).0: Triple<u8>) = move _44;
+        _46 = &(_43.1: u32);
+        _48 = const 3724541952_u32;
+        _47 = &_48;
+        _45 = (move _46, move _47);
+        _49 = (_45.0: &u32);
+        _50 = (_45.1: &u32);
+        _53 = (*_49);
+        _54 = (*_50);
+        _52 = Eq(move _53, move _54);
+        _51 = Not(move _52);
+        switchInt(move _51) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _55 = core::panicking::AssertKind::Eq;
+        _57 = Option::<Arguments<'_>>::None;
+        _56 = core::panicking::assert_failed::<u32, u32>(move _55, _49, _50, move _57);
+    }
+
+    bb8: {
+        _58 = W::<Pair<u8, Triple<u8>>, u32> { a: const 3735936685_u32 };
+        _59 = Triple::<u8>(const 0_u8, const 0_u8, const 0_u8);
+        ((_58.0: Pair<u8, Triple<u8>>).1: Triple<u8>) = move _59;
+        _61 = &(_58.1: u32);
+        _63 = const 173_u32;
+        _62 = &_63;
+        _60 = (move _61, move _62);
+        _64 = (_60.0: &u32);
+        _65 = (_60.1: &u32);
+        _68 = (*_64);
+        _69 = (*_65);
+        _67 = Eq(move _68, move _69);
+        _66 = Not(move _67);
+        switchInt(move _66) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<u32, u32>(move _70, _64, _65, move _72);
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    scope 1 {
+    }
+
+    bb0: {
+        _1 = check() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Pair(_1: T, _2: U) -> Pair<T, U> {
+    let mut _0: Pair<T, U>;
+
+    bb0: {
+        _0 = Pair::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Pair(_1: T, _2: U) -> Pair<T, U> {
+    let mut _0: Pair<T, U>;
+
+    bb0: {
+        _0 = Pair::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+fn Triple(_1: T, _2: T, _3: T) -> Triple<T> {
+    let mut _0: Triple<T>;
+
+    bb0: {
+        _0 = Triple::<T>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Triple(_1: T, _2: T, _3: T) -> Triple<T> {
+    let mut _0: Triple<T>;
+
+    bb0: {
+        _0 = Triple::<T>(move _1, move _2, move _3);
+        return;
+    }
+}

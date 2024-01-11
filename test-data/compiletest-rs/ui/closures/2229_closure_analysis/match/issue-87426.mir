@@ -1,0 +1,91 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _3: &i32;
+    scope 1 {
+        debug ref_x_ck => _1;
+        let _2: [closure@ui/closures/2229_closure_analysis/match/issue-87426.rs:6:14: 6:16];
+        scope 2 {
+            debug _y => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 123_i32;
+        _3 = &_1;
+        _2 = [closure@ui/closures/2229_closure_analysis/match/issue-87426.rs:6:14: 6:16] { ref_x_ck: move _3 };
+        return;
+    }
+}
+
+fn foo::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/match/issue-87426.rs:6:14: 6:16]) -> () {
+    debug ref_x_ck => (*((*_1).0: &i32));
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 1];
+    let _8: [&str; 1];
+    let _9: ();
+    let mut _10: std::fmt::Arguments<'_>;
+    let mut _11: &[&str];
+    let _12: &[&str; 1];
+    let _13: [&str; 1];
+    let mut _14: &i32;
+    let mut _15: &i32;
+
+    bb0: {
+        _14 = deref_copy ((*_1).0: &i32);
+        _2 = Le(const 2000000_i32, (*_14));
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _15 = deref_copy ((*_1).0: &i32);
+        _3 = Le((*_15), const 3999999_i32);
+        switchInt(move _3) -> [0: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _13 = [const "B\n"];
+        _12 = &_13;
+        _11 = _12 as &[&str] (Pointer(Unsize));
+        _10 = Arguments::<'_>::new_const(move _11) -> bb5;
+    }
+
+    bb3: {
+        _8 = [const "A\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_const(move _6) -> bb4;
+    }
+
+    bb4: {
+        _4 = _print(move _5) -> bb6;
+    }
+
+    bb5: {
+        _9 = _print(move _10) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

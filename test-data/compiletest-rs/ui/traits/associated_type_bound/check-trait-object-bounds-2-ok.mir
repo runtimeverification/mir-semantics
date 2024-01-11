@@ -1,0 +1,48 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<&i32>;
+    let mut _2: std::option::Option<<T as X<'_>>::F>;
+
+    bb0: {
+        _2 = Option::<<T as X<'_>>::F>::None;
+        _1 = Option::<<T as X<'_>>::F>::map::<&i32, [closure@ui/traits/associated_type_bound/check-trait-object-bounds-2-ok.rs:10:22: 10:25]>(move _2, const ZeroSized: [closure@ui/traits/associated_type_bound/check-trait-object-bounds-2-ok.rs:10:22: 10:25]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn f::{closure#0}(_1: [closure@ui/traits/associated_type_bound/check-trait-object-bounds-2-ok.rs:10:22: 10:25], _2: <T as X<'_>>::F) -> &i32 {
+    debug f => _2;
+    let mut _0: &i32;
+    let mut _3: (&i32,);
+    let _4: &i32;
+    let _5: i32;
+
+    bb0: {
+        _5 = const 0_i32;
+        _4 = &_5;
+        _3 = (_4,);
+        _0 = <<T as X<'_>>::F as FnOnce<(&i32,)>>::call_once(move _2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = f::<dyn for<'x> X<'x, for<'x> F = for<'a> fn(&'a i32) -> &'x i32>>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

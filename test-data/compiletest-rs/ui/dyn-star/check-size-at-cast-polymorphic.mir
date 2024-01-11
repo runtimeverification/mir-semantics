@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn dyn_debug(_1: dyn* Debug) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn polymorphic(_1: &T) -> () {
+    debug t => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: dyn* std::fmt::Debug;
+
+    bb0: {
+        _3 = _1 as dyn* std::fmt::Debug (DynStar);
+        _2 = dyn_debug(move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,255 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/panic-runtime/abort.rs:14:1: 14:19>::drop(_1: &mut Bomb) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: !;
+
+    bb0: {
+        _2 = exit(const 0_i32);
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::env::ArgsOs;
+    let mut _3: std::option::Option<std::ffi::OsString>;
+    let mut _4: &mut std::env::ArgsOs;
+    let mut _5: std::option::Option<std::ffi::OsString>;
+    let mut _6: &mut std::env::ArgsOs;
+    let mut _7: isize;
+    let mut _9: bool;
+    let mut _10: &&std::ffi::OsStr;
+    let _11: &std::ffi::OsStr;
+    let _12: &std::ffi::OsStr;
+    let mut _13: &std::ffi::OsString;
+    let mut _14: &&str;
+    let _15: &str;
+    let _17: !;
+    let mut _19: std::ffi::OsString;
+    let mut _20: std::option::Option<std::ffi::OsString>;
+    let mut _21: &mut std::env::ArgsOs;
+    let mut _22: std::env::ArgsOs;
+    let _23: &mut std::process::Command;
+    let mut _24: &mut std::process::Command;
+    let mut _25: bool;
+    let _26: &mut std::process::Command;
+    let mut _27: &mut std::process::Command;
+    let mut _29: &mut std::process::Command;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: &std::option::Option<i32>;
+    let _33: std::option::Option<i32>;
+    let mut _34: &std::process::ExitStatus;
+    let _35: std::process::ExitStatus;
+    let mut _36: std::result::Result<std::process::ExitStatus, std::io::Error>;
+    let mut _37: &std::option::Option<i32>;
+    let _38: std::option::Option<i32>;
+    let mut _39: !;
+    let mut _40: bool;
+    let mut _41: isize;
+    scope 1 {
+        debug args => _1;
+        let _2: std::ffi::OsString;
+        scope 2 {
+            debug me => _2;
+            let mut _18: std::process::Command;
+            scope 3 {
+                debug s => _8;
+                let _8: std::ffi::OsString;
+                let _16: Bomb;
+                scope 4 {
+                    debug _bomb => const Bomb;
+                }
+            }
+            scope 5 {
+                debug cmd => _18;
+                let _28: std::result::Result<std::process::ExitStatus, std::io::Error>;
+                scope 6 {
+                    debug s => _28;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _40 = const false;
+        _1 = args_os() -> bb1;
+    }
+
+    bb1: {
+        _4 = &mut _1;
+        _3 = <ArgsOs as Iterator>::next(move _4) -> [return: bb2, unwind: bb32];
+    }
+
+    bb2: {
+        _2 = Option::<OsString>::unwrap(move _3) -> [return: bb3, unwind: bb32];
+    }
+
+    bb3: {
+        _6 = &mut _1;
+        _5 = <ArgsOs as Iterator>::next(move _6) -> [return: bb4, unwind: bb31];
+    }
+
+    bb4: {
+        _40 = const true;
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [1: bb5, otherwise: bb37];
+    }
+
+    bb5: {
+        _40 = const false;
+        _8 = move ((_5 as Some).0: std::ffi::OsString);
+        _13 = &_8;
+        _12 = <OsString as Deref>::deref(move _13) -> [return: bb6, unwind: bb30];
+    }
+
+    bb6: {
+        _11 = _12;
+        _10 = &_11;
+        _15 = const "foo";
+        _14 = &_15;
+        _9 = <&OsStr as PartialEq<&str>>::eq(move _10, move _14) -> [return: bb7, unwind: bb30];
+    }
+
+    bb7: {
+        switchInt(move _9) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _17 = begin_panic::<&str>(const "try to catch me") -> bb29;
+    }
+
+    bb9: {
+        drop(_8) -> [return: bb37, unwind: bb31];
+    }
+
+    bb10: {
+        _21 = &mut _22;
+        _20 = <ArgsOs as Iterator>::next(move _21) -> [return: bb11, unwind: bb28];
+    }
+
+    bb11: {
+        _19 = Option::<OsString>::unwrap(move _20) -> [return: bb12, unwind: bb28];
+    }
+
+    bb12: {
+        _18 = Command::new::<OsString>(move _19) -> [return: bb13, unwind: bb28];
+    }
+
+    bb13: {
+        drop(_22) -> [return: bb14, unwind: bb27];
+    }
+
+    bb14: {
+        _24 = &mut _18;
+        _23 = Command::arg::<&str>(move _24, const "foo") -> [return: bb15, unwind: bb27];
+    }
+
+    bb15: {
+        _25 = const false;
+        switchInt(move _25) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _27 = &mut _18;
+        _26 = Command::env::<&str, &str>(move _27, const "RUST_BACKTRACE", const "0") -> [return: bb38, unwind: bb27];
+    }
+
+    bb17: {
+        _29 = &mut _18;
+        _28 = Command::status(move _29) -> [return: bb18, unwind: bb27];
+    }
+
+    bb18: {
+        _36 = move _28;
+        _35 = Result::<ExitStatus, std::io::Error>::unwrap(move _36) -> [return: bb19, unwind: bb27];
+    }
+
+    bb19: {
+        _34 = &_35;
+        _33 = ExitStatus::code(move _34) -> [return: bb20, unwind: bb27];
+    }
+
+    bb20: {
+        _32 = &_33;
+        _38 = Option::<i32>::Some(const 0_i32);
+        _37 = &_38;
+        _31 = <Option<i32> as PartialEq>::ne(move _32, move _37) -> [return: bb21, unwind: bb27];
+    }
+
+    bb21: {
+        _30 = Not(move _31);
+        switchInt(move _30) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _39 = core::panicking::panic(const "assertion failed: s.unwrap().code() != Some(0)") -> bb27;
+    }
+
+    bb23: {
+        drop(_18) -> [return: bb24, unwind: bb31];
+    }
+
+    bb24: {
+        drop(_2) -> [return: bb25, unwind: bb32];
+    }
+
+    bb25: {
+        drop(_1) -> bb26;
+    }
+
+    bb26: {
+        return;
+    }
+
+    bb27 (cleanup): {
+        drop(_18) -> [return: bb31, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        drop(_22) -> [return: bb31, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_16) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_8) -> [return: bb31, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_2) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_1) -> [return: bb33, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        resume;
+    }
+
+    bb34: {
+        _40 = const false;
+        _22 = args_os() -> [return: bb10, unwind: bb31];
+    }
+
+    bb35: {
+        switchInt(_40) -> [0: bb34, otherwise: bb36];
+    }
+
+    bb36: {
+        drop(((_5 as Some).0: std::ffi::OsString)) -> [return: bb34, unwind: bb31];
+    }
+
+    bb37: {
+        _41 = discriminant(_5);
+        switchInt(move _41) -> [1: bb35, otherwise: bb34];
+    }
+
+    bb38: {
+        goto -> bb17;
+    }
+}

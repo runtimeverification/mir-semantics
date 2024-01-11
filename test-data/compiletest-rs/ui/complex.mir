@@ -1,0 +1,228 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn nothing() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn putstr(_1: String) -> () {
+    debug _s => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn putint(_1: isize) -> () {
+    debug _i => _1;
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: bool;
+    let mut _4: isize;
+    let _5: ();
+    let mut _6: std::string::String;
+    let _7: &str;
+    let mut _8: isize;
+    scope 1 {
+        debug i => _2;
+    }
+
+    bb0: {
+        _2 = const 33_isize;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _4 = _2;
+        _3 = Lt(move _4, const 36_isize);
+        switchInt(move _3) -> [0: bb5, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = const "hi";
+        _6 = <str as ToString>::to_string(_7) -> bb3;
+    }
+
+    bb3: {
+        _5 = putstr(move _6) -> bb4;
+    }
+
+    bb4: {
+        _8 = _2;
+        _2 = Add(move _8, const 1_isize);
+        goto -> bb1;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn zerg(_1: isize) -> isize {
+    debug i => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn foo(_1: isize) -> isize {
+    debug x => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let _3: ();
+    let mut _4: std::string::String;
+    let _5: &str;
+    let mut _6: bool;
+    let mut _7: isize;
+    let _8: ();
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let _13: ();
+    let _15: isize;
+    scope 1 {
+        debug y => _2;
+        let mut _14: isize;
+        scope 2 {
+            debug z => _14;
+        }
+    }
+
+    bb0: {
+        _2 = Add(_1, const 2_isize);
+        _5 = const "hello";
+        _4 = <str as ToString>::to_string(_5) -> bb1;
+    }
+
+    bb1: {
+        _3 = putstr(move _4) -> bb2;
+    }
+
+    bb2: {
+        _7 = _2;
+        _6 = Lt(move _7, const 10_isize);
+        switchInt(move _6) -> [0: bb6, otherwise: bb3];
+    }
+
+    bb3: {
+        _9 = _2;
+        _8 = putint(move _9) -> bb4;
+    }
+
+    bb4: {
+        _11 = _2;
+        _10 = Mul(move _11, const 3_isize);
+        switchInt(move _10) -> [4: bb5, otherwise: bb2];
+    }
+
+    bb5: {
+        _12 = _2;
+        _2 = Add(move _12, const 2_isize);
+        _13 = nothing() -> bb2;
+    }
+
+    bb6: {
+        _14 = const 85_isize;
+        _15 = foo(_14) -> bb7;
+    }
+
+    bb7: {
+        _0 = const 0_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &isize;
+    let _12: ();
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 1];
+    let _16: [&str; 1];
+    let _17: ();
+    let mut _18: std::fmt::Arguments<'_>;
+    let mut _19: &[&str];
+    let _20: &[&str; 1];
+    let _21: [&str; 1];
+    let mut _22: &[core::fmt::rt::Argument<'_>];
+    let _23: &[core::fmt::rt::Argument<'_>; 0];
+    let _24: [core::fmt::rt::Argument<'_>; 0];
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = Add(const 2_isize, const 2_isize);
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _16 = [const "hello, world\n"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_const(move _14) -> bb4;
+    }
+
+    bb4: {
+        _12 = _print(move _13) -> bb5;
+    }
+
+    bb5: {
+        _21 = [const "10\n"];
+        _20 = &_21;
+        _19 = _20 as &[&str] (Pointer(Unsize));
+        _24 = core::fmt::rt::Argument::<'_>::none() -> bb6;
+    }
+
+    bb6: {
+        _23 = &_24;
+        _22 = _23 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _18 = Arguments::<'_>::new_v1(move _19, move _22) -> bb7;
+    }
+
+    bb7: {
+        _17 = _print(move _18) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}

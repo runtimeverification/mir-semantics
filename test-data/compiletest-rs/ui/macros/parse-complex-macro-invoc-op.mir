@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: i32;
+    let _10: usize;
+    let mut _11: usize;
+    let mut _12: bool;
+    let _13: ();
+    scope 1 {
+        debug x => _9;
+    }
+
+    bb0: {
+        _1 = Eq(const 1_i32, const 0_i32);
+        assert(!move _1, "attempt to divide `{}` by zero", const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _2 = Eq(const 1_i32, const -1_i32);
+        _3 = Eq(const 1_i32, const i32::MIN);
+        _4 = BitAnd(move _2, move _3);
+        assert(!move _4, "attempt to compute `{} / {}`, which would overflow", const 1_i32, const 1_i32) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(const 1_i32, const 0_i32);
+        assert(!move _5, "attempt to calculate the remainder of `{}` with a divisor of zero", const 1_i32) -> bb3;
+    }
+
+    bb3: {
+        _6 = Eq(const 1_i32, const -1_i32);
+        _7 = Eq(const 1_i32, const i32::MIN);
+        _8 = BitAnd(move _6, move _7);
+        assert(!move _8, "attempt to compute the remainder of `{} % {}`, which would overflow", const 1_i32, const 1_i32) -> bb4;
+    }
+
+    bb4: {
+        _9 = const 1_i32;
+        _9 = const 2_i32;
+        _9 = Add(_9, const 1_i32);
+        _10 = const 1_usize;
+        _11 = const 3_usize;
+        _12 = Lt(_10, _11);
+        assert(move _12, "index out of bounds: the length is {} but the index is {}", move _11, _10) -> bb5;
+    }
+
+    bb5: {
+        _13 = std::mem::drop::<i32>(const 1_i32) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

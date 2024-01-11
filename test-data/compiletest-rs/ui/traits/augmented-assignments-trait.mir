@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/augmented-assignments-trait.rs:6:1: 6:23>::add_assign(_1: &mut Int, _2: Int) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _3: !;
+
+    bb0: {
+        _3 = core::panicking::panic(const "not implemented");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Int(_1: i32) -> Int {
+    let mut _0: Int;
+
+    bb0: {
+        _0 = Int(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Int(_1: i32) -> Int {
+    let mut _0: Int;
+
+    bb0: {
+        _0 = Int(move _1);
+        return;
+    }
+}

@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-eval/const_prop_errors.rs:7:1: 7:18>::foo(_1: T) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+    let mut _2: fn();
+
+    bb0: {
+        _2 = bar::<T> as fn() (Pointer(ReifyFnPointer));
+        _0 = move _2 as u32 (PointerExposeAddress);
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar() -> () {
+    let mut _0: ();
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

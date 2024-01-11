@@ -1,0 +1,308 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-with-repr-packed.rs:7:16: 7:21>::clone(_1: &Aligned) -> Aligned {
+    debug self => _1;
+    let mut _0: Aligned;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn check_align(_1: *const Aligned) -> () {
+    debug ptr => _1;
+    let mut _0: ();
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+    let mut _8: &usize;
+    let _9: usize;
+    let _10: &usize;
+    let _11: &usize;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: usize;
+    let mut _15: usize;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _10;
+        debug right_val => _11;
+        let _16: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _16;
+        }
+    }
+
+    bb0: {
+        _5 = _1 as usize (PointerExposeAddress);
+        _6 = align_of::<Aligned>() -> bb1;
+    }
+
+    bb1: {
+        _7 = Eq(_6, const 0_usize);
+        assert(!move _7, "attempt to calculate the remainder of `{}` with a divisor of zero", _5) -> bb2;
+    }
+
+    bb2: {
+        _4 = Rem(move _5, move _6);
+        _3 = &_4;
+        _9 = const 0_usize;
+        _8 = &_9;
+        _2 = (move _3, move _8);
+        _10 = (_2.0: &usize);
+        _11 = (_2.1: &usize);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<usize, usize>(move _16, _10, _11, move _18);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-with-repr-packed.rs:16:1: 16:27>::eq(_1: &Aligned, _2: &Aligned) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: ();
+    let mut _4: *const Aligned;
+    let _5: ();
+    let mut _6: *const Aligned;
+    let mut _7: usize;
+    let mut _8: usize;
+
+    bb0: {
+        _4 = &raw const (*_1);
+        _3 = check_align(move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = &raw const (*_2);
+        _5 = check_align(move _6) -> bb2;
+    }
+
+    bb2: {
+        _7 = ((*_1).0: usize);
+        _8 = ((*_2).0: usize);
+        _0 = Eq(move _7, move _8);
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-with-repr-packed.rs:25:16: 25:21>::clone(_1: &Packed) -> Packed {
+    debug self => _1;
+    let mut _0: Packed;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-with-repr-packed.rs:25:23: 25:32>::eq(_1: &Packed, _2: &Packed) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: &Aligned;
+    let _5: Aligned;
+    let mut _6: &Aligned;
+    let _7: Aligned;
+    let mut _8: bool;
+    let mut _9: &Aligned;
+    let _10: Aligned;
+    let mut _11: &Aligned;
+    let _12: Aligned;
+
+    bb0: {
+        _5 = ((*_1).0: Aligned);
+        _4 = &_5;
+        _7 = ((*_2).0: Aligned);
+        _6 = &_7;
+        _3 = <Aligned as PartialEq>::eq(move _4, move _6) -> bb4;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _10 = ((*_1).1: Aligned);
+        _9 = &_10;
+        _12 = ((*_2).1: Aligned);
+        _11 = &_12;
+        _8 = <Aligned as PartialEq>::eq(move _9, move _11) -> bb5;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _8;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/deriving/deriving-with-repr-packed.rs:28:10: 28:19>::eq(_1: &Dealigned<T>, _2: &Dealigned<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u8;
+    let mut _5: u8;
+    let mut _6: bool;
+    let mut _7: &T;
+    let mut _8: &T;
+
+    bb0: {
+        _4 = ((*_1).0: u8);
+        _5 = ((*_2).0: u8);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = &((*_1).1: T);
+        _8 = &((*_2).1: T);
+        _6 = <T as PartialEq>::eq(move _7, move _8) -> bb4;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Dealigned<Packed>;
+    let mut _2: Packed;
+    let mut _3: Aligned;
+    let mut _4: Aligned;
+    let mut _6: &Dealigned<Packed>;
+    let mut _7: &Dealigned<Packed>;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: !;
+    scope 1 {
+        debug d1 => _1;
+        let _5: bool;
+        scope 2 {
+            debug ck => _5;
+        }
+    }
+
+    bb0: {
+        _3 = Aligned(const 1_usize);
+        _4 = Aligned(const 2_usize);
+        _2 = Packed(move _3, move _4);
+        _1 = Dealigned::<Packed>(const 0_u8, move _2);
+        _6 = &_1;
+        _7 = &_1;
+        _5 = <Dealigned<Packed> as PartialEq>::eq(move _6, move _7) -> bb1;
+    }
+
+    bb1: {
+        _9 = _5;
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::panic(const "assertion failed: ck");
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn Aligned(_1: usize) -> Aligned {
+    let mut _0: Aligned;
+
+    bb0: {
+        _0 = Aligned(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Aligned(_1: usize) -> Aligned {
+    let mut _0: Aligned;
+
+    bb0: {
+        _0 = Aligned(move _1);
+        return;
+    }
+}
+
+fn Packed(_1: Aligned, _2: Aligned) -> Packed {
+    let mut _0: Packed;
+
+    bb0: {
+        _0 = Packed(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Packed(_1: Aligned, _2: Aligned) -> Packed {
+    let mut _0: Packed;
+
+    bb0: {
+        _0 = Packed(move _1, move _2);
+        return;
+    }
+}
+
+fn Dealigned(_1: u8, _2: T) -> Dealigned<T> {
+    let mut _0: Dealigned<T>;
+
+    bb0: {
+        _0 = Dealigned::<T>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Dealigned(_1: u8, _2: T) -> Dealigned<T> {
+    let mut _0: Dealigned<T>;
+
+    bb0: {
+        _0 = Dealigned::<T>(move _1, move _2);
+        return;
+    }
+}

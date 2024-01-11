@@ -1,0 +1,312 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &isize;
+    let mut _12: (&isize, &isize);
+    let mut _13: &isize;
+    let mut _14: &isize;
+    let _15: isize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: isize;
+    let mut _21: isize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let _25: ();
+    let mut _26: std::fmt::Arguments<'_>;
+    let mut _27: &[&str];
+    let _28: &[&str; 2];
+    let _29: [&str; 2];
+    let mut _30: &[core::fmt::rt::Argument<'_>];
+    let _31: &[core::fmt::rt::Argument<'_>; 1];
+    let _32: [core::fmt::rt::Argument<'_>; 1];
+    let mut _33: core::fmt::rt::Argument<'_>;
+    let _34: &isize;
+    let mut _35: (&isize, &isize);
+    let mut _36: &isize;
+    let mut _37: &isize;
+    let _38: isize;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: isize;
+    let mut _44: isize;
+    let _46: !;
+    let mut _47: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _48: isize;
+    let _49: ();
+    let mut _50: std::fmt::Arguments<'_>;
+    let mut _51: &[&str];
+    let _52: &[&str; 2];
+    let _53: [&str; 2];
+    let mut _54: &[core::fmt::rt::Argument<'_>];
+    let _55: &[core::fmt::rt::Argument<'_>; 1];
+    let _56: [core::fmt::rt::Argument<'_>; 1];
+    let mut _57: core::fmt::rt::Argument<'_>;
+    let _58: &isize;
+    let mut _59: (&isize, &isize);
+    let mut _60: &isize;
+    let mut _61: &isize;
+    let _62: isize;
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: isize;
+    let mut _68: isize;
+    let _70: !;
+    let mut _71: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _72: bool;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let _76: ();
+    let mut _77: std::fmt::Arguments<'_>;
+    let mut _78: &[&str];
+    let _79: &[&str; 2];
+    let _80: [&str; 2];
+    let mut _81: &[core::fmt::rt::Argument<'_>];
+    let _82: &[core::fmt::rt::Argument<'_>; 1];
+    let _83: [core::fmt::rt::Argument<'_>; 1];
+    let mut _84: core::fmt::rt::Argument<'_>;
+    let _85: &isize;
+    let mut _86: (&isize, &isize);
+    let mut _87: &isize;
+    let mut _88: &isize;
+    let _89: isize;
+    let mut _92: bool;
+    let mut _93: bool;
+    let mut _94: isize;
+    let mut _95: isize;
+    let _97: !;
+    let mut _98: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _16: &isize;
+        let _17: &isize;
+        let _39: &isize;
+        let _40: &isize;
+        let _63: &isize;
+        let _64: &isize;
+        let _90: &isize;
+        let _91: &isize;
+        scope 2 {
+            debug left_val => _16;
+            debug right_val => _17;
+            let _22: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _22;
+            }
+        }
+        scope 4 {
+            debug left_val => _39;
+            debug right_val => _40;
+            let _45: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _45;
+            }
+        }
+        scope 6 {
+            debug left_val => _63;
+            debug right_val => _64;
+            let _69: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _69;
+            }
+        }
+        scope 8 {
+            debug left_val => _90;
+            debug right_val => _91;
+            let _96: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _96;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_isize;
+        _1 = Mul(_1, const 2_isize);
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = &_1;
+        _15 = const 2_isize;
+        _14 = &_15;
+        _12 = (move _13, move _14);
+        _16 = (_12.0: &isize);
+        _17 = (_12.1: &isize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<isize, isize>(move _22, _16, _17, move _24);
+    }
+
+    bb5: {
+        _1 = Add(_1, const 3_isize);
+        _29 = [const "", const "\n"];
+        _28 = &_29;
+        _27 = _28 as &[&str] (Pointer(Unsize));
+        _34 = &_1;
+        _33 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_34) -> bb6;
+    }
+
+    bb6: {
+        _32 = [move _33];
+        _31 = &_32;
+        _30 = _31 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _26 = Arguments::<'_>::new_v1(move _27, move _30) -> bb7;
+    }
+
+    bb7: {
+        _25 = _print(move _26) -> bb8;
+    }
+
+    bb8: {
+        _36 = &_1;
+        _38 = const 5_isize;
+        _37 = &_38;
+        _35 = (move _36, move _37);
+        _39 = (_35.0: &isize);
+        _40 = (_35.1: &isize);
+        _43 = (*_39);
+        _44 = (*_40);
+        _42 = Eq(move _43, move _44);
+        _41 = Not(move _42);
+        switchInt(move _41) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _45 = core::panicking::AssertKind::Eq;
+        _47 = Option::<Arguments<'_>>::None;
+        _46 = core::panicking::assert_failed::<isize, isize>(move _45, _39, _40, move _47);
+    }
+
+    bb10: {
+        _48 = _1;
+        _1 = Mul(_1, move _48);
+        _53 = [const "", const "\n"];
+        _52 = &_53;
+        _51 = _52 as &[&str] (Pointer(Unsize));
+        _58 = &_1;
+        _57 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_58) -> bb11;
+    }
+
+    bb11: {
+        _56 = [move _57];
+        _55 = &_56;
+        _54 = _55 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _50 = Arguments::<'_>::new_v1(move _51, move _54) -> bb12;
+    }
+
+    bb12: {
+        _49 = _print(move _50) -> bb13;
+    }
+
+    bb13: {
+        _60 = &_1;
+        _62 = const 25_isize;
+        _61 = &_62;
+        _59 = (move _60, move _61);
+        _63 = (_59.0: &isize);
+        _64 = (_59.1: &isize);
+        _67 = (*_63);
+        _68 = (*_64);
+        _66 = Eq(move _67, move _68);
+        _65 = Not(move _66);
+        switchInt(move _65) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _69 = core::panicking::AssertKind::Eq;
+        _71 = Option::<Arguments<'_>>::None;
+        _70 = core::panicking::assert_failed::<isize, isize>(move _69, _63, _64, move _71);
+    }
+
+    bb15: {
+        _72 = Eq(const 5_isize, const 0_isize);
+        assert(!move _72, "attempt to divide `{}` by zero", _1) -> bb16;
+    }
+
+    bb16: {
+        _73 = Eq(const 5_isize, const -1_isize);
+        _74 = Eq(_1, const isize::MIN);
+        _75 = BitAnd(move _73, move _74);
+        assert(!move _75, "attempt to compute `{} / {}`, which would overflow", _1, const 5_isize) -> bb17;
+    }
+
+    bb17: {
+        _1 = Div(_1, const 5_isize);
+        _80 = [const "", const "\n"];
+        _79 = &_80;
+        _78 = _79 as &[&str] (Pointer(Unsize));
+        _85 = &_1;
+        _84 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_85) -> bb18;
+    }
+
+    bb18: {
+        _83 = [move _84];
+        _82 = &_83;
+        _81 = _82 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _77 = Arguments::<'_>::new_v1(move _78, move _81) -> bb19;
+    }
+
+    bb19: {
+        _76 = _print(move _77) -> bb20;
+    }
+
+    bb20: {
+        _87 = &_1;
+        _89 = const 5_isize;
+        _88 = &_89;
+        _86 = (move _87, move _88);
+        _90 = (_86.0: &isize);
+        _91 = (_86.1: &isize);
+        _94 = (*_90);
+        _95 = (*_91);
+        _93 = Eq(move _94, move _95);
+        _92 = Not(move _93);
+        switchInt(move _92) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _96 = core::panicking::AssertKind::Eq;
+        _98 = Option::<Arguments<'_>>::None;
+        _97 = core::panicking::assert_failed::<isize, isize>(move _96, _90, _91, move _98);
+    }
+
+    bb22: {
+        return;
+    }
+}

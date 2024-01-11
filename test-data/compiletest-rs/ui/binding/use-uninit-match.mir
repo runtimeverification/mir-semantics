@@ -1,0 +1,88 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: myoption<T>) -> isize {
+    debug o => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let mut _3: isize;
+    scope 1 {
+        debug x => _2;
+        let _4: T;
+        scope 2 {
+            debug _t => _4;
+        }
+    }
+
+    bb0: {
+        _2 = const 5_isize;
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _4 = move ((_1 as some).0: T);
+        _2 = Add(_2, const 1_isize);
+        drop(_4) -> bb3;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 0];
+    let _8: [core::fmt::rt::Argument<'_>; 0];
+
+    bb0: {
+        _5 = [const "5\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _8 = core::fmt::rt::Argument::<'_>::none() -> bb1;
+    }
+
+    bb1: {
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb2;
+    }
+
+    bb2: {
+        _1 = _print(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn myoption::some(_1: T) -> myoption<T> {
+    let mut _0: myoption<T>;
+
+    bb0: {
+        _0 = myoption::<T>::some(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn myoption::some(_1: T) -> myoption<T> {
+    let mut _0: myoption<T>;
+
+    bb0: {
+        _0 = myoption::<T>::some(move _1);
+        return;
+    }
+}

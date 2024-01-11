@@ -1,0 +1,39 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: impl Sized;
+
+    bb0: {
+        _2 = main::f() -> bb1;
+    }
+
+    bb1: {
+        _1 = main::f::<impl Sized>(const ZeroSized: impl Sized) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::f() -> impl Sized {
+    let mut _0: impl Sized;
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::f(_1: impl Sized) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

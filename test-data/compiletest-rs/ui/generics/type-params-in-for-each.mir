@@ -1,0 +1,112 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn range_(_1: usize, _2: usize, _3: F) -> () {
+    debug lo => _1;
+    debug hi => _2;
+    debug it => _3;
+    let mut _0: ();
+    let mut _4: usize;
+    let mut _5: bool;
+    let mut _6: usize;
+    let _7: ();
+    let mut _8: &mut F;
+    let mut _9: (usize,);
+    let mut _10: usize;
+    scope 1 {
+        debug lo_ => _4;
+    }
+
+    bb0: {
+        _4 = _1;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _6 = _4;
+        _5 = Lt(move _6, _2);
+        switchInt(move _5) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = &mut _3;
+        _10 = _4;
+        _9 = (move _10,);
+        _7 = <F as FnMut<(usize,)>>::call_mut(move _8, move _9) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _4 = Add(_4, const 1_usize);
+        goto -> bb1;
+    }
+
+    bb4: {
+        drop(_3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_3) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn create_index(_1: Vec<S<T>>, _2: extern "C" fn(T) -> usize) -> () {
+    debug _index => _1;
+    debug _hash_fn => _2;
+    let mut _0: ();
+
+    bb0: {
+        _0 = range_::<[closure@ui/generics/type-params-in-for-each.rs:18:20: 18:24]>(const 0_usize, const 256_usize, const ZeroSized: [closure@ui/generics/type-params-in-for-each.rs:18:20: 18:24]) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn create_index::{closure#0}(_1: &mut [closure@ui/generics/type-params-in-for-each.rs:18:20: 18:24], _2: usize) -> () {
+    debug _i => _2;
+    let mut _0: ();
+    let _3: std::vec::Vec<T>;
+    scope 1 {
+        debug _bucket => _3;
+    }
+
+    bb0: {
+        _3 = Vec::<T>::new() -> bb1;
+    }
+
+    bb1: {
+        drop(_3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

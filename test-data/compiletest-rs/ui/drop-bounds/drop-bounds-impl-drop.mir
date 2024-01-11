@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn voldemort_type() -> impl Drop {
+    let mut _0: impl std::ops::Drop;
+
+    bb0: {
+        return;
+    }
+}
+
+fn voldemort_type::<impl at ui/drop-bounds/drop-bounds-impl-drop.rs:7:3: 7:26>::drop(_1: &mut Voldemort) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: impl std::ops::Drop;
+    scope 1 {
+    }
+
+    bb0: {
+        _1 = voldemort_type() -> bb1;
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

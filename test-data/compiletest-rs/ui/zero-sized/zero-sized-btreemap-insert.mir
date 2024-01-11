@@ -1,0 +1,427 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:10: 8:12>::assert_receiver_is_total_eq(_1: &Zst) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:14: 8:18>::hash(_1: &Zst, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:20: 8:25>::fmt(_1: &Zst, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Zst";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:27: 8:30>::cmp(_1: &Zst, _2: &Zst) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+
+    bb0: {
+        _0 = Equal;
+        return;
+    }
+}
+
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:32: 8:41>::eq(_1: &Zst, _2: &Zst) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/zero-sized/zero-sized-btreemap-insert.rs:8:43: 8:53>::partial_cmp(_1: &Zst, _2: &Zst) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: std::cmp::Ordering;
+
+    bb0: {
+        _3 = Equal;
+        _0 = Option::<std::cmp::Ordering>::Some(move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::ops::Range<usize>;
+    let mut _2: std::ops::Range<usize>;
+    let mut _3: std::ops::Range<usize>;
+    let mut _4: std::option::Option<usize>;
+    let mut _5: &mut std::ops::Range<usize>;
+    let mut _6: isize;
+    let mut _9: (&usize, &usize);
+    let mut _10: &usize;
+    let _11: usize;
+    let mut _12: &std::collections::BTreeMap<Zst, ()>;
+    let mut _13: &usize;
+    let _14: usize;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: usize;
+    let mut _20: usize;
+    let _22: !;
+    let mut _23: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _24: std::ops::Range<usize>;
+    let mut _25: std::ops::Range<usize>;
+    let mut _27: std::option::Option<usize>;
+    let mut _28: &mut std::ops::Range<usize>;
+    let mut _29: isize;
+    let _31: std::option::Option<()>;
+    let mut _32: &mut std::collections::BTreeMap<Zst, ()>;
+    let mut _33: (&usize, &usize);
+    let mut _34: &usize;
+    let _35: usize;
+    let mut _36: &std::collections::BTreeMap<Zst, ()>;
+    let mut _37: &usize;
+    let _38: usize;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: usize;
+    let mut _44: usize;
+    let _46: !;
+    let mut _47: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _48: (&usize, &usize);
+    let mut _49: &usize;
+    let _50: usize;
+    let mut _51: std::collections::btree_map::Iter<'_, Zst, ()>;
+    let mut _52: &std::collections::BTreeMap<Zst, ()>;
+    let mut _53: &usize;
+    let _54: usize;
+    let mut _57: bool;
+    let mut _58: bool;
+    let mut _59: usize;
+    let mut _60: usize;
+    let _62: !;
+    let mut _63: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _64: (&bool, &bool);
+    let mut _65: &bool;
+    let _66: bool;
+    let mut _67: &std::option::Option<&()>;
+    let _68: std::option::Option<&()>;
+    let mut _69: &std::collections::BTreeMap<Zst, ()>;
+    let _70: &Zst;
+    let _71: Zst;
+    let mut _72: &bool;
+    let _73: bool;
+    let mut _76: bool;
+    let mut _77: bool;
+    let mut _78: bool;
+    let mut _79: bool;
+    let _81: !;
+    let mut _82: std::option::Option<std::fmt::Arguments<'_>>;
+    let _83: ();
+    let mut _84: &mut std::collections::BTreeMap<Zst, ()>;
+    scope 1 {
+        debug iter => _3;
+        let _7: usize;
+        scope 2 {
+            debug len => _7;
+            let mut _8: std::collections::BTreeMap<Zst, ()>;
+            scope 3 {
+                debug tester => _8;
+                let _15: &usize;
+                let _16: &usize;
+                let mut _26: std::ops::Range<usize>;
+                let _39: &usize;
+                let _40: &usize;
+                let _55: &usize;
+                let _56: &usize;
+                let _74: &bool;
+                let _75: &bool;
+                scope 4 {
+                    debug left_val => _15;
+                    debug right_val => _16;
+                    let _21: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _21;
+                    }
+                }
+                scope 6 {
+                    debug iter => _26;
+                    let _30: usize;
+                    scope 7 {
+                        debug bit => _30;
+                    }
+                }
+                scope 8 {
+                    debug left_val => _39;
+                    debug right_val => _40;
+                    let _45: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _45;
+                    }
+                }
+                scope 10 {
+                    debug left_val => _55;
+                    debug right_val => _56;
+                    let _61: core::panicking::AssertKind;
+                    scope 11 {
+                        debug kind => _61;
+                    }
+                }
+                scope 12 {
+                    debug left_val => _74;
+                    debug right_val => _75;
+                    let _80: core::panicking::AssertKind;
+                    scope 13 {
+                        debug kind => _80;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = std::ops::Range::<usize> { start: const 0_usize, end: const _ };
+        _1 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _3 = move _1;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _5 = &mut _3;
+        _4 = <std::ops::Range<usize> as Iterator>::next(_5) -> bb3;
+    }
+
+    bb3: {
+        _6 = discriminant(_4);
+        switchInt(move _6) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _7 = ((_4 as Some).0: usize);
+        _8 = BTreeMap::<Zst, ()>::new() -> bb7;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        _12 = &_8;
+        _11 = BTreeMap::<Zst, ()>::len(move _12) -> [return: bb8, unwind: bb34];
+    }
+
+    bb8: {
+        _10 = &_11;
+        _14 = const 0_usize;
+        _13 = &_14;
+        _9 = (move _10, move _13);
+        _15 = (_9.0: &usize);
+        _16 = (_9.1: &usize);
+        _19 = (*_15);
+        _20 = (*_16);
+        _18 = Eq(move _19, move _20);
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _21 = core::panicking::AssertKind::Eq;
+        _23 = Option::<Arguments<'_>>::None;
+        _22 = core::panicking::assert_failed::<usize, usize>(move _21, _15, _16, move _23) -> bb34;
+    }
+
+    bb10: {
+        _25 = std::ops::Range::<usize> { start: const 0_usize, end: _7 };
+        _24 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _25) -> [return: bb11, unwind: bb34];
+    }
+
+    bb11: {
+        _26 = move _24;
+        goto -> bb12;
+    }
+
+    bb12: {
+        _28 = &mut _26;
+        _27 = <std::ops::Range<usize> as Iterator>::next(_28) -> [return: bb13, unwind: bb34];
+    }
+
+    bb13: {
+        _29 = discriminant(_27);
+        switchInt(move _29) -> [0: bb15, 1: bb14, otherwise: bb5];
+    }
+
+    bb14: {
+        _30 = ((_27 as Some).0: usize);
+        _32 = &mut _8;
+        _31 = BTreeMap::<Zst, ()>::insert(move _32, const Zst, const ()) -> [return: bb36, unwind: bb34];
+    }
+
+    bb15: {
+        _36 = &_8;
+        _35 = BTreeMap::<Zst, ()>::len(move _36) -> [return: bb16, unwind: bb34];
+    }
+
+    bb16: {
+        _34 = &_35;
+        switchInt(move _7) -> [0: bb17, otherwise: bb18];
+    }
+
+    bb17: {
+        _38 = const 0_usize;
+        goto -> bb19;
+    }
+
+    bb18: {
+        _38 = const 1_usize;
+        goto -> bb19;
+    }
+
+    bb19: {
+        _37 = &_38;
+        _33 = (move _34, move _37);
+        _39 = (_33.0: &usize);
+        _40 = (_33.1: &usize);
+        _43 = (*_39);
+        _44 = (*_40);
+        _42 = Eq(move _43, move _44);
+        _41 = Not(move _42);
+        switchInt(move _41) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _45 = core::panicking::AssertKind::Eq;
+        _47 = Option::<Arguments<'_>>::None;
+        _46 = core::panicking::assert_failed::<usize, usize>(move _45, _39, _40, move _47) -> bb34;
+    }
+
+    bb21: {
+        _52 = &_8;
+        _51 = BTreeMap::<Zst, ()>::iter(move _52) -> [return: bb22, unwind: bb34];
+    }
+
+    bb22: {
+        _50 = <std::collections::btree_map::Iter<'_, Zst, ()> as Iterator>::count(move _51) -> [return: bb23, unwind: bb34];
+    }
+
+    bb23: {
+        _49 = &_50;
+        switchInt(move _7) -> [0: bb24, otherwise: bb25];
+    }
+
+    bb24: {
+        _54 = const 0_usize;
+        goto -> bb26;
+    }
+
+    bb25: {
+        _54 = const 1_usize;
+        goto -> bb26;
+    }
+
+    bb26: {
+        _53 = &_54;
+        _48 = (move _49, move _53);
+        _55 = (_48.0: &usize);
+        _56 = (_48.1: &usize);
+        _59 = (*_55);
+        _60 = (*_56);
+        _58 = Eq(move _59, move _60);
+        _57 = Not(move _58);
+        switchInt(move _57) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _61 = core::panicking::AssertKind::Eq;
+        _63 = Option::<Arguments<'_>>::None;
+        _62 = core::panicking::assert_failed::<usize, usize>(move _61, _55, _56, move _63) -> bb34;
+    }
+
+    bb28: {
+        _69 = &_8;
+        _70 = &_71;
+        _68 = BTreeMap::<Zst, ()>::get::<Zst>(move _69, _70) -> [return: bb29, unwind: bb34];
+    }
+
+    bb29: {
+        _67 = &_68;
+        _66 = Option::<&()>::is_some(move _67) -> [return: bb30, unwind: bb34];
+    }
+
+    bb30: {
+        _65 = &_66;
+        _73 = Gt(_7, const 0_usize);
+        _72 = &_73;
+        _64 = (move _65, move _72);
+        _74 = (_64.0: &bool);
+        _75 = (_64.1: &bool);
+        _78 = (*_74);
+        _79 = (*_75);
+        _77 = Eq(move _78, move _79);
+        _76 = Not(move _77);
+        switchInt(move _76) -> [0: bb32, otherwise: bb31];
+    }
+
+    bb31: {
+        _80 = core::panicking::AssertKind::Eq;
+        _82 = Option::<Arguments<'_>>::None;
+        _81 = core::panicking::assert_failed::<bool, bool>(move _80, _74, _75, move _82) -> bb34;
+    }
+
+    bb32: {
+        _84 = &mut _8;
+        _83 = BTreeMap::<Zst, ()>::clear(move _84) -> [return: bb33, unwind: bb34];
+    }
+
+    bb33: {
+        drop(_8) -> bb2;
+    }
+
+    bb34 (cleanup): {
+        drop(_8) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        resume;
+    }
+
+    bb36: {
+        goto -> bb12;
+    }
+}
+
+const N: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}

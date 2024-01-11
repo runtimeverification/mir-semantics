@@ -1,0 +1,576 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/binding/fn-arg-incomplete-pattern-drop-order.rs:11:16: 11:21>::clone(_1: &Context<'_>) -> Context<'_> {
+    debug self => _1;
+    let mut _0: Context<'_>;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/binding/fn-arg-incomplete-pattern-drop-order.rs:17:1: 17:21>::record_drop(_1: Context<'_>, _2: i32) -> () {
+    debug self => _1;
+    debug index => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: &mut std::vec::Vec<i32>;
+    let mut _5: &mut std::vec::Vec<i32>;
+    let mut _6: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _7: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _8: bool;
+    let mut _9: i32;
+    let mut _10: !;
+    let mut _11: &std::cell::RefCell<std::vec::Vec<i32>>;
+
+    bb0: {
+        _11 = deref_copy (_1.1: &std::cell::RefCell<std::vec::Vec<i32>>);
+        _7 = RefCell::<Vec<i32>>::borrow_mut(_11) -> bb1;
+    }
+
+    bb1: {
+        _6 = &mut _7;
+        _5 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _6) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _4 = _5;
+        _3 = Vec::<i32>::push(move _4, _2) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        drop(_7) -> bb4;
+    }
+
+    bb4: {
+        _9 = (_1.0: i32);
+        _8 = Eq(_2, move _9);
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _10 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_7) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/binding/fn-arg-incomplete-pattern-drop-order.rs:26:1: 26:30>::drop(_1: &mut LogDrop<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: Context<'_>;
+    let mut _4: i32;
+
+    bb0: {
+        _3 = ((*_1).1: Context<'_>);
+        _4 = ((*_1).0: i32);
+        _2 = Context::<'_>::record_drop(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bindings_in_params(_1: (LogDrop<'_>, LogDrop<'_>), _2: (LogDrop<'_>, LogDrop<'_>)) -> () {
+    let mut _0: ();
+    let _3: LogDrop<'_>;
+    let _4: LogDrop<'_>;
+    scope 1 {
+        debug _x => _3;
+        debug _y => _4;
+    }
+
+    bb0: {
+        _3 = move (_1.0: LogDrop<'_>);
+        _4 = move (_2.1: LogDrop<'_>);
+        drop(_4) -> [return: bb1, unwind: bb7];
+    }
+
+    bb1: {
+        drop((_2.0: LogDrop<'_>)) -> [return: bb5, unwind: bb3];
+    }
+
+    bb2: {
+        drop((_1.1: LogDrop<'_>)) -> bb6;
+    }
+
+    bb3 (cleanup): {
+        drop(_3) -> [return: bb8, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5: {
+        drop(_3) -> [return: bb2, unwind: bb8];
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop((_2.0: LogDrop<'_>)) -> [return: bb3, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        drop((_1.1: LogDrop<'_>)) -> [return: bb4, unwind terminate];
+    }
+}
+
+fn bindings_with_let(_1: (LogDrop<'_>, LogDrop<'_>), _2: (LogDrop<'_>, LogDrop<'_>)) -> () {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: ();
+    let _3: (LogDrop<'_>, LogDrop<'_>);
+    scope 1 {
+        debug _temp1 => _3;
+        let _4: LogDrop<'_>;
+        scope 2 {
+            debug _x => _4;
+            let _5: (LogDrop<'_>, LogDrop<'_>);
+            scope 3 {
+                debug _temp2 => _5;
+                let _6: LogDrop<'_>;
+                scope 4 {
+                    debug _y => _6;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = move _1;
+        _4 = move (_3.0: LogDrop<'_>);
+        _5 = move _2;
+        _6 = move (_5.1: LogDrop<'_>);
+        drop(_6) -> [return: bb1, unwind: bb7];
+    }
+
+    bb1: {
+        drop((_5.0: LogDrop<'_>)) -> [return: bb5, unwind: bb3];
+    }
+
+    bb2: {
+        drop((_3.1: LogDrop<'_>)) -> bb6;
+    }
+
+    bb3 (cleanup): {
+        drop(_4) -> [return: bb8, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5: {
+        drop(_4) -> [return: bb2, unwind: bb8];
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop((_5.0: LogDrop<'_>)) -> [return: bb3, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        drop((_3.1: LogDrop<'_>)) -> [return: bb4, unwind terminate];
+    }
+}
+
+fn test_drop_order(_1: i32, _2: for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>))) -> () {
+    debug panic_on => _1;
+    debug fun => _2;
+    let mut _0: ();
+    let _3: Context<'_>;
+    let _4: &std::cell::RefCell<std::vec::Vec<i32>>;
+    let _5: std::cell::RefCell<std::vec::Vec<i32>>;
+    let mut _6: std::vec::Vec<i32>;
+    let mut _12: std::panic::AssertUnwindSafe<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61]>;
+    let mut _13: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61];
+    let mut _14: &for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _18: !;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _22: !;
+    let mut _23: (&std::vec::Vec<i32>, &[i32; 4]);
+    let mut _24: &std::vec::Vec<i32>;
+    let _25: &std::vec::Vec<i32>;
+    let mut _26: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _27: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _28: &[i32; 4];
+    let _29: [i32; 4];
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: std::fmt::Arguments<'_>;
+    let mut _38: &[&str];
+    let _39: &[&str; 1];
+    let _40: [&str; 1];
+    let mut _41: &std::cell::RefCell<std::vec::Vec<i32>>;
+    scope 1 {
+        debug context => _3;
+        let _7: LogDrop<'_>;
+        scope 2 {
+            debug one => _7;
+            let _8: LogDrop<'_>;
+            scope 3 {
+                debug two => _8;
+                let _9: LogDrop<'_>;
+                scope 4 {
+                    debug three => _9;
+                    let _10: LogDrop<'_>;
+                    scope 5 {
+                        debug four => _10;
+                        let _11: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+                        scope 6 {
+                            debug res => _11;
+                            let _30: &std::vec::Vec<i32>;
+                            let _31: &[i32; 4];
+                            scope 7 {
+                                debug left_val => _30;
+                                debug right_val => _31;
+                                let _34: core::panicking::AssertKind;
+                                scope 8 {
+                                    debug kind => _34;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _6 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _5 = RefCell::<Vec<i32>>::new(move _6) -> bb2;
+    }
+
+    bb2: {
+        _4 = &_5;
+        _3 = Context::<'_> { panic_on: _1, drops: _4 };
+        _7 = LogDrop::<'_>(const 1_i32, _3);
+        _8 = LogDrop::<'_>(const 2_i32, _3);
+        _9 = LogDrop::<'_>(const 3_i32, _3);
+        _10 = LogDrop::<'_>(const 4_i32, _3);
+        _14 = &_2;
+        _13 = [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61] { fun: move _14, three: move _9, four: move _10, two: move _8, one: move _7 };
+        _12 = AssertUnwindSafe::<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61]>(move _13);
+        _11 = catch_unwind::<AssertUnwindSafe<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61]>, ()>(move _12) -> [return: bb3, unwind: bb22];
+    }
+
+    bb3: {
+        switchInt(move _1) -> [0: bb4, otherwise: bb7];
+    }
+
+    bb4: {
+        _17 = &_11;
+        _16 = Result::<(), Box<dyn Any + Send>>::is_ok(move _17) -> [return: bb5, unwind: bb21];
+    }
+
+    bb5: {
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb10, otherwise: bb6];
+    }
+
+    bb6: {
+        _18 = begin_panic::<&str>(const "should not have panicked") -> bb21;
+    }
+
+    bb7: {
+        _21 = &_11;
+        _20 = Result::<(), Box<dyn Any + Send>>::is_err(move _21) -> [return: bb8, unwind: bb21];
+    }
+
+    bb8: {
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _22 = begin_panic::<&str>(const "should have panicked") -> bb21;
+    }
+
+    bb10: {
+        _41 = deref_copy (_3.1: &std::cell::RefCell<std::vec::Vec<i32>>);
+        _27 = RefCell::<Vec<i32>>::borrow(_41) -> [return: bb11, unwind: bb21];
+    }
+
+    bb11: {
+        _26 = &_27;
+        _25 = <Ref<'_, Vec<i32>> as Deref>::deref(move _26) -> [return: bb12, unwind: bb20];
+    }
+
+    bb12: {
+        _24 = _25;
+        _29 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _28 = &_29;
+        _23 = (move _24, move _28);
+        _30 = (_23.0: &std::vec::Vec<i32>);
+        _31 = (_23.1: &[i32; 4]);
+        _33 = <Vec<i32> as PartialEq<[i32; 4]>>::eq(_30, _31) -> [return: bb13, unwind: bb20];
+    }
+
+    bb13: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb16, otherwise: bb14];
+    }
+
+    bb14: {
+        _34 = core::panicking::AssertKind::Eq;
+        _40 = [const "incorrect drop order"];
+        _39 = &_40;
+        _38 = _39 as &[&str] (Pointer(Unsize));
+        _37 = Arguments::<'_>::new_const(move _38) -> [return: bb15, unwind: bb20];
+    }
+
+    bb15: {
+        _36 = Option::<Arguments<'_>>::Some(move _37);
+        _35 = core::panicking::assert_failed::<Vec<i32>, [i32; 4]>(move _34, _30, _31, move _36) -> bb20;
+    }
+
+    bb16: {
+        drop(_27) -> [return: bb17, unwind: bb21];
+    }
+
+    bb17: {
+        drop(_11) -> [return: bb18, unwind: bb22];
+    }
+
+    bb18: {
+        drop(_5) -> bb19;
+    }
+
+    bb19: {
+        return;
+    }
+
+    bb20 (cleanup): {
+        drop(_27) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_11) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_5) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        resume;
+    }
+}
+
+fn test_drop_order::{closure#0}(_1: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:54:59: 54:61]) -> () {
+    debug fun => (*(_1.0: &for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>))));
+    debug three => (_1.1: LogDrop<'_>);
+    debug four => (_1.2: LogDrop<'_>);
+    debug two => (_1.3: LogDrop<'_>);
+    debug one => (_1.4: LogDrop<'_>);
+    let mut _0: ();
+    let _2: ();
+    let mut _3: for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+    let mut _4: (LogDrop<'_>, LogDrop<'_>);
+    let mut _5: LogDrop<'_>;
+    let mut _6: LogDrop<'_>;
+    let mut _7: (LogDrop<'_>, LogDrop<'_>);
+    let mut _8: LogDrop<'_>;
+    let mut _9: LogDrop<'_>;
+    let mut _10: &for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+
+    bb0: {
+        _10 = deref_copy (_1.0: &for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>)));
+        _3 = (*_10);
+        _5 = move (_1.1: LogDrop<'_>);
+        _6 = move (_1.2: LogDrop<'_>);
+        _4 = (move _5, move _6);
+        _8 = move (_1.3: LogDrop<'_>);
+        _9 = move (_1.4: LogDrop<'_>);
+        _7 = (move _8, move _9);
+        _2 = move _3(move _4, move _7) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::ops::RangeInclusive<i32>;
+    let _3: ();
+    let mut _4: std::ops::RangeInclusive<i32>;
+    let _5: ();
+    let mut _6: std::ops::RangeInclusive<i32>;
+
+    bb0: {
+        _2 = RangeInclusive::<i32>::new(const 0_i32, const 4_i32) -> bb1;
+    }
+
+    bb1: {
+        _1 = <RangeInclusive<i32> as Iterator>::for_each::<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:66:22: 66:25]>(move _2, const ZeroSized: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:66:22: 66:25]) -> bb2;
+    }
+
+    bb2: {
+        _4 = RangeInclusive::<i32>::new(const 0_i32, const 4_i32) -> bb3;
+    }
+
+    bb3: {
+        _3 = <RangeInclusive<i32> as Iterator>::for_each::<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:67:22: 67:25]>(move _4, const ZeroSized: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:67:22: 67:25]) -> bb4;
+    }
+
+    bb4: {
+        _6 = RangeInclusive::<i32>::new(const 0_i32, const 4_i32) -> bb5;
+    }
+
+    bb5: {
+        _5 = <RangeInclusive<i32> as Iterator>::for_each::<[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:68:22: 68:25]>(move _6, const ZeroSized: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:68:22: 68:25]) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:66:22: 66:25], _2: i32) -> () {
+    debug i => _2;
+    let mut _0: ();
+    let mut _3: for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+
+    bb0: {
+        _3 = bindings_in_params as for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>)) (Pointer(ReifyFnPointer));
+        _0 = test_drop_order(_2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:67:22: 67:25], _2: i32) -> () {
+    debug i => _2;
+    let mut _0: ();
+    let mut _3: for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+
+    bb0: {
+        _3 = bindings_with_let as for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>)) (Pointer(ReifyFnPointer));
+        _0 = test_drop_order(_2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:68:22: 68:25], _2: i32) -> () {
+    debug i => _2;
+    let mut _0: ();
+    let mut _3: for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>));
+
+    bb0: {
+        _3 = const ZeroSized: [closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:68:45: 68:63] as for<'a, 'b, 'c, 'd> fn((LogDrop<'a>, LogDrop<'b>), (LogDrop<'c>, LogDrop<'d>)) (Pointer(ClosureFnPointer(Normal)));
+        _0 = test_drop_order(_2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#2}::{closure#0}(_1: &[closure@ui/binding/fn-arg-incomplete-pattern-drop-order.rs:68:45: 68:63], _2: (LogDrop<'_>, LogDrop<'_>), _3: (LogDrop<'_>, LogDrop<'_>)) -> () {
+    let mut _0: ();
+    let _4: LogDrop<'_>;
+    let _5: LogDrop<'_>;
+    scope 1 {
+        debug _x => _4;
+        debug _y => _5;
+    }
+
+    bb0: {
+        _4 = move (_2.0: LogDrop<'_>);
+        _5 = move (_3.1: LogDrop<'_>);
+        drop(_5) -> [return: bb1, unwind: bb7];
+    }
+
+    bb1: {
+        drop((_3.0: LogDrop<'_>)) -> [return: bb5, unwind: bb3];
+    }
+
+    bb2: {
+        drop((_2.1: LogDrop<'_>)) -> bb6;
+    }
+
+    bb3 (cleanup): {
+        drop(_4) -> [return: bb8, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5: {
+        drop(_4) -> [return: bb2, unwind: bb8];
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop((_3.0: LogDrop<'_>)) -> [return: bb3, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        drop((_2.1: LogDrop<'_>)) -> [return: bb4, unwind terminate];
+    }
+}
+
+fn LogDrop(_1: i32, _2: Context<'_>) -> LogDrop<'_> {
+    let mut _0: LogDrop<'_>;
+
+    bb0: {
+        _0 = LogDrop::<'_>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn LogDrop(_1: i32, _2: Context<'_>) -> LogDrop<'_> {
+    let mut _0: LogDrop<'_>;
+
+    bb0: {
+        _0 = LogDrop::<'_>(move _1, move _2);
+        return;
+    }
+}

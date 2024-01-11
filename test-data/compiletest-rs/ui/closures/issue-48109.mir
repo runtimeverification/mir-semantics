@@ -1,0 +1,121 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn useful(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn useful2(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::slice::Iter<'_, fn(usize) -> usize>;
+    let mut _2: &[fn(usize) -> usize; 3];
+    let _3: [fn(usize) -> usize; 3];
+    let mut _4: fn(usize) -> usize;
+    let mut _5: fn(usize) -> usize;
+    let mut _6: fn(usize) -> usize;
+    let mut _7: std::slice::Iter<'_, fn(usize) -> usize>;
+    let mut _8: std::option::Option<&fn(usize) -> usize>;
+    let mut _9: &mut std::slice::Iter<'_, fn(usize) -> usize>;
+    let mut _10: isize;
+    let _12: ();
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 2];
+    let _16: [&str; 2];
+    let mut _17: &[core::fmt::rt::Argument<'_>];
+    let _18: &[core::fmt::rt::Argument<'_>; 1];
+    let _19: [core::fmt::rt::Argument<'_>; 1];
+    let mut _20: core::fmt::rt::Argument<'_>;
+    let _21: &usize;
+    let _22: usize;
+    let mut _23: fn(usize) -> usize;
+    scope 1 {
+        debug iter => _7;
+        let _11: &fn(usize) -> usize;
+        scope 2 {
+            debug f => _11;
+        }
+    }
+
+    bb0: {
+        _4 = useful as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        _5 = useful2 as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        _6 = const ZeroSized: [closure@ui/closures/issue-48109.rs:11:33: 11:36] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        _3 = [move _4, move _5, move _6];
+        _2 = &_3;
+        _1 = <&[fn(usize) -> usize; 3] as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _7 = move _1;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _9 = &mut _7;
+        _8 = <std::slice::Iter<'_, fn(usize) -> usize> as Iterator>::next(_9) -> bb3;
+    }
+
+    bb3: {
+        _10 = discriminant(_8);
+        switchInt(move _10) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _11 = ((_8 as Some).0: &fn(usize) -> usize);
+        _16 = [const "", const "\n"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _23 = (*_11);
+        _22 = move _23(const 6_usize) -> bb7;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        _21 = &_22;
+        _20 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_21) -> bb8;
+    }
+
+    bb8: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_v1(move _14, move _17) -> bb9;
+    }
+
+    bb9: {
+        _12 = _print(move _13) -> bb2;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/issue-48109.rs:11:33: 11:36], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}

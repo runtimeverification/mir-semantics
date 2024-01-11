@@ -1,0 +1,240 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn g(_1: X) -> X {
+    debug x => _1;
+    let mut _0: X;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-derived-type.rs:4:10: 4:15>::clone(_1: &Pair<T>) -> Pair<T> {
+    debug self => _1;
+    let mut _0: Pair<T>;
+    let mut _2: T;
+    let _3: &T;
+    let mut _4: T;
+    let _5: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &((*_1).1: T);
+        _4 = <T as Clone>::clone(_5) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = Pair::<T> { a: move _2, b: move _4 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn f(_1: T) -> Pair<T> {
+    debug t => _1;
+    let mut _0: Pair<T>;
+    let _2: Pair<T>;
+    let mut _3: T;
+    let mut _4: &T;
+    let mut _5: T;
+    let mut _6: bool;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _6 = const false;
+        _6 = const true;
+        _4 = &_1;
+        _3 = <T as Clone>::clone(move _4) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _6 = const false;
+        _5 = move _1;
+        _2 = Pair::<T> { a: move _3, b: move _5 };
+        _0 = g::<Pair<T>>(move _2) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        switchInt(_6) -> [0: bb3, otherwise: bb4];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Pair<isize>;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &isize;
+    let _12: ();
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 2];
+    let _16: [&str; 2];
+    let mut _17: &[core::fmt::rt::Argument<'_>];
+    let _18: &[core::fmt::rt::Argument<'_>; 1];
+    let _19: [core::fmt::rt::Argument<'_>; 1];
+    let mut _20: core::fmt::rt::Argument<'_>;
+    let _21: &isize;
+    let mut _22: (&isize, &isize);
+    let mut _23: &isize;
+    let mut _24: &isize;
+    let _25: isize;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: isize;
+    let mut _31: isize;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: (&isize, &isize);
+    let mut _36: &isize;
+    let mut _37: &isize;
+    let _38: isize;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: isize;
+    let mut _44: isize;
+    let _46: !;
+    let mut _47: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug b => _1;
+        let _26: &isize;
+        let _27: &isize;
+        let _39: &isize;
+        let _40: &isize;
+        scope 2 {
+            debug left_val => _26;
+            debug right_val => _27;
+            let _32: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _32;
+            }
+        }
+        scope 4 {
+            debug left_val => _39;
+            debug right_val => _40;
+            let _45: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _45;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = f::<isize>(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &(_1.0: isize);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_11) -> bb2;
+    }
+
+    bb2: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb3;
+    }
+
+    bb3: {
+        _2 = _print(move _3) -> bb4;
+    }
+
+    bb4: {
+        _16 = [const "", const "\n"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _21 = &(_1.1: isize);
+        _20 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_21) -> bb5;
+    }
+
+    bb5: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_v1(move _14, move _17) -> bb6;
+    }
+
+    bb6: {
+        _12 = _print(move _13) -> bb7;
+    }
+
+    bb7: {
+        _23 = &(_1.0: isize);
+        _25 = const 10_isize;
+        _24 = &_25;
+        _22 = (move _23, move _24);
+        _26 = (_22.0: &isize);
+        _27 = (_22.1: &isize);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<isize, isize>(move _32, _26, _27, move _34);
+    }
+
+    bb9: {
+        _36 = &(_1.1: isize);
+        _38 = const 10_isize;
+        _37 = &_38;
+        _35 = (move _36, move _37);
+        _39 = (_35.0: &isize);
+        _40 = (_35.1: &isize);
+        _43 = (*_39);
+        _44 = (*_40);
+        _42 = Eq(move _43, move _44);
+        _41 = Not(move _42);
+        switchInt(move _41) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _45 = core::panicking::AssertKind::Eq;
+        _47 = Option::<Arguments<'_>>::None;
+        _46 = core::panicking::assert_failed::<isize, isize>(move _45, _39, _40, move _47);
+    }
+
+    bb11: {
+        return;
+    }
+}

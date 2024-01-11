@@ -1,0 +1,109 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/union/union-trait-impl.rs:11:1: 11:24>::fmt(_1: &U, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &u8;
+    scope 1 {
+    }
+
+    bb0: {
+        _6 = [const "Oh hai "];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: u8);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<u8>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _0 = Formatter::<'_>::write_fmt(_2, move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::string::String, &&str);
+    let mut _2: &std::string::String;
+    let _3: std::string::String;
+    let mut _4: &U;
+    let _5: U;
+    let mut _6: &&str;
+    let _7: &str;
+    let _8: &std::string::String;
+    let _9: &&str;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _5 = U { a: const 2_u8 };
+        _4 = &_5;
+        _3 = <U as ToString>::to_string(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const "Oh hai 2";
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &std::string::String);
+        _9 = (_1.1: &&str);
+        _11 = <String as PartialEq<&str>>::eq(_8, _9) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<String, &str>(move _12, _8, _9, move _14) -> bb6;
+    }
+
+    bb4: {
+        drop(_3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_3) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}

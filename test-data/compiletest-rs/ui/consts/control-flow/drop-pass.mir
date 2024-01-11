@@ -1,0 +1,254 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const _: Option<Vec<i32>> = {
+    let mut _0: std::option::Option<std::vec::Vec<i32>>;
+    let _1: std::option::Option<std::vec::Vec<i32>>;
+    let mut _3: std::vec::Vec<i32>;
+    let mut _4: bool;
+    scope 1 {
+        debug y => _1;
+        let _2: std::option::Option<std::vec::Vec<i32>>;
+        scope 2 {
+            debug x => _2;
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Option::<Vec<i32>>::None;
+        StorageLive(_2);
+        StorageLive(_3);
+        ConstEvalCounter;
+        _3 = Vec::<i32>::new() -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _2 = Option::<Vec<i32>>::Some(move _3);
+        StorageDead(_3);
+        StorageLive(_4);
+        _4 = const true;
+        switchInt(move _4) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _0 = move _2;
+        goto -> bb4;
+    }
+
+    bb3: {
+        _0 = move _2;
+        goto -> bb4;
+    }
+
+    bb4: {
+        StorageDead(_4);
+        StorageDead(_2);
+        drop(_1) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        StorageDead(_1);
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+const _: Option<Vec<i32>> = {
+    let mut _0: std::option::Option<std::vec::Vec<i32>>;
+    let _1: std::option::Option<std::vec::Vec<i32>>;
+    let mut _2: std::vec::Vec<i32>;
+    let mut _3: ();
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = Option::<Vec<i32>>::Some(move _2);
+        StorageDead(_2);
+        StorageLive(_3);
+        _3 = ();
+        _0 = move _1;
+        StorageDead(_1);
+        StorageDead(_3);
+        return;
+    }
+}
+
+const _: Option<Vec<i32>> = {
+    let mut _0: std::option::Option<std::vec::Vec<i32>>;
+    let mut _1: std::option::Option<std::vec::Vec<i32>>;
+    let mut _2: std::vec::Vec<i32>;
+    let _5: ();
+    let mut _6: ();
+    let mut _7: bool;
+    let mut _8: i32;
+    let mut _9: std::option::Option<std::vec::Vec<i32>>;
+    let mut _10: std::option::Option<std::vec::Vec<i32>>;
+    let mut _11: std::option::Option<std::vec::Vec<i32>>;
+    let mut _12: std::option::Option<std::vec::Vec<i32>>;
+    let mut _13: (i32, bool);
+    let mut _14: !;
+    let _15: ();
+    let mut _16: !;
+    let mut _17: bool;
+    let mut _18: bool;
+    scope 1 {
+        debug some => _1;
+        let mut _3: std::option::Option<std::vec::Vec<i32>>;
+        scope 2 {
+            debug tmp => _3;
+            let mut _4: i32;
+            scope 3 {
+                debug i => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _18 = const false;
+        _17 = const false;
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _18 = const true;
+        _1 = Option::<Vec<i32>>::Some(move _2);
+        StorageDead(_2);
+        StorageLive(_3);
+        _17 = const true;
+        _3 = Option::<Vec<i32>>::None;
+        StorageLive(_4);
+        _4 = const 0_i32;
+        StorageLive(_5);
+        goto -> bb2;
+    }
+
+    bb2: {
+        StorageLive(_7);
+        StorageLive(_8);
+        _8 = _4;
+        _7 = Lt(move _8, const 10_i32);
+        StorageDead(_8);
+        switchInt(move _7) -> [0: bb9, otherwise: bb3];
+    }
+
+    bb3: {
+        StorageLive(_9);
+        _18 = const false;
+        _9 = move _1;
+        drop(_3) -> [return: bb4, unwind: bb5];
+    }
+
+    bb4: {
+        _17 = const true;
+        _3 = move _9;
+        StorageDead(_9);
+        StorageLive(_10);
+        _10 = Option::<Vec<i32>>::None;
+        _18 = const true;
+        _1 = move _10;
+        StorageDead(_10);
+        StorageLive(_11);
+        _17 = const false;
+        _11 = move _3;
+        drop(_1) -> [return: bb6, unwind: bb7];
+    }
+
+    bb5 (cleanup): {
+        _17 = const true;
+        _3 = move _9;
+        goto -> bb13;
+    }
+
+    bb6: {
+        _18 = const true;
+        _1 = move _11;
+        StorageDead(_11);
+        StorageLive(_12);
+        _12 = Option::<Vec<i32>>::None;
+        _17 = const true;
+        _3 = move _12;
+        StorageDead(_12);
+        _13 = CheckedAdd(_4, const 1_i32);
+        assert(!move (_13.1: bool), "attempt to compute `{} + {}`, which would overflow", _4, const 1_i32) -> [success: bb8, unwind: bb13];
+    }
+
+    bb7 (cleanup): {
+        _18 = const true;
+        _1 = move _11;
+        goto -> bb13;
+    }
+
+    bb8: {
+        _4 = move (_13.0: i32);
+        _6 = const ();
+        StorageDead(_7);
+        ConstEvalCounter;
+        goto -> bb2;
+    }
+
+    bb9: {
+        StorageLive(_15);
+        _5 = const ();
+        StorageDead(_15);
+        StorageDead(_7);
+        StorageDead(_5);
+        _18 = const false;
+        _0 = move _1;
+        StorageDead(_4);
+        drop(_3) -> [return: bb10, unwind: bb15];
+    }
+
+    bb10: {
+        _17 = const false;
+        StorageDead(_3);
+        _18 = const false;
+        StorageDead(_1);
+        return;
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12 (cleanup): {
+        drop(_3) -> [return: bb15, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        switchInt(_17) -> [0: bb15, otherwise: bb12];
+    }
+
+    bb14 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        switchInt(_18) -> [0: bb11, otherwise: bb14];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

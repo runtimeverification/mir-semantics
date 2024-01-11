@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn as_trait(_1: &Type<A>) -> &dyn Trait<A> {
+    debug t => _1;
+    let mut _0: &dyn Trait<A>;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn want(_1: &T) -> () {
+    debug t => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn call(_1: Type<A>) -> () {
+    debug p => const ZeroSized: Type<A>;
+    let mut _0: ();
+    let _2: &dyn Trait<A>;
+    let _3: &Type<A>;
+    let _4: ();
+    let mut _5: &dyn Trait<A>;
+    scope 1 {
+        debug q => _2;
+    }
+
+    bb0: {
+        _3 = &_1;
+        _2 = as_trait::<A>(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = _2;
+        _4 = want::<A, dyn Trait<A>>(move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

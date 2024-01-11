@@ -1,0 +1,56 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::alloc::Layout;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _1 = Layout::new::<Wrapper2<()>>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Wrapper1(_1: <T as Foo>::Bar) -> Wrapper1<T> {
+    let mut _0: Wrapper1<T>;
+
+    bb0: {
+        _0 = Wrapper1::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Wrapper1(_1: <T as Foo>::Bar) -> Wrapper1<T> {
+    let mut _0: Wrapper1<T>;
+
+    bb0: {
+        _0 = Wrapper1::<T>(move _1);
+        return;
+    }
+}
+
+fn Wrapper2(_1: ()) -> Wrapper2<T> {
+    let mut _0: Wrapper2<T>;
+
+    bb0: {
+        _0 = Wrapper2::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Wrapper2(_1: ()) -> Wrapper2<T> {
+    let mut _0: Wrapper2<T>;
+
+    bb0: {
+        _0 = Wrapper2::<T>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,469 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inheritance/repeated-supertrait.rs:15:1: 15:28>::same_as(_1: &i64, _2: i64) -> bool {
+    debug self => _1;
+    debug t => _2;
+    let mut _0: bool;
+    let mut _3: i64;
+
+    bb0: {
+        _3 = (*_1);
+        _0 = Eq(move _3, _2);
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/repeated-supertrait.rs:19:1: 19:28>::same_as(_1: &i64, _2: u64) -> bool {
+    debug self => _1;
+    debug t => _2;
+    let mut _0: bool;
+    let mut _3: i64;
+    let mut _4: i64;
+
+    bb0: {
+        _3 = (*_1);
+        _4 = _2 as i64 (IntToInt);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn with_obj(_1: &dyn CompareToInts) -> bool {
+    debug c => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+
+    bb0: {
+        _2 = <dyn CompareToInts as CompareTo<i64>>::same_as(_1, const 22_i64) -> bb4;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _3 = <dyn CompareToInts as CompareTo<u64>>::same_as(_1, const 22_u64) -> bb5;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        switchInt(move _2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _3;
+        goto -> bb3;
+    }
+}
+
+fn with_trait(_1: &C) -> bool {
+    debug c => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+
+    bb0: {
+        _2 = <C as CompareTo<i64>>::same_as(_1, const 22_i64) -> bb4;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _3 = <C as CompareTo<u64>>::same_as(_1, const 22_u64) -> bb5;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        switchInt(move _2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _3;
+        goto -> bb3;
+    }
+}
+
+fn with_ufcs1(_1: &C) -> bool {
+    debug c => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: &dyn CompareToInts;
+    let mut _4: bool;
+    let mut _5: &dyn CompareToInts;
+
+    bb0: {
+        _3 = _1 as &dyn CompareToInts (Pointer(Unsize));
+        _2 = <dyn CompareToInts as CompareTo<i64>>::same_as(move _3, const 22_i64) -> bb4;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _5 = _1 as &dyn CompareToInts (Pointer(Unsize));
+        _4 = <dyn CompareToInts as CompareTo<u64>>::same_as(move _5, const 22_u64) -> bb5;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        switchInt(move _2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _4;
+        goto -> bb3;
+    }
+}
+
+fn with_ufcs2(_1: &C) -> bool {
+    debug c => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+
+    bb0: {
+        _2 = <C as CompareTo<i64>>::same_as(_1, const 22_i64) -> bb4;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _3 = <C as CompareTo<u64>>::same_as(_1, const 22_u64) -> bb5;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        switchInt(move _2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _3;
+        goto -> bb3;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&bool, &bool);
+    let mut _2: &bool;
+    let _3: bool;
+    let mut _4: &i64;
+    let _5: i64;
+    let mut _6: &bool;
+    let _7: bool;
+    let _8: &bool;
+    let _9: &bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&bool, &bool);
+    let mut _18: &bool;
+    let _19: bool;
+    let mut _20: &i64;
+    let _21: i64;
+    let mut _22: &bool;
+    let _23: bool;
+    let _24: &bool;
+    let _25: &bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: bool;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: (&bool, &bool);
+    let mut _34: &bool;
+    let _35: bool;
+    let _36: &i64;
+    let _37: i64;
+    let mut _38: &bool;
+    let _39: bool;
+    let _40: &bool;
+    let _41: &bool;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: bool;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&bool, &bool);
+    let mut _50: &bool;
+    let _51: bool;
+    let mut _52: &dyn CompareToInts;
+    let _53: &i64;
+    let _54: i64;
+    let mut _55: &bool;
+    let _56: bool;
+    let _57: &bool;
+    let _58: &bool;
+    let mut _59: bool;
+    let mut _60: bool;
+    let mut _61: bool;
+    let mut _62: bool;
+    let _64: !;
+    let mut _65: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _66: (&bool, &bool);
+    let mut _67: &bool;
+    let _68: bool;
+    let _69: &i64;
+    let _70: i64;
+    let mut _71: &bool;
+    let _72: bool;
+    let _73: &bool;
+    let _74: &bool;
+    let mut _75: bool;
+    let mut _76: bool;
+    let mut _77: bool;
+    let mut _78: bool;
+    let _80: !;
+    let mut _81: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _82: (&bool, &bool);
+    let mut _83: &bool;
+    let _84: bool;
+    let _85: &i64;
+    let _86: i64;
+    let mut _87: &bool;
+    let _88: bool;
+    let _89: &bool;
+    let _90: &bool;
+    let mut _91: bool;
+    let mut _92: bool;
+    let mut _93: bool;
+    let mut _94: bool;
+    let _96: !;
+    let mut _97: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+    scope 3 {
+        debug left_val => _24;
+        debug right_val => _25;
+        let _30: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _30;
+        }
+    }
+    scope 5 {
+        debug left_val => _40;
+        debug right_val => _41;
+        let _46: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _46;
+        }
+    }
+    scope 7 {
+        debug left_val => _57;
+        debug right_val => _58;
+        let _63: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _63;
+        }
+    }
+    scope 9 {
+        debug left_val => _73;
+        debug right_val => _74;
+        let _79: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _79;
+        }
+    }
+    scope 11 {
+        debug left_val => _89;
+        debug right_val => _90;
+        let _95: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _95;
+        }
+    }
+
+    bb0: {
+        _5 = const 22_i64;
+        _4 = &_5;
+        _3 = <i64 as CompareTo<i64>>::same_as(move _4, const 22_i64) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const true;
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &bool);
+        _9 = (_1.1: &bool);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<bool, bool>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _21 = const 22_i64;
+        _20 = &_21;
+        _19 = <i64 as CompareTo<u64>>::same_as(move _20, const 22_u64) -> bb4;
+    }
+
+    bb4: {
+        _18 = &_19;
+        _23 = const true;
+        _22 = &_23;
+        _17 = (move _18, move _22);
+        _24 = (_17.0: &bool);
+        _25 = (_17.1: &bool);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<bool, bool>(move _30, _24, _25, move _32);
+    }
+
+    bb6: {
+        _37 = const 22_i64;
+        _36 = &_37;
+        _35 = with_trait::<i64>(_36) -> bb7;
+    }
+
+    bb7: {
+        _34 = &_35;
+        _39 = const true;
+        _38 = &_39;
+        _33 = (move _34, move _38);
+        _40 = (_33.0: &bool);
+        _41 = (_33.1: &bool);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<bool, bool>(move _46, _40, _41, move _48);
+    }
+
+    bb9: {
+        _54 = const 22_i64;
+        _53 = &_54;
+        _52 = _53 as &dyn CompareToInts (Pointer(Unsize));
+        _51 = with_obj(move _52) -> bb10;
+    }
+
+    bb10: {
+        _50 = &_51;
+        _56 = const true;
+        _55 = &_56;
+        _49 = (move _50, move _55);
+        _57 = (_49.0: &bool);
+        _58 = (_49.1: &bool);
+        _61 = (*_57);
+        _62 = (*_58);
+        _60 = Eq(move _61, move _62);
+        _59 = Not(move _60);
+        switchInt(move _59) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _63 = core::panicking::AssertKind::Eq;
+        _65 = Option::<Arguments<'_>>::None;
+        _64 = core::panicking::assert_failed::<bool, bool>(move _63, _57, _58, move _65);
+    }
+
+    bb12: {
+        _70 = const 22_i64;
+        _69 = &_70;
+        _68 = with_ufcs1::<i64>(_69) -> bb13;
+    }
+
+    bb13: {
+        _67 = &_68;
+        _72 = const true;
+        _71 = &_72;
+        _66 = (move _67, move _71);
+        _73 = (_66.0: &bool);
+        _74 = (_66.1: &bool);
+        _77 = (*_73);
+        _78 = (*_74);
+        _76 = Eq(move _77, move _78);
+        _75 = Not(move _76);
+        switchInt(move _75) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _79 = core::panicking::AssertKind::Eq;
+        _81 = Option::<Arguments<'_>>::None;
+        _80 = core::panicking::assert_failed::<bool, bool>(move _79, _73, _74, move _81);
+    }
+
+    bb15: {
+        _86 = const 22_i64;
+        _85 = &_86;
+        _84 = with_ufcs2::<i64>(_85) -> bb16;
+    }
+
+    bb16: {
+        _83 = &_84;
+        _88 = const true;
+        _87 = &_88;
+        _82 = (move _83, move _87);
+        _89 = (_82.0: &bool);
+        _90 = (_82.1: &bool);
+        _93 = (*_89);
+        _94 = (*_90);
+        _92 = Eq(move _93, move _94);
+        _91 = Not(move _92);
+        switchInt(move _91) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _95 = core::panicking::AssertKind::Eq;
+        _97 = Option::<Arguments<'_>>::None;
+        _96 = core::panicking::assert_failed::<bool, bool>(move _95, _89, _90, move _97);
+    }
+
+    bb18: {
+        return;
+    }
+}

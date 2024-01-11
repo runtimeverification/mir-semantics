@@ -1,0 +1,502 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const CURSOR_PARTITION_LABEL: &[u8] = {
+    let mut _0: &[u8];
+    let mut _1: &[u8; 9];
+    let _2: &[u8; 9];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const b"partition";
+        _1 = &(*_2);
+        _0 = move _1 as &[u8] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (size: 9, align: 1) {
+    70 61 72 74 69 74 69 6f 6e                      │ partition
+}
+
+const CURSOR_EVENT_TYPE_LABEL: &[u8] = {
+    let mut _0: &[u8];
+    let mut _1: &[u8; 10];
+    let _2: &[u8; 10];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const b"event_type";
+        _1 = &(*_2);
+        _0 = move _1 as &[u8] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc2 (size: 10, align: 1) {
+    65 76 65 6e 74 5f 74 79 70 65                   │ event_type
+}
+
+const BYTE_PATTERN: &[u8; 5] = {
+    let mut _0: &[u8; 5];
+
+    bb0: {
+        _0 = const b"hello";
+        return;
+    }
+}
+
+alloc3 (size: 5, align: 1) {
+    68 65 6c 6c 6f                                  │ hello
+}
+
+BYTE_PATTERN::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn match_slice(_1: &[u8]) -> u32 {
+    debug x => _1;
+    let mut _0: u32;
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+
+    bb0: {
+        _5 = Len((*_1));
+        _6 = const 9_usize;
+        _7 = Eq(move _5, move _6);
+        switchInt(move _7) -> [0: bb11, otherwise: bb1];
+    }
+
+    bb1: {
+        switchInt((*_1)[0 of 9]) -> [112: bb2, otherwise: bb10];
+    }
+
+    bb2: {
+        switchInt((*_1)[1 of 9]) -> [97: bb3, otherwise: bb10];
+    }
+
+    bb3: {
+        switchInt((*_1)[2 of 9]) -> [114: bb4, otherwise: bb10];
+    }
+
+    bb4: {
+        switchInt((*_1)[3 of 9]) -> [116: bb5, otherwise: bb10];
+    }
+
+    bb5: {
+        switchInt((*_1)[4 of 9]) -> [105: bb6, otherwise: bb10];
+    }
+
+    bb6: {
+        switchInt((*_1)[5 of 9]) -> [116: bb7, otherwise: bb10];
+    }
+
+    bb7: {
+        switchInt((*_1)[6 of 9]) -> [105: bb8, otherwise: bb10];
+    }
+
+    bb8: {
+        switchInt((*_1)[7 of 9]) -> [111: bb9, otherwise: bb10];
+    }
+
+    bb9: {
+        switchInt((*_1)[8 of 9]) -> [110: bb22, otherwise: bb10];
+    }
+
+    bb10: {
+        _0 = const 2_u32;
+        goto -> bb24;
+    }
+
+    bb11: {
+        _2 = Len((*_1));
+        _3 = const 10_usize;
+        _4 = Eq(move _2, move _3);
+        switchInt(move _4) -> [0: bb10, otherwise: bb12];
+    }
+
+    bb12: {
+        switchInt((*_1)[0 of 10]) -> [101: bb13, otherwise: bb10];
+    }
+
+    bb13: {
+        switchInt((*_1)[1 of 10]) -> [118: bb14, otherwise: bb10];
+    }
+
+    bb14: {
+        switchInt((*_1)[2 of 10]) -> [101: bb15, otherwise: bb10];
+    }
+
+    bb15: {
+        switchInt((*_1)[3 of 10]) -> [110: bb16, otherwise: bb10];
+    }
+
+    bb16: {
+        switchInt((*_1)[4 of 10]) -> [116: bb17, otherwise: bb10];
+    }
+
+    bb17: {
+        switchInt((*_1)[5 of 10]) -> [95: bb18, otherwise: bb10];
+    }
+
+    bb18: {
+        switchInt((*_1)[6 of 10]) -> [116: bb19, otherwise: bb10];
+    }
+
+    bb19: {
+        switchInt((*_1)[7 of 10]) -> [121: bb20, otherwise: bb10];
+    }
+
+    bb20: {
+        switchInt((*_1)[8 of 10]) -> [112: bb21, otherwise: bb10];
+    }
+
+    bb21: {
+        switchInt((*_1)[9 of 10]) -> [101: bb23, otherwise: bb10];
+    }
+
+    bb22: {
+        _0 = const 0_u32;
+        goto -> bb24;
+    }
+
+    bb23: {
+        _0 = const 1_u32;
+        goto -> bb24;
+    }
+
+    bb24: {
+        return;
+    }
+}
+
+fn match_array(_1: &[u8; 5]) -> bool {
+    debug x => _1;
+    let mut _0: bool;
+    let mut _2: u8;
+
+    bb0: {
+        switchInt((*_1)[0 of 5]) -> [104: bb1, otherwise: bb5];
+    }
+
+    bb1: {
+        switchInt((*_1)[1 of 5]) -> [101: bb2, otherwise: bb5];
+    }
+
+    bb2: {
+        switchInt((*_1)[2 of 5]) -> [108: bb3, otherwise: bb5];
+    }
+
+    bb3: {
+        switchInt((*_1)[3 of 5]) -> [108: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        StorageLive(_2);
+        _2 = (*_1)[4 of 5];
+        _0 = Eq(_2, const 111_u8);
+        StorageDead(_2);
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = const false;
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+match_array::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: &[u8];
+    let _5: &[u8; 5];
+    let mut _6: &u32;
+    let _7: u32;
+    let _8: &u32;
+    let _9: &u32;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: u32;
+    let mut _13: u32;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&u32, &u32);
+    let mut _18: &u32;
+    let _19: u32;
+    let mut _20: &[u8];
+    let _21: &[u8; 10];
+    let mut _22: &u32;
+    let _23: u32;
+    let _24: &u32;
+    let _25: &u32;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: u32;
+    let mut _29: u32;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: (&u32, &u32);
+    let mut _34: &u32;
+    let _35: u32;
+    let mut _36: &[u8];
+    let _37: &[u8; 9];
+    let mut _38: &u32;
+    let _39: u32;
+    let _40: &u32;
+    let _41: &u32;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: u32;
+    let mut _45: u32;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&bool, &bool);
+    let mut _50: &bool;
+    let _51: bool;
+    let _52: &[u8; 5];
+    let mut _53: &bool;
+    let _54: bool;
+    let _55: &bool;
+    let _56: &bool;
+    let mut _57: bool;
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: bool;
+    let _62: !;
+    let mut _63: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _64: (&bool, &bool);
+    let mut _65: &bool;
+    let _66: bool;
+    let _67: &[u8; 5];
+    let mut _68: &bool;
+    let _69: bool;
+    let _70: &bool;
+    let _71: &bool;
+    let mut _72: bool;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let _77: !;
+    let mut _78: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+    scope 3 {
+        debug left_val => _24;
+        debug right_val => _25;
+        let _30: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _30;
+        }
+    }
+    scope 5 {
+        debug left_val => _40;
+        debug right_val => _41;
+        let _46: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _46;
+        }
+    }
+    scope 7 {
+        debug left_val => _55;
+        debug right_val => _56;
+        let _61: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _61;
+        }
+    }
+    scope 9 {
+        debug left_val => _70;
+        debug right_val => _71;
+        let _76: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _76;
+        }
+    }
+
+    bb0: {
+        _5 = const b"abcde";
+        _4 = _5 as &[u8] (Pointer(Unsize));
+        _3 = match_slice(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const 2_u32;
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &u32);
+        _9 = (_1.1: &u32);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<u32, u32>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _21 = const b"event_type";
+        _20 = _21 as &[u8] (Pointer(Unsize));
+        _19 = match_slice(move _20) -> bb4;
+    }
+
+    bb4: {
+        _18 = &_19;
+        _23 = const 1_u32;
+        _22 = &_23;
+        _17 = (move _18, move _22);
+        _24 = (_17.0: &u32);
+        _25 = (_17.1: &u32);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<u32, u32>(move _30, _24, _25, move _32);
+    }
+
+    bb6: {
+        _37 = const b"partition";
+        _36 = _37 as &[u8] (Pointer(Unsize));
+        _35 = match_slice(move _36) -> bb7;
+    }
+
+    bb7: {
+        _34 = &_35;
+        _39 = const 0_u32;
+        _38 = &_39;
+        _33 = (move _34, move _38);
+        _40 = (_33.0: &u32);
+        _41 = (_33.1: &u32);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<u32, u32>(move _46, _40, _41, move _48);
+    }
+
+    bb9: {
+        _52 = const b"hello";
+        _51 = match_array(_52) -> bb10;
+    }
+
+    bb10: {
+        _50 = &_51;
+        _54 = const true;
+        _53 = &_54;
+        _49 = (move _50, move _53);
+        _55 = (_49.0: &bool);
+        _56 = (_49.1: &bool);
+        _59 = (*_55);
+        _60 = (*_56);
+        _58 = Eq(move _59, move _60);
+        _57 = Not(move _58);
+        switchInt(move _57) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _61 = core::panicking::AssertKind::Eq;
+        _63 = Option::<Arguments<'_>>::None;
+        _62 = core::panicking::assert_failed::<bool, bool>(move _61, _55, _56, move _63);
+    }
+
+    bb12: {
+        _67 = const b"hella";
+        _66 = match_array(_67) -> bb13;
+    }
+
+    bb13: {
+        _65 = &_66;
+        _69 = const false;
+        _68 = &_69;
+        _64 = (move _65, move _68);
+        _70 = (_64.0: &bool);
+        _71 = (_64.1: &bool);
+        _74 = (*_70);
+        _75 = (*_71);
+        _73 = Eq(move _74, move _75);
+        _72 = Not(move _73);
+        switchInt(move _72) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _76 = core::panicking::AssertKind::Eq;
+        _78 = Option::<Arguments<'_>>::None;
+        _77 = core::panicking::assert_failed::<bool, bool>(move _76, _70, _71, move _78);
+    }
+
+    bb15: {
+        return;
+    }
+}
+
+alloc11 (size: 5, align: 1) {
+    68 65 6c 6c 61                                  │ hella
+}
+
+alloc10 (size: 5, align: 1) {
+    68 65 6c 6c 6f                                  │ hello
+}
+
+alloc9 (size: 9, align: 1) {
+    70 61 72 74 69 74 69 6f 6e                      │ partition
+}
+
+alloc8 (size: 10, align: 1) {
+    65 76 65 6e 74 5f 74 79 70 65                   │ event_type
+}
+
+alloc7 (size: 5, align: 1) {
+    61 62 63 64 65                                  │ abcde
+}

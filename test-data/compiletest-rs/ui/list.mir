@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: list;
+    let mut _2: std::boxed::Box<list>;
+    let mut _3: list;
+    let mut _4: std::boxed::Box<list>;
+    let mut _5: list;
+    let mut _6: std::boxed::Box<list>;
+    let mut _7: list;
+
+    bb0: {
+        _7 = list::nil;
+        _6 = Box::<list>::new(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = list::cons(const 12_isize, move _6);
+        _4 = Box::<list>::new(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = list::cons(const 11_isize, move _4);
+        _2 = Box::<list>::new(move _3) -> bb3;
+    }
+
+    bb3: {
+        _1 = list::cons(const 10_isize, move _2);
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn list::cons(_1: isize, _2: Box<list>) -> list {
+    let mut _0: list;
+
+    bb0: {
+        _0 = list::cons(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn list::cons(_1: isize, _2: Box<list>) -> list {
+    let mut _0: list;
+
+    bb0: {
+        _0 = list::cons(move _1, move _2);
+        return;
+    }
+}

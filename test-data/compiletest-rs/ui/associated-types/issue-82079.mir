@@ -1,0 +1,175 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn convenience_operators::<impl at ui/associated-types/issue-82079.rs:11:5: 11:28>::map(_1: Relation<C>, _2: F) -> Relation<impl Op<D = D2, R = <C as Op>::R>> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: core::Relation<impl core::operator::Op<D = D2, R = <C as core::operator::Op>::R>>;
+    let mut _3: [closure@ui/associated-types/issue-82079.rs:16:25: 16:36];
+
+    bb0: {
+        _3 = [closure@ui/associated-types/issue-82079.rs:16:25: 16:36] { f: move _2 };
+        _0 = map::<impl Relation<C>>::map_dr::<[closure@ui/associated-types/issue-82079.rs:16:25: 16:36], D2, <C as Op>::R>(move _1, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn convenience_operators::<impl at ui/associated-types/issue-82079.rs:11:5: 11:28>::map::{closure#0}(_1: &[closure@ui/associated-types/issue-82079.rs:16:25: 16:36], _2: <C as Op>::D, _3: <C as Op>::R) -> (D2, <C as Op>::R) {
+    debug x => _2;
+    debug r => _3;
+    debug f => ((*_1).0: F);
+    let mut _0: (D2, <C as core::operator::Op>::R);
+    let mut _4: D2;
+    let mut _5: &F;
+    let mut _6: (<C as core::operator::Op>::D,);
+    let mut _7: <C as core::operator::Op>::R;
+
+    bb0: {
+        _5 = &((*_1).0: F);
+        _6 = (move _2,);
+        _4 = <F as Fn<(<C as Op>::D,)>>::call(move _5, move _6) -> [return: bb1, unwind: bb2];
+    }
+
+    bb1: {
+        _7 = move _3;
+        _0 = (move _4, move _7);
+        return;
+    }
+
+    bb2 (cleanup): {
+        drop(_3) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn convenience_operators::<impl at ui/associated-types/issue-82079.rs:20:5: 20:64>::semijoin(_1: Relation<C>, _2: Relation<C2>) -> Relation<impl Op<D = <C as Op>::D, R = R3>> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: core::Relation<impl core::operator::Op<D = <C as core::operator::Op>::D, R = R3>>;
+    let mut _3: core::Relation<impl core::operator::Op<D = (K, V, ()), R = R3>>;
+    let mut _4: core::Relation<C>;
+    let mut _5: core::Relation<impl core::operator::Op<D = (K, ()), R = <C2 as core::operator::Op>::R>>;
+    let mut _6: bool;
+
+    bb0: {
+        _6 = const false;
+        _6 = const true;
+        _4 = move _1;
+        _5 = convenience_operators::<impl Relation<C2>>::map::<[closure@ui/associated-types/issue-82079.rs:28:33: 28:36], (K, ())>(move _2, const ZeroSized: [closure@ui/associated-types/issue-82079.rs:28:33: 28:36]) -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _6 = const false;
+        _3 = join::<impl Relation<C>>::join::<impl Op<D = (K, ()), R = <C2 as Op>::R>, (), R3>(move _4, move _5) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _6 = const false;
+        _0 = convenience_operators::<impl Relation<impl Op<D = (K, V, ()), R = R3>>>::map::<[closure@ui/associated-types/issue-82079.rs:28:51: 28:63], (K, V)>(move _3, const ZeroSized: [closure@ui/associated-types/issue-82079.rs:28:51: 28:63]) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5 (cleanup): {
+        drop(_4) -> [return: bb4, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        switchInt(_6) -> [0: bb4, otherwise: bb5];
+    }
+}
+
+fn convenience_operators::<impl at ui/associated-types/issue-82079.rs:20:5: 20:64>::semijoin::{closure#0}(_1: &[closure@ui/associated-types/issue-82079.rs:28:33: 28:36], _2: K) -> (K, ()) {
+    debug x => _2;
+    let mut _0: (K, ());
+
+    bb0: {
+        _0 = (move _2, const ());
+        return;
+    }
+}
+
+fn convenience_operators::<impl at ui/associated-types/issue-82079.rs:20:5: 20:64>::semijoin::{closure#1}(_1: &[closure@ui/associated-types/issue-82079.rs:28:51: 28:63], _2: (K, V, ())) -> (K, V) {
+    let mut _0: (K, V);
+    let _3: K;
+    let _4: V;
+    scope 1 {
+        debug k => _3;
+        debug x => _4;
+    }
+
+    bb0: {
+        _3 = move (_2.0: K);
+        _4 = move (_2.1: V);
+        _0 = (move _3, move _4);
+        return;
+    }
+}
+
+fn join::<impl at ui/associated-types/issue-82079.rs:57:13: 57:72>::join(_1: Relation<C>, _2: Relation<C2>) -> Relation<impl Op<D = (K, D, D2), R = OR>> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: core::Relation<impl core::operator::Op<D = (K, D, D2), R = OR>>;
+    let mut _3: core::operator::join::Join<C, C2>;
+    let mut _4: C;
+    let mut _5: C2;
+
+    bb0: {
+        _4 = move (_1.0: C);
+        _5 = move (_2.0: C2);
+        _3 = join::Join::<C, C2> { _left: move _4, _right: move _5 };
+        _0 = Relation::<join::Join<C, C2>> { inner: move _3 };
+        return;
+    }
+}
+
+fn map::<impl at ui/associated-types/issue-82079.rs:94:13: 94:36>::map_dr(_1: Relation<C>, _2: F) -> Relation<impl Op<D = D2, R = R2>> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: core::Relation<impl core::operator::Op<D = D2, R = R2>>;
+    let mut _3: core::operator::map::Map<C, F>;
+    let mut _4: C;
+
+    bb0: {
+        _4 = move (_1.0: C);
+        _3 = map::Map::<C, F> { _inner: move _4, _op: move _2 };
+        _0 = Relation::<map::Map<C, F>> { inner: move _3 };
+        return;
+    }
+}
+
+fn core::<impl at ui/associated-types/issue-82079.rs:115:14: 115:19>::clone(_1: &Relation<C>) -> Relation<C> {
+    debug self => _1;
+    let mut _0: core::Relation<C>;
+    let mut _2: C;
+    let _3: &C;
+
+    bb0: {
+        _3 = &((*_1).0: C);
+        _2 = <C as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Relation::<C> { inner: move _2 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

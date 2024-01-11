@@ -1,0 +1,150 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: Bar;
+    let mut _2: std::string::String;
+    let _3: &str;
+    let mut _4: std::string::String;
+    let _5: &str;
+    let mut _6: E;
+    let mut _7: std::string::String;
+    let _8: &str;
+    let mut _9: std::string::String;
+    let _10: &str;
+    let mut _11: std::string::String;
+    let _12: &str;
+    let mut _18: bool;
+    scope 1 {
+        debug bar => _1;
+        let _13: std::string::String;
+        let _14: std::string::String;
+        let _15: &std::string::String;
+        let _16: std::string::String;
+        let _17: &std::string::String;
+        scope 2 {
+            debug a => _13;
+            debug b => _14;
+            debug c => _15;
+        }
+        scope 3 {
+            debug a => _16;
+            debug b => _17;
+        }
+    }
+
+    bb0: {
+        _18 = const false;
+        _3 = const "1";
+        _2 = <str as ToString>::to_string(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = const "2";
+        _4 = <str as ToString>::to_string(_5) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _18 = const true;
+        _1 = Bar { a: move _2, b: move _4 };
+        _8 = const "";
+        _7 = <&str as Into<String>>::into(_8) -> [return: bb3, unwind: bb19];
+    }
+
+    bb3: {
+        _10 = const "";
+        _9 = <&str as Into<String>>::into(_10) -> [return: bb4, unwind: bb11];
+    }
+
+    bb4: {
+        _12 = const "";
+        _11 = <&str as Into<String>>::into(_12) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        _6 = E::Foo(move _7, move _9, move _11);
+        _13 = move ((_6 as Foo).0: std::string::String);
+        _14 = move ((_6 as Foo).1: std::string::String);
+        _15 = &((_6 as Foo).2: std::string::String);
+        drop(_14) -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_13) -> [return: bb7, unwind: bb16];
+    }
+
+    bb7: {
+        drop(((_6 as Foo).2: std::string::String)) -> [return: bb14, unwind: bb19];
+    }
+
+    bb8: {
+        drop((_1.1: std::string::String)) -> bb15;
+    }
+
+    bb9 (cleanup): {
+        drop(_13) -> [return: bb16, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_9) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_7) -> [return: bb19, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_2) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14: {
+        _18 = const false;
+        _16 = move (_1.0: std::string::String);
+        _17 = &(_1.1: std::string::String);
+        drop(_16) -> [return: bb8, unwind: bb19];
+    }
+
+    bb15: {
+        _18 = const false;
+        return;
+    }
+
+    bb16 (cleanup): {
+        drop(((_6 as Foo).2: std::string::String)) -> [return: bb19, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop((_1.1: std::string::String)) -> [return: bb13, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        drop((_1.0: std::string::String)) -> [return: bb17, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        switchInt(_18) -> [0: bb17, otherwise: bb18];
+    }
+}
+
+fn E::Foo(_1: String, _2: String, _3: String) -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::Foo(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn E::Foo(_1: String, _2: String, _3: String) -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::Foo(move _1, move _2, move _3);
+        return;
+    }
+}

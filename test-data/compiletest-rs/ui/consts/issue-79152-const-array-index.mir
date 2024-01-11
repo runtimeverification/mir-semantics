@@ -1,0 +1,109 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: [[i32; 1]; 1];
+    let mut _2: [i32; 1];
+    let _3: usize;
+    let mut _4: usize;
+    let mut _5: bool;
+    let _6: usize;
+    let mut _7: usize;
+    let mut _8: bool;
+    scope 1 {
+        debug array => _1;
+    }
+
+    bb0: {
+        _2 = [const 0_i32; 1];
+        _1 = [move _2; 1];
+        _3 = const 0_usize;
+        _4 = const 1_usize;
+        _5 = Lt(_3, _4);
+        assert(move _5, "index out of bounds: the length is {} but the index is {}", move _4, _3) -> bb1;
+    }
+
+    bb1: {
+        _6 = const 0_usize;
+        _7 = const 1_usize;
+        _8 = Lt(_6, _7);
+        assert(move _8, "index out of bounds: the length is {} but the index is {}", move _7, _6) -> bb2;
+    }
+
+    bb2: {
+        _1[_3][_6] = const 1_i32;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: [[i32; 1]; 1];
+    let mut _2: [i32; 1];
+    let _3: usize;
+    let mut _4: usize;
+    let mut _5: bool;
+    let _6: usize;
+    let mut _7: usize;
+    let mut _8: bool;
+    scope 1 {
+        debug array => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = [const 0_i32; 1];
+        _1 = [move _2; 1];
+        StorageDead(_2);
+        StorageLive(_3);
+        _3 = const 0_usize;
+        _4 = Len(_1);
+        _5 = Lt(_3, _4);
+        assert(move _5, "index out of bounds: the length is {} but the index is {}", move _4, _3) -> bb1;
+    }
+
+    bb1: {
+        StorageLive(_6);
+        _6 = const 0_usize;
+        _7 = Len(_1[_3]);
+        _8 = Lt(_6, _7);
+        assert(move _8, "index out of bounds: the length is {} but the index is {}", move _7, _6) -> bb2;
+    }
+
+    bb2: {
+        _1[_3][_6] = const 1_i32;
+        StorageDead(_6);
+        StorageDead(_3);
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+foo::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

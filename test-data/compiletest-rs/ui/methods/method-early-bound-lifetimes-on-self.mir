@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/methods/method-early-bound-lifetimes-on-self.rs:21:1: 21:41>::init_cursor(_1: &SimpleNavigator, _2: &mut Cursor<'_>) -> bool {
+    debug self => _1;
+    debug _cursor => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Cursor<'_>;
+    let _3: bool;
+    let mut _4: &SimpleNavigator;
+    let mut _5: &mut Cursor<'_>;
+    scope 1 {
+        debug c => const Cursor::<'_> {{ m: PhantomData::<&()> }};
+        let _2: SimpleNavigator;
+        scope 2 {
+            debug n => const SimpleNavigator;
+        }
+    }
+
+    bb0: {
+        _4 = &_2;
+        _5 = &mut _1;
+        _3 = <SimpleNavigator as CursorNavigator>::init_cursor::<'_, '_>(move _4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

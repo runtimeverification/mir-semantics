@@ -1,0 +1,54 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/early-vtbl-resolution.rs:10:1: 10:27>::foo(_1: &isize) -> Option<A> {
+    debug self => _1;
+    let mut _0: std::option::Option<A>;
+
+    bb0: {
+        _0 = Option::<A>::None;
+        return;
+    }
+}
+
+fn foo_func(_1: B) -> Option<A> {
+    debug x => _1;
+    let mut _0: std::option::Option<A>;
+    let mut _2: &B;
+
+    bb0: {
+        _2 = &_1;
+        _0 = <B as thing<A>>::foo(move _2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<f64>;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _1 = foo_func::<f64, isize>(const 0_isize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

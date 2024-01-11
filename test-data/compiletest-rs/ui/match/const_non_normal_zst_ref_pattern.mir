@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 10_isize;
+        return;
+    }
+}
+
+const ZST: &() = {
+    let mut _0: &();
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = const _ as &() (Transmute);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

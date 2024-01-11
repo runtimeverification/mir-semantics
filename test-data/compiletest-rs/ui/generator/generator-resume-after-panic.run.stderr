@@ -1,0 +1,3 @@
+thread 'main' panicked at 'explicit panic', ui/generator/generator-resume-after-panic.rs:18:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread 'main' panicked at 'generator resumed after panicking', ui/generator/generator-resume-after-panic.rs:17:17

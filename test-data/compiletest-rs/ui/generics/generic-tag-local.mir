@@ -1,0 +1,33 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: clam<i32>;
+    scope 1 {
+        debug _c => _1;
+    }
+
+    bb0: {
+        _1 = clam::<i32>::a(const 3_i32);
+        return;
+    }
+}
+
+fn clam::a(_1: T) -> clam<T> {
+    let mut _0: clam<T>;
+
+    bb0: {
+        _0 = clam::<T>::a(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn clam::a(_1: T) -> clam<T> {
+    let mut _0: clam<T>;
+
+    bb0: {
+        _0 = clam::<T>::a(move _1);
+        return;
+    }
+}

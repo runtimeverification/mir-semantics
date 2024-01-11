@@ -1,0 +1,81 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const Foo::ASSOC: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+Iced::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+Iced::1::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn foo() -> () {
+    let mut _0: ();
+    let _1: Iced<T>;
+    scope 1 {
+        debug _iced => _1;
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = foo::<u32>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Iced(_1: T, _2: [(); T::ASSOC]) -> Iced<T> {
+    let mut _0: Iced<T>;
+
+    bb0: {
+        _0 = Iced::<T>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Iced(_1: T, _2: [(); T::ASSOC]) -> Iced<T> {
+    let mut _0: Iced<T>;
+
+    bb0: {
+        _0 = Iced::<T>(move _1, move _2);
+        return;
+    }
+}

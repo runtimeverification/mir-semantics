@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<&str>;
+    let _2: &str;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        _1 = Option::<&str>::Some(const "foo");
+        _2 = Option::<&str>::unwrap(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

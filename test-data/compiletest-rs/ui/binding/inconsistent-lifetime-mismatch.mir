@@ -1,0 +1,59 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &[&str]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn bad(_1: &str, _2: &str) -> () {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+
+    bb0: {
+        _6 = [_1, _2];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _3 = foo(move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn good(_1: &str, _2: &str) -> () {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+
+    bb0: {
+        _6 = [_1, _2];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _3 = foo(move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

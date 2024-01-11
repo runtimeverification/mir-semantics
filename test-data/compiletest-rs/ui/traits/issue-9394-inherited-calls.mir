@@ -1,0 +1,504 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Base::foo2(_1: &Self) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "base foo2";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-9394-inherited-calls.rs:25:1: 25:16>::foo(_1: &X) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "base foo";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-9394-inherited-calls.rs:25:1: 25:16>::foo1(_1: &X) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "base foo1";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-9394-inherited-calls.rs:35:1: 35:17>::baz(_1: &X) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "base2 baz";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-9394-inherited-calls.rs:41:1: 41:17>::root(_1: &X) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "base3 root";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-9394-inherited-calls.rs:47:1: 47:17>::bar(_1: &X) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "super bar";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: X;
+    let mut _2: &dyn Super;
+    let _3: &X;
+    let mut _4: (&std::string::String, &std::string::String);
+    let mut _5: &std::string::String;
+    let _6: std::string::String;
+    let mut _7: &std::string::String;
+    let _8: std::string::String;
+    let _9: &str;
+    let mut _12: bool;
+    let mut _13: bool;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&std::string::String, &std::string::String);
+    let mut _18: &std::string::String;
+    let _19: std::string::String;
+    let mut _20: &std::string::String;
+    let _21: std::string::String;
+    let _22: &str;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&std::string::String, &std::string::String);
+    let mut _31: &std::string::String;
+    let _32: std::string::String;
+    let mut _33: &std::string::String;
+    let _34: std::string::String;
+    let _35: &str;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&std::string::String, &std::string::String);
+    let mut _44: &std::string::String;
+    let _45: std::string::String;
+    let mut _46: &std::string::String;
+    let _47: std::string::String;
+    let _48: &str;
+    let mut _51: bool;
+    let mut _52: bool;
+    let _54: !;
+    let mut _55: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _56: (&std::string::String, &std::string::String);
+    let mut _57: &std::string::String;
+    let _58: std::string::String;
+    let mut _59: &std::string::String;
+    let _60: std::string::String;
+    let _61: &str;
+    let mut _64: bool;
+    let mut _65: bool;
+    let _67: !;
+    let mut _68: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _69: (&std::string::String, &std::string::String);
+    let mut _70: &std::string::String;
+    let _71: std::string::String;
+    let mut _72: &std::string::String;
+    let _73: std::string::String;
+    let _74: &str;
+    let mut _77: bool;
+    let mut _78: bool;
+    let _80: !;
+    let mut _81: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug n => const X;
+        scope 2 {
+            debug s => _2;
+            let _10: &std::string::String;
+            let _11: &std::string::String;
+            let _23: &std::string::String;
+            let _24: &std::string::String;
+            let _36: &std::string::String;
+            let _37: &std::string::String;
+            let _49: &std::string::String;
+            let _50: &std::string::String;
+            let _62: &std::string::String;
+            let _63: &std::string::String;
+            let _75: &std::string::String;
+            let _76: &std::string::String;
+            scope 3 {
+                debug left_val => _10;
+                debug right_val => _11;
+                let _14: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _14;
+                }
+            }
+            scope 5 {
+                debug left_val => _23;
+                debug right_val => _24;
+                let _27: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _27;
+                }
+            }
+            scope 7 {
+                debug left_val => _36;
+                debug right_val => _37;
+                let _40: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _40;
+                }
+            }
+            scope 9 {
+                debug left_val => _49;
+                debug right_val => _50;
+                let _53: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _53;
+                }
+            }
+            scope 11 {
+                debug left_val => _62;
+                debug right_val => _63;
+                let _66: core::panicking::AssertKind;
+                scope 12 {
+                    debug kind => _66;
+                }
+            }
+            scope 13 {
+                debug left_val => _75;
+                debug right_val => _76;
+                let _79: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _79;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = &_1;
+        _2 = _3 as &dyn Super (Pointer(Unsize));
+        _6 = <dyn Super as Super>::bar(_2) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _9 = const "super bar";
+        _8 = <str as ToString>::to_string(_9) -> [return: bb2, unwind: bb54];
+    }
+
+    bb2: {
+        _7 = &_8;
+        _4 = (move _5, move _7);
+        _10 = (_4.0: &std::string::String);
+        _11 = (_4.1: &std::string::String);
+        _13 = <String as PartialEq>::eq(_10, _11) -> [return: bb3, unwind: bb53];
+    }
+
+    bb3: {
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<String, String>(move _14, _10, _11, move _16) -> bb53;
+    }
+
+    bb5: {
+        drop(_8) -> [return: bb6, unwind: bb54];
+    }
+
+    bb6: {
+        drop(_6) -> bb7;
+    }
+
+    bb7: {
+        _19 = <dyn Super as Base>::foo(_2) -> bb8;
+    }
+
+    bb8: {
+        _18 = &_19;
+        _22 = const "base foo";
+        _21 = <str as ToString>::to_string(_22) -> [return: bb9, unwind: bb52];
+    }
+
+    bb9: {
+        _20 = &_21;
+        _17 = (move _18, move _20);
+        _23 = (_17.0: &std::string::String);
+        _24 = (_17.1: &std::string::String);
+        _26 = <String as PartialEq>::eq(_23, _24) -> [return: bb10, unwind: bb51];
+    }
+
+    bb10: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<String, String>(move _27, _23, _24, move _29) -> bb51;
+    }
+
+    bb12: {
+        drop(_21) -> [return: bb13, unwind: bb52];
+    }
+
+    bb13: {
+        drop(_19) -> bb14;
+    }
+
+    bb14: {
+        _32 = <dyn Super as Base>::foo1(_2) -> bb15;
+    }
+
+    bb15: {
+        _31 = &_32;
+        _35 = const "base foo1";
+        _34 = <str as ToString>::to_string(_35) -> [return: bb16, unwind: bb50];
+    }
+
+    bb16: {
+        _33 = &_34;
+        _30 = (move _31, move _33);
+        _36 = (_30.0: &std::string::String);
+        _37 = (_30.1: &std::string::String);
+        _39 = <String as PartialEq>::eq(_36, _37) -> [return: bb17, unwind: bb49];
+    }
+
+    bb17: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<String, String>(move _40, _36, _37, move _42) -> bb49;
+    }
+
+    bb19: {
+        drop(_34) -> [return: bb20, unwind: bb50];
+    }
+
+    bb20: {
+        drop(_32) -> bb21;
+    }
+
+    bb21: {
+        _45 = <dyn Super as Base>::foo2(_2) -> bb22;
+    }
+
+    bb22: {
+        _44 = &_45;
+        _48 = const "base foo2";
+        _47 = <str as ToString>::to_string(_48) -> [return: bb23, unwind: bb48];
+    }
+
+    bb23: {
+        _46 = &_47;
+        _43 = (move _44, move _46);
+        _49 = (_43.0: &std::string::String);
+        _50 = (_43.1: &std::string::String);
+        _52 = <String as PartialEq>::eq(_49, _50) -> [return: bb24, unwind: bb47];
+    }
+
+    bb24: {
+        _51 = Not(move _52);
+        switchInt(move _51) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _53 = core::panicking::AssertKind::Eq;
+        _55 = Option::<Arguments<'_>>::None;
+        _54 = core::panicking::assert_failed::<String, String>(move _53, _49, _50, move _55) -> bb47;
+    }
+
+    bb26: {
+        drop(_47) -> [return: bb27, unwind: bb48];
+    }
+
+    bb27: {
+        drop(_45) -> bb28;
+    }
+
+    bb28: {
+        _58 = <dyn Super as Base2>::baz(_2) -> bb29;
+    }
+
+    bb29: {
+        _57 = &_58;
+        _61 = const "base2 baz";
+        _60 = <str as ToString>::to_string(_61) -> [return: bb30, unwind: bb46];
+    }
+
+    bb30: {
+        _59 = &_60;
+        _56 = (move _57, move _59);
+        _62 = (_56.0: &std::string::String);
+        _63 = (_56.1: &std::string::String);
+        _65 = <String as PartialEq>::eq(_62, _63) -> [return: bb31, unwind: bb45];
+    }
+
+    bb31: {
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _66 = core::panicking::AssertKind::Eq;
+        _68 = Option::<Arguments<'_>>::None;
+        _67 = core::panicking::assert_failed::<String, String>(move _66, _62, _63, move _68) -> bb45;
+    }
+
+    bb33: {
+        drop(_60) -> [return: bb34, unwind: bb46];
+    }
+
+    bb34: {
+        drop(_58) -> bb35;
+    }
+
+    bb35: {
+        _71 = <dyn Super as Base3>::root(_2) -> bb36;
+    }
+
+    bb36: {
+        _70 = &_71;
+        _74 = const "base3 root";
+        _73 = <str as ToString>::to_string(_74) -> [return: bb37, unwind: bb44];
+    }
+
+    bb37: {
+        _72 = &_73;
+        _69 = (move _70, move _72);
+        _75 = (_69.0: &std::string::String);
+        _76 = (_69.1: &std::string::String);
+        _78 = <String as PartialEq>::eq(_75, _76) -> [return: bb38, unwind: bb43];
+    }
+
+    bb38: {
+        _77 = Not(move _78);
+        switchInt(move _77) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _79 = core::panicking::AssertKind::Eq;
+        _81 = Option::<Arguments<'_>>::None;
+        _80 = core::panicking::assert_failed::<String, String>(move _79, _75, _76, move _81) -> bb43;
+    }
+
+    bb40: {
+        drop(_73) -> [return: bb41, unwind: bb44];
+    }
+
+    bb41: {
+        drop(_71) -> bb42;
+    }
+
+    bb42: {
+        return;
+    }
+
+    bb43 (cleanup): {
+        drop(_73) -> [return: bb44, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_71) -> [return: bb55, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_60) -> [return: bb46, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_58) -> [return: bb55, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_47) -> [return: bb48, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_45) -> [return: bb55, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        drop(_34) -> [return: bb50, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_32) -> [return: bb55, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_21) -> [return: bb52, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_19) -> [return: bb55, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_8) -> [return: bb54, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_6) -> [return: bb55, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        resume;
+    }
+}

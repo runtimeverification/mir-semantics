@@ -1,0 +1,43 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inherent-method-order.rs:5:1: 5:9>::foo(_1: Foo) -> () {
+    debug self => const Foo;
+    let mut _0: ();
+    let _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "wrong method!");
+    }
+}
+
+fn <impl at ui/traits/inherent-method-order.rs:16:1: 16:41>::foo(_1: &&&Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &&&Foo;
+    let _2: &&Foo;
+    let _3: &Foo;
+    let _4: Foo;
+    let _5: ();
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _3 = &_4;
+        _2 = &_3;
+        _1 = &_2;
+        _5 = <&&&Foo as Trait>::foo(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

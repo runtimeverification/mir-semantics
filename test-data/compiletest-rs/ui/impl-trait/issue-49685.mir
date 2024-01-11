@@ -1,0 +1,77 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::iter::FlatMap<std::option::IntoIter<()>, std::iter::FlatMap<std::option::IntoIter<()>, impl std::iter::Iterator<Item = ()>, fn(()) -> impl std::iter::Iterator<Item = ()> {func}>, [closure@ui/impl-trait/issue-49685.rs:8:19: 8:22]>;
+    let mut _2: std::option::IntoIter<()>;
+    let mut _3: std::option::Option<()>;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = Option::<()>::Some(const ());
+        _2 = <Option<()> as IntoIterator>::into_iter(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = <std::option::IntoIter<()> as Iterator>::flat_map::<FlatMap<std::option::IntoIter<()>, impl Iterator<Item = ()>, fn(()) -> impl Iterator<Item = ()> {func}>, [closure@ui/impl-trait/issue-49685.rs:8:19: 8:22]>(move _2, const ZeroSized: [closure@ui/impl-trait/issue-49685.rs:8:19: 8:22]) -> bb2;
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/impl-trait/issue-49685.rs:8:19: 8:22], _2: ()) -> FlatMap<std::option::IntoIter<()>, impl Iterator<Item = ()>, fn(()) -> impl Iterator<Item = ()> {func}> {
+    let mut _0: std::iter::FlatMap<std::option::IntoIter<()>, impl std::iter::Iterator<Item = ()>, fn(()) -> impl std::iter::Iterator<Item = ()> {func}>;
+    let mut _3: std::option::IntoIter<()>;
+    let mut _4: std::option::Option<()>;
+
+    bb0: {
+        _4 = Option::<()>::Some(const ());
+        _3 = <Option<()> as IntoIterator>::into_iter(move _4) -> bb1;
+    }
+
+    bb1: {
+        _0 = <std::option::IntoIter<()> as Iterator>::flat_map::<impl Iterator<Item = ()>, fn(()) -> impl Iterator<Item = ()> {func}>(move _3, func) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn func(_1: ()) -> impl Iterator<Item = ()> {
+    let mut _0: impl std::iter::Iterator<Item = ()>;
+    let mut _2: std::option::IntoIter<()>;
+    let mut _3: std::option::Option<()>;
+
+    bb0: {
+        _3 = Option::<()>::Some(const ());
+        _2 = <Option<()> as IntoIterator>::into_iter(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <std::option::IntoIter<()> as Iterator>::flat_map::<Vec<()>, [closure@ui/impl-trait/issue-49685.rs:12:35: 12:38]>(move _2, const ZeroSized: [closure@ui/impl-trait/issue-49685.rs:12:35: 12:38]) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn func::{closure#0}(_1: &mut [closure@ui/impl-trait/issue-49685.rs:12:35: 12:38], _2: ()) -> Vec<()> {
+    let mut _0: std::vec::Vec<()>;
+
+    bb0: {
+        _0 = Vec::<()>::new() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,2 @@
+thread 'main' panicked at 'internal error: entered unreachable code: x is {x}', ui/macros/unreachable-format-arg.rs:14:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

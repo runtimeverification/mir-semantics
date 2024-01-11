@@ -1,0 +1,173 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/issue-66851.rs:7:10: 7:15>::fmt(_1: &SpecialsRes, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &u64;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&u64;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as Res).0: u64);
+        _4 = const "Res";
+        _6 = &_3;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/issue-66851.rs:7:17: 7:26>::eq(_1: &SpecialsRes, _2: &SpecialsRes) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: (&SpecialsRes, &SpecialsRes);
+    let _4: &u64;
+    let _5: &u64;
+    let mut _6: u64;
+    let mut _7: u64;
+    let mut _8: &SpecialsRes;
+    let mut _9: &SpecialsRes;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _8 = deref_copy (_3.0: &SpecialsRes);
+        _4 = &(((*_8) as Res).0: u64);
+        _9 = deref_copy (_3.1: &SpecialsRes);
+        _5 = &(((*_9) as Res).0: u64);
+        _6 = (*_4);
+        _7 = (*_5);
+        _0 = Eq(move _6, move _7);
+        return;
+    }
+}
+
+fn <impl at ui/mir/issue-66851.rs:7:28: 7:30>::assert_receiver_is_total_eq(_1: &SpecialsRes) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn e103() -> SpecialsRes {
+    let mut _0: SpecialsRes;
+    let mut _1: std::result::Result<u64, std::num::ParseIntError>;
+    let _2: &str;
+    let mut _3: isize;
+    scope 1 {
+        debug r => _4;
+        let _4: u64;
+    }
+
+    bb0: {
+        _2 = const "1";
+        _1 = core::str::<impl str>::parse::<u64>(_2) -> bb1;
+    }
+
+    bb1: {
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _4 = ((_1 as Ok).0: u64);
+        _0 = SpecialsRes::Res(_4);
+        goto -> bb4;
+    }
+
+    bb3: {
+        _0 = SpecialsRes::Res(const 42_u64);
+        goto -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&SpecialsRes, &SpecialsRes);
+    let mut _2: &SpecialsRes;
+    let _3: SpecialsRes;
+    let mut _4: &SpecialsRes;
+    let _5: SpecialsRes;
+    let _6: &SpecialsRes;
+    let _7: &SpecialsRes;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+
+    bb0: {
+        _3 = e103() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = SpecialsRes::Res(const 1_u64);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &SpecialsRes);
+        _7 = (_1.1: &SpecialsRes);
+        _9 = <SpecialsRes as PartialEq>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<SpecialsRes, SpecialsRes>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn SpecialsRes::Res(_1: u64) -> SpecialsRes {
+    let mut _0: SpecialsRes;
+
+    bb0: {
+        _0 = SpecialsRes::Res(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn SpecialsRes::Res(_1: u64) -> SpecialsRes {
+    let mut _0: SpecialsRes;
+
+    bb0: {
+        _0 = SpecialsRes::Res(move _1);
+        return;
+    }
+}

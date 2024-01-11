@@ -1,0 +1,72 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:6:1: 6:21>::{constant#0}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:15:1: 15:35>::{constant#0}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = Eq(const N, const 0_u8);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:15:1: 15:35>::{constant#1}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:22:1: 22:35>::{constant#0}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:22:1: 22:35>::{constant#1}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:25:1: 25:35>::{constant#0}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-74634.rs:25:1: 25:35>::{constant#1}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

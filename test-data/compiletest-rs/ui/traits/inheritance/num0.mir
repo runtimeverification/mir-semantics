@@ -1,0 +1,46 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn greater_than_one(_1: &T) -> bool {
+    debug n => _1;
+    let mut _0: bool;
+    let _2: &T;
+    let _3: T;
+    let mut _4: std::option::Option<T>;
+
+    bb0: {
+        _4 = <T as NumCast>::from(const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _3 = Option::<T>::unwrap(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _0 = <T as PartialOrd>::gt(_1, _2) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_3) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

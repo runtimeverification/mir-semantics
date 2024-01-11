@@ -1,0 +1,85 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static C: E = {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::S1 { u: const 23_usize };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &E;
+    let mut _2: isize;
+    let mut _3: !;
+    let _4: usize;
+    let mut _5: (&usize, &usize);
+    let mut _6: &usize;
+    let mut _7: &usize;
+    let _8: usize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug u => _4;
+        let _9: &usize;
+        let _10: &usize;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const {alloc1: &E};
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _4 = (((*_1) as S1).0: usize);
+        _6 = &_4;
+        _8 = const 23_usize;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &usize);
+        _10 = (_5.1: &usize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<usize, usize>(move _15, _9, _10, move _17);
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+alloc1 (static: C, size: 24, align: 8) {
+    0x00 │ 00 00 00 00 00 00 00 00 17 00 00 00 00 00 00 00 │ ................
+    0x10 │ __ __ __ __ __ __ __ __                         │ ░░░░░░░░
+}

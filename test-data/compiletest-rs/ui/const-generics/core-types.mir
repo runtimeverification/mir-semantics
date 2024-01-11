@@ -1,0 +1,295 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                    scope 9 {
+                                        scope 10 {
+                                            scope 11 {
+                                                scope 12 {
+                                                    scope 13 {
+                                                        scope 14 {
+                                                            scope 15 {
+                                                                scope 16 {
+                                                                    scope 17 {
+                                                                        scope 18 {
+                                                                            scope 19 {
+                                                                                scope 20 {
+                                                                                    scope 21 {
+                                                                                        scope 22 {
+                                                                                            scope 23 {
+                                                                                                scope 24 {
+                                                                                                    scope 25 {
+                                                                                                        scope 26 {
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+main::{constant#0}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#1}: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#2}: u16 = {
+    let mut _0: u16;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#3}: u16 = {
+    let mut _0: u16;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#4}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#5}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#6}: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#7}: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#8}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#9}: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#10}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#11}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#12}: i8 = {
+    let mut _0: i8;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#13}: i8 = {
+    let mut _0: i8;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#14}: i16 = {
+    let mut _0: i16;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#15}: i16 = {
+    let mut _0: i16;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#16}: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#17}: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#18}: i64 = {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#19}: i64 = {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#20}: i128 = {
+    let mut _0: i128;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#21}: i128 = {
+    let mut _0: i128;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#22}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#23}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#24}: char = {
+    let mut _0: char;
+
+    bb0: {
+        _0 = const 'A';
+        return;
+    }
+}
+
+main::{constant#25}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}

@@ -1,0 +1,230 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/derives/derive-Debug-use-ufcs-struct.rs:4:10: 4:15>::fmt(_1: &Bar, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&();
+    let _7: &();
+
+    bb0: {
+        _3 = const "Bar";
+        _4 = const "t";
+        _7 = &((*_1).0: ());
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Access::field(_1: &Self, _2: impl Sized, _3: impl Sized) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _4: !;
+
+    bb0: {
+        _4 = begin_panic::<&str>(const "got into Access::field") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_3) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn Access::finish(_1: &Self) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "got into Access::finish");
+    }
+}
+
+fn Access::debug_struct(_1: &Self, _2: impl Sized, _3: impl Sized) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _4: !;
+
+    bb0: {
+        _4 = begin_panic::<&str>(const "got into Access::debug_struct") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_3) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn MutAccess::field(_1: &mut Self, _2: impl Sized, _3: impl Sized) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _4: !;
+
+    bb0: {
+        _4 = begin_panic::<&str>(const "got into MutAccess::field") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_3) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn MutAccess::finish(_1: &mut Self) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "got into MutAccess::finish");
+    }
+}
+
+fn MutAccess::debug_struct(_1: &mut Self, _2: impl Sized, _3: impl Sized) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _4: !;
+
+    bb0: {
+        _4 = begin_panic::<&str>(const "got into MutAccess::debug_struct") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_3) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Bar;
+    let mut _2: (&&str, &std::string::String);
+    let mut _3: &&str;
+    let _4: &str;
+    let mut _5: &std::string::String;
+    let _6: std::string::String;
+    let mut _8: std::fmt::Arguments<'_>;
+    let mut _9: &[&str];
+    let _10: &[&str; 1];
+    let _11: [&str; 1];
+    let mut _12: &[core::fmt::rt::Argument<'_>];
+    let _13: &[core::fmt::rt::Argument<'_>; 1];
+    let _14: [core::fmt::rt::Argument<'_>; 1];
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &Bar;
+    let mut _19: bool;
+    let mut _20: bool;
+    let _22: !;
+    let mut _23: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug bar => const Bar {{ t: () }};
+        let _7: std::string::String;
+        let _17: &&str;
+        let _18: &std::string::String;
+        scope 2 {
+            debug res => _7;
+        }
+        scope 3 {
+            debug left_val => _17;
+            debug right_val => _18;
+            let _21: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _21;
+            }
+        }
+    }
+
+    bb0: {
+        _4 = const "Bar { t: () }";
+        _3 = &_4;
+        _11 = [const ""];
+        _10 = &_11;
+        _9 = _10 as &[&str] (Pointer(Unsize));
+        _16 = &_1;
+        _15 = core::fmt::rt::Argument::<'_>::new_debug::<Bar>(_16) -> bb1;
+    }
+
+    bb1: {
+        _14 = [move _15];
+        _13 = &_14;
+        _12 = _13 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _8 = Arguments::<'_>::new_v1(move _9, move _12) -> bb2;
+    }
+
+    bb2: {
+        _7 = format(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = move _7;
+        _5 = &_6;
+        _2 = (move _3, move _5);
+        _17 = (_2.0: &&str);
+        _18 = (_2.1: &std::string::String);
+        _20 = <&str as PartialEq<String>>::eq(_17, _18) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _21 = core::panicking::AssertKind::Eq;
+        _23 = Option::<Arguments<'_>>::None;
+        _22 = core::panicking::assert_failed::<&str, String>(move _21, _17, _18, move _23) -> bb8;
+    }
+
+    bb6: {
+        drop(_6) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_6) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}

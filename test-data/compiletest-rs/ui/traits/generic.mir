@@ -1,0 +1,703 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/generic.rs:9:1: 9:22>::to_string_(_1: &isize) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = <isize as ToString>::to_string(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/generic.rs:12:1: 12:23>::to_string_(_1: &String) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = <String as Clone>::clone(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/generic.rs:15:1: 15:19>::to_string_(_1: &()) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "()";
+        _0 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/generic.rs:22:1: 22:26>::map(_1: &Vec<T>, _2: F) -> Vec<U> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::vec::Vec<U>;
+    let mut _3: std::vec::Vec<U>;
+    let mut _4: std::slice::Iter<'_, T>;
+    let mut _6: std::option::Option<&T>;
+    let mut _7: &mut std::slice::Iter<'_, T>;
+    let mut _8: isize;
+    let _10: ();
+    let mut _11: &mut std::vec::Vec<U>;
+    let mut _12: U;
+    let mut _13: &mut F;
+    let mut _14: (&T,);
+    scope 1 {
+        debug r => _3;
+        let mut _5: std::slice::Iter<'_, T>;
+        scope 2 {
+            debug iter => _5;
+            let _9: &T;
+            scope 3 {
+                debug i => _9;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Vec::<U>::new() -> [return: bb1, unwind: bb11];
+    }
+
+    bb1: {
+        _4 = <&Vec<T> as IntoIterator>::into_iter(_1) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _5 = move _4;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::slice::Iter<'_, T> as Iterator>::next(_7) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = ((_6 as Some).0: &T);
+        _11 = &mut _3;
+        _13 = &mut _2;
+        _14 = (_9,);
+        _12 = <F as FnMut<(&T,)>>::call_mut(move _13, move _14) -> [return: bb8, unwind: bb10];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _0 = move _3;
+        drop(_2) -> bb9;
+    }
+
+    bb8: {
+        _10 = Vec::<U>::push(move _11, move _12) -> [return: bb13, unwind: bb10];
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+
+    bb13: {
+        goto -> bb3;
+    }
+}
+
+fn foo(_1: T) -> Vec<String> {
+    debug x => _1;
+    let mut _0: std::vec::Vec<std::string::String>;
+    let mut _2: &T;
+
+    bb0: {
+        _2 = &_1;
+        _0 = <T as map<U>>::map::<String, [closure@ui/traits/generic.rs:33:11: 33:15]>(move _2, const ZeroSized: [closure@ui/traits/generic.rs:33:11: 33:15]) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn foo::{closure#0}(_1: &mut [closure@ui/traits/generic.rs:33:11: 33:15], _2: &U) -> String {
+    debug _e => _2;
+    let mut _0: std::string::String;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "hi";
+        _0 = <str as ToString>::to_string(_3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar(_1: T) -> Vec<String> {
+    debug x => _1;
+    let mut _0: std::vec::Vec<std::string::String>;
+    let mut _2: &T;
+
+    bb0: {
+        _2 = &_1;
+        _0 = <T as map<U>>::map::<String, [closure@ui/traits/generic.rs:36:11: 36:15]>(move _2, const ZeroSized: [closure@ui/traits/generic.rs:36:11: 36:15]) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn bar::{closure#0}(_1: &mut [closure@ui/traits/generic.rs:36:11: 36:15], _2: &U) -> String {
+    debug _e => _2;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = <U as to_str>::to_string_(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::vec::Vec<std::string::String>, &[std::string::String; 1]);
+    let mut _2: &std::vec::Vec<std::string::String>;
+    let _3: std::vec::Vec<std::string::String>;
+    let mut _4: std::vec::Vec<i32>;
+    let mut _5: std::boxed::Box<[i32]>;
+    let mut _6: usize;
+    let mut _7: usize;
+    let mut _8: *mut u8;
+    let mut _9: std::boxed::Box<[i32; 1]>;
+    let mut _10: &[std::string::String; 1];
+    let _11: [std::string::String; 1];
+    let mut _12: std::string::String;
+    let _13: &str;
+    let _14: &std::vec::Vec<std::string::String>;
+    let _15: &[std::string::String; 1];
+    let mut _16: bool;
+    let mut _17: bool;
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _21: (&std::vec::Vec<std::string::String>, &[std::string::String; 2]);
+    let mut _22: &std::vec::Vec<std::string::String>;
+    let _23: std::vec::Vec<std::string::String>;
+    let mut _24: std::vec::Vec<isize>;
+    let mut _25: std::boxed::Box<[isize]>;
+    let mut _26: usize;
+    let mut _27: usize;
+    let mut _28: *mut u8;
+    let mut _29: std::boxed::Box<[isize; 2]>;
+    let mut _30: &[std::string::String; 2];
+    let _31: [std::string::String; 2];
+    let mut _32: std::string::String;
+    let _33: &str;
+    let mut _34: std::string::String;
+    let _35: &str;
+    let _36: &std::vec::Vec<std::string::String>;
+    let _37: &[std::string::String; 2];
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&std::vec::Vec<std::string::String>, &[std::string::String; 2]);
+    let mut _44: &std::vec::Vec<std::string::String>;
+    let _45: std::vec::Vec<std::string::String>;
+    let mut _46: std::vec::Vec<std::string::String>;
+    let mut _47: std::boxed::Box<[std::string::String]>;
+    let mut _48: std::boxed::Box<[std::string::String; 2]>;
+    let mut _49: usize;
+    let mut _50: usize;
+    let mut _51: *mut u8;
+    let mut _52: std::boxed::Box<[std::string::String; 2]>;
+    let mut _53: std::string::String;
+    let _54: &str;
+    let mut _55: std::string::String;
+    let _56: &str;
+    let mut _57: &[std::string::String; 2];
+    let _58: [std::string::String; 2];
+    let mut _59: std::string::String;
+    let _60: &str;
+    let mut _61: std::string::String;
+    let _62: &str;
+    let _63: &std::vec::Vec<std::string::String>;
+    let _64: &[std::string::String; 2];
+    let mut _65: bool;
+    let mut _66: bool;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _70: (&std::vec::Vec<std::string::String>, &[std::string::String; 1]);
+    let mut _71: &std::vec::Vec<std::string::String>;
+    let _72: std::vec::Vec<std::string::String>;
+    let mut _73: std::vec::Vec<()>;
+    let mut _74: std::boxed::Box<[()]>;
+    let mut _75: usize;
+    let mut _76: usize;
+    let mut _77: *mut u8;
+    let mut _78: std::boxed::Box<[(); 1]>;
+    let mut _79: &[std::string::String; 1];
+    let _80: [std::string::String; 1];
+    let mut _81: std::string::String;
+    let _82: &str;
+    let _83: &std::vec::Vec<std::string::String>;
+    let _84: &[std::string::String; 1];
+    let mut _85: bool;
+    let mut _86: bool;
+    let _88: !;
+    let mut _89: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _90: &mut std::boxed::Box<[std::string::String; 2]>;
+    let mut _91: ();
+    let mut _92: *const [i32; 1];
+    let mut _93: *const [isize; 2];
+    let mut _94: *const [std::string::String; 2];
+    let mut _95: *const [(); 1];
+    let mut _96: *const ();
+    let mut _97: usize;
+    let mut _98: usize;
+    let mut _99: usize;
+    let mut _100: usize;
+    let mut _101: bool;
+    let mut _102: *const ();
+    let mut _103: usize;
+    let mut _104: usize;
+    let mut _105: usize;
+    let mut _106: usize;
+    let mut _107: bool;
+    let mut _108: *const ();
+    let mut _109: usize;
+    let mut _110: usize;
+    let mut _111: usize;
+    let mut _112: usize;
+    let mut _113: bool;
+    let mut _114: *const ();
+    let mut _115: usize;
+    let mut _116: usize;
+    let mut _117: usize;
+    let mut _118: usize;
+    let mut _119: bool;
+    scope 1 {
+    }
+    scope 2 {
+        debug left_val => _14;
+        debug right_val => _15;
+        let _18: core::panicking::AssertKind;
+        scope 3 {
+            debug kind => _18;
+        }
+    }
+    scope 4 {
+    }
+    scope 5 {
+        debug left_val => _36;
+        debug right_val => _37;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+    }
+    scope 8 {
+        debug left_val => _63;
+        debug right_val => _64;
+        let _67: core::panicking::AssertKind;
+        scope 9 {
+            debug kind => _67;
+        }
+    }
+    scope 10 {
+    }
+    scope 11 {
+        debug left_val => _83;
+        debug right_val => _84;
+        let _87: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _87;
+        }
+    }
+
+    bb0: {
+        _6 = SizeOf([i32; 1]);
+        _7 = AlignOf([i32; 1]);
+        _8 = alloc::alloc::exchange_malloc(move _6, move _7) -> bb1;
+    }
+
+    bb1: {
+        _9 = ShallowInitBox(move _8, [i32; 1]);
+        _92 = (((_9.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _114 = _92 as *const () (PtrToPtr);
+        _115 = _114 as usize (Transmute);
+        _116 = AlignOf(i32);
+        _117 = Sub(_116, const 1_usize);
+        _118 = BitAnd(_115, _117);
+        _119 = Eq(_118, const 0_usize);
+        assert(_119, "misaligned pointer dereference: address must be a multiple of {} but is {}", _116, _115) -> [success: bb57, unwind unreachable];
+    }
+
+    bb2: {
+        _3 = foo::<i32, Vec<i32>>(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = &_3;
+        _13 = const "hi";
+        _12 = <str as ToString>::to_string(_13) -> [return: bb4, unwind: bb51];
+    }
+
+    bb4: {
+        _11 = [move _12];
+        _10 = &_11;
+        _1 = (move _2, move _10);
+        _14 = (_1.0: &std::vec::Vec<std::string::String>);
+        _15 = (_1.1: &[std::string::String; 1]);
+        _17 = <Vec<String> as PartialEq<[String; 1]>>::eq(_14, _15) -> [return: bb5, unwind: bb50];
+    }
+
+    bb5: {
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<Vec<String>, [String; 1]>(move _18, _14, _15, move _20) -> bb50;
+    }
+
+    bb7: {
+        drop(_11) -> [return: bb8, unwind: bb51];
+    }
+
+    bb8: {
+        drop(_3) -> bb9;
+    }
+
+    bb9: {
+        _26 = SizeOf([isize; 2]);
+        _27 = AlignOf([isize; 2]);
+        _28 = alloc::alloc::exchange_malloc(move _26, move _27) -> bb10;
+    }
+
+    bb10: {
+        _29 = ShallowInitBox(move _28, [isize; 2]);
+        _93 = (((_29.0: std::ptr::Unique<[isize; 2]>).0: std::ptr::NonNull<[isize; 2]>).0: *const [isize; 2]);
+        _108 = _93 as *const () (PtrToPtr);
+        _109 = _108 as usize (Transmute);
+        _110 = AlignOf(isize);
+        _111 = Sub(_110, const 1_usize);
+        _112 = BitAnd(_109, _111);
+        _113 = Eq(_112, const 0_usize);
+        assert(_113, "misaligned pointer dereference: address must be a multiple of {} but is {}", _110, _109) -> [success: bb56, unwind unreachable];
+    }
+
+    bb11: {
+        _23 = bar::<isize, Vec<isize>>(move _24) -> bb12;
+    }
+
+    bb12: {
+        _22 = &_23;
+        _33 = const "4";
+        _32 = <str as ToString>::to_string(_33) -> [return: bb13, unwind: bb49];
+    }
+
+    bb13: {
+        _35 = const "5";
+        _34 = <str as ToString>::to_string(_35) -> [return: bb14, unwind: bb48];
+    }
+
+    bb14: {
+        _31 = [move _32, move _34];
+        _30 = &_31;
+        _21 = (move _22, move _30);
+        _36 = (_21.0: &std::vec::Vec<std::string::String>);
+        _37 = (_21.1: &[std::string::String; 2]);
+        _39 = <Vec<String> as PartialEq<[String; 2]>>::eq(_36, _37) -> [return: bb15, unwind: bb47];
+    }
+
+    bb15: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<Vec<String>, [String; 2]>(move _40, _36, _37, move _42) -> bb47;
+    }
+
+    bb17: {
+        drop(_31) -> [return: bb18, unwind: bb49];
+    }
+
+    bb18: {
+        drop(_23) -> bb19;
+    }
+
+    bb19: {
+        _49 = SizeOf([std::string::String; 2]);
+        _50 = AlignOf([std::string::String; 2]);
+        _51 = alloc::alloc::exchange_malloc(move _49, move _50) -> bb20;
+    }
+
+    bb20: {
+        _52 = ShallowInitBox(move _51, [std::string::String; 2]);
+        _54 = const "x";
+        _53 = <str as ToString>::to_string(_54) -> [return: bb21, unwind: bb53];
+    }
+
+    bb21: {
+        _56 = const "y";
+        _55 = <str as ToString>::to_string(_56) -> [return: bb22, unwind: bb46];
+    }
+
+    bb22: {
+        _94 = (((_52.0: std::ptr::Unique<[std::string::String; 2]>).0: std::ptr::NonNull<[std::string::String; 2]>).0: *const [std::string::String; 2]);
+        _102 = _94 as *const () (PtrToPtr);
+        _103 = _102 as usize (Transmute);
+        _104 = AlignOf(std::string::String);
+        _105 = Sub(_104, const 1_usize);
+        _106 = BitAnd(_103, _105);
+        _107 = Eq(_106, const 0_usize);
+        assert(_107, "misaligned pointer dereference: address must be a multiple of {} but is {}", _104, _103) -> [success: bb55, unwind unreachable];
+    }
+
+    bb23: {
+        _45 = bar::<String, Vec<String>>(move _46) -> bb24;
+    }
+
+    bb24: {
+        _44 = &_45;
+        _60 = const "x";
+        _59 = <str as ToString>::to_string(_60) -> [return: bb25, unwind: bb45];
+    }
+
+    bb25: {
+        _62 = const "y";
+        _61 = <str as ToString>::to_string(_62) -> [return: bb26, unwind: bb44];
+    }
+
+    bb26: {
+        _58 = [move _59, move _61];
+        _57 = &_58;
+        _43 = (move _44, move _57);
+        _63 = (_43.0: &std::vec::Vec<std::string::String>);
+        _64 = (_43.1: &[std::string::String; 2]);
+        _66 = <Vec<String> as PartialEq<[String; 2]>>::eq(_63, _64) -> [return: bb27, unwind: bb43];
+    }
+
+    bb27: {
+        _65 = Not(move _66);
+        switchInt(move _65) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb28: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<Vec<String>, [String; 2]>(move _67, _63, _64, move _69) -> bb43;
+    }
+
+    bb29: {
+        drop(_58) -> [return: bb30, unwind: bb45];
+    }
+
+    bb30: {
+        drop(_45) -> bb31;
+    }
+
+    bb31: {
+        _75 = SizeOf([(); 1]);
+        _76 = AlignOf([(); 1]);
+        _77 = alloc::alloc::exchange_malloc(move _75, move _76) -> bb32;
+    }
+
+    bb32: {
+        _78 = ShallowInitBox(move _77, [(); 1]);
+        _95 = (((_78.0: std::ptr::Unique<[(); 1]>).0: std::ptr::NonNull<[(); 1]>).0: *const [(); 1]);
+        _96 = _95 as *const () (PtrToPtr);
+        _97 = _96 as usize (Transmute);
+        _98 = AlignOf(());
+        _99 = Sub(_98, const 1_usize);
+        _100 = BitAnd(_97, _99);
+        _101 = Eq(_100, const 0_usize);
+        assert(_101, "misaligned pointer dereference: address must be a multiple of {} but is {}", _98, _97) -> [success: bb54, unwind unreachable];
+    }
+
+    bb33: {
+        _72 = bar::<(), Vec<()>>(move _73) -> bb34;
+    }
+
+    bb34: {
+        _71 = &_72;
+        _82 = const "()";
+        _81 = <str as ToString>::to_string(_82) -> [return: bb35, unwind: bb42];
+    }
+
+    bb35: {
+        _80 = [move _81];
+        _79 = &_80;
+        _70 = (move _71, move _79);
+        _83 = (_70.0: &std::vec::Vec<std::string::String>);
+        _84 = (_70.1: &[std::string::String; 1]);
+        _86 = <Vec<String> as PartialEq<[String; 1]>>::eq(_83, _84) -> [return: bb36, unwind: bb41];
+    }
+
+    bb36: {
+        _85 = Not(move _86);
+        switchInt(move _85) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _87 = core::panicking::AssertKind::Eq;
+        _89 = Option::<Arguments<'_>>::None;
+        _88 = core::panicking::assert_failed::<Vec<String>, [String; 1]>(move _87, _83, _84, move _89) -> bb41;
+    }
+
+    bb38: {
+        drop(_80) -> [return: bb39, unwind: bb42];
+    }
+
+    bb39: {
+        drop(_72) -> bb40;
+    }
+
+    bb40: {
+        return;
+    }
+
+    bb41 (cleanup): {
+        drop(_80) -> [return: bb42, unwind terminate];
+    }
+
+    bb42 (cleanup): {
+        drop(_72) -> [return: bb52, unwind terminate];
+    }
+
+    bb43 (cleanup): {
+        drop(_58) -> [return: bb45, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_59) -> [return: bb45, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_45) -> [return: bb52, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_53) -> [return: bb53, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_31) -> [return: bb49, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_32) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        drop(_23) -> [return: bb52, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_11) -> [return: bb51, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_3) -> [return: bb52, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        resume;
+    }
+
+    bb53 (cleanup): {
+        _90 = &mut _52;
+        _91 = <Box<[String; 2]> as Drop>::drop(move _90) -> [return: bb58, unwind terminate];
+    }
+
+    bb54: {
+        _74 = move _78 as std::boxed::Box<[()]> (Pointer(Unsize));
+        _73 = slice::<impl [()]>::into_vec::<std::alloc::Global>(move _74) -> bb33;
+    }
+
+    bb55: {
+        (*_94) = [move _53, move _55];
+        _48 = move _52;
+        _47 = move _48 as std::boxed::Box<[std::string::String]> (Pointer(Unsize));
+        _46 = slice::<impl [String]>::into_vec::<std::alloc::Global>(move _47) -> bb23;
+    }
+
+    bb56: {
+        (*_93) = [const 4_isize, const 5_isize];
+        _25 = move _29 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _24 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _25) -> bb11;
+    }
+
+    bb57: {
+        (*_92) = [const 1_i32];
+        _5 = move _9 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _4 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _5) -> bb2;
+    }
+
+    bb58 (cleanup): {
+        goto -> bb52;
+    }
+}

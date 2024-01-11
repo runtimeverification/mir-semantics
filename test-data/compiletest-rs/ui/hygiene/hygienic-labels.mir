@@ -1,0 +1,114 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::ops::Range<i32>;
+    let mut _2: std::ops::Range<i32>;
+    let mut _3: std::ops::Range<i32>;
+    let mut _4: std::option::Option<i32>;
+    let mut _5: &mut std::ops::Range<i32>;
+    let mut _6: isize;
+    let mut _7: i32;
+    let mut _8: i32;
+    let _9: !;
+    let mut _10: std::ops::Range<i32>;
+    let mut _11: std::ops::Range<i32>;
+    let mut _12: std::ops::Range<i32>;
+    let mut _13: std::option::Option<i32>;
+    let mut _14: &mut std::ops::Range<i32>;
+    let mut _15: isize;
+    let mut _16: std::ops::Range<i32>;
+    let mut _17: std::ops::Range<i32>;
+    let mut _19: std::option::Option<i32>;
+    let mut _20: &mut std::ops::Range<i32>;
+    let mut _21: isize;
+    let _22: !;
+    scope 1 {
+        debug iter => _3;
+    }
+    scope 2 {
+        debug iter => _12;
+        let mut _18: std::ops::Range<i32>;
+        scope 3 {
+            debug iter => _18;
+        }
+    }
+
+    bb0: {
+        _2 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _1 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _3 = move _1;
+        _5 = &mut _3;
+        _4 = <std::ops::Range<i32> as Iterator>::next(_5) -> bb2;
+    }
+
+    bb2: {
+        _6 = discriminant(_4);
+        switchInt(move _6) -> [0: bb4, 1: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _7 = Add(const 1_i32, const 1_i32);
+        switchInt(move _7) -> [2: bb5, otherwise: bb7];
+    }
+
+    bb5: {
+        _8 = Add(const 1_i32, const 1_i32);
+        switchInt(move _8) -> [2: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _9 = begin_panic::<&str>(const "break doesn't act hygienically inside infinite while loop");
+    }
+
+    bb7: {
+        _11 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _10 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _11) -> bb8;
+    }
+
+    bb8: {
+        _12 = move _10;
+        goto -> bb9;
+    }
+
+    bb9: {
+        _14 = &mut _12;
+        _13 = <std::ops::Range<i32> as Iterator>::next(_14) -> bb10;
+    }
+
+    bb10: {
+        _15 = discriminant(_13);
+        switchInt(move _15) -> [0: bb12, 1: bb11, otherwise: bb3];
+    }
+
+    bb11: {
+        _17 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _16 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _17) -> bb13;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13: {
+        _18 = move _16;
+        _20 = &mut _18;
+        _19 = <std::ops::Range<i32> as Iterator>::next(_20) -> bb14;
+    }
+
+    bb14: {
+        _21 = discriminant(_19);
+        switchInt(move _21) -> [0: bb15, 1: bb9, otherwise: bb3];
+    }
+
+    bb15: {
+        _22 = begin_panic::<&str>(const "continue doesn't act hygienically inside for loop");
+    }
+}

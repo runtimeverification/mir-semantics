@@ -1,0 +1,51 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-86033.rs:7:1: 7:25>::{constant#0}: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-86033.rs:11:1: 11:20>::{constant#0}: bool = {
+    let mut _0: bool;
+    let mut _1: usize;
+
+    bb0: {
+        StorageLive(_1);
+        ConstEvalCounter;
+        _1 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        _0 = Eq(move _1, const 0_usize);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn _func() -> impl IsZST {
+    let mut _0: impl IsZST;
+
+    bb0: {
+        return;
+    }
+}
+
+fn _func::{closure#0}(_1: &[closure@ui/const-generics/issues/issue-86033.rs:17:5: 17:7]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

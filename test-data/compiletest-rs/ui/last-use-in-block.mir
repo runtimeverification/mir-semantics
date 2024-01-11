@@ -1,0 +1,152 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn lp(_1: String, _2: F) -> T {
+    debug s => _1;
+    debug f => _2;
+    let mut _0: T;
+    let mut _3: bool;
+    let _4: T;
+    let mut _5: &mut F;
+    let mut _6: (std::string::String,);
+    let mut _7: std::string::String;
+    let mut _8: !;
+    let mut _9: bool;
+    scope 1 {
+        debug r => _4;
+    }
+
+    bb0: {
+        _9 = const false;
+        _9 = const true;
+        _3 = const false;
+        switchInt(move _3) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = &mut _2;
+        _9 = const false;
+        _7 = move _1;
+        _6 = (move _7,);
+        _4 = <F as FnMut<(String,)>>::call_mut(move _5, move _6) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _0 = move _4;
+        drop(_2) -> [return: bb4, unwind: bb8];
+    }
+
+    bb3: {
+        _8 = begin_panic::<&str>(const "explicit panic") -> bb5;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb8, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        switchInt(_9) -> [0: bb6, otherwise: bb7];
+    }
+}
+
+fn apply(_1: String, _2: F) -> T {
+    debug s => _1;
+    debug f => _2;
+    let mut _0: T;
+    let mut _3: [closure@ui/last-use-in-block.rs:18:10: 18:13];
+    let mut _4: &mut F;
+
+    bb0: {
+        _4 = &mut _2;
+        _3 = [closure@ui/last-use-in-block.rs:18:10: 18:13] { f: move _4 };
+        _0 = g::<T, [closure@ui/last-use-in-block.rs:18:10: 18:13]>(move _1, move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn g(_1: String, _2: F) -> T {
+    debug s => _1;
+    debug f => _2;
+    let mut _0: T;
+    let mut _3: &mut F;
+    let mut _4: (std::string::String,);
+
+    bb0: {
+        _3 = &mut _2;
+        _4 = (move _1,);
+        _0 = <F as FnMut<(String,)>>::call_mut(move _3, move _4) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn apply::{closure#0}(_1: &mut [closure@ui/last-use-in-block.rs:18:10: 18:13], _2: String) -> T {
+    debug v => _2;
+    debug f => (*((*_1).0: &mut F));
+    let mut _0: T;
+    let _3: T;
+    let mut _4: (std::string::String,);
+    let mut _5: &mut F;
+    scope 1 {
+        debug r => _3;
+    }
+
+    bb0: {
+        _5 = deref_copy ((*_1).0: &mut F);
+        _4 = (move _2,);
+        _3 = <F as FnMut<(String,)>>::call_mut(_5, move _4) -> bb1;
+    }
+
+    bb1: {
+        _0 = move _3;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

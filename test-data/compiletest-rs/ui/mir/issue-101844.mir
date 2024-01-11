@@ -1,0 +1,40 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/issue-101844.rs:49:1: 49:36>::access_fn(_1: D) -> () {
+    let mut _0: ();
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not yet implemented") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_1) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+}
+
+fn broken(_1: MS) -> () {
+    debug ms => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = ImplShoulExist::<MS, ()>::access_fn(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,24 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: Reserved<'_, ()>;
+    let mut _2: Lex<'_, ()>;
+    let _3: &();
+    let _4: ();
+    scope 1 {
+        debug r => _1;
+        let _5: &();
+        scope 2 {
+            debug _v => _5;
+        }
+    }
+
+    bb0: {
+        _3 = &_4;
+        _2 = Lex::<'_, ()> { x: _3 };
+        _1 = Reserved::<'_, ()> { x: move _2 };
+        _5 = ((_1.0: Lex<'_, ()>).0: &());
+        return;
+    }
+}

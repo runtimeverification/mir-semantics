@@ -1,0 +1,24 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn can_copy_copy(_1: T) -> () {
+    debug v => _1;
+    let mut _0: ();
+    scope 1 {
+        debug _a => _1;
+        scope 2 {
+            debug _b => _1;
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

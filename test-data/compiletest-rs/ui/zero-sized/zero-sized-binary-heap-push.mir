@@ -1,0 +1,296 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::ops::Range<usize>;
+    let mut _2: std::ops::Range<usize>;
+    let mut _3: std::ops::Range<usize>;
+    let mut _4: std::option::Option<usize>;
+    let mut _5: &mut std::ops::Range<usize>;
+    let mut _6: isize;
+    let mut _9: usize;
+    let mut _10: (&usize, &usize);
+    let mut _11: &usize;
+    let _12: usize;
+    let mut _13: &std::collections::BinaryHeap<()>;
+    let mut _14: &usize;
+    let _15: usize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: usize;
+    let mut _28: &std::collections::BinaryHeap<()>;
+    let mut _29: usize;
+    let mut _30: !;
+    let mut _31: std::ops::Range<usize>;
+    let mut _32: std::ops::Range<usize>;
+    let mut _33: usize;
+    let mut _35: std::option::Option<usize>;
+    let mut _36: &mut std::ops::Range<usize>;
+    let mut _37: isize;
+    let _39: ();
+    let mut _40: &mut std::collections::BinaryHeap<()>;
+    let mut _41: (&usize, &usize);
+    let mut _42: &usize;
+    let _43: usize;
+    let mut _44: &std::collections::BinaryHeap<()>;
+    let mut _45: &usize;
+    let mut _48: bool;
+    let mut _49: bool;
+    let mut _50: usize;
+    let mut _51: usize;
+    let _53: !;
+    let mut _54: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _55: (&usize, &usize);
+    let mut _56: &usize;
+    let _57: usize;
+    let mut _58: std::collections::binary_heap::Iter<'_, ()>;
+    let mut _59: &std::collections::BinaryHeap<()>;
+    let mut _60: &usize;
+    let mut _63: bool;
+    let mut _64: bool;
+    let mut _65: usize;
+    let mut _66: usize;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let _70: ();
+    let mut _71: &mut std::collections::BinaryHeap<()>;
+    scope 1 {
+        debug iter => _3;
+        let _7: usize;
+        scope 2 {
+            debug len => _7;
+            let mut _8: std::collections::BinaryHeap<()>;
+            scope 3 {
+                debug tester => _8;
+                let _16: &usize;
+                let _17: &usize;
+                let mut _34: std::ops::Range<usize>;
+                let _46: &usize;
+                let _47: &usize;
+                let _61: &usize;
+                let _62: &usize;
+                scope 4 {
+                    debug left_val => _16;
+                    debug right_val => _17;
+                    let _22: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _22;
+                    }
+                }
+                scope 6 {
+                    debug iter => _34;
+                    let _38: usize;
+                    scope 7 {
+                        debug bit => _38;
+                    }
+                }
+                scope 8 {
+                    debug left_val => _46;
+                    debug right_val => _47;
+                    let _52: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _52;
+                    }
+                }
+                scope 10 {
+                    debug left_val => _61;
+                    debug right_val => _62;
+                    let _67: core::panicking::AssertKind;
+                    scope 11 {
+                        debug kind => _67;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = std::ops::Range::<usize> { start: const 0_usize, end: const _ };
+        _1 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _3 = move _1;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _5 = &mut _3;
+        _4 = <std::ops::Range<usize> as Iterator>::next(_5) -> bb3;
+    }
+
+    bb3: {
+        _6 = discriminant(_4);
+        switchInt(move _6) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _7 = ((_4 as Some).0: usize);
+        _9 = _7;
+        _8 = BinaryHeap::<()>::with_capacity(move _9) -> bb7;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        _13 = &_8;
+        _12 = BinaryHeap::<()>::len(move _13) -> [return: bb8, unwind: bb27];
+    }
+
+    bb8: {
+        _11 = &_12;
+        _15 = const 0_usize;
+        _14 = &_15;
+        _10 = (move _11, move _14);
+        _16 = (_10.0: &usize);
+        _17 = (_10.1: &usize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<usize, usize>(move _22, _16, _17, move _24) -> bb27;
+    }
+
+    bb10: {
+        _28 = &_8;
+        _27 = BinaryHeap::<()>::capacity(move _28) -> [return: bb11, unwind: bb27];
+    }
+
+    bb11: {
+        _29 = _7;
+        _26 = Ge(move _27, move _29);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _30 = core::panicking::panic(const "assertion failed: tester.capacity() >= len") -> bb27;
+    }
+
+    bb13: {
+        _33 = _7;
+        _32 = std::ops::Range::<usize> { start: const 0_usize, end: move _33 };
+        _31 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _32) -> [return: bb14, unwind: bb27];
+    }
+
+    bb14: {
+        _34 = move _31;
+        goto -> bb15;
+    }
+
+    bb15: {
+        _36 = &mut _34;
+        _35 = <std::ops::Range<usize> as Iterator>::next(_36) -> [return: bb16, unwind: bb27];
+    }
+
+    bb16: {
+        _37 = discriminant(_35);
+        switchInt(move _37) -> [0: bb18, 1: bb17, otherwise: bb5];
+    }
+
+    bb17: {
+        _38 = ((_35 as Some).0: usize);
+        _40 = &mut _8;
+        _39 = BinaryHeap::<()>::push(move _40, const ()) -> [return: bb29, unwind: bb27];
+    }
+
+    bb18: {
+        _44 = &_8;
+        _43 = BinaryHeap::<()>::len(move _44) -> [return: bb19, unwind: bb27];
+    }
+
+    bb19: {
+        _42 = &_43;
+        _45 = &_7;
+        _41 = (move _42, move _45);
+        _46 = (_41.0: &usize);
+        _47 = (_41.1: &usize);
+        _50 = (*_46);
+        _51 = (*_47);
+        _49 = Eq(move _50, move _51);
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _52 = core::panicking::AssertKind::Eq;
+        _54 = Option::<Arguments<'_>>::None;
+        _53 = core::panicking::assert_failed::<usize, usize>(move _52, _46, _47, move _54) -> bb27;
+    }
+
+    bb21: {
+        _59 = &_8;
+        _58 = BinaryHeap::<()>::iter(move _59) -> [return: bb22, unwind: bb27];
+    }
+
+    bb22: {
+        _57 = <std::collections::binary_heap::Iter<'_, ()> as Iterator>::count(move _58) -> [return: bb23, unwind: bb27];
+    }
+
+    bb23: {
+        _56 = &_57;
+        _60 = &_7;
+        _55 = (move _56, move _60);
+        _61 = (_55.0: &usize);
+        _62 = (_55.1: &usize);
+        _65 = (*_61);
+        _66 = (*_62);
+        _64 = Eq(move _65, move _66);
+        _63 = Not(move _64);
+        switchInt(move _63) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<usize, usize>(move _67, _61, _62, move _69) -> bb27;
+    }
+
+    bb25: {
+        _71 = &mut _8;
+        _70 = BinaryHeap::<()>::clear(move _71) -> [return: bb26, unwind: bb27];
+    }
+
+    bb26: {
+        drop(_8) -> bb2;
+    }
+
+    bb27 (cleanup): {
+        drop(_8) -> [return: bb28, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        resume;
+    }
+
+    bb29: {
+        goto -> bb15;
+    }
+}
+
+const N: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}

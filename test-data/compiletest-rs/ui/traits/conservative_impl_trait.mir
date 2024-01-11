@@ -1,0 +1,22 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn batches(_1: &u32) -> impl Iterator<Item = &u32> {
+    debug n => _1;
+    let mut _0: impl std::iter::Iterator<Item = &u32>;
+
+    bb0: {
+        _0 = once::<&u32>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

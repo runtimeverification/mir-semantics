@@ -1,0 +1,111 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn next_u32(_1: &mut dyn for<'a> FnMut(&'a mut [u8])) -> () {
+    debug fill_buf => _1;
+    let mut _0: ();
+    let mut _2: [u8; 4];
+    let _3: ();
+    let mut _4: (&mut [u8],);
+    let mut _5: &mut [u8];
+    let mut _6: &mut [u8; 4];
+    scope 1 {
+        debug buf => _2;
+    }
+
+    bb0: {
+        _2 = [const 0_u8; 4];
+        _6 = &mut _2;
+        _5 = _6 as &mut [u8] (Pointer(Unsize));
+        _4 = (move _5,);
+        _3 = <dyn for<'a> FnMut(&'a mut [u8]) as FnMut<(&mut [u8],)>>::call_mut(_1, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+next_u32::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+next_u32::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn explicit(_1: &mut dyn for<'a> FnMut(&'a mut [u8])) -> () {
+    debug fill_buf => _1;
+    let mut _0: ();
+    let mut _2: [u8; 4];
+    let _3: ();
+    let mut _4: (&mut [u8],);
+    let mut _5: &mut [u8];
+    let mut _6: &mut [u8; 4];
+    scope 1 {
+        debug buf => _2;
+    }
+
+    bb0: {
+        _2 = [const 0_u8; 4];
+        _6 = &mut _2;
+        _5 = _6 as &mut [u8] (Pointer(Unsize));
+        _4 = (move _5,);
+        _3 = <dyn for<'a> FnMut(&'a mut [u8]) as FnMut<(&mut [u8],)>>::call_mut(_1, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+explicit::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+explicit::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}

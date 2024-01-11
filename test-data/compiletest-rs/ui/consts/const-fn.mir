@@ -1,0 +1,420 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn add(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = Add(_1, _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn add(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+    let mut _3: u32;
+    let mut _4: u32;
+
+    bb0: {
+        StorageLive(_3);
+        _3 = _1;
+        StorageLive(_4);
+        _4 = _2;
+        _0 = Add(move _3, move _4);
+        StorageDead(_4);
+        StorageDead(_3);
+        return;
+    }
+}
+
+fn sub(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = Sub(_1, _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn sub(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+    let mut _3: u32;
+    let mut _4: u32;
+
+    bb0: {
+        StorageLive(_3);
+        _3 = _1;
+        StorageLive(_4);
+        _4 = _2;
+        _0 = Sub(move _3, move _4);
+        StorageDead(_4);
+        StorageDead(_3);
+        return;
+    }
+}
+
+fn div(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+    let mut _3: bool;
+
+    bb0: {
+        _3 = Eq(_2, const 0_u32);
+        assert(!move _3, "attempt to divide `{}` by zero", _1) -> bb1;
+    }
+
+    bb1: {
+        _0 = Div(_1, _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn div(_1: u32, _2: u32) -> u32 {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: u32;
+    let mut _3: u32;
+    let mut _4: u32;
+    let mut _5: bool;
+
+    bb0: {
+        StorageLive(_3);
+        _3 = _1;
+        StorageLive(_4);
+        _4 = _2;
+        _5 = Eq(_4, const 0_u32);
+        assert(!move _5, "attempt to divide `{}` by zero", _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Div(move _3, move _4);
+        StorageDead(_4);
+        StorageDead(_3);
+        return;
+    }
+}
+
+fn generic(_1: T) -> T {
+    debug t => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn generic(_1: T) -> T {
+    debug t => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn generic_arr(_1: [T; 1]) -> T {
+    debug t => _1;
+    let mut _0: T;
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        _2 = const 0_usize;
+        _3 = const 1_usize;
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = _1[_2];
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn generic_arr(_1: [T; 1]) -> T {
+    debug t => _1;
+    let mut _0: T;
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        StorageLive(_2);
+        _2 = const 0_usize;
+        _3 = Len(_1);
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = _1[_2];
+        StorageDead(_2);
+        return;
+    }
+}
+
+generic_arr::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+const SUM: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = add(const 44_u32, const 22_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const DIFF: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = sub(const 44_u32, const 22_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const DIV: u32 = {
+    let mut _0: u32;
+    scope 1 {
+    }
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = div(const 44_u32, const 22_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: &u32;
+    let _5: u32;
+    let _6: &u32;
+    let _7: &u32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u32;
+    let mut _11: u32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: !;
+    let mut _18: (&u32, &u32);
+    let mut _19: &u32;
+    let _20: u32;
+    let mut _21: &u32;
+    let _22: u32;
+    let _23: &u32;
+    let _24: &u32;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: u32;
+    let mut _28: u32;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: (&u32, &u32);
+    let mut _33: &u32;
+    let _34: u32;
+    let mut _35: &u32;
+    let _36: u32;
+    let _37: &u32;
+    let _38: &u32;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: u32;
+    let mut _42: u32;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _23;
+        debug right_val => _24;
+        let _29: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _29;
+        }
+    }
+    scope 5 {
+        debug left_val => _37;
+        debug right_val => _38;
+        let _43: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _43;
+        }
+    }
+    scope 7 {
+        scope 8 {
+            scope 9 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &_3;
+        _5 = const 66_u32;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &u32);
+        _7 = (_1.1: &u32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u32, u32>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        _16 = Ne(const _, const 88_u32);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _17 = core::panicking::panic(const "assertion failed: SUM != 88");
+    }
+
+    bb4: {
+        _20 = const _;
+        _19 = &_20;
+        _22 = const 22_u32;
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _23 = (_18.0: &u32);
+        _24 = (_18.1: &u32);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<u32, u32>(move _29, _23, _24, move _31);
+    }
+
+    bb6: {
+        _34 = const _;
+        _33 = &_34;
+        _36 = const 2_u32;
+        _35 = &_36;
+        _32 = (move _33, move _35);
+        _37 = (_32.0: &u32);
+        _38 = (_32.1: &u32);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<u32, u32>(move _43, _37, _38, move _45);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+
+    bb0: {
+        StorageLive(_1);
+        ConstEvalCounter;
+        _1 = sub(const 100_u32, const 99_u32) -> bb1;
+    }
+
+    bb1: {
+        _0 = move _1 as usize (IntToInt);
+        StorageDead(_1);
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = generic::<usize>(const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+    let mut _1: [usize; 1];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [const 1_usize];
+        ConstEvalCounter;
+        _0 = generic_arr::<usize>(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}

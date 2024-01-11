@@ -1,0 +1,266 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/issue-77359-simplify-arm-identity.rs:5:10: 5:15>::fmt(_1: &MyEnum, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &std::vec::Vec<u8>;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&std::vec::Vec<u8>;
+    let _8: &str;
+    let _9: &str;
+    let _10: &str;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb4, 2: bb5, 3: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _10 = const "Variant4";
+        _0 = Formatter::<'_>::write_str(_2, _10) -> bb6;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as Variant1).0: std::vec::Vec<u8>);
+        _5 = const "Variant1";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb6;
+    }
+
+    bb4: {
+        _8 = const "Variant2";
+        _0 = Formatter::<'_>::write_str(_2, _8) -> bb6;
+    }
+
+    bb5: {
+        _9 = const "Variant3";
+        _0 = Formatter::<'_>::write_str(_2, _9) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn f(_1: &bool, _2: &bool, _3: bool) -> MyStruct {
+    debug arg1 => _1;
+    debug arg2 => _2;
+    debug arg3 => _3;
+    let mut _0: MyStruct;
+    let mut _4: bool;
+    let _5: ();
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 2];
+    let _9: [&str; 2];
+    let mut _10: &[core::fmt::rt::Argument<'_>];
+    let _11: &[core::fmt::rt::Argument<'_>; 1];
+    let _12: [core::fmt::rt::Argument<'_>; 1];
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let _14: &MyStruct;
+    let _15: MyStruct;
+    let _16: &&bool;
+    let mut _17: &bool;
+    let mut _18: std::option::Option<MyEnum>;
+    let mut _19: std::option::Option<MyEnum>;
+    let mut _20: MyEnum;
+    let mut _21: isize;
+    let _22: MyEnum;
+    let mut _23: std::option::Option<MyEnum>;
+    let mut _24: std::option::Option<MyEnum>;
+    let mut _25: &bool;
+    scope 1 {
+        debug t => _22;
+        scope 2 {
+            debug ah => _22;
+        }
+    }
+
+    bb0: {
+        _4 = (*_1);
+        switchInt(move _4) -> [0: bb7, otherwise: bb1];
+    }
+
+    bb1: {
+        _9 = [const "", const "\n"];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _16 = &_2;
+        _25 = deref_copy (*_16);
+        _17 = _2;
+        _15 = f(_25, move _17, _3) -> bb2;
+    }
+
+    bb2: {
+        _14 = &_15;
+        _13 = core::fmt::rt::Argument::<'_>::new_debug::<MyStruct>(_14) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _12 = [move _13];
+        _11 = &_12;
+        _10 = _11 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _6 = Arguments::<'_>::new_v1(move _7, move _10) -> [return: bb4, unwind: bb14];
+    }
+
+    bb4: {
+        _5 = _print(move _6) -> [return: bb5, unwind: bb14];
+    }
+
+    bb5: {
+        drop(_15) -> bb6;
+    }
+
+    bb6: {
+        _18 = Option::<MyEnum>::None;
+        _0 = MyStruct(move _18);
+        goto -> bb13;
+    }
+
+    bb7: {
+        switchInt(_3) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _20 = MyEnum::Variant3;
+        _19 = Option::<MyEnum>::Some(move _20);
+        goto -> bb10;
+    }
+
+    bb9: {
+        _19 = Option::<MyEnum>::None;
+        goto -> bb10;
+    }
+
+    bb10: {
+        _21 = discriminant(_19);
+        switchInt(move _21) -> [1: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _24 = Option::<MyEnum>::None;
+        _0 = MyStruct(move _24);
+        drop(_19) -> bb13;
+    }
+
+    bb12: {
+        _22 = move ((_19 as Some).0: MyEnum);
+        _23 = Option::<MyEnum>::Some(move _22);
+        _0 = MyStruct(move _23);
+        goto -> bb13;
+    }
+
+    bb13: {
+        return;
+    }
+
+    bb14 (cleanup): {
+        drop(_15) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/mir/issue-77359-simplify-arm-identity.rs:28:10: 28:15>::fmt(_1: &MyStruct, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&std::option::Option<MyEnum>;
+    let _6: &std::option::Option<MyEnum>;
+
+    bb0: {
+        _3 = const "MyStruct";
+        _6 = &((*_1).0: std::option::Option<MyEnum>);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let _3: MyStruct;
+    let _4: &bool;
+    let _5: &bool;
+    scope 1 {
+        debug arg1 => _1;
+        let _2: bool;
+        scope 2 {
+            debug arg2 => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const true;
+        _2 = const false;
+        _4 = &_1;
+        _5 = &_2;
+        _3 = f(_4, _5, const true) -> bb1;
+    }
+
+    bb1: {
+        drop(_3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn MyEnum::Variant1(_1: Vec<u8>) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::Variant1(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyEnum::Variant1(_1: Vec<u8>) -> MyEnum {
+    let mut _0: MyEnum;
+
+    bb0: {
+        _0 = MyEnum::Variant1(move _1);
+        return;
+    }
+}
+
+fn MyStruct(_1: Option<MyEnum>) -> MyStruct {
+    let mut _0: MyStruct;
+
+    bb0: {
+        _0 = MyStruct(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MyStruct(_1: Option<MyEnum>) -> MyStruct {
+    let mut _0: MyStruct;
+
+    bb0: {
+        _0 = MyStruct(move _1);
+        return;
+    }
+}

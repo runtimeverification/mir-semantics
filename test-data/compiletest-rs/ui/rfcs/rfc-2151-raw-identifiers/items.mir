@@ -1,0 +1,499 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:2:10: 2:15>::fmt(_1: &IntWrapper, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&u32;
+    let _6: &u32;
+
+    bb0: {
+        _3 = const "IntWrapper";
+        _6 = &((*_1).0: u32);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:2:17: 2:26>::eq(_1: &IntWrapper, _2: &IntWrapper) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: u32;
+    let mut _4: u32;
+
+    bb0: {
+        _3 = ((*_1).0: u32);
+        _4 = ((*_2).0: u32);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:2:28: 2:30>::assert_receiver_is_total_eq(_1: &IntWrapper) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:10: 5:15>::fmt(_1: &HasKeywordField, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&u32;
+    let _7: &u32;
+
+    bb0: {
+        _3 = const "HasKeywordField";
+        _4 = const "struct";
+        _7 = &((*_1).0: u32);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:17: 5:20>::cmp(_1: &HasKeywordField, _2: &HasKeywordField) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &u32;
+    let _4: &u32;
+
+    bb0: {
+        _3 = &((*_1).0: u32);
+        _4 = &((*_2).0: u32);
+        _0 = <u32 as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:22: 5:32>::partial_cmp(_1: &HasKeywordField, _2: &HasKeywordField) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &u32;
+    let _4: &u32;
+
+    bb0: {
+        _3 = &((*_1).0: u32);
+        _4 = &((*_2).0: u32);
+        _0 = <u32 as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:34: 5:43>::eq(_1: &HasKeywordField, _2: &HasKeywordField) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: u32;
+    let mut _4: u32;
+
+    bb0: {
+        _3 = ((*_1).0: u32);
+        _4 = ((*_2).0: u32);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:45: 5:47>::assert_receiver_is_total_eq(_1: &HasKeywordField) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:49: 5:53>::hash(_1: &HasKeywordField, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &u32;
+
+    bb0: {
+        _3 = &((*_1).0: u32);
+        _0 = <u32 as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:61: 5:66>::clone(_1: &HasKeywordField) -> HasKeywordField {
+    debug self => _1;
+    let mut _0: HasKeywordField;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:5:68: 5:75>::default() -> HasKeywordField {
+    let mut _0: HasKeywordField;
+    let mut _1: u32;
+
+    bb0: {
+        _1 = <u32 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = HasKeywordField { struct: move _1 };
+        return;
+    }
+}
+
+fn <impl at ui/rfcs/rfc-2151-raw-identifiers/items.rs:15:1: 15:28>::r#trait(_1: &Generic<u32>) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = ((*_1).0: u32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&IntWrapper, &IntWrapper);
+    let mut _2: &IntWrapper;
+    let _3: IntWrapper;
+    let mut _4: &IntWrapper;
+    let _5: IntWrapper;
+    let _6: &IntWrapper;
+    let _7: &IntWrapper;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: IntWrapper;
+    let _14: u32;
+    let mut _15: (&u32, &u32);
+    let mut _16: &u32;
+    let _17: u32;
+    let mut _18: &u32;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: u32;
+    let mut _24: u32;
+    let _26: !;
+    let mut _27: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _28: (&&str, &std::string::String);
+    let mut _29: &&str;
+    let _30: &str;
+    let mut _31: &std::string::String;
+    let _32: std::string::String;
+    let _33: std::string::String;
+    let mut _34: std::fmt::Arguments<'_>;
+    let mut _35: &[&str];
+    let _36: &[&str; 1];
+    let _37: [&str; 1];
+    let mut _38: &[core::fmt::rt::Argument<'_>];
+    let _39: &[core::fmt::rt::Argument<'_>; 1];
+    let _40: [core::fmt::rt::Argument<'_>; 1];
+    let mut _41: core::fmt::rt::Argument<'_>;
+    let _42: &HasKeywordField;
+    let _43: HasKeywordField;
+    let _44: &&str;
+    let _45: &std::string::String;
+    let mut _46: bool;
+    let mut _47: bool;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: (&i32, &i32);
+    let mut _52: &i32;
+    let _53: i32;
+    let mut _54: &i32;
+    let _55: Generic<i32>;
+    let _56: &i32;
+    let _57: &i32;
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: i32;
+    let mut _61: i32;
+    let _63: !;
+    let mut _64: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _65: (&u32, &u32);
+    let mut _66: &u32;
+    let _67: u32;
+    let mut _68: &u32;
+    let _69: u32;
+    let mut _70: &Generic<u32>;
+    let _71: Generic<u32>;
+    let _72: &u32;
+    let _73: &u32;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: u32;
+    let mut _77: u32;
+    let _79: !;
+    let mut _80: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug struct => _14;
+        let _19: &u32;
+        let _20: &u32;
+        scope 4 {
+            debug left_val => _19;
+            debug right_val => _20;
+            let _25: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _25;
+            }
+        }
+    }
+    scope 6 {
+        debug res => _33;
+    }
+    scope 7 {
+        debug left_val => _44;
+        debug right_val => _45;
+        let _48: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _48;
+        }
+    }
+    scope 9 {
+        debug left_val => _56;
+        debug right_val => _57;
+        let _62: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _62;
+        }
+    }
+    scope 11 {
+        debug left_val => _72;
+        debug right_val => _73;
+        let _78: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _78;
+        }
+    }
+
+    bb0: {
+        _3 = IntWrapper(const 1_u32);
+        _2 = &_3;
+        _5 = IntWrapper(const 1_u32);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &IntWrapper);
+        _7 = (_1.1: &IntWrapper);
+        _9 = <IntWrapper as PartialEq>::eq(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<IntWrapper, IntWrapper>(move _10, _6, _7, move _12);
+    }
+
+    bb3: {
+        _13 = IntWrapper(const 2_u32);
+        _14 = (_13.0: u32);
+        _17 = const 2_u32;
+        _16 = &_17;
+        _18 = &_14;
+        _15 = (move _16, move _18);
+        _19 = (_15.0: &u32);
+        _20 = (_15.1: &u32);
+        _23 = (*_19);
+        _24 = (*_20);
+        _22 = Eq(move _23, move _24);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _25 = core::panicking::AssertKind::Eq;
+        _27 = Option::<Arguments<'_>>::None;
+        _26 = core::panicking::assert_failed::<u32, u32>(move _25, _19, _20, move _27);
+    }
+
+    bb5: {
+        _30 = const "HasKeywordField { struct: 3 }";
+        _29 = &_30;
+        _37 = [const ""];
+        _36 = &_37;
+        _35 = _36 as &[&str] (Pointer(Unsize));
+        _43 = HasKeywordField { struct: const 3_u32 };
+        _42 = &_43;
+        _41 = core::fmt::rt::Argument::<'_>::new_debug::<HasKeywordField>(_42) -> bb6;
+    }
+
+    bb6: {
+        _40 = [move _41];
+        _39 = &_40;
+        _38 = _39 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _34 = Arguments::<'_>::new_v1(move _35, move _38) -> bb7;
+    }
+
+    bb7: {
+        _33 = format(move _34) -> bb8;
+    }
+
+    bb8: {
+        _32 = move _33;
+        _31 = &_32;
+        _28 = (move _29, move _31);
+        _44 = (_28.0: &&str);
+        _45 = (_28.1: &std::string::String);
+        _47 = <&str as PartialEq<String>>::eq(_44, _45) -> [return: bb9, unwind: bb18];
+    }
+
+    bb9: {
+        _46 = Not(move _47);
+        switchInt(move _46) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<&str, String>(move _48, _44, _45, move _50) -> bb18;
+    }
+
+    bb11: {
+        drop(_32) -> bb12;
+    }
+
+    bb12: {
+        _53 = const 4_i32;
+        _52 = &_53;
+        _55 = Generic::<i32>(const 4_i32);
+        _54 = &(_55.0: i32);
+        _51 = (move _52, move _54);
+        _56 = (_51.0: &i32);
+        _57 = (_51.1: &i32);
+        _60 = (*_56);
+        _61 = (*_57);
+        _59 = Eq(move _60, move _61);
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _62 = core::panicking::AssertKind::Eq;
+        _64 = Option::<Arguments<'_>>::None;
+        _63 = core::panicking::assert_failed::<i32, i32>(move _62, _56, _57, move _64);
+    }
+
+    bb14: {
+        _67 = const 5_u32;
+        _66 = &_67;
+        _71 = Generic::<u32>(const 5_u32);
+        _70 = &_71;
+        _69 = <Generic<u32> as Trait>::r#trait(move _70) -> bb15;
+    }
+
+    bb15: {
+        _68 = &_69;
+        _65 = (move _66, move _68);
+        _72 = (_65.0: &u32);
+        _73 = (_65.1: &u32);
+        _76 = (*_72);
+        _77 = (*_73);
+        _75 = Eq(move _76, move _77);
+        _74 = Not(move _75);
+        switchInt(move _74) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _78 = core::panicking::AssertKind::Eq;
+        _80 = Option::<Arguments<'_>>::None;
+        _79 = core::panicking::assert_failed::<u32, u32>(move _78, _72, _73, move _80);
+    }
+
+    bb17: {
+        return;
+    }
+
+    bb18 (cleanup): {
+        drop(_32) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        resume;
+    }
+}
+
+fn IntWrapper(_1: u32) -> IntWrapper {
+    let mut _0: IntWrapper;
+
+    bb0: {
+        _0 = IntWrapper(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn IntWrapper(_1: u32) -> IntWrapper {
+    let mut _0: IntWrapper;
+
+    bb0: {
+        _0 = IntWrapper(move _1);
+        return;
+    }
+}
+
+fn Generic(_1: T) -> Generic<T> {
+    let mut _0: Generic<T>;
+
+    bb0: {
+        _0 = Generic::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Generic(_1: T) -> Generic<T> {
+    let mut _0: Generic<T>;
+
+    bb0: {
+        _0 = Generic::<T>(move _1);
+        return;
+    }
+}

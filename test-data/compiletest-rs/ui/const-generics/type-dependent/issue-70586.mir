@@ -1,0 +1,130 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/const-generics/type-dependent/issue-70586.rs:7:1: 7:15>::const_chunks_exact() -> ConstChunksExact<'_, T, N> {
+    let mut _0: ConstChunksExact<'_, T, N>;
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/issue-70586.rs:7:1: 7:15>::const_chunks_exact::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/issue-70586.rs:14:10: 14:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/type-dependent/issue-70586.rs:14:10: 14:15>::fmt(_1: &ConstChunksExact<'_, T, N>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&std::marker::PhantomData<&T>;
+    let _7: &std::marker::PhantomData<&T>;
+
+    bb0: {
+        _3 = const "ConstChunksExact";
+        _4 = const "inner";
+        _7 = &((*_1).0: std::marker::PhantomData<&T>);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/issue-70586.rs:19:1: 19:73>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/issue-70586.rs:19:1: 19:73>::Item::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/type-dependent/issue-70586.rs:19:1: 19:73>::next(_1: &mut ConstChunksExact<'_, T, N>) -> Option<&[T; N]> {
+    debug self => _1;
+    let mut _0: std::option::Option<&[T; N]>;
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: ConstChunksExact<'_, i32, 3>;
+    let _3: &[i32; 3];
+    let mut _4: std::option::Option<&[i32; 3]>;
+    let mut _5: &mut ConstChunksExact<'_, i32, 3>;
+    scope 1 {
+        debug chunks => const ConstChunksExact::<'_, i32, 3> {{ inner: PhantomData::<&i32> }};
+        let _2: &[i32; 3];
+        scope 2 {
+            debug _next => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Namespace::const_chunks_exact::<i32, 3>() -> bb1;
+    }
+
+    bb1: {
+        _5 = &mut _1;
+        _4 = <ConstChunksExact<'_, i32, 3> as Iterator>::next(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = Option::<&[i32; 3]>::unwrap(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = _3;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

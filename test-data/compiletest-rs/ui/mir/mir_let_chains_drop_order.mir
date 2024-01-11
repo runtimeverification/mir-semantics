@@ -1,0 +1,976 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_let_chains_drop_order.rs:18:1: 18:39>::drop(_1: &mut DropLogger<'_, T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &mut std::vec::Vec<usize>;
+    let mut _4: &mut std::vec::Vec<usize>;
+    let mut _5: &mut std::cell::RefMut<'_, std::vec::Vec<usize>>;
+    let mut _6: std::cell::RefMut<'_, std::vec::Vec<usize>>;
+    let mut _7: &std::cell::RefCell<std::vec::Vec<usize>>;
+    let mut _8: usize;
+    let mut _9: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+
+    bb0: {
+        _9 = deref_copy ((*_1).2: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>);
+        _7 = &((*_9).0: std::cell::RefCell<std::vec::Vec<usize>>);
+        _6 = RefCell::<Vec<usize>>::borrow_mut(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &mut _6;
+        _4 = <RefMut<'_, Vec<usize>> as DerefMut>::deref_mut(move _5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _3 = _4;
+        _8 = ((*_1).1: usize);
+        _2 = Vec::<usize>::push(move _3, move _8) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_6) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+    let mut _2: std::cell::RefCell<std::vec::Vec<usize>>;
+    let mut _3: std::vec::Vec<usize>;
+    let mut _5: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+    let mut _7: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+    let mut _9: DropLogger<'_, std::option::Option<bool>>;
+    let mut _10: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _11: (usize, std::option::Option<bool>);
+    let mut _12: std::option::Option<bool>;
+    let mut _13: DropLogger<'_, std::option::Option<bool>>;
+    let mut _14: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _15: (usize, std::option::Option<bool>);
+    let mut _16: std::option::Option<bool>;
+    let mut _17: DropLogger<'_, std::option::Option<bool>>;
+    let mut _18: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _19: (usize, std::option::Option<bool>);
+    let mut _20: std::option::Option<bool>;
+    let mut _21: isize;
+    let mut _22: DropLogger<'_, std::option::Option<bool>>;
+    let mut _23: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _24: (usize, std::option::Option<bool>);
+    let mut _25: std::option::Option<bool>;
+    let mut _26: DropLogger<'_, std::option::Option<bool>>;
+    let mut _27: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _28: (usize, std::option::Option<bool>);
+    let mut _29: std::option::Option<bool>;
+    let mut _30: &DropLogger<'_, std::option::Option<bool>>;
+    let _31: DropLogger<'_, std::option::Option<bool>>;
+    let mut _32: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _33: (usize, std::option::Option<bool>);
+    let mut _34: std::option::Option<bool>;
+    let mut _35: DropLogger<'_, std::option::Option<bool>>;
+    let mut _36: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _37: (usize, std::option::Option<bool>);
+    let mut _38: std::option::Option<bool>;
+    let mut _39: DropLogger<'_, std::option::Option<bool>>;
+    let mut _40: DropLogger<'_, std::option::Option<bool>>;
+    let mut _41: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _42: (usize, std::option::Option<bool>);
+    let mut _43: std::option::Option<bool>;
+    let mut _44: DropLogger<'_, std::option::Option<bool>>;
+    let mut _45: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _46: (usize, std::option::Option<bool>);
+    let mut _47: std::option::Option<bool>;
+    let mut _48: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _49: (usize, std::option::Option<bool>);
+    let mut _50: std::option::Option<bool>;
+    let mut _51: (&std::vec::Vec<usize>, &std::vec::Vec<usize>);
+    let mut _52: &std::vec::Vec<usize>;
+    let _53: std::vec::Vec<usize>;
+    let mut _54: &[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27];
+    let mut _55: &std::vec::Vec<usize>;
+    let _56: std::vec::Vec<usize>;
+    let mut _57: std::boxed::Box<[usize]>;
+    let mut _58: usize;
+    let mut _59: usize;
+    let mut _60: *mut u8;
+    let mut _61: std::boxed::Box<[usize; 5]>;
+    let mut _64: bool;
+    let mut _65: bool;
+    let _67: !;
+    let mut _68: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _69: (&std::vec::Vec<usize>, &std::vec::Vec<usize>);
+    let mut _70: &std::vec::Vec<usize>;
+    let _71: std::vec::Vec<usize>;
+    let mut _72: &[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27];
+    let mut _73: &std::vec::Vec<usize>;
+    let _74: std::vec::Vec<usize>;
+    let mut _75: std::boxed::Box<[usize]>;
+    let mut _76: usize;
+    let mut _77: usize;
+    let mut _78: *mut u8;
+    let mut _79: std::boxed::Box<[usize; 5]>;
+    let mut _82: bool;
+    let mut _83: bool;
+    let _85: !;
+    let mut _86: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _87: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _88: [closure@ui/mir/mir_let_chains_drop_order.rs:64:38: 64:40];
+    let mut _89: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _90: (&std::vec::Vec<usize>, &std::vec::Vec<usize>);
+    let mut _91: &std::vec::Vec<usize>;
+    let _92: std::vec::Vec<usize>;
+    let mut _93: &[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27];
+    let mut _94: &std::vec::Vec<usize>;
+    let _95: std::vec::Vec<usize>;
+    let mut _96: std::boxed::Box<[usize]>;
+    let mut _97: usize;
+    let mut _98: usize;
+    let mut _99: *mut u8;
+    let mut _100: std::boxed::Box<[usize; 10]>;
+    let mut _103: bool;
+    let mut _104: bool;
+    let _106: !;
+    let mut _107: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _108: bool;
+    let mut _109: *const [usize; 5];
+    let mut _110: *const [usize; 5];
+    let mut _111: *const [usize; 10];
+    scope 1 {
+        debug log => _1;
+        let _4: [closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+        scope 2 {
+            debug d => _4;
+            let _6: [closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27];
+            scope 3 {
+                debug get => _6;
+                let _8: (DropLogger<'_, std::option::Option<bool>>, DropLogger<'_, std::option::Option<bool>>, &DropLogger<'_, std::option::Option<bool>>, DropLogger<'_, std::option::Option<bool>>, DropLogger<'_, std::option::Option<bool>>);
+                let _80: &std::vec::Vec<usize>;
+                let _81: &std::vec::Vec<usize>;
+                let mut _118: *const ();
+                let mut _119: usize;
+                let mut _120: usize;
+                let mut _121: usize;
+                let mut _122: usize;
+                let mut _123: bool;
+                scope 4 {
+                    debug _x => _8;
+                    let _62: &std::vec::Vec<usize>;
+                    let _63: &std::vec::Vec<usize>;
+                    let mut _124: *const ();
+                    let mut _125: usize;
+                    let mut _126: usize;
+                    let mut _127: usize;
+                    let mut _128: usize;
+                    let mut _129: bool;
+                    scope 5 {
+                    }
+                    scope 6 {
+                        debug left_val => _62;
+                        debug right_val => _63;
+                        let _66: core::panicking::AssertKind;
+                        scope 7 {
+                            debug kind => _66;
+                        }
+                    }
+                }
+                scope 8 {
+                }
+                scope 9 {
+                    debug left_val => _80;
+                    debug right_val => _81;
+                    let _84: core::panicking::AssertKind;
+                    scope 10 {
+                        debug kind => _84;
+                    }
+                }
+                scope 11 {
+                    let _101: &std::vec::Vec<usize>;
+                    let _102: &std::vec::Vec<usize>;
+                    let mut _112: *const ();
+                    let mut _113: usize;
+                    let mut _114: usize;
+                    let mut _115: usize;
+                    let mut _116: usize;
+                    let mut _117: bool;
+                    scope 12 {
+                    }
+                    scope 13 {
+                        debug left_val => _101;
+                        debug right_val => _102;
+                        let _105: core::panicking::AssertKind;
+                        scope 14 {
+                            debug kind => _105;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _108 = const false;
+        _3 = Vec::<usize>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = RefCell::<Vec<usize>>::new(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = AssertUnwindSafe::<RefCell<Vec<usize>>>(move _2);
+        _5 = &_1;
+        _4 = [closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] { log: move _5 };
+        _7 = &_1;
+        _6 = [closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27] { log: move _7 };
+        _10 = &_4;
+        _14 = &_4;
+        _18 = &_4;
+        _20 = Option::<bool>::Some(const true);
+        _19 = (const 2_usize, move _20);
+        _17 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _18, move _19) -> [return: bb3, unwind: bb77];
+    }
+
+    bb3: {
+        _21 = discriminant((_17.0: std::option::Option<bool>));
+        switchInt(move _21) -> [1: bb4, otherwise: bb6];
+    }
+
+    bb4: {
+        _23 = &_4;
+        _25 = Option::<bool>::None;
+        _24 = (const 3_usize, move _25);
+        _22 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _23, move _24) -> [return: bb5, unwind: bb76];
+    }
+
+    bb5: {
+        _108 = const true;
+        _16 = Option::<bool>::None;
+        goto -> bb7;
+    }
+
+    bb6: {
+        _16 = Option::<bool>::Some(const true);
+        goto -> bb7;
+    }
+
+    bb7: {
+        _15 = (const 1_usize, move _16);
+        _13 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _14, move _15) -> [return: bb8, unwind: bb86];
+    }
+
+    bb8: {
+        _12 = (_13.0: std::option::Option<bool>);
+        _11 = (const 0_usize, move _12);
+        _9 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _10, move _11) -> [return: bb9, unwind: bb75];
+    }
+
+    bb9: {
+        _27 = &_4;
+        _29 = Option::<bool>::None;
+        _28 = (const 4_usize, move _29);
+        _26 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _27, move _28) -> [return: bb10, unwind: bb74];
+    }
+
+    bb10: {
+        _32 = &_4;
+        _34 = Option::<bool>::None;
+        _33 = (const 5_usize, move _34);
+        _31 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _32, move _33) -> [return: bb11, unwind: bb73];
+    }
+
+    bb11: {
+        _30 = &_31;
+        _36 = &_4;
+        _38 = Option::<bool>::None;
+        _37 = (const 6_usize, move _38);
+        _35 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _36, move _37) -> [return: bb12, unwind: bb68];
+    }
+
+    bb12: {
+        _41 = &_4;
+        _43 = Option::<bool>::None;
+        _42 = (const 7_usize, move _43);
+        _40 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _41, move _42) -> [return: bb13, unwind: bb67];
+    }
+
+    bb13: {
+        _45 = &_4;
+        _47 = Option::<bool>::None;
+        _46 = (const 8_usize, move _47);
+        _44 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _45, move _46) -> [return: bb14, unwind: bb63];
+    }
+
+    bb14: {
+        _48 = &_4;
+        _50 = Option::<bool>::None;
+        _49 = (const 9_usize, move _50);
+        _39 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(move _48, move _49) -> [return: bb15, unwind: bb59];
+    }
+
+    bb15: {
+        _8 = (move _9, move _26, move _30, move _35, move _39);
+        drop(_44) -> [return: bb16, unwind: bb55];
+    }
+
+    bb16: {
+        drop(_40) -> [return: bb17, unwind: bb56];
+    }
+
+    bb17: {
+        drop(_13) -> [return: bb80, unwind: bb82];
+    }
+
+    bb18: {
+        _108 = const false;
+        drop(_17) -> [return: bb19, unwind: bb58];
+    }
+
+    bb19: {
+        _54 = &_6;
+        _53 = <[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27] as Fn<()>>::call(move _54, const ()) -> [return: bb20, unwind: bb58];
+    }
+
+    bb20: {
+        _52 = &_53;
+        _58 = SizeOf([usize; 5]);
+        _59 = AlignOf([usize; 5]);
+        _60 = alloc::alloc::exchange_malloc(move _58, move _59) -> [return: bb21, unwind: bb54];
+    }
+
+    bb21: {
+        _61 = ShallowInitBox(move _60, [usize; 5]);
+        _109 = (((_61.0: std::ptr::Unique<[usize; 5]>).0: std::ptr::NonNull<[usize; 5]>).0: *const [usize; 5]);
+        _124 = _109 as *const () (PtrToPtr);
+        _125 = _124 as usize (Transmute);
+        _126 = AlignOf(usize);
+        _127 = Sub(_126, const 1_usize);
+        _128 = BitAnd(_125, _127);
+        _129 = Eq(_128, const 0_usize);
+        assert(_129, "misaligned pointer dereference: address must be a multiple of {} but is {}", _126, _125) -> [success: bb89, unwind unreachable];
+    }
+
+    bb22: {
+        _55 = &_56;
+        _51 = (move _52, move _55);
+        _62 = (_51.0: &std::vec::Vec<usize>);
+        _63 = (_51.1: &std::vec::Vec<usize>);
+        _65 = <Vec<usize> as PartialEq>::eq(_62, _63) -> [return: bb23, unwind: bb53];
+    }
+
+    bb23: {
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _66 = core::panicking::AssertKind::Eq;
+        _68 = Option::<Arguments<'_>>::None;
+        _67 = core::panicking::assert_failed::<Vec<usize>, Vec<usize>>(move _66, _62, _63, move _68) -> bb53;
+    }
+
+    bb25: {
+        drop(_56) -> [return: bb26, unwind: bb54];
+    }
+
+    bb26: {
+        drop(_53) -> [return: bb27, unwind: bb58];
+    }
+
+    bb27: {
+        drop(_8) -> [return: bb28, unwind: bb72];
+    }
+
+    bb28: {
+        drop(_31) -> [return: bb29, unwind: bb77];
+    }
+
+    bb29: {
+        _72 = &_6;
+        _71 = <[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27] as Fn<()>>::call(move _72, const ()) -> [return: bb30, unwind: bb77];
+    }
+
+    bb30: {
+        _70 = &_71;
+        _76 = SizeOf([usize; 5]);
+        _77 = AlignOf([usize; 5]);
+        _78 = alloc::alloc::exchange_malloc(move _76, move _77) -> [return: bb31, unwind: bb52];
+    }
+
+    bb31: {
+        _79 = ShallowInitBox(move _78, [usize; 5]);
+        _110 = (((_79.0: std::ptr::Unique<[usize; 5]>).0: std::ptr::NonNull<[usize; 5]>).0: *const [usize; 5]);
+        _118 = _110 as *const () (PtrToPtr);
+        _119 = _118 as usize (Transmute);
+        _120 = AlignOf(usize);
+        _121 = Sub(_120, const 1_usize);
+        _122 = BitAnd(_119, _121);
+        _123 = Eq(_122, const 0_usize);
+        assert(_123, "misaligned pointer dereference: address must be a multiple of {} but is {}", _120, _119) -> [success: bb88, unwind unreachable];
+    }
+
+    bb32: {
+        _73 = &_74;
+        _69 = (move _70, move _73);
+        _80 = (_69.0: &std::vec::Vec<usize>);
+        _81 = (_69.1: &std::vec::Vec<usize>);
+        _83 = <Vec<usize> as PartialEq>::eq(_80, _81) -> [return: bb33, unwind: bb51];
+    }
+
+    bb33: {
+        _82 = Not(move _83);
+        switchInt(move _82) -> [0: bb35, otherwise: bb34];
+    }
+
+    bb34: {
+        _84 = core::panicking::AssertKind::Eq;
+        _86 = Option::<Arguments<'_>>::None;
+        _85 = core::panicking::assert_failed::<Vec<usize>, Vec<usize>>(move _84, _80, _81, move _86) -> bb51;
+    }
+
+    bb35: {
+        drop(_74) -> [return: bb36, unwind: bb52];
+    }
+
+    bb36: {
+        drop(_71) -> [return: bb37, unwind: bb77];
+    }
+
+    bb37: {
+        _89 = &_4;
+        _88 = [closure@ui/mir/mir_let_chains_drop_order.rs:64:38: 64:40] { d: move _89 };
+        _87 = catch_unwind::<[closure@ui/mir/mir_let_chains_drop_order.rs:64:38: 64:40], ()>(move _88) -> [return: bb38, unwind: bb77];
+    }
+
+    bb38: {
+        drop(_87) -> [return: bb39, unwind: bb77];
+    }
+
+    bb39: {
+        _93 = &_6;
+        _92 = <[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27] as Fn<()>>::call(move _93, const ()) -> [return: bb40, unwind: bb77];
+    }
+
+    bb40: {
+        _91 = &_92;
+        _97 = SizeOf([usize; 10]);
+        _98 = AlignOf([usize; 10]);
+        _99 = alloc::alloc::exchange_malloc(move _97, move _98) -> [return: bb41, unwind: bb50];
+    }
+
+    bb41: {
+        _100 = ShallowInitBox(move _99, [usize; 10]);
+        _111 = (((_100.0: std::ptr::Unique<[usize; 10]>).0: std::ptr::NonNull<[usize; 10]>).0: *const [usize; 10]);
+        _112 = _111 as *const () (PtrToPtr);
+        _113 = _112 as usize (Transmute);
+        _114 = AlignOf(usize);
+        _115 = Sub(_114, const 1_usize);
+        _116 = BitAnd(_113, _115);
+        _117 = Eq(_116, const 0_usize);
+        assert(_117, "misaligned pointer dereference: address must be a multiple of {} but is {}", _114, _113) -> [success: bb87, unwind unreachable];
+    }
+
+    bb42: {
+        _94 = &_95;
+        _90 = (move _91, move _94);
+        _101 = (_90.0: &std::vec::Vec<usize>);
+        _102 = (_90.1: &std::vec::Vec<usize>);
+        _104 = <Vec<usize> as PartialEq>::eq(_101, _102) -> [return: bb43, unwind: bb49];
+    }
+
+    bb43: {
+        _103 = Not(move _104);
+        switchInt(move _103) -> [0: bb45, otherwise: bb44];
+    }
+
+    bb44: {
+        _105 = core::panicking::AssertKind::Eq;
+        _107 = Option::<Arguments<'_>>::None;
+        _106 = core::panicking::assert_failed::<Vec<usize>, Vec<usize>>(move _105, _101, _102, move _107) -> bb49;
+    }
+
+    bb45: {
+        drop(_95) -> [return: bb46, unwind: bb50];
+    }
+
+    bb46: {
+        drop(_92) -> [return: bb47, unwind: bb77];
+    }
+
+    bb47: {
+        drop(_1) -> bb48;
+    }
+
+    bb48: {
+        return;
+    }
+
+    bb49 (cleanup): {
+        drop(_95) -> [return: bb50, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_92) -> [return: bb77, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_74) -> [return: bb52, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_71) -> [return: bb77, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_56) -> [return: bb54, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_53) -> [return: bb58, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        drop(_40) -> [return: bb56, unwind terminate];
+    }
+
+    bb56 (cleanup): {
+        drop(_13) -> [return: bb82, unwind terminate];
+    }
+
+    bb57 (cleanup): {
+        drop(_17) -> [return: bb58, unwind terminate];
+    }
+
+    bb58 (cleanup): {
+        drop(_8) -> [return: bb72, unwind terminate];
+    }
+
+    bb59 (cleanup): {
+        drop(_35) -> [return: bb60, unwind terminate];
+    }
+
+    bb60 (cleanup): {
+        drop(_26) -> [return: bb61, unwind terminate];
+    }
+
+    bb61 (cleanup): {
+        drop(_9) -> [return: bb62, unwind terminate];
+    }
+
+    bb62 (cleanup): {
+        drop(_44) -> [return: bb66, unwind terminate];
+    }
+
+    bb63 (cleanup): {
+        drop(_35) -> [return: bb64, unwind terminate];
+    }
+
+    bb64 (cleanup): {
+        drop(_26) -> [return: bb65, unwind terminate];
+    }
+
+    bb65 (cleanup): {
+        drop(_9) -> [return: bb66, unwind terminate];
+    }
+
+    bb66 (cleanup): {
+        drop(_40) -> [return: bb70, unwind terminate];
+    }
+
+    bb67 (cleanup): {
+        drop(_35) -> [return: bb68, unwind terminate];
+    }
+
+    bb68 (cleanup): {
+        drop(_26) -> [return: bb69, unwind terminate];
+    }
+
+    bb69 (cleanup): {
+        drop(_9) -> [return: bb70, unwind terminate];
+    }
+
+    bb70 (cleanup): {
+        drop(_13) -> [return: bb84, unwind terminate];
+    }
+
+    bb71 (cleanup): {
+        drop(_17) -> [return: bb72, unwind terminate];
+    }
+
+    bb72 (cleanup): {
+        drop(_31) -> [return: bb77, unwind terminate];
+    }
+
+    bb73 (cleanup): {
+        drop(_26) -> [return: bb74, unwind terminate];
+    }
+
+    bb74 (cleanup): {
+        drop(_9) -> [return: bb75, unwind terminate];
+    }
+
+    bb75 (cleanup): {
+        drop(_13) -> [return: bb86, unwind terminate];
+    }
+
+    bb76 (cleanup): {
+        drop(_17) -> [return: bb77, unwind terminate];
+    }
+
+    bb77 (cleanup): {
+        drop(_1) -> [return: bb78, unwind terminate];
+    }
+
+    bb78 (cleanup): {
+        resume;
+    }
+
+    bb79: {
+        drop(_22) -> [return: bb18, unwind: bb57];
+    }
+
+    bb80: {
+        switchInt(_108) -> [0: bb18, otherwise: bb79];
+    }
+
+    bb81 (cleanup): {
+        drop(_22) -> [return: bb57, unwind terminate];
+    }
+
+    bb82 (cleanup): {
+        switchInt(_108) -> [0: bb57, otherwise: bb81];
+    }
+
+    bb83 (cleanup): {
+        drop(_22) -> [return: bb71, unwind terminate];
+    }
+
+    bb84 (cleanup): {
+        switchInt(_108) -> [0: bb71, otherwise: bb83];
+    }
+
+    bb85 (cleanup): {
+        drop(_22) -> [return: bb76, unwind terminate];
+    }
+
+    bb86 (cleanup): {
+        switchInt(_108) -> [0: bb76, otherwise: bb85];
+    }
+
+    bb87: {
+        (*_111) = [const 20_usize, const 17_usize, const 15_usize, const 11_usize, const 19_usize, const 18_usize, const 16_usize, const 12_usize, const 14_usize, const 13_usize];
+        _96 = move _100 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _95 = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _96) -> [return: bb42, unwind: bb50];
+    }
+
+    bb88: {
+        (*_110) = [const 0_usize, const 4_usize, const 6_usize, const 9_usize, const 5_usize];
+        _75 = move _79 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _74 = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _75) -> [return: bb32, unwind: bb52];
+    }
+
+    bb89: {
+        (*_109) = [const 8_usize, const 7_usize, const 1_usize, const 3_usize, const 2_usize];
+        _57 = move _61 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _56 = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _57) -> [return: bb22, unwind: bb54];
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24], _2: usize, _3: Option<bool>) -> DropLogger<'_, Option<bool>> {
+    debug id => _2;
+    debug extra => _3;
+    debug log => (*((*_1).0: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>));
+    let mut _0: DropLogger<'_, std::option::Option<bool>>;
+    let mut _4: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>);
+        _0 = DropLogger::<'_, Option<bool>> { extra: _3, id: _2, log: _4 };
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/mir/mir_let_chains_drop_order.rs:30:15: 30:27]) -> Vec<usize> {
+    debug log => (*((*_1).0: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>));
+    let mut _0: std::vec::Vec<usize>;
+    let mut _2: std::cell::RefMut<'_, std::vec::Vec<usize>>;
+    let mut _3: &std::cell::RefCell<std::vec::Vec<usize>>;
+    let mut _5: &mut std::vec::Vec<usize>;
+    let mut _6: &mut std::vec::Vec<usize>;
+    let mut _7: &mut std::cell::RefMut<'_, std::vec::Vec<usize>>;
+    let mut _8: std::vec::Drain<'_, usize>;
+    let mut _9: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>;
+    scope 1 {
+        debug m => _2;
+        let _4: std::vec::Drain<'_, usize>;
+        scope 2 {
+            debug n => _4;
+        }
+    }
+
+    bb0: {
+        _9 = deref_copy ((*_1).0: &std::panic::AssertUnwindSafe<std::cell::RefCell<std::vec::Vec<usize>>>);
+        _3 = &((*_9).0: std::cell::RefCell<std::vec::Vec<usize>>);
+        _2 = RefCell::<Vec<usize>>::borrow_mut(move _3) -> bb1;
+    }
+
+    bb1: {
+        _7 = &mut _2;
+        _6 = <RefMut<'_, Vec<usize>> as DerefMut>::deref_mut(move _7) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _5 = _6;
+        _4 = Vec::<usize>::drain::<RangeFull>(move _5, const RangeFull) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _8 = move _4;
+        _0 = <std::vec::Drain<'_, usize> as Iterator>::collect::<Vec<usize>>(move _8) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_2) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#2}(_1: [closure@ui/mir/mir_let_chains_drop_order.rs:64:38: 64:40]) -> () {
+    debug d => (*(_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]));
+    let mut _0: ();
+    let mut _2: DropLogger<'_, std::option::Option<bool>>;
+    let mut _3: (usize, std::option::Option<bool>);
+    let mut _4: std::option::Option<bool>;
+    let mut _5: DropLogger<'_, std::option::Option<bool>>;
+    let mut _6: (usize, std::option::Option<bool>);
+    let mut _7: std::option::Option<bool>;
+    let mut _8: DropLogger<'_, std::option::Option<bool>>;
+    let mut _9: (usize, std::option::Option<bool>);
+    let mut _10: std::option::Option<bool>;
+    let mut _11: isize;
+    let mut _12: DropLogger<'_, std::option::Option<bool>>;
+    let mut _13: (usize, std::option::Option<bool>);
+    let mut _14: std::option::Option<bool>;
+    let mut _15: DropLogger<'_, std::option::Option<bool>>;
+    let mut _16: (usize, std::option::Option<bool>);
+    let mut _17: std::option::Option<bool>;
+    let _18: DropLogger<'_, std::option::Option<bool>>;
+    let mut _19: (usize, std::option::Option<bool>);
+    let mut _20: std::option::Option<bool>;
+    let mut _21: DropLogger<'_, std::option::Option<bool>>;
+    let mut _22: (usize, std::option::Option<bool>);
+    let mut _23: std::option::Option<bool>;
+    let mut _24: DropLogger<'_, std::option::Option<bool>>;
+    let mut _25: DropLogger<'_, std::option::Option<bool>>;
+    let mut _26: (usize, std::option::Option<bool>);
+    let mut _27: std::option::Option<bool>;
+    let mut _28: DropLogger<'_, std::option::Option<bool>>;
+    let mut _29: (usize, std::option::Option<bool>);
+    let mut _30: std::option::Option<bool>;
+    let mut _31: (usize, std::option::Option<bool>);
+    let mut _32: std::option::Option<bool>;
+    let mut _33: !;
+    let mut _34: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _35: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _36: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _37: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _38: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _39: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _40: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _41: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _42: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _43: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24];
+    let mut _44: bool;
+
+    bb0: {
+        _44 = const false;
+        _34 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _35 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _36 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _10 = Option::<bool>::Some(const true);
+        _9 = (const 13_usize, move _10);
+        _8 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_36, move _9) -> bb1;
+    }
+
+    bb1: {
+        _11 = discriminant((_8.0: std::option::Option<bool>));
+        switchInt(move _11) -> [1: bb2, otherwise: bb4];
+    }
+
+    bb2: {
+        _37 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _14 = Option::<bool>::None;
+        _13 = (const 14_usize, move _14);
+        _12 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_37, move _13) -> [return: bb3, unwind: bb30];
+    }
+
+    bb3: {
+        _44 = const true;
+        _7 = Option::<bool>::None;
+        goto -> bb5;
+    }
+
+    bb4: {
+        _7 = Option::<bool>::Some(const true);
+        goto -> bb5;
+    }
+
+    bb5: {
+        _6 = (const 12_usize, move _7);
+        _5 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_35, move _6) -> [return: bb6, unwind: bb33];
+    }
+
+    bb6: {
+        _4 = (_5.0: std::option::Option<bool>);
+        _3 = (const 11_usize, move _4);
+        _2 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_34, move _3) -> [return: bb7, unwind: bb29];
+    }
+
+    bb7: {
+        _38 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _17 = Option::<bool>::None;
+        _16 = (const 15_usize, move _17);
+        _15 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_38, move _16) -> [return: bb8, unwind: bb28];
+    }
+
+    bb8: {
+        _39 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _20 = Option::<bool>::None;
+        _19 = (const 16_usize, move _20);
+        _18 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_39, move _19) -> [return: bb9, unwind: bb27];
+    }
+
+    bb9: {
+        _40 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _23 = Option::<bool>::None;
+        _22 = (const 17_usize, move _23);
+        _21 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_40, move _22) -> [return: bb10, unwind: bb24];
+    }
+
+    bb10: {
+        _41 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _27 = Option::<bool>::None;
+        _26 = (const 18_usize, move _27);
+        _25 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_41, move _26) -> [return: bb11, unwind: bb23];
+    }
+
+    bb11: {
+        _42 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _30 = Option::<bool>::None;
+        _29 = (const 19_usize, move _30);
+        _28 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_42, move _29) -> [return: bb12, unwind: bb19];
+    }
+
+    bb12: {
+        _43 = deref_copy (_1.0: &[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24]);
+        _32 = Option::<bool>::None;
+        _31 = (const 20_usize, move _32);
+        _24 = <[closure@ui/mir/mir_let_chains_drop_order.rs:29:13: 29:24] as Fn<(usize, Option<bool>)>>::call(_43, move _31) -> [return: bb13, unwind: bb15];
+    }
+
+    bb13: {
+        _33 = panic_any::<InjectedFailure>(const InjectedFailure) -> bb14;
+    }
+
+    bb14 (cleanup): {
+        drop(_24) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_21) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        drop(_15) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop(_2) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        drop(_28) -> [return: bb22, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        drop(_21) -> [return: bb20, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        drop(_15) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_2) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_25) -> [return: bb26, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_21) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_15) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        drop(_2) -> [return: bb26, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        drop(_18) -> [return: bb29, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        drop(_15) -> [return: bb28, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        drop(_2) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_5) -> [return: bb33, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_8) -> [return: bb31, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        resume;
+    }
+
+    bb32 (cleanup): {
+        drop(_12) -> [return: bb30, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        switchInt(_44) -> [0: bb30, otherwise: bb32];
+    }
+}

@@ -1,0 +1,96 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: isize) -> isize {
+    debug i => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = Add(_1, const 1_isize);
+        return;
+    }
+}
+
+fn apply(_1: F, _2: A) -> A {
+    debug f => _1;
+    debug v => _2;
+    let mut _0: A;
+    let mut _3: (A,);
+
+    bb0: {
+        _3 = (move _2,);
+        _0 = <F as FnOnce<(A,)>>::call_once(move _1, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&isize, &isize);
+    let mut _2: &isize;
+    let _3: isize;
+    let mut _4: &isize;
+    let _5: isize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: isize;
+    let mut _11: isize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug f => const ZeroSized: [closure@ui/functions-closures/closure-inference.rs:9:14: 9:17];
+        let _6: &isize;
+        let _7: &isize;
+        scope 2 {
+            debug left_val => _6;
+            debug right_val => _7;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = apply::<isize, [closure@ui/functions-closures/closure-inference.rs:9:14: 9:17]>(const ZeroSized: [closure@ui/functions-closures/closure-inference.rs:9:14: 9:17], const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const 3_isize;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &isize);
+        _7 = (_1.1: &isize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<isize, isize>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/functions-closures/closure-inference.rs:9:14: 9:17], _2: isize) -> isize {
+    debug i => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = foo(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

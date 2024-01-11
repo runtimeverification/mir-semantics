@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn wrap(_1: &<T as Trait>::Ref<'_>) -> RefRef<'_, T> {
+    debug reff => _1;
+    let mut _0: RefRef<'_, T>;
+
+    bb0: {
+        _0 = RefRef::<'_, T>(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn RefRef(_1: &<T as Trait>::Ref<'_>) -> RefRef<'_, T> {
+    let mut _0: RefRef<'_, T>;
+
+    bb0: {
+        _0 = RefRef::<'_, T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn RefRef(_1: &<T as Trait>::Ref<'_>) -> RefRef<'_, T> {
+    let mut _0: RefRef<'_, T>;
+
+    bb0: {
+        _0 = RefRef::<'_, T>(move _1);
+        return;
+    }
+}

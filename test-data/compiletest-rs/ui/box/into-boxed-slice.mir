@@ -1,0 +1,280 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::boxed::Box<[u8]>, &std::boxed::Box<[u8]>);
+    let mut _2: &std::boxed::Box<[u8]>;
+    let _3: std::boxed::Box<[u8]>;
+    let mut _4: std::boxed::Box<u8>;
+    let mut _5: &std::boxed::Box<[u8]>;
+    let _6: std::boxed::Box<[u8]>;
+    let mut _7: std::boxed::Box<[u8; 1]>;
+    let mut _8: [u8; 1];
+    let _9: &std::boxed::Box<[u8]>;
+    let _10: &std::boxed::Box<[u8]>;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&std::boxed::Box<[[u8; 1]]>, &std::boxed::Box<[[u8; 1]]>);
+    let mut _17: &std::boxed::Box<[[u8; 1]]>;
+    let _18: std::boxed::Box<[[u8; 1]]>;
+    let mut _19: std::boxed::Box<[u8; 1]>;
+    let mut _20: [u8; 1];
+    let mut _21: &std::boxed::Box<[[u8; 1]]>;
+    let _22: std::boxed::Box<[[u8; 1]]>;
+    let mut _23: std::boxed::Box<[[u8; 1]; 1]>;
+    let mut _24: [[u8; 1]; 1];
+    let mut _25: [u8; 1];
+    let _26: &std::boxed::Box<[[u8; 1]]>;
+    let _27: &std::boxed::Box<[[u8; 1]]>;
+    let mut _28: bool;
+    let mut _29: bool;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let _33: std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+    let mut _34: std::boxed::Box<std::boxed::Box<[u8; 1]>>;
+    let mut _35: std::boxed::Box<[u8; 1]>;
+    let mut _36: [u8; 1];
+    let mut _38: std::boxed::Box<[std::boxed::Box<[u8; 1]>; 1]>;
+    let mut _39: [std::boxed::Box<[u8; 1]>; 1];
+    let mut _40: std::boxed::Box<[u8; 1]>;
+    let mut _41: [u8; 1];
+    let mut _42: (&std::boxed::Box<[std::boxed::Box<[u8; 1]>]>, &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>);
+    let mut _43: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+    let mut _44: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+    let mut _47: bool;
+    let mut _48: bool;
+    let _50: !;
+    let mut _51: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _26;
+        debug right_val => _27;
+        let _30: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _30;
+        }
+    }
+    scope 5 {
+        debug a => _33;
+        let _37: std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+        scope 6 {
+            debug b => _37;
+            let _45: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+            let _46: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>;
+            scope 7 {
+                debug left_val => _45;
+                debug right_val => _46;
+                let _49: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _49;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = Box::<u8>::new(const 5_u8) -> bb1;
+    }
+
+    bb1: {
+        _3 = Box::<u8>::into_boxed_slice(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _8 = [const 5_u8];
+        _7 = Box::<[u8; 1]>::new(move _8) -> [return: bb3, unwind: bb32];
+    }
+
+    bb3: {
+        _6 = move _7 as std::boxed::Box<[u8]> (Pointer(Unsize));
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _9 = (_1.0: &std::boxed::Box<[u8]>);
+        _10 = (_1.1: &std::boxed::Box<[u8]>);
+        _12 = <Box<[u8]> as PartialEq>::eq(_9, _10) -> [return: bb4, unwind: bb31];
+    }
+
+    bb4: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<Box<[u8]>, Box<[u8]>>(move _13, _9, _10, move _15) -> bb31;
+    }
+
+    bb6: {
+        drop(_6) -> [return: bb7, unwind: bb32];
+    }
+
+    bb7: {
+        drop(_3) -> bb8;
+    }
+
+    bb8: {
+        _20 = [const 25_u8];
+        _19 = Box::<[u8; 1]>::new(move _20) -> bb9;
+    }
+
+    bb9: {
+        _18 = Box::<[u8; 1]>::into_boxed_slice(move _19) -> bb10;
+    }
+
+    bb10: {
+        _17 = &_18;
+        _25 = [const 25_u8];
+        _24 = [move _25];
+        _23 = Box::<[[u8; 1]; 1]>::new(move _24) -> [return: bb11, unwind: bb30];
+    }
+
+    bb11: {
+        _22 = move _23 as std::boxed::Box<[[u8; 1]]> (Pointer(Unsize));
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _26 = (_16.0: &std::boxed::Box<[[u8; 1]]>);
+        _27 = (_16.1: &std::boxed::Box<[[u8; 1]]>);
+        _29 = <Box<[[u8; 1]]> as PartialEq>::eq(_26, _27) -> [return: bb12, unwind: bb29];
+    }
+
+    bb12: {
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<Box<[[u8; 1]]>, Box<[[u8; 1]]>>(move _30, _26, _27, move _32) -> bb29;
+    }
+
+    bb14: {
+        drop(_22) -> [return: bb15, unwind: bb30];
+    }
+
+    bb15: {
+        drop(_18) -> bb16;
+    }
+
+    bb16: {
+        _36 = [const 5_u8];
+        _35 = Box::<[u8; 1]>::new(move _36) -> bb17;
+    }
+
+    bb17: {
+        _34 = Box::<Box<[u8; 1]>>::new(move _35) -> bb18;
+    }
+
+    bb18: {
+        _33 = Box::<Box<[u8; 1]>>::into_boxed_slice(move _34) -> bb19;
+    }
+
+    bb19: {
+        _41 = [const 5_u8];
+        _40 = Box::<[u8; 1]>::new(move _41) -> [return: bb20, unwind: bb28];
+    }
+
+    bb20: {
+        _39 = [move _40];
+        _38 = Box::<[Box<[u8; 1]>; 1]>::new(move _39) -> [return: bb21, unwind: bb28];
+    }
+
+    bb21: {
+        _37 = move _38 as std::boxed::Box<[std::boxed::Box<[u8; 1]>]> (Pointer(Unsize));
+        _43 = &_33;
+        _44 = &_37;
+        _42 = (move _43, move _44);
+        _45 = (_42.0: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>);
+        _46 = (_42.1: &std::boxed::Box<[std::boxed::Box<[u8; 1]>]>);
+        _48 = <Box<[Box<[u8; 1]>]> as PartialEq>::eq(_45, _46) -> [return: bb22, unwind: bb27];
+    }
+
+    bb22: {
+        _47 = Not(move _48);
+        switchInt(move _47) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _49 = core::panicking::AssertKind::Eq;
+        _51 = Option::<Arguments<'_>>::None;
+        _50 = core::panicking::assert_failed::<Box<[Box<[u8; 1]>]>, Box<[Box<[u8; 1]>]>>(move _49, _45, _46, move _51) -> bb27;
+    }
+
+    bb24: {
+        drop(_37) -> [return: bb25, unwind: bb28];
+    }
+
+    bb25: {
+        drop(_33) -> bb26;
+    }
+
+    bb26: {
+        return;
+    }
+
+    bb27 (cleanup): {
+        drop(_37) -> [return: bb28, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        drop(_33) -> [return: bb33, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_22) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_18) -> [return: bb33, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_6) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_3) -> [return: bb33, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        resume;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}

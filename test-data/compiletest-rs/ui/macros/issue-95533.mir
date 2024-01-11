@@ -1,0 +1,423 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const P: LocalKey<()> = {
+    let mut _0: std::thread::LocalKey<()>;
+    let mut _1: for<'a> unsafe fn(std::option::Option<&'a mut std::option::Option<()>>) -> std::option::Option<&()>;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = P::__getit as for<'a> unsafe fn(std::option::Option<&'a mut std::option::Option<()>>) -> std::option::Option<&()> (Pointer(ReifyFnPointer));
+        ConstEvalCounter;
+        _0 = LocalKey::<()>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn __init() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn P::__getit(_1: Option<&mut Option<()>>) -> Option<&()> {
+    debug init => _1;
+    let mut _0: std::option::Option<&()>;
+    let _2: &std::thread::local_impl::Key<()>;
+    let mut _3: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38];
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _2 = &/*tls*/ __KEY;
+        _3 = [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38] { init: move _1 };
+        _0 = Key::<()>::get::<[closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38]>(_2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static __KEY: Key<()> = {
+    let mut _0: std::thread::local_impl::Key<()>;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Key::<()>::new() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn P::__getit::{closure#0}(_1: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38]) -> () {
+    debug init => (_1.0: std::option::Option<&mut std::option::Option<()>>);
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _4: std::option::Option<()>;
+    let mut _5: isize;
+    let mut _6: bool;
+    let _7: !;
+    let mut _8: std::fmt::Arguments<'_>;
+    let mut _9: &[&str];
+    let _10: &[&str; 1];
+    let _11: [&str; 1];
+    let mut _12: &[core::fmt::rt::Argument<'_>];
+    let _13: &[core::fmt::rt::Argument<'_>; 0];
+    let _14: [core::fmt::rt::Argument<'_>; 0];
+    scope 1 {
+        debug init => _3;
+        let _3: &mut std::option::Option<()>;
+        scope 2 {
+            debug value => const ();
+        }
+    }
+
+    bb0: {
+        _2 = discriminant((_1.0: std::option::Option<&mut std::option::Option<()>>));
+        switchInt(move _2) -> [1: bb1, otherwise: bb7];
+    }
+
+    bb1: {
+        _3 = move (((_1.0: std::option::Option<&mut std::option::Option<()>>) as Some).0: &mut std::option::Option<()>);
+        _4 = Option::<()>::take(_3) -> bb2;
+    }
+
+    bb2: {
+        _5 = discriminant(_4);
+        switchInt(move _5) -> [1: bb8, otherwise: bb3];
+    }
+
+    bb3: {
+        _6 = const true;
+        switchInt(move _6) -> [0: bb7, otherwise: bb4];
+    }
+
+    bb4: {
+        _11 = [const "internal error: entered unreachable code: missing default value"];
+        _10 = &_11;
+        _9 = _10 as &[&str] (Pointer(Unsize));
+        _14 = core::fmt::rt::Argument::<'_>::none() -> bb5;
+    }
+
+    bb5: {
+        _13 = &_14;
+        _12 = _13 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _8 = Arguments::<'_>::new_v1(move _9, move _12) -> bb6;
+    }
+
+    bb6: {
+        _7 = panic_fmt(move _8);
+    }
+
+    bb7: {
+        _0 = __init() -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+const Q: LocalKey<()> = {
+    let mut _0: std::thread::LocalKey<()>;
+    let mut _1: for<'a> unsafe fn(std::option::Option<&'a mut std::option::Option<()>>) -> std::option::Option<&()>;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Q::__getit as for<'a> unsafe fn(std::option::Option<&'a mut std::option::Option<()>>) -> std::option::Option<&()> (Pointer(ReifyFnPointer));
+        ConstEvalCounter;
+        _0 = LocalKey::<()>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn Q::__getit(_1: Option<&mut Option<()>>) -> Option<&()> {
+    debug _init => _1;
+    let mut _0: std::option::Option<&()>;
+    let mut _2: bool;
+    let mut _3: bool;
+    let _4: &();
+    let _5: *mut ();
+    let mut _6: u8;
+    let _7: &std::cell::Cell<u8>;
+    let _8: ();
+    let mut _9: *mut u8;
+    let mut _10: *mut ();
+    let mut _11: *mut ();
+    let mut _12: unsafe extern "C" fn(*mut u8);
+    let _13: ();
+    let _14: &std::cell::Cell<u8>;
+    let _15: &();
+    let _16: *mut ();
+    let _17: &();
+    let _18: *mut ();
+    scope 1 {
+        let mut _31: *const ();
+        let mut _32: usize;
+        let mut _33: usize;
+        let mut _34: usize;
+        let mut _35: usize;
+        let mut _36: bool;
+    }
+    scope 2 {
+        let mut _19: *const ();
+        let mut _20: usize;
+        let mut _21: usize;
+        let mut _22: usize;
+        let mut _23: usize;
+        let mut _24: bool;
+        let mut _25: *const ();
+        let mut _26: usize;
+        let mut _27: usize;
+        let mut _28: usize;
+        let mut _29: usize;
+        let mut _30: bool;
+    }
+
+    bb0: {
+        _3 = std::mem::needs_drop::<()>() -> bb1;
+    }
+
+    bb1: {
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = &/*tls*/ mut VAL;
+        _31 = _5 as *const () (PtrToPtr);
+        _32 = _31 as usize (Transmute);
+        _33 = AlignOf(());
+        _34 = Sub(_33, const 1_usize);
+        _35 = BitAnd(_32, _34);
+        _36 = Eq(_35, const 0_usize);
+        assert(_36, "misaligned pointer dereference: address must be a multiple of {} but is {}", _33, _32) -> [success: bb13, unwind unreachable];
+    }
+
+    bb3: {
+        _7 = &/*tls*/ STATE;
+        _6 = Cell::<u8>::get(_7) -> bb4;
+    }
+
+    bb4: {
+        switchInt(_6) -> [0: bb6, 1: bb9, otherwise: bb5];
+    }
+
+    bb5: {
+        _0 = Option::<&()>::None;
+        goto -> bb10;
+    }
+
+    bb6: {
+        _11 = &/*tls*/ mut VAL;
+        _10 = &raw mut (*_11);
+        _9 = move _10 as *mut u8 (PtrToPtr);
+        _12 = destroy as unsafe extern "C" fn(*mut u8) (Pointer(ReifyFnPointer));
+        _8 = Key::<()>::register_dtor(move _9, move _12) -> bb7;
+    }
+
+    bb7: {
+        _14 = &/*tls*/ STATE;
+        _13 = Cell::<u8>::set(_14, const 1_u8) -> bb8;
+    }
+
+    bb8: {
+        _16 = &/*tls*/ mut VAL;
+        _25 = _16 as *const () (PtrToPtr);
+        _26 = _25 as usize (Transmute);
+        _27 = AlignOf(());
+        _28 = Sub(_27, const 1_usize);
+        _29 = BitAnd(_26, _28);
+        _30 = Eq(_29, const 0_usize);
+        assert(_30, "misaligned pointer dereference: address must be a multiple of {} but is {}", _27, _26) -> [success: bb12, unwind unreachable];
+    }
+
+    bb9: {
+        _18 = &/*tls*/ mut VAL;
+        _19 = _18 as *const () (PtrToPtr);
+        _20 = _19 as usize (Transmute);
+        _21 = AlignOf(());
+        _22 = Sub(_21, const 1_usize);
+        _23 = BitAnd(_20, _22);
+        _24 = Eq(_23, const 0_usize);
+        assert(_24, "misaligned pointer dereference: address must be a multiple of {} but is {}", _21, _20) -> [success: bb11, unwind unreachable];
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11: {
+        _17 = &(*_18);
+        _0 = Option::<&()>::Some(_17);
+        goto -> bb10;
+    }
+
+    bb12: {
+        _15 = &(*_16);
+        _0 = Option::<&()>::Some(_15);
+        goto -> bb10;
+    }
+
+    bb13: {
+        _4 = &(*_5);
+        _0 = Option::<&()>::Some(_4);
+        goto -> bb10;
+    }
+}
+
+const INIT_EXPR: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static mut VAL: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+static STATE: Cell<u8> = {
+    let mut _0: std::cell::Cell<u8>;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Cell::<u8>::new(const 0_u8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn destroy(_1: *mut u8) -> () {
+    debug ptr => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:41:66: 41:68];
+    let mut _4: &*mut u8;
+
+    bb0: {
+        _4 = &_1;
+        _3 = [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:41:66: 41:68] { ptr: move _4 };
+        _2 = abort_on_dtor_unwind::<[closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:41:66: 41:68]>(move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn destroy::{closure#0}(_1: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:41:66: 41:68]) -> () {
+    debug ptr => (*(_1.0: &*mut u8));
+    let mut _0: ();
+    let _2: u8;
+    let _3: &std::cell::Cell<u8>;
+    let mut _4: bool;
+    let mut _5: (&u8, &u8);
+    let mut _6: &u8;
+    let mut _7: &u8;
+    let _8: u8;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: u8;
+    let mut _14: u8;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let _18: ();
+    let mut _19: *mut ();
+    let mut _20: *mut u8;
+    let mut _21: &*mut u8;
+    scope 1 {
+        debug old_state => _2;
+        let _9: &u8;
+        let _10: &u8;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+        scope 4 {
+        }
+    }
+
+    bb0: {
+        _3 = &/*tls*/ STATE;
+        _2 = Cell::<u8>::replace(_3, const 2_u8) -> bb1;
+    }
+
+    bb1: {
+        _4 = const true;
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = &_2;
+        _8 = const 1_u8;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &u8);
+        _10 = (_5.1: &u8);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<u8, u8>(move _15, _9, _10, move _17);
+    }
+
+    bb4: {
+        _21 = deref_copy (_1.0: &*mut u8);
+        _20 = (*_21);
+        _19 = ptr::mut_ptr::<impl *mut u8>::cast::<()>(move _20) -> bb5;
+    }
+
+    bb5: {
+        _18 = std::ptr::drop_in_place::<()>(move _19) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

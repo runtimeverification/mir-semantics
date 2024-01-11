@@ -1,0 +1,25 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/macros/macro-multiple-items.rs:6:9: 6:17>::bar(_1: &Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &Foo;
+    let _2: Foo;
+
+    bb0: {
+        _1 = &_2;
+        _0 = Foo::bar(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

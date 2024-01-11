@@ -1,0 +1,102 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/const-generics/generic_const_exprs/eval-try-unify.rs:10:1: 10:20>::ASSOC: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 17_usize;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/generic_const_exprs/eval-try-unify.rs:13:1: 13:21>::ASSOC: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+fn uses_assoc_type() -> [u8; N + T::ASSOC] {
+    let mut _0: [u8; N + T::ASSOC];
+
+    bb0: {
+        _0 = [const 0_u8; N + T::ASSOC];
+        return;
+    }
+}
+
+uses_assoc_type::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const N, const _);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+uses_assoc_type::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const N, const _);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn only_generic_n() -> [u8; N + 13] {
+    let mut _0: [u8; N + 13];
+
+    bb0: {
+        _0 = uses_assoc_type::<u16, N>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+only_generic_n::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const N, const 13_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const N, const 13_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+only_generic_n::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

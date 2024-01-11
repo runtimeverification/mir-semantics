@@ -1,0 +1,293 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: f64;
+    let mut _12: (&f64, &f64);
+    let mut _13: &f64;
+    let mut _14: &f64;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: f64;
+    let mut _20: f64;
+    let _22: !;
+    let mut _23: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: f64;
+    let mut _27: f64;
+    let mut _28: !;
+    let mut _29: (&f64, &f64);
+    let mut _30: &f64;
+    let mut _31: &f64;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: f64;
+    let mut _37: f64;
+    let _39: !;
+    let mut _40: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _41: bool;
+    let mut _42: bool;
+    let mut _43: f32;
+    let mut _44: !;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: f64;
+    let mut _48: !;
+    let mut _49: (&f32, &f32);
+    let mut _50: &f32;
+    let mut _51: &f32;
+    let _52: f32;
+    let mut _55: bool;
+    let mut _56: bool;
+    let mut _57: f32;
+    let mut _58: f32;
+    let _60: !;
+    let mut _61: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _62: (&f64, &f64);
+    let mut _63: &f64;
+    let mut _64: &f64;
+    let mut _67: bool;
+    let mut _68: bool;
+    let mut _69: f64;
+    let mut _70: f64;
+    let _72: !;
+    let mut _73: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: !;
+    let mut _77: bool;
+    let mut _78: bool;
+    let mut _79: f64;
+    let mut _80: !;
+    scope 1 {
+        debug a => _1;
+        let _2: f64;
+        scope 2 {
+            debug b => _2;
+            let _3: f64;
+            scope 3 {
+                debug c => _3;
+                let _4: f64;
+                scope 4 {
+                    debug d => _4;
+                    let _5: f32;
+                    scope 5 {
+                        debug e => _5;
+                        let _6: f64;
+                        scope 6 {
+                            debug f => _6;
+                            let _7: f32;
+                            scope 7 {
+                                debug g => _7;
+                                let _8: f64;
+                                scope 8 {
+                                    debug h => _8;
+                                    let _9: f64;
+                                    scope 9 {
+                                        debug i => _9;
+                                        let _10: f64;
+                                        scope 10 {
+                                            debug j => _10;
+                                            let _11: f64;
+                                            scope 11 {
+                                                debug k => _11;
+                                                let _15: &f64;
+                                                let _16: &f64;
+                                                let _32: &f64;
+                                                let _33: &f64;
+                                                let _53: &f32;
+                                                let _54: &f32;
+                                                let _65: &f64;
+                                                let _66: &f64;
+                                                scope 12 {
+                                                    debug left_val => _15;
+                                                    debug right_val => _16;
+                                                    let _21: core::panicking::AssertKind;
+                                                    scope 13 {
+                                                        debug kind => _21;
+                                                    }
+                                                }
+                                                scope 14 {
+                                                    debug left_val => _32;
+                                                    debug right_val => _33;
+                                                    let _38: core::panicking::AssertKind;
+                                                    scope 15 {
+                                                        debug kind => _38;
+                                                    }
+                                                }
+                                                scope 16 {
+                                                    debug left_val => _53;
+                                                    debug right_val => _54;
+                                                    let _59: core::panicking::AssertKind;
+                                                    scope 17 {
+                                                        debug kind => _59;
+                                                    }
+                                                }
+                                                scope 18 {
+                                                    debug left_val => _65;
+                                                    debug right_val => _66;
+                                                    let _71: core::panicking::AssertKind;
+                                                    scope 19 {
+                                                        debug kind => _71;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1.5E+6f64;
+        _2 = const 1.5E+6f64;
+        _3 = const 1.0E+6f64;
+        _4 = const 1.0E+6f64;
+        _5 = const 3f32;
+        _6 = const 5.9000000000000004f64;
+        _7 = const 1.0E+6f32;
+        _8 = const 1.0E+7f64;
+        _9 = const 1.0E+7f64;
+        _10 = const 3.1E+9f64;
+        _11 = const 3.1999999999999998E-10f64;
+        _13 = &_1;
+        _14 = &_2;
+        _12 = (move _13, move _14);
+        _15 = (_12.0: &f64);
+        _16 = (_12.1: &f64);
+        _19 = (*_15);
+        _20 = (*_16);
+        _18 = Eq(move _19, move _20);
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _21 = core::panicking::AssertKind::Eq;
+        _23 = Option::<Arguments<'_>>::None;
+        _22 = core::panicking::assert_failed::<f64, f64>(move _21, _15, _16, move _23);
+    }
+
+    bb2: {
+        _26 = _3;
+        _27 = _2;
+        _25 = Lt(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _28 = core::panicking::panic(const "assertion failed: (c < b)");
+    }
+
+    bb4: {
+        _30 = &_3;
+        _31 = &_4;
+        _29 = (move _30, move _31);
+        _32 = (_29.0: &f64);
+        _33 = (_29.1: &f64);
+        _36 = (*_32);
+        _37 = (*_33);
+        _35 = Eq(move _36, move _37);
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _38 = core::panicking::AssertKind::Eq;
+        _40 = Option::<Arguments<'_>>::None;
+        _39 = core::panicking::assert_failed::<f64, f64>(move _38, _32, _33, move _40);
+    }
+
+    bb6: {
+        _43 = _7;
+        _42 = Lt(_5, move _43);
+        _41 = Not(move _42);
+        switchInt(move _41) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _44 = core::panicking::panic(const "assertion failed: (e < g)");
+    }
+
+    bb8: {
+        _47 = _8;
+        _46 = Lt(_6, move _47);
+        _45 = Not(move _46);
+        switchInt(move _45) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _48 = core::panicking::panic(const "assertion failed: (f < h)");
+    }
+
+    bb10: {
+        _50 = &_7;
+        _52 = const 1.0E+6f32;
+        _51 = &_52;
+        _49 = (move _50, move _51);
+        _53 = (_49.0: &f32);
+        _54 = (_49.1: &f32);
+        _57 = (*_53);
+        _58 = (*_54);
+        _56 = Eq(move _57, move _58);
+        _55 = Not(move _56);
+        switchInt(move _55) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _59 = core::panicking::AssertKind::Eq;
+        _61 = Option::<Arguments<'_>>::None;
+        _60 = core::panicking::assert_failed::<f32, f32>(move _59, _53, _54, move _61);
+    }
+
+    bb12: {
+        _63 = &_8;
+        _64 = &_9;
+        _62 = (move _63, move _64);
+        _65 = (_62.0: &f64);
+        _66 = (_62.1: &f64);
+        _69 = (*_65);
+        _70 = (*_66);
+        _68 = Eq(move _69, move _70);
+        _67 = Not(move _68);
+        switchInt(move _67) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _71 = core::panicking::AssertKind::Eq;
+        _73 = Option::<Arguments<'_>>::None;
+        _72 = core::panicking::assert_failed::<f64, f64>(move _71, _65, _66, move _73);
+    }
+
+    bb14: {
+        _75 = Gt(_10, _11);
+        _74 = Not(move _75);
+        switchInt(move _74) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _76 = core::panicking::panic(const "assertion failed: (j > k)");
+    }
+
+    bb16: {
+        _79 = _1;
+        _78 = Lt(_11, move _79);
+        _77 = Not(move _78);
+        switchInt(move _77) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _80 = core::panicking::panic(const "assertion failed: (k < a)");
+    }
+
+    bb18: {
+        return;
+    }
+}

@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f(_1: *const isize) -> *const isize {
+    debug a => _1;
+    let mut _0: *const isize;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn g(_1: *const isize) -> *const isize {
+    debug a => _1;
+    let mut _0: *const isize;
+    let _2: *const isize;
+    scope 1 {
+        debug b => _2;
+    }
+
+    bb0: {
+        _2 = f(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

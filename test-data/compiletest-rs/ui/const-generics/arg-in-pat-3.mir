@@ -1,0 +1,169 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn bindingp() -> () {
+    let mut _0: ();
+    let mut _1: Foo<3>;
+    scope 1 {
+        debug x => const Foo::<3>;
+        let _2: &mut Foo<3>;
+        scope 2 {
+            debug _x => _2;
+        }
+    }
+
+    bb0: {
+        _2 = &mut _1;
+        return;
+    }
+}
+
+bindingp::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+bindingp::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+Bar::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn structp() -> () {
+    let mut _0: ();
+    let mut _1: !;
+
+    bb0: {
+        _1 = core::panicking::panic(const "not yet implemented");
+    }
+}
+
+structp::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+structp::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+Baz::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn tuplestructp() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+tuplestructp::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+tuplestructp::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/arg-in-pat-3.rs:32:1: 32:28>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/arg-in-pat-3.rs:32:1: 32:28>::ASSOC: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn pathp() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+pathp::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Baz(_1: Foo<N>) -> Baz<N> {
+    let mut _0: Baz<N>;
+
+    bb0: {
+        _0 = Baz::<N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz(_1: Foo<N>) -> Baz<N> {
+    let mut _0: Baz<N>;
+
+    bb0: {
+        _0 = Baz::<N>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,190 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f(_1: E) -> () {
+    debug e => _1;
+    let mut _0: ();
+    let mut _2: isize;
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb2, 1: bb2, 2: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn f(_1: E) -> () {
+    debug e => _1;
+    let mut _0: ();
+    let mut _2: isize;
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb3, 1: bb4, 2: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const ();
+        goto -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _0 = const ();
+        goto -> bb5;
+    }
+
+    bb4: {
+        _0 = const ();
+        goto -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn g(_1: E) -> usize {
+    debug e => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn g(_1: E) -> usize {
+    debug e => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let mut _4: &usize;
+    let _5: usize;
+    let _6: &usize;
+    let _7: &usize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&usize, &usize);
+    let mut _16: &usize;
+    let _17: usize;
+    let mut _18: E;
+    let mut _19: &usize;
+    let _20: usize;
+    let _21: &usize;
+    let _22: &usize;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: usize;
+    let mut _26: usize;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _21;
+        debug right_val => _22;
+        let _27: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _27;
+        }
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &_3;
+        _5 = const 0_usize;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &usize);
+        _7 = (_1.1: &usize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<usize, usize>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        _18 = E::A;
+        _17 = g(move _18) -> bb3;
+    }
+
+    bb3: {
+        _16 = &_17;
+        _20 = const 0_usize;
+        _19 = &_20;
+        _15 = (move _16, move _19);
+        _21 = (_15.0: &usize);
+        _22 = (_15.1: &usize);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<usize, usize>(move _27, _21, _22, move _29);
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+const X: usize = {
+    let mut _0: usize;
+    let mut _1: E;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = E::C;
+        ConstEvalCounter;
+        _0 = g(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}

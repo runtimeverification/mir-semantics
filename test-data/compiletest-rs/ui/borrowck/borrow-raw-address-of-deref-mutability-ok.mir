@@ -1,0 +1,87 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn raw_reborrow() -> () {
+    let mut _0: ();
+    let _1: &i32;
+    let _2: i32;
+    let mut _4: i32;
+    scope 1 {
+        debug x => _1;
+        let _3: &mut i32;
+        scope 2 {
+            debug y => _3;
+            let _5: *const i32;
+            scope 3 {
+                debug p => _5;
+                let _6: *const i32;
+                scope 4 {
+                    debug r => _6;
+                    let _7: *mut i32;
+                    scope 5 {
+                        debug s => _7;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const 0_i32;
+        _1 = &_2;
+        _4 = const 0_i32;
+        _3 = &mut _4;
+        _5 = &raw const (*_1);
+        _6 = &raw const (*_3);
+        _7 = &raw mut (*_3);
+        return;
+    }
+}
+
+fn raw_reborrow_of_raw() -> () {
+    let mut _0: ();
+    let _1: *const i32;
+    let _2: &i32;
+    let _3: i32;
+    let mut _5: &mut i32;
+    let mut _6: i32;
+    scope 1 {
+        debug x => _1;
+        let _4: *mut i32;
+        scope 2 {
+            debug y => _4;
+            let _7: *const i32;
+            scope 3 {
+                debug p => _7;
+                let _8: *const i32;
+                scope 4 {
+                    debug r => _8;
+                    let _9: *mut i32;
+                    scope 5 {
+                        debug s => _9;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = const 0_i32;
+        _2 = &_3;
+        _1 = &raw const (*_2);
+        _6 = const 0_i32;
+        _5 = &mut _6;
+        _4 = &raw mut (*_5);
+        _7 = &raw const (*_1);
+        _8 = &raw const (*_4);
+        _9 = &raw mut (*_4);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

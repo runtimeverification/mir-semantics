@@ -1,0 +1,183 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+V::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/mir/issue-76740-copy-propagation.rs:5:16: 5:21>::clone(_1: &V) -> V {
+    debug self => _1;
+    let mut _0: V;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+<impl at ui/mir/issue-76740-copy-propagation.rs:5:16: 5:21>::clone::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/mir/issue-76740-copy-propagation.rs:8:1: 8:7>::new() -> V {
+    let mut _0: V;
+    let mut _1: [usize; 4];
+
+    bb0: {
+        _1 = [const 0_usize; 4];
+        _0 = V(move _1);
+        return;
+    }
+}
+
+<impl at ui/mir/issue-76740-copy-propagation.rs:8:1: 8:7>::new::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/mir/issue-76740-copy-propagation.rs:8:1: 8:7>::check(_1: V) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: &usize;
+    let _8: usize;
+    let _9: &usize;
+    let _10: &usize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let _18: usize;
+    let mut _19: usize;
+    let mut _20: bool;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _15;
+        }
+    }
+
+    bb0: {
+        _4 = const 0_usize;
+        _5 = const 4_usize;
+        _6 = Lt(_4, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _4) -> bb1;
+    }
+
+    bb1: {
+        _3 = &(_1.0: [usize; 4])[_4];
+        _8 = const 0_usize;
+        _7 = &_8;
+        _2 = (move _3, move _7);
+        _9 = (_2.0: &usize);
+        _10 = (_2.1: &usize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<usize, usize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _18 = const 0_usize;
+        _19 = const 4_usize;
+        _20 = Lt(_18, _19);
+        assert(move _20, "index out of bounds: the length is {} but the index is {}", move _19, _18) -> bb4;
+    }
+
+    bb4: {
+        (_1.0: [usize; 4])[_18] = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: V;
+    let mut _3: i32;
+    let _4: ();
+    let mut _5: V;
+    scope 1 {
+        debug v => _1;
+        let mut _2: i32;
+        scope 2 {
+            debug i => _2;
+        }
+    }
+
+    bb0: {
+        _1 = V::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = const 0_i32;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _3 = _2;
+        switchInt(move _3) -> [10: bb5, otherwise: bb3];
+    }
+
+    bb3: {
+        _5 = _1;
+        _4 = V::check(move _5) -> bb4;
+    }
+
+    bb4: {
+        _2 = Add(_2, const 1_i32);
+        goto -> bb2;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn V(_1: [usize; 4]) -> V {
+    let mut _0: V;
+
+    bb0: {
+        _0 = V(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn V(_1: [usize; 4]) -> V {
+    let mut _0: V;
+
+    bb0: {
+        _0 = V(move _1);
+        return;
+    }
+}

@@ -1,0 +1,352 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_big_vec() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let mut _4: &usize;
+    let _5: usize;
+    let _6: &usize;
+    let _7: &usize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _3 = std::mem::size_of::<[u8; 4294967296]>() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = Shl(const 1_usize, const 32_i32);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &usize);
+        _7 = (_1.1: &usize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<usize, usize>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+test_big_vec::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const 32_i32 as u32 (IntToInt);
+        _2 = Lt(move _1, const 64_u32);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const 32_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const 32_i32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [isize; 4];
+    let mut _2: (&isize, &isize);
+    let mut _3: &isize;
+    let _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: &isize;
+    let _8: isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&isize, &isize);
+    let mut _19: &isize;
+    let _20: usize;
+    let mut _21: usize;
+    let mut _22: bool;
+    let mut _23: &isize;
+    let _24: isize;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: isize;
+    let mut _30: isize;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: (&isize, &isize);
+    let mut _35: &isize;
+    let _36: usize;
+    let mut _37: usize;
+    let mut _38: bool;
+    let mut _39: &isize;
+    let _40: isize;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: isize;
+    let mut _46: isize;
+    let _48: !;
+    let mut _49: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _50: (&isize, &isize);
+    let mut _51: &isize;
+    let _52: usize;
+    let mut _53: usize;
+    let mut _54: bool;
+    let mut _55: &isize;
+    let _56: isize;
+    let mut _59: bool;
+    let mut _60: bool;
+    let mut _61: isize;
+    let mut _62: isize;
+    let _64: !;
+    let mut _65: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _66: (&usize, &usize);
+    let mut _67: &usize;
+    let _68: usize;
+    let mut _69: &usize;
+    let _70: usize;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: usize;
+    let mut _76: usize;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    let _80: ();
+    scope 1 {
+        debug x => _1;
+        let _9: &isize;
+        let _10: &isize;
+        let _25: &isize;
+        let _26: &isize;
+        let _41: &isize;
+        let _42: &isize;
+        let _57: &isize;
+        let _58: &isize;
+        let _71: &usize;
+        let _72: &usize;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+        scope 4 {
+            debug left_val => _25;
+            debug right_val => _26;
+            let _31: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _31;
+            }
+        }
+        scope 6 {
+            debug left_val => _41;
+            debug right_val => _42;
+            let _47: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _47;
+            }
+        }
+        scope 8 {
+            debug left_val => _57;
+            debug right_val => _58;
+            let _63: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _63;
+            }
+        }
+        scope 10 {
+            debug left_val => _71;
+            debug right_val => _72;
+            let _77: core::panicking::AssertKind;
+            scope 11 {
+                debug kind => _77;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 1_isize, const 2_isize, const 3_isize, const 4_isize];
+        _4 = const 0_usize;
+        _5 = const 4_usize;
+        _6 = Lt(_4, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _4) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_1[_4];
+        _8 = const 1_isize;
+        _7 = &_8;
+        _2 = (move _3, move _7);
+        _9 = (_2.0: &isize);
+        _10 = (_2.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _20 = const 1_usize;
+        _21 = const 4_usize;
+        _22 = Lt(_20, _21);
+        assert(move _22, "index out of bounds: the length is {} but the index is {}", move _21, _20) -> bb4;
+    }
+
+    bb4: {
+        _19 = &_1[_20];
+        _24 = const 2_isize;
+        _23 = &_24;
+        _18 = (move _19, move _23);
+        _25 = (_18.0: &isize);
+        _26 = (_18.1: &isize);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<isize, isize>(move _31, _25, _26, move _33);
+    }
+
+    bb6: {
+        _36 = const 2_usize;
+        _37 = const 4_usize;
+        _38 = Lt(_36, _37);
+        assert(move _38, "index out of bounds: the length is {} but the index is {}", move _37, _36) -> bb7;
+    }
+
+    bb7: {
+        _35 = &_1[_36];
+        _40 = const 3_isize;
+        _39 = &_40;
+        _34 = (move _35, move _39);
+        _41 = (_34.0: &isize);
+        _42 = (_34.1: &isize);
+        _45 = (*_41);
+        _46 = (*_42);
+        _44 = Eq(move _45, move _46);
+        _43 = Not(move _44);
+        switchInt(move _43) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _47 = core::panicking::AssertKind::Eq;
+        _49 = Option::<Arguments<'_>>::None;
+        _48 = core::panicking::assert_failed::<isize, isize>(move _47, _41, _42, move _49);
+    }
+
+    bb9: {
+        _52 = const 3_usize;
+        _53 = const 4_usize;
+        _54 = Lt(_52, _53);
+        assert(move _54, "index out of bounds: the length is {} but the index is {}", move _53, _52) -> bb10;
+    }
+
+    bb10: {
+        _51 = &_1[_52];
+        _56 = const 4_isize;
+        _55 = &_56;
+        _50 = (move _51, move _55);
+        _57 = (_50.0: &isize);
+        _58 = (_50.1: &isize);
+        _61 = (*_57);
+        _62 = (*_58);
+        _60 = Eq(move _61, move _62);
+        _59 = Not(move _60);
+        switchInt(move _59) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _63 = core::panicking::AssertKind::Eq;
+        _65 = Option::<Arguments<'_>>::None;
+        _64 = core::panicking::assert_failed::<isize, isize>(move _63, _57, _58, move _65);
+    }
+
+    bb12: {
+        _68 = std::mem::size_of::<[u8; 4]>() -> bb13;
+    }
+
+    bb13: {
+        _67 = &_68;
+        _70 = const 4_usize;
+        _69 = &_70;
+        _66 = (move _67, move _69);
+        _71 = (_66.0: &usize);
+        _72 = (_66.1: &usize);
+        _75 = (*_71);
+        _76 = (*_72);
+        _74 = Eq(move _75, move _76);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<usize, usize>(move _77, _71, _72, move _79);
+    }
+
+    bb15: {
+        _80 = test_big_vec() -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

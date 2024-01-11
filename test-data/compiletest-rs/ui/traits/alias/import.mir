@@ -1,0 +1,42 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn inner::<impl at ui/traits/alias/import.rs:12:5: 12:21>::foo(_1: &Qux) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn two::<impl at ui/traits/alias/import.rs:24:5: 24:18>::foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: inner::Qux;
+    let _2: ();
+    let mut _3: &inner::Qux;
+    let _4: ();
+    scope 1 {
+        debug q => const Qux;
+    }
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Qux as Foo>::foo(move _3) -> bb1;
+    }
+
+    bb1: {
+        _4 = <u8 as A>::foo() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

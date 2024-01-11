@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn LineFormatter::dimensions(_1: &Self, _2: &str) -> () {
+    debug self => _1;
+    debug line => _2;
+    let mut _0: ();
+    let _3: <Self as LineFormatter<'_>>::Iter;
+    let _4: <Self as LineFormatter<'_>>::Iter;
+    let mut _5: <Self as LineFormatter<'_>>::Iter;
+    scope 1 {
+        debug iter => _3;
+    }
+
+    bb0: {
+        _3 = <Self as LineFormatter<'_>>::iter(_1, _2) -> bb1;
+    }
+
+    bb1: {
+        _5 = move _3;
+        _4 = <<Self as LineFormatter<'_>>::Iter as IntoIterator>::into_iter(move _5) -> bb2;
+    }
+
+    bb2: {
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

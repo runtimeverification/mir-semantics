@@ -1,0 +1,3 @@
+foo0.1: ScribbleOnDrop("last") foo1.1: ScribbleOnDrop("first")
+Dropping Foo(1, _)
+Dropping Foo(0, _)

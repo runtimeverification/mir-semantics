@@ -1,0 +1,377 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:10: 8:19>::eq(_1: &MyEnum, _2: &MyEnum) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:21: 8:26>::fmt(_1: &MyEnum, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: isize;
+    let _5: &str;
+    let _6: &str;
+    let _7: &str;
+    let _8: &str;
+    let _9: &str;
+    let _10: &str;
+    let _11: &str;
+    let _12: &str;
+
+    bb0: {
+        _4 = discriminant((*_1));
+        switchInt(move _4) -> [0: bb3, 1: bb4, 2: bb5, 3: bb6, 4: bb7, 5: bb8, 6: bb9, 7: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _12 = const "E7";
+        _3 = _12;
+        goto -> bb10;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _5 = const "E0";
+        _3 = _5;
+        goto -> bb10;
+    }
+
+    bb4: {
+        _6 = const "E1";
+        _3 = _6;
+        goto -> bb10;
+    }
+
+    bb5: {
+        _7 = const "E2";
+        _3 = _7;
+        goto -> bb10;
+    }
+
+    bb6: {
+        _8 = const "E3";
+        _3 = _8;
+        goto -> bb10;
+    }
+
+    bb7: {
+        _9 = const "E4";
+        _3 = _9;
+        goto -> bb10;
+    }
+
+    bb8: {
+        _10 = const "E5";
+        _3 = _10;
+        goto -> bb10;
+    }
+
+    bb9: {
+        _11 = const "E6";
+        _3 = _11;
+        goto -> bb10;
+    }
+
+    bb10: {
+        _0 = Formatter::<'_>::write_str(_2, move _3) -> bb11;
+    }
+
+    bb11: {
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:28: 8:32>::hash(_1: &MyEnum, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: isize;
+    let _4: &isize;
+    scope 1 {
+        debug __self_tag => _3;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = &_3;
+        _0 = <isize as Hash>::hash::<__H>(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:34: 8:36>::assert_receiver_is_total_eq(_1: &MyEnum) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:38: 8:43>::clone(_1: &MyEnum) -> MyEnum {
+    debug self => _1;
+    let mut _0: MyEnum;
+    let mut _2: isize;
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb4, 2: bb5, 3: bb6, 4: bb7, 5: bb8, 6: bb9, 7: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = MyEnum::E7;
+        goto -> bb10;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _0 = MyEnum::E0;
+        goto -> bb10;
+    }
+
+    bb4: {
+        _0 = MyEnum::E1;
+        goto -> bb10;
+    }
+
+    bb5: {
+        _0 = MyEnum::E2;
+        goto -> bb10;
+    }
+
+    bb6: {
+        _0 = MyEnum::E3;
+        goto -> bb10;
+    }
+
+    bb7: {
+        _0 = MyEnum::E4;
+        goto -> bb10;
+    }
+
+    bb8: {
+        _0 = MyEnum::E5;
+        goto -> bb10;
+    }
+
+    bb9: {
+        _0 = MyEnum::E6;
+        goto -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:45: 8:55>::partial_cmp(_1: &MyEnum, _2: &MyEnum) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: isize;
+    let _5: &isize;
+    let _6: &isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <isize as PartialOrd>::partial_cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/wrong-hashset-issue-42918.rs:8:57: 8:60>::cmp(_1: &MyEnum, _2: &MyEnum) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: isize;
+    let _5: &isize;
+    let _6: &isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <isize as Ord>::cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::collections::HashSet<MyEnum>;
+    let mut _2: std::iter::Cloned<std::slice::Iter<'_, MyEnum>>;
+    let mut _3: std::slice::Iter<'_, MyEnum>;
+    let mut _4: &[MyEnum];
+    let mut _5: &[MyEnum; 2];
+    let _6: [MyEnum; 2];
+    let mut _7: MyEnum;
+    let mut _8: MyEnum;
+    let mut _10: std::collections::hash_set::IntoIter<MyEnum>;
+    let mut _11: std::collections::HashSet<MyEnum>;
+    let _12: ();
+    let mut _13: &mut [MyEnum];
+    let mut _14: &mut [MyEnum];
+    let mut _15: &mut std::vec::Vec<MyEnum>;
+    let mut _16: (&[MyEnum; 2], &&[MyEnum]);
+    let mut _17: &[MyEnum; 2];
+    let _18: [MyEnum; 2];
+    let mut _19: MyEnum;
+    let mut _20: MyEnum;
+    let mut _21: &&[MyEnum];
+    let _22: &[MyEnum];
+    let _23: &[MyEnum];
+    let mut _24: &std::vec::Vec<MyEnum>;
+    let mut _27: bool;
+    let mut _28: bool;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug s => _1;
+        let mut _9: std::vec::Vec<MyEnum>;
+        scope 2 {
+            debug v => _9;
+            let _25: &[MyEnum; 2];
+            let _26: &&[MyEnum];
+            scope 3 {
+                debug left_val => _25;
+                debug right_val => _26;
+                let _29: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _29;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _7 = MyEnum::E4;
+        _8 = MyEnum::E1;
+        _6 = [move _7, move _8];
+        _5 = &_6;
+        _4 = move _5 as &[MyEnum] (Pointer(Unsize));
+        _3 = core::slice::<impl [MyEnum]>::iter(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <std::slice::Iter<'_, MyEnum> as Iterator>::cloned::<'_, MyEnum>(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = <Cloned<std::slice::Iter<'_, MyEnum>> as Iterator>::collect::<HashSet<MyEnum>>(move _2) -> bb3;
+    }
+
+    bb3: {
+        _11 = move _1;
+        _10 = <HashSet<MyEnum> as IntoIterator>::into_iter(move _11) -> bb4;
+    }
+
+    bb4: {
+        _9 = <std::collections::hash_set::IntoIter<MyEnum> as Iterator>::collect::<Vec<MyEnum>>(move _10) -> bb5;
+    }
+
+    bb5: {
+        _15 = &mut _9;
+        _14 = <Vec<MyEnum> as DerefMut>::deref_mut(move _15) -> [return: bb6, unwind: bb13];
+    }
+
+    bb6: {
+        _13 = _14;
+        _12 = slice::<impl [MyEnum]>::sort(move _13) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _19 = MyEnum::E1;
+        _20 = MyEnum::E4;
+        _18 = [move _19, move _20];
+        _17 = &_18;
+        _24 = &_9;
+        _23 = <Vec<MyEnum> as Index<RangeFull>>::index(move _24, const RangeFull) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _22 = _23;
+        _21 = &_22;
+        _16 = (move _17, move _21);
+        _25 = (_16.0: &[MyEnum; 2]);
+        _26 = (_16.1: &&[MyEnum]);
+        _28 = <[MyEnum; 2] as PartialEq<&[MyEnum]>>::eq(_25, _26) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<[MyEnum; 2], &[MyEnum]>(move _29, _25, _26, move _31) -> bb13;
+    }
+
+    bb11: {
+        drop(_9) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_9) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}

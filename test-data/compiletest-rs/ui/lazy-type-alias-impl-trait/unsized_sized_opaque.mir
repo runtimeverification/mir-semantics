@@ -1,0 +1,28 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/lazy-type-alias-impl-trait/unsized_sized_opaque.rs:12:1: 12:38>::remainder(_1: PairSlices<'_, '_, T>) -> impl Iterator<Item = &[T]> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &[T]>;
+    let mut _2: [&[T]; 2];
+    let mut _3: &[T];
+    let mut _4: &[T];
+
+    bb0: {
+        _3 = (_1.2: &[T]);
+        _4 = deref_copy (_1.3: &[T]);
+        _2 = [move _3, _4];
+        _0 = <[&[T]; 2] as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

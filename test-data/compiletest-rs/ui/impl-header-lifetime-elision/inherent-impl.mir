@@ -1,0 +1,36 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-header-lifetime-elision/inherent-impl.rs:5:1: 5:13>::x() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: &u8) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: &u8) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}

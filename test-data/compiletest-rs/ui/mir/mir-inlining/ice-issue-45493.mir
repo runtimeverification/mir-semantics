@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: *mut <A as Array>::Item;
+    scope 1 {
+    }
+
+    bb0: {
+        _1 = null_mut::<<A as Array>::Item>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = foo::<Foo>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

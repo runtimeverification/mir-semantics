@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn nth(_1: &mut I, _2: usize) -> impl FnMut() -> Option<<I as Iterator>::Item> + '_ {
+    debug iter => _1;
+    debug step => _2;
+    let mut _0: impl FnMut() -> std::option::Option<<I as std::iter::Iterator>::Item> + '_;
+
+    bb0: {
+        _0 = [closure@ui/lazy-type-alias-impl-trait/lifetime_inference.rs:6:5: 6:12] { iter: move _1, step: _2 };
+        return;
+    }
+}
+
+fn nth::{closure#0}(_1: &mut [closure@ui/lazy-type-alias-impl-trait/lifetime_inference.rs:6:5: 6:12]) -> Option<<I as Iterator>::Item> {
+    debug iter => ((*_1).0: &mut I);
+    debug step => ((*_1).1: usize);
+    let mut _0: std::option::Option<<I as std::iter::Iterator>::Item>;
+    let mut _2: usize;
+    let mut _3: &mut I;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut I);
+        _2 = ((*_1).1: usize);
+        _0 = <I as Iterator>::nth(_3, move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

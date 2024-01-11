@@ -1,0 +1,134 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/borrowck/borrowck-univariant-enum.rs:6:16: 6:21>::clone(_1: &newtype) -> newtype {
+    debug self => _1;
+    let mut _0: newtype;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &std::cell::Cell<isize>;
+    let _2: std::cell::Cell<isize>;
+    let _4: std::cell::Cell<newtype>;
+    let mut _5: newtype;
+    let mut _7: newtype;
+    let _9: ();
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let mut _13: (&isize, &isize);
+    let mut _14: &isize;
+    let mut _15: &isize;
+    let _16: isize;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: isize;
+    let mut _22: isize;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _3: &std::cell::Cell<newtype>;
+        scope 2 {
+            debug y => _3;
+            let _6: isize;
+            let _8: isize;
+            scope 3 {
+                debug z => _6;
+                let _17: &isize;
+                let _18: &isize;
+                scope 5 {
+                    debug left_val => _17;
+                    debug right_val => _18;
+                    let _23: core::panicking::AssertKind;
+                    scope 6 {
+                        debug kind => _23;
+                    }
+                }
+            }
+            scope 4 {
+                debug b => _8;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Cell::<isize>::new(const 5_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = &_2;
+        _5 = newtype::newvar(const 3_isize);
+        _4 = Cell::<newtype>::new(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _7 = Cell::<newtype>::get(_3) -> bb3;
+    }
+
+    bb3: {
+        _8 = ((_7 as newvar).0: isize);
+        _11 = Cell::<isize>::get(_1) -> bb4;
+    }
+
+    bb4: {
+        _10 = Add(move _11, const 1_isize);
+        _9 = Cell::<isize>::set(_1, move _10) -> bb5;
+    }
+
+    bb5: {
+        _12 = Cell::<isize>::get(_1) -> bb6;
+    }
+
+    bb6: {
+        _6 = Mul(move _12, _8);
+        _14 = &_6;
+        _16 = const 18_isize;
+        _15 = &_16;
+        _13 = (move _14, move _15);
+        _17 = (_13.0: &isize);
+        _18 = (_13.1: &isize);
+        _21 = (*_17);
+        _22 = (*_18);
+        _20 = Eq(move _21, move _22);
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<isize, isize>(move _23, _17, _18, move _25);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+fn newtype::newvar(_1: isize) -> newtype {
+    let mut _0: newtype;
+
+    bb0: {
+        _0 = newtype::newvar(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn newtype::newvar(_1: isize) -> newtype {
+    let mut _0: newtype;
+
+    bb0: {
+        _0 = newtype::newvar(move _1);
+        return;
+    }
+}

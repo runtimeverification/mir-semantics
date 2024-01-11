@@ -1,0 +1,67 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/impl-implicit-trait.rs:12:1: 12:19>::foo(_1: &option_<T>) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/traits/impl-implicit-trait.rs:21:1: 21:14>::foo(_1: &option__) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn option_::some_(_1: T) -> option_<T> {
+    let mut _0: option_<T>;
+
+    bb0: {
+        _0 = option_::<T>::some_(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn option_::some_(_1: T) -> option_<T> {
+    let mut _0: option_<T>;
+
+    bb0: {
+        _0 = option_::<T>::some_(move _1);
+        return;
+    }
+}
+
+fn option__::some__(_1: isize) -> option__ {
+    let mut _0: option__;
+
+    bb0: {
+        _0 = option__::some__(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn option__::some__(_1: isize) -> option__ {
+    let mut _0: option__;
+
+    bb0: {
+        _0 = option__::some__(move _1);
+        return;
+    }
+}

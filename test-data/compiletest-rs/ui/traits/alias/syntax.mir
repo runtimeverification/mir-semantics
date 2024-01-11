@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn The(_1: T) -> The<T> {
+    let mut _0: The<T>;
+
+    bb0: {
+        _0 = The::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn The(_1: T) -> The<T> {
+    let mut _0: The<T>;
+
+    bb0: {
+        _0 = The::<T>(move _1);
+        return;
+    }
+}
+
+fn Fore(_1: T) -> Fore<T> {
+    let mut _0: Fore<T>;
+
+    bb0: {
+        _0 = Fore::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Fore(_1: T) -> Fore<T> {
+    let mut _0: Fore<T>;
+
+    bb0: {
+        _0 = Fore::<T>(move _1);
+        return;
+    }
+}

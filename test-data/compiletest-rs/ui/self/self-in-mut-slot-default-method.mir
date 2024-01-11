@@ -1,0 +1,231 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Changer::change(_1: Self) -> Self {
+    debug self => _1;
+    let mut _0: Self;
+    let _2: ();
+    let mut _3: &mut Self;
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = <Self as Changer>::set_to(move _3, const 55_isize) -> [return: bb1, unwind: bb2];
+    }
+
+    bb1: {
+        _0 = move _1;
+        return;
+    }
+
+    bb2 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn Changer::change_again(_1: Box<Self>) -> Box<Self> {
+    debug self => _1;
+    let mut _0: std::boxed::Box<Self>;
+    let _2: ();
+    let mut _3: &mut Self;
+    let mut _4: *const Self;
+    let mut _5: *const ();
+    let mut _6: usize;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+
+    bb0: {
+        _4 = (((_1.0: std::ptr::Unique<Self>).0: std::ptr::NonNull<Self>).0: *const Self);
+        _5 = _4 as *const () (PtrToPtr);
+        _6 = _5 as usize (Transmute);
+        _7 = AlignOf(Self);
+        _8 = Sub(_7, const 1_usize);
+        _9 = BitAnd(_6, _8);
+        _10 = Eq(_9, const 0_usize);
+        assert(_10, "misaligned pointer dereference: address must be a multiple of {} but is {}", _7, _6) -> [success: bb4, unwind unreachable];
+    }
+
+    bb1: {
+        _0 = move _1;
+        return;
+    }
+
+    bb2 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4: {
+        _3 = &mut (*_4);
+        _2 = <Self as Changer>::set_to(move _3, const 45_isize) -> [return: bb1, unwind: bb2];
+    }
+}
+
+fn <impl at ui/self/self-in-mut-slot-default-method.rs:21:1: 21:19>::set_to(_1: &mut X, _2: isize) -> () {
+    debug self => _1;
+    debug a => _2;
+    let mut _0: ();
+
+    bb0: {
+        ((*_1).0: isize) = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: X;
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: isize;
+    let mut _12: isize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: X;
+    let mut _19: std::boxed::Box<X>;
+    let mut _20: (&isize, &isize);
+    let mut _21: &isize;
+    let mut _22: &isize;
+    let _23: isize;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: isize;
+    let mut _29: isize;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: *const X;
+    scope 1 {
+        debug x => _1;
+        let _2: X;
+        scope 2 {
+            debug new_x => _2;
+            let _7: &isize;
+            let _8: &isize;
+            let _16: std::boxed::Box<X>;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+            scope 5 {
+                debug x => _16;
+                let _18: std::boxed::Box<X>;
+                scope 6 {
+                    debug new_x => _18;
+                    let _24: &isize;
+                    let _25: &isize;
+                    let mut _34: *const ();
+                    let mut _35: usize;
+                    let mut _36: usize;
+                    let mut _37: usize;
+                    let mut _38: usize;
+                    let mut _39: bool;
+                    scope 7 {
+                        debug left_val => _24;
+                        debug right_val => _25;
+                        let _30: core::panicking::AssertKind;
+                        scope 8 {
+                            debug kind => _30;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = X { a: const 32_isize };
+        _2 = <X as Changer>::change(move _1) -> bb1;
+    }
+
+    bb1: {
+        _4 = &(_2.0: isize);
+        _6 = const 55_isize;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &isize);
+        _8 = (_3.1: &isize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<isize, isize>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        _17 = move _2;
+        _16 = Box::<X>::new(move _17) -> bb4;
+    }
+
+    bb4: {
+        _19 = move _16;
+        _18 = <X as Changer>::change_again(move _19) -> bb5;
+    }
+
+    bb5: {
+        _33 = (((_18.0: std::ptr::Unique<X>).0: std::ptr::NonNull<X>).0: *const X);
+        _34 = _33 as *const () (PtrToPtr);
+        _35 = _34 as usize (Transmute);
+        _36 = AlignOf(X);
+        _37 = Sub(_36, const 1_usize);
+        _38 = BitAnd(_35, _37);
+        _39 = Eq(_38, const 0_usize);
+        assert(_39, "misaligned pointer dereference: address must be a multiple of {} but is {}", _36, _35) -> [success: bb11, unwind unreachable];
+    }
+
+    bb6: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<isize, isize>(move _30, _24, _25, move _32) -> bb9;
+    }
+
+    bb7: {
+        drop(_18) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_18) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        resume;
+    }
+
+    bb11: {
+        _21 = &((*_33).0: isize);
+        _23 = const 45_isize;
+        _22 = &_23;
+        _20 = (move _21, move _22);
+        _24 = (_20.0: &isize);
+        _25 = (_20.1: &isize);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb7, otherwise: bb6];
+    }
+}

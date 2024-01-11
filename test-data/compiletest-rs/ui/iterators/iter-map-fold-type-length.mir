@@ -1,0 +1,275 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/iterators/iter-map-fold-type-length.rs:11:1: 11:29>::next(_1: &mut Iter<I>) -> Option<<I as Iterator>::Item> {
+    debug self => _1;
+    let mut _0: std::option::Option<<I as std::iter::Iterator>::Item>;
+    let mut _2: &mut I;
+
+    bb0: {
+        _2 = &mut ((*_1).0: I);
+        _0 = <I as Iterator>::next(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _2: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:35:14: 35:17]>;
+    let mut _3: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]>;
+    let mut _4: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>;
+    let mut _5: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>;
+    let mut _6: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>;
+    let mut _7: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>;
+    let mut _8: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>;
+    let mut _9: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>;
+    let mut _10: std::iter::Map<std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>;
+    let mut _11: std::iter::Map<std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>;
+    let mut _12: std::iter::Map<std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>;
+    let mut _13: std::iter::Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>;
+    let mut _14: Iter<std::ops::Range<i32>>;
+    let mut _15: std::ops::Range<i32>;
+    let mut _16: (&usize, &usize);
+    let mut _17: &usize;
+    let mut _18: &usize;
+    let _19: usize;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: usize;
+    let mut _25: usize;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug c => _1;
+        let _20: &usize;
+        let _21: &usize;
+        scope 2 {
+            debug left_val => _20;
+            debug right_val => _21;
+            let _26: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _26;
+            }
+        }
+    }
+
+    bb0: {
+        _15 = std::ops::Range::<i32> { start: const 0_i32, end: const 10_i32 };
+        _14 = Iter::<std::ops::Range<i32>>(move _15);
+        _13 = <Iter<std::ops::Range<i32>> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>(move _14, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]) -> bb1;
+    }
+
+    bb1: {
+        _12 = <Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>(move _13, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]) -> bb2;
+    }
+
+    bb2: {
+        _11 = <Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>(move _12, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]) -> bb3;
+    }
+
+    bb3: {
+        _10 = <Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>(move _11, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]) -> bb4;
+    }
+
+    bb4: {
+        _9 = <Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>(move _10, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]) -> bb5;
+    }
+
+    bb5: {
+        _8 = <Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>(move _9, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]) -> bb6;
+    }
+
+    bb6: {
+        _7 = <Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>(move _8, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]) -> bb7;
+    }
+
+    bb7: {
+        _6 = <Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>(move _7, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]) -> bb8;
+    }
+
+    bb8: {
+        _5 = <Map<Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>(move _6, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]) -> bb9;
+    }
+
+    bb9: {
+        _4 = <Map<Map<Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>(move _5, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]) -> bb10;
+    }
+
+    bb10: {
+        _3 = <Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]>(move _4, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]) -> bb11;
+    }
+
+    bb11: {
+        _2 = <Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]> as Iterator>::map::<i32, [closure@ui/iterators/iter-map-fold-type-length.rs:35:14: 35:17]>(move _3, const ZeroSized: [closure@ui/iterators/iter-map-fold-type-length.rs:35:14: 35:17]) -> bb12;
+    }
+
+    bb12: {
+        _1 = <Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Map<Iter<std::ops::Range<i32>>, [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17]>, [closure@ui/iterators/iter-map-fold-type-length.rs:35:14: 35:17]> as Iterator>::count(move _2) -> bb13;
+    }
+
+    bb13: {
+        _17 = &_1;
+        _19 = const 10_usize;
+        _18 = &_19;
+        _16 = (move _17, move _18);
+        _20 = (_16.0: &usize);
+        _21 = (_16.1: &usize);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<usize, usize>(move _26, _20, _21, move _28);
+    }
+
+    bb15: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:24:14: 24:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:25:14: 25:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:26:14: 26:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:27:14: 27:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:28:14: 28:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:29:14: 29:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#6}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:30:14: 30:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#7}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:31:14: 31:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#8}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:32:14: 32:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#9}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:33:14: 33:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#10}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:34:14: 34:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#11}(_1: &mut [closure@ui/iterators/iter-map-fold-type-length.rs:35:14: 35:17], _2: i32) -> i32 {
+    debug x => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn Iter(_1: I) -> Iter<I> {
+    let mut _0: Iter<I>;
+
+    bb0: {
+        _0 = Iter::<I>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Iter(_1: I) -> Iter<I> {
+    let mut _0: Iter<I>;
+
+    bb0: {
+        _0 = Iter::<I>(move _1);
+        return;
+    }
+}

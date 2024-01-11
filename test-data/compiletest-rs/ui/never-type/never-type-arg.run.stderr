@@ -1,0 +1,2 @@
+thread 'main' panicked at 'oh no!', ui/never-type/never-type-arg.rs:16:20
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

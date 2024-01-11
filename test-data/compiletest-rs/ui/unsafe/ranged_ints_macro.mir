@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: NonZero<i32>;
+    scope 1 {
+        debug _x => _1;
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _1 = NonZero::<i32>(const 1_i32);
+        return;
+    }
+}
+
+fn NonZero(_1: T) -> NonZero<T> {
+    let mut _0: NonZero<T>;
+
+    bb0: {
+        _0 = NonZero::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NonZero(_1: T) -> NonZero<T> {
+    let mut _0: NonZero<T>;
+
+    bb0: {
+        _0 = NonZero::<T>(move _1);
+        return;
+    }
+}

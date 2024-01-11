@@ -1,0 +1,813 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: usize) -> usize {
+    debug x => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn bar(_1: usize) -> usize {
+    debug x => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: !;
+    let mut _3: i32;
+    let mut _4: !;
+    let mut _5: i32;
+    let mut _6: !;
+    let mut _7: i32;
+    let mut _8: !;
+    let mut _9: i32;
+    let mut _10: !;
+    let mut _11: i32;
+    let mut _12: !;
+    let mut _13: i32;
+    let mut _14: !;
+    let mut _15: i32;
+    let mut _16: !;
+    let mut _17: i32;
+    let mut _18: !;
+    let mut _19: i32;
+    let mut _20: !;
+    let mut _21: i32;
+    let mut _22: !;
+    let mut _23: i32;
+    let mut _24: !;
+    let mut _25: i32;
+    let mut _26: !;
+    let mut _27: i32;
+    let mut _28: !;
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                    scope 9 {
+                                        scope 10 {
+                                            scope 11 {
+                                                scope 12 {
+                                                    scope 13 {
+                                                        scope 14 {
+                                                            scope 15 {
+                                                                scope 16 {
+                                                                    scope 17 {
+                                                                        scope 18 {
+                                                                            scope 19 {
+                                                                                debug clo0 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:99:16: 99:26];
+                                                                                scope 20 {
+                                                                                    debug clo1 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:100:16: 100:19];
+                                                                                    scope 21 {
+                                                                                        debug clo2 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:101:16: 101:19];
+                                                                                        scope 22 {
+                                                                                            scope 23 {
+                                                                                                debug clo0 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:109:16: 109:26];
+                                                                                                scope 24 {
+                                                                                                    debug clo1 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:110:16: 110:19];
+                                                                                                    scope 25 {
+                                                                                                        debug clo2 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:111:16: 111:19];
+                                                                                                        scope 26 {
+                                                                                                            scope 27 {
+                                                                                                                scope 28 {
+                                                                                                                    scope 29 {
+                                                                                                                        scope 30 {
+                                                                                                                            scope 31 {
+                                                                                                                                scope 32 {
+                                                                                                                                    scope 33 {
+                                                                                                                                        scope 34 {
+                                                                                                                                            scope 35 {
+                                                                                                                                                scope 36 {
+                                                                                                                                                    debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:140:13: 140:16];
+                                                                                                                                                    scope 37 {
+                                                                                                                                                        scope 38 {
+                                                                                                                                                            debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:146:13: 146:16];
+                                                                                                                                                            scope 39 {
+                                                                                                                                                                scope 40 {
+                                                                                                                                                                    debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:152:13: 152:16];
+                                                                                                                                                                    scope 41 {
+                                                                                                                                                                        scope 42 {
+                                                                                                                                                                            scope 43 {
+                                                                                                                                                                                debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:156:13: 156:16];
+                                                                                                                                                                                scope 44 {
+                                                                                                                                                                                    let _29: fn(usize) -> usize;
+                                                                                                                                                                                    scope 45 {
+                                                                                                                                                                                        debug x => _29;
+                                                                                                                                                                                        scope 46 {
+                                                                                                                                                                                            scope 47 {
+                                                                                                                                                                                                debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:160:13: 160:16];
+                                                                                                                                                                                                scope 48 {
+                                                                                                                                                                                                    scope 49 {
+                                                                                                                                                                                                        debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:162:13: 162:16];
+                                                                                                                                                                                                        scope 50 {
+                                                                                                                                                                                                            scope 51 {
+                                                                                                                                                                                                                debug x => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:164:13: 164:16];
+                                                                                                                                                                                                                scope 52 {
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                }
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+                                                                                                                                                                            }
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                }
+                                                                                                                                                            }
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 0_i32;
+        switchInt(_1) -> [0: bb2, 2: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = core::panicking::panic(const "not implemented");
+    }
+
+    bb2: {
+        _3 = const 0_i32;
+        switchInt(_3) -> [2: bb4, 0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _4 = core::panicking::panic(const "not implemented");
+    }
+
+    bb4: {
+        _5 = const 0_i32;
+        switchInt(_5) -> [0: bb6, 1: bb6, 2: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = core::panicking::panic(const "not implemented");
+    }
+
+    bb6: {
+        _7 = const 0_i32;
+        switchInt(_7) -> [0: bb8, 2: bb8, 1: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _8 = core::panicking::panic(const "not implemented");
+    }
+
+    bb8: {
+        _9 = const 0_i32;
+        switchInt(_9) -> [2: bb10, 0: bb10, 1: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _10 = core::panicking::panic(const "not implemented");
+    }
+
+    bb10: {
+        _11 = const 0_i32;
+        switchInt(_11) -> [0: bb12, 1: bb12, 2: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _12 = core::panicking::panic(const "not implemented");
+    }
+
+    bb12: {
+        _13 = const 0_i32;
+        switchInt(_13) -> [1: bb14, 0: bb14, 2: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _14 = core::panicking::panic(const "not implemented");
+    }
+
+    bb14: {
+        _15 = const 0_i32;
+        switchInt(_15) -> [1: bb16, 2: bb16, 0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _16 = core::panicking::panic(const "not implemented");
+    }
+
+    bb16: {
+        _17 = const 0_i32;
+        switchInt(_17) -> [0: bb18, 1: bb18, 2: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _18 = core::panicking::panic(const "not implemented");
+    }
+
+    bb18: {
+        _19 = const 0_i32;
+        switchInt(_19) -> [0: bb20, 1: bb20, 2: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _20 = core::panicking::panic(const "not implemented");
+    }
+
+    bb20: {
+        _21 = const 0_i32;
+        switchInt(_21) -> [0: bb22, 2: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _22 = core::panicking::panic(const "not implemented");
+    }
+
+    bb22: {
+        _23 = const 0_i32;
+        switchInt(_23) -> [2: bb24, 0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _24 = core::panicking::panic(const "not implemented");
+    }
+
+    bb24: {
+        _25 = const 0_i32;
+        switchInt(_25) -> [0: bb26, 2: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _26 = core::panicking::panic(const "not implemented");
+    }
+
+    bb26: {
+        _27 = const 0_i32;
+        switchInt(_27) -> [2: bb28, 0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _28 = core::panicking::panic(const "not implemented");
+    }
+
+    bb28: {
+        _29 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:158:24: 158:27] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:15:14: 15:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:20:14: 20:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:25:19: 25:22], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:26:14: 26:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:34:14: 34:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:40:14: 40:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#6}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:46:14: 46:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#7}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:52:24: 52:27], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#8}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:53:19: 53:22], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#9}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:54:14: 54:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#10}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:61:14: 61:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#11}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:62:14: 62:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#12}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:67:14: 67:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#13}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:69:14: 69:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#14}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:74:14: 74:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#15}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:75:14: 75:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#16}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:80:19: 80:22], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#17}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:80:26: 80:29], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#18}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:81:14: 81:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#19}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:81:26: 81:29], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#20}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:82:14: 82:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#21}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:82:21: 82:24], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#22}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:88:14: 88:24], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn main::{closure#23}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:89:14: 89:17], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn main::{closure#24}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:90:14: 90:17], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn main::{closure#25}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:94:14: 94:24], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn main::{closure#26}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:94:28: 94:31], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn main::{closure#27}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:94:35: 94:38], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn main::{closure#28}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:99:16: 99:26], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn main::{closure#29}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:100:16: 100:19], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn main::{closure#30}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:101:16: 101:19], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn main::{closure#31}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:109:16: 109:26], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn main::{closure#32}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:110:16: 110:19], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn main::{closure#33}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:111:16: 111:19], _2: usize) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn main::{closure#34}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:123:14: 123:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#35}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:127:14: 127:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#36}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:131:32: 131:35], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#37}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:132:14: 132:17], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#38}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:133:24: 133:27], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#39}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:134:37: 134:40], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#40}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:135:37: 135:40], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#41}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:136:25: 136:28], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#42}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:137:50: 137:53], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#43}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:140:13: 140:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#44}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:146:13: 146:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#45}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:152:13: 152:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#46}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:156:13: 156:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#47}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:158:24: 158:27], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#48}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:160:13: 160:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#49}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:162:13: 162:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#50}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_check_pass.rs:164:13: 164:16], _2: usize) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}

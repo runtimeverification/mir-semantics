@@ -1,0 +1,106 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/max-min-classes.rs:13:1: 13:9>::sum(_1: &Foo) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let mut _3: isize;
+
+    bb0: {
+        _2 = ((*_1).0: isize);
+        _3 = ((*_1).1: isize);
+        _0 = Add(move _2, move _3);
+        return;
+    }
+}
+
+fn <impl at ui/max-min-classes.rs:19:1: 19:21>::product(_1: &Foo) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let mut _3: isize;
+
+    bb0: {
+        _2 = ((*_1).0: isize);
+        _3 = ((*_1).1: isize);
+        _0 = Mul(move _2, move _3);
+        return;
+    }
+}
+
+fn Foo(_1: isize, _2: isize) -> Foo {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo { x: _1, y: _2 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 3];
+    let _6: [&str; 3];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 2];
+    let _9: [core::fmt::rt::Argument<'_>; 2];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &isize;
+    let _12: isize;
+    let mut _13: &Foo;
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &isize;
+    let _16: isize;
+    let mut _17: &Foo;
+    scope 1 {
+        debug foo => _1;
+    }
+
+    bb0: {
+        _1 = Foo(const 3_isize, const 20_isize) -> bb1;
+    }
+
+    bb1: {
+        _6 = [const "", const " ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _13 = &_1;
+        _12 = Foo::sum(move _13) -> bb2;
+    }
+
+    bb2: {
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_11) -> bb3;
+    }
+
+    bb3: {
+        _17 = &_1;
+        _16 = <Foo as Product>::product(move _17) -> bb4;
+    }
+
+    bb4: {
+        _15 = &_16;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_15) -> bb5;
+    }
+
+    bb5: {
+        _9 = [move _10, move _14];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb6;
+    }
+
+    bb6: {
+        _2 = _print(move _3) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}

@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [i32; 3];
+    let _3: &[i32; 3];
+    scope 1 {
+        debug arr => _1;
+        let _2: UnalignedPtr<'_, [i32; 3]>;
+        scope 2 {
+            debug arr_unaligned => _2;
+            let _4: UnalignedPtr<'_, [i32]>;
+            scope 3 {
+                debug arr_unaligned => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 1_i32, const 2_i32, const 3_i32];
+        _3 = &_1;
+        _2 = UnalignedPtr::<'_, [i32; 3]> { data: _3 };
+        _4 = move _2 as UnalignedPtr<'_, [i32]> (Pointer(Unsize));
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

@@ -1,0 +1,221 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn call(_1: F) -> T {
+    debug f => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <F as FnOnce<()>>::call_once(move _1, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _3: &i32;
+    let mut _4: (&i32, &i32);
+    let mut _5: &i32;
+    let _6: i32;
+    let mut _7: &i32;
+    let _8: i32;
+    let mut _9: [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19];
+    let mut _10: &[closure@ui/functions-closures/copy-closure.rs:8:17: 8:19];
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: i32;
+    let mut _16: i32;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: (&i32, &i32);
+    let mut _21: &i32;
+    let _22: i32;
+    let mut _23: &i32;
+    let _24: i32;
+    let mut _25: [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19];
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: i32;
+    let mut _31: i32;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: (&i32, &i32);
+    let mut _36: &i32;
+    let _37: i32;
+    let mut _38: &i32;
+    let _39: i32;
+    let mut _40: [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19];
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: i32;
+    let mut _46: i32;
+    let _48: !;
+    let mut _49: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19];
+        scope 2 {
+            debug hello => _2;
+            let _11: &i32;
+            let _12: &i32;
+            let _26: &i32;
+            let _27: &i32;
+            let _41: &i32;
+            let _42: &i32;
+            scope 3 {
+                debug left_val => _11;
+                debug right_val => _12;
+                let _17: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _17;
+                }
+            }
+            scope 5 {
+                debug left_val => _26;
+                debug right_val => _27;
+                let _32: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _32;
+                }
+            }
+            scope 7 {
+                debug left_val => _41;
+                debug right_val => _42;
+                let _47: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _47;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 5_i32;
+        _3 = &_1;
+        _2 = [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19] { a: move _3 };
+        _6 = const 5_i32;
+        _5 = &_6;
+        _10 = &_2;
+        _9 = <[closure@ui/functions-closures/copy-closure.rs:8:17: 8:19] as Clone>::clone(move _10) -> bb1;
+    }
+
+    bb1: {
+        _8 = call::<i32, [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19]>(move _9) -> bb2;
+    }
+
+    bb2: {
+        _7 = &_8;
+        _4 = (move _5, move _7);
+        _11 = (_4.0: &i32);
+        _12 = (_4.1: &i32);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<i32, i32>(move _17, _11, _12, move _19);
+    }
+
+    bb4: {
+        _22 = const 5_i32;
+        _21 = &_22;
+        _25 = _2;
+        _24 = call::<i32, [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19]>(move _25) -> bb5;
+    }
+
+    bb5: {
+        _23 = &_24;
+        _20 = (move _21, move _23);
+        _26 = (_20.0: &i32);
+        _27 = (_20.1: &i32);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<i32, i32>(move _32, _26, _27, move _34);
+    }
+
+    bb7: {
+        _37 = const 5_i32;
+        _36 = &_37;
+        _40 = _2;
+        _39 = call::<i32, [closure@ui/functions-closures/copy-closure.rs:8:17: 8:19]>(move _40) -> bb8;
+    }
+
+    bb8: {
+        _38 = &_39;
+        _35 = (move _36, move _38);
+        _41 = (_35.0: &i32);
+        _42 = (_35.1: &i32);
+        _45 = (*_41);
+        _46 = (*_42);
+        _44 = Eq(move _45, move _46);
+        _43 = Not(move _44);
+        switchInt(move _43) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _47 = core::panicking::AssertKind::Eq;
+        _49 = Option::<Arguments<'_>>::None;
+        _48 = core::panicking::assert_failed::<i32, i32>(move _47, _41, _42, move _49);
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/functions-closures/copy-closure.rs:8:17: 8:19]) -> i32 {
+    debug a => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let mut _11: &i32;
+    let mut _12: &i32;
+
+    bb0: {
+        _6 = [const "Hello ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = deref_copy ((*_1).0: &i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _12 = deref_copy ((*_1).0: &i32);
+        _0 = (*_12);
+        return;
+    }
+}

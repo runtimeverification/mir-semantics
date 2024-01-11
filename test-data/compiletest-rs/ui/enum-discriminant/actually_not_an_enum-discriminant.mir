@@ -1,0 +1,274 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn check(_1: u8) -> () {
+    debug v => _1;
+    let mut _0: ();
+    let mut _2: (&u8, &u8);
+    let mut _3: &u8;
+    let mut _4: &u8;
+    let _5: u8;
+    let _6: &u8;
+    let _7: &u8;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u8;
+    let mut _11: u8;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _3 = &_1;
+        _5 = const 0_u8;
+        _4 = &_5;
+        _2 = (move _3, move _4);
+        _6 = (_2.0: &u8);
+        _7 = (_2.1: &u8);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u8, u8>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn generic() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<T>;
+    scope 1 {
+        debug v => _1;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _1 = Vec::<T>::new() -> bb1;
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: u8;
+    let _3: &bool;
+    let _4: bool;
+    let _5: ();
+    let mut _6: u8;
+    let _7: &char;
+    let _8: char;
+    let _9: ();
+    let mut _10: u8;
+    let _11: &i32;
+    let _12: i32;
+    let _13: ();
+    let mut _14: u8;
+    let _15: &f64;
+    let _16: f64;
+    let _17: ();
+    let mut _18: u8;
+    let _19: &Zst;
+    let _20: Zst;
+    let _21: ();
+    let mut _22: u8;
+    let _23: &Struct;
+    let _24: Struct;
+    let _25: ();
+    let mut _26: u8;
+    let _27: &Union;
+    let _28: Union;
+    let _29: ();
+    let mut _30: u8;
+    let _31: &[i32; 2];
+    let _32: [i32; 2];
+    let _33: ();
+    let mut _34: u8;
+    let _35: &*const ();
+    let _36: *const ();
+    let _37: ();
+    let mut _38: u8;
+    let _39: &*mut ();
+    let _40: *mut ();
+    let _41: ();
+    let mut _42: u8;
+    let _43: &&i32;
+    let _44: &i32;
+    let _45: i32;
+    let _46: ();
+    let mut _47: u8;
+    let _48: &&mut i32;
+    let _49: &mut i32;
+    let mut _50: i32;
+    let _51: ();
+    let mut _52: u8;
+    let _53: &fn(u8) {check};
+    let _54: fn(u8) {check};
+    let _55: fn(u8);
+    let _56: ();
+    let mut _57: u8;
+    let _58: &fn(u8);
+    let _60: ();
+    let mut _61: u8;
+    let _62: &for<'a> fn(&'a str) -> &'a str;
+    let _63: ();
+    let mut _64: u8;
+    let _65: &(i32, i32, i32);
+    let _66: (i32, i32, i32);
+    scope 1 {
+        debug fn_ptr => _55;
+        let _59: for<'a> fn(&'a str) -> &'a str;
+        scope 2 {
+            debug hrtb => _59;
+        }
+    }
+
+    bb0: {
+        _4 = const true;
+        _3 = &_4;
+        _2 = discriminant((*_3));
+        _1 = check(move _2) -> bb1;
+    }
+
+    bb1: {
+        _8 = const 'a';
+        _7 = &_8;
+        _6 = discriminant((*_7));
+        _5 = check(move _6) -> bb2;
+    }
+
+    bb2: {
+        _12 = const 7_i32;
+        _11 = &_12;
+        _10 = discriminant((*_11));
+        _9 = check(move _10) -> bb3;
+    }
+
+    bb3: {
+        _16 = const 7f64;
+        _15 = &_16;
+        _14 = discriminant((*_15));
+        _13 = check(move _14) -> bb4;
+    }
+
+    bb4: {
+        _19 = &_20;
+        _18 = discriminant((*_19));
+        _17 = check(move _18) -> bb5;
+    }
+
+    bb5: {
+        _24 = Struct { _a: const 7_u32 };
+        _23 = &_24;
+        _22 = discriminant((*_23));
+        _21 = check(move _22) -> bb6;
+    }
+
+    bb6: {
+        _28 = Union { _a: const 7_u32 };
+        _27 = &_28;
+        _26 = discriminant((*_27));
+        _25 = check(move _26) -> bb7;
+    }
+
+    bb7: {
+        _32 = [const 7_i32, const 77_i32];
+        _31 = &_32;
+        _30 = discriminant((*_31));
+        _29 = check(move _30) -> bb8;
+    }
+
+    bb8: {
+        _36 = const 7_usize as *const () (PointerFromExposedAddress);
+        _35 = &_36;
+        _34 = discriminant((*_35));
+        _33 = check(move _34) -> bb9;
+    }
+
+    bb9: {
+        _40 = const 7_usize as *mut () (PointerFromExposedAddress);
+        _39 = &_40;
+        _38 = discriminant((*_39));
+        _37 = check(move _38) -> bb10;
+    }
+
+    bb10: {
+        _45 = const 7_i32;
+        _44 = &_45;
+        _43 = &_44;
+        _42 = discriminant((*_43));
+        _41 = check(move _42) -> bb11;
+    }
+
+    bb11: {
+        _50 = const 7_i32;
+        _49 = &mut _50;
+        _48 = &_49;
+        _47 = discriminant((*_48));
+        _46 = check(move _47) -> bb12;
+    }
+
+    bb12: {
+        _53 = &_54;
+        _52 = discriminant((*_53));
+        _51 = check(move _52) -> bb13;
+    }
+
+    bb13: {
+        _55 = check as fn(u8) (Pointer(ReifyFnPointer));
+        _58 = &_55;
+        _57 = discriminant((*_58));
+        _56 = check(move _57) -> bb14;
+    }
+
+    bb14: {
+        _59 = const ZeroSized: [closure@ui/enum-discriminant/actually_not_an_enum-discriminant.rs:46:48: 46:51] as for<'a> fn(&'a str) -> &'a str (Pointer(ClosureFnPointer(Normal)));
+        _62 = &_59;
+        _61 = discriminant((*_62));
+        _60 = check(move _61) -> bb15;
+    }
+
+    bb15: {
+        _66 = (const 7_i32, const 77_i32, const 777_i32);
+        _65 = &_66;
+        _64 = discriminant((*_65));
+        _63 = check(move _64) -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/enum-discriminant/actually_not_an_enum-discriminant.rs:46:48: 46:51], _2: &str) -> &str {
+    debug x => _2;
+    let mut _0: &str;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}

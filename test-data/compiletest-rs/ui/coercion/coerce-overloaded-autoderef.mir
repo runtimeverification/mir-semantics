@@ -1,0 +1,719 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn use_ref(_1: &T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn use_mut(_1: &mut T) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn use_rc(_1: Rc<T>) -> () {
+    debug t => _1;
+    let mut _0: ();
+    let _2: ();
+    let _3: &T;
+    let _4: &T;
+    let mut _5: &std::rc::Rc<T>;
+    let _6: ();
+    let _7: &std::rc::Rc<T>;
+    let _8: ();
+    let _9: &&&&&&std::rc::Rc<T>;
+    let _10: &&&&&std::rc::Rc<T>;
+    let _11: &&&&std::rc::Rc<T>;
+    let _12: &&&std::rc::Rc<T>;
+    let _13: &&std::rc::Rc<T>;
+    let _14: &std::rc::Rc<T>;
+    let _15: ();
+    let mut _16: &&&&&&std::rc::Rc<T>;
+    let _17: &mut &&&&&std::rc::Rc<T>;
+    let mut _18: &&&&&std::rc::Rc<T>;
+    let _19: &&&&std::rc::Rc<T>;
+    let _20: &&&std::rc::Rc<T>;
+    let _21: &&std::rc::Rc<T>;
+    let _22: &std::rc::Rc<T>;
+    let _23: ();
+    let _24: &&&mut &&&std::rc::Rc<T>;
+    let _25: &&mut &&&std::rc::Rc<T>;
+    let _26: &mut &&&std::rc::Rc<T>;
+    let mut _27: &&&std::rc::Rc<T>;
+    let _28: &&std::rc::Rc<T>;
+    let _29: &std::rc::Rc<T>;
+
+    bb0: {
+        _5 = &_1;
+        _4 = <Rc<T> as Deref>::deref(move _5) -> [return: bb1, unwind: bb8];
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = use_ref::<T>(_3) -> [return: bb2, unwind: bb8];
+    }
+
+    bb2: {
+        _7 = &_1;
+        _6 = use_ref::<Rc<T>>(_7) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _14 = &_1;
+        _13 = &_14;
+        _12 = &_13;
+        _11 = &_12;
+        _10 = &_11;
+        _9 = &_10;
+        _8 = use_ref::<&&&&&Rc<T>>(_9) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _22 = &_1;
+        _21 = &_22;
+        _20 = &_21;
+        _19 = &_20;
+        _18 = &_19;
+        _17 = &mut _18;
+        _16 = &(*_17);
+        _15 = use_ref::<&&&&&Rc<T>>(move _16) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        _29 = &_1;
+        _28 = &_29;
+        _27 = &_28;
+        _26 = &mut _27;
+        _25 = &_26;
+        _24 = &_25;
+        _23 = use_ref::<&&mut &&&Rc<T>>(_24) -> [return: bb6, unwind: bb8];
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_1) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn use_mut_box(_1: &mut Box<T>) -> () {
+    debug t => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &mut std::boxed::Box<T>;
+    let _4: ();
+    let mut _5: &mut std::boxed::Box<T>;
+    let _6: ();
+    let mut _7: &mut &mut &mut &mut std::boxed::Box<T>;
+    let mut _8: &mut &mut &mut std::boxed::Box<T>;
+    let mut _9: &mut &mut std::boxed::Box<T>;
+    let _10: ();
+    let _11: &std::boxed::Box<T>;
+    let _12: ();
+    let mut _13: &std::boxed::Box<T>;
+    let _14: ();
+    let _15: &&&&&&&mut std::boxed::Box<T>;
+    let _16: &&&&&&mut std::boxed::Box<T>;
+    let _17: &&&&&mut std::boxed::Box<T>;
+    let _18: &&&&mut std::boxed::Box<T>;
+    let _19: &&&mut std::boxed::Box<T>;
+    let _20: &&mut std::boxed::Box<T>;
+    let _21: ();
+    let mut _22: &&&&&&&mut std::boxed::Box<T>;
+    let _23: &mut &&&&&&mut std::boxed::Box<T>;
+    let mut _24: &&&&&&mut std::boxed::Box<T>;
+    let _25: &&&&&mut std::boxed::Box<T>;
+    let _26: &&&&mut std::boxed::Box<T>;
+    let _27: &&&mut std::boxed::Box<T>;
+    let _28: &&mut std::boxed::Box<T>;
+    let _29: ();
+    let _30: &&&mut &&&&mut std::boxed::Box<T>;
+    let _31: &&mut &&&&mut std::boxed::Box<T>;
+    let _32: &mut &&&&mut std::boxed::Box<T>;
+    let mut _33: &&&&mut std::boxed::Box<T>;
+    let _34: &&&mut std::boxed::Box<T>;
+    let _35: &&mut std::boxed::Box<T>;
+
+    bb0: {
+        _3 = _1;
+        _2 = use_mut::<Box<T>>(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = _1;
+        _4 = use_mut::<Box<T>>(move _5) -> bb2;
+    }
+
+    bb2: {
+        _9 = &mut _1;
+        _8 = &mut _9;
+        _7 = &mut _8;
+        _6 = use_mut::<&mut &mut &mut Box<T>>(_7) -> bb3;
+    }
+
+    bb3: {
+        _11 = &(*_1);
+        _10 = use_ref::<Box<T>>(_11) -> bb4;
+    }
+
+    bb4: {
+        _13 = &(*_1);
+        _12 = use_ref::<Box<T>>(move _13) -> bb5;
+    }
+
+    bb5: {
+        _20 = &_1;
+        _19 = &_20;
+        _18 = &_19;
+        _17 = &_18;
+        _16 = &_17;
+        _15 = &_16;
+        _14 = use_ref::<&&&&&&mut Box<T>>(_15) -> bb6;
+    }
+
+    bb6: {
+        _28 = &_1;
+        _27 = &_28;
+        _26 = &_27;
+        _25 = &_26;
+        _24 = &_25;
+        _23 = &mut _24;
+        _22 = &(*_23);
+        _21 = use_ref::<&&&&&&mut Box<T>>(move _22) -> bb7;
+    }
+
+    bb7: {
+        _35 = &_1;
+        _34 = &_35;
+        _33 = &_34;
+        _32 = &mut _33;
+        _31 = &_32;
+        _30 = &_31;
+        _29 = use_ref::<&&mut &&&&mut Box<T>>(_30) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+fn use_nested(_1: &Box<T>) -> () {
+    debug t => _1;
+    let mut _0: ();
+    let _2: ();
+    let _3: &T;
+    let _4: ();
+    let mut _5: &std::boxed::Box<T>;
+    let _6: ();
+    let _7: &&&&&&&std::boxed::Box<T>;
+    let _8: &&&&&&std::boxed::Box<T>;
+    let _9: &&&&&std::boxed::Box<T>;
+    let _10: &&&&std::boxed::Box<T>;
+    let _11: &&&std::boxed::Box<T>;
+    let _12: &&std::boxed::Box<T>;
+    let _13: ();
+    let mut _14: &&&&&&&std::boxed::Box<T>;
+    let _15: &mut &&&&&&std::boxed::Box<T>;
+    let mut _16: &&&&&&std::boxed::Box<T>;
+    let _17: &&&&&std::boxed::Box<T>;
+    let _18: &&&&std::boxed::Box<T>;
+    let _19: &&&std::boxed::Box<T>;
+    let _20: &&std::boxed::Box<T>;
+    let _21: ();
+    let _22: &&&mut &&&&std::boxed::Box<T>;
+    let _23: &&mut &&&&std::boxed::Box<T>;
+    let _24: &mut &&&&std::boxed::Box<T>;
+    let mut _25: &&&&std::boxed::Box<T>;
+    let _26: &&&std::boxed::Box<T>;
+    let _27: &&std::boxed::Box<T>;
+    let mut _28: std::boxed::Box<T>;
+    let mut _29: *const T;
+    let mut _30: *const ();
+    let mut _31: usize;
+    let mut _32: usize;
+    let mut _33: usize;
+    let mut _34: usize;
+    let mut _35: bool;
+
+    bb0: {
+        _28 = deref_copy (*_1);
+        _29 = (((_28.0: std::ptr::Unique<T>).0: std::ptr::NonNull<T>).0: *const T);
+        _30 = _29 as *const () (PtrToPtr);
+        _31 = _30 as usize (Transmute);
+        _32 = AlignOf(T);
+        _33 = Sub(_32, const 1_usize);
+        _34 = BitAnd(_31, _33);
+        _35 = Eq(_34, const 0_usize);
+        assert(_35, "misaligned pointer dereference: address must be a multiple of {} but is {}", _32, _31) -> [success: bb6, unwind unreachable];
+    }
+
+    bb1: {
+        _5 = _1;
+        _4 = use_ref::<Box<T>>(move _5) -> bb2;
+    }
+
+    bb2: {
+        _12 = &_1;
+        _11 = &_12;
+        _10 = &_11;
+        _9 = &_10;
+        _8 = &_9;
+        _7 = &_8;
+        _6 = use_ref::<&&&&&&Box<T>>(_7) -> bb3;
+    }
+
+    bb3: {
+        _20 = &_1;
+        _19 = &_20;
+        _18 = &_19;
+        _17 = &_18;
+        _16 = &_17;
+        _15 = &mut _16;
+        _14 = &(*_15);
+        _13 = use_ref::<&&&&&&Box<T>>(move _14) -> bb4;
+    }
+
+    bb4: {
+        _27 = &_1;
+        _26 = &_27;
+        _25 = &_26;
+        _24 = &mut _25;
+        _23 = &_24;
+        _22 = &_23;
+        _21 = use_ref::<&&mut &&&&Box<T>>(_22) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        _3 = &(*_29);
+        _2 = use_ref::<T>(_3) -> bb1;
+    }
+}
+
+fn use_slice(_1: &[u8]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn use_slice_mut(_1: &mut [u8]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn use_vec(_1: Vec<u8>) -> () {
+    debug v => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &mut [u8];
+    let mut _4: &mut [u8];
+    let mut _5: &mut std::vec::Vec<u8>;
+    let _6: ();
+    let mut _7: &mut [u8];
+    let mut _8: &mut [u8];
+    let mut _9: &mut std::vec::Vec<u8>;
+    let _10: ();
+    let mut _11: &mut [u8];
+    let mut _12: &mut [u8];
+    let mut _13: &mut &mut &mut std::vec::Vec<u8>;
+    let mut _14: &mut &mut std::vec::Vec<u8>;
+    let mut _15: &mut std::vec::Vec<u8>;
+    let _16: ();
+    let _17: &[u8];
+    let _18: &[u8];
+    let mut _19: &std::vec::Vec<u8>;
+    let _20: ();
+    let mut _21: &[u8];
+    let _22: &[u8];
+    let _23: &std::vec::Vec<u8>;
+    let _24: ();
+    let mut _25: &[u8];
+    let _26: &[u8];
+    let _27: &&&&&&std::vec::Vec<u8>;
+    let _28: &&&&&std::vec::Vec<u8>;
+    let _29: &&&&std::vec::Vec<u8>;
+    let _30: &&&std::vec::Vec<u8>;
+    let _31: &&std::vec::Vec<u8>;
+    let _32: &std::vec::Vec<u8>;
+    let _33: ();
+    let mut _34: &[u8];
+    let _35: &[u8];
+    let _36: &mut &&&&&std::vec::Vec<u8>;
+    let mut _37: &&&&&std::vec::Vec<u8>;
+    let _38: &&&&std::vec::Vec<u8>;
+    let _39: &&&std::vec::Vec<u8>;
+    let _40: &&std::vec::Vec<u8>;
+    let _41: &std::vec::Vec<u8>;
+    let _42: ();
+    let mut _43: &[u8];
+    let _44: &[u8];
+    let _45: &&&mut &&&std::vec::Vec<u8>;
+    let _46: &&mut &&&std::vec::Vec<u8>;
+    let _47: &mut &&&std::vec::Vec<u8>;
+    let mut _48: &&&std::vec::Vec<u8>;
+    let _49: &&std::vec::Vec<u8>;
+    let _50: &std::vec::Vec<u8>;
+    let mut _51: &mut &mut std::vec::Vec<u8>;
+    let mut _52: &mut std::vec::Vec<u8>;
+    let mut _53: &&&&&std::vec::Vec<u8>;
+    let mut _54: &&&&std::vec::Vec<u8>;
+    let mut _55: &&&std::vec::Vec<u8>;
+    let mut _56: &&std::vec::Vec<u8>;
+    let mut _57: &std::vec::Vec<u8>;
+    let mut _58: &&&&&std::vec::Vec<u8>;
+    let mut _59: &&&&std::vec::Vec<u8>;
+    let mut _60: &&&std::vec::Vec<u8>;
+    let mut _61: &&std::vec::Vec<u8>;
+    let mut _62: &std::vec::Vec<u8>;
+    let mut _63: &&mut &&&std::vec::Vec<u8>;
+    let mut _64: &mut &&&std::vec::Vec<u8>;
+    let mut _65: &&&std::vec::Vec<u8>;
+    let mut _66: &&std::vec::Vec<u8>;
+    let mut _67: &std::vec::Vec<u8>;
+
+    bb0: {
+        _5 = &mut _1;
+        _4 = <Vec<u8> as IndexMut<RangeFull>>::index_mut(move _5, const RangeFull) -> [return: bb1, unwind: bb18];
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = use_slice_mut(_3) -> [return: bb2, unwind: bb18];
+    }
+
+    bb2: {
+        _9 = &mut _1;
+        _8 = <Vec<u8> as DerefMut>::deref_mut(_9) -> [return: bb3, unwind: bb18];
+    }
+
+    bb3: {
+        _7 = _8;
+        _6 = use_slice_mut(move _7) -> [return: bb4, unwind: bb18];
+    }
+
+    bb4: {
+        _15 = &mut _1;
+        _14 = &mut _15;
+        _13 = &mut _14;
+        _51 = deref_copy (*_13);
+        _52 = deref_copy (*_51);
+        _12 = <Vec<u8> as DerefMut>::deref_mut(_52) -> [return: bb5, unwind: bb18];
+    }
+
+    bb5: {
+        _11 = _12;
+        _10 = use_slice_mut(move _11) -> [return: bb6, unwind: bb18];
+    }
+
+    bb6: {
+        _19 = &_1;
+        _18 = <Vec<u8> as Index<RangeFull>>::index(move _19, const RangeFull) -> [return: bb7, unwind: bb18];
+    }
+
+    bb7: {
+        _17 = _18;
+        _16 = use_slice(_17) -> [return: bb8, unwind: bb18];
+    }
+
+    bb8: {
+        _23 = &_1;
+        _22 = <Vec<u8> as Deref>::deref(_23) -> [return: bb9, unwind: bb18];
+    }
+
+    bb9: {
+        _21 = _22;
+        _20 = use_slice(move _21) -> [return: bb10, unwind: bb18];
+    }
+
+    bb10: {
+        _32 = &_1;
+        _31 = &_32;
+        _30 = &_31;
+        _29 = &_30;
+        _28 = &_29;
+        _27 = &_28;
+        _53 = deref_copy (*_27);
+        _54 = deref_copy (*_53);
+        _55 = deref_copy (*_54);
+        _56 = deref_copy (*_55);
+        _57 = deref_copy (*_56);
+        _26 = <Vec<u8> as Deref>::deref(_57) -> [return: bb11, unwind: bb18];
+    }
+
+    bb11: {
+        _25 = _26;
+        _24 = use_slice(move _25) -> [return: bb12, unwind: bb18];
+    }
+
+    bb12: {
+        _41 = &_1;
+        _40 = &_41;
+        _39 = &_40;
+        _38 = &_39;
+        _37 = &_38;
+        _36 = &mut _37;
+        _58 = deref_copy (*_36);
+        _59 = deref_copy (*_58);
+        _60 = deref_copy (*_59);
+        _61 = deref_copy (*_60);
+        _62 = deref_copy (*_61);
+        _35 = <Vec<u8> as Deref>::deref(_62) -> [return: bb13, unwind: bb18];
+    }
+
+    bb13: {
+        _34 = _35;
+        _33 = use_slice(move _34) -> [return: bb14, unwind: bb18];
+    }
+
+    bb14: {
+        _50 = &_1;
+        _49 = &_50;
+        _48 = &_49;
+        _47 = &mut _48;
+        _46 = &_47;
+        _45 = &_46;
+        _63 = deref_copy (*_45);
+        _64 = deref_copy (*_63);
+        _65 = deref_copy (*_64);
+        _66 = deref_copy (*_65);
+        _67 = deref_copy (*_66);
+        _44 = <Vec<u8> as Deref>::deref(_67) -> [return: bb15, unwind: bb18];
+    }
+
+    bb15: {
+        _43 = _44;
+        _42 = use_slice(move _43) -> [return: bb16, unwind: bb18];
+    }
+
+    bb16: {
+        drop(_1) -> bb17;
+    }
+
+    bb17: {
+        return;
+    }
+
+    bb18 (cleanup): {
+        drop(_1) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        resume;
+    }
+}
+
+fn use_vec_ref(_1: &Vec<u8>) -> () {
+    debug v => _1;
+    let mut _0: ();
+    let _2: ();
+    let _3: &[u8];
+    let _4: &[u8];
+    let mut _5: &std::vec::Vec<u8>;
+    let _6: ();
+    let mut _7: &[u8];
+    let _8: &[u8];
+    let mut _9: &std::vec::Vec<u8>;
+    let _10: ();
+    let mut _11: &[u8];
+    let _12: &[u8];
+    let _13: &&&&&&&std::vec::Vec<u8>;
+    let _14: &&&&&&std::vec::Vec<u8>;
+    let _15: &&&&&std::vec::Vec<u8>;
+    let _16: &&&&std::vec::Vec<u8>;
+    let _17: &&&std::vec::Vec<u8>;
+    let _18: &&std::vec::Vec<u8>;
+    let _19: ();
+    let mut _20: &[u8];
+    let _21: &[u8];
+    let _22: &mut &&&&&&std::vec::Vec<u8>;
+    let mut _23: &&&&&&std::vec::Vec<u8>;
+    let _24: &&&&&std::vec::Vec<u8>;
+    let _25: &&&&std::vec::Vec<u8>;
+    let _26: &&&std::vec::Vec<u8>;
+    let _27: &&std::vec::Vec<u8>;
+    let _28: ();
+    let mut _29: &[u8];
+    let _30: &[u8];
+    let _31: &&&mut &&&&std::vec::Vec<u8>;
+    let _32: &&mut &&&&std::vec::Vec<u8>;
+    let _33: &mut &&&&std::vec::Vec<u8>;
+    let mut _34: &&&&std::vec::Vec<u8>;
+    let _35: &&&std::vec::Vec<u8>;
+    let _36: &&std::vec::Vec<u8>;
+    let mut _37: &&&&&&std::vec::Vec<u8>;
+    let mut _38: &&&&&std::vec::Vec<u8>;
+    let mut _39: &&&&std::vec::Vec<u8>;
+    let mut _40: &&&std::vec::Vec<u8>;
+    let mut _41: &&std::vec::Vec<u8>;
+    let mut _42: &std::vec::Vec<u8>;
+    let mut _43: &&&&&&std::vec::Vec<u8>;
+    let mut _44: &&&&&std::vec::Vec<u8>;
+    let mut _45: &&&&std::vec::Vec<u8>;
+    let mut _46: &&&std::vec::Vec<u8>;
+    let mut _47: &&std::vec::Vec<u8>;
+    let mut _48: &std::vec::Vec<u8>;
+    let mut _49: &&mut &&&&std::vec::Vec<u8>;
+    let mut _50: &mut &&&&std::vec::Vec<u8>;
+    let mut _51: &&&&std::vec::Vec<u8>;
+    let mut _52: &&&std::vec::Vec<u8>;
+    let mut _53: &&std::vec::Vec<u8>;
+    let mut _54: &std::vec::Vec<u8>;
+
+    bb0: {
+        _5 = _1;
+        _4 = <Vec<u8> as Index<RangeFull>>::index(move _5, const RangeFull) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = use_slice(_3) -> bb2;
+    }
+
+    bb2: {
+        _9 = _1;
+        _8 = <Vec<u8> as Deref>::deref(move _9) -> bb3;
+    }
+
+    bb3: {
+        _7 = _8;
+        _6 = use_slice(move _7) -> bb4;
+    }
+
+    bb4: {
+        _18 = &_1;
+        _17 = &_18;
+        _16 = &_17;
+        _15 = &_16;
+        _14 = &_15;
+        _13 = &_14;
+        _37 = deref_copy (*_13);
+        _38 = deref_copy (*_37);
+        _39 = deref_copy (*_38);
+        _40 = deref_copy (*_39);
+        _41 = deref_copy (*_40);
+        _42 = deref_copy (*_41);
+        _12 = <Vec<u8> as Deref>::deref(_42) -> bb5;
+    }
+
+    bb5: {
+        _11 = _12;
+        _10 = use_slice(move _11) -> bb6;
+    }
+
+    bb6: {
+        _27 = &_1;
+        _26 = &_27;
+        _25 = &_26;
+        _24 = &_25;
+        _23 = &_24;
+        _22 = &mut _23;
+        _43 = deref_copy (*_22);
+        _44 = deref_copy (*_43);
+        _45 = deref_copy (*_44);
+        _46 = deref_copy (*_45);
+        _47 = deref_copy (*_46);
+        _48 = deref_copy (*_47);
+        _21 = <Vec<u8> as Deref>::deref(_48) -> bb7;
+    }
+
+    bb7: {
+        _20 = _21;
+        _19 = use_slice(move _20) -> bb8;
+    }
+
+    bb8: {
+        _36 = &_1;
+        _35 = &_36;
+        _34 = &_35;
+        _33 = &mut _34;
+        _32 = &_33;
+        _31 = &_32;
+        _49 = deref_copy (*_31);
+        _50 = deref_copy (*_49);
+        _51 = deref_copy (*_50);
+        _52 = deref_copy (*_51);
+        _53 = deref_copy (*_52);
+        _54 = deref_copy (*_53);
+        _30 = <Vec<u8> as Deref>::deref(_54) -> bb9;
+    }
+
+    bb9: {
+        _29 = _30;
+        _28 = use_slice(move _29) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn use_op_rhs(_1: &mut String) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: &str;
+    let _4: &str;
+    let _5: &std::string::String;
+    let _6: std::string::String;
+
+    bb0: {
+        _6 = <String as From<&str>>::from(const " ") -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _4 = <String as Deref>::deref(_5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _3 = _4;
+        _2 = <String as AddAssign<&str>>::add_assign(_1, move _3) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_6) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

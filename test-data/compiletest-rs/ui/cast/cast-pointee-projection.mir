@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/cast/cast-pointee-projection.rs:11:1: 11:39>::into_raw(_1: *const <T as Tag<'_>>::Type) -> *mut <T as Tag<'_>>::Type {
+    debug this => _1;
+    let mut _0: *mut <T as Tag<'_>>::Type;
+
+    bb0: {
+        _0 = _1 as *mut <T as Tag<'_>>::Type (PtrToPtr);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

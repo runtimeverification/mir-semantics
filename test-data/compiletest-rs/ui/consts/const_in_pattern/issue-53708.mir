@@ -1,0 +1,45 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const_in_pattern/issue-53708.rs:3:10: 3:19>::eq(_1: &S, _2: &S) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/consts/const_in_pattern/issue-53708.rs:3:21: 3:23>::assert_receiver_is_total_eq(_1: &S) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const C: &S = {
+    let mut _0: &S;
+    let _1: &S;
+    let _2: S;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = S;
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}

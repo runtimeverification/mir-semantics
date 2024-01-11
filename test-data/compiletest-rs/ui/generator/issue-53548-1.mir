@@ -1,0 +1,23 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: Store<std::boxed::Box<for<'b, 'a> fn(&'b (dyn Trait + 'a))>>;
+    let mut _2: std::rc::Rc<std::cell::RefCell<std::option::Option<std::boxed::Box<for<'b, 'a> fn(&'b (dyn Trait + 'a))>>>>;
+    scope 1 {
+        debug store => _1;
+    }
+
+    bb0: {
+        _2 = <Rc<RefCell<Option<Box<for<'b, 'a> fn(&'b (dyn Trait + 'a))>>>> as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _1 = Store::<Box<for<'b, 'a> fn(&'b (dyn Trait + 'a))>> { inner: move _2 };
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

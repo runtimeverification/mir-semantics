@@ -1,0 +1,238 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn bind(_1: A, _2: F) -> impl for<'a> FnMut(&'a mut State) -> Result<U, ()> {
+    debug a => _1;
+    debug f => _2;
+    let mut _0: impl for<'a> FnMut(&'a mut State) -> std::result::Result<U, ()>;
+
+    bb0: {
+        _0 = [closure@ui/impl-trait/example-st.rs:17:5: 17:18] { a: move _1, f: move _2 };
+        return;
+    }
+}
+
+fn bind::{closure#0}(_1: &mut [closure@ui/impl-trait/example-st.rs:17:5: 17:18], _2: &mut State) -> Result<U, ()> {
+    debug state => _2;
+    debug a => ((*_1).0: A);
+    debug f => ((*_1).1: F);
+    let mut _0: std::result::Result<U, ()>;
+    let _3: T;
+    let mut _4: std::ops::ControlFlow<std::result::Result<std::convert::Infallible, ()>, T>;
+    let mut _5: std::result::Result<T, ()>;
+    let mut _6: &mut A;
+    let mut _7: (&mut State,);
+    let mut _8: isize;
+    let _9: T;
+    let mut _10: &mut B;
+    let mut _11: B;
+    let mut _12: &mut F;
+    let mut _13: (T,);
+    let mut _14: T;
+    let mut _15: (&mut State,);
+    let mut _16: bool;
+    scope 1 {
+        debug r => _3;
+    }
+    scope 2 {
+        debug residual => const Result::<Infallible, ()>::Err(());
+        scope 3 {
+        }
+    }
+    scope 4 {
+        debug val => _9;
+        scope 5 {
+        }
+    }
+
+    bb0: {
+        _16 = const false;
+        _6 = &mut ((*_1).0: A);
+        _7 = (_2,);
+        _5 = <A as FnMut<(&mut State,)>>::call_mut(move _6, move _7) -> bb1;
+    }
+
+    bb1: {
+        _4 = <Result<T, ()> as Try>::branch(move _5) -> bb2;
+    }
+
+    bb2: {
+        _8 = discriminant(_4);
+        switchInt(move _8) -> [0: bb3, 1: bb5, otherwise: bb4];
+    }
+
+    bb3: {
+        _9 = move ((_4 as Continue).0: T);
+        _16 = const true;
+        _3 = move _9;
+        _12 = &mut ((*_1).1: F);
+        _16 = const false;
+        _14 = move _3;
+        _13 = (move _14,);
+        _11 = <F as FnMut<(T,)>>::call_mut(move _12, move _13) -> [return: bb7, unwind: bb13];
+    }
+
+    bb4: {
+        unreachable;
+    }
+
+    bb5: {
+        _0 = <Result<U, ()> as FromResidual<Result<Infallible, ()>>>::from_residual(const Result::<Infallible, ()>::Err(())) -> bb6;
+    }
+
+    bb6: {
+        _16 = const false;
+        goto -> bb9;
+    }
+
+    bb7: {
+        _10 = &mut _11;
+        _15 = (_2,);
+        _0 = <B as FnMut<(&mut State,)>>::call_mut(move _10, move _15) -> [return: bb8, unwind: bb10];
+    }
+
+    bb8: {
+        _16 = const false;
+        drop(_11) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_11) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        switchInt(_16) -> [0: bb11, otherwise: bb12];
+    }
+}
+
+fn atom(_1: T) -> impl for<'a> FnMut(&'a mut State) -> Result<T, ()> {
+    debug x => _1;
+    let mut _0: impl for<'a> FnMut(&'a mut State) -> std::result::Result<T, ()>;
+    let mut _2: std::option::Option<T>;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _2 = Option::<T>::Some(move _1);
+        _0 = [closure@ui/impl-trait/example-st.rs:25:5: 25:13] { x: move _2 };
+        return;
+    }
+}
+
+fn atom::{closure#0}(_1: &mut [closure@ui/impl-trait/example-st.rs:25:5: 25:13], _2: &mut State) -> Result<T, ()> {
+    debug x => ((*_1).0: std::option::Option<T>);
+    let mut _0: std::result::Result<T, ()>;
+    let mut _3: std::option::Option<T>;
+    let mut _4: &mut std::option::Option<T>;
+    let mut _5: std::result::Result<T, ()>;
+
+    bb0: {
+        _4 = &mut ((*_1).0: std::option::Option<T>);
+        _3 = Option::<T>::take(move _4) -> bb1;
+    }
+
+    bb1: {
+        _5 = Result::<T, ()>::Err(const ());
+        _0 = Option::<T>::map_or::<Result<T, ()>, fn(T) -> Result<T, ()> {Result::<T, ()>::Ok}>(move _3, move _5, Result::<T, ()>::Ok) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::result::Result<bool, ()>, &std::result::Result<bool, ()>);
+    let mut _2: &std::result::Result<bool, ()>;
+    let _3: std::result::Result<bool, ()>;
+    let mut _4: &mut impl for<'a> FnMut(&'a mut State) -> std::result::Result<bool, ()>;
+    let mut _5: impl for<'a> FnMut(&'a mut State) -> std::result::Result<bool, ()>;
+    let mut _6: impl for<'a> FnMut(&'a mut State) -> std::result::Result<i32, ()>;
+    let mut _7: (&mut State,);
+    let mut _8: &mut State;
+    let mut _9: State;
+    let mut _10: &std::result::Result<bool, ()>;
+    let _11: std::result::Result<bool, ()>;
+    let _12: &std::result::Result<bool, ()>;
+    let _13: &std::result::Result<bool, ()>;
+    let mut _14: bool;
+    let mut _15: bool;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _12;
+        debug right_val => _13;
+        let _16: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _16;
+        }
+    }
+
+    bb0: {
+        _6 = atom::<i32>(const 5_i32) -> bb1;
+    }
+
+    bb1: {
+        _5 = bind::<i32, bool, impl for<'a> FnMut(&'a mut State) -> Result<i32, ()>, impl for<'a> FnMut(&'a mut State) -> Result<bool, ()>, [closure@ui/impl-trait/example-st.rs:29:30: 29:33]>(move _6, const ZeroSized: [closure@ui/impl-trait/example-st.rs:29:30: 29:33]) -> bb2;
+    }
+
+    bb2: {
+        _4 = &mut _5;
+        _8 = &mut _9;
+        _7 = (_8,);
+        _3 = <impl for<'a> FnMut(&'a mut State) -> Result<bool, ()> as FnMut<(&mut State,)>>::call_mut(move _4, move _7) -> bb3;
+    }
+
+    bb3: {
+        _2 = &_3;
+        _11 = Result::<bool, ()>::Ok(const true);
+        _10 = &_11;
+        _1 = (move _2, move _10);
+        _12 = (_1.0: &std::result::Result<bool, ()>);
+        _13 = (_1.1: &std::result::Result<bool, ()>);
+        _15 = <Result<bool, ()> as PartialEq>::eq(_12, _13) -> bb4;
+    }
+
+    bb4: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<Result<bool, ()>, Result<bool, ()>>(move _16, _12, _13, move _18);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/impl-trait/example-st.rs:29:30: 29:33], _2: i32) -> impl for<'a> FnMut(&'a mut State) -> Result<bool, ()> {
+    debug x => _2;
+    let mut _0: impl for<'a> FnMut(&'a mut State) -> std::result::Result<bool, ()>;
+    let mut _3: bool;
+
+    bb0: {
+        _3 = Gt(_2, const 4_i32);
+        _0 = atom::<bool>(move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

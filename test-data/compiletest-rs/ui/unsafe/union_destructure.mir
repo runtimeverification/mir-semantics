@@ -1,0 +1,139 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/unsafe/union_destructure.rs:5:16: 5:21>::clone(_1: &Pie) -> Pie {
+    debug self => _1;
+    let mut _0: Pie;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo;
+    let mut _2: std::option::Option<Foo>;
+    let mut _3: isize;
+    let mut _5: std::option::Option<Foo>;
+    let mut _6: isize;
+    let mut _9: (&i8, &i8);
+    let mut _10: &i8;
+    let mut _11: &i8;
+    let _12: i8;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: i8;
+    let mut _18: i8;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _23: std::option::Option<Foo>;
+    let mut _24: isize;
+    scope 1 {
+        debug u => _1;
+        scope 2 {
+            let _4: Foo;
+            scope 3 {
+                debug u => _4;
+                scope 4 {
+                    let _22: Foo;
+                    scope 5 {
+                        let _7: Foo;
+                        scope 6 {
+                            debug u => _7;
+                            let _8: i8;
+                            scope 7 {
+                                debug bar => _8;
+                                let _13: &i8;
+                                let _14: &i8;
+                                scope 8 {
+                                    debug left_val => _13;
+                                    debug right_val => _14;
+                                    let _19: core::panicking::AssertKind;
+                                    scope 9 {
+                                        debug kind => _19;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    scope 10 {
+                        debug u => _22;
+                        let _25: Foo;
+                        scope 11 {
+                            debug u => _25;
+                            let _26: Foo;
+                            scope 12 {
+                            }
+                            scope 13 {
+                                debug u => _26;
+                                let _27: Foo;
+                                scope 14 {
+                                }
+                                scope 15 {
+                                    debug u => _27;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Foo { bar: const 5_i8 };
+        _2 = Option::<Foo>::Some(move _1);
+        _3 = discriminant(_2);
+        switchInt(move _3) -> [0: bb2, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _4 = Foo { bar: const 6_i8 };
+        _5 = Option::<Foo>::Some(move _4);
+        _6 = discriminant(_5);
+        switchInt(move _6) -> [0: bb3, 1: bb3, otherwise: bb1];
+    }
+
+    bb3: {
+        _7 = Foo { bar: const 7_i8 };
+        _8 = (_7.0: i8);
+        _10 = &_8;
+        _12 = const 7_i8;
+        _11 = &_12;
+        _9 = (move _10, move _11);
+        _13 = (_9.0: &i8);
+        _14 = (_9.1: &i8);
+        _17 = (*_13);
+        _18 = (*_14);
+        _16 = Eq(move _17, move _18);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<i8, i8>(move _19, _13, _14, move _21);
+    }
+
+    bb5: {
+        _22 = Foo { bar: const 8_i8 };
+        _23 = Option::<Foo>::Some(move _22);
+        _24 = discriminant(_23);
+        switchInt(move _24) -> [0: bb6, 1: bb6, otherwise: bb1];
+    }
+
+    bb6: {
+        _25 = Foo { bar: const 9_i8 };
+        _26 = Foo { bar: const 10_i8 };
+        _27 = Foo { bar: const 11_i8 };
+        return;
+    }
+}

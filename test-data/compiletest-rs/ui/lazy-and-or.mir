@@ -1,0 +1,194 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn incr(_1: &mut isize) -> bool {
+    debug x => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: !;
+
+    bb0: {
+        (*_1) = Add((*_1), const 1_isize);
+        _2 = Not(const false);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = core::panicking::panic(const "assertion failed: (false)");
+    }
+
+    bb2: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: !;
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 2];
+    let _12: [&str; 2];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 1];
+    let _15: [core::fmt::rt::Argument<'_>; 1];
+    let mut _16: core::fmt::rt::Argument<'_>;
+    let _17: &bool;
+    let _18: bool;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &mut isize;
+    let mut _22: (&isize, &isize);
+    let mut _23: &isize;
+    let mut _24: &isize;
+    let _25: isize;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: isize;
+    let mut _31: isize;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: bool;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: !;
+    let mut _39: bool;
+    let mut _40: !;
+    scope 1 {
+        debug x => _1;
+        let mut _7: isize;
+        scope 2 {
+            debug y => _7;
+            let _26: &isize;
+            let _27: &isize;
+            scope 3 {
+                debug left_val => _26;
+                debug right_val => _27;
+                let _32: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _32;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Eq(const 1_i32, const 2_i32);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _1 = const true;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _3 = Eq(const 3_i32, const 3_i32);
+        _1 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _5 = _1;
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _6 = core::panicking::panic(const "assertion failed: (x)");
+    }
+
+    bb5: {
+        _7 = const 10_isize;
+        _12 = [const "", const "\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _19 = _1;
+        switchInt(move _19) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _18 = const true;
+        goto -> bb8;
+    }
+
+    bb7: {
+        _21 = &mut _7;
+        _20 = incr(_21) -> bb9;
+    }
+
+    bb8: {
+        _17 = &_18;
+        _16 = core::fmt::rt::Argument::<'_>::new_display::<bool>(_17) -> bb10;
+    }
+
+    bb9: {
+        _18 = move _20;
+        goto -> bb8;
+    }
+
+    bb10: {
+        _15 = [move _16];
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb11;
+    }
+
+    bb11: {
+        _8 = _print(move _9) -> bb12;
+    }
+
+    bb12: {
+        _23 = &_7;
+        _25 = const 10_isize;
+        _24 = &_25;
+        _22 = (move _23, move _24);
+        _26 = (_22.0: &isize);
+        _27 = (_22.1: &isize);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<isize, isize>(move _32, _26, _27, move _34);
+    }
+
+    bb14: {
+        _36 = _1;
+        _35 = move _36;
+        switchInt(move _35) -> [0: bb17, otherwise: bb15];
+    }
+
+    bb15: {
+        _37 = Not(const true);
+        switchInt(move _37) -> [0: bb19, otherwise: bb16];
+    }
+
+    bb16: {
+        _38 = core::panicking::panic(const "assertion failed: (true)");
+    }
+
+    bb17: {
+        _39 = Not(const false);
+        switchInt(move _39) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _40 = core::panicking::panic(const "assertion failed: (false)");
+    }
+
+    bb19: {
+        return;
+    }
+}

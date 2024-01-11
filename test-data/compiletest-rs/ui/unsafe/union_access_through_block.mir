@@ -1,0 +1,32 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/unsafe/union_access_through_block.rs:5:16: 5:21>::clone(_1: &Foo) -> Foo {
+    debug self => _1;
+    let mut _0: Foo;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn baz(_1: Bar) -> () {
+    debug bar => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

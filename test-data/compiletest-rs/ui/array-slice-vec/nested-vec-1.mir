@@ -1,0 +1,169 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<std::vec::Vec<u32>>;
+    let mut _2: std::boxed::Box<[std::vec::Vec<u32>]>;
+    let mut _3: std::boxed::Box<[std::vec::Vec<u32>; 1]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[std::vec::Vec<u32>; 1]>;
+    let mut _8: std::vec::Vec<u32>;
+    let mut _9: std::boxed::Box<[u32]>;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: *mut u8;
+    let mut _13: std::boxed::Box<[u32; 3]>;
+    let mut _14: (&u32, &u32);
+    let mut _15: &u32;
+    let _16: &u32;
+    let mut _17: &std::vec::Vec<u32>;
+    let _18: &std::vec::Vec<u32>;
+    let mut _19: &std::vec::Vec<std::vec::Vec<u32>>;
+    let mut _20: &u32;
+    let _21: u32;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: u32;
+    let mut _27: u32;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: &mut std::boxed::Box<[std::vec::Vec<u32>; 1]>;
+    let mut _32: ();
+    let mut _33: *const [u32; 3];
+    let mut _34: *const [std::vec::Vec<u32>; 1];
+    let mut _35: *const ();
+    let mut _36: usize;
+    let mut _37: usize;
+    let mut _38: usize;
+    let mut _39: usize;
+    let mut _40: bool;
+    let mut _41: *const ();
+    let mut _42: usize;
+    let mut _43: usize;
+    let mut _44: usize;
+    let mut _45: usize;
+    let mut _46: bool;
+    scope 1 {
+        debug nested => _1;
+        let _22: &u32;
+        let _23: &u32;
+        scope 4 {
+            debug left_val => _22;
+            debug right_val => _23;
+            let _28: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _28;
+            }
+        }
+    }
+    scope 2 {
+    }
+    scope 3 {
+    }
+
+    bb0: {
+        _4 = SizeOf([std::vec::Vec<u32>; 1]);
+        _5 = AlignOf([std::vec::Vec<u32>; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [std::vec::Vec<u32>; 1]);
+        _10 = SizeOf([u32; 3]);
+        _11 = AlignOf([u32; 3]);
+        _12 = alloc::alloc::exchange_malloc(move _10, move _11) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _13 = ShallowInitBox(move _12, [u32; 3]);
+        _33 = (((_13.0: std::ptr::Unique<[u32; 3]>).0: std::ptr::NonNull<[u32; 3]>).0: *const [u32; 3]);
+        _41 = _33 as *const () (PtrToPtr);
+        _42 = _41 as usize (Transmute);
+        _43 = AlignOf(u32);
+        _44 = Sub(_43, const 1_usize);
+        _45 = BitAnd(_42, _44);
+        _46 = Eq(_45, const 0_usize);
+        assert(_46, "misaligned pointer dereference: address must be a multiple of {} but is {}", _43, _42) -> [success: bb14, unwind unreachable];
+    }
+
+    bb3: {
+        _34 = (((_7.0: std::ptr::Unique<[std::vec::Vec<u32>; 1]>).0: std::ptr::NonNull<[std::vec::Vec<u32>; 1]>).0: *const [std::vec::Vec<u32>; 1]);
+        _35 = _34 as *const () (PtrToPtr);
+        _36 = _35 as usize (Transmute);
+        _37 = AlignOf(std::vec::Vec<u32>);
+        _38 = Sub(_37, const 1_usize);
+        _39 = BitAnd(_36, _38);
+        _40 = Eq(_39, const 0_usize);
+        assert(_40, "misaligned pointer dereference: address must be a multiple of {} but is {}", _37, _36) -> [success: bb13, unwind unreachable];
+    }
+
+    bb4: {
+        _19 = &_1;
+        _18 = <Vec<Vec<u32>> as Index<usize>>::index(move _19, const 0_usize) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        _17 = _18;
+        _16 = <Vec<u32> as Index<usize>>::index(move _17, const 1_usize) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        _15 = _16;
+        _21 = const 2_u32;
+        _20 = &_21;
+        _14 = (move _15, move _20);
+        _22 = (_14.0: &u32);
+        _23 = (_14.1: &u32);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<u32, u32>(move _28, _22, _23, move _30) -> bb10;
+    }
+
+    bb8: {
+        drop(_1) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12 (cleanup): {
+        _31 = &mut _7;
+        _32 = <Box<[Vec<u32>; 1]> as Drop>::drop(move _31) -> [return: bb15, unwind terminate];
+    }
+
+    bb13: {
+        (*_34) = [move _8];
+        _3 = move _7;
+        _2 = move _3 as std::boxed::Box<[std::vec::Vec<u32>]> (Pointer(Unsize));
+        _1 = slice::<impl [Vec<u32>]>::into_vec::<std::alloc::Global>(move _2) -> bb4;
+    }
+
+    bb14: {
+        (*_33) = [const 1_u32, const 2_u32, const 3_u32];
+        _9 = move _13 as std::boxed::Box<[u32]> (Pointer(Unsize));
+        _8 = slice::<impl [u32]>::into_vec::<std::alloc::Global>(move _9) -> [return: bb3, unwind: bb12];
+    }
+
+    bb15 (cleanup): {
+        goto -> bb11;
+    }
+}

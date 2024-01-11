@@ -1,0 +1,112 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn assert_send(_1: T) -> () {
+    debug _thing => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generator/derived-drop-parent-expr.rs:9:10: 9:17>::default() -> Client {
+    let mut _0: Client;
+    let mut _1: std::string::String;
+
+    bb0: {
+        _1 = <String as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Client { nickname: move _1 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20];
+    let _2: ();
+    scope 1 {
+        debug g => _1;
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20 (#0)];
+        _2 = assert_send::<[generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]>(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: ();
+    let mut _4: Client;
+    let mut _5: Client;
+    let _6: ();
+    let mut _7: ();
+    let mut _8: u32;
+    let mut _9: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20];
+    let mut _10: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20];
+    let mut _11: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20];
+    let mut _12: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20];
+    scope 1 {
+        debug _status => _6;
+    }
+
+    bb0: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]);
+        _8 = discriminant((*_9));
+        switchInt(move _8) -> [0: bb1, 1: bb7, 2: bb6, 3: bb5, otherwise: bb8];
+    }
+
+    bb1: {
+        _5 = <Client as Default>::default() -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _4 = Client { nickname: move (_5.0: std::string::String) };
+        _3 = std::mem::drop::<Client>(move _4) -> [return: bb3, unwind: bb4];
+    }
+
+    bb3: {
+        _6 = _3;
+        _7 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _7);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]);
+        discriminant((*_10)) = 3;
+        return;
+    }
+
+    bb4 (cleanup): {
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]);
+        discriminant((*_12)) = 2;
+        resume;
+    }
+
+    bb5: {
+        _0 = GeneratorState::<(), ()>::Complete(move _2);
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/derived-drop-parent-expr.rs:13:13: 13:20]);
+        discriminant((*_11)) = 1;
+        return;
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after panicking") -> bb6;
+    }
+
+    bb7: {
+        assert(const false, "generator resumed after completion") -> bb7;
+    }
+
+    bb8: {
+        unreachable;
+    }
+}

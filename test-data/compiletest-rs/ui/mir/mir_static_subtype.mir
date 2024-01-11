@@ -1,0 +1,28 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &()) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+static X: fn(&()) = {
+    let mut _0: fn(&());
+
+    bb0: {
+        _0 = foo as for<'a> fn(&'a ()) (Pointer(ReifyFnPointer));
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}

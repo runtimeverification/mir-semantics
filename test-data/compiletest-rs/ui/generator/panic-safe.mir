@@ -1,0 +1,233 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _3: std::panic::AssertUnwindSafe<[closure@ui/generator/panic-safe.rs:19:59: 19:61]>;
+    let mut _4: [closure@ui/generator/panic-safe.rs:19:59: 19:61];
+    let mut _5: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: &std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _9: !;
+    let mut _10: std::ops::Range<i32>;
+    let mut _11: std::ops::Range<i32>;
+    let mut _13: std::option::Option<i32>;
+    let mut _14: &mut std::ops::Range<i32>;
+    let mut _15: isize;
+    let mut _17: std::panic::AssertUnwindSafe<[closure@ui/generator/panic-safe.rs:25:63: 25:65]>;
+    let mut _18: [closure@ui/generator/panic-safe.rs:25:63: 25:65];
+    let mut _19: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: &std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _23: !;
+    scope 1 {
+        debug foo => _1;
+        let _2: std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+        scope 2 {
+            debug res => _2;
+            let mut _12: std::ops::Range<i32>;
+            scope 3 {
+                debug iter => _12;
+                let _16: std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+                scope 4 {
+                    debug res => _16;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/panic-safe.rs:12:19: 12:21 (#0)];
+        _5 = &mut _1;
+        _4 = [closure@ui/generator/panic-safe.rs:19:59: 19:61] { foo: move _5 };
+        _3 = AssertUnwindSafe::<[closure@ui/generator/panic-safe.rs:19:59: 19:61]>(move _4);
+        _2 = catch_unwind::<AssertUnwindSafe<[closure@ui/generator/panic-safe.rs:19:59: 19:61]>, GeneratorState<(), ()>>(move _3) -> bb1;
+    }
+
+    bb1: {
+        _8 = &_2;
+        _7 = Result::<GeneratorState<(), ()>, Box<dyn Any + Send>>::is_err(move _8) -> [return: bb2, unwind: bb17];
+    }
+
+    bb2: {
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _9 = core::panicking::panic(const "assertion failed: res.is_err()") -> bb17;
+    }
+
+    bb4: {
+        _11 = std::ops::Range::<i32> { start: const 0_i32, end: const 10_i32 };
+        _10 = <std::ops::Range<i32> as IntoIterator>::into_iter(move _11) -> [return: bb5, unwind: bb17];
+    }
+
+    bb5: {
+        _12 = move _10;
+        goto -> bb6;
+    }
+
+    bb6: {
+        _14 = &mut _12;
+        _13 = <std::ops::Range<i32> as Iterator>::next(_14) -> [return: bb7, unwind: bb17];
+    }
+
+    bb7: {
+        _15 = discriminant(_13);
+        switchInt(move _15) -> [0: bb10, 1: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        _19 = &mut _1;
+        _18 = [closure@ui/generator/panic-safe.rs:25:63: 25:65] { foo: move _19 };
+        _17 = AssertUnwindSafe::<[closure@ui/generator/panic-safe.rs:25:63: 25:65]>(move _18);
+        _16 = catch_unwind::<AssertUnwindSafe<[closure@ui/generator/panic-safe.rs:25:63: 25:65]>, GeneratorState<(), ()>>(move _17) -> [return: bb11, unwind: bb17];
+    }
+
+    bb9: {
+        unreachable;
+    }
+
+    bb10: {
+        drop(_2) -> bb15;
+    }
+
+    bb11: {
+        _22 = &_16;
+        _21 = Result::<GeneratorState<(), ()>, Box<dyn Any + Send>>::is_err(move _22) -> [return: bb12, unwind: bb16];
+    }
+
+    bb12: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _23 = core::panicking::panic(const "assertion failed: res.is_err()") -> bb16;
+    }
+
+    bb14: {
+        drop(_16) -> [return: bb6, unwind: bb17];
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16 (cleanup): {
+        drop(_16) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop(_2) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: bool;
+    let mut _4: !;
+    let mut _5: ();
+    let mut _6: ();
+    let mut _7: u32;
+    let mut _8: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _9: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _10: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+    let mut _11: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+
+    bb0: {
+        _8 = deref_copy (_1.0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        _7 = discriminant((*_8));
+        switchInt(move _7) -> [0: bb1, 1: bb7, 2: bb6, 3: bb5, otherwise: bb8];
+    }
+
+    bb1: {
+        _3 = const true;
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _4 = begin_panic::<&str>(const "explicit panic") -> bb4;
+    }
+
+    bb3: {
+        _5 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _5);
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        discriminant((*_9)) = 3;
+        return;
+    }
+
+    bb4 (cleanup): {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        discriminant((*_11)) = 2;
+        resume;
+    }
+
+    bb5: {
+        _6 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _6);
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        discriminant((*_10)) = 1;
+        return;
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after panicking") -> bb6;
+    }
+
+    bb7: {
+        assert(const false, "generator resumed after completion") -> bb7;
+    }
+
+    bb8: {
+        unreachable;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/generator/panic-safe.rs:19:59: 19:61]) -> GeneratorState<(), ()> {
+    debug foo => (*((*_1).0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]));
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _2: std::pin::Pin<&mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]>;
+    let mut _3: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        _2 = Pin::<&mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]>::new(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <[generator@ui/generator/panic-safe.rs:12:19: 12:21] as Generator>::resume(move _2, const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/generator/panic-safe.rs:25:63: 25:65]) -> GeneratorState<(), ()> {
+    debug foo => (*((*_1).0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]));
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _2: std::pin::Pin<&mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]>;
+    let mut _3: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21];
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]);
+        _2 = Pin::<&mut [generator@ui/generator/panic-safe.rs:12:19: 12:21]>::new(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <[generator@ui/generator/panic-safe.rs:12:19: 12:21] as Generator>::resume(move _2, const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

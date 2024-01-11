@@ -1,0 +1,112 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Trait::dummy(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/issue-19358.rs:7:10: 7:15>::fmt(_1: &Foo<T>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&T;
+    let _7: &T;
+
+    bb0: {
+        _3 = const "Foo";
+        _4 = const "foo";
+        _7 = &((*_1).0: T);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/deriving/issue-19358.rs:12:10: 12:15>::fmt(_1: &Bar<T>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&T;
+    let _7: &T;
+
+    bb0: {
+        _3 = const "Bar";
+        _4 = const "bar";
+        _7 = &((*_1).0: T);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo<isize>;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 3];
+    let _7: [&str; 3];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 2];
+    let _10: [core::fmt::rt::Argument<'_>; 2];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &Foo<isize>;
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let _14: &Bar<isize>;
+    scope 1 {
+        debug a => _1;
+        let _2: Bar<isize>;
+        scope 2 {
+            debug b => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Foo::<isize> { foo: const 12_isize };
+        _2 = Bar::<isize> { bar: const 12_isize };
+        _7 = [const "", const " ", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_1;
+        _11 = core::fmt::rt::Argument::<'_>::new_debug::<Foo<isize>>(_12) -> bb1;
+    }
+
+    bb1: {
+        _14 = &_2;
+        _13 = core::fmt::rt::Argument::<'_>::new_debug::<Bar<isize>>(_14) -> bb2;
+    }
+
+    bb2: {
+        _10 = [move _11, move _13];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb3;
+    }
+
+    bb3: {
+        _3 = _print(move _4) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

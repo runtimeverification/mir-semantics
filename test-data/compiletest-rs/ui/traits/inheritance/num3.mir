@@ -1,0 +1,103 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inheritance/num3.rs:9:1: 9:21>::from(_1: i32) -> Option<f32> {
+    debug i => _1;
+    let mut _0: std::option::Option<f32>;
+    let mut _2: f32;
+
+    bb0: {
+        _2 = _1 as f32 (IntToFloat);
+        _0 = Option::<f32>::Some(move _2);
+        return;
+    }
+}
+
+fn num_eq_one(_1: T) -> () {
+    debug n => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &bool;
+    let _12: bool;
+    let mut _13: &T;
+    let mut _14: &T;
+    let _15: T;
+    let mut _16: std::option::Option<T>;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _13 = &_1;
+        _16 = <T as NumCast>::from(const 1_i32) -> [return: bb1, unwind: bb10];
+    }
+
+    bb1: {
+        _15 = Option::<T>::unwrap(move _16) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _14 = &_15;
+        _12 = <T as PartialEq>::eq(move _13, move _14) -> [return: bb3, unwind: bb9];
+    }
+
+    bb3: {
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<bool>(_11) -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        _2 = _print(move _3) -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_15) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        drop(_1) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_15) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = num_eq_one::<f32>(const 1f32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

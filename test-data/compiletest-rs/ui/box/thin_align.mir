@@ -1,0 +1,182 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _3: Foo;
+    let mut _4: &str;
+    let mut _6: &std::boxed::ThinBox<dyn std::error::Error>;
+    let mut _8: &dyn std::error::Error;
+    let mut _9: (&&str, &std::string::String);
+    let mut _10: &&str;
+    let mut _11: &std::string::String;
+    let mut _14: bool;
+    let mut _15: bool;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug expected => _1;
+        let _2: std::boxed::ThinBox<dyn std::error::Error>;
+        scope 2 {
+            debug a => _2;
+            let _5: &dyn std::error::Error;
+            scope 3 {
+                debug a => _5;
+                let _7: std::string::String;
+                scope 4 {
+                    debug msg => _7;
+                    let _12: &&str;
+                    let _13: &std::string::String;
+                    scope 5 {
+                        debug left_val => _12;
+                        debug right_val => _13;
+                        let _16: core::panicking::AssertKind;
+                        scope 6 {
+                            debug kind => _16;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const "Foo error!";
+        _4 = _1;
+        _3 = Foo(move _4);
+        _2 = ThinBox::<dyn std::error::Error>::new_unsize::<Foo>(move _3) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_2;
+        _5 = <ThinBox<dyn std::error::Error> as Deref>::deref(move _6) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _8 = _5;
+        _7 = <dyn std::error::Error as ToString>::to_string(move _8) -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _10 = &_1;
+        _11 = &_7;
+        _9 = (move _10, move _11);
+        _12 = (_9.0: &&str);
+        _13 = (_9.1: &std::string::String);
+        _15 = <&str as PartialEq<String>>::eq(_12, _13) -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<&str, String>(move _16, _12, _13, move _18) -> bb9;
+    }
+
+    bb6: {
+        drop(_7) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        drop(_2) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_7) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_2) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/box/thin_align.rs:16:10: 16:15>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&&str;
+    let _6: &&str;
+
+    bb0: {
+        _3 = const "Foo";
+        _6 = &((*_1).0: &str);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/box/thin_align.rs:20:1: 20:26>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+
+    bb0: {
+        _6 = [const ""];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: &str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _0 = Formatter::<'_>::write_fmt(_2, move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn Foo(_1: &str) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: &str) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

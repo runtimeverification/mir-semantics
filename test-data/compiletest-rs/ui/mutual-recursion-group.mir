@@ -1,0 +1,85 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn tree::children(_1: Box<list>) -> tree {
+    let mut _0: tree;
+
+    bb0: {
+        _0 = tree::children(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn tree::children(_1: Box<list>) -> tree {
+    let mut _0: tree;
+
+    bb0: {
+        _0 = tree::children(move _1);
+        return;
+    }
+}
+
+fn tree::leaf(_1: colour) -> tree {
+    let mut _0: tree;
+
+    bb0: {
+        _0 = tree::leaf(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn tree::leaf(_1: colour) -> tree {
+    let mut _0: tree;
+
+    bb0: {
+        _0 = tree::leaf(move _1);
+        return;
+    }
+}
+
+fn list::cons(_1: Box<tree>, _2: Box<list>) -> list {
+    let mut _0: list;
+
+    bb0: {
+        _0 = list::cons(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn list::cons(_1: Box<tree>, _2: Box<list>) -> list {
+    let mut _0: list;
+
+    bb0: {
+        _0 = list::cons(move _1, move _2);
+        return;
+    }
+}
+
+fn small_list::kons(_1: isize, _2: Box<small_list>) -> small_list {
+    let mut _0: small_list;
+
+    bb0: {
+        _0 = small_list::kons(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn small_list::kons(_1: isize, _2: Box<small_list>) -> small_list {
+    let mut _0: small_list;
+
+    bb0: {
+        _0 = small_list::kons(move _1, move _2);
+        return;
+    }
+}

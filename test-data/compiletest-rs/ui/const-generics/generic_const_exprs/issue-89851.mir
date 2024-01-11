@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const BAR: () = {
+    let mut _0: ();
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = ice::<"">() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+BAR::{constant#0}: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "";
+        return;
+    }
+}
+
+fn ice() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ice() -> () {
+    let mut _0: ();
+    let _1: &i32;
+    let _2: i32;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const 10_i32;
+        _1 = &_2;
+        StorageDead(_2);
+        StorageDead(_1);
+        _0 = const ();
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,23 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/macros/issue-33185.rs:7:18: 7:25>::default() -> State {
+    let mut _0: State;
+    let mut _1: i64;
+
+    bb0: {
+        _1 = <i64 as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = State { x: move _1 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

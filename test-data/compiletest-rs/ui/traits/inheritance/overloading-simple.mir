@@ -1,0 +1,197 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inheritance/overloading-simple.rs:7:10: 7:15>::fmt(_1: &MyInt, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&isize;
+    let _7: &isize;
+
+    bb0: {
+        _3 = const "MyInt";
+        _4 = const "val";
+        _7 = &((*_1).0: isize);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/overloading-simple.rs:10:1: 10:25>::eq(_1: &MyInt, _2: &MyInt) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: isize;
+    let mut _4: isize;
+
+    bb0: {
+        _3 = ((*_1).0: isize);
+        _4 = ((*_2).0: isize);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/overloading-simple.rs:10:1: 10:25>::ne(_1: &MyInt, _2: &MyInt) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+
+    bb0: {
+        _3 = <MyInt as PartialEq>::eq(_1, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = Not(move _3);
+        return;
+    }
+}
+
+fn f(_1: T, _2: T) -> bool {
+    debug x => _1;
+    debug y => _2;
+    let mut _0: bool;
+    let mut _3: &T;
+    let mut _4: &T;
+
+    bb0: {
+        _3 = &_1;
+        _4 = &_2;
+        _0 = <T as PartialEq>::eq(move _3, move _4) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        drop(_2) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn mi(_1: isize) -> MyInt {
+    debug v => _1;
+    let mut _0: MyInt;
+
+    bb0: {
+        _0 = MyInt { val: _1 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: MyInt;
+    let _2: MyInt;
+    let _3: MyInt;
+    let mut _4: (MyInt, MyInt, MyInt);
+    let mut _5: MyInt;
+    let mut _6: MyInt;
+    let mut _7: MyInt;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: &MyInt;
+    let mut _11: &MyInt;
+    let mut _12: !;
+    let mut _13: (&MyInt, &MyInt);
+    let mut _14: &MyInt;
+    let mut _15: &MyInt;
+    let mut _18: bool;
+    let mut _19: bool;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        debug y => _2;
+        debug z => _3;
+        let _16: &MyInt;
+        let _17: &MyInt;
+        scope 2 {
+            debug left_val => _16;
+            debug right_val => _17;
+            let _20: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _20;
+            }
+        }
+    }
+
+    bb0: {
+        _5 = mi(const 3_isize) -> bb1;
+    }
+
+    bb1: {
+        _6 = mi(const 5_isize) -> bb2;
+    }
+
+    bb2: {
+        _7 = mi(const 3_isize) -> bb3;
+    }
+
+    bb3: {
+        _4 = (move _5, move _6, move _7);
+        _1 = move (_4.0: MyInt);
+        _2 = move (_4.1: MyInt);
+        _3 = move (_4.2: MyInt);
+        _10 = &_1;
+        _11 = &_2;
+        _9 = <MyInt as PartialEq>::ne(move _10, move _11) -> bb4;
+    }
+
+    bb4: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _12 = core::panicking::panic(const "assertion failed: x != y");
+    }
+
+    bb6: {
+        _14 = &_1;
+        _15 = &_3;
+        _13 = (move _14, move _15);
+        _16 = (_13.0: &MyInt);
+        _17 = (_13.1: &MyInt);
+        _19 = <MyInt as PartialEq>::eq(_16, _17) -> bb7;
+    }
+
+    bb7: {
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<MyInt, MyInt>(move _20, _16, _17, move _22);
+    }
+
+    bb9: {
+        return;
+    }
+}

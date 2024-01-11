@@ -1,0 +1,66 @@
+end_of_block({ let _x = AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = &AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = &&AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = Box { f: AddFlags(1) } ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = Box { f: &AddFlags(1) } ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = Box { f: &AddFlags(1) } ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _x = pass(AddFlags(1)) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let ref _x = AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let AddFlags { bits: ref _x } = AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let &AddFlags { bits } = &AddFlags(1) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let (_, ref _y) = (AddFlags(1), 22) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let box ref _x = std::boxed::Box::new(AddFlags(1)) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let box _x = std::boxed::Box::new(AddFlags(1)) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _ = { { check_flags(0); &AddFlags(1) } } ; })
+flags 0, expected 0
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _ = &((Box { f: AddFlags(1) }).f) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_block({ let _ = &(([AddFlags(1)])[0]) ; })
+flags 0, expected 0
+flags 1, expected 1
+end_of_stmt(AddFlags(1))
+flags 1, expected 1
+flags 0, expected 0
+end_of_stmt((AddFlags(1), 22))
+flags 1, expected 1
+flags 0, expected 0
+end_of_stmt(arg(0, &AddFlags(1)))
+flags 0, expected 0
+flags 1, expected 1
+flags 0, expected 0
+end_of_stmt(AddFlags(1).check_flags(0).bits())
+flags 0, expected 0
+flags 1, expected 1
+flags 0, expected 0
+end_of_stmt(AddFlags(1))
+flags 1, expected 1
+flags 0, expected 0

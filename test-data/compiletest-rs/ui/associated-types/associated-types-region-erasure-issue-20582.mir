@@ -1,0 +1,21 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/associated-types-region-erasure-issue-20582.rs:12:1: 12:30>::next(_1: &mut Foo<'_>) -> Option<&[u8]> {
+    debug self => _1;
+    let mut _0: std::option::Option<&[u8]>;
+    let mut _2: &[u8];
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &[u8]);
+        _0 = Option::<&[u8]>::Some(_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

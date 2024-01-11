@@ -1,0 +1,42 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Fun::identity(_1: <Self as Fun>::F<'_>) -> <Self as Fun>::F<'_> {
+    debug t => _1;
+    let mut _0: <Self as Fun>::F<'_>;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn bug(_1: T) -> T {
+    debug t => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <T as Fun>::identity::<'_>(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _2: i32;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = const 10_i32;
+        _2 = bug::<'_, i32>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,208 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let _4: &fn() {main};
+    let _5: fn() {main};
+    let mut _6: &usize;
+    let _7: usize;
+    let _8: &usize;
+    let _9: &usize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: usize;
+    let mut _13: usize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let _17: fn() -> usize {std::mem::size_of::<u8>};
+    let _18: fn() -> usize {std::mem::size_of::<u16>};
+    let mut _19: (&usize, &usize);
+    let mut _20: &usize;
+    let _21: usize;
+    let _22: &fn() -> usize {std::mem::size_of::<u8>};
+    let mut _23: &usize;
+    let _24: usize;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: usize;
+    let mut _30: usize;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: (&usize, &usize);
+    let mut _35: &usize;
+    let _36: usize;
+    let _37: &fn() -> usize {std::mem::size_of::<u16>};
+    let mut _38: &usize;
+    let _39: usize;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: usize;
+    let mut _45: usize;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&(usize, usize), &(usize, usize));
+    let mut _50: &(usize, usize);
+    let _51: (usize, usize);
+    let mut _52: usize;
+    let mut _53: usize;
+    let mut _54: &(usize, usize);
+    let _55: (usize, usize);
+    let mut _58: bool;
+    let mut _59: bool;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+    scope 3 {
+        debug a => std::mem::size_of::<u8>;
+        debug b => std::mem::size_of::<u16>;
+        let _25: &usize;
+        let _26: &usize;
+        let _40: &usize;
+        let _41: &usize;
+        let _56: &(usize, usize);
+        let _57: &(usize, usize);
+        scope 4 {
+            debug left_val => _25;
+            debug right_val => _26;
+            let _31: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _31;
+            }
+        }
+        scope 6 {
+            debug left_val => _40;
+            debug right_val => _41;
+            let _46: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _46;
+            }
+        }
+        scope 8 {
+            debug left_val => _56;
+            debug right_val => _57;
+            let _60: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _60;
+            }
+        }
+    }
+
+    bb0: {
+        _4 = &_5;
+        _3 = std::mem::size_of_val::<fn() {main}>(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const 0_usize;
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &usize);
+        _9 = (_1.1: &usize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<usize, usize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _22 = &_17;
+        _21 = std::mem::size_of_val::<fn() -> usize {std::mem::size_of::<u8>}>(_22) -> bb4;
+    }
+
+    bb4: {
+        _20 = &_21;
+        _24 = const 0_usize;
+        _23 = &_24;
+        _19 = (move _20, move _23);
+        _25 = (_19.0: &usize);
+        _26 = (_19.1: &usize);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<usize, usize>(move _31, _25, _26, move _33);
+    }
+
+    bb6: {
+        _37 = &_18;
+        _36 = std::mem::size_of_val::<fn() -> usize {std::mem::size_of::<u16>}>(_37) -> bb7;
+    }
+
+    bb7: {
+        _35 = &_36;
+        _39 = const 0_usize;
+        _38 = &_39;
+        _34 = (move _35, move _38);
+        _40 = (_34.0: &usize);
+        _41 = (_34.1: &usize);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<usize, usize>(move _46, _40, _41, move _48);
+    }
+
+    bb9: {
+        _52 = std::mem::size_of::<u8>() -> bb10;
+    }
+
+    bb10: {
+        _53 = std::mem::size_of::<u16>() -> bb11;
+    }
+
+    bb11: {
+        _51 = (move _52, move _53);
+        _50 = &_51;
+        _55 = (const 1_usize, const 2_usize);
+        _54 = &_55;
+        _49 = (move _50, move _54);
+        _56 = (_49.0: &(usize, usize));
+        _57 = (_49.1: &(usize, usize));
+        _59 = <(usize, usize) as PartialEq>::eq(_56, _57) -> bb12;
+    }
+
+    bb12: {
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _60, _56, _57, move _62);
+    }
+
+    bb14: {
+        return;
+    }
+}

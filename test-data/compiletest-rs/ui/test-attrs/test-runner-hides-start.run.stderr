@@ -1,0 +1,5 @@
+thread '<unnamed>' panicked at 'explicit panic', ui/test-attrs/test-runner-hides-start.rs:7:52
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+fatal runtime error: failed to initiate panic, error 5
+timeout: the monitored command dumped core
+Aborted

@@ -1,0 +1,39 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/associated-types-projection-to-unrelated-trait.rs:27:1: 27:18>::okay(_1: &(), _2: U, _3: f32) -> () {
+    debug self => _1;
+    debug _foo => _2;
+    debug _bar => _3;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-projection-to-unrelated-trait.rs:31:1: 31:19>::okay(_1: &f64, _2: U, _3: u32) -> () {
+    debug self => _1;
+    debug _foo => _2;
+    debug _bar => _3;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

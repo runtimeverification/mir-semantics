@@ -1,0 +1,104 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: Test<[i32; 3]>;
+    let mut _2: [i32; 3];
+    let _4: &Test<[i32; 3]>;
+    let _6: [i32; 3];
+    let mut _8: &&[i32; 3];
+    let mut _11: [i32; 3];
+    let _13: &(i32, [i32; 3]);
+    let _15: [i32; 3];
+    let mut _17: &&[i32; 3];
+    let mut _19: &&[i32; 3];
+    let mut _20: &&[i32; 3];
+    scope 1 {
+        debug x => _1;
+        let _3: &Test<[i32]>;
+        scope 2 {
+            debug x => _3;
+            scope 3 {
+                debug _y => _3;
+                let _5: &[i32; 3];
+                scope 4 {
+                    debug slice => _5;
+                    let _7: Test<&&[i32; 3]>;
+                    scope 5 {
+                        debug x => _7;
+                        let _9: &[i32; 3];
+                        scope 6 {
+                            debug _slice => _9;
+                            let _10: (i32, [i32; 3]);
+                            scope 7 {
+                                debug x => _10;
+                                let _12: &(i32, [i32]);
+                                scope 8 {
+                                    debug x => _12;
+                                    scope 9 {
+                                        debug _y => _12;
+                                        let _14: &[i32; 3];
+                                        scope 10 {
+                                            debug slice => _14;
+                                            let _16: (i32, &&[i32; 3]);
+                                            scope 11 {
+                                                debug x => _16;
+                                                let _18: &[i32; 3];
+                                                scope 12 {
+                                                    debug _slice => _18;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = [const 1_i32, const 2_i32, const 3_i32];
+        _1 = Test::<[i32; 3]>(move _2);
+        _4 = &_1;
+        _3 = _4 as &Test<[i32]> (Pointer(Unsize));
+        _6 = [const 1_i32, const 2_i32, const 3_i32];
+        _5 = &_6;
+        _8 = &_5;
+        _7 = Test::<&&[i32; 3]>(move _8);
+        _19 = deref_copy (_7.0: &&[i32; 3]);
+        _9 = (*_19);
+        _11 = [const 1_i32, const 2_i32, const 3_i32];
+        _10 = (const 10_i32, move _11);
+        _13 = &_10;
+        _12 = _13 as &(i32, [i32]) (Pointer(Unsize));
+        _15 = [const 1_i32, const 2_i32, const 3_i32];
+        _14 = &_15;
+        _17 = &_14;
+        _16 = (const 10_i32, move _17);
+        _20 = deref_copy (_16.1: &&[i32; 3]);
+        _18 = (*_20);
+        return;
+    }
+}
+
+fn Test(_1: T) -> Test<T> {
+    let mut _0: Test<T>;
+
+    bb0: {
+        _0 = Test::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Test(_1: T) -> Test<T> {
+    let mut _0: Test<T>;
+
+    bb0: {
+        _0 = Test::<T>(move _1);
+        return;
+    }
+}

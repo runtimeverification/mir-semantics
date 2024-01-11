@@ -1,0 +1,1427 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn search(_1: (bool, bool, bool)) -> u32 {
+    debug target => _1;
+    let mut _0: u32;
+    let _2: ((bool, bool), (bool, bool), (bool, bool));
+    let mut _3: (bool, bool);
+    let mut _4: (bool, bool);
+    let mut _5: (bool, bool);
+    let mut _13: bool;
+    let mut _14: &(bool, bool, bool);
+    let _15: (bool, bool, bool);
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: &(bool, bool, bool);
+    let mut _20: bool;
+    let mut _21: &(bool, bool, bool);
+    let _22: (bool, bool, bool);
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: &(bool, bool, bool);
+    let mut _27: bool;
+    let mut _28: &(bool, bool, bool);
+    let _29: (bool, bool, bool);
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: &(bool, bool, bool);
+    let mut _34: bool;
+    let mut _35: &(bool, bool, bool);
+    let _36: (bool, bool, bool);
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: &(bool, bool, bool);
+    let mut _41: bool;
+    let mut _42: &(bool, bool, bool);
+    let _43: (bool, bool, bool);
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: &(bool, bool, bool);
+    let mut _48: bool;
+    let mut _49: &(bool, bool, bool);
+    let _50: (bool, bool, bool);
+    let mut _51: bool;
+    let mut _52: bool;
+    let mut _53: bool;
+    let mut _54: &(bool, bool, bool);
+    let mut _55: bool;
+    let mut _56: &(bool, bool, bool);
+    let _57: (bool, bool, bool);
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: bool;
+    let mut _61: &(bool, bool, bool);
+    let mut _62: bool;
+    let mut _63: &(bool, bool, bool);
+    let _64: (bool, bool, bool);
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: &(bool, bool, bool);
+    let mut _69: !;
+    scope 1 {
+        debug x => _2;
+        let mut _6: u32;
+        scope 2 {
+            debug guard_count => _6;
+            let _7: bool;
+            let _8: &bool;
+            let _9: bool;
+            let _10: &bool;
+            let _11: bool;
+            let _12: &bool;
+            scope 3 {
+                debug a => _7;
+                debug a => _8;
+                debug b => _9;
+                debug b => _10;
+                debug c => _11;
+                debug c => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = (const false, const true);
+        _4 = (const false, const true);
+        _5 = (const false, const true);
+        _2 = (move _3, move _4, move _5);
+        _6 = const 0_u32;
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb10, otherwise: bb5];
+    }
+
+    bb1: {
+        _69 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb2: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb16, otherwise: bb6];
+    }
+
+    bb3: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb22, otherwise: bb7];
+    }
+
+    bb4: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb28, otherwise: bb8];
+    }
+
+    bb5: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb2, otherwise: bb13];
+    }
+
+    bb6: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb3, otherwise: bb19];
+    }
+
+    bb7: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb4, otherwise: bb25];
+    }
+
+    bb8: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb1, otherwise: bb31];
+    }
+
+    bb9: {
+        _0 = _6;
+        return;
+    }
+
+    bb10: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _16 = (*_8);
+        _17 = (*_10);
+        _18 = (*_12);
+        _15 = (move _16, move _17, move _18);
+        _14 = &_15;
+        _19 = &_1;
+        _13 = <(bool, bool, bool) as PartialEq>::eq(move _14, move _19) -> bb11;
+    }
+
+    bb11: {
+        switchInt(move _13) -> [0: bb5, otherwise: bb12];
+    }
+
+    bb12: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb13: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _23 = (*_8);
+        _24 = (*_10);
+        _25 = (*_12);
+        _22 = (move _23, move _24, move _25);
+        _21 = &_22;
+        _26 = &_1;
+        _20 = <(bool, bool, bool) as PartialEq>::eq(move _21, move _26) -> bb14;
+    }
+
+    bb14: {
+        switchInt(move _20) -> [0: bb2, otherwise: bb15];
+    }
+
+    bb15: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb16: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _30 = (*_8);
+        _31 = (*_10);
+        _32 = (*_12);
+        _29 = (move _30, move _31, move _32);
+        _28 = &_29;
+        _33 = &_1;
+        _27 = <(bool, bool, bool) as PartialEq>::eq(move _28, move _33) -> bb17;
+    }
+
+    bb17: {
+        switchInt(move _27) -> [0: bb6, otherwise: bb18];
+    }
+
+    bb18: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb19: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _37 = (*_8);
+        _38 = (*_10);
+        _39 = (*_12);
+        _36 = (move _37, move _38, move _39);
+        _35 = &_36;
+        _40 = &_1;
+        _34 = <(bool, bool, bool) as PartialEq>::eq(move _35, move _40) -> bb20;
+    }
+
+    bb20: {
+        switchInt(move _34) -> [0: bb3, otherwise: bb21];
+    }
+
+    bb21: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb22: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _44 = (*_8);
+        _45 = (*_10);
+        _46 = (*_12);
+        _43 = (move _44, move _45, move _46);
+        _42 = &_43;
+        _47 = &_1;
+        _41 = <(bool, bool, bool) as PartialEq>::eq(move _42, move _47) -> bb23;
+    }
+
+    bb23: {
+        switchInt(move _41) -> [0: bb7, otherwise: bb24];
+    }
+
+    bb24: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb25: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _51 = (*_8);
+        _52 = (*_10);
+        _53 = (*_12);
+        _50 = (move _51, move _52, move _53);
+        _49 = &_50;
+        _54 = &_1;
+        _48 = <(bool, bool, bool) as PartialEq>::eq(move _49, move _54) -> bb26;
+    }
+
+    bb26: {
+        switchInt(move _48) -> [0: bb4, otherwise: bb27];
+    }
+
+    bb27: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb28: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _58 = (*_8);
+        _59 = (*_10);
+        _60 = (*_12);
+        _57 = (move _58, move _59, move _60);
+        _56 = &_57;
+        _61 = &_1;
+        _55 = <(bool, bool, bool) as PartialEq>::eq(move _56, move _61) -> bb29;
+    }
+
+    bb29: {
+        switchInt(move _55) -> [0: bb8, otherwise: bb30];
+    }
+
+    bb30: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb31: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _65 = (*_8);
+        _66 = (*_10);
+        _67 = (*_12);
+        _64 = (move _65, move _66, move _67);
+        _63 = &_64;
+        _68 = &_1;
+        _62 = <(bool, bool, bool) as PartialEq>::eq(move _63, move _68) -> bb32;
+    }
+
+    bb32: {
+        switchInt(move _62) -> [0: bb1, otherwise: bb33];
+    }
+
+    bb33: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+}
+
+fn search_old_style(_1: (bool, bool, bool)) -> u32 {
+    debug target => _1;
+    let mut _0: u32;
+    let _2: ((bool, bool), (bool, bool), (bool, bool));
+    let mut _3: (bool, bool);
+    let mut _4: (bool, bool);
+    let mut _5: (bool, bool);
+    let mut _13: bool;
+    let mut _14: &(bool, bool, bool);
+    let _15: (bool, bool, bool);
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: &(bool, bool, bool);
+    let mut _20: bool;
+    let mut _21: &(bool, bool, bool);
+    let _22: (bool, bool, bool);
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: &(bool, bool, bool);
+    let mut _27: bool;
+    let mut _28: &(bool, bool, bool);
+    let _29: (bool, bool, bool);
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: &(bool, bool, bool);
+    let mut _34: bool;
+    let mut _35: &(bool, bool, bool);
+    let _36: (bool, bool, bool);
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: &(bool, bool, bool);
+    let mut _41: bool;
+    let mut _42: &(bool, bool, bool);
+    let _43: (bool, bool, bool);
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: &(bool, bool, bool);
+    let mut _48: bool;
+    let mut _49: &(bool, bool, bool);
+    let _50: (bool, bool, bool);
+    let mut _51: bool;
+    let mut _52: bool;
+    let mut _53: bool;
+    let mut _54: &(bool, bool, bool);
+    let mut _55: bool;
+    let mut _56: &(bool, bool, bool);
+    let _57: (bool, bool, bool);
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: bool;
+    let mut _61: &(bool, bool, bool);
+    let mut _62: bool;
+    let mut _63: &(bool, bool, bool);
+    let _64: (bool, bool, bool);
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: &(bool, bool, bool);
+    let mut _69: !;
+    scope 1 {
+        debug x => _2;
+        let mut _6: u32;
+        scope 2 {
+            debug guard_count => _6;
+            let _7: bool;
+            let _8: &bool;
+            let _9: bool;
+            let _10: &bool;
+            let _11: bool;
+            let _12: &bool;
+            scope 3 {
+                debug a => _7;
+                debug a => _8;
+                debug b => _9;
+                debug b => _10;
+                debug c => _11;
+                debug c => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = (const false, const true);
+        _4 = (const false, const true);
+        _5 = (const false, const true);
+        _2 = (move _3, move _4, move _5);
+        _6 = const 0_u32;
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb10, otherwise: bb1];
+    }
+
+    bb1: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb2, otherwise: bb13];
+    }
+
+    bb2: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb16, otherwise: bb3];
+    }
+
+    bb3: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb4, otherwise: bb19];
+    }
+
+    bb4: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb22, otherwise: bb5];
+    }
+
+    bb5: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb6, otherwise: bb25];
+    }
+
+    bb6: {
+        switchInt(((_2.2: (bool, bool)).0: bool)) -> [0: bb28, otherwise: bb7];
+    }
+
+    bb7: {
+        switchInt(((_2.2: (bool, bool)).1: bool)) -> [0: bb8, otherwise: bb31];
+    }
+
+    bb8: {
+        _69 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb9: {
+        _0 = _6;
+        return;
+    }
+
+    bb10: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _16 = (*_8);
+        _17 = (*_10);
+        _18 = (*_12);
+        _15 = (move _16, move _17, move _18);
+        _14 = &_15;
+        _19 = &_1;
+        _13 = <(bool, bool, bool) as PartialEq>::eq(move _14, move _19) -> bb11;
+    }
+
+    bb11: {
+        switchInt(move _13) -> [0: bb1, otherwise: bb12];
+    }
+
+    bb12: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb13: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _23 = (*_8);
+        _24 = (*_10);
+        _25 = (*_12);
+        _22 = (move _23, move _24, move _25);
+        _21 = &_22;
+        _26 = &_1;
+        _20 = <(bool, bool, bool) as PartialEq>::eq(move _21, move _26) -> bb14;
+    }
+
+    bb14: {
+        switchInt(move _20) -> [0: bb2, otherwise: bb15];
+    }
+
+    bb15: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb16: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _30 = (*_8);
+        _31 = (*_10);
+        _32 = (*_12);
+        _29 = (move _30, move _31, move _32);
+        _28 = &_29;
+        _33 = &_1;
+        _27 = <(bool, bool, bool) as PartialEq>::eq(move _28, move _33) -> bb17;
+    }
+
+    bb17: {
+        switchInt(move _27) -> [0: bb3, otherwise: bb18];
+    }
+
+    bb18: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb19: {
+        _8 = &((_2.0: (bool, bool)).0: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _37 = (*_8);
+        _38 = (*_10);
+        _39 = (*_12);
+        _36 = (move _37, move _38, move _39);
+        _35 = &_36;
+        _40 = &_1;
+        _34 = <(bool, bool, bool) as PartialEq>::eq(move _35, move _40) -> bb20;
+    }
+
+    bb20: {
+        switchInt(move _34) -> [0: bb4, otherwise: bb21];
+    }
+
+    bb21: {
+        _7 = ((_2.0: (bool, bool)).0: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb22: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _44 = (*_8);
+        _45 = (*_10);
+        _46 = (*_12);
+        _43 = (move _44, move _45, move _46);
+        _42 = &_43;
+        _47 = &_1;
+        _41 = <(bool, bool, bool) as PartialEq>::eq(move _42, move _47) -> bb23;
+    }
+
+    bb23: {
+        switchInt(move _41) -> [0: bb5, otherwise: bb24];
+    }
+
+    bb24: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb25: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).0: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _51 = (*_8);
+        _52 = (*_10);
+        _53 = (*_12);
+        _50 = (move _51, move _52, move _53);
+        _49 = &_50;
+        _54 = &_1;
+        _48 = <(bool, bool, bool) as PartialEq>::eq(move _49, move _54) -> bb26;
+    }
+
+    bb26: {
+        switchInt(move _48) -> [0: bb6, otherwise: bb27];
+    }
+
+    bb27: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).0: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+
+    bb28: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).0: bool);
+        _6 = Add(_6, const 1_u32);
+        _58 = (*_8);
+        _59 = (*_10);
+        _60 = (*_12);
+        _57 = (move _58, move _59, move _60);
+        _56 = &_57;
+        _61 = &_1;
+        _55 = <(bool, bool, bool) as PartialEq>::eq(move _56, move _61) -> bb29;
+    }
+
+    bb29: {
+        switchInt(move _55) -> [0: bb7, otherwise: bb30];
+    }
+
+    bb30: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).0: bool);
+        goto -> bb9;
+    }
+
+    bb31: {
+        _8 = &((_2.0: (bool, bool)).1: bool);
+        _10 = &((_2.1: (bool, bool)).1: bool);
+        _12 = &((_2.2: (bool, bool)).1: bool);
+        _6 = Add(_6, const 1_u32);
+        _65 = (*_8);
+        _66 = (*_10);
+        _67 = (*_12);
+        _64 = (move _65, move _66, move _67);
+        _63 = &_64;
+        _68 = &_1;
+        _62 = <(bool, bool, bool) as PartialEq>::eq(move _63, move _68) -> bb32;
+    }
+
+    bb32: {
+        switchInt(move _62) -> [0: bb8, otherwise: bb33];
+    }
+
+    bb33: {
+        _7 = ((_2.0: (bool, bool)).1: bool);
+        _9 = ((_2.1: (bool, bool)).1: bool);
+        _11 = ((_2.2: (bool, bool)).1: bool);
+        goto -> bb9;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: (bool, bool, bool);
+    let mut _5: &u32;
+    let _6: u32;
+    let _7: &u32;
+    let _8: &u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&u32, &u32);
+    let mut _17: &u32;
+    let _18: u32;
+    let mut _19: (bool, bool, bool);
+    let mut _20: &u32;
+    let _21: u32;
+    let _22: &u32;
+    let _23: &u32;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: u32;
+    let mut _27: u32;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&u32, &u32);
+    let mut _32: &u32;
+    let _33: u32;
+    let mut _34: (bool, bool, bool);
+    let mut _35: &u32;
+    let _36: u32;
+    let _37: &u32;
+    let _38: &u32;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: u32;
+    let mut _42: u32;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _46: (&u32, &u32);
+    let mut _47: &u32;
+    let _48: u32;
+    let mut _49: (bool, bool, bool);
+    let mut _50: &u32;
+    let _51: u32;
+    let _52: &u32;
+    let _53: &u32;
+    let mut _54: bool;
+    let mut _55: bool;
+    let mut _56: u32;
+    let mut _57: u32;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: (&u32, &u32);
+    let mut _62: &u32;
+    let _63: u32;
+    let mut _64: (bool, bool, bool);
+    let mut _65: &u32;
+    let _66: u32;
+    let _67: &u32;
+    let _68: &u32;
+    let mut _69: bool;
+    let mut _70: bool;
+    let mut _71: u32;
+    let mut _72: u32;
+    let _74: !;
+    let mut _75: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _76: (&u32, &u32);
+    let mut _77: &u32;
+    let _78: u32;
+    let mut _79: (bool, bool, bool);
+    let mut _80: &u32;
+    let _81: u32;
+    let _82: &u32;
+    let _83: &u32;
+    let mut _84: bool;
+    let mut _85: bool;
+    let mut _86: u32;
+    let mut _87: u32;
+    let _89: !;
+    let mut _90: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _91: (&u32, &u32);
+    let mut _92: &u32;
+    let _93: u32;
+    let mut _94: (bool, bool, bool);
+    let mut _95: &u32;
+    let _96: u32;
+    let _97: &u32;
+    let _98: &u32;
+    let mut _99: bool;
+    let mut _100: bool;
+    let mut _101: u32;
+    let mut _102: u32;
+    let _104: !;
+    let mut _105: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _106: (&u32, &u32);
+    let mut _107: &u32;
+    let _108: u32;
+    let mut _109: (bool, bool, bool);
+    let mut _110: &u32;
+    let _111: u32;
+    let _112: &u32;
+    let _113: &u32;
+    let mut _114: bool;
+    let mut _115: bool;
+    let mut _116: u32;
+    let mut _117: u32;
+    let _119: !;
+    let mut _120: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _121: (&u32, &u32);
+    let mut _122: &u32;
+    let _123: u32;
+    let mut _124: (bool, bool, bool);
+    let mut _125: &u32;
+    let _126: u32;
+    let _127: &u32;
+    let _128: &u32;
+    let mut _129: bool;
+    let mut _130: bool;
+    let mut _131: u32;
+    let mut _132: u32;
+    let _134: !;
+    let mut _135: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _136: (&u32, &u32);
+    let mut _137: &u32;
+    let _138: u32;
+    let mut _139: (bool, bool, bool);
+    let mut _140: &u32;
+    let _141: u32;
+    let _142: &u32;
+    let _143: &u32;
+    let mut _144: bool;
+    let mut _145: bool;
+    let mut _146: u32;
+    let mut _147: u32;
+    let _149: !;
+    let mut _150: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _151: (&u32, &u32);
+    let mut _152: &u32;
+    let _153: u32;
+    let mut _154: (bool, bool, bool);
+    let mut _155: &u32;
+    let _156: u32;
+    let _157: &u32;
+    let _158: &u32;
+    let mut _159: bool;
+    let mut _160: bool;
+    let mut _161: u32;
+    let mut _162: u32;
+    let _164: !;
+    let mut _165: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _166: (&u32, &u32);
+    let mut _167: &u32;
+    let _168: u32;
+    let mut _169: (bool, bool, bool);
+    let mut _170: &u32;
+    let _171: u32;
+    let _172: &u32;
+    let _173: &u32;
+    let mut _174: bool;
+    let mut _175: bool;
+    let mut _176: u32;
+    let mut _177: u32;
+    let _179: !;
+    let mut _180: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _181: (&u32, &u32);
+    let mut _182: &u32;
+    let _183: u32;
+    let mut _184: (bool, bool, bool);
+    let mut _185: &u32;
+    let _186: u32;
+    let _187: &u32;
+    let _188: &u32;
+    let mut _189: bool;
+    let mut _190: bool;
+    let mut _191: u32;
+    let mut _192: u32;
+    let _194: !;
+    let mut _195: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _196: (&u32, &u32);
+    let mut _197: &u32;
+    let _198: u32;
+    let mut _199: (bool, bool, bool);
+    let mut _200: &u32;
+    let _201: u32;
+    let _202: &u32;
+    let _203: &u32;
+    let mut _204: bool;
+    let mut _205: bool;
+    let mut _206: u32;
+    let mut _207: u32;
+    let _209: !;
+    let mut _210: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _211: (&u32, &u32);
+    let mut _212: &u32;
+    let _213: u32;
+    let mut _214: (bool, bool, bool);
+    let mut _215: &u32;
+    let _216: u32;
+    let _217: &u32;
+    let _218: &u32;
+    let mut _219: bool;
+    let mut _220: bool;
+    let mut _221: u32;
+    let mut _222: u32;
+    let _224: !;
+    let mut _225: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _226: (&u32, &u32);
+    let mut _227: &u32;
+    let _228: u32;
+    let mut _229: (bool, bool, bool);
+    let mut _230: &u32;
+    let _231: u32;
+    let _232: &u32;
+    let _233: &u32;
+    let mut _234: bool;
+    let mut _235: bool;
+    let mut _236: u32;
+    let mut _237: u32;
+    let _239: !;
+    let mut _240: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _28: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _28;
+        }
+    }
+    scope 5 {
+        debug left_val => _37;
+        debug right_val => _38;
+        let _43: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _43;
+        }
+    }
+    scope 7 {
+        debug left_val => _52;
+        debug right_val => _53;
+        let _58: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _58;
+        }
+    }
+    scope 9 {
+        debug left_val => _67;
+        debug right_val => _68;
+        let _73: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _73;
+        }
+    }
+    scope 11 {
+        debug left_val => _82;
+        debug right_val => _83;
+        let _88: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _88;
+        }
+    }
+    scope 13 {
+        debug left_val => _97;
+        debug right_val => _98;
+        let _103: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _103;
+        }
+    }
+    scope 15 {
+        debug left_val => _112;
+        debug right_val => _113;
+        let _118: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _118;
+        }
+    }
+    scope 17 {
+        debug left_val => _127;
+        debug right_val => _128;
+        let _133: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _133;
+        }
+    }
+    scope 19 {
+        debug left_val => _142;
+        debug right_val => _143;
+        let _148: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _148;
+        }
+    }
+    scope 21 {
+        debug left_val => _157;
+        debug right_val => _158;
+        let _163: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _163;
+        }
+    }
+    scope 23 {
+        debug left_val => _172;
+        debug right_val => _173;
+        let _178: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _178;
+        }
+    }
+    scope 25 {
+        debug left_val => _187;
+        debug right_val => _188;
+        let _193: core::panicking::AssertKind;
+        scope 26 {
+            debug kind => _193;
+        }
+    }
+    scope 27 {
+        debug left_val => _202;
+        debug right_val => _203;
+        let _208: core::panicking::AssertKind;
+        scope 28 {
+            debug kind => _208;
+        }
+    }
+    scope 29 {
+        debug left_val => _217;
+        debug right_val => _218;
+        let _223: core::panicking::AssertKind;
+        scope 30 {
+            debug kind => _223;
+        }
+    }
+    scope 31 {
+        debug left_val => _232;
+        debug right_val => _233;
+        let _238: core::panicking::AssertKind;
+        scope 32 {
+            debug kind => _238;
+        }
+    }
+
+    bb0: {
+        _4 = (const false, const false, const false);
+        _3 = search(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _6 = const 1_u32;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &u32);
+        _8 = (_1.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        _19 = (const false, const false, const true);
+        _18 = search(move _19) -> bb4;
+    }
+
+    bb4: {
+        _17 = &_18;
+        _21 = const 2_u32;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &u32);
+        _23 = (_16.1: &u32);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<u32, u32>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        _34 = (const false, const true, const false);
+        _33 = search(move _34) -> bb7;
+    }
+
+    bb7: {
+        _32 = &_33;
+        _36 = const 3_u32;
+        _35 = &_36;
+        _31 = (move _32, move _35);
+        _37 = (_31.0: &u32);
+        _38 = (_31.1: &u32);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<u32, u32>(move _43, _37, _38, move _45);
+    }
+
+    bb9: {
+        _49 = (const false, const true, const true);
+        _48 = search(move _49) -> bb10;
+    }
+
+    bb10: {
+        _47 = &_48;
+        _51 = const 4_u32;
+        _50 = &_51;
+        _46 = (move _47, move _50);
+        _52 = (_46.0: &u32);
+        _53 = (_46.1: &u32);
+        _56 = (*_52);
+        _57 = (*_53);
+        _55 = Eq(move _56, move _57);
+        _54 = Not(move _55);
+        switchInt(move _54) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<u32, u32>(move _58, _52, _53, move _60);
+    }
+
+    bb12: {
+        _64 = (const true, const false, const false);
+        _63 = search(move _64) -> bb13;
+    }
+
+    bb13: {
+        _62 = &_63;
+        _66 = const 5_u32;
+        _65 = &_66;
+        _61 = (move _62, move _65);
+        _67 = (_61.0: &u32);
+        _68 = (_61.1: &u32);
+        _71 = (*_67);
+        _72 = (*_68);
+        _70 = Eq(move _71, move _72);
+        _69 = Not(move _70);
+        switchInt(move _69) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _73 = core::panicking::AssertKind::Eq;
+        _75 = Option::<Arguments<'_>>::None;
+        _74 = core::panicking::assert_failed::<u32, u32>(move _73, _67, _68, move _75);
+    }
+
+    bb15: {
+        _79 = (const true, const false, const true);
+        _78 = search(move _79) -> bb16;
+    }
+
+    bb16: {
+        _77 = &_78;
+        _81 = const 6_u32;
+        _80 = &_81;
+        _76 = (move _77, move _80);
+        _82 = (_76.0: &u32);
+        _83 = (_76.1: &u32);
+        _86 = (*_82);
+        _87 = (*_83);
+        _85 = Eq(move _86, move _87);
+        _84 = Not(move _85);
+        switchInt(move _84) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _88 = core::panicking::AssertKind::Eq;
+        _90 = Option::<Arguments<'_>>::None;
+        _89 = core::panicking::assert_failed::<u32, u32>(move _88, _82, _83, move _90);
+    }
+
+    bb18: {
+        _94 = (const true, const true, const false);
+        _93 = search(move _94) -> bb19;
+    }
+
+    bb19: {
+        _92 = &_93;
+        _96 = const 7_u32;
+        _95 = &_96;
+        _91 = (move _92, move _95);
+        _97 = (_91.0: &u32);
+        _98 = (_91.1: &u32);
+        _101 = (*_97);
+        _102 = (*_98);
+        _100 = Eq(move _101, move _102);
+        _99 = Not(move _100);
+        switchInt(move _99) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _103 = core::panicking::AssertKind::Eq;
+        _105 = Option::<Arguments<'_>>::None;
+        _104 = core::panicking::assert_failed::<u32, u32>(move _103, _97, _98, move _105);
+    }
+
+    bb21: {
+        _109 = (const true, const true, const true);
+        _108 = search(move _109) -> bb22;
+    }
+
+    bb22: {
+        _107 = &_108;
+        _111 = const 8_u32;
+        _110 = &_111;
+        _106 = (move _107, move _110);
+        _112 = (_106.0: &u32);
+        _113 = (_106.1: &u32);
+        _116 = (*_112);
+        _117 = (*_113);
+        _115 = Eq(move _116, move _117);
+        _114 = Not(move _115);
+        switchInt(move _114) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _118 = core::panicking::AssertKind::Eq;
+        _120 = Option::<Arguments<'_>>::None;
+        _119 = core::panicking::assert_failed::<u32, u32>(move _118, _112, _113, move _120);
+    }
+
+    bb24: {
+        _124 = (const false, const false, const false);
+        _123 = search_old_style(move _124) -> bb25;
+    }
+
+    bb25: {
+        _122 = &_123;
+        _126 = const 1_u32;
+        _125 = &_126;
+        _121 = (move _122, move _125);
+        _127 = (_121.0: &u32);
+        _128 = (_121.1: &u32);
+        _131 = (*_127);
+        _132 = (*_128);
+        _130 = Eq(move _131, move _132);
+        _129 = Not(move _130);
+        switchInt(move _129) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _133 = core::panicking::AssertKind::Eq;
+        _135 = Option::<Arguments<'_>>::None;
+        _134 = core::panicking::assert_failed::<u32, u32>(move _133, _127, _128, move _135);
+    }
+
+    bb27: {
+        _139 = (const false, const false, const true);
+        _138 = search_old_style(move _139) -> bb28;
+    }
+
+    bb28: {
+        _137 = &_138;
+        _141 = const 2_u32;
+        _140 = &_141;
+        _136 = (move _137, move _140);
+        _142 = (_136.0: &u32);
+        _143 = (_136.1: &u32);
+        _146 = (*_142);
+        _147 = (*_143);
+        _145 = Eq(move _146, move _147);
+        _144 = Not(move _145);
+        switchInt(move _144) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _148 = core::panicking::AssertKind::Eq;
+        _150 = Option::<Arguments<'_>>::None;
+        _149 = core::panicking::assert_failed::<u32, u32>(move _148, _142, _143, move _150);
+    }
+
+    bb30: {
+        _154 = (const false, const true, const false);
+        _153 = search_old_style(move _154) -> bb31;
+    }
+
+    bb31: {
+        _152 = &_153;
+        _156 = const 3_u32;
+        _155 = &_156;
+        _151 = (move _152, move _155);
+        _157 = (_151.0: &u32);
+        _158 = (_151.1: &u32);
+        _161 = (*_157);
+        _162 = (*_158);
+        _160 = Eq(move _161, move _162);
+        _159 = Not(move _160);
+        switchInt(move _159) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _163 = core::panicking::AssertKind::Eq;
+        _165 = Option::<Arguments<'_>>::None;
+        _164 = core::panicking::assert_failed::<u32, u32>(move _163, _157, _158, move _165);
+    }
+
+    bb33: {
+        _169 = (const false, const true, const true);
+        _168 = search_old_style(move _169) -> bb34;
+    }
+
+    bb34: {
+        _167 = &_168;
+        _171 = const 4_u32;
+        _170 = &_171;
+        _166 = (move _167, move _170);
+        _172 = (_166.0: &u32);
+        _173 = (_166.1: &u32);
+        _176 = (*_172);
+        _177 = (*_173);
+        _175 = Eq(move _176, move _177);
+        _174 = Not(move _175);
+        switchInt(move _174) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _178 = core::panicking::AssertKind::Eq;
+        _180 = Option::<Arguments<'_>>::None;
+        _179 = core::panicking::assert_failed::<u32, u32>(move _178, _172, _173, move _180);
+    }
+
+    bb36: {
+        _184 = (const true, const false, const false);
+        _183 = search_old_style(move _184) -> bb37;
+    }
+
+    bb37: {
+        _182 = &_183;
+        _186 = const 5_u32;
+        _185 = &_186;
+        _181 = (move _182, move _185);
+        _187 = (_181.0: &u32);
+        _188 = (_181.1: &u32);
+        _191 = (*_187);
+        _192 = (*_188);
+        _190 = Eq(move _191, move _192);
+        _189 = Not(move _190);
+        switchInt(move _189) -> [0: bb39, otherwise: bb38];
+    }
+
+    bb38: {
+        _193 = core::panicking::AssertKind::Eq;
+        _195 = Option::<Arguments<'_>>::None;
+        _194 = core::panicking::assert_failed::<u32, u32>(move _193, _187, _188, move _195);
+    }
+
+    bb39: {
+        _199 = (const true, const false, const true);
+        _198 = search_old_style(move _199) -> bb40;
+    }
+
+    bb40: {
+        _197 = &_198;
+        _201 = const 6_u32;
+        _200 = &_201;
+        _196 = (move _197, move _200);
+        _202 = (_196.0: &u32);
+        _203 = (_196.1: &u32);
+        _206 = (*_202);
+        _207 = (*_203);
+        _205 = Eq(move _206, move _207);
+        _204 = Not(move _205);
+        switchInt(move _204) -> [0: bb42, otherwise: bb41];
+    }
+
+    bb41: {
+        _208 = core::panicking::AssertKind::Eq;
+        _210 = Option::<Arguments<'_>>::None;
+        _209 = core::panicking::assert_failed::<u32, u32>(move _208, _202, _203, move _210);
+    }
+
+    bb42: {
+        _214 = (const true, const true, const false);
+        _213 = search_old_style(move _214) -> bb43;
+    }
+
+    bb43: {
+        _212 = &_213;
+        _216 = const 7_u32;
+        _215 = &_216;
+        _211 = (move _212, move _215);
+        _217 = (_211.0: &u32);
+        _218 = (_211.1: &u32);
+        _221 = (*_217);
+        _222 = (*_218);
+        _220 = Eq(move _221, move _222);
+        _219 = Not(move _220);
+        switchInt(move _219) -> [0: bb45, otherwise: bb44];
+    }
+
+    bb44: {
+        _223 = core::panicking::AssertKind::Eq;
+        _225 = Option::<Arguments<'_>>::None;
+        _224 = core::panicking::assert_failed::<u32, u32>(move _223, _217, _218, move _225);
+    }
+
+    bb45: {
+        _229 = (const true, const true, const true);
+        _228 = search_old_style(move _229) -> bb46;
+    }
+
+    bb46: {
+        _227 = &_228;
+        _231 = const 8_u32;
+        _230 = &_231;
+        _226 = (move _227, move _230);
+        _232 = (_226.0: &u32);
+        _233 = (_226.1: &u32);
+        _236 = (*_232);
+        _237 = (*_233);
+        _235 = Eq(move _236, move _237);
+        _234 = Not(move _235);
+        switchInt(move _234) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb47: {
+        _238 = core::panicking::AssertKind::Eq;
+        _240 = Option::<Arguments<'_>>::None;
+        _239 = core::panicking::assert_failed::<u32, u32>(move _238, _232, _233, move _240);
+    }
+
+    bb48: {
+        return;
+    }
+}

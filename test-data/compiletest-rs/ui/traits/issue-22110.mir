@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-22110.rs:14:1: 14:29>::foo(_1: &F, _2: A) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn baz(_1: F) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn components(_1: for<'a> fn(&'a A)) -> () {
+    debug t => _1;
+    let mut _0: ();
+
+    bb0: {
+        _0 = baz::<A, for<'a> fn(&'a A)>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

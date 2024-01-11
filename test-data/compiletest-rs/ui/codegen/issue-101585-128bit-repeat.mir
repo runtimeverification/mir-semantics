@@ -1,0 +1,142 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&[i128; 1], &[i128; 1]);
+    let mut _2: &[i128; 1];
+    let _3: [i128; 1];
+    let mut _4: &[i128; 1];
+    let _5: [i128; 1];
+    let _6: &[i128; 1];
+    let _7: &[i128; 1];
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: (&[i128; 1], &[i128; 1]);
+    let mut _14: &[i128; 1];
+    let _15: [i128; 1];
+    let mut _16: &[i128; 1];
+    let _17: [i128; 1];
+    let _18: &[i128; 1];
+    let _19: &[i128; 1];
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _22: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _22;
+        }
+    }
+
+    bb0: {
+        _3 = min_array_ok() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = [const i128::MIN];
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &[i128; 1]);
+        _7 = (_1.1: &[i128; 1]);
+        _9 = <[i128; 1] as PartialEq>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<[i128; 1], [i128; 1]>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        _15 = min_array_nok() -> bb5;
+    }
+
+    bb5: {
+        _14 = &_15;
+        _17 = [const i128::MIN];
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &[i128; 1]);
+        _19 = (_13.1: &[i128; 1]);
+        _21 = <[i128; 1] as PartialEq>::eq(_18, _19) -> bb6;
+    }
+
+    bb6: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<[i128; 1], [i128; 1]>(move _22, _18, _19, move _24);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+fn min_array_ok() -> [i128; 1] {
+    let mut _0: [i128; 1];
+
+    bb0: {
+        _0 = [const _];
+        return;
+    }
+}
+
+min_array_ok::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn min_array_nok() -> [i128; 1] {
+    let mut _0: [i128; 1];
+
+    bb0: {
+        _0 = [const _; 1];
+        return;
+    }
+}
+
+min_array_nok::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+min_array_nok::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}

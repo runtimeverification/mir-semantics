@@ -1,0 +1,28 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn A(_1: T) -> A<N, T> {
+    let mut _0: A<N, T>;
+
+    bb0: {
+        _0 = A::<N, T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn A(_1: T) -> A<N, T> {
+    let mut _0: A<N, T>;
+
+    bb0: {
+        _0 = A::<N, T>(move _1);
+        return;
+    }
+}

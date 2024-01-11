@@ -1,0 +1,164 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: f64;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &f64;
+    let _12: f64;
+    let mut _13: f64;
+    let mut _14: f64;
+    let mut _15: f64;
+    let mut _16: f64;
+    let mut _17: f64;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: f64;
+    let mut _28: bool;
+    let mut _29: bool;
+    let _30: ();
+    let mut _31: std::fmt::Arguments<'_>;
+    let mut _32: &[&str];
+    let _33: &[&str; 1];
+    let _34: [&str; 1];
+    scope 1 {
+        debug pi => _1;
+    }
+
+    bb0: {
+        _1 = const 3.1415926999999999f64;
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _14 = Neg(_1);
+        _16 = Div(const 2f64, _1);
+        _15 = Add(_1, move _16);
+        _13 = Mul(move _14, move _15);
+        _17 = Mul(_1, const 5f64);
+        _12 = Sub(move _13, move _17);
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _23 = Eq(_1, const 5f64);
+        switchInt(move _23) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb4: {
+        _18 = const true;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _29 = Gt(_1, const 1f64);
+        _18 = move _29;
+        goto -> bb6;
+    }
+
+    bb6: {
+        switchInt(move _18) -> [0: bb21, otherwise: bb19];
+    }
+
+    bb7: {
+        _19 = const true;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _28 = Ge(_1, const 10f64);
+        _19 = move _28;
+        goto -> bb9;
+    }
+
+    bb9: {
+        switchInt(move _19) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb10: {
+        _20 = const true;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _27 = Div(const 22f64, const 7f64);
+        _26 = Ne(_1, move _27);
+        _20 = move _26;
+        goto -> bb12;
+    }
+
+    bb12: {
+        switchInt(move _20) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb13: {
+        _21 = const true;
+        goto -> bb15;
+    }
+
+    bb14: {
+        _25 = Le(_1, const 2f64);
+        _21 = move _25;
+        goto -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _21) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb16: {
+        _22 = const true;
+        goto -> bb18;
+    }
+
+    bb17: {
+        _24 = Lt(_1, const 10f64);
+        _22 = move _24;
+        goto -> bb18;
+    }
+
+    bb18: {
+        switchInt(move _22) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb19: {
+        _34 = [const "yes\n"];
+        _33 = &_34;
+        _32 = _33 as &[&str] (Pointer(Unsize));
+        _31 = Arguments::<'_>::new_const(move _32) -> bb20;
+    }
+
+    bb20: {
+        _30 = _print(move _31) -> bb21;
+    }
+
+    bb21: {
+        return;
+    }
+}

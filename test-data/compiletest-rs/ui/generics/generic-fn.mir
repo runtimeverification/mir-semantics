@@ -1,0 +1,290 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn id(_1: T) -> T {
+    debug x => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-fn.rs:7:16: 7:21>::clone(_1: &Triple) -> Triple {
+    debug self => _1;
+    let mut _0: Triple;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let _9: ();
+    let mut _10: std::fmt::Arguments<'_>;
+    let mut _11: &[&str];
+    let _12: &[&str; 2];
+    let _13: [&str; 2];
+    let mut _14: &[core::fmt::rt::Argument<'_>];
+    let _15: &[core::fmt::rt::Argument<'_>; 1];
+    let _16: [core::fmt::rt::Argument<'_>; 1];
+    let mut _17: core::fmt::rt::Argument<'_>;
+    let _18: &isize;
+    let mut _19: (&isize, &isize);
+    let mut _20: &isize;
+    let mut _21: &isize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: isize;
+    let mut _27: isize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: char;
+    let mut _32: char;
+    let _33: ();
+    let mut _34: std::fmt::Arguments<'_>;
+    let mut _35: &[&str];
+    let _36: &[&str; 2];
+    let _37: [&str; 2];
+    let mut _38: &[core::fmt::rt::Argument<'_>];
+    let _39: &[core::fmt::rt::Argument<'_>; 1];
+    let _40: [core::fmt::rt::Argument<'_>; 1];
+    let mut _41: core::fmt::rt::Argument<'_>;
+    let _42: &char;
+    let mut _43: (&char, &char);
+    let mut _44: &char;
+    let mut _45: &char;
+    let mut _48: bool;
+    let mut _49: bool;
+    let mut _50: char;
+    let mut _51: char;
+    let _53: !;
+    let mut _54: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _55: Triple;
+    let mut _56: isize;
+    let mut _57: isize;
+    let _58: ();
+    let mut _59: std::fmt::Arguments<'_>;
+    let mut _60: &[&str];
+    let _61: &[&str; 2];
+    let _62: [&str; 2];
+    let mut _63: &[core::fmt::rt::Argument<'_>];
+    let _64: &[core::fmt::rt::Argument<'_>; 1];
+    let _65: [core::fmt::rt::Argument<'_>; 1];
+    let mut _66: core::fmt::rt::Argument<'_>;
+    let _67: &isize;
+    let mut _68: (&isize, &isize);
+    let mut _69: &isize;
+    let mut _70: &isize;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: isize;
+    let mut _76: isize;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let mut _2: isize;
+        scope 2 {
+            debug y => _2;
+            let _3: char;
+            scope 3 {
+                debug a => _3;
+                let mut _4: char;
+                scope 4 {
+                    debug b => _4;
+                    let _5: Triple;
+                    scope 5 {
+                        debug p => _5;
+                        let mut _6: Triple;
+                        scope 6 {
+                            debug q => _6;
+                            let _22: &isize;
+                            let _23: &isize;
+                            let _46: &char;
+                            let _47: &char;
+                            let _71: &isize;
+                            let _72: &isize;
+                            scope 7 {
+                                debug left_val => _22;
+                                debug right_val => _23;
+                                let _28: core::panicking::AssertKind;
+                                scope 8 {
+                                    debug kind => _28;
+                                }
+                            }
+                            scope 9 {
+                                debug left_val => _46;
+                                debug right_val => _47;
+                                let _52: core::panicking::AssertKind;
+                                scope 10 {
+                                    debug kind => _52;
+                                }
+                            }
+                            scope 11 {
+                                debug left_val => _71;
+                                debug right_val => _72;
+                                let _77: core::panicking::AssertKind;
+                                scope 12 {
+                                    debug kind => _77;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 62_isize;
+        _2 = const 63_isize;
+        _3 = const 'a';
+        _4 = const 'b';
+        _5 = Triple { x: const 65_isize, y: const 66_isize, z: const 67_isize };
+        _6 = Triple { x: const 68_isize, y: const 69_isize, z: const 70_isize };
+        _8 = _1;
+        _7 = id::<isize>(move _8) -> bb1;
+    }
+
+    bb1: {
+        _2 = move _7;
+        _13 = [const "", const "\n"];
+        _12 = &_13;
+        _11 = _12 as &[&str] (Pointer(Unsize));
+        _18 = &_2;
+        _17 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_18) -> bb2;
+    }
+
+    bb2: {
+        _16 = [move _17];
+        _15 = &_16;
+        _14 = _15 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _10 = Arguments::<'_>::new_v1(move _11, move _14) -> bb3;
+    }
+
+    bb3: {
+        _9 = _print(move _10) -> bb4;
+    }
+
+    bb4: {
+        _20 = &_1;
+        _21 = &_2;
+        _19 = (move _20, move _21);
+        _22 = (_19.0: &isize);
+        _23 = (_19.1: &isize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<isize, isize>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        _32 = _3;
+        _31 = id::<char>(move _32) -> bb7;
+    }
+
+    bb7: {
+        _4 = move _31;
+        _37 = [const "", const "\n"];
+        _36 = &_37;
+        _35 = _36 as &[&str] (Pointer(Unsize));
+        _42 = &_4;
+        _41 = core::fmt::rt::Argument::<'_>::new_display::<char>(_42) -> bb8;
+    }
+
+    bb8: {
+        _40 = [move _41];
+        _39 = &_40;
+        _38 = _39 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _34 = Arguments::<'_>::new_v1(move _35, move _38) -> bb9;
+    }
+
+    bb9: {
+        _33 = _print(move _34) -> bb10;
+    }
+
+    bb10: {
+        _44 = &_3;
+        _45 = &_4;
+        _43 = (move _44, move _45);
+        _46 = (_43.0: &char);
+        _47 = (_43.1: &char);
+        _50 = (*_46);
+        _51 = (*_47);
+        _49 = Eq(move _50, move _51);
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _52 = core::panicking::AssertKind::Eq;
+        _54 = Option::<Arguments<'_>>::None;
+        _53 = core::panicking::assert_failed::<char, char>(move _52, _46, _47, move _54);
+    }
+
+    bb12: {
+        _55 = id::<Triple>(_5) -> bb13;
+    }
+
+    bb13: {
+        _6 = move _55;
+        _56 = (_5.2: isize);
+        _1 = move _56;
+        _57 = (_6.2: isize);
+        _2 = move _57;
+        _62 = [const "", const "\n"];
+        _61 = &_62;
+        _60 = _61 as &[&str] (Pointer(Unsize));
+        _67 = &_2;
+        _66 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_67) -> bb14;
+    }
+
+    bb14: {
+        _65 = [move _66];
+        _64 = &_65;
+        _63 = _64 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _59 = Arguments::<'_>::new_v1(move _60, move _63) -> bb15;
+    }
+
+    bb15: {
+        _58 = _print(move _59) -> bb16;
+    }
+
+    bb16: {
+        _69 = &_1;
+        _70 = &_2;
+        _68 = (move _69, move _70);
+        _71 = (_68.0: &isize);
+        _72 = (_68.1: &isize);
+        _75 = (*_71);
+        _76 = (*_72);
+        _74 = Eq(move _75, move _76);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<isize, isize>(move _77, _71, _72, move _79);
+    }
+
+    bb18: {
+        return;
+    }
+}

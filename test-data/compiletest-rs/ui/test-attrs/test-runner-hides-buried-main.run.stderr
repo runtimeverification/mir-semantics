@@ -1,0 +1,2 @@
+thread 'main' panicked at 'explicit panic', ui/test-attrs/test-runner-hides-buried-main.rs:12:22
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

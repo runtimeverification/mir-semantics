@@ -1,0 +1,77 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn _run(_1: &mut i32) -> () {
+    debug bar => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn _run::{closure#0}(_1: Pin<&mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]>, _2: ()) -> GeneratorState<(), ()> {
+    debug bar => (*((*(_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7])).0: &mut &mut i32));
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: &i32;
+    let mut _4: ();
+    let mut _5: &mut &mut i32;
+    let mut _6: &mut i32;
+    let mut _7: &mut &mut i32;
+    let mut _8: &mut i32;
+    let mut _9: ();
+    let mut _10: u32;
+    let mut _11: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7];
+    let mut _12: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7];
+    let mut _13: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7];
+    let mut _14: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7];
+    let mut _15: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7];
+    scope 1 {
+        debug _baz => _3;
+    }
+
+    bb0: {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]);
+        _10 = discriminant((*_11));
+        switchInt(move _10) -> [0: bb1, 1: bb3, 3: bb2, otherwise: bb4];
+    }
+
+    bb1: {
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]);
+        _5 = deref_copy ((*_12).0: &mut &mut i32);
+        _6 = deref_copy (*_5);
+        _3 = &(*_6);
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]);
+        discriminant((*_13)) = 3;
+        return;
+    }
+
+    bb2: {
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]);
+        _7 = deref_copy ((*_14).0: &mut &mut i32);
+        _8 = deref_copy (*_7);
+        (*_8) = const 2_i32;
+        _9 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _9);
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/reborrow-mut-upvar.rs:6:5: 6:7]);
+        discriminant((*_15)) = 1;
+        return;
+    }
+
+    bb3: {
+        assert(const false, "generator resumed after completion") -> bb3;
+    }
+
+    bb4: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/consts/assoc-const.rs:11:1: 11:18>::VALUE: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+const <impl at ui/consts/assoc-const.rs:15:1: 15:29>::VALUE: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const _, const 1_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const _, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [i32; 4];
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn Succ(_1: N) -> Succ<N> {
+    let mut _0: Succ<N>;
+
+    bb0: {
+        _0 = Succ::<N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Succ(_1: N) -> Succ<N> {
+    let mut _0: Succ<N>;
+
+    bb0: {
+        _0 = Succ::<N>(move _1);
+        return;
+    }
+}

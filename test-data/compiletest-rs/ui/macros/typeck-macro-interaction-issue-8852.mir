@@ -1,0 +1,125 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: T, _2: T) -> T {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: T;
+    let mut _3: (T, T);
+    let mut _4: isize;
+    let mut _5: isize;
+    let mut _6: isize;
+    let _7: isize;
+    let _8: isize;
+    let mut _9: isize;
+    let _10: f64;
+    let _11: f64;
+    let mut _12: f64;
+    let mut _13: !;
+    scope 1 {
+        debug x => _7;
+        debug y => _8;
+    }
+    scope 2 {
+        debug x => _10;
+        debug y => _11;
+    }
+
+    bb0: {
+        _3 = (move _1, move _2);
+        _6 = discriminant((_3.0: T));
+        switchInt(move _6) -> [0: bb1, 1: bb3, otherwise: bb7];
+    }
+
+    bb1: {
+        _4 = discriminant((_3.1: T));
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb3: {
+        _5 = discriminant((_3.1: T));
+        switchInt(move _5) -> [1: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _7 = (((_3.0: T) as A).0: isize);
+        _8 = (((_3.1: T) as A).0: isize);
+        _9 = Add(_7, _8);
+        _0 = T::A(move _9);
+        goto -> bb6;
+    }
+
+    bb5: {
+        _10 = (((_3.0: T) as B).0: f64);
+        _11 = (((_3.1: T) as B).0: f64);
+        _12 = Add(_10, _11);
+        _0 = T::B(move _12);
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: T;
+    let mut _2: T;
+    let mut _3: T;
+
+    bb0: {
+        _2 = T::A(const 1_isize);
+        _3 = T::A(const 2_isize);
+        _1 = foo(move _2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn T::A(_1: isize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn T::A(_1: isize) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::A(move _1);
+        return;
+    }
+}
+
+fn T::B(_1: f64) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::B(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn T::B(_1: f64) -> T {
+    let mut _0: T;
+
+    bb0: {
+        _0 = T::B(move _1);
+        return;
+    }
+}

@@ -1,0 +1,166 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+EntriesBuffer::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+EntriesBuffer::0::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn <impl at ui/impl-header-lifetime-elision/constant-used-as-arraylen.rs:6:1: 6:19>::iter_child_buffers(_1: &mut EntriesBuffer) -> impl Iterator<Item = &mut [u8; HashesEntry::LEN]> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &mut [u8; HashesEntry::LEN]>;
+    let mut _2: &mut [[u8; 1]];
+    let mut _3: &mut [[u8; 1]; 5];
+    let mut _4: std::boxed::Box<[[u8; 1]; 5]>;
+    let mut _5: *const [[u8; 1]; 5];
+    let mut _6: *const ();
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: usize;
+    let mut _11: bool;
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: std::boxed::Box<[[u8; 1]; 5]>);
+        _5 = (((_4.0: std::ptr::Unique<[[u8; 1]; 5]>).0: std::ptr::NonNull<[[u8; 1]; 5]>).0: *const [[u8; 1]; 5]);
+        _6 = _5 as *const () (PtrToPtr);
+        _7 = _6 as usize (Transmute);
+        _8 = AlignOf([u8; 1]);
+        _9 = Sub(_8, const 1_usize);
+        _10 = BitAnd(_7, _9);
+        _11 = Eq(_10, const 0_usize);
+        assert(_11, "misaligned pointer dereference: address must be a multiple of {} but is {}", _8, _7) -> [success: bb2, unwind unreachable];
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        _3 = &mut (*_5);
+        _2 = move _3 as &mut [[u8; 1]] (Pointer(Unsize));
+        _0 = core::slice::<impl [[u8; 1]]>::iter_mut(move _2) -> bb1;
+    }
+}
+
+<impl at ui/impl-header-lifetime-elision/constant-used-as-arraylen.rs:6:1: 6:19>::iter_child_buffers::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/impl-header-lifetime-elision/constant-used-as-arraylen.rs:6:1: 6:19>::iter_child_buffers_explicit(_1: &mut EntriesBuffer) -> impl Iterator<Item = &mut [u8; HashesEntry::<'_>::LEN]> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &mut [u8; HashesEntry::<'_>::LEN]>;
+    let mut _2: &mut [[u8; 1]];
+    let mut _3: &mut [[u8; 1]; 5];
+    let mut _4: std::boxed::Box<[[u8; 1]; 5]>;
+    let mut _5: *const [[u8; 1]; 5];
+    let mut _6: *const ();
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: usize;
+    let mut _11: bool;
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: std::boxed::Box<[[u8; 1]; 5]>);
+        _5 = (((_4.0: std::ptr::Unique<[[u8; 1]; 5]>).0: std::ptr::NonNull<[[u8; 1]; 5]>).0: *const [[u8; 1]; 5]);
+        _6 = _5 as *const () (PtrToPtr);
+        _7 = _6 as usize (Transmute);
+        _8 = AlignOf([u8; 1]);
+        _9 = Sub(_8, const 1_usize);
+        _10 = BitAnd(_7, _9);
+        _11 = Eq(_10, const 0_usize);
+        assert(_11, "misaligned pointer dereference: address must be a multiple of {} but is {}", _8, _7) -> [success: bb2, unwind unreachable];
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        _3 = &mut (*_5);
+        _2 = move _3 as &mut [[u8; 1]] (Pointer(Unsize));
+        _0 = core::slice::<impl [[u8; 1]]>::iter_mut(move _2) -> bb1;
+    }
+}
+
+<impl at ui/impl-header-lifetime-elision/constant-used-as-arraylen.rs:6:1: 6:19>::iter_child_buffers_explicit::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const <impl at ui/impl-header-lifetime-elision/constant-used-as-arraylen.rs:20:1: 20:21>::LEN: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn EntriesBuffer(_1: Box<[[u8; 1]; 5]>) -> EntriesBuffer {
+    let mut _0: EntriesBuffer;
+
+    bb0: {
+        _0 = EntriesBuffer(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn EntriesBuffer(_1: Box<[[u8; 1]; 5]>) -> EntriesBuffer {
+    let mut _0: EntriesBuffer;
+
+    bb0: {
+        _0 = EntriesBuffer(move _1);
+        return;
+    }
+}
+
+fn HashesEntry(_1: &[u8]) -> HashesEntry<'_> {
+    let mut _0: HashesEntry<'_>;
+
+    bb0: {
+        _0 = HashesEntry::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn HashesEntry(_1: &[u8]) -> HashesEntry<'_> {
+    let mut _0: HashesEntry<'_>;
+
+    bb0: {
+        _0 = HashesEntry::<'_>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static FOO: Foo = {
+    let mut _0: Foo;
+    let mut _1: std::option::Option<&Foo>;
+    let mut _2: &Foo;
+    let _3: &Foo;
+    let _4: &Foo;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = const {alloc1: &Foo};
+        _3 = &(*_4);
+        _2 = &(*_3);
+        _1 = Option::<&Foo>::Some(move _2);
+        StorageDead(_2);
+        _0 = Foo { foo: move _1 };
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (static: FOO, size: 8, align: 8) {
+    ╾───────alloc1────────╼                         │ ╾──────╼
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

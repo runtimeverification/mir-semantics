@@ -1,0 +1,1042 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn some_or_wildcard(_1: &Option<i32>, _2: &i32) -> () {
+    debug r => _1;
+    debug b => _2;
+    let mut _0: ();
+    let mut _3: isize;
+    let _4: &i32;
+    scope 1 {
+    }
+    scope 2 {
+        debug a => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _4 = &(((*_1) as Some).0: i32);
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn none_or_wildcard(_1: &Option<i32>, _2: &i32) -> () {
+    debug r => _1;
+    debug b => _2;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn some_or_ref_none(_1: &Option<i32>, _2: &i32) -> () {
+    debug r => _1;
+    debug b => _2;
+    let mut _0: ();
+    let mut _3: isize;
+    let _4: &i32;
+    scope 1 {
+    }
+    scope 2 {
+        debug a => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _4 = &(((*_1) as Some).0: i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn ref_some_or_none(_1: &Option<i32>, _2: &i32) -> () {
+    debug r => _1;
+    debug b => _2;
+    let mut _0: ();
+    let mut _3: isize;
+    let _4: &i32;
+    scope 1 {
+    }
+    scope 2 {
+        debug a => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _4 = &(((*_1) as Some).0: i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn some_or_self(_1: &Option<i32>) -> () {
+    debug r => _1;
+    let mut _0: ();
+    let mut _2: isize;
+    let _3: &i32;
+    scope 1 {
+    }
+    scope 2 {
+        debug n => _3;
+        scope 3 {
+        }
+    }
+    scope 4 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _3 = &(((*_1) as Some).0: i32);
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn multiple_deref(_1: &&&&&Option<i32>) -> () {
+    debug r => _1;
+    let mut _0: ();
+    let mut _2: isize;
+    let _3: &i32;
+    let mut _4: &&&&std::option::Option<i32>;
+    let mut _5: &&&std::option::Option<i32>;
+    let mut _6: &&std::option::Option<i32>;
+    let mut _7: &std::option::Option<i32>;
+    let mut _8: &&&&std::option::Option<i32>;
+    let mut _9: &&&std::option::Option<i32>;
+    let mut _10: &&std::option::Option<i32>;
+    let mut _11: &std::option::Option<i32>;
+    scope 1 {
+    }
+    scope 2 {
+        debug a => _3;
+    }
+
+    bb0: {
+        _4 = deref_copy (*_1);
+        _5 = deref_copy (*_4);
+        _6 = deref_copy (*_5);
+        _7 = deref_copy (*_6);
+        _2 = discriminant((*_7));
+        switchInt(move _2) -> [0: bb3, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _8 = deref_copy (*_1);
+        _9 = deref_copy (*_8);
+        _10 = deref_copy (*_9);
+        _11 = deref_copy (*_10);
+        _3 = &(((*_11) as Some).0: i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn match_with_or() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn nested_mixed() -> () {
+    let mut _0: ();
+    let mut _1: (&std::option::Option<i32>, &std::option::Option<i32>);
+    let mut _2: &std::option::Option<i32>;
+    let _3: std::option::Option<i32>;
+    let mut _4: &std::option::Option<i32>;
+    let _5: std::option::Option<i32>;
+    let mut _6: isize;
+    let mut _7: isize;
+    let _8: &i32;
+    let mut _9: i32;
+    let mut _10: &std::option::Option<i32>;
+    let mut _11: &std::option::Option<i32>;
+    let mut _12: &std::option::Option<i32>;
+    let mut _13: &std::option::Option<i32>;
+    scope 1 {
+        debug a => _8;
+        debug b => _9;
+        scope 2 {
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Option::<i32>::Some(const 5_i32);
+        _2 = &_3;
+        _5 = Option::<i32>::Some(const 6_i32);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _10 = deref_copy (_1.0: &std::option::Option<i32>);
+        _7 = discriminant((*_10));
+        switchInt(move _7) -> [1: bb1, otherwise: bb3];
+    }
+
+    bb1: {
+        _11 = deref_copy (_1.1: &std::option::Option<i32>);
+        _6 = discriminant((*_11));
+        switchInt(move _6) -> [1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _12 = deref_copy (_1.0: &std::option::Option<i32>);
+        _8 = &(((*_12) as Some).0: i32);
+        _13 = deref_copy (_1.1: &std::option::Option<i32>);
+        _9 = (((*_13) as Some).0: i32);
+        _9 = const 7_i32;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn nested_mixed_multiple_deref_1() -> () {
+    let mut _0: ();
+    let _1: (i32, &std::option::Option<i32>);
+    let mut _2: &std::option::Option<i32>;
+    let _3: std::option::Option<i32>;
+    let _5: std::option::Option<(i32, &std::option::Option<i32>)>;
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _10: &std::option::Option<i32>;
+    let mut _11: &std::option::Option<i32>;
+    scope 1 {
+        debug x => _1;
+        let _4: &std::option::Option<(i32, &std::option::Option<i32>)>;
+        scope 2 {
+            debug y => _4;
+            let _8: &i32;
+            let _9: &i32;
+            scope 3 {
+                debug a => _8;
+                debug b => _9;
+                scope 4 {
+                    scope 5 {
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Option::<i32>::Some(const 5_i32);
+        _2 = &_3;
+        _1 = (const 1_i32, move _2);
+        _5 = Option::<(i32, &Option<i32>)>::Some(_1);
+        _4 = &_5;
+        _7 = discriminant((*_4));
+        switchInt(move _7) -> [1: bb1, otherwise: bb3];
+    }
+
+    bb1: {
+        _10 = deref_copy ((((*_4) as Some).0: (i32, &std::option::Option<i32>)).1: &std::option::Option<i32>);
+        _6 = discriminant((*_10));
+        switchInt(move _6) -> [1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _8 = &((((*_4) as Some).0: (i32, &std::option::Option<i32>)).0: i32);
+        _11 = deref_copy ((((*_4) as Some).0: (i32, &std::option::Option<i32>)).1: &std::option::Option<i32>);
+        _9 = &(((*_11) as Some).0: i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn nested_mixed_multiple_deref_2() -> () {
+    let mut _0: ();
+    let _1: &std::option::Option<i32>;
+    let _2: std::option::Option<i32>;
+    let mut _4: isize;
+    let mut _6: &std::option::Option<i32>;
+    let mut _7: &std::option::Option<i32>;
+    scope 1 {
+        debug x => _1;
+        let _3: &&std::option::Option<i32>;
+        scope 2 {
+            debug y => _3;
+            let _5: &i32;
+            scope 3 {
+                debug z => _5;
+                scope 4 {
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Option::<i32>::Some(const 5_i32);
+        _1 = &_2;
+        _3 = &_1;
+        _6 = deref_copy (*_3);
+        _4 = discriminant((*_6));
+        switchInt(move _4) -> [1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _7 = deref_copy (*_3);
+        _5 = &(((*_7) as Some).0: i32);
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn new_mutable_reference() -> () {
+    let mut _0: ();
+    let mut _1: &mut std::option::Option<i32>;
+    let mut _2: std::option::Option<i32>;
+    let mut _3: &mut &mut std::option::Option<i32>;
+    let mut _4: isize;
+    let mut _6: &mut &mut std::option::Option<i32>;
+    let mut _7: isize;
+    let _9: ();
+    let mut _10: std::fmt::Arguments<'_>;
+    let mut _11: &[&str];
+    let _12: &[&str; 2];
+    let _13: [&str; 2];
+    let mut _14: &[core::fmt::rt::Argument<'_>];
+    let _15: &[core::fmt::rt::Argument<'_>; 1];
+    let _16: [core::fmt::rt::Argument<'_>; 1];
+    let mut _17: core::fmt::rt::Argument<'_>;
+    let _18: &i32;
+    let mut _19: &mut std::option::Option<i32>;
+    let mut _20: &mut std::option::Option<i32>;
+    let mut _21: &mut std::option::Option<i32>;
+    let mut _22: &mut std::option::Option<i32>;
+    scope 1 {
+        debug x => _1;
+        let _5: &mut i32;
+        let _8: &mut i32;
+        scope 2 {
+            debug y => _5;
+        }
+        scope 3 {
+            debug y => _8;
+        }
+    }
+
+    bb0: {
+        _2 = Option::<i32>::Some(const 5_i32);
+        _1 = &mut _2;
+        _3 = &mut _1;
+        _19 = deref_copy (*_3);
+        _4 = discriminant((*_19));
+        switchInt(move _4) -> [0: bb3, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _20 = deref_copy (*_3);
+        _5 = &mut (((*_20) as Some).0: i32);
+        (*_5) = const 5_i32;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _6 = &mut _1;
+        _21 = deref_copy (*_6);
+        _7 = discriminant((*_21));
+        switchInt(move _7) -> [0: bb7, 1: bb4, otherwise: bb1];
+    }
+
+    bb4: {
+        _22 = deref_copy (*_6);
+        _8 = &mut (((*_22) as Some).0: i32);
+        _13 = [const "", const "\n"];
+        _12 = &_13;
+        _11 = _12 as &[&str] (Pointer(Unsize));
+        _18 = &(*_8);
+        _17 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_18) -> bb5;
+    }
+
+    bb5: {
+        _16 = [move _17];
+        _15 = &_16;
+        _14 = _15 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _10 = Arguments::<'_>::new_v1(move _11, move _14) -> bb6;
+    }
+
+    bb6: {
+        _9 = _print(move _10) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn let_implicit_ref_binding() -> () {
+    let mut _0: ();
+    let _1: &i32;
+    let mut _2: &let_implicit_ref_binding::Foo;
+    let _3: let_implicit_ref_binding::Foo;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _3 = Foo(const 3_i32);
+        _2 = &_3;
+        _1 = &((*_2).0: i32);
+        return;
+    }
+}
+
+fn explicit_mut_binding() -> () {
+    let mut _0: ();
+    let mut _1: &std::option::Option<i32>;
+    let _2: std::option::Option<i32>;
+    let mut _3: isize;
+    let mut _4: i32;
+    let mut _5: &mut std::option::Option<i32>;
+    let mut _6: std::option::Option<i32>;
+    let mut _7: isize;
+    let _8: &mut i32;
+    let mut _9: &mut &mut std::option::Option<i32>;
+    let mut _10: &mut std::option::Option<i32>;
+    let mut _11: std::option::Option<i32>;
+    let mut _12: isize;
+    let _13: &mut i32;
+    let mut _14: &mut std::option::Option<i32>;
+    let mut _15: &mut std::option::Option<i32>;
+    scope 1 {
+        debug n => _4;
+        scope 2 {
+        }
+    }
+    scope 3 {
+        debug n => _8;
+        scope 4 {
+        }
+    }
+    scope 5 {
+        debug n => _13;
+        scope 6 {
+        }
+    }
+
+    bb0: {
+        _2 = Option::<i32>::Some(const 5_i32);
+        _1 = &_2;
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _4 = (((*_1) as Some).0: i32);
+        _4 = Add(_4, const 1_i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        _6 = Option::<i32>::Some(const 5_i32);
+        _5 = &mut _6;
+        _7 = discriminant((*_5));
+        switchInt(move _7) -> [0: bb5, 1: bb4, otherwise: bb1];
+    }
+
+    bb4: {
+        _8 = &mut (((*_5) as Some).0: i32);
+        (*_8) = Add((*_8), const 1_i32);
+        goto -> bb5;
+    }
+
+    bb5: {
+        _11 = Option::<i32>::Some(const 5_i32);
+        _10 = &mut _11;
+        _9 = &mut _10;
+        _14 = deref_copy (*_9);
+        _12 = discriminant((*_14));
+        switchInt(move _12) -> [0: bb7, 1: bb6, otherwise: bb1];
+    }
+
+    bb6: {
+        _15 = deref_copy (*_9);
+        _13 = &mut (((*_15) as Some).0: i32);
+        goto -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn tuple_mut_and_mut_mut() -> () {
+    let mut _0: ();
+    let mut _1: (std::option::Option<i32>, &std::option::Option<i32>);
+    let mut _2: std::option::Option<i32>;
+    let mut _3: &std::option::Option<i32>;
+    let _4: std::option::Option<i32>;
+    let mut _5: isize;
+    let mut _6: isize;
+    let _7: i32;
+    let _8: &i32;
+    let mut _9: (&std::option::Option<i32>, &&std::option::Option<i32>);
+    let mut _10: &std::option::Option<i32>;
+    let _11: std::option::Option<i32>;
+    let mut _12: &&std::option::Option<i32>;
+    let _13: &std::option::Option<i32>;
+    let _14: std::option::Option<i32>;
+    let mut _15: isize;
+    let mut _16: isize;
+    let _17: &i32;
+    let _18: &i32;
+    let mut _19: &mut &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _20: &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _21: (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _22: std::option::Option<i32>;
+    let mut _23: std::option::Option<i32>;
+    let mut _24: isize;
+    let mut _25: isize;
+    let _26: &mut i32;
+    let _27: &mut i32;
+    let mut _28: (&mut std::option::Option<i32>, &mut &mut std::option::Option<i32>);
+    let mut _29: &mut std::option::Option<i32>;
+    let mut _30: std::option::Option<i32>;
+    let mut _31: &mut &mut std::option::Option<i32>;
+    let mut _32: &mut std::option::Option<i32>;
+    let mut _33: std::option::Option<i32>;
+    let mut _34: isize;
+    let mut _35: isize;
+    let _36: &mut i32;
+    let _37: &mut i32;
+    let mut _38: &std::option::Option<i32>;
+    let mut _39: &std::option::Option<i32>;
+    let mut _40: &std::option::Option<i32>;
+    let mut _41: &&std::option::Option<i32>;
+    let mut _42: &std::option::Option<i32>;
+    let mut _43: &std::option::Option<i32>;
+    let mut _44: &&std::option::Option<i32>;
+    let mut _45: &std::option::Option<i32>;
+    let mut _46: &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _47: &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _48: &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _49: &mut (std::option::Option<i32>, std::option::Option<i32>);
+    let mut _50: &mut std::option::Option<i32>;
+    let mut _51: &mut &mut std::option::Option<i32>;
+    let mut _52: &mut std::option::Option<i32>;
+    let mut _53: &mut std::option::Option<i32>;
+    let mut _54: &mut &mut std::option::Option<i32>;
+    let mut _55: &mut std::option::Option<i32>;
+    scope 1 {
+        debug n => _7;
+        debug m => _8;
+        scope 2 {
+            debug r => _7;
+            scope 3 {
+                scope 4 {
+                    debug q => _8;
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    scope 8 {
+        debug n => _17;
+        debug m => _18;
+        scope 9 {
+            scope 10 {
+            }
+        }
+    }
+    scope 11 {
+        debug n => _26;
+        debug m => _27;
+        scope 12 {
+            scope 13 {
+            }
+        }
+    }
+    scope 14 {
+        debug n => _36;
+        debug m => _37;
+        scope 15 {
+            scope 16 {
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Option::<i32>::Some(const 5_i32);
+        _4 = Option::<i32>::Some(const 5_i32);
+        _3 = &_4;
+        _1 = (move _2, move _3);
+        _6 = discriminant((_1.0: std::option::Option<i32>));
+        switchInt(move _6) -> [1: bb1, otherwise: bb3];
+    }
+
+    bb1: {
+        _38 = deref_copy (_1.1: &std::option::Option<i32>);
+        _5 = discriminant((*_38));
+        switchInt(move _5) -> [1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _7 = (((_1.0: std::option::Option<i32>) as Some).0: i32);
+        _39 = deref_copy (_1.1: &std::option::Option<i32>);
+        _8 = &(((*_39) as Some).0: i32);
+        goto -> bb3;
+    }
+
+    bb3: {
+        _11 = Option::<i32>::Some(const 5_i32);
+        _10 = &_11;
+        _14 = Option::<i32>::Some(const 5_i32);
+        _13 = &_14;
+        _12 = &_13;
+        _9 = (move _10, move _12);
+        _40 = deref_copy (_9.0: &std::option::Option<i32>);
+        _16 = discriminant((*_40));
+        switchInt(move _16) -> [1: bb4, otherwise: bb6];
+    }
+
+    bb4: {
+        _41 = deref_copy (_9.1: &&std::option::Option<i32>);
+        _42 = deref_copy (*_41);
+        _15 = discriminant((*_42));
+        switchInt(move _15) -> [1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _43 = deref_copy (_9.0: &std::option::Option<i32>);
+        _17 = &(((*_43) as Some).0: i32);
+        _44 = deref_copy (_9.1: &&std::option::Option<i32>);
+        _45 = deref_copy (*_44);
+        _18 = &(((*_45) as Some).0: i32);
+        goto -> bb6;
+    }
+
+    bb6: {
+        _22 = Option::<i32>::Some(const 5_i32);
+        _23 = Option::<i32>::Some(const 5_i32);
+        _21 = (move _22, move _23);
+        _20 = &mut _21;
+        _19 = &mut _20;
+        _46 = deref_copy (*_19);
+        _25 = discriminant(((*_46).0: std::option::Option<i32>));
+        switchInt(move _25) -> [1: bb7, otherwise: bb9];
+    }
+
+    bb7: {
+        _47 = deref_copy (*_19);
+        _24 = discriminant(((*_47).1: std::option::Option<i32>));
+        switchInt(move _24) -> [1: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        _48 = deref_copy (*_19);
+        _26 = &mut ((((*_48).0: std::option::Option<i32>) as Some).0: i32);
+        _49 = deref_copy (*_19);
+        _27 = &mut ((((*_49).1: std::option::Option<i32>) as Some).0: i32);
+        goto -> bb9;
+    }
+
+    bb9: {
+        _30 = Option::<i32>::Some(const 5_i32);
+        _29 = &mut _30;
+        _33 = Option::<i32>::Some(const 5_i32);
+        _32 = &mut _33;
+        _31 = &mut _32;
+        _28 = (move _29, move _31);
+        _50 = deref_copy (_28.0: &mut std::option::Option<i32>);
+        _35 = discriminant((*_50));
+        switchInt(move _35) -> [1: bb10, otherwise: bb12];
+    }
+
+    bb10: {
+        _51 = deref_copy (_28.1: &mut &mut std::option::Option<i32>);
+        _52 = deref_copy (*_51);
+        _34 = discriminant((*_52));
+        switchInt(move _34) -> [1: bb11, otherwise: bb12];
+    }
+
+    bb11: {
+        _53 = deref_copy (_28.0: &mut std::option::Option<i32>);
+        _36 = &mut (((*_53) as Some).0: i32);
+        _54 = deref_copy (_28.1: &mut &mut std::option::Option<i32>);
+        _55 = deref_copy (*_54);
+        _37 = &mut (((*_55) as Some).0: i32);
+        goto -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+fn min_mir_embedded_type() -> () {
+    let mut _0: ();
+    let mut _1: (u8, &&std::option::Option<i32>);
+    let mut _2: &&std::option::Option<i32>;
+    let _3: &std::option::Option<i32>;
+    let _4: std::option::Option<i32>;
+    let mut _5: isize;
+    let _6: &i32;
+    let mut _7: &&std::option::Option<i32>;
+    let mut _8: &std::option::Option<i32>;
+    let mut _9: &&std::option::Option<i32>;
+    let mut _10: &std::option::Option<i32>;
+    scope 1 {
+        debug m => _6;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _4 = Option::<i32>::Some(const 5_i32);
+        _3 = &_4;
+        _2 = &_3;
+        _1 = (const 0_u8, move _2);
+        _7 = deref_copy (_1.1: &&std::option::Option<i32>);
+        _8 = deref_copy (*_7);
+        _5 = discriminant((*_8));
+        switchInt(move _5) -> [1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _9 = deref_copy (_1.1: &&std::option::Option<i32>);
+        _10 = deref_copy (*_9);
+        _6 = &(((*_10) as Some).0: i32);
+        goto -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn no_autoderef() -> () {
+    let mut _0: ();
+    let _1: &i32;
+    let _2: i32;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let mut _12: (&i32, &i32);
+    let mut _13: &i32;
+    let _14: i32;
+    let mut _15: &i32;
+    let _16: i32;
+    let mut _17: &str;
+    let mut _18: bool;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: i32;
+    let mut _24: i32;
+    let _26: !;
+    let mut _27: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: &i32;
+    let _30: i32;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            let _19: &i32;
+            let _20: &i32;
+            let _28: i32;
+            scope 3 {
+                debug left_val => _19;
+                debug right_val => _20;
+                let _25: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _25;
+                }
+            }
+            scope 5 {
+                debug x => _28;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const 3_i32;
+        _1 = &_2;
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_1) -> bb1;
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = _print(move _4) -> bb3;
+    }
+
+    bb3: {
+        _14 = const 0_i32;
+        _13 = &_14;
+        _17 = const "foo";
+        _18 = <str as PartialEq>::eq(_17, const "foo") -> bb4;
+    }
+
+    bb4: {
+        switchInt(move _18) -> [0: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _16 = const 1_i32;
+        goto -> bb7;
+    }
+
+    bb6: {
+        _16 = const 0_i32;
+        goto -> bb7;
+    }
+
+    bb7: {
+        _15 = &_16;
+        _12 = (move _13, move _15);
+        _19 = (_12.0: &i32);
+        _20 = (_12.1: &i32);
+        _23 = (*_19);
+        _24 = (*_20);
+        _22 = Eq(move _23, move _24);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _25 = core::panicking::AssertKind::Eq;
+        _27 = Option::<Arguments<'_>>::None;
+        _26 = core::panicking::assert_failed::<i32, i32>(move _25, _19, _20, move _27);
+    }
+
+    bb9: {
+        _30 = const 3_i32;
+        _29 = &_30;
+        _28 = (*_29);
+        return;
+    }
+}
+
+const Y: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "foo";
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &std::option::Option<i32>;
+    let _2: &std::option::Option<i32>;
+    let _3: std::option::Option<i32>;
+    let _5: i32;
+    let _6: ();
+    let mut _7: &std::option::Option<i32>;
+    let _8: ();
+    let mut _9: &std::option::Option<i32>;
+    let _10: ();
+    let mut _11: &std::option::Option<i32>;
+    let _12: ();
+    let mut _13: &std::option::Option<i32>;
+    let _14: ();
+    let mut _15: &std::option::Option<i32>;
+    let _16: ();
+    let _17: &&&&&std::option::Option<i32>;
+    let _18: &&&&std::option::Option<i32>;
+    let _19: &&&std::option::Option<i32>;
+    let _20: &&std::option::Option<i32>;
+    let _21: ();
+    let _22: ();
+    let _23: ();
+    let _24: ();
+    let _25: ();
+    let _26: ();
+    let _27: ();
+    let _28: ();
+    let _29: ();
+    let _30: ();
+    scope 1 {
+        debug r => _1;
+        let _4: &i32;
+        scope 2 {
+            debug b => _4;
+        }
+    }
+
+    bb0: {
+        _3 = Option::<i32>::Some(const 3_i32);
+        _2 = &_3;
+        _1 = _2;
+        _5 = const 4_i32;
+        _4 = &_5;
+        _7 = _1;
+        _6 = none_or_wildcard(move _7, _4) -> bb1;
+    }
+
+    bb1: {
+        _9 = _1;
+        _8 = some_or_wildcard(move _9, _4) -> bb2;
+    }
+
+    bb2: {
+        _11 = _1;
+        _10 = some_or_ref_none(move _11, _4) -> bb3;
+    }
+
+    bb3: {
+        _13 = _1;
+        _12 = ref_some_or_none(move _13, _4) -> bb4;
+    }
+
+    bb4: {
+        _15 = _1;
+        _14 = some_or_self(move _15) -> bb5;
+    }
+
+    bb5: {
+        _20 = &_1;
+        _19 = &_20;
+        _18 = &_19;
+        _17 = &_18;
+        _16 = multiple_deref(_17) -> bb6;
+    }
+
+    bb6: {
+        _21 = match_with_or() -> bb7;
+    }
+
+    bb7: {
+        _22 = nested_mixed() -> bb8;
+    }
+
+    bb8: {
+        _23 = nested_mixed_multiple_deref_1() -> bb9;
+    }
+
+    bb9: {
+        _24 = nested_mixed_multiple_deref_2() -> bb10;
+    }
+
+    bb10: {
+        _25 = new_mutable_reference() -> bb11;
+    }
+
+    bb11: {
+        _26 = explicit_mut_binding() -> bb12;
+    }
+
+    bb12: {
+        _27 = tuple_mut_and_mut_mut() -> bb13;
+    }
+
+    bb13: {
+        _28 = min_mir_embedded_type() -> bb14;
+    }
+
+    bb14: {
+        _29 = let_implicit_ref_binding() -> bb15;
+    }
+
+    bb15: {
+        _30 = no_autoderef() -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+fn Foo(_1: i32) -> Foo {
+    let mut _0: let_implicit_ref_binding::Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: i32) -> Foo {
+    let mut _0: let_implicit_ref_binding::Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

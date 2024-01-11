@@ -1,0 +1,12 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn start(_1: isize, _2: *const *const u8) -> isize {
+    debug _argc => _1;
+    debug _argv => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 0_isize;
+        return;
+    }
+}

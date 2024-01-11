@@ -1,0 +1,698 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_stack_assign() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let _2: &str;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &std::string::String;
+    let _13: std::string::String;
+    let mut _14: &std::string::String;
+    let _16: &str;
+    let mut _17: (&std::string::String, &std::string::String);
+    let mut _18: &std::string::String;
+    let mut _19: &std::string::String;
+    let mut _22: bool;
+    let mut _23: bool;
+    let _25: !;
+    let mut _26: std::option::Option<std::fmt::Arguments<'_>>;
+    let _28: &str;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: &std::string::String;
+    let mut _32: &std::string::String;
+    let mut _33: !;
+    scope 1 {
+        debug s => _1;
+        let _15: std::string::String;
+        scope 2 {
+            debug t => _15;
+            let _20: &std::string::String;
+            let _21: &std::string::String;
+            let _27: std::string::String;
+            scope 3 {
+                debug left_val => _20;
+                debug right_val => _21;
+                let _24: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _24;
+                }
+            }
+            scope 5 {
+                debug u => _27;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const "a";
+        _1 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _14 = &_1;
+        _13 = <String as Clone>::clone(move _14) -> [return: bb2, unwind: bb21];
+    }
+
+    bb2: {
+        _12 = &_13;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<String>(_12) -> [return: bb3, unwind: bb20];
+    }
+
+    bb3: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb4, unwind: bb20];
+    }
+
+    bb4: {
+        _3 = _print(move _4) -> [return: bb5, unwind: bb20];
+    }
+
+    bb5: {
+        drop(_13) -> [return: bb6, unwind: bb21];
+    }
+
+    bb6: {
+        _16 = const "a";
+        _15 = <str as ToString>::to_string(_16) -> [return: bb7, unwind: bb21];
+    }
+
+    bb7: {
+        _18 = &_1;
+        _19 = &_15;
+        _17 = (move _18, move _19);
+        _20 = (_17.0: &std::string::String);
+        _21 = (_17.1: &std::string::String);
+        _23 = <String as PartialEq>::eq(_20, _21) -> [return: bb8, unwind: bb19];
+    }
+
+    bb8: {
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _24 = core::panicking::AssertKind::Eq;
+        _26 = Option::<Arguments<'_>>::None;
+        _25 = core::panicking::assert_failed::<String, String>(move _24, _20, _21, move _26) -> bb19;
+    }
+
+    bb10: {
+        _28 = const "b";
+        _27 = <str as ToString>::to_string(_28) -> [return: bb11, unwind: bb19];
+    }
+
+    bb11: {
+        _31 = &_1;
+        _32 = &_27;
+        _30 = <String as PartialEq>::ne(move _31, move _32) -> [return: bb12, unwind: bb18];
+    }
+
+    bb12: {
+        _29 = Not(move _30);
+        switchInt(move _29) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _33 = core::panicking::panic(const "assertion failed: (s != u)") -> bb18;
+    }
+
+    bb14: {
+        drop(_27) -> [return: bb15, unwind: bb19];
+    }
+
+    bb15: {
+        drop(_15) -> [return: bb16, unwind: bb21];
+    }
+
+    bb16: {
+        drop(_1) -> bb17;
+    }
+
+    bb17: {
+        return;
+    }
+
+    bb18 (cleanup): {
+        drop(_27) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        drop(_15) -> [return: bb21, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        drop(_13) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_1) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        resume;
+    }
+}
+
+fn test_heap_lit() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let _2: &str;
+
+    bb0: {
+        _2 = const "a big string";
+        _1 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn test_heap_assign() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let _2: &str;
+    let _4: &str;
+    let mut _5: (&std::string::String, &std::string::String);
+    let mut _6: &std::string::String;
+    let mut _7: &std::string::String;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let _16: &str;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: &std::string::String;
+    let mut _20: &std::string::String;
+    let mut _21: !;
+    scope 1 {
+        debug s => _1;
+        let _3: std::string::String;
+        scope 2 {
+            debug t => _3;
+            let _8: &std::string::String;
+            let _9: &std::string::String;
+            let _15: std::string::String;
+            scope 3 {
+                debug left_val => _8;
+                debug right_val => _9;
+                let _12: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _12;
+                }
+            }
+            scope 5 {
+                debug u => _15;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const "a big ol' string";
+        _1 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        _4 = const "a big ol' string";
+        _3 = <str as ToString>::to_string(_4) -> [return: bb2, unwind: bb15];
+    }
+
+    bb2: {
+        _6 = &_1;
+        _7 = &_3;
+        _5 = (move _6, move _7);
+        _8 = (_5.0: &std::string::String);
+        _9 = (_5.1: &std::string::String);
+        _11 = <String as PartialEq>::eq(_8, _9) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<String, String>(move _12, _8, _9, move _14) -> bb14;
+    }
+
+    bb5: {
+        _16 = const "a bad ol' string";
+        _15 = <str as ToString>::to_string(_16) -> [return: bb6, unwind: bb14];
+    }
+
+    bb6: {
+        _19 = &_1;
+        _20 = &_15;
+        _18 = <String as PartialEq>::ne(move _19, move _20) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _21 = core::panicking::panic(const "assertion failed: (s != u)") -> bb13;
+    }
+
+    bb9: {
+        drop(_15) -> [return: bb10, unwind: bb14];
+    }
+
+    bb10: {
+        drop(_3) -> [return: bb11, unwind: bb15];
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_15) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_3) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_1) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        resume;
+    }
+}
+
+fn test_heap_log() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let _2: &str;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &std::string::String;
+    scope 1 {
+        debug s => _1;
+    }
+
+    bb0: {
+        _2 = const "a big ol' string";
+        _1 = <str as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_1;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<String>(_12) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _3 = _print(move _4) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_1) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn test_append() -> () {
+    let mut _0: ();
+    let mut _1: std::string::String;
+    let _2: ();
+    let mut _3: &mut std::string::String;
+    let _4: &str;
+    let mut _5: (&std::string::String, &&str);
+    let mut _6: &std::string::String;
+    let mut _7: &&str;
+    let _8: &str;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _17: ();
+    let mut _18: &mut std::string::String;
+    let _19: &str;
+    let _20: ();
+    let mut _21: std::fmt::Arguments<'_>;
+    let mut _22: &[&str];
+    let _23: &[&str; 2];
+    let _24: [&str; 2];
+    let mut _25: &[core::fmt::rt::Argument<'_>];
+    let _26: &[core::fmt::rt::Argument<'_>; 1];
+    let _27: [core::fmt::rt::Argument<'_>; 1];
+    let mut _28: core::fmt::rt::Argument<'_>;
+    let _29: &std::string::String;
+    let _30: std::string::String;
+    let mut _31: &std::string::String;
+    let mut _32: (&std::string::String, &&str);
+    let mut _33: &std::string::String;
+    let mut _34: &&str;
+    let _35: &str;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let _44: ();
+    let mut _45: &mut std::string::String;
+    let _46: &str;
+    let mut _47: (&std::string::String, &&str);
+    let mut _48: &std::string::String;
+    let mut _49: &&str;
+    let _50: &str;
+    let mut _53: bool;
+    let mut _54: bool;
+    let _56: !;
+    let mut _57: std::option::Option<std::fmt::Arguments<'_>>;
+    let _58: ();
+    let mut _59: &mut std::string::String;
+    let _60: &str;
+    let mut _61: (&std::string::String, &&str);
+    let mut _62: &std::string::String;
+    let mut _63: &&str;
+    let _64: &str;
+    let mut _67: bool;
+    let mut _68: bool;
+    let _70: !;
+    let mut _71: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug s => _1;
+        let _9: &std::string::String;
+        let _10: &&str;
+        let mut _16: std::string::String;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+        scope 4 {
+            debug s => _16;
+            let _36: &std::string::String;
+            let _37: &&str;
+            let mut _43: std::string::String;
+            scope 5 {
+                debug left_val => _36;
+                debug right_val => _37;
+                let _40: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _40;
+                }
+            }
+            scope 7 {
+                debug s => _43;
+                let _51: &std::string::String;
+                let _52: &&str;
+                let _65: &std::string::String;
+                let _66: &&str;
+                scope 8 {
+                    debug left_val => _51;
+                    debug right_val => _52;
+                    let _55: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _55;
+                    }
+                }
+                scope 10 {
+                    debug left_val => _65;
+                    debug right_val => _66;
+                    let _69: core::panicking::AssertKind;
+                    scope 11 {
+                        debug kind => _69;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = String::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = &mut _1;
+        _4 = const "a";
+        _2 = String::push_str(move _3, _4) -> [return: bb2, unwind: bb31];
+    }
+
+    bb2: {
+        _6 = &_1;
+        _8 = const "a";
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &std::string::String);
+        _10 = (_5.1: &&str);
+        _12 = <String as PartialEq<&str>>::eq(_9, _10) -> [return: bb3, unwind: bb31];
+    }
+
+    bb3: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<String, &str>(move _13, _9, _10, move _15) -> bb31;
+    }
+
+    bb5: {
+        _16 = <String as From<&str>>::from(const "a") -> [return: bb6, unwind: bb31];
+    }
+
+    bb6: {
+        _18 = &mut _16;
+        _19 = const "b";
+        _17 = String::push_str(move _18, _19) -> [return: bb7, unwind: bb30];
+    }
+
+    bb7: {
+        _24 = [const "", const "\n"];
+        _23 = &_24;
+        _22 = _23 as &[&str] (Pointer(Unsize));
+        _31 = &_16;
+        _30 = <String as Clone>::clone(move _31) -> [return: bb8, unwind: bb30];
+    }
+
+    bb8: {
+        _29 = &_30;
+        _28 = core::fmt::rt::Argument::<'_>::new_display::<String>(_29) -> [return: bb9, unwind: bb29];
+    }
+
+    bb9: {
+        _27 = [move _28];
+        _26 = &_27;
+        _25 = _26 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _21 = Arguments::<'_>::new_v1(move _22, move _25) -> [return: bb10, unwind: bb29];
+    }
+
+    bb10: {
+        _20 = _print(move _21) -> [return: bb11, unwind: bb29];
+    }
+
+    bb11: {
+        drop(_30) -> [return: bb12, unwind: bb30];
+    }
+
+    bb12: {
+        _33 = &_16;
+        _35 = const "ab";
+        _34 = &_35;
+        _32 = (move _33, move _34);
+        _36 = (_32.0: &std::string::String);
+        _37 = (_32.1: &&str);
+        _39 = <String as PartialEq<&str>>::eq(_36, _37) -> [return: bb13, unwind: bb30];
+    }
+
+    bb13: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<String, &str>(move _40, _36, _37, move _42) -> bb30;
+    }
+
+    bb15: {
+        _43 = <String as From<&str>>::from(const "c") -> [return: bb16, unwind: bb30];
+    }
+
+    bb16: {
+        _45 = &mut _43;
+        _46 = const "offee";
+        _44 = String::push_str(move _45, _46) -> [return: bb17, unwind: bb28];
+    }
+
+    bb17: {
+        _48 = &_43;
+        _50 = const "coffee";
+        _49 = &_50;
+        _47 = (move _48, move _49);
+        _51 = (_47.0: &std::string::String);
+        _52 = (_47.1: &&str);
+        _54 = <String as PartialEq<&str>>::eq(_51, _52) -> [return: bb18, unwind: bb28];
+    }
+
+    bb18: {
+        _53 = Not(move _54);
+        switchInt(move _53) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _55 = core::panicking::AssertKind::Eq;
+        _57 = Option::<Arguments<'_>>::None;
+        _56 = core::panicking::assert_failed::<String, &str>(move _55, _51, _52, move _57) -> bb28;
+    }
+
+    bb20: {
+        _59 = &mut _43;
+        _60 = const "&tea";
+        _58 = String::push_str(move _59, _60) -> [return: bb21, unwind: bb28];
+    }
+
+    bb21: {
+        _62 = &_43;
+        _64 = const "coffee&tea";
+        _63 = &_64;
+        _61 = (move _62, move _63);
+        _65 = (_61.0: &std::string::String);
+        _66 = (_61.1: &&str);
+        _68 = <String as PartialEq<&str>>::eq(_65, _66) -> [return: bb22, unwind: bb28];
+    }
+
+    bb22: {
+        _67 = Not(move _68);
+        switchInt(move _67) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _69 = core::panicking::AssertKind::Eq;
+        _71 = Option::<Arguments<'_>>::None;
+        _70 = core::panicking::assert_failed::<String, &str>(move _69, _65, _66, move _71) -> bb28;
+    }
+
+    bb24: {
+        drop(_43) -> [return: bb25, unwind: bb30];
+    }
+
+    bb25: {
+        drop(_16) -> [return: bb26, unwind: bb31];
+    }
+
+    bb26: {
+        drop(_1) -> bb27;
+    }
+
+    bb27: {
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_43) -> [return: bb30, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_30) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_16) -> [return: bb31, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_1) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+
+    bb0: {
+        _1 = test_stack_assign() -> bb1;
+    }
+
+    bb1: {
+        _2 = test_heap_lit() -> bb2;
+    }
+
+    bb2: {
+        _3 = test_heap_assign() -> bb3;
+    }
+
+    bb3: {
+        _4 = test_heap_log() -> bb4;
+    }
+
+    bb4: {
+        _5 = test_append() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}

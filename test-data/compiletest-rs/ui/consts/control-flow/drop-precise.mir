@@ -1,0 +1,84 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const _: Vec<i32> = {
+    let mut _0: std::vec::Vec<i32>;
+    let _1: (std::vec::Vec<i32>,);
+    let mut _2: std::vec::Vec<i32>;
+    scope 1 {
+        debug vec_tuple => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = (move _2,);
+        StorageDead(_2);
+        _0 = move (_1.0: std::vec::Vec<i32>);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _: Vec<i32> = {
+    let mut _0: std::vec::Vec<i32>;
+    let _1: std::result::Result<std::vec::Vec<i32>, std::vec::Vec<i32>>;
+    let mut _2: std::vec::Vec<i32>;
+    let mut _3: isize;
+    scope 1 {
+        debug x => _1;
+        let _4: std::vec::Vec<i32>;
+        scope 2 {
+            debug x => _4;
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = Result::<Vec<i32>, Vec<i32>>::Ok(move _2);
+        StorageDead(_2);
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb5, 1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        StorageLive(_4);
+        _4 = move ((_1 as Err).0: std::vec::Vec<i32>);
+        goto -> bb4;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _0 = move _4;
+        StorageDead(_4);
+        StorageDead(_1);
+        return;
+    }
+
+    bb5: {
+        StorageLive(_4);
+        _4 = move ((_1 as Ok).0: std::vec::Vec<i32>);
+        goto -> bb4;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

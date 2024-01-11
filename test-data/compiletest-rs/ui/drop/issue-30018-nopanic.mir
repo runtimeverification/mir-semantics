@@ -1,0 +1,945 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/drop/issue-30018-nopanic.rs:15:1: 15:24>::drop(_1: &mut D<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+    let _12: ();
+    let mut _13: &mut std::vec::Vec<i32>;
+    let mut _14: &mut std::vec::Vec<i32>;
+    let mut _15: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _16: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _17: i32;
+    let mut _18: &std::cell::RefCell<std::vec::Vec<i32>>;
+
+    bb0: {
+        _6 = [const "Dropping D(", const ")\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).1: i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _18 = deref_copy ((*_1).0: &std::cell::RefCell<std::vec::Vec<i32>>);
+        _16 = RefCell::<Vec<i32>>::borrow_mut(_18) -> bb4;
+    }
+
+    bb4: {
+        _15 = &mut _16;
+        _14 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _15) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        _13 = _14;
+        _17 = ((*_1).1: i32);
+        _12 = Vec::<i32>::push(move _13, move _17) -> [return: bb6, unwind: bb8];
+    }
+
+    bb6: {
+        drop(_16) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_16) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+    let _6: ();
+    let _7: ();
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 1];
+    let _12: [&str; 1];
+
+    bb0: {
+        _5 = [const "Start\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _print(move _2) -> bb2;
+    }
+
+    bb2: {
+        _6 = break_during_elem() -> bb3;
+    }
+
+    bb3: {
+        _7 = break_after_whole() -> bb4;
+    }
+
+    bb4: {
+        _12 = [const "Finis\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_const(move _10) -> bb5;
+    }
+
+    bb5: {
+        _8 = _print(move _9) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn break_during_elem() -> () {
+    let mut _0: ();
+    let _1: &std::cell::RefCell<std::vec::Vec<i32>>;
+    let _2: std::cell::RefCell<std::vec::Vec<i32>>;
+    let mut _3: std::vec::Vec<i32>;
+    let mut _5: D<'_>;
+    let mut _6: D<'_>;
+    let _7: D<'_>;
+    let mut _8: (&&[i32], &&[i32; 3]);
+    let mut _9: &&[i32];
+    let _10: &[i32];
+    let _11: &[i32];
+    let mut _12: &std::vec::Vec<i32>;
+    let _13: &std::vec::Vec<i32>;
+    let mut _14: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _15: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _16: &&[i32; 3];
+    let _17: &[i32; 3];
+    let _18: [i32; 3];
+    let mut _21: bool;
+    let mut _22: bool;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let _26: ();
+    let mut _27: &mut std::vec::Vec<i32>;
+    let mut _28: &mut std::vec::Vec<i32>;
+    let mut _29: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _30: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _32: D<'_>;
+    let mut _33: D<'_>;
+    let _34: D<'_>;
+    let mut _35: (&&[i32], &&[i32; 3]);
+    let mut _36: &&[i32];
+    let _37: &[i32];
+    let _38: &[i32];
+    let mut _39: &std::vec::Vec<i32>;
+    let _40: &std::vec::Vec<i32>;
+    let mut _41: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _42: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _43: &&[i32; 3];
+    let _44: &[i32; 3];
+    let _45: [i32; 3];
+    let mut _48: bool;
+    let mut _49: bool;
+    let _51: !;
+    let mut _52: std::option::Option<std::fmt::Arguments<'_>>;
+    let _53: ();
+    let mut _54: &mut std::vec::Vec<i32>;
+    let mut _55: &mut std::vec::Vec<i32>;
+    let mut _56: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _57: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _59: D<'_>;
+    let mut _60: D<'_>;
+    let _61: D<'_>;
+    let mut _62: (&&[i32], &&[i32; 3]);
+    let mut _63: &&[i32];
+    let _64: &[i32];
+    let _65: &[i32];
+    let mut _66: &std::vec::Vec<i32>;
+    let _67: &std::vec::Vec<i32>;
+    let mut _68: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _69: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _70: &&[i32; 3];
+    let _71: &[i32; 3];
+    let _72: [i32; 3];
+    let mut _75: bool;
+    let mut _76: bool;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    let _80: ();
+    let mut _81: &mut std::vec::Vec<i32>;
+    let mut _82: &mut std::vec::Vec<i32>;
+    let mut _83: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _84: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    scope 1 {
+        debug log => _1;
+        let _4: [D<'_>; 4];
+        let _19: &&[i32];
+        let _20: &&[i32; 3];
+        let _31: &[D<'_>; 4];
+        let _46: &&[i32];
+        let _47: &&[i32; 3];
+        let _58: &[D<'_>];
+        let _73: &&[i32];
+        let _74: &&[i32; 3];
+        scope 2 {
+            debug _r => _4;
+        }
+        scope 3 {
+            debug left_val => _19;
+            debug right_val => _20;
+            let _23: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _23;
+            }
+        }
+        scope 5 {
+            debug _r => _31;
+        }
+        scope 6 {
+            debug left_val => _46;
+            debug right_val => _47;
+            let _50: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _50;
+            }
+        }
+        scope 8 {
+            debug _r => _58;
+        }
+        scope 9 {
+            debug left_val => _73;
+            debug right_val => _74;
+            let _77: core::panicking::AssertKind;
+            scope 10 {
+                debug kind => _77;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = RefCell::<Vec<i32>>::new(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = &_2;
+        _5 = D::<'_>(_1, const 10_i32);
+        _6 = D::<'_>(_1, const 11_i32);
+        _7 = D::<'_>(_1, const 12_i32);
+        drop(_7) -> [return: bb3, unwind: bb56];
+    }
+
+    bb3: {
+        drop(_6) -> [return: bb4, unwind: bb57];
+    }
+
+    bb4: {
+        drop(_5) -> [return: bb5, unwind: bb58];
+    }
+
+    bb5: {
+        _15 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb6, unwind: bb58];
+    }
+
+    bb6: {
+        _14 = &_15;
+        _13 = <Ref<'_, Vec<i32>> as Deref>::deref(move _14) -> [return: bb7, unwind: bb55];
+    }
+
+    bb7: {
+        _12 = _13;
+        _11 = <Vec<i32> as Index<RangeFull>>::index(move _12, const RangeFull) -> [return: bb8, unwind: bb55];
+    }
+
+    bb8: {
+        _10 = _11;
+        _9 = &_10;
+        _18 = [const 12_i32, const 11_i32, const 10_i32];
+        _17 = &_18;
+        _16 = &_17;
+        _8 = (move _9, move _16);
+        _19 = (_8.0: &&[i32]);
+        _20 = (_8.1: &&[i32; 3]);
+        _22 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_19, _20) -> [return: bb9, unwind: bb55];
+    }
+
+    bb9: {
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _23, _19, _20, move _25) -> bb55;
+    }
+
+    bb11: {
+        drop(_15) -> [return: bb12, unwind: bb58];
+    }
+
+    bb12: {
+        _30 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb13, unwind: bb58];
+    }
+
+    bb13: {
+        _29 = &mut _30;
+        _28 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _29) -> [return: bb14, unwind: bb54];
+    }
+
+    bb14: {
+        _27 = _28;
+        _26 = Vec::<i32>::clear(move _27) -> [return: bb15, unwind: bb54];
+    }
+
+    bb15: {
+        drop(_30) -> [return: bb16, unwind: bb58];
+    }
+
+    bb16: {
+        _32 = D::<'_>(_1, const 20_i32);
+        _33 = D::<'_>(_1, const 21_i32);
+        _34 = D::<'_>(_1, const 22_i32);
+        drop(_34) -> [return: bb17, unwind: bb52];
+    }
+
+    bb17: {
+        drop(_33) -> [return: bb18, unwind: bb53];
+    }
+
+    bb18: {
+        drop(_32) -> [return: bb19, unwind: bb58];
+    }
+
+    bb19: {
+        _42 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb20, unwind: bb58];
+    }
+
+    bb20: {
+        _41 = &_42;
+        _40 = <Ref<'_, Vec<i32>> as Deref>::deref(move _41) -> [return: bb21, unwind: bb51];
+    }
+
+    bb21: {
+        _39 = _40;
+        _38 = <Vec<i32> as Index<RangeFull>>::index(move _39, const RangeFull) -> [return: bb22, unwind: bb51];
+    }
+
+    bb22: {
+        _37 = _38;
+        _36 = &_37;
+        _45 = [const 22_i32, const 21_i32, const 20_i32];
+        _44 = &_45;
+        _43 = &_44;
+        _35 = (move _36, move _43);
+        _46 = (_35.0: &&[i32]);
+        _47 = (_35.1: &&[i32; 3]);
+        _49 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_46, _47) -> [return: bb23, unwind: bb51];
+    }
+
+    bb23: {
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _50 = core::panicking::AssertKind::Eq;
+        _52 = Option::<Arguments<'_>>::None;
+        _51 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _50, _46, _47, move _52) -> bb51;
+    }
+
+    bb25: {
+        drop(_42) -> [return: bb26, unwind: bb58];
+    }
+
+    bb26: {
+        _57 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb27, unwind: bb58];
+    }
+
+    bb27: {
+        _56 = &mut _57;
+        _55 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _56) -> [return: bb28, unwind: bb50];
+    }
+
+    bb28: {
+        _54 = _55;
+        _53 = Vec::<i32>::clear(move _54) -> [return: bb29, unwind: bb50];
+    }
+
+    bb29: {
+        drop(_57) -> [return: bb30, unwind: bb58];
+    }
+
+    bb30: {
+        _59 = D::<'_>(_1, const 30_i32);
+        _60 = D::<'_>(_1, const 31_i32);
+        _61 = D::<'_>(_1, const 32_i32);
+        drop(_61) -> [return: bb31, unwind: bb48];
+    }
+
+    bb31: {
+        drop(_60) -> [return: bb32, unwind: bb49];
+    }
+
+    bb32: {
+        drop(_59) -> [return: bb33, unwind: bb58];
+    }
+
+    bb33: {
+        _69 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb34, unwind: bb58];
+    }
+
+    bb34: {
+        _68 = &_69;
+        _67 = <Ref<'_, Vec<i32>> as Deref>::deref(move _68) -> [return: bb35, unwind: bb47];
+    }
+
+    bb35: {
+        _66 = _67;
+        _65 = <Vec<i32> as Index<RangeFull>>::index(move _66, const RangeFull) -> [return: bb36, unwind: bb47];
+    }
+
+    bb36: {
+        _64 = _65;
+        _63 = &_64;
+        _72 = [const 32_i32, const 31_i32, const 30_i32];
+        _71 = &_72;
+        _70 = &_71;
+        _62 = (move _63, move _70);
+        _73 = (_62.0: &&[i32]);
+        _74 = (_62.1: &&[i32; 3]);
+        _76 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_73, _74) -> [return: bb37, unwind: bb47];
+    }
+
+    bb37: {
+        _75 = Not(move _76);
+        switchInt(move _75) -> [0: bb39, otherwise: bb38];
+    }
+
+    bb38: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _77, _73, _74, move _79) -> bb47;
+    }
+
+    bb39: {
+        drop(_69) -> [return: bb40, unwind: bb58];
+    }
+
+    bb40: {
+        _84 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb41, unwind: bb58];
+    }
+
+    bb41: {
+        _83 = &mut _84;
+        _82 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _83) -> [return: bb42, unwind: bb46];
+    }
+
+    bb42: {
+        _81 = _82;
+        _80 = Vec::<i32>::clear(move _81) -> [return: bb43, unwind: bb46];
+    }
+
+    bb43: {
+        drop(_84) -> [return: bb44, unwind: bb58];
+    }
+
+    bb44: {
+        drop(_2) -> bb45;
+    }
+
+    bb45: {
+        return;
+    }
+
+    bb46 (cleanup): {
+        drop(_84) -> [return: bb58, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_69) -> [return: bb58, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_60) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        drop(_59) -> [return: bb58, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_57) -> [return: bb58, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_42) -> [return: bb58, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_33) -> [return: bb53, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_32) -> [return: bb58, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_30) -> [return: bb58, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        drop(_15) -> [return: bb58, unwind terminate];
+    }
+
+    bb56 (cleanup): {
+        drop(_6) -> [return: bb57, unwind terminate];
+    }
+
+    bb57 (cleanup): {
+        drop(_5) -> [return: bb58, unwind terminate];
+    }
+
+    bb58 (cleanup): {
+        drop(_2) -> [return: bb59, unwind terminate];
+    }
+
+    bb59 (cleanup): {
+        resume;
+    }
+}
+
+fn break_after_whole() -> () {
+    let mut _0: ();
+    let _1: &std::cell::RefCell<std::vec::Vec<i32>>;
+    let _2: std::cell::RefCell<std::vec::Vec<i32>>;
+    let mut _3: std::vec::Vec<i32>;
+    let mut _5: D<'_>;
+    let mut _6: D<'_>;
+    let mut _7: D<'_>;
+    let mut _8: (&&[i32], &&[i32; 3]);
+    let mut _9: &&[i32];
+    let _10: &[i32];
+    let _11: &[i32];
+    let mut _12: &std::vec::Vec<i32>;
+    let _13: &std::vec::Vec<i32>;
+    let mut _14: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _15: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _16: &&[i32; 3];
+    let _17: &[i32; 3];
+    let _18: [i32; 3];
+    let mut _21: bool;
+    let mut _22: bool;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let _26: ();
+    let mut _27: &mut std::vec::Vec<i32>;
+    let mut _28: &mut std::vec::Vec<i32>;
+    let mut _29: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _30: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let _32: [D<'_>; 3];
+    let mut _33: D<'_>;
+    let mut _34: D<'_>;
+    let mut _35: D<'_>;
+    let mut _36: (&&[i32], &&[i32; 3]);
+    let mut _37: &&[i32];
+    let _38: &[i32];
+    let _39: &[i32];
+    let mut _40: &std::vec::Vec<i32>;
+    let _41: &std::vec::Vec<i32>;
+    let mut _42: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _43: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _44: &&[i32; 3];
+    let _45: &[i32; 3];
+    let _46: [i32; 3];
+    let mut _49: bool;
+    let mut _50: bool;
+    let _52: !;
+    let mut _53: std::option::Option<std::fmt::Arguments<'_>>;
+    let _54: ();
+    let mut _55: &mut std::vec::Vec<i32>;
+    let mut _56: &mut std::vec::Vec<i32>;
+    let mut _57: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _58: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let _60: &[D<'_>];
+    let mut _61: &[D<'_>; 3];
+    let _62: [D<'_>; 3];
+    let mut _63: D<'_>;
+    let mut _64: D<'_>;
+    let mut _65: D<'_>;
+    let mut _66: (&&[i32], &&[i32; 3]);
+    let mut _67: &&[i32];
+    let _68: &[i32];
+    let _69: &[i32];
+    let mut _70: &std::vec::Vec<i32>;
+    let _71: &std::vec::Vec<i32>;
+    let mut _72: &std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let _73: std::cell::Ref<'_, std::vec::Vec<i32>>;
+    let mut _74: &&[i32; 3];
+    let _75: &[i32; 3];
+    let _76: [i32; 3];
+    let mut _79: bool;
+    let mut _80: bool;
+    let _82: !;
+    let mut _83: std::option::Option<std::fmt::Arguments<'_>>;
+    let _84: ();
+    let mut _85: &mut std::vec::Vec<i32>;
+    let mut _86: &mut std::vec::Vec<i32>;
+    let mut _87: &mut std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    let mut _88: std::cell::RefMut<'_, std::vec::Vec<i32>>;
+    scope 1 {
+        debug log => _1;
+        let _4: [D<'_>; 3];
+        let _19: &&[i32];
+        let _20: &&[i32; 3];
+        let _31: &[D<'_>; 3];
+        let _47: &&[i32];
+        let _48: &&[i32; 3];
+        let _59: &[D<'_>];
+        let _77: &&[i32];
+        let _78: &&[i32; 3];
+        scope 2 {
+            debug _r => _4;
+        }
+        scope 3 {
+            debug left_val => _19;
+            debug right_val => _20;
+            let _23: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _23;
+            }
+        }
+        scope 5 {
+            debug _r => _31;
+        }
+        scope 6 {
+            debug left_val => _47;
+            debug right_val => _48;
+            let _51: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _51;
+            }
+        }
+        scope 8 {
+            debug _r => _59;
+        }
+        scope 9 {
+            debug left_val => _77;
+            debug right_val => _78;
+            let _81: core::panicking::AssertKind;
+            scope 10 {
+                debug kind => _81;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = RefCell::<Vec<i32>>::new(move _3) -> bb2;
+    }
+
+    bb2: {
+        _1 = &_2;
+        _5 = D::<'_>(_1, const 10_i32);
+        _6 = D::<'_>(_1, const 11_i32);
+        _7 = D::<'_>(_1, const 12_i32);
+        _4 = [move _5, move _6, move _7];
+        drop(_4) -> [return: bb3, unwind: bb48];
+    }
+
+    bb3: {
+        _15 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb4, unwind: bb48];
+    }
+
+    bb4: {
+        _14 = &_15;
+        _13 = <Ref<'_, Vec<i32>> as Deref>::deref(move _14) -> [return: bb5, unwind: bb47];
+    }
+
+    bb5: {
+        _12 = _13;
+        _11 = <Vec<i32> as Index<RangeFull>>::index(move _12, const RangeFull) -> [return: bb6, unwind: bb47];
+    }
+
+    bb6: {
+        _10 = _11;
+        _9 = &_10;
+        _18 = [const 10_i32, const 11_i32, const 12_i32];
+        _17 = &_18;
+        _16 = &_17;
+        _8 = (move _9, move _16);
+        _19 = (_8.0: &&[i32]);
+        _20 = (_8.1: &&[i32; 3]);
+        _22 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_19, _20) -> [return: bb7, unwind: bb47];
+    }
+
+    bb7: {
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _23, _19, _20, move _25) -> bb47;
+    }
+
+    bb9: {
+        drop(_15) -> [return: bb10, unwind: bb48];
+    }
+
+    bb10: {
+        _30 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb11, unwind: bb48];
+    }
+
+    bb11: {
+        _29 = &mut _30;
+        _28 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _29) -> [return: bb12, unwind: bb46];
+    }
+
+    bb12: {
+        _27 = _28;
+        _26 = Vec::<i32>::clear(move _27) -> [return: bb13, unwind: bb46];
+    }
+
+    bb13: {
+        drop(_30) -> [return: bb14, unwind: bb48];
+    }
+
+    bb14: {
+        _33 = D::<'_>(_1, const 20_i32);
+        _34 = D::<'_>(_1, const 21_i32);
+        _35 = D::<'_>(_1, const 22_i32);
+        _32 = [move _33, move _34, move _35];
+        _31 = &_32;
+        drop(_32) -> [return: bb15, unwind: bb48];
+    }
+
+    bb15: {
+        _43 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb16, unwind: bb48];
+    }
+
+    bb16: {
+        _42 = &_43;
+        _41 = <Ref<'_, Vec<i32>> as Deref>::deref(move _42) -> [return: bb17, unwind: bb45];
+    }
+
+    bb17: {
+        _40 = _41;
+        _39 = <Vec<i32> as Index<RangeFull>>::index(move _40, const RangeFull) -> [return: bb18, unwind: bb45];
+    }
+
+    bb18: {
+        _38 = _39;
+        _37 = &_38;
+        _46 = [const 20_i32, const 21_i32, const 22_i32];
+        _45 = &_46;
+        _44 = &_45;
+        _36 = (move _37, move _44);
+        _47 = (_36.0: &&[i32]);
+        _48 = (_36.1: &&[i32; 3]);
+        _50 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_47, _48) -> [return: bb19, unwind: bb45];
+    }
+
+    bb19: {
+        _49 = Not(move _50);
+        switchInt(move _49) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _51 = core::panicking::AssertKind::Eq;
+        _53 = Option::<Arguments<'_>>::None;
+        _52 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _51, _47, _48, move _53) -> bb45;
+    }
+
+    bb21: {
+        drop(_43) -> [return: bb22, unwind: bb48];
+    }
+
+    bb22: {
+        _58 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb23, unwind: bb48];
+    }
+
+    bb23: {
+        _57 = &mut _58;
+        _56 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _57) -> [return: bb24, unwind: bb44];
+    }
+
+    bb24: {
+        _55 = _56;
+        _54 = Vec::<i32>::clear(move _55) -> [return: bb25, unwind: bb44];
+    }
+
+    bb25: {
+        drop(_58) -> [return: bb26, unwind: bb48];
+    }
+
+    bb26: {
+        _63 = D::<'_>(_1, const 30_i32);
+        _64 = D::<'_>(_1, const 31_i32);
+        _65 = D::<'_>(_1, const 32_i32);
+        _62 = [move _63, move _64, move _65];
+        _61 = &_62;
+        _60 = <[D<'_>; 3] as Index<RangeFull>>::index(move _61, const RangeFull) -> [return: bb27, unwind: bb43];
+    }
+
+    bb27: {
+        _59 = _60;
+        drop(_62) -> [return: bb28, unwind: bb48];
+    }
+
+    bb28: {
+        _73 = RefCell::<Vec<i32>>::borrow(_1) -> [return: bb29, unwind: bb48];
+    }
+
+    bb29: {
+        _72 = &_73;
+        _71 = <Ref<'_, Vec<i32>> as Deref>::deref(move _72) -> [return: bb30, unwind: bb42];
+    }
+
+    bb30: {
+        _70 = _71;
+        _69 = <Vec<i32> as Index<RangeFull>>::index(move _70, const RangeFull) -> [return: bb31, unwind: bb42];
+    }
+
+    bb31: {
+        _68 = _69;
+        _67 = &_68;
+        _76 = [const 30_i32, const 31_i32, const 32_i32];
+        _75 = &_76;
+        _74 = &_75;
+        _66 = (move _67, move _74);
+        _77 = (_66.0: &&[i32]);
+        _78 = (_66.1: &&[i32; 3]);
+        _80 = <&[i32] as PartialEq<&[i32; 3]>>::eq(_77, _78) -> [return: bb32, unwind: bb42];
+    }
+
+    bb32: {
+        _79 = Not(move _80);
+        switchInt(move _79) -> [0: bb34, otherwise: bb33];
+    }
+
+    bb33: {
+        _81 = core::panicking::AssertKind::Eq;
+        _83 = Option::<Arguments<'_>>::None;
+        _82 = core::panicking::assert_failed::<&[i32], &[i32; 3]>(move _81, _77, _78, move _83) -> bb42;
+    }
+
+    bb34: {
+        drop(_73) -> [return: bb35, unwind: bb48];
+    }
+
+    bb35: {
+        _88 = RefCell::<Vec<i32>>::borrow_mut(_1) -> [return: bb36, unwind: bb48];
+    }
+
+    bb36: {
+        _87 = &mut _88;
+        _86 = <RefMut<'_, Vec<i32>> as DerefMut>::deref_mut(move _87) -> [return: bb37, unwind: bb41];
+    }
+
+    bb37: {
+        _85 = _86;
+        _84 = Vec::<i32>::clear(move _85) -> [return: bb38, unwind: bb41];
+    }
+
+    bb38: {
+        drop(_88) -> [return: bb39, unwind: bb48];
+    }
+
+    bb39: {
+        drop(_2) -> bb40;
+    }
+
+    bb40: {
+        return;
+    }
+
+    bb41 (cleanup): {
+        drop(_88) -> [return: bb48, unwind terminate];
+    }
+
+    bb42 (cleanup): {
+        drop(_73) -> [return: bb48, unwind terminate];
+    }
+
+    bb43 (cleanup): {
+        drop(_62) -> [return: bb48, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_58) -> [return: bb48, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_43) -> [return: bb48, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_30) -> [return: bb48, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_15) -> [return: bb48, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_2) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        resume;
+    }
+}
+
+fn D(_1: &RefCell<Vec<i32>>, _2: i32) -> D<'_> {
+    let mut _0: D<'_>;
+
+    bb0: {
+        _0 = D::<'_>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn D(_1: &RefCell<Vec<i32>>, _2: i32) -> D<'_> {
+    let mut _0: D<'_>;
+
+    bb0: {
+        _0 = D::<'_>(move _1, move _2);
+        return;
+    }
+}

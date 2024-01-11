@@ -1,0 +1,668 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const S: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "foo";
+        return;
+    }
+}
+
+const B: &[u8] = {
+    let mut _0: &[u8];
+    let _1: &[u8];
+    let mut _2: &str;
+    let _3: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &(*_3);
+        ConstEvalCounter;
+        _1 = core::str::<impl str>::as_bytes(move _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = &(*_1);
+        StorageDead(_3);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const C: usize = {
+    let mut _0: usize;
+    let mut _1: &[u8];
+    let _2: &[u8];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::slice::<impl [u8]>::len(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const D: bool = {
+    let mut _0: bool;
+    let mut _1: &[u8];
+    let _2: &[u8];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::slice::<impl [u8]>::is_empty(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const E: bool = {
+    let mut _0: bool;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::is_empty(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const F: usize = {
+    let mut _0: usize;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::len(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn foo() -> [u8; 3] {
+    let mut _0: [u8; 3];
+    let mut _1: [u8; 3];
+    let mut _2: std::iter::Enumerate<std::slice::Iter<'_, u8>>;
+    let mut _3: std::iter::Enumerate<std::slice::Iter<'_, u8>>;
+    let mut _4: std::slice::Iter<'_, u8>;
+    let mut _5: &[u8];
+    let _6: &[u8];
+    let _7: &str;
+    let mut _9: std::option::Option<(usize, &u8)>;
+    let mut _10: &mut std::iter::Enumerate<std::slice::Iter<'_, u8>>;
+    let mut _11: isize;
+    let mut _14: usize;
+    let mut _15: bool;
+    let mut _16: &u8;
+    scope 1 {
+        debug buf => _1;
+        let mut _8: std::iter::Enumerate<std::slice::Iter<'_, u8>>;
+        scope 2 {
+            debug iter => _8;
+            let _12: usize;
+            let _13: u8;
+            scope 3 {
+                debug i => _12;
+                debug c => _13;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 0_u8; 3];
+        _7 = const _;
+        _6 = core::str::<impl str>::as_bytes(_7) -> bb1;
+    }
+
+    bb1: {
+        _5 = _6;
+        _4 = core::slice::<impl [u8]>::iter(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = <std::slice::Iter<'_, u8> as Iterator>::enumerate(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = <Enumerate<std::slice::Iter<'_, u8>> as IntoIterator>::into_iter(move _3) -> bb4;
+    }
+
+    bb4: {
+        _8 = move _2;
+        goto -> bb5;
+    }
+
+    bb5: {
+        _10 = &mut _8;
+        _9 = <Enumerate<std::slice::Iter<'_, u8>> as Iterator>::next(_10) -> bb6;
+    }
+
+    bb6: {
+        _11 = discriminant(_9);
+        switchInt(move _11) -> [0: bb9, 1: bb7, otherwise: bb8];
+    }
+
+    bb7: {
+        _16 = deref_copy (((_9 as Some).0: (usize, &u8)).1: &u8);
+        _13 = (*_16);
+        _12 = (((_9 as Some).0: (usize, &u8)).0: usize);
+        _14 = const 3_usize;
+        _15 = Lt(_12, _14);
+        assert(move _15, "index out of bounds: the length is {} but the index is {}", move _14, _12) -> bb10;
+    }
+
+    bb8: {
+        unreachable;
+    }
+
+    bb9: {
+        _0 = _1;
+        return;
+    }
+
+    bb10: {
+        _1[_12] = _13;
+        goto -> bb5;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::len(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+foo::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::len(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&[u8], &&[u8; 3]);
+    let mut _2: &&[u8];
+    let _3: &[u8];
+    let _4: &[u8];
+    let mut _5: &[u8; 3];
+    let _6: [u8; 3];
+    let mut _7: &&[u8; 3];
+    let _8: &[u8; 3];
+    let _9: &&[u8];
+    let _10: &&[u8; 3];
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&usize, &usize);
+    let mut _17: &usize;
+    let _18: usize;
+    let mut _19: &[u8];
+    let mut _20: &[u8; 3];
+    let _21: [u8; 3];
+    let mut _22: &usize;
+    let _23: usize;
+    let _24: &str;
+    let _25: &usize;
+    let _26: &usize;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: usize;
+    let mut _30: usize;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: (&usize, &usize);
+    let mut _35: &usize;
+    let _36: usize;
+    let mut _37: &usize;
+    let _38: usize;
+    let _39: &str;
+    let _40: &usize;
+    let _41: &usize;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: usize;
+    let mut _45: usize;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&&[u8], &[u8; 3]);
+    let mut _50: &&[u8];
+    let _51: &[u8];
+    let mut _52: &[u8; 3];
+    let _53: [u8; 3];
+    let _54: &&[u8];
+    let _55: &[u8; 3];
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: (&&[u8], &&[u8; 3]);
+    let mut _62: &&[u8];
+    let _63: &[u8];
+    let mut _64: &&[u8; 3];
+    let _65: &[u8; 3];
+    let _66: &&[u8];
+    let _67: &&[u8; 3];
+    let mut _68: bool;
+    let mut _69: bool;
+    let _71: !;
+    let mut _72: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _73: (&usize, &usize);
+    let mut _74: &usize;
+    let _75: usize;
+    let mut _76: &usize;
+    let _77: usize;
+    let _78: &usize;
+    let _79: &usize;
+    let mut _80: bool;
+    let mut _81: bool;
+    let mut _82: usize;
+    let mut _83: usize;
+    let _85: !;
+    let mut _86: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _87: (&usize, &usize);
+    let mut _88: &usize;
+    let _89: usize;
+    let mut _90: &usize;
+    let _91: usize;
+    let _92: &usize;
+    let _93: &usize;
+    let mut _94: bool;
+    let mut _95: bool;
+    let mut _96: usize;
+    let mut _97: usize;
+    let _99: !;
+    let mut _100: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _101: bool;
+    let mut _102: bool;
+    let mut _103: !;
+    let mut _104: bool;
+    let mut _105: bool;
+    let mut _106: !;
+    let mut _107: bool;
+    let mut _108: !;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _25;
+        debug right_val => _26;
+        let _31: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _31;
+        }
+    }
+    scope 5 {
+        debug left_val => _40;
+        debug right_val => _41;
+        let _46: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _46;
+        }
+    }
+    scope 7 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _58: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _58;
+        }
+    }
+    scope 9 {
+        debug left_val => _66;
+        debug right_val => _67;
+        let _70: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _70;
+        }
+    }
+    scope 11 {
+        debug left_val => _78;
+        debug right_val => _79;
+        let _84: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _84;
+        }
+    }
+    scope 13 {
+        debug left_val => _92;
+        debug right_val => _93;
+        let _98: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _98;
+        }
+    }
+
+    bb0: {
+        _6 = foo() -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _4 = <[u8; 3] as Index<RangeFull>>::index(move _5, const RangeFull) -> bb2;
+    }
+
+    bb2: {
+        _3 = _4;
+        _2 = &_3;
+        _8 = const b"foo";
+        _7 = &_8;
+        _1 = (move _2, move _7);
+        _9 = (_1.0: &&[u8]);
+        _10 = (_1.1: &&[u8; 3]);
+        _12 = <&[u8] as PartialEq<&[u8; 3]>>::eq(_9, _10) -> bb3;
+    }
+
+    bb3: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<&[u8], &[u8; 3]>(move _13, _9, _10, move _15);
+    }
+
+    bb5: {
+        _21 = foo() -> bb6;
+    }
+
+    bb6: {
+        _20 = &_21;
+        _19 = move _20 as &[u8] (Pointer(Unsize));
+        _18 = Len((*_19));
+        _17 = &_18;
+        _24 = const _;
+        _23 = core::str::<impl str>::len(_24) -> bb7;
+    }
+
+    bb7: {
+        _22 = &_23;
+        _16 = (move _17, move _22);
+        _25 = (_16.0: &usize);
+        _26 = (_16.1: &usize);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<usize, usize>(move _31, _25, _26, move _33);
+    }
+
+    bb9: {
+        _36 = const _;
+        _35 = &_36;
+        _39 = const _;
+        _38 = core::str::<impl str>::len(_39) -> bb10;
+    }
+
+    bb10: {
+        _37 = &_38;
+        _34 = (move _35, move _37);
+        _40 = (_34.0: &usize);
+        _41 = (_34.1: &usize);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<usize, usize>(move _46, _40, _41, move _48);
+    }
+
+    bb12: {
+        _51 = const _;
+        _50 = &_51;
+        _53 = foo() -> bb13;
+    }
+
+    bb13: {
+        _52 = &_53;
+        _49 = (move _50, move _52);
+        _54 = (_49.0: &&[u8]);
+        _55 = (_49.1: &[u8; 3]);
+        _57 = <&[u8] as PartialEq<[u8; 3]>>::eq(_54, _55) -> bb14;
+    }
+
+    bb14: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<&[u8], [u8; 3]>(move _58, _54, _55, move _60);
+    }
+
+    bb16: {
+        _63 = const _;
+        _62 = &_63;
+        _65 = const b"foo";
+        _64 = &_65;
+        _61 = (move _62, move _64);
+        _66 = (_61.0: &&[u8]);
+        _67 = (_61.1: &&[u8; 3]);
+        _69 = <&[u8] as PartialEq<&[u8; 3]>>::eq(_66, _67) -> bb17;
+    }
+
+    bb17: {
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _70 = core::panicking::AssertKind::Eq;
+        _72 = Option::<Arguments<'_>>::None;
+        _71 = core::panicking::assert_failed::<&[u8], &[u8; 3]>(move _70, _66, _67, move _72);
+    }
+
+    bb19: {
+        _75 = const _;
+        _74 = &_75;
+        _77 = const 3_usize;
+        _76 = &_77;
+        _73 = (move _74, move _76);
+        _78 = (_73.0: &usize);
+        _79 = (_73.1: &usize);
+        _82 = (*_78);
+        _83 = (*_79);
+        _81 = Eq(move _82, move _83);
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _84 = core::panicking::AssertKind::Eq;
+        _86 = Option::<Arguments<'_>>::None;
+        _85 = core::panicking::assert_failed::<usize, usize>(move _84, _78, _79, move _86);
+    }
+
+    bb21: {
+        _89 = const _;
+        _88 = &_89;
+        _91 = const 3_usize;
+        _90 = &_91;
+        _87 = (move _88, move _90);
+        _92 = (_87.0: &usize);
+        _93 = (_87.1: &usize);
+        _96 = (*_92);
+        _97 = (*_93);
+        _95 = Eq(move _96, move _97);
+        _94 = Not(move _95);
+        switchInt(move _94) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _98 = core::panicking::AssertKind::Eq;
+        _100 = Option::<Arguments<'_>>::None;
+        _99 = core::panicking::assert_failed::<usize, usize>(move _98, _92, _93, move _100);
+    }
+
+    bb23: {
+        _102 = Not(const _);
+        _101 = Not(move _102);
+        switchInt(move _101) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _103 = core::panicking::panic(const "assertion failed: !D");
+    }
+
+    bb25: {
+        _105 = Not(const _);
+        _104 = Not(move _105);
+        switchInt(move _104) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _106 = core::panicking::panic(const "assertion failed: !E");
+    }
+
+    bb27: {
+        _107 = Not(const _);
+        switchInt(move _107) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb28: {
+        _108 = core::panicking::panic(const "assertion failed: EMPTY");
+    }
+
+    bb29: {
+        return;
+    }
+}
+
+alloc10 (size: 3, align: 1) {
+    66 6f 6f                                        │ foo
+}
+
+alloc9 (size: 3, align: 1) {
+    66 6f 6f                                        │ foo
+}
+
+const LEN: usize = {
+    let mut _0: usize;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const _;
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::len(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const EMPTY: bool = {
+    let mut _0: bool;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const "";
+        _1 = &(*_2);
+        ConstEvalCounter;
+        _0 = core::str::<impl str>::is_empty(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}

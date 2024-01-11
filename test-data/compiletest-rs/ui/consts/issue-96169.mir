@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn a() -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn bar(_1: u32) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn baz() -> *const dyn Fn(u32) {
+    let mut _0: *const dyn std::ops::Fn(u32);
+    let mut _1: !;
+
+    bb0: {
+        _1 = core::panicking::panic(const "not implemented");
+    }
+}
+
+fn foo() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: &*const dyn std::ops::Fn(u32);
+    let _3: *const dyn std::ops::Fn(u32);
+    let mut _4: &*const dyn std::ops::Fn(u32);
+    let _5: *const dyn std::ops::Fn(u32);
+    let mut _6: *const dyn std::ops::Fn(u32);
+    let _7: &dyn std::ops::Fn(u32);
+    let _8: &fn(u32) {bar};
+    let _9: fn(u32) {bar};
+
+    bb0: {
+        _3 = baz() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _8 = &_9;
+        _7 = _8 as &dyn std::ops::Fn(u32) (Pointer(Unsize));
+        _6 = &raw const (*_7);
+        _5 = move _6;
+        _4 = &_5;
+        _1 = <*const dyn Fn(u32) as PartialEq>::eq(move _2, move _4) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

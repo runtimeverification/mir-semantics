@@ -1,0 +1,62 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/issue-23012-supertrait-signature-inference.rs:9:1: 9:56>::receive(_1: F, _2: Result<T, E>) -> () {
+    debug self => _1;
+    debug res => _2;
+    let mut _0: ();
+    let mut _3: (std::result::Result<T, E>,);
+
+    bb0: {
+        _3 = (move _2,);
+        _0 = <F as FnOnce<(Result<T, E>,)>>::call_once(move _1, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/issue-23012-supertrait-signature-inference.rs:19:1: 19:40>::receive(_1: Result<T, E>, _2: F) -> () {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: ();
+    let mut _3: (std::result::Result<T, E>,);
+
+    bb0: {
+        _3 = (move _1,);
+        _0 = <F as FnOnce<(Result<T, E>,)>>::call_once(move _2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::result::Result<u32, ()>;
+
+    bb0: {
+        _2 = Result::<u32, ()>::Ok(const 123_u32);
+        _1 = <Result<u32, ()> as Async<u32, ()>>::receive::<[closure@ui/closures/issue-23012-supertrait-signature-inference.rs:26:32: 26:37]>(move _2, const ZeroSized: [closure@ui/closures/issue-23012-supertrait-signature-inference.rs:26:32: 26:37]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/closures/issue-23012-supertrait-signature-inference.rs:26:32: 26:37], _2: Result<u32, ()>) -> () {
+    debug res => _2;
+    let mut _0: ();
+    let _3: u32;
+
+    bb0: {
+        _3 = Result::<u32, ()>::unwrap(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

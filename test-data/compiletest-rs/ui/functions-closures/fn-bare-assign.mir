@@ -1,0 +1,132 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f(_1: isize, _2: &mut bool) -> () {
+    debug i => _1;
+    debug called => _2;
+    let mut _0: ();
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let mut _5: &isize;
+    let _6: isize;
+    let _7: &isize;
+    let _8: &isize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: isize;
+    let mut _12: isize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+
+    bb0: {
+        _4 = &_1;
+        _6 = const 10_isize;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &isize);
+        _8 = (_3.1: &isize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<isize, isize>(move _13, _7, _8, move _15);
+    }
+
+    bb2: {
+        (*_2) = const true;
+        return;
+    }
+}
+
+fn g(_1: for<'a> fn(isize, &'a mut bool), _2: &mut bool) -> () {
+    debug f => _1;
+    debug called => _2;
+    let mut _0: ();
+    let _3: ();
+
+    bb0: {
+        _3 = _1(const 10_isize, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let _2: ();
+    let mut _3: for<'a> fn(isize, &'a mut bool);
+    let mut _4: &mut bool;
+    let mut _5: (&bool, &bool);
+    let mut _6: &bool;
+    let mut _7: &bool;
+    let _8: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug called => _1;
+        scope 2 {
+            debug h => f;
+            let _9: &bool;
+            let _10: &bool;
+            scope 3 {
+                debug left_val => _9;
+                debug right_val => _10;
+                let _15: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _15;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const false;
+        _3 = f as for<'a> fn(isize, &'a mut bool) (Pointer(ReifyFnPointer));
+        _4 = &mut _1;
+        _2 = g(move _3, _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_1;
+        _8 = const true;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &bool);
+        _10 = (_5.1: &bool);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<bool, bool>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        return;
+    }
+}

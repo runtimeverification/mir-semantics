@@ -1,0 +1,101 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+S::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+<impl at ui/dropck/dropck_fn_type.rs:9:1: 9:39>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn <impl at ui/dropck/dropck_fn_type.rs:9:1: 9:39>::drop(_1: &mut S<F>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+P::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+<impl at ui/dropck/dropck_fn_type.rs:16:1: 16:49>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+fn <impl at ui/dropck/dropck_fn_type.rs:16:1: 16:49>::drop(_1: &mut P<A, F>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn S(_1: F) -> S<F> {
+    let mut _0: S<F>;
+
+    bb0: {
+        _0 = S::<F>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn S(_1: F) -> S<F> {
+    let mut _0: S<F>;
+
+    bb0: {
+        _0 = S::<F>(move _1);
+        return;
+    }
+}
+
+fn P(_1: F) -> P<A, F> {
+    let mut _0: P<A, F>;
+
+    bb0: {
+        _0 = P::<A, F>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn P(_1: F) -> P<A, F> {
+    let mut _0: P<A, F>;
+
+    bb0: {
+        _0 = P::<A, F>(move _1);
+        return;
+    }
+}

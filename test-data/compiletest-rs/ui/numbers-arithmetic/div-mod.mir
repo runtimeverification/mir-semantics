@@ -1,0 +1,599 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let _5: isize;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: &isize;
+    let _11: isize;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: isize;
+    let mut _17: isize;
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _21: (&isize, &isize);
+    let mut _22: &isize;
+    let _23: isize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: &isize;
+    let _29: isize;
+    let mut _32: bool;
+    let mut _33: bool;
+    let mut _34: isize;
+    let mut _35: isize;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: (&isize, &isize);
+    let mut _40: &isize;
+    let _41: isize;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: &isize;
+    let _47: isize;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: isize;
+    let mut _53: isize;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&isize, &isize);
+    let mut _58: &isize;
+    let _59: isize;
+    let mut _60: bool;
+    let mut _61: bool;
+    let mut _62: bool;
+    let mut _63: bool;
+    let mut _64: &isize;
+    let _65: isize;
+    let mut _68: bool;
+    let mut _69: bool;
+    let mut _70: isize;
+    let mut _71: isize;
+    let _73: !;
+    let mut _74: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _75: (&isize, &isize);
+    let mut _76: &isize;
+    let _77: isize;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: bool;
+    let mut _81: bool;
+    let mut _82: &isize;
+    let _83: isize;
+    let mut _86: bool;
+    let mut _87: bool;
+    let mut _88: isize;
+    let mut _89: isize;
+    let _91: !;
+    let mut _92: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _93: (&isize, &isize);
+    let mut _94: &isize;
+    let _95: isize;
+    let mut _96: bool;
+    let mut _97: bool;
+    let mut _98: bool;
+    let mut _99: bool;
+    let mut _100: &isize;
+    let _101: isize;
+    let mut _104: bool;
+    let mut _105: bool;
+    let mut _106: isize;
+    let mut _107: isize;
+    let _109: !;
+    let mut _110: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _111: (&isize, &isize);
+    let mut _112: &isize;
+    let _113: isize;
+    let mut _114: bool;
+    let mut _115: bool;
+    let mut _116: bool;
+    let mut _117: bool;
+    let mut _118: &isize;
+    let _119: isize;
+    let mut _122: bool;
+    let mut _123: bool;
+    let mut _124: isize;
+    let mut _125: isize;
+    let _127: !;
+    let mut _128: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _129: (&isize, &isize);
+    let mut _130: &isize;
+    let _131: isize;
+    let mut _132: bool;
+    let mut _133: bool;
+    let mut _134: bool;
+    let mut _135: bool;
+    let mut _136: &isize;
+    let _137: isize;
+    let mut _140: bool;
+    let mut _141: bool;
+    let mut _142: isize;
+    let mut _143: isize;
+    let _145: !;
+    let mut _146: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _147: (&isize, &isize);
+    let mut _148: &isize;
+    let _149: isize;
+    let mut _150: bool;
+    let mut _151: bool;
+    let mut _152: bool;
+    let mut _153: bool;
+    let mut _154: &isize;
+    let _155: isize;
+    let mut _158: bool;
+    let mut _159: bool;
+    let mut _160: isize;
+    let mut _161: isize;
+    let _163: !;
+    let mut _164: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _165: (&isize, &isize);
+    let mut _166: &isize;
+    let _167: isize;
+    let mut _168: bool;
+    let mut _169: bool;
+    let mut _170: bool;
+    let mut _171: bool;
+    let mut _172: &isize;
+    let _173: isize;
+    let mut _176: bool;
+    let mut _177: bool;
+    let mut _178: isize;
+    let mut _179: isize;
+    let _181: !;
+    let mut _182: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _2: isize;
+        scope 2 {
+            debug y => _2;
+            let _12: &isize;
+            let _13: &isize;
+            let _30: &isize;
+            let _31: &isize;
+            let _48: &isize;
+            let _49: &isize;
+            let _66: &isize;
+            let _67: &isize;
+            let _84: &isize;
+            let _85: &isize;
+            let _102: &isize;
+            let _103: &isize;
+            let _120: &isize;
+            let _121: &isize;
+            let _138: &isize;
+            let _139: &isize;
+            let _156: &isize;
+            let _157: &isize;
+            let _174: &isize;
+            let _175: &isize;
+            scope 3 {
+                debug left_val => _12;
+                debug right_val => _13;
+                let _18: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _18;
+                }
+            }
+            scope 5 {
+                debug left_val => _30;
+                debug right_val => _31;
+                let _36: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _36;
+                }
+            }
+            scope 7 {
+                debug left_val => _48;
+                debug right_val => _49;
+                let _54: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _54;
+                }
+            }
+            scope 9 {
+                debug left_val => _66;
+                debug right_val => _67;
+                let _72: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _72;
+                }
+            }
+            scope 11 {
+                debug left_val => _84;
+                debug right_val => _85;
+                let _90: core::panicking::AssertKind;
+                scope 12 {
+                    debug kind => _90;
+                }
+            }
+            scope 13 {
+                debug left_val => _102;
+                debug right_val => _103;
+                let _108: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _108;
+                }
+            }
+            scope 15 {
+                debug left_val => _120;
+                debug right_val => _121;
+                let _126: core::panicking::AssertKind;
+                scope 16 {
+                    debug kind => _126;
+                }
+            }
+            scope 17 {
+                debug left_val => _138;
+                debug right_val => _139;
+                let _144: core::panicking::AssertKind;
+                scope 18 {
+                    debug kind => _144;
+                }
+            }
+            scope 19 {
+                debug left_val => _156;
+                debug right_val => _157;
+                let _162: core::panicking::AssertKind;
+                scope 20 {
+                    debug kind => _162;
+                }
+            }
+            scope 21 {
+                debug left_val => _174;
+                debug right_val => _175;
+                let _180: core::panicking::AssertKind;
+                scope 22 {
+                    debug kind => _180;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 15_isize;
+        _2 = const 5_isize;
+        _6 = Eq(const 5_isize, const 0_isize);
+        assert(!move _6, "attempt to divide `{}` by zero", _1) -> bb1;
+    }
+
+    bb1: {
+        _7 = Eq(const 5_isize, const -1_isize);
+        _8 = Eq(_1, const isize::MIN);
+        _9 = BitAnd(move _7, move _8);
+        assert(!move _9, "attempt to compute `{} / {}`, which would overflow", _1, const 5_isize) -> bb2;
+    }
+
+    bb2: {
+        _5 = Div(_1, const 5_isize);
+        _4 = &_5;
+        _11 = const 3_isize;
+        _10 = &_11;
+        _3 = (move _4, move _10);
+        _12 = (_3.0: &isize);
+        _13 = (_3.1: &isize);
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<isize, isize>(move _18, _12, _13, move _20);
+    }
+
+    bb4: {
+        _24 = Eq(const 4_isize, const 0_isize);
+        assert(!move _24, "attempt to divide `{}` by zero", _1) -> bb5;
+    }
+
+    bb5: {
+        _25 = Eq(const 4_isize, const -1_isize);
+        _26 = Eq(_1, const isize::MIN);
+        _27 = BitAnd(move _25, move _26);
+        assert(!move _27, "attempt to compute `{} / {}`, which would overflow", _1, const 4_isize) -> bb6;
+    }
+
+    bb6: {
+        _23 = Div(_1, const 4_isize);
+        _22 = &_23;
+        _29 = const 3_isize;
+        _28 = &_29;
+        _21 = (move _22, move _28);
+        _30 = (_21.0: &isize);
+        _31 = (_21.1: &isize);
+        _34 = (*_30);
+        _35 = (*_31);
+        _33 = Eq(move _34, move _35);
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<isize, isize>(move _36, _30, _31, move _38);
+    }
+
+    bb8: {
+        _42 = Eq(const 3_isize, const 0_isize);
+        assert(!move _42, "attempt to divide `{}` by zero", _1) -> bb9;
+    }
+
+    bb9: {
+        _43 = Eq(const 3_isize, const -1_isize);
+        _44 = Eq(_1, const isize::MIN);
+        _45 = BitAnd(move _43, move _44);
+        assert(!move _45, "attempt to compute `{} / {}`, which would overflow", _1, const 3_isize) -> bb10;
+    }
+
+    bb10: {
+        _41 = Div(_1, const 3_isize);
+        _40 = &_41;
+        _47 = const 5_isize;
+        _46 = &_47;
+        _39 = (move _40, move _46);
+        _48 = (_39.0: &isize);
+        _49 = (_39.1: &isize);
+        _52 = (*_48);
+        _53 = (*_49);
+        _51 = Eq(move _52, move _53);
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<isize, isize>(move _54, _48, _49, move _56);
+    }
+
+    bb12: {
+        _60 = Eq(_2, const 0_isize);
+        assert(!move _60, "attempt to divide `{}` by zero", _1) -> bb13;
+    }
+
+    bb13: {
+        _61 = Eq(_2, const -1_isize);
+        _62 = Eq(_1, const isize::MIN);
+        _63 = BitAnd(move _61, move _62);
+        assert(!move _63, "attempt to compute `{} / {}`, which would overflow", _1, _2) -> bb14;
+    }
+
+    bb14: {
+        _59 = Div(_1, _2);
+        _58 = &_59;
+        _65 = const 3_isize;
+        _64 = &_65;
+        _57 = (move _58, move _64);
+        _66 = (_57.0: &isize);
+        _67 = (_57.1: &isize);
+        _70 = (*_66);
+        _71 = (*_67);
+        _69 = Eq(move _70, move _71);
+        _68 = Not(move _69);
+        switchInt(move _68) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _72 = core::panicking::AssertKind::Eq;
+        _74 = Option::<Arguments<'_>>::None;
+        _73 = core::panicking::assert_failed::<isize, isize>(move _72, _66, _67, move _74);
+    }
+
+    bb16: {
+        _78 = Eq(_2, const 0_isize);
+        assert(!move _78, "attempt to divide `{}` by zero", const 15_isize) -> bb17;
+    }
+
+    bb17: {
+        _79 = Eq(_2, const -1_isize);
+        _80 = Eq(const 15_isize, const isize::MIN);
+        _81 = BitAnd(move _79, move _80);
+        assert(!move _81, "attempt to compute `{} / {}`, which would overflow", const 15_isize, _2) -> bb18;
+    }
+
+    bb18: {
+        _77 = Div(const 15_isize, _2);
+        _76 = &_77;
+        _83 = const 3_isize;
+        _82 = &_83;
+        _75 = (move _76, move _82);
+        _84 = (_75.0: &isize);
+        _85 = (_75.1: &isize);
+        _88 = (*_84);
+        _89 = (*_85);
+        _87 = Eq(move _88, move _89);
+        _86 = Not(move _87);
+        switchInt(move _86) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _90 = core::panicking::AssertKind::Eq;
+        _92 = Option::<Arguments<'_>>::None;
+        _91 = core::panicking::assert_failed::<isize, isize>(move _90, _84, _85, move _92);
+    }
+
+    bb20: {
+        _96 = Eq(const 5_isize, const 0_isize);
+        assert(!move _96, "attempt to calculate the remainder of `{}` with a divisor of zero", _1) -> bb21;
+    }
+
+    bb21: {
+        _97 = Eq(const 5_isize, const -1_isize);
+        _98 = Eq(_1, const isize::MIN);
+        _99 = BitAnd(move _97, move _98);
+        assert(!move _99, "attempt to compute the remainder of `{} % {}`, which would overflow", _1, const 5_isize) -> bb22;
+    }
+
+    bb22: {
+        _95 = Rem(_1, const 5_isize);
+        _94 = &_95;
+        _101 = const 0_isize;
+        _100 = &_101;
+        _93 = (move _94, move _100);
+        _102 = (_93.0: &isize);
+        _103 = (_93.1: &isize);
+        _106 = (*_102);
+        _107 = (*_103);
+        _105 = Eq(move _106, move _107);
+        _104 = Not(move _105);
+        switchInt(move _104) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _108 = core::panicking::AssertKind::Eq;
+        _110 = Option::<Arguments<'_>>::None;
+        _109 = core::panicking::assert_failed::<isize, isize>(move _108, _102, _103, move _110);
+    }
+
+    bb24: {
+        _114 = Eq(const 4_isize, const 0_isize);
+        assert(!move _114, "attempt to calculate the remainder of `{}` with a divisor of zero", _1) -> bb25;
+    }
+
+    bb25: {
+        _115 = Eq(const 4_isize, const -1_isize);
+        _116 = Eq(_1, const isize::MIN);
+        _117 = BitAnd(move _115, move _116);
+        assert(!move _117, "attempt to compute the remainder of `{} % {}`, which would overflow", _1, const 4_isize) -> bb26;
+    }
+
+    bb26: {
+        _113 = Rem(_1, const 4_isize);
+        _112 = &_113;
+        _119 = const 3_isize;
+        _118 = &_119;
+        _111 = (move _112, move _118);
+        _120 = (_111.0: &isize);
+        _121 = (_111.1: &isize);
+        _124 = (*_120);
+        _125 = (*_121);
+        _123 = Eq(move _124, move _125);
+        _122 = Not(move _123);
+        switchInt(move _122) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _126 = core::panicking::AssertKind::Eq;
+        _128 = Option::<Arguments<'_>>::None;
+        _127 = core::panicking::assert_failed::<isize, isize>(move _126, _120, _121, move _128);
+    }
+
+    bb28: {
+        _132 = Eq(const 3_isize, const 0_isize);
+        assert(!move _132, "attempt to calculate the remainder of `{}` with a divisor of zero", _1) -> bb29;
+    }
+
+    bb29: {
+        _133 = Eq(const 3_isize, const -1_isize);
+        _134 = Eq(_1, const isize::MIN);
+        _135 = BitAnd(move _133, move _134);
+        assert(!move _135, "attempt to compute the remainder of `{} % {}`, which would overflow", _1, const 3_isize) -> bb30;
+    }
+
+    bb30: {
+        _131 = Rem(_1, const 3_isize);
+        _130 = &_131;
+        _137 = const 0_isize;
+        _136 = &_137;
+        _129 = (move _130, move _136);
+        _138 = (_129.0: &isize);
+        _139 = (_129.1: &isize);
+        _142 = (*_138);
+        _143 = (*_139);
+        _141 = Eq(move _142, move _143);
+        _140 = Not(move _141);
+        switchInt(move _140) -> [0: bb32, otherwise: bb31];
+    }
+
+    bb31: {
+        _144 = core::panicking::AssertKind::Eq;
+        _146 = Option::<Arguments<'_>>::None;
+        _145 = core::panicking::assert_failed::<isize, isize>(move _144, _138, _139, move _146);
+    }
+
+    bb32: {
+        _150 = Eq(_2, const 0_isize);
+        assert(!move _150, "attempt to calculate the remainder of `{}` with a divisor of zero", _1) -> bb33;
+    }
+
+    bb33: {
+        _151 = Eq(_2, const -1_isize);
+        _152 = Eq(_1, const isize::MIN);
+        _153 = BitAnd(move _151, move _152);
+        assert(!move _153, "attempt to compute the remainder of `{} % {}`, which would overflow", _1, _2) -> bb34;
+    }
+
+    bb34: {
+        _149 = Rem(_1, _2);
+        _148 = &_149;
+        _155 = const 0_isize;
+        _154 = &_155;
+        _147 = (move _148, move _154);
+        _156 = (_147.0: &isize);
+        _157 = (_147.1: &isize);
+        _160 = (*_156);
+        _161 = (*_157);
+        _159 = Eq(move _160, move _161);
+        _158 = Not(move _159);
+        switchInt(move _158) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _162 = core::panicking::AssertKind::Eq;
+        _164 = Option::<Arguments<'_>>::None;
+        _163 = core::panicking::assert_failed::<isize, isize>(move _162, _156, _157, move _164);
+    }
+
+    bb36: {
+        _168 = Eq(_2, const 0_isize);
+        assert(!move _168, "attempt to calculate the remainder of `{}` with a divisor of zero", const 15_isize) -> bb37;
+    }
+
+    bb37: {
+        _169 = Eq(_2, const -1_isize);
+        _170 = Eq(const 15_isize, const isize::MIN);
+        _171 = BitAnd(move _169, move _170);
+        assert(!move _171, "attempt to compute the remainder of `{} % {}`, which would overflow", const 15_isize, _2) -> bb38;
+    }
+
+    bb38: {
+        _167 = Rem(const 15_isize, _2);
+        _166 = &_167;
+        _173 = const 0_isize;
+        _172 = &_173;
+        _165 = (move _166, move _172);
+        _174 = (_165.0: &isize);
+        _175 = (_165.1: &isize);
+        _178 = (*_174);
+        _179 = (*_175);
+        _177 = Eq(move _178, move _179);
+        _176 = Not(move _177);
+        switchInt(move _176) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _180 = core::panicking::AssertKind::Eq;
+        _182 = Option::<Arguments<'_>>::None;
+        _181 = core::panicking::assert_failed::<isize, isize>(move _180, _174, _175, move _182);
+    }
+
+    bb40: {
+        return;
+    }
+}

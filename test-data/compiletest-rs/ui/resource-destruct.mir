@@ -1,0 +1,231 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/resource-destruct.rs:10:1: 10:38>::drop(_1: &mut shrinky_pointer<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let _7: ();
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: &std::cell::Cell<isize>;
+    let mut _11: &std::cell::Cell<isize>;
+
+    bb0: {
+        _6 = [const "Hello!\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_const(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = _print(move _3) -> bb2;
+    }
+
+    bb2: {
+        _10 = deref_copy ((*_1).0: &std::cell::Cell<isize>);
+        _11 = deref_copy ((*_1).0: &std::cell::Cell<isize>);
+        _9 = Cell::<isize>::get(_11) -> bb3;
+    }
+
+    bb3: {
+        _8 = Sub(move _9, const 1_isize);
+        _7 = Cell::<isize>::set(_10, move _8) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/resource-destruct.rs:16:1: 16:29>::look_at(_1: &shrinky_pointer<'_>) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+    let mut _2: &std::cell::Cell<isize>;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &std::cell::Cell<isize>);
+        _0 = Cell::<isize>::get(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn shrinky_pointer(_1: &Cell<isize>) -> shrinky_pointer<'_> {
+    debug i => _1;
+    let mut _0: shrinky_pointer<'_>;
+
+    bb0: {
+        _0 = shrinky_pointer::<'_> { i: _1 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &std::cell::Cell<isize>;
+    let _2: std::cell::Cell<isize>;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _7: &shrinky_pointer<'_>;
+    let mut _8: &isize;
+    let _9: isize;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: isize;
+    let mut _15: isize;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let _19: ();
+    let mut _20: std::fmt::Arguments<'_>;
+    let mut _21: &[&str];
+    let _22: &[&str; 2];
+    let _23: [&str; 2];
+    let mut _24: &[core::fmt::rt::Argument<'_>];
+    let _25: &[core::fmt::rt::Argument<'_>; 1];
+    let _26: [core::fmt::rt::Argument<'_>; 1];
+    let mut _27: core::fmt::rt::Argument<'_>;
+    let _28: &isize;
+    let _29: isize;
+    let mut _30: (&isize, &isize);
+    let mut _31: &isize;
+    let _32: isize;
+    let mut _33: &isize;
+    let _34: isize;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: isize;
+    let mut _40: isize;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug my_total => _1;
+        let _3: shrinky_pointer<'_>;
+        let _35: &isize;
+        let _36: &isize;
+        scope 2 {
+            debug pt => _3;
+            let _10: &isize;
+            let _11: &isize;
+            scope 3 {
+                debug left_val => _10;
+                debug right_val => _11;
+                let _16: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _16;
+                }
+            }
+        }
+        scope 5 {
+            debug left_val => _35;
+            debug right_val => _36;
+            let _41: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _41;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Cell::<isize>::new(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = &_2;
+        _3 = shrinky_pointer(_1) -> bb2;
+    }
+
+    bb2: {
+        _7 = &_3;
+        _6 = shrinky_pointer::<'_>::look_at(move _7) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _5 = &_6;
+        _9 = const 10_isize;
+        _8 = &_9;
+        _4 = (move _5, move _8);
+        _10 = (_4.0: &isize);
+        _11 = (_4.1: &isize);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<isize, isize>(move _16, _10, _11, move _18) -> bb14;
+    }
+
+    bb5: {
+        drop(_3) -> bb6;
+    }
+
+    bb6: {
+        _23 = [const "my_total = ", const "\n"];
+        _22 = &_23;
+        _21 = _22 as &[&str] (Pointer(Unsize));
+        _29 = Cell::<isize>::get(_1) -> bb7;
+    }
+
+    bb7: {
+        _28 = &_29;
+        _27 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_28) -> bb8;
+    }
+
+    bb8: {
+        _26 = [move _27];
+        _25 = &_26;
+        _24 = _25 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _20 = Arguments::<'_>::new_v1(move _21, move _24) -> bb9;
+    }
+
+    bb9: {
+        _19 = _print(move _20) -> bb10;
+    }
+
+    bb10: {
+        _32 = Cell::<isize>::get(_1) -> bb11;
+    }
+
+    bb11: {
+        _31 = &_32;
+        _34 = const 9_isize;
+        _33 = &_34;
+        _30 = (move _31, move _33);
+        _35 = (_30.0: &isize);
+        _36 = (_30.1: &isize);
+        _39 = (*_35);
+        _40 = (*_36);
+        _38 = Eq(move _39, move _40);
+        _37 = Not(move _38);
+        switchInt(move _37) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<isize, isize>(move _41, _35, _36, move _43);
+    }
+
+    bb13: {
+        return;
+    }
+
+    bb14 (cleanup): {
+        drop(_3) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+}

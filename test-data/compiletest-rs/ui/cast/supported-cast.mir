@@ -1,0 +1,5811 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: *const std::string::String;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &isize;
+    let _12: isize;
+    let _13: ();
+    let mut _14: std::fmt::Arguments<'_>;
+    let mut _15: &[&str];
+    let _16: &[&str; 2];
+    let _17: [&str; 2];
+    let mut _18: &[core::fmt::rt::Argument<'_>];
+    let _19: &[core::fmt::rt::Argument<'_>; 1];
+    let _20: [core::fmt::rt::Argument<'_>; 1];
+    let mut _21: core::fmt::rt::Argument<'_>;
+    let _22: &usize;
+    let _23: usize;
+    let _24: ();
+    let mut _25: std::fmt::Arguments<'_>;
+    let mut _26: &[&str];
+    let _27: &[&str; 2];
+    let _28: [&str; 2];
+    let mut _29: &[core::fmt::rt::Argument<'_>];
+    let _30: &[core::fmt::rt::Argument<'_>; 1];
+    let _31: [core::fmt::rt::Argument<'_>; 1];
+    let mut _32: core::fmt::rt::Argument<'_>;
+    let _33: &i8;
+    let _34: i8;
+    let _35: ();
+    let mut _36: std::fmt::Arguments<'_>;
+    let mut _37: &[&str];
+    let _38: &[&str; 2];
+    let _39: [&str; 2];
+    let mut _40: &[core::fmt::rt::Argument<'_>];
+    let _41: &[core::fmt::rt::Argument<'_>; 1];
+    let _42: [core::fmt::rt::Argument<'_>; 1];
+    let mut _43: core::fmt::rt::Argument<'_>;
+    let _44: &i16;
+    let _45: i16;
+    let _46: ();
+    let mut _47: std::fmt::Arguments<'_>;
+    let mut _48: &[&str];
+    let _49: &[&str; 2];
+    let _50: [&str; 2];
+    let mut _51: &[core::fmt::rt::Argument<'_>];
+    let _52: &[core::fmt::rt::Argument<'_>; 1];
+    let _53: [core::fmt::rt::Argument<'_>; 1];
+    let mut _54: core::fmt::rt::Argument<'_>;
+    let _55: &i32;
+    let _56: i32;
+    let _57: ();
+    let mut _58: std::fmt::Arguments<'_>;
+    let mut _59: &[&str];
+    let _60: &[&str; 2];
+    let _61: [&str; 2];
+    let mut _62: &[core::fmt::rt::Argument<'_>];
+    let _63: &[core::fmt::rt::Argument<'_>; 1];
+    let _64: [core::fmt::rt::Argument<'_>; 1];
+    let mut _65: core::fmt::rt::Argument<'_>;
+    let _66: &i64;
+    let _67: i64;
+    let _68: ();
+    let mut _69: std::fmt::Arguments<'_>;
+    let mut _70: &[&str];
+    let _71: &[&str; 2];
+    let _72: [&str; 2];
+    let mut _73: &[core::fmt::rt::Argument<'_>];
+    let _74: &[core::fmt::rt::Argument<'_>; 1];
+    let _75: [core::fmt::rt::Argument<'_>; 1];
+    let mut _76: core::fmt::rt::Argument<'_>;
+    let _77: &u8;
+    let _78: u8;
+    let _79: ();
+    let mut _80: std::fmt::Arguments<'_>;
+    let mut _81: &[&str];
+    let _82: &[&str; 2];
+    let _83: [&str; 2];
+    let mut _84: &[core::fmt::rt::Argument<'_>];
+    let _85: &[core::fmt::rt::Argument<'_>; 1];
+    let _86: [core::fmt::rt::Argument<'_>; 1];
+    let mut _87: core::fmt::rt::Argument<'_>;
+    let _88: &u16;
+    let _89: u16;
+    let _90: ();
+    let mut _91: std::fmt::Arguments<'_>;
+    let mut _92: &[&str];
+    let _93: &[&str; 2];
+    let _94: [&str; 2];
+    let mut _95: &[core::fmt::rt::Argument<'_>];
+    let _96: &[core::fmt::rt::Argument<'_>; 1];
+    let _97: [core::fmt::rt::Argument<'_>; 1];
+    let mut _98: core::fmt::rt::Argument<'_>;
+    let _99: &u32;
+    let _100: u32;
+    let _101: ();
+    let mut _102: std::fmt::Arguments<'_>;
+    let mut _103: &[&str];
+    let _104: &[&str; 2];
+    let _105: [&str; 2];
+    let mut _106: &[core::fmt::rt::Argument<'_>];
+    let _107: &[core::fmt::rt::Argument<'_>; 1];
+    let _108: [core::fmt::rt::Argument<'_>; 1];
+    let mut _109: core::fmt::rt::Argument<'_>;
+    let _110: &u64;
+    let _111: u64;
+    let _112: ();
+    let mut _113: std::fmt::Arguments<'_>;
+    let mut _114: &[&str];
+    let _115: &[&str; 2];
+    let _116: [&str; 2];
+    let mut _117: &[core::fmt::rt::Argument<'_>];
+    let _118: &[core::fmt::rt::Argument<'_>; 1];
+    let _119: [core::fmt::rt::Argument<'_>; 1];
+    let mut _120: core::fmt::rt::Argument<'_>;
+    let _121: &isize;
+    let _122: isize;
+    let _123: ();
+    let mut _124: std::fmt::Arguments<'_>;
+    let mut _125: &[&str];
+    let _126: &[&str; 2];
+    let _127: [&str; 2];
+    let mut _128: &[core::fmt::rt::Argument<'_>];
+    let _129: &[core::fmt::rt::Argument<'_>; 1];
+    let _130: [core::fmt::rt::Argument<'_>; 1];
+    let mut _131: core::fmt::rt::Argument<'_>;
+    let _132: &usize;
+    let _133: usize;
+    let _134: ();
+    let mut _135: std::fmt::Arguments<'_>;
+    let mut _136: &[&str];
+    let _137: &[&str; 2];
+    let _138: [&str; 2];
+    let mut _139: &[core::fmt::rt::Argument<'_>];
+    let _140: &[core::fmt::rt::Argument<'_>; 1];
+    let _141: [core::fmt::rt::Argument<'_>; 1];
+    let mut _142: core::fmt::rt::Argument<'_>;
+    let _143: &*const std::string::String;
+    let _144: *const std::string::String;
+    let _145: ();
+    let mut _146: std::fmt::Arguments<'_>;
+    let mut _147: &[&str];
+    let _148: &[&str; 2];
+    let _149: [&str; 2];
+    let mut _150: &[core::fmt::rt::Argument<'_>];
+    let _151: &[core::fmt::rt::Argument<'_>; 1];
+    let _152: [core::fmt::rt::Argument<'_>; 1];
+    let mut _153: core::fmt::rt::Argument<'_>;
+    let _154: &i8;
+    let _155: i8;
+    let _156: ();
+    let mut _157: std::fmt::Arguments<'_>;
+    let mut _158: &[&str];
+    let _159: &[&str; 2];
+    let _160: [&str; 2];
+    let mut _161: &[core::fmt::rt::Argument<'_>];
+    let _162: &[core::fmt::rt::Argument<'_>; 1];
+    let _163: [core::fmt::rt::Argument<'_>; 1];
+    let mut _164: core::fmt::rt::Argument<'_>;
+    let _165: &i16;
+    let _166: i16;
+    let _167: ();
+    let mut _168: std::fmt::Arguments<'_>;
+    let mut _169: &[&str];
+    let _170: &[&str; 2];
+    let _171: [&str; 2];
+    let mut _172: &[core::fmt::rt::Argument<'_>];
+    let _173: &[core::fmt::rt::Argument<'_>; 1];
+    let _174: [core::fmt::rt::Argument<'_>; 1];
+    let mut _175: core::fmt::rt::Argument<'_>;
+    let _176: &i32;
+    let _177: i32;
+    let _178: ();
+    let mut _179: std::fmt::Arguments<'_>;
+    let mut _180: &[&str];
+    let _181: &[&str; 2];
+    let _182: [&str; 2];
+    let mut _183: &[core::fmt::rt::Argument<'_>];
+    let _184: &[core::fmt::rt::Argument<'_>; 1];
+    let _185: [core::fmt::rt::Argument<'_>; 1];
+    let mut _186: core::fmt::rt::Argument<'_>;
+    let _187: &i64;
+    let _188: i64;
+    let _189: ();
+    let mut _190: std::fmt::Arguments<'_>;
+    let mut _191: &[&str];
+    let _192: &[&str; 2];
+    let _193: [&str; 2];
+    let mut _194: &[core::fmt::rt::Argument<'_>];
+    let _195: &[core::fmt::rt::Argument<'_>; 1];
+    let _196: [core::fmt::rt::Argument<'_>; 1];
+    let mut _197: core::fmt::rt::Argument<'_>;
+    let _198: &u8;
+    let _199: u8;
+    let _200: ();
+    let mut _201: std::fmt::Arguments<'_>;
+    let mut _202: &[&str];
+    let _203: &[&str; 2];
+    let _204: [&str; 2];
+    let mut _205: &[core::fmt::rt::Argument<'_>];
+    let _206: &[core::fmt::rt::Argument<'_>; 1];
+    let _207: [core::fmt::rt::Argument<'_>; 1];
+    let mut _208: core::fmt::rt::Argument<'_>;
+    let _209: &u16;
+    let _210: u16;
+    let _211: ();
+    let mut _212: std::fmt::Arguments<'_>;
+    let mut _213: &[&str];
+    let _214: &[&str; 2];
+    let _215: [&str; 2];
+    let mut _216: &[core::fmt::rt::Argument<'_>];
+    let _217: &[core::fmt::rt::Argument<'_>; 1];
+    let _218: [core::fmt::rt::Argument<'_>; 1];
+    let mut _219: core::fmt::rt::Argument<'_>;
+    let _220: &u32;
+    let _221: u32;
+    let _222: ();
+    let mut _223: std::fmt::Arguments<'_>;
+    let mut _224: &[&str];
+    let _225: &[&str; 2];
+    let _226: [&str; 2];
+    let mut _227: &[core::fmt::rt::Argument<'_>];
+    let _228: &[core::fmt::rt::Argument<'_>; 1];
+    let _229: [core::fmt::rt::Argument<'_>; 1];
+    let mut _230: core::fmt::rt::Argument<'_>;
+    let _231: &u64;
+    let _232: u64;
+    let _233: ();
+    let mut _234: std::fmt::Arguments<'_>;
+    let mut _235: &[&str];
+    let _236: &[&str; 2];
+    let _237: [&str; 2];
+    let mut _238: &[core::fmt::rt::Argument<'_>];
+    let _239: &[core::fmt::rt::Argument<'_>; 1];
+    let _240: [core::fmt::rt::Argument<'_>; 1];
+    let mut _241: core::fmt::rt::Argument<'_>;
+    let _242: &f32;
+    let _243: f32;
+    let _244: ();
+    let mut _245: std::fmt::Arguments<'_>;
+    let mut _246: &[&str];
+    let _247: &[&str; 2];
+    let _248: [&str; 2];
+    let mut _249: &[core::fmt::rt::Argument<'_>];
+    let _250: &[core::fmt::rt::Argument<'_>; 1];
+    let _251: [core::fmt::rt::Argument<'_>; 1];
+    let mut _252: core::fmt::rt::Argument<'_>;
+    let _253: &f64;
+    let _254: f64;
+    let _255: ();
+    let mut _256: std::fmt::Arguments<'_>;
+    let mut _257: &[&str];
+    let _258: &[&str; 2];
+    let _259: [&str; 2];
+    let mut _260: &[core::fmt::rt::Argument<'_>];
+    let _261: &[core::fmt::rt::Argument<'_>; 1];
+    let _262: [core::fmt::rt::Argument<'_>; 1];
+    let mut _263: core::fmt::rt::Argument<'_>;
+    let _264: &isize;
+    let _265: isize;
+    let _266: ();
+    let mut _267: std::fmt::Arguments<'_>;
+    let mut _268: &[&str];
+    let _269: &[&str; 2];
+    let _270: [&str; 2];
+    let mut _271: &[core::fmt::rt::Argument<'_>];
+    let _272: &[core::fmt::rt::Argument<'_>; 1];
+    let _273: [core::fmt::rt::Argument<'_>; 1];
+    let mut _274: core::fmt::rt::Argument<'_>;
+    let _275: &usize;
+    let _276: usize;
+    let _277: ();
+    let mut _278: std::fmt::Arguments<'_>;
+    let mut _279: &[&str];
+    let _280: &[&str; 2];
+    let _281: [&str; 2];
+    let mut _282: &[core::fmt::rt::Argument<'_>];
+    let _283: &[core::fmt::rt::Argument<'_>; 1];
+    let _284: [core::fmt::rt::Argument<'_>; 1];
+    let mut _285: core::fmt::rt::Argument<'_>;
+    let _286: &*const std::string::String;
+    let _287: *const std::string::String;
+    let _288: ();
+    let mut _289: std::fmt::Arguments<'_>;
+    let mut _290: &[&str];
+    let _291: &[&str; 2];
+    let _292: [&str; 2];
+    let mut _293: &[core::fmt::rt::Argument<'_>];
+    let _294: &[core::fmt::rt::Argument<'_>; 1];
+    let _295: [core::fmt::rt::Argument<'_>; 1];
+    let mut _296: core::fmt::rt::Argument<'_>;
+    let _297: &i8;
+    let _298: i8;
+    let _299: ();
+    let mut _300: std::fmt::Arguments<'_>;
+    let mut _301: &[&str];
+    let _302: &[&str; 2];
+    let _303: [&str; 2];
+    let mut _304: &[core::fmt::rt::Argument<'_>];
+    let _305: &[core::fmt::rt::Argument<'_>; 1];
+    let _306: [core::fmt::rt::Argument<'_>; 1];
+    let mut _307: core::fmt::rt::Argument<'_>;
+    let _308: &i16;
+    let _309: i16;
+    let _310: ();
+    let mut _311: std::fmt::Arguments<'_>;
+    let mut _312: &[&str];
+    let _313: &[&str; 2];
+    let _314: [&str; 2];
+    let mut _315: &[core::fmt::rt::Argument<'_>];
+    let _316: &[core::fmt::rt::Argument<'_>; 1];
+    let _317: [core::fmt::rt::Argument<'_>; 1];
+    let mut _318: core::fmt::rt::Argument<'_>;
+    let _319: &i32;
+    let _320: i32;
+    let _321: ();
+    let mut _322: std::fmt::Arguments<'_>;
+    let mut _323: &[&str];
+    let _324: &[&str; 2];
+    let _325: [&str; 2];
+    let mut _326: &[core::fmt::rt::Argument<'_>];
+    let _327: &[core::fmt::rt::Argument<'_>; 1];
+    let _328: [core::fmt::rt::Argument<'_>; 1];
+    let mut _329: core::fmt::rt::Argument<'_>;
+    let _330: &i64;
+    let _331: i64;
+    let _332: ();
+    let mut _333: std::fmt::Arguments<'_>;
+    let mut _334: &[&str];
+    let _335: &[&str; 2];
+    let _336: [&str; 2];
+    let mut _337: &[core::fmt::rt::Argument<'_>];
+    let _338: &[core::fmt::rt::Argument<'_>; 1];
+    let _339: [core::fmt::rt::Argument<'_>; 1];
+    let mut _340: core::fmt::rt::Argument<'_>;
+    let _341: &u8;
+    let _342: u8;
+    let _343: ();
+    let mut _344: std::fmt::Arguments<'_>;
+    let mut _345: &[&str];
+    let _346: &[&str; 2];
+    let _347: [&str; 2];
+    let mut _348: &[core::fmt::rt::Argument<'_>];
+    let _349: &[core::fmt::rt::Argument<'_>; 1];
+    let _350: [core::fmt::rt::Argument<'_>; 1];
+    let mut _351: core::fmt::rt::Argument<'_>;
+    let _352: &u16;
+    let _353: u16;
+    let _354: ();
+    let mut _355: std::fmt::Arguments<'_>;
+    let mut _356: &[&str];
+    let _357: &[&str; 2];
+    let _358: [&str; 2];
+    let mut _359: &[core::fmt::rt::Argument<'_>];
+    let _360: &[core::fmt::rt::Argument<'_>; 1];
+    let _361: [core::fmt::rt::Argument<'_>; 1];
+    let mut _362: core::fmt::rt::Argument<'_>;
+    let _363: &u32;
+    let _364: u32;
+    let _365: ();
+    let mut _366: std::fmt::Arguments<'_>;
+    let mut _367: &[&str];
+    let _368: &[&str; 2];
+    let _369: [&str; 2];
+    let mut _370: &[core::fmt::rt::Argument<'_>];
+    let _371: &[core::fmt::rt::Argument<'_>; 1];
+    let _372: [core::fmt::rt::Argument<'_>; 1];
+    let mut _373: core::fmt::rt::Argument<'_>;
+    let _374: &u64;
+    let _375: u64;
+    let _376: ();
+    let mut _377: std::fmt::Arguments<'_>;
+    let mut _378: &[&str];
+    let _379: &[&str; 2];
+    let _380: [&str; 2];
+    let mut _381: &[core::fmt::rt::Argument<'_>];
+    let _382: &[core::fmt::rt::Argument<'_>; 1];
+    let _383: [core::fmt::rt::Argument<'_>; 1];
+    let mut _384: core::fmt::rt::Argument<'_>;
+    let _385: &f32;
+    let _386: f32;
+    let _387: ();
+    let mut _388: std::fmt::Arguments<'_>;
+    let mut _389: &[&str];
+    let _390: &[&str; 2];
+    let _391: [&str; 2];
+    let mut _392: &[core::fmt::rt::Argument<'_>];
+    let _393: &[core::fmt::rt::Argument<'_>; 1];
+    let _394: [core::fmt::rt::Argument<'_>; 1];
+    let mut _395: core::fmt::rt::Argument<'_>;
+    let _396: &f64;
+    let _397: f64;
+    let _398: ();
+    let mut _399: std::fmt::Arguments<'_>;
+    let mut _400: &[&str];
+    let _401: &[&str; 2];
+    let _402: [&str; 2];
+    let mut _403: &[core::fmt::rt::Argument<'_>];
+    let _404: &[core::fmt::rt::Argument<'_>; 1];
+    let _405: [core::fmt::rt::Argument<'_>; 1];
+    let mut _406: core::fmt::rt::Argument<'_>;
+    let _407: &isize;
+    let _408: isize;
+    let _409: ();
+    let mut _410: std::fmt::Arguments<'_>;
+    let mut _411: &[&str];
+    let _412: &[&str; 2];
+    let _413: [&str; 2];
+    let mut _414: &[core::fmt::rt::Argument<'_>];
+    let _415: &[core::fmt::rt::Argument<'_>; 1];
+    let _416: [core::fmt::rt::Argument<'_>; 1];
+    let mut _417: core::fmt::rt::Argument<'_>;
+    let _418: &usize;
+    let _419: usize;
+    let _420: ();
+    let mut _421: std::fmt::Arguments<'_>;
+    let mut _422: &[&str];
+    let _423: &[&str; 2];
+    let _424: [&str; 2];
+    let mut _425: &[core::fmt::rt::Argument<'_>];
+    let _426: &[core::fmt::rt::Argument<'_>; 1];
+    let _427: [core::fmt::rt::Argument<'_>; 1];
+    let mut _428: core::fmt::rt::Argument<'_>;
+    let _429: &*const std::string::String;
+    let _430: *const std::string::String;
+    let _431: ();
+    let mut _432: std::fmt::Arguments<'_>;
+    let mut _433: &[&str];
+    let _434: &[&str; 2];
+    let _435: [&str; 2];
+    let mut _436: &[core::fmt::rt::Argument<'_>];
+    let _437: &[core::fmt::rt::Argument<'_>; 1];
+    let _438: [core::fmt::rt::Argument<'_>; 1];
+    let mut _439: core::fmt::rt::Argument<'_>;
+    let _440: &i8;
+    let _441: i8;
+    let _442: ();
+    let mut _443: std::fmt::Arguments<'_>;
+    let mut _444: &[&str];
+    let _445: &[&str; 2];
+    let _446: [&str; 2];
+    let mut _447: &[core::fmt::rt::Argument<'_>];
+    let _448: &[core::fmt::rt::Argument<'_>; 1];
+    let _449: [core::fmt::rt::Argument<'_>; 1];
+    let mut _450: core::fmt::rt::Argument<'_>;
+    let _451: &i16;
+    let _452: i16;
+    let _453: ();
+    let mut _454: std::fmt::Arguments<'_>;
+    let mut _455: &[&str];
+    let _456: &[&str; 2];
+    let _457: [&str; 2];
+    let mut _458: &[core::fmt::rt::Argument<'_>];
+    let _459: &[core::fmt::rt::Argument<'_>; 1];
+    let _460: [core::fmt::rt::Argument<'_>; 1];
+    let mut _461: core::fmt::rt::Argument<'_>;
+    let _462: &i32;
+    let _463: i32;
+    let _464: ();
+    let mut _465: std::fmt::Arguments<'_>;
+    let mut _466: &[&str];
+    let _467: &[&str; 2];
+    let _468: [&str; 2];
+    let mut _469: &[core::fmt::rt::Argument<'_>];
+    let _470: &[core::fmt::rt::Argument<'_>; 1];
+    let _471: [core::fmt::rt::Argument<'_>; 1];
+    let mut _472: core::fmt::rt::Argument<'_>;
+    let _473: &i64;
+    let _474: i64;
+    let _475: ();
+    let mut _476: std::fmt::Arguments<'_>;
+    let mut _477: &[&str];
+    let _478: &[&str; 2];
+    let _479: [&str; 2];
+    let mut _480: &[core::fmt::rt::Argument<'_>];
+    let _481: &[core::fmt::rt::Argument<'_>; 1];
+    let _482: [core::fmt::rt::Argument<'_>; 1];
+    let mut _483: core::fmt::rt::Argument<'_>;
+    let _484: &u8;
+    let _485: u8;
+    let _486: ();
+    let mut _487: std::fmt::Arguments<'_>;
+    let mut _488: &[&str];
+    let _489: &[&str; 2];
+    let _490: [&str; 2];
+    let mut _491: &[core::fmt::rt::Argument<'_>];
+    let _492: &[core::fmt::rt::Argument<'_>; 1];
+    let _493: [core::fmt::rt::Argument<'_>; 1];
+    let mut _494: core::fmt::rt::Argument<'_>;
+    let _495: &u16;
+    let _496: u16;
+    let _497: ();
+    let mut _498: std::fmt::Arguments<'_>;
+    let mut _499: &[&str];
+    let _500: &[&str; 2];
+    let _501: [&str; 2];
+    let mut _502: &[core::fmt::rt::Argument<'_>];
+    let _503: &[core::fmt::rt::Argument<'_>; 1];
+    let _504: [core::fmt::rt::Argument<'_>; 1];
+    let mut _505: core::fmt::rt::Argument<'_>;
+    let _506: &u32;
+    let _507: u32;
+    let _508: ();
+    let mut _509: std::fmt::Arguments<'_>;
+    let mut _510: &[&str];
+    let _511: &[&str; 2];
+    let _512: [&str; 2];
+    let mut _513: &[core::fmt::rt::Argument<'_>];
+    let _514: &[core::fmt::rt::Argument<'_>; 1];
+    let _515: [core::fmt::rt::Argument<'_>; 1];
+    let mut _516: core::fmt::rt::Argument<'_>;
+    let _517: &u64;
+    let _518: u64;
+    let _519: ();
+    let mut _520: std::fmt::Arguments<'_>;
+    let mut _521: &[&str];
+    let _522: &[&str; 2];
+    let _523: [&str; 2];
+    let mut _524: &[core::fmt::rt::Argument<'_>];
+    let _525: &[core::fmt::rt::Argument<'_>; 1];
+    let _526: [core::fmt::rt::Argument<'_>; 1];
+    let mut _527: core::fmt::rt::Argument<'_>;
+    let _528: &f32;
+    let _529: f32;
+    let _530: ();
+    let mut _531: std::fmt::Arguments<'_>;
+    let mut _532: &[&str];
+    let _533: &[&str; 2];
+    let _534: [&str; 2];
+    let mut _535: &[core::fmt::rt::Argument<'_>];
+    let _536: &[core::fmt::rt::Argument<'_>; 1];
+    let _537: [core::fmt::rt::Argument<'_>; 1];
+    let mut _538: core::fmt::rt::Argument<'_>;
+    let _539: &f64;
+    let _540: f64;
+    let _541: ();
+    let mut _542: std::fmt::Arguments<'_>;
+    let mut _543: &[&str];
+    let _544: &[&str; 2];
+    let _545: [&str; 2];
+    let mut _546: &[core::fmt::rt::Argument<'_>];
+    let _547: &[core::fmt::rt::Argument<'_>; 1];
+    let _548: [core::fmt::rt::Argument<'_>; 1];
+    let mut _549: core::fmt::rt::Argument<'_>;
+    let _550: &isize;
+    let _551: isize;
+    let _552: ();
+    let mut _553: std::fmt::Arguments<'_>;
+    let mut _554: &[&str];
+    let _555: &[&str; 2];
+    let _556: [&str; 2];
+    let mut _557: &[core::fmt::rt::Argument<'_>];
+    let _558: &[core::fmt::rt::Argument<'_>; 1];
+    let _559: [core::fmt::rt::Argument<'_>; 1];
+    let mut _560: core::fmt::rt::Argument<'_>;
+    let _561: &usize;
+    let _562: usize;
+    let _563: ();
+    let mut _564: std::fmt::Arguments<'_>;
+    let mut _565: &[&str];
+    let _566: &[&str; 2];
+    let _567: [&str; 2];
+    let mut _568: &[core::fmt::rt::Argument<'_>];
+    let _569: &[core::fmt::rt::Argument<'_>; 1];
+    let _570: [core::fmt::rt::Argument<'_>; 1];
+    let mut _571: core::fmt::rt::Argument<'_>;
+    let _572: &*const std::string::String;
+    let _573: *const std::string::String;
+    let _574: ();
+    let mut _575: std::fmt::Arguments<'_>;
+    let mut _576: &[&str];
+    let _577: &[&str; 2];
+    let _578: [&str; 2];
+    let mut _579: &[core::fmt::rt::Argument<'_>];
+    let _580: &[core::fmt::rt::Argument<'_>; 1];
+    let _581: [core::fmt::rt::Argument<'_>; 1];
+    let mut _582: core::fmt::rt::Argument<'_>;
+    let _583: &i8;
+    let _584: i8;
+    let _585: ();
+    let mut _586: std::fmt::Arguments<'_>;
+    let mut _587: &[&str];
+    let _588: &[&str; 2];
+    let _589: [&str; 2];
+    let mut _590: &[core::fmt::rt::Argument<'_>];
+    let _591: &[core::fmt::rt::Argument<'_>; 1];
+    let _592: [core::fmt::rt::Argument<'_>; 1];
+    let mut _593: core::fmt::rt::Argument<'_>;
+    let _594: &i16;
+    let _595: i16;
+    let _596: ();
+    let mut _597: std::fmt::Arguments<'_>;
+    let mut _598: &[&str];
+    let _599: &[&str; 2];
+    let _600: [&str; 2];
+    let mut _601: &[core::fmt::rt::Argument<'_>];
+    let _602: &[core::fmt::rt::Argument<'_>; 1];
+    let _603: [core::fmt::rt::Argument<'_>; 1];
+    let mut _604: core::fmt::rt::Argument<'_>;
+    let _605: &i32;
+    let _606: i32;
+    let _607: ();
+    let mut _608: std::fmt::Arguments<'_>;
+    let mut _609: &[&str];
+    let _610: &[&str; 2];
+    let _611: [&str; 2];
+    let mut _612: &[core::fmt::rt::Argument<'_>];
+    let _613: &[core::fmt::rt::Argument<'_>; 1];
+    let _614: [core::fmt::rt::Argument<'_>; 1];
+    let mut _615: core::fmt::rt::Argument<'_>;
+    let _616: &i64;
+    let _617: i64;
+    let _618: ();
+    let mut _619: std::fmt::Arguments<'_>;
+    let mut _620: &[&str];
+    let _621: &[&str; 2];
+    let _622: [&str; 2];
+    let mut _623: &[core::fmt::rt::Argument<'_>];
+    let _624: &[core::fmt::rt::Argument<'_>; 1];
+    let _625: [core::fmt::rt::Argument<'_>; 1];
+    let mut _626: core::fmt::rt::Argument<'_>;
+    let _627: &u8;
+    let _628: u8;
+    let _629: ();
+    let mut _630: std::fmt::Arguments<'_>;
+    let mut _631: &[&str];
+    let _632: &[&str; 2];
+    let _633: [&str; 2];
+    let mut _634: &[core::fmt::rt::Argument<'_>];
+    let _635: &[core::fmt::rt::Argument<'_>; 1];
+    let _636: [core::fmt::rt::Argument<'_>; 1];
+    let mut _637: core::fmt::rt::Argument<'_>;
+    let _638: &u16;
+    let _639: u16;
+    let _640: ();
+    let mut _641: std::fmt::Arguments<'_>;
+    let mut _642: &[&str];
+    let _643: &[&str; 2];
+    let _644: [&str; 2];
+    let mut _645: &[core::fmt::rt::Argument<'_>];
+    let _646: &[core::fmt::rt::Argument<'_>; 1];
+    let _647: [core::fmt::rt::Argument<'_>; 1];
+    let mut _648: core::fmt::rt::Argument<'_>;
+    let _649: &u32;
+    let _650: u32;
+    let _651: ();
+    let mut _652: std::fmt::Arguments<'_>;
+    let mut _653: &[&str];
+    let _654: &[&str; 2];
+    let _655: [&str; 2];
+    let mut _656: &[core::fmt::rt::Argument<'_>];
+    let _657: &[core::fmt::rt::Argument<'_>; 1];
+    let _658: [core::fmt::rt::Argument<'_>; 1];
+    let mut _659: core::fmt::rt::Argument<'_>;
+    let _660: &u64;
+    let _661: u64;
+    let _662: ();
+    let mut _663: std::fmt::Arguments<'_>;
+    let mut _664: &[&str];
+    let _665: &[&str; 2];
+    let _666: [&str; 2];
+    let mut _667: &[core::fmt::rt::Argument<'_>];
+    let _668: &[core::fmt::rt::Argument<'_>; 1];
+    let _669: [core::fmt::rt::Argument<'_>; 1];
+    let mut _670: core::fmt::rt::Argument<'_>;
+    let _671: &f32;
+    let _672: f32;
+    let _673: ();
+    let mut _674: std::fmt::Arguments<'_>;
+    let mut _675: &[&str];
+    let _676: &[&str; 2];
+    let _677: [&str; 2];
+    let mut _678: &[core::fmt::rt::Argument<'_>];
+    let _679: &[core::fmt::rt::Argument<'_>; 1];
+    let _680: [core::fmt::rt::Argument<'_>; 1];
+    let mut _681: core::fmt::rt::Argument<'_>;
+    let _682: &f64;
+    let _683: f64;
+    let _684: ();
+    let mut _685: std::fmt::Arguments<'_>;
+    let mut _686: &[&str];
+    let _687: &[&str; 2];
+    let _688: [&str; 2];
+    let mut _689: &[core::fmt::rt::Argument<'_>];
+    let _690: &[core::fmt::rt::Argument<'_>; 1];
+    let _691: [core::fmt::rt::Argument<'_>; 1];
+    let mut _692: core::fmt::rt::Argument<'_>;
+    let _693: &isize;
+    let _694: isize;
+    let _695: ();
+    let mut _696: std::fmt::Arguments<'_>;
+    let mut _697: &[&str];
+    let _698: &[&str; 2];
+    let _699: [&str; 2];
+    let mut _700: &[core::fmt::rt::Argument<'_>];
+    let _701: &[core::fmt::rt::Argument<'_>; 1];
+    let _702: [core::fmt::rt::Argument<'_>; 1];
+    let mut _703: core::fmt::rt::Argument<'_>;
+    let _704: &usize;
+    let _705: usize;
+    let _706: ();
+    let mut _707: std::fmt::Arguments<'_>;
+    let mut _708: &[&str];
+    let _709: &[&str; 2];
+    let _710: [&str; 2];
+    let mut _711: &[core::fmt::rt::Argument<'_>];
+    let _712: &[core::fmt::rt::Argument<'_>; 1];
+    let _713: [core::fmt::rt::Argument<'_>; 1];
+    let mut _714: core::fmt::rt::Argument<'_>;
+    let _715: &*const std::string::String;
+    let _716: *const std::string::String;
+    let _717: ();
+    let mut _718: std::fmt::Arguments<'_>;
+    let mut _719: &[&str];
+    let _720: &[&str; 2];
+    let _721: [&str; 2];
+    let mut _722: &[core::fmt::rt::Argument<'_>];
+    let _723: &[core::fmt::rt::Argument<'_>; 1];
+    let _724: [core::fmt::rt::Argument<'_>; 1];
+    let mut _725: core::fmt::rt::Argument<'_>;
+    let _726: &i8;
+    let _727: i8;
+    let _728: ();
+    let mut _729: std::fmt::Arguments<'_>;
+    let mut _730: &[&str];
+    let _731: &[&str; 2];
+    let _732: [&str; 2];
+    let mut _733: &[core::fmt::rt::Argument<'_>];
+    let _734: &[core::fmt::rt::Argument<'_>; 1];
+    let _735: [core::fmt::rt::Argument<'_>; 1];
+    let mut _736: core::fmt::rt::Argument<'_>;
+    let _737: &i16;
+    let _738: i16;
+    let _739: ();
+    let mut _740: std::fmt::Arguments<'_>;
+    let mut _741: &[&str];
+    let _742: &[&str; 2];
+    let _743: [&str; 2];
+    let mut _744: &[core::fmt::rt::Argument<'_>];
+    let _745: &[core::fmt::rt::Argument<'_>; 1];
+    let _746: [core::fmt::rt::Argument<'_>; 1];
+    let mut _747: core::fmt::rt::Argument<'_>;
+    let _748: &i32;
+    let _749: i32;
+    let _750: ();
+    let mut _751: std::fmt::Arguments<'_>;
+    let mut _752: &[&str];
+    let _753: &[&str; 2];
+    let _754: [&str; 2];
+    let mut _755: &[core::fmt::rt::Argument<'_>];
+    let _756: &[core::fmt::rt::Argument<'_>; 1];
+    let _757: [core::fmt::rt::Argument<'_>; 1];
+    let mut _758: core::fmt::rt::Argument<'_>;
+    let _759: &i64;
+    let _760: i64;
+    let _761: ();
+    let mut _762: std::fmt::Arguments<'_>;
+    let mut _763: &[&str];
+    let _764: &[&str; 2];
+    let _765: [&str; 2];
+    let mut _766: &[core::fmt::rt::Argument<'_>];
+    let _767: &[core::fmt::rt::Argument<'_>; 1];
+    let _768: [core::fmt::rt::Argument<'_>; 1];
+    let mut _769: core::fmt::rt::Argument<'_>;
+    let _770: &u8;
+    let _771: u8;
+    let _772: ();
+    let mut _773: std::fmt::Arguments<'_>;
+    let mut _774: &[&str];
+    let _775: &[&str; 2];
+    let _776: [&str; 2];
+    let mut _777: &[core::fmt::rt::Argument<'_>];
+    let _778: &[core::fmt::rt::Argument<'_>; 1];
+    let _779: [core::fmt::rt::Argument<'_>; 1];
+    let mut _780: core::fmt::rt::Argument<'_>;
+    let _781: &u16;
+    let _782: u16;
+    let _783: ();
+    let mut _784: std::fmt::Arguments<'_>;
+    let mut _785: &[&str];
+    let _786: &[&str; 2];
+    let _787: [&str; 2];
+    let mut _788: &[core::fmt::rt::Argument<'_>];
+    let _789: &[core::fmt::rt::Argument<'_>; 1];
+    let _790: [core::fmt::rt::Argument<'_>; 1];
+    let mut _791: core::fmt::rt::Argument<'_>;
+    let _792: &u32;
+    let _793: u32;
+    let _794: ();
+    let mut _795: std::fmt::Arguments<'_>;
+    let mut _796: &[&str];
+    let _797: &[&str; 2];
+    let _798: [&str; 2];
+    let mut _799: &[core::fmt::rt::Argument<'_>];
+    let _800: &[core::fmt::rt::Argument<'_>; 1];
+    let _801: [core::fmt::rt::Argument<'_>; 1];
+    let mut _802: core::fmt::rt::Argument<'_>;
+    let _803: &u64;
+    let _804: u64;
+    let _805: ();
+    let mut _806: std::fmt::Arguments<'_>;
+    let mut _807: &[&str];
+    let _808: &[&str; 2];
+    let _809: [&str; 2];
+    let mut _810: &[core::fmt::rt::Argument<'_>];
+    let _811: &[core::fmt::rt::Argument<'_>; 1];
+    let _812: [core::fmt::rt::Argument<'_>; 1];
+    let mut _813: core::fmt::rt::Argument<'_>;
+    let _814: &f32;
+    let _815: f32;
+    let _816: ();
+    let mut _817: std::fmt::Arguments<'_>;
+    let mut _818: &[&str];
+    let _819: &[&str; 2];
+    let _820: [&str; 2];
+    let mut _821: &[core::fmt::rt::Argument<'_>];
+    let _822: &[core::fmt::rt::Argument<'_>; 1];
+    let _823: [core::fmt::rt::Argument<'_>; 1];
+    let mut _824: core::fmt::rt::Argument<'_>;
+    let _825: &f64;
+    let _826: f64;
+    let _827: ();
+    let mut _828: std::fmt::Arguments<'_>;
+    let mut _829: &[&str];
+    let _830: &[&str; 2];
+    let _831: [&str; 2];
+    let mut _832: &[core::fmt::rt::Argument<'_>];
+    let _833: &[core::fmt::rt::Argument<'_>; 1];
+    let _834: [core::fmt::rt::Argument<'_>; 1];
+    let mut _835: core::fmt::rt::Argument<'_>;
+    let _836: &isize;
+    let _837: isize;
+    let _838: ();
+    let mut _839: std::fmt::Arguments<'_>;
+    let mut _840: &[&str];
+    let _841: &[&str; 2];
+    let _842: [&str; 2];
+    let mut _843: &[core::fmt::rt::Argument<'_>];
+    let _844: &[core::fmt::rt::Argument<'_>; 1];
+    let _845: [core::fmt::rt::Argument<'_>; 1];
+    let mut _846: core::fmt::rt::Argument<'_>;
+    let _847: &usize;
+    let _848: usize;
+    let _849: ();
+    let mut _850: std::fmt::Arguments<'_>;
+    let mut _851: &[&str];
+    let _852: &[&str; 2];
+    let _853: [&str; 2];
+    let mut _854: &[core::fmt::rt::Argument<'_>];
+    let _855: &[core::fmt::rt::Argument<'_>; 1];
+    let _856: [core::fmt::rt::Argument<'_>; 1];
+    let mut _857: core::fmt::rt::Argument<'_>;
+    let _858: &*const std::string::String;
+    let _859: *const std::string::String;
+    let _860: ();
+    let mut _861: std::fmt::Arguments<'_>;
+    let mut _862: &[&str];
+    let _863: &[&str; 2];
+    let _864: [&str; 2];
+    let mut _865: &[core::fmt::rt::Argument<'_>];
+    let _866: &[core::fmt::rt::Argument<'_>; 1];
+    let _867: [core::fmt::rt::Argument<'_>; 1];
+    let mut _868: core::fmt::rt::Argument<'_>;
+    let _869: &i8;
+    let _870: i8;
+    let _871: ();
+    let mut _872: std::fmt::Arguments<'_>;
+    let mut _873: &[&str];
+    let _874: &[&str; 2];
+    let _875: [&str; 2];
+    let mut _876: &[core::fmt::rt::Argument<'_>];
+    let _877: &[core::fmt::rt::Argument<'_>; 1];
+    let _878: [core::fmt::rt::Argument<'_>; 1];
+    let mut _879: core::fmt::rt::Argument<'_>;
+    let _880: &i16;
+    let _881: i16;
+    let _882: ();
+    let mut _883: std::fmt::Arguments<'_>;
+    let mut _884: &[&str];
+    let _885: &[&str; 2];
+    let _886: [&str; 2];
+    let mut _887: &[core::fmt::rt::Argument<'_>];
+    let _888: &[core::fmt::rt::Argument<'_>; 1];
+    let _889: [core::fmt::rt::Argument<'_>; 1];
+    let mut _890: core::fmt::rt::Argument<'_>;
+    let _891: &i32;
+    let _892: i32;
+    let _893: ();
+    let mut _894: std::fmt::Arguments<'_>;
+    let mut _895: &[&str];
+    let _896: &[&str; 2];
+    let _897: [&str; 2];
+    let mut _898: &[core::fmt::rt::Argument<'_>];
+    let _899: &[core::fmt::rt::Argument<'_>; 1];
+    let _900: [core::fmt::rt::Argument<'_>; 1];
+    let mut _901: core::fmt::rt::Argument<'_>;
+    let _902: &i64;
+    let _903: i64;
+    let _904: ();
+    let mut _905: std::fmt::Arguments<'_>;
+    let mut _906: &[&str];
+    let _907: &[&str; 2];
+    let _908: [&str; 2];
+    let mut _909: &[core::fmt::rt::Argument<'_>];
+    let _910: &[core::fmt::rt::Argument<'_>; 1];
+    let _911: [core::fmt::rt::Argument<'_>; 1];
+    let mut _912: core::fmt::rt::Argument<'_>;
+    let _913: &u8;
+    let _914: u8;
+    let _915: ();
+    let mut _916: std::fmt::Arguments<'_>;
+    let mut _917: &[&str];
+    let _918: &[&str; 2];
+    let _919: [&str; 2];
+    let mut _920: &[core::fmt::rt::Argument<'_>];
+    let _921: &[core::fmt::rt::Argument<'_>; 1];
+    let _922: [core::fmt::rt::Argument<'_>; 1];
+    let mut _923: core::fmt::rt::Argument<'_>;
+    let _924: &u16;
+    let _925: u16;
+    let _926: ();
+    let mut _927: std::fmt::Arguments<'_>;
+    let mut _928: &[&str];
+    let _929: &[&str; 2];
+    let _930: [&str; 2];
+    let mut _931: &[core::fmt::rt::Argument<'_>];
+    let _932: &[core::fmt::rt::Argument<'_>; 1];
+    let _933: [core::fmt::rt::Argument<'_>; 1];
+    let mut _934: core::fmt::rt::Argument<'_>;
+    let _935: &u32;
+    let _936: u32;
+    let _937: ();
+    let mut _938: std::fmt::Arguments<'_>;
+    let mut _939: &[&str];
+    let _940: &[&str; 2];
+    let _941: [&str; 2];
+    let mut _942: &[core::fmt::rt::Argument<'_>];
+    let _943: &[core::fmt::rt::Argument<'_>; 1];
+    let _944: [core::fmt::rt::Argument<'_>; 1];
+    let mut _945: core::fmt::rt::Argument<'_>;
+    let _946: &u64;
+    let _947: u64;
+    let _948: ();
+    let mut _949: std::fmt::Arguments<'_>;
+    let mut _950: &[&str];
+    let _951: &[&str; 2];
+    let _952: [&str; 2];
+    let mut _953: &[core::fmt::rt::Argument<'_>];
+    let _954: &[core::fmt::rt::Argument<'_>; 1];
+    let _955: [core::fmt::rt::Argument<'_>; 1];
+    let mut _956: core::fmt::rt::Argument<'_>;
+    let _957: &f32;
+    let _958: f32;
+    let _959: ();
+    let mut _960: std::fmt::Arguments<'_>;
+    let mut _961: &[&str];
+    let _962: &[&str; 2];
+    let _963: [&str; 2];
+    let mut _964: &[core::fmt::rt::Argument<'_>];
+    let _965: &[core::fmt::rt::Argument<'_>; 1];
+    let _966: [core::fmt::rt::Argument<'_>; 1];
+    let mut _967: core::fmt::rt::Argument<'_>;
+    let _968: &f64;
+    let _969: f64;
+    let _970: ();
+    let mut _971: std::fmt::Arguments<'_>;
+    let mut _972: &[&str];
+    let _973: &[&str; 2];
+    let _974: [&str; 2];
+    let mut _975: &[core::fmt::rt::Argument<'_>];
+    let _976: &[core::fmt::rt::Argument<'_>; 1];
+    let _977: [core::fmt::rt::Argument<'_>; 1];
+    let mut _978: core::fmt::rt::Argument<'_>;
+    let _979: &isize;
+    let _980: isize;
+    let _981: ();
+    let mut _982: std::fmt::Arguments<'_>;
+    let mut _983: &[&str];
+    let _984: &[&str; 2];
+    let _985: [&str; 2];
+    let mut _986: &[core::fmt::rt::Argument<'_>];
+    let _987: &[core::fmt::rt::Argument<'_>; 1];
+    let _988: [core::fmt::rt::Argument<'_>; 1];
+    let mut _989: core::fmt::rt::Argument<'_>;
+    let _990: &usize;
+    let _991: usize;
+    let _992: ();
+    let mut _993: std::fmt::Arguments<'_>;
+    let mut _994: &[&str];
+    let _995: &[&str; 2];
+    let _996: [&str; 2];
+    let mut _997: &[core::fmt::rt::Argument<'_>];
+    let _998: &[core::fmt::rt::Argument<'_>; 1];
+    let _999: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1000: core::fmt::rt::Argument<'_>;
+    let _1001: &*const std::string::String;
+    let _1002: *const std::string::String;
+    let _1003: ();
+    let mut _1004: std::fmt::Arguments<'_>;
+    let mut _1005: &[&str];
+    let _1006: &[&str; 2];
+    let _1007: [&str; 2];
+    let mut _1008: &[core::fmt::rt::Argument<'_>];
+    let _1009: &[core::fmt::rt::Argument<'_>; 1];
+    let _1010: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1011: core::fmt::rt::Argument<'_>;
+    let _1012: &i8;
+    let _1013: i8;
+    let _1014: ();
+    let mut _1015: std::fmt::Arguments<'_>;
+    let mut _1016: &[&str];
+    let _1017: &[&str; 2];
+    let _1018: [&str; 2];
+    let mut _1019: &[core::fmt::rt::Argument<'_>];
+    let _1020: &[core::fmt::rt::Argument<'_>; 1];
+    let _1021: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1022: core::fmt::rt::Argument<'_>;
+    let _1023: &i16;
+    let _1024: i16;
+    let _1025: ();
+    let mut _1026: std::fmt::Arguments<'_>;
+    let mut _1027: &[&str];
+    let _1028: &[&str; 2];
+    let _1029: [&str; 2];
+    let mut _1030: &[core::fmt::rt::Argument<'_>];
+    let _1031: &[core::fmt::rt::Argument<'_>; 1];
+    let _1032: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1033: core::fmt::rt::Argument<'_>;
+    let _1034: &i32;
+    let _1035: i32;
+    let _1036: ();
+    let mut _1037: std::fmt::Arguments<'_>;
+    let mut _1038: &[&str];
+    let _1039: &[&str; 2];
+    let _1040: [&str; 2];
+    let mut _1041: &[core::fmt::rt::Argument<'_>];
+    let _1042: &[core::fmt::rt::Argument<'_>; 1];
+    let _1043: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1044: core::fmt::rt::Argument<'_>;
+    let _1045: &i64;
+    let _1046: i64;
+    let _1047: ();
+    let mut _1048: std::fmt::Arguments<'_>;
+    let mut _1049: &[&str];
+    let _1050: &[&str; 2];
+    let _1051: [&str; 2];
+    let mut _1052: &[core::fmt::rt::Argument<'_>];
+    let _1053: &[core::fmt::rt::Argument<'_>; 1];
+    let _1054: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1055: core::fmt::rt::Argument<'_>;
+    let _1056: &u8;
+    let _1057: u8;
+    let _1058: ();
+    let mut _1059: std::fmt::Arguments<'_>;
+    let mut _1060: &[&str];
+    let _1061: &[&str; 2];
+    let _1062: [&str; 2];
+    let mut _1063: &[core::fmt::rt::Argument<'_>];
+    let _1064: &[core::fmt::rt::Argument<'_>; 1];
+    let _1065: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1066: core::fmt::rt::Argument<'_>;
+    let _1067: &u16;
+    let _1068: u16;
+    let _1069: ();
+    let mut _1070: std::fmt::Arguments<'_>;
+    let mut _1071: &[&str];
+    let _1072: &[&str; 2];
+    let _1073: [&str; 2];
+    let mut _1074: &[core::fmt::rt::Argument<'_>];
+    let _1075: &[core::fmt::rt::Argument<'_>; 1];
+    let _1076: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1077: core::fmt::rt::Argument<'_>;
+    let _1078: &u32;
+    let _1079: u32;
+    let _1080: ();
+    let mut _1081: std::fmt::Arguments<'_>;
+    let mut _1082: &[&str];
+    let _1083: &[&str; 2];
+    let _1084: [&str; 2];
+    let mut _1085: &[core::fmt::rt::Argument<'_>];
+    let _1086: &[core::fmt::rt::Argument<'_>; 1];
+    let _1087: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1088: core::fmt::rt::Argument<'_>;
+    let _1089: &u64;
+    let _1090: u64;
+    let _1091: ();
+    let mut _1092: std::fmt::Arguments<'_>;
+    let mut _1093: &[&str];
+    let _1094: &[&str; 2];
+    let _1095: [&str; 2];
+    let mut _1096: &[core::fmt::rt::Argument<'_>];
+    let _1097: &[core::fmt::rt::Argument<'_>; 1];
+    let _1098: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1099: core::fmt::rt::Argument<'_>;
+    let _1100: &f32;
+    let _1101: f32;
+    let _1102: ();
+    let mut _1103: std::fmt::Arguments<'_>;
+    let mut _1104: &[&str];
+    let _1105: &[&str; 2];
+    let _1106: [&str; 2];
+    let mut _1107: &[core::fmt::rt::Argument<'_>];
+    let _1108: &[core::fmt::rt::Argument<'_>; 1];
+    let _1109: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1110: core::fmt::rt::Argument<'_>;
+    let _1111: &f64;
+    let _1112: f64;
+    let _1113: ();
+    let mut _1114: std::fmt::Arguments<'_>;
+    let mut _1115: &[&str];
+    let _1116: &[&str; 2];
+    let _1117: [&str; 2];
+    let mut _1118: &[core::fmt::rt::Argument<'_>];
+    let _1119: &[core::fmt::rt::Argument<'_>; 1];
+    let _1120: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1121: core::fmt::rt::Argument<'_>;
+    let _1122: &isize;
+    let _1123: isize;
+    let _1124: ();
+    let mut _1125: std::fmt::Arguments<'_>;
+    let mut _1126: &[&str];
+    let _1127: &[&str; 2];
+    let _1128: [&str; 2];
+    let mut _1129: &[core::fmt::rt::Argument<'_>];
+    let _1130: &[core::fmt::rt::Argument<'_>; 1];
+    let _1131: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1132: core::fmt::rt::Argument<'_>;
+    let _1133: &usize;
+    let _1134: usize;
+    let _1135: ();
+    let mut _1136: std::fmt::Arguments<'_>;
+    let mut _1137: &[&str];
+    let _1138: &[&str; 2];
+    let _1139: [&str; 2];
+    let mut _1140: &[core::fmt::rt::Argument<'_>];
+    let _1141: &[core::fmt::rt::Argument<'_>; 1];
+    let _1142: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1143: core::fmt::rt::Argument<'_>;
+    let _1144: &*const std::string::String;
+    let _1145: *const std::string::String;
+    let _1146: ();
+    let mut _1147: std::fmt::Arguments<'_>;
+    let mut _1148: &[&str];
+    let _1149: &[&str; 2];
+    let _1150: [&str; 2];
+    let mut _1151: &[core::fmt::rt::Argument<'_>];
+    let _1152: &[core::fmt::rt::Argument<'_>; 1];
+    let _1153: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1154: core::fmt::rt::Argument<'_>;
+    let _1155: &i8;
+    let _1156: i8;
+    let _1157: ();
+    let mut _1158: std::fmt::Arguments<'_>;
+    let mut _1159: &[&str];
+    let _1160: &[&str; 2];
+    let _1161: [&str; 2];
+    let mut _1162: &[core::fmt::rt::Argument<'_>];
+    let _1163: &[core::fmt::rt::Argument<'_>; 1];
+    let _1164: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1165: core::fmt::rt::Argument<'_>;
+    let _1166: &i16;
+    let _1167: i16;
+    let _1168: ();
+    let mut _1169: std::fmt::Arguments<'_>;
+    let mut _1170: &[&str];
+    let _1171: &[&str; 2];
+    let _1172: [&str; 2];
+    let mut _1173: &[core::fmt::rt::Argument<'_>];
+    let _1174: &[core::fmt::rt::Argument<'_>; 1];
+    let _1175: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1176: core::fmt::rt::Argument<'_>;
+    let _1177: &i32;
+    let _1178: i32;
+    let _1179: ();
+    let mut _1180: std::fmt::Arguments<'_>;
+    let mut _1181: &[&str];
+    let _1182: &[&str; 2];
+    let _1183: [&str; 2];
+    let mut _1184: &[core::fmt::rt::Argument<'_>];
+    let _1185: &[core::fmt::rt::Argument<'_>; 1];
+    let _1186: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1187: core::fmt::rt::Argument<'_>;
+    let _1188: &i64;
+    let _1189: i64;
+    let _1190: ();
+    let mut _1191: std::fmt::Arguments<'_>;
+    let mut _1192: &[&str];
+    let _1193: &[&str; 2];
+    let _1194: [&str; 2];
+    let mut _1195: &[core::fmt::rt::Argument<'_>];
+    let _1196: &[core::fmt::rt::Argument<'_>; 1];
+    let _1197: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1198: core::fmt::rt::Argument<'_>;
+    let _1199: &u8;
+    let _1200: u8;
+    let _1201: ();
+    let mut _1202: std::fmt::Arguments<'_>;
+    let mut _1203: &[&str];
+    let _1204: &[&str; 2];
+    let _1205: [&str; 2];
+    let mut _1206: &[core::fmt::rt::Argument<'_>];
+    let _1207: &[core::fmt::rt::Argument<'_>; 1];
+    let _1208: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1209: core::fmt::rt::Argument<'_>;
+    let _1210: &u16;
+    let _1211: u16;
+    let _1212: ();
+    let mut _1213: std::fmt::Arguments<'_>;
+    let mut _1214: &[&str];
+    let _1215: &[&str; 2];
+    let _1216: [&str; 2];
+    let mut _1217: &[core::fmt::rt::Argument<'_>];
+    let _1218: &[core::fmt::rt::Argument<'_>; 1];
+    let _1219: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1220: core::fmt::rt::Argument<'_>;
+    let _1221: &u32;
+    let _1222: u32;
+    let _1223: ();
+    let mut _1224: std::fmt::Arguments<'_>;
+    let mut _1225: &[&str];
+    let _1226: &[&str; 2];
+    let _1227: [&str; 2];
+    let mut _1228: &[core::fmt::rt::Argument<'_>];
+    let _1229: &[core::fmt::rt::Argument<'_>; 1];
+    let _1230: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1231: core::fmt::rt::Argument<'_>;
+    let _1232: &u64;
+    let _1233: u64;
+    let _1234: ();
+    let mut _1235: std::fmt::Arguments<'_>;
+    let mut _1236: &[&str];
+    let _1237: &[&str; 2];
+    let _1238: [&str; 2];
+    let mut _1239: &[core::fmt::rt::Argument<'_>];
+    let _1240: &[core::fmt::rt::Argument<'_>; 1];
+    let _1241: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1242: core::fmt::rt::Argument<'_>;
+    let _1243: &f32;
+    let _1244: f32;
+    let _1245: ();
+    let mut _1246: std::fmt::Arguments<'_>;
+    let mut _1247: &[&str];
+    let _1248: &[&str; 2];
+    let _1249: [&str; 2];
+    let mut _1250: &[core::fmt::rt::Argument<'_>];
+    let _1251: &[core::fmt::rt::Argument<'_>; 1];
+    let _1252: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1253: core::fmt::rt::Argument<'_>;
+    let _1254: &f64;
+    let _1255: f64;
+    let _1256: ();
+    let mut _1257: std::fmt::Arguments<'_>;
+    let mut _1258: &[&str];
+    let _1259: &[&str; 2];
+    let _1260: [&str; 2];
+    let mut _1261: &[core::fmt::rt::Argument<'_>];
+    let _1262: &[core::fmt::rt::Argument<'_>; 1];
+    let _1263: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1264: core::fmt::rt::Argument<'_>;
+    let _1265: &isize;
+    let _1266: isize;
+    let _1267: ();
+    let mut _1268: std::fmt::Arguments<'_>;
+    let mut _1269: &[&str];
+    let _1270: &[&str; 2];
+    let _1271: [&str; 2];
+    let mut _1272: &[core::fmt::rt::Argument<'_>];
+    let _1273: &[core::fmt::rt::Argument<'_>; 1];
+    let _1274: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1275: core::fmt::rt::Argument<'_>;
+    let _1276: &usize;
+    let _1277: usize;
+    let _1278: ();
+    let mut _1279: std::fmt::Arguments<'_>;
+    let mut _1280: &[&str];
+    let _1281: &[&str; 2];
+    let _1282: [&str; 2];
+    let mut _1283: &[core::fmt::rt::Argument<'_>];
+    let _1284: &[core::fmt::rt::Argument<'_>; 1];
+    let _1285: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1286: core::fmt::rt::Argument<'_>;
+    let _1287: &*const std::string::String;
+    let _1288: *const std::string::String;
+    let _1289: ();
+    let mut _1290: std::fmt::Arguments<'_>;
+    let mut _1291: &[&str];
+    let _1292: &[&str; 2];
+    let _1293: [&str; 2];
+    let mut _1294: &[core::fmt::rt::Argument<'_>];
+    let _1295: &[core::fmt::rt::Argument<'_>; 1];
+    let _1296: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1297: core::fmt::rt::Argument<'_>;
+    let _1298: &i8;
+    let _1299: i8;
+    let _1300: ();
+    let mut _1301: std::fmt::Arguments<'_>;
+    let mut _1302: &[&str];
+    let _1303: &[&str; 2];
+    let _1304: [&str; 2];
+    let mut _1305: &[core::fmt::rt::Argument<'_>];
+    let _1306: &[core::fmt::rt::Argument<'_>; 1];
+    let _1307: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1308: core::fmt::rt::Argument<'_>;
+    let _1309: &i16;
+    let _1310: i16;
+    let _1311: ();
+    let mut _1312: std::fmt::Arguments<'_>;
+    let mut _1313: &[&str];
+    let _1314: &[&str; 2];
+    let _1315: [&str; 2];
+    let mut _1316: &[core::fmt::rt::Argument<'_>];
+    let _1317: &[core::fmt::rt::Argument<'_>; 1];
+    let _1318: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1319: core::fmt::rt::Argument<'_>;
+    let _1320: &i32;
+    let _1321: i32;
+    let _1322: ();
+    let mut _1323: std::fmt::Arguments<'_>;
+    let mut _1324: &[&str];
+    let _1325: &[&str; 2];
+    let _1326: [&str; 2];
+    let mut _1327: &[core::fmt::rt::Argument<'_>];
+    let _1328: &[core::fmt::rt::Argument<'_>; 1];
+    let _1329: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1330: core::fmt::rt::Argument<'_>;
+    let _1331: &i64;
+    let _1332: i64;
+    let _1333: ();
+    let mut _1334: std::fmt::Arguments<'_>;
+    let mut _1335: &[&str];
+    let _1336: &[&str; 2];
+    let _1337: [&str; 2];
+    let mut _1338: &[core::fmt::rt::Argument<'_>];
+    let _1339: &[core::fmt::rt::Argument<'_>; 1];
+    let _1340: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1341: core::fmt::rt::Argument<'_>;
+    let _1342: &u8;
+    let _1343: u8;
+    let _1344: ();
+    let mut _1345: std::fmt::Arguments<'_>;
+    let mut _1346: &[&str];
+    let _1347: &[&str; 2];
+    let _1348: [&str; 2];
+    let mut _1349: &[core::fmt::rt::Argument<'_>];
+    let _1350: &[core::fmt::rt::Argument<'_>; 1];
+    let _1351: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1352: core::fmt::rt::Argument<'_>;
+    let _1353: &u16;
+    let _1354: u16;
+    let _1355: ();
+    let mut _1356: std::fmt::Arguments<'_>;
+    let mut _1357: &[&str];
+    let _1358: &[&str; 2];
+    let _1359: [&str; 2];
+    let mut _1360: &[core::fmt::rt::Argument<'_>];
+    let _1361: &[core::fmt::rt::Argument<'_>; 1];
+    let _1362: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1363: core::fmt::rt::Argument<'_>;
+    let _1364: &u32;
+    let _1365: u32;
+    let _1366: ();
+    let mut _1367: std::fmt::Arguments<'_>;
+    let mut _1368: &[&str];
+    let _1369: &[&str; 2];
+    let _1370: [&str; 2];
+    let mut _1371: &[core::fmt::rt::Argument<'_>];
+    let _1372: &[core::fmt::rt::Argument<'_>; 1];
+    let _1373: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1374: core::fmt::rt::Argument<'_>;
+    let _1375: &u64;
+    let _1376: u64;
+    let _1377: ();
+    let mut _1378: std::fmt::Arguments<'_>;
+    let mut _1379: &[&str];
+    let _1380: &[&str; 2];
+    let _1381: [&str; 2];
+    let mut _1382: &[core::fmt::rt::Argument<'_>];
+    let _1383: &[core::fmt::rt::Argument<'_>; 1];
+    let _1384: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1385: core::fmt::rt::Argument<'_>;
+    let _1386: &f32;
+    let _1387: f32;
+    let _1388: ();
+    let mut _1389: std::fmt::Arguments<'_>;
+    let mut _1390: &[&str];
+    let _1391: &[&str; 2];
+    let _1392: [&str; 2];
+    let mut _1393: &[core::fmt::rt::Argument<'_>];
+    let _1394: &[core::fmt::rt::Argument<'_>; 1];
+    let _1395: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1396: core::fmt::rt::Argument<'_>;
+    let _1397: &f64;
+    let _1398: f64;
+    let _1399: ();
+    let mut _1400: std::fmt::Arguments<'_>;
+    let mut _1401: &[&str];
+    let _1402: &[&str; 2];
+    let _1403: [&str; 2];
+    let mut _1404: &[core::fmt::rt::Argument<'_>];
+    let _1405: &[core::fmt::rt::Argument<'_>; 1];
+    let _1406: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1407: core::fmt::rt::Argument<'_>;
+    let _1408: &isize;
+    let _1409: isize;
+    let _1410: ();
+    let mut _1411: std::fmt::Arguments<'_>;
+    let mut _1412: &[&str];
+    let _1413: &[&str; 2];
+    let _1414: [&str; 2];
+    let mut _1415: &[core::fmt::rt::Argument<'_>];
+    let _1416: &[core::fmt::rt::Argument<'_>; 1];
+    let _1417: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1418: core::fmt::rt::Argument<'_>;
+    let _1419: &usize;
+    let _1420: usize;
+    let _1421: ();
+    let mut _1422: std::fmt::Arguments<'_>;
+    let mut _1423: &[&str];
+    let _1424: &[&str; 2];
+    let _1425: [&str; 2];
+    let mut _1426: &[core::fmt::rt::Argument<'_>];
+    let _1427: &[core::fmt::rt::Argument<'_>; 1];
+    let _1428: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1429: core::fmt::rt::Argument<'_>;
+    let _1430: &*const std::string::String;
+    let _1431: *const std::string::String;
+    let _1432: ();
+    let mut _1433: std::fmt::Arguments<'_>;
+    let mut _1434: &[&str];
+    let _1435: &[&str; 2];
+    let _1436: [&str; 2];
+    let mut _1437: &[core::fmt::rt::Argument<'_>];
+    let _1438: &[core::fmt::rt::Argument<'_>; 1];
+    let _1439: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1440: core::fmt::rt::Argument<'_>;
+    let _1441: &i8;
+    let _1442: i8;
+    let _1443: ();
+    let mut _1444: std::fmt::Arguments<'_>;
+    let mut _1445: &[&str];
+    let _1446: &[&str; 2];
+    let _1447: [&str; 2];
+    let mut _1448: &[core::fmt::rt::Argument<'_>];
+    let _1449: &[core::fmt::rt::Argument<'_>; 1];
+    let _1450: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1451: core::fmt::rt::Argument<'_>;
+    let _1452: &i16;
+    let _1453: i16;
+    let _1454: ();
+    let mut _1455: std::fmt::Arguments<'_>;
+    let mut _1456: &[&str];
+    let _1457: &[&str; 2];
+    let _1458: [&str; 2];
+    let mut _1459: &[core::fmt::rt::Argument<'_>];
+    let _1460: &[core::fmt::rt::Argument<'_>; 1];
+    let _1461: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1462: core::fmt::rt::Argument<'_>;
+    let _1463: &i32;
+    let _1464: i32;
+    let _1465: ();
+    let mut _1466: std::fmt::Arguments<'_>;
+    let mut _1467: &[&str];
+    let _1468: &[&str; 2];
+    let _1469: [&str; 2];
+    let mut _1470: &[core::fmt::rt::Argument<'_>];
+    let _1471: &[core::fmt::rt::Argument<'_>; 1];
+    let _1472: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1473: core::fmt::rt::Argument<'_>;
+    let _1474: &i64;
+    let _1475: i64;
+    let _1476: ();
+    let mut _1477: std::fmt::Arguments<'_>;
+    let mut _1478: &[&str];
+    let _1479: &[&str; 2];
+    let _1480: [&str; 2];
+    let mut _1481: &[core::fmt::rt::Argument<'_>];
+    let _1482: &[core::fmt::rt::Argument<'_>; 1];
+    let _1483: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1484: core::fmt::rt::Argument<'_>;
+    let _1485: &u8;
+    let _1486: u8;
+    let _1487: ();
+    let mut _1488: std::fmt::Arguments<'_>;
+    let mut _1489: &[&str];
+    let _1490: &[&str; 2];
+    let _1491: [&str; 2];
+    let mut _1492: &[core::fmt::rt::Argument<'_>];
+    let _1493: &[core::fmt::rt::Argument<'_>; 1];
+    let _1494: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1495: core::fmt::rt::Argument<'_>;
+    let _1496: &u16;
+    let _1497: u16;
+    let _1498: ();
+    let mut _1499: std::fmt::Arguments<'_>;
+    let mut _1500: &[&str];
+    let _1501: &[&str; 2];
+    let _1502: [&str; 2];
+    let mut _1503: &[core::fmt::rt::Argument<'_>];
+    let _1504: &[core::fmt::rt::Argument<'_>; 1];
+    let _1505: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1506: core::fmt::rt::Argument<'_>;
+    let _1507: &u32;
+    let _1508: u32;
+    let _1509: ();
+    let mut _1510: std::fmt::Arguments<'_>;
+    let mut _1511: &[&str];
+    let _1512: &[&str; 2];
+    let _1513: [&str; 2];
+    let mut _1514: &[core::fmt::rt::Argument<'_>];
+    let _1515: &[core::fmt::rt::Argument<'_>; 1];
+    let _1516: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1517: core::fmt::rt::Argument<'_>;
+    let _1518: &u64;
+    let _1519: u64;
+    let _1520: ();
+    let mut _1521: std::fmt::Arguments<'_>;
+    let mut _1522: &[&str];
+    let _1523: &[&str; 2];
+    let _1524: [&str; 2];
+    let mut _1525: &[core::fmt::rt::Argument<'_>];
+    let _1526: &[core::fmt::rt::Argument<'_>; 1];
+    let _1527: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1528: core::fmt::rt::Argument<'_>;
+    let _1529: &f32;
+    let _1530: f32;
+    let _1531: ();
+    let mut _1532: std::fmt::Arguments<'_>;
+    let mut _1533: &[&str];
+    let _1534: &[&str; 2];
+    let _1535: [&str; 2];
+    let mut _1536: &[core::fmt::rt::Argument<'_>];
+    let _1537: &[core::fmt::rt::Argument<'_>; 1];
+    let _1538: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1539: core::fmt::rt::Argument<'_>;
+    let _1540: &f64;
+    let _1541: f64;
+    let _1542: ();
+    let mut _1543: std::fmt::Arguments<'_>;
+    let mut _1544: &[&str];
+    let _1545: &[&str; 2];
+    let _1546: [&str; 2];
+    let mut _1547: &[core::fmt::rt::Argument<'_>];
+    let _1548: &[core::fmt::rt::Argument<'_>; 1];
+    let _1549: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1550: core::fmt::rt::Argument<'_>;
+    let _1551: &isize;
+    let _1552: isize;
+    let _1553: ();
+    let mut _1554: std::fmt::Arguments<'_>;
+    let mut _1555: &[&str];
+    let _1556: &[&str; 2];
+    let _1557: [&str; 2];
+    let mut _1558: &[core::fmt::rt::Argument<'_>];
+    let _1559: &[core::fmt::rt::Argument<'_>; 1];
+    let _1560: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1561: core::fmt::rt::Argument<'_>;
+    let _1562: &usize;
+    let _1563: usize;
+    let _1564: ();
+    let mut _1565: std::fmt::Arguments<'_>;
+    let mut _1566: &[&str];
+    let _1567: &[&str; 2];
+    let _1568: [&str; 2];
+    let mut _1569: &[core::fmt::rt::Argument<'_>];
+    let _1570: &[core::fmt::rt::Argument<'_>; 1];
+    let _1571: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1572: core::fmt::rt::Argument<'_>;
+    let _1573: &*const std::string::String;
+    let _1574: *const std::string::String;
+    let _1575: ();
+    let mut _1576: std::fmt::Arguments<'_>;
+    let mut _1577: &[&str];
+    let _1578: &[&str; 2];
+    let _1579: [&str; 2];
+    let mut _1580: &[core::fmt::rt::Argument<'_>];
+    let _1581: &[core::fmt::rt::Argument<'_>; 1];
+    let _1582: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1583: core::fmt::rt::Argument<'_>;
+    let _1584: &i8;
+    let _1585: i8;
+    let _1586: ();
+    let mut _1587: std::fmt::Arguments<'_>;
+    let mut _1588: &[&str];
+    let _1589: &[&str; 2];
+    let _1590: [&str; 2];
+    let mut _1591: &[core::fmt::rt::Argument<'_>];
+    let _1592: &[core::fmt::rt::Argument<'_>; 1];
+    let _1593: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1594: core::fmt::rt::Argument<'_>;
+    let _1595: &i16;
+    let _1596: i16;
+    let _1597: ();
+    let mut _1598: std::fmt::Arguments<'_>;
+    let mut _1599: &[&str];
+    let _1600: &[&str; 2];
+    let _1601: [&str; 2];
+    let mut _1602: &[core::fmt::rt::Argument<'_>];
+    let _1603: &[core::fmt::rt::Argument<'_>; 1];
+    let _1604: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1605: core::fmt::rt::Argument<'_>;
+    let _1606: &i32;
+    let _1607: i32;
+    let _1608: ();
+    let mut _1609: std::fmt::Arguments<'_>;
+    let mut _1610: &[&str];
+    let _1611: &[&str; 2];
+    let _1612: [&str; 2];
+    let mut _1613: &[core::fmt::rt::Argument<'_>];
+    let _1614: &[core::fmt::rt::Argument<'_>; 1];
+    let _1615: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1616: core::fmt::rt::Argument<'_>;
+    let _1617: &i64;
+    let _1618: i64;
+    let _1619: ();
+    let mut _1620: std::fmt::Arguments<'_>;
+    let mut _1621: &[&str];
+    let _1622: &[&str; 2];
+    let _1623: [&str; 2];
+    let mut _1624: &[core::fmt::rt::Argument<'_>];
+    let _1625: &[core::fmt::rt::Argument<'_>; 1];
+    let _1626: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1627: core::fmt::rt::Argument<'_>;
+    let _1628: &u8;
+    let _1629: u8;
+    let _1630: ();
+    let mut _1631: std::fmt::Arguments<'_>;
+    let mut _1632: &[&str];
+    let _1633: &[&str; 2];
+    let _1634: [&str; 2];
+    let mut _1635: &[core::fmt::rt::Argument<'_>];
+    let _1636: &[core::fmt::rt::Argument<'_>; 1];
+    let _1637: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1638: core::fmt::rt::Argument<'_>;
+    let _1639: &u16;
+    let _1640: u16;
+    let _1641: ();
+    let mut _1642: std::fmt::Arguments<'_>;
+    let mut _1643: &[&str];
+    let _1644: &[&str; 2];
+    let _1645: [&str; 2];
+    let mut _1646: &[core::fmt::rt::Argument<'_>];
+    let _1647: &[core::fmt::rt::Argument<'_>; 1];
+    let _1648: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1649: core::fmt::rt::Argument<'_>;
+    let _1650: &u32;
+    let _1651: u32;
+    let _1652: ();
+    let mut _1653: std::fmt::Arguments<'_>;
+    let mut _1654: &[&str];
+    let _1655: &[&str; 2];
+    let _1656: [&str; 2];
+    let mut _1657: &[core::fmt::rt::Argument<'_>];
+    let _1658: &[core::fmt::rt::Argument<'_>; 1];
+    let _1659: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1660: core::fmt::rt::Argument<'_>;
+    let _1661: &u64;
+    let _1662: u64;
+    let _1663: ();
+    let mut _1664: std::fmt::Arguments<'_>;
+    let mut _1665: &[&str];
+    let _1666: &[&str; 2];
+    let _1667: [&str; 2];
+    let mut _1668: &[core::fmt::rt::Argument<'_>];
+    let _1669: &[core::fmt::rt::Argument<'_>; 1];
+    let _1670: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1671: core::fmt::rt::Argument<'_>;
+    let _1672: &f32;
+    let _1673: f32;
+    let _1674: ();
+    let mut _1675: std::fmt::Arguments<'_>;
+    let mut _1676: &[&str];
+    let _1677: &[&str; 2];
+    let _1678: [&str; 2];
+    let mut _1679: &[core::fmt::rt::Argument<'_>];
+    let _1680: &[core::fmt::rt::Argument<'_>; 1];
+    let _1681: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1682: core::fmt::rt::Argument<'_>;
+    let _1683: &f64;
+    let _1684: f64;
+    let _1685: ();
+    let mut _1686: std::fmt::Arguments<'_>;
+    let mut _1687: &[&str];
+    let _1688: &[&str; 2];
+    let _1689: [&str; 2];
+    let mut _1690: &[core::fmt::rt::Argument<'_>];
+    let _1691: &[core::fmt::rt::Argument<'_>; 1];
+    let _1692: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1693: core::fmt::rt::Argument<'_>;
+    let _1694: &isize;
+    let _1695: isize;
+    let _1696: ();
+    let mut _1697: std::fmt::Arguments<'_>;
+    let mut _1698: &[&str];
+    let _1699: &[&str; 2];
+    let _1700: [&str; 2];
+    let mut _1701: &[core::fmt::rt::Argument<'_>];
+    let _1702: &[core::fmt::rt::Argument<'_>; 1];
+    let _1703: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1704: core::fmt::rt::Argument<'_>;
+    let _1705: &usize;
+    let _1706: usize;
+    let _1707: ();
+    let mut _1708: std::fmt::Arguments<'_>;
+    let mut _1709: &[&str];
+    let _1710: &[&str; 2];
+    let _1711: [&str; 2];
+    let mut _1712: &[core::fmt::rt::Argument<'_>];
+    let _1713: &[core::fmt::rt::Argument<'_>; 1];
+    let _1714: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1715: core::fmt::rt::Argument<'_>;
+    let _1716: &i8;
+    let _1717: i8;
+    let _1718: ();
+    let mut _1719: std::fmt::Arguments<'_>;
+    let mut _1720: &[&str];
+    let _1721: &[&str; 2];
+    let _1722: [&str; 2];
+    let mut _1723: &[core::fmt::rt::Argument<'_>];
+    let _1724: &[core::fmt::rt::Argument<'_>; 1];
+    let _1725: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1726: core::fmt::rt::Argument<'_>;
+    let _1727: &i16;
+    let _1728: i16;
+    let _1729: ();
+    let mut _1730: std::fmt::Arguments<'_>;
+    let mut _1731: &[&str];
+    let _1732: &[&str; 2];
+    let _1733: [&str; 2];
+    let mut _1734: &[core::fmt::rt::Argument<'_>];
+    let _1735: &[core::fmt::rt::Argument<'_>; 1];
+    let _1736: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1737: core::fmt::rt::Argument<'_>;
+    let _1738: &i32;
+    let _1739: i32;
+    let _1740: ();
+    let mut _1741: std::fmt::Arguments<'_>;
+    let mut _1742: &[&str];
+    let _1743: &[&str; 2];
+    let _1744: [&str; 2];
+    let mut _1745: &[core::fmt::rt::Argument<'_>];
+    let _1746: &[core::fmt::rt::Argument<'_>; 1];
+    let _1747: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1748: core::fmt::rt::Argument<'_>;
+    let _1749: &i64;
+    let _1750: i64;
+    let _1751: ();
+    let mut _1752: std::fmt::Arguments<'_>;
+    let mut _1753: &[&str];
+    let _1754: &[&str; 2];
+    let _1755: [&str; 2];
+    let mut _1756: &[core::fmt::rt::Argument<'_>];
+    let _1757: &[core::fmt::rt::Argument<'_>; 1];
+    let _1758: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1759: core::fmt::rt::Argument<'_>;
+    let _1760: &u8;
+    let _1761: u8;
+    let _1762: ();
+    let mut _1763: std::fmt::Arguments<'_>;
+    let mut _1764: &[&str];
+    let _1765: &[&str; 2];
+    let _1766: [&str; 2];
+    let mut _1767: &[core::fmt::rt::Argument<'_>];
+    let _1768: &[core::fmt::rt::Argument<'_>; 1];
+    let _1769: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1770: core::fmt::rt::Argument<'_>;
+    let _1771: &u16;
+    let _1772: u16;
+    let _1773: ();
+    let mut _1774: std::fmt::Arguments<'_>;
+    let mut _1775: &[&str];
+    let _1776: &[&str; 2];
+    let _1777: [&str; 2];
+    let mut _1778: &[core::fmt::rt::Argument<'_>];
+    let _1779: &[core::fmt::rt::Argument<'_>; 1];
+    let _1780: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1781: core::fmt::rt::Argument<'_>;
+    let _1782: &u32;
+    let _1783: u32;
+    let _1784: ();
+    let mut _1785: std::fmt::Arguments<'_>;
+    let mut _1786: &[&str];
+    let _1787: &[&str; 2];
+    let _1788: [&str; 2];
+    let mut _1789: &[core::fmt::rt::Argument<'_>];
+    let _1790: &[core::fmt::rt::Argument<'_>; 1];
+    let _1791: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1792: core::fmt::rt::Argument<'_>;
+    let _1793: &u64;
+    let _1794: u64;
+    let _1795: ();
+    let mut _1796: std::fmt::Arguments<'_>;
+    let mut _1797: &[&str];
+    let _1798: &[&str; 2];
+    let _1799: [&str; 2];
+    let mut _1800: &[core::fmt::rt::Argument<'_>];
+    let _1801: &[core::fmt::rt::Argument<'_>; 1];
+    let _1802: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1803: core::fmt::rt::Argument<'_>;
+    let _1804: &isize;
+    let _1805: isize;
+    let _1806: ();
+    let mut _1807: std::fmt::Arguments<'_>;
+    let mut _1808: &[&str];
+    let _1809: &[&str; 2];
+    let _1810: [&str; 2];
+    let mut _1811: &[core::fmt::rt::Argument<'_>];
+    let _1812: &[core::fmt::rt::Argument<'_>; 1];
+    let _1813: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1814: core::fmt::rt::Argument<'_>;
+    let _1815: &usize;
+    let _1816: usize;
+    let _1817: ();
+    let mut _1818: std::fmt::Arguments<'_>;
+    let mut _1819: &[&str];
+    let _1820: &[&str; 2];
+    let _1821: [&str; 2];
+    let mut _1822: &[core::fmt::rt::Argument<'_>];
+    let _1823: &[core::fmt::rt::Argument<'_>; 1];
+    let _1824: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1825: core::fmt::rt::Argument<'_>;
+    let _1826: &i8;
+    let _1827: i8;
+    let _1828: ();
+    let mut _1829: std::fmt::Arguments<'_>;
+    let mut _1830: &[&str];
+    let _1831: &[&str; 2];
+    let _1832: [&str; 2];
+    let mut _1833: &[core::fmt::rt::Argument<'_>];
+    let _1834: &[core::fmt::rt::Argument<'_>; 1];
+    let _1835: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1836: core::fmt::rt::Argument<'_>;
+    let _1837: &i16;
+    let _1838: i16;
+    let _1839: ();
+    let mut _1840: std::fmt::Arguments<'_>;
+    let mut _1841: &[&str];
+    let _1842: &[&str; 2];
+    let _1843: [&str; 2];
+    let mut _1844: &[core::fmt::rt::Argument<'_>];
+    let _1845: &[core::fmt::rt::Argument<'_>; 1];
+    let _1846: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1847: core::fmt::rt::Argument<'_>;
+    let _1848: &i32;
+    let _1849: i32;
+    let _1850: ();
+    let mut _1851: std::fmt::Arguments<'_>;
+    let mut _1852: &[&str];
+    let _1853: &[&str; 2];
+    let _1854: [&str; 2];
+    let mut _1855: &[core::fmt::rt::Argument<'_>];
+    let _1856: &[core::fmt::rt::Argument<'_>; 1];
+    let _1857: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1858: core::fmt::rt::Argument<'_>;
+    let _1859: &i64;
+    let _1860: i64;
+    let _1861: ();
+    let mut _1862: std::fmt::Arguments<'_>;
+    let mut _1863: &[&str];
+    let _1864: &[&str; 2];
+    let _1865: [&str; 2];
+    let mut _1866: &[core::fmt::rt::Argument<'_>];
+    let _1867: &[core::fmt::rt::Argument<'_>; 1];
+    let _1868: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1869: core::fmt::rt::Argument<'_>;
+    let _1870: &u8;
+    let _1871: u8;
+    let _1872: ();
+    let mut _1873: std::fmt::Arguments<'_>;
+    let mut _1874: &[&str];
+    let _1875: &[&str; 2];
+    let _1876: [&str; 2];
+    let mut _1877: &[core::fmt::rt::Argument<'_>];
+    let _1878: &[core::fmt::rt::Argument<'_>; 1];
+    let _1879: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1880: core::fmt::rt::Argument<'_>;
+    let _1881: &u16;
+    let _1882: u16;
+    let _1883: ();
+    let mut _1884: std::fmt::Arguments<'_>;
+    let mut _1885: &[&str];
+    let _1886: &[&str; 2];
+    let _1887: [&str; 2];
+    let mut _1888: &[core::fmt::rt::Argument<'_>];
+    let _1889: &[core::fmt::rt::Argument<'_>; 1];
+    let _1890: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1891: core::fmt::rt::Argument<'_>;
+    let _1892: &u32;
+    let _1893: u32;
+    let _1894: ();
+    let mut _1895: std::fmt::Arguments<'_>;
+    let mut _1896: &[&str];
+    let _1897: &[&str; 2];
+    let _1898: [&str; 2];
+    let mut _1899: &[core::fmt::rt::Argument<'_>];
+    let _1900: &[core::fmt::rt::Argument<'_>; 1];
+    let _1901: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1902: core::fmt::rt::Argument<'_>;
+    let _1903: &u64;
+    let _1904: u64;
+    let _1905: ();
+    let mut _1906: std::fmt::Arguments<'_>;
+    let mut _1907: &[&str];
+    let _1908: &[&str; 2];
+    let _1909: [&str; 2];
+    let mut _1910: &[core::fmt::rt::Argument<'_>];
+    let _1911: &[core::fmt::rt::Argument<'_>; 1];
+    let _1912: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1913: core::fmt::rt::Argument<'_>;
+    let _1914: &f32;
+    let _1915: f32;
+    let _1916: ();
+    let mut _1917: std::fmt::Arguments<'_>;
+    let mut _1918: &[&str];
+    let _1919: &[&str; 2];
+    let _1920: [&str; 2];
+    let mut _1921: &[core::fmt::rt::Argument<'_>];
+    let _1922: &[core::fmt::rt::Argument<'_>; 1];
+    let _1923: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1924: core::fmt::rt::Argument<'_>;
+    let _1925: &f64;
+    let _1926: f64;
+    let _1927: ();
+    let mut _1928: std::fmt::Arguments<'_>;
+    let mut _1929: &[&str];
+    let _1930: &[&str; 2];
+    let _1931: [&str; 2];
+    let mut _1932: &[core::fmt::rt::Argument<'_>];
+    let _1933: &[core::fmt::rt::Argument<'_>; 1];
+    let _1934: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1935: core::fmt::rt::Argument<'_>;
+    let _1936: &isize;
+    let _1937: isize;
+    let _1938: ();
+    let mut _1939: std::fmt::Arguments<'_>;
+    let mut _1940: &[&str];
+    let _1941: &[&str; 2];
+    let _1942: [&str; 2];
+    let mut _1943: &[core::fmt::rt::Argument<'_>];
+    let _1944: &[core::fmt::rt::Argument<'_>; 1];
+    let _1945: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1946: core::fmt::rt::Argument<'_>;
+    let _1947: &usize;
+    let _1948: usize;
+    let _1949: ();
+    let mut _1950: std::fmt::Arguments<'_>;
+    let mut _1951: &[&str];
+    let _1952: &[&str; 2];
+    let _1953: [&str; 2];
+    let mut _1954: &[core::fmt::rt::Argument<'_>];
+    let _1955: &[core::fmt::rt::Argument<'_>; 1];
+    let _1956: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1957: core::fmt::rt::Argument<'_>;
+    let _1958: &i8;
+    let _1959: i8;
+    let _1960: ();
+    let mut _1961: std::fmt::Arguments<'_>;
+    let mut _1962: &[&str];
+    let _1963: &[&str; 2];
+    let _1964: [&str; 2];
+    let mut _1965: &[core::fmt::rt::Argument<'_>];
+    let _1966: &[core::fmt::rt::Argument<'_>; 1];
+    let _1967: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1968: core::fmt::rt::Argument<'_>;
+    let _1969: &i16;
+    let _1970: i16;
+    let _1971: ();
+    let mut _1972: std::fmt::Arguments<'_>;
+    let mut _1973: &[&str];
+    let _1974: &[&str; 2];
+    let _1975: [&str; 2];
+    let mut _1976: &[core::fmt::rt::Argument<'_>];
+    let _1977: &[core::fmt::rt::Argument<'_>; 1];
+    let _1978: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1979: core::fmt::rt::Argument<'_>;
+    let _1980: &i32;
+    let _1981: i32;
+    let _1982: ();
+    let mut _1983: std::fmt::Arguments<'_>;
+    let mut _1984: &[&str];
+    let _1985: &[&str; 2];
+    let _1986: [&str; 2];
+    let mut _1987: &[core::fmt::rt::Argument<'_>];
+    let _1988: &[core::fmt::rt::Argument<'_>; 1];
+    let _1989: [core::fmt::rt::Argument<'_>; 1];
+    let mut _1990: core::fmt::rt::Argument<'_>;
+    let _1991: &i64;
+    let _1992: i64;
+    let _1993: ();
+    let mut _1994: std::fmt::Arguments<'_>;
+    let mut _1995: &[&str];
+    let _1996: &[&str; 2];
+    let _1997: [&str; 2];
+    let mut _1998: &[core::fmt::rt::Argument<'_>];
+    let _1999: &[core::fmt::rt::Argument<'_>; 1];
+    let _2000: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2001: core::fmt::rt::Argument<'_>;
+    let _2002: &u8;
+    let _2003: u8;
+    let _2004: ();
+    let mut _2005: std::fmt::Arguments<'_>;
+    let mut _2006: &[&str];
+    let _2007: &[&str; 2];
+    let _2008: [&str; 2];
+    let mut _2009: &[core::fmt::rt::Argument<'_>];
+    let _2010: &[core::fmt::rt::Argument<'_>; 1];
+    let _2011: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2012: core::fmt::rt::Argument<'_>;
+    let _2013: &u16;
+    let _2014: u16;
+    let _2015: ();
+    let mut _2016: std::fmt::Arguments<'_>;
+    let mut _2017: &[&str];
+    let _2018: &[&str; 2];
+    let _2019: [&str; 2];
+    let mut _2020: &[core::fmt::rt::Argument<'_>];
+    let _2021: &[core::fmt::rt::Argument<'_>; 1];
+    let _2022: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2023: core::fmt::rt::Argument<'_>;
+    let _2024: &u32;
+    let _2025: u32;
+    let _2026: ();
+    let mut _2027: std::fmt::Arguments<'_>;
+    let mut _2028: &[&str];
+    let _2029: &[&str; 2];
+    let _2030: [&str; 2];
+    let mut _2031: &[core::fmt::rt::Argument<'_>];
+    let _2032: &[core::fmt::rt::Argument<'_>; 1];
+    let _2033: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2034: core::fmt::rt::Argument<'_>;
+    let _2035: &u64;
+    let _2036: u64;
+    let _2037: ();
+    let mut _2038: std::fmt::Arguments<'_>;
+    let mut _2039: &[&str];
+    let _2040: &[&str; 2];
+    let _2041: [&str; 2];
+    let mut _2042: &[core::fmt::rt::Argument<'_>];
+    let _2043: &[core::fmt::rt::Argument<'_>; 1];
+    let _2044: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2045: core::fmt::rt::Argument<'_>;
+    let _2046: &f32;
+    let _2047: f32;
+    let _2048: ();
+    let mut _2049: std::fmt::Arguments<'_>;
+    let mut _2050: &[&str];
+    let _2051: &[&str; 2];
+    let _2052: [&str; 2];
+    let mut _2053: &[core::fmt::rt::Argument<'_>];
+    let _2054: &[core::fmt::rt::Argument<'_>; 1];
+    let _2055: [core::fmt::rt::Argument<'_>; 1];
+    let mut _2056: core::fmt::rt::Argument<'_>;
+    let _2057: &f64;
+    let _2058: f64;
+    scope 1 {
+        debug f => _1;
+    }
+
+    bb0: {
+        _1 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _12 = _1 as isize (PointerExposeAddress);
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _17 = [const "", const "\n"];
+        _16 = &_17;
+        _15 = _16 as &[&str] (Pointer(Unsize));
+        _23 = _1 as usize (PointerExposeAddress);
+        _22 = &_23;
+        _21 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_22) -> bb4;
+    }
+
+    bb4: {
+        _20 = [move _21];
+        _19 = &_20;
+        _18 = _19 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _14 = Arguments::<'_>::new_v1(move _15, move _18) -> bb5;
+    }
+
+    bb5: {
+        _13 = _print(move _14) -> bb6;
+    }
+
+    bb6: {
+        _28 = [const "", const "\n"];
+        _27 = &_28;
+        _26 = _27 as &[&str] (Pointer(Unsize));
+        _34 = _1 as i8 (PointerExposeAddress);
+        _33 = &_34;
+        _32 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_33) -> bb7;
+    }
+
+    bb7: {
+        _31 = [move _32];
+        _30 = &_31;
+        _29 = _30 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _25 = Arguments::<'_>::new_v1(move _26, move _29) -> bb8;
+    }
+
+    bb8: {
+        _24 = _print(move _25) -> bb9;
+    }
+
+    bb9: {
+        _39 = [const "", const "\n"];
+        _38 = &_39;
+        _37 = _38 as &[&str] (Pointer(Unsize));
+        _45 = _1 as i16 (PointerExposeAddress);
+        _44 = &_45;
+        _43 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_44) -> bb10;
+    }
+
+    bb10: {
+        _42 = [move _43];
+        _41 = &_42;
+        _40 = _41 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _36 = Arguments::<'_>::new_v1(move _37, move _40) -> bb11;
+    }
+
+    bb11: {
+        _35 = _print(move _36) -> bb12;
+    }
+
+    bb12: {
+        _50 = [const "", const "\n"];
+        _49 = &_50;
+        _48 = _49 as &[&str] (Pointer(Unsize));
+        _56 = _1 as i32 (PointerExposeAddress);
+        _55 = &_56;
+        _54 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_55) -> bb13;
+    }
+
+    bb13: {
+        _53 = [move _54];
+        _52 = &_53;
+        _51 = _52 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _47 = Arguments::<'_>::new_v1(move _48, move _51) -> bb14;
+    }
+
+    bb14: {
+        _46 = _print(move _47) -> bb15;
+    }
+
+    bb15: {
+        _61 = [const "", const "\n"];
+        _60 = &_61;
+        _59 = _60 as &[&str] (Pointer(Unsize));
+        _67 = _1 as i64 (PointerExposeAddress);
+        _66 = &_67;
+        _65 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_66) -> bb16;
+    }
+
+    bb16: {
+        _64 = [move _65];
+        _63 = &_64;
+        _62 = _63 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _58 = Arguments::<'_>::new_v1(move _59, move _62) -> bb17;
+    }
+
+    bb17: {
+        _57 = _print(move _58) -> bb18;
+    }
+
+    bb18: {
+        _72 = [const "", const "\n"];
+        _71 = &_72;
+        _70 = _71 as &[&str] (Pointer(Unsize));
+        _78 = _1 as u8 (PointerExposeAddress);
+        _77 = &_78;
+        _76 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_77) -> bb19;
+    }
+
+    bb19: {
+        _75 = [move _76];
+        _74 = &_75;
+        _73 = _74 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _69 = Arguments::<'_>::new_v1(move _70, move _73) -> bb20;
+    }
+
+    bb20: {
+        _68 = _print(move _69) -> bb21;
+    }
+
+    bb21: {
+        _83 = [const "", const "\n"];
+        _82 = &_83;
+        _81 = _82 as &[&str] (Pointer(Unsize));
+        _89 = _1 as u16 (PointerExposeAddress);
+        _88 = &_89;
+        _87 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_88) -> bb22;
+    }
+
+    bb22: {
+        _86 = [move _87];
+        _85 = &_86;
+        _84 = _85 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _80 = Arguments::<'_>::new_v1(move _81, move _84) -> bb23;
+    }
+
+    bb23: {
+        _79 = _print(move _80) -> bb24;
+    }
+
+    bb24: {
+        _94 = [const "", const "\n"];
+        _93 = &_94;
+        _92 = _93 as &[&str] (Pointer(Unsize));
+        _100 = _1 as u32 (PointerExposeAddress);
+        _99 = &_100;
+        _98 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_99) -> bb25;
+    }
+
+    bb25: {
+        _97 = [move _98];
+        _96 = &_97;
+        _95 = _96 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _91 = Arguments::<'_>::new_v1(move _92, move _95) -> bb26;
+    }
+
+    bb26: {
+        _90 = _print(move _91) -> bb27;
+    }
+
+    bb27: {
+        _105 = [const "", const "\n"];
+        _104 = &_105;
+        _103 = _104 as &[&str] (Pointer(Unsize));
+        _111 = _1 as u64 (PointerExposeAddress);
+        _110 = &_111;
+        _109 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_110) -> bb28;
+    }
+
+    bb28: {
+        _108 = [move _109];
+        _107 = &_108;
+        _106 = _107 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _102 = Arguments::<'_>::new_v1(move _103, move _106) -> bb29;
+    }
+
+    bb29: {
+        _101 = _print(move _102) -> bb30;
+    }
+
+    bb30: {
+        _116 = [const "", const "\n"];
+        _115 = &_116;
+        _114 = _115 as &[&str] (Pointer(Unsize));
+        _122 = const 1_isize;
+        _121 = &_122;
+        _120 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_121) -> bb31;
+    }
+
+    bb31: {
+        _119 = [move _120];
+        _118 = &_119;
+        _117 = _118 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _113 = Arguments::<'_>::new_v1(move _114, move _117) -> bb32;
+    }
+
+    bb32: {
+        _112 = _print(move _113) -> bb33;
+    }
+
+    bb33: {
+        _127 = [const "", const "\n"];
+        _126 = &_127;
+        _125 = _126 as &[&str] (Pointer(Unsize));
+        _133 = const 1_usize;
+        _132 = &_133;
+        _131 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_132) -> bb34;
+    }
+
+    bb34: {
+        _130 = [move _131];
+        _129 = &_130;
+        _128 = _129 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _124 = Arguments::<'_>::new_v1(move _125, move _128) -> bb35;
+    }
+
+    bb35: {
+        _123 = _print(move _124) -> bb36;
+    }
+
+    bb36: {
+        _138 = [const "", const "\n"];
+        _137 = &_138;
+        _136 = _137 as &[&str] (Pointer(Unsize));
+        _144 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _143 = &_144;
+        _142 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_143) -> bb37;
+    }
+
+    bb37: {
+        _141 = [move _142];
+        _140 = &_141;
+        _139 = _140 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _135 = Arguments::<'_>::new_v1(move _136, move _139) -> bb38;
+    }
+
+    bb38: {
+        _134 = _print(move _135) -> bb39;
+    }
+
+    bb39: {
+        _149 = [const "", const "\n"];
+        _148 = &_149;
+        _147 = _148 as &[&str] (Pointer(Unsize));
+        _155 = const 1_i8;
+        _154 = &_155;
+        _153 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_154) -> bb40;
+    }
+
+    bb40: {
+        _152 = [move _153];
+        _151 = &_152;
+        _150 = _151 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _146 = Arguments::<'_>::new_v1(move _147, move _150) -> bb41;
+    }
+
+    bb41: {
+        _145 = _print(move _146) -> bb42;
+    }
+
+    bb42: {
+        _160 = [const "", const "\n"];
+        _159 = &_160;
+        _158 = _159 as &[&str] (Pointer(Unsize));
+        _166 = const 1_i16;
+        _165 = &_166;
+        _164 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_165) -> bb43;
+    }
+
+    bb43: {
+        _163 = [move _164];
+        _162 = &_163;
+        _161 = _162 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _157 = Arguments::<'_>::new_v1(move _158, move _161) -> bb44;
+    }
+
+    bb44: {
+        _156 = _print(move _157) -> bb45;
+    }
+
+    bb45: {
+        _171 = [const "", const "\n"];
+        _170 = &_171;
+        _169 = _170 as &[&str] (Pointer(Unsize));
+        _177 = const 1_i32;
+        _176 = &_177;
+        _175 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_176) -> bb46;
+    }
+
+    bb46: {
+        _174 = [move _175];
+        _173 = &_174;
+        _172 = _173 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _168 = Arguments::<'_>::new_v1(move _169, move _172) -> bb47;
+    }
+
+    bb47: {
+        _167 = _print(move _168) -> bb48;
+    }
+
+    bb48: {
+        _182 = [const "", const "\n"];
+        _181 = &_182;
+        _180 = _181 as &[&str] (Pointer(Unsize));
+        _188 = const 1_i64;
+        _187 = &_188;
+        _186 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_187) -> bb49;
+    }
+
+    bb49: {
+        _185 = [move _186];
+        _184 = &_185;
+        _183 = _184 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _179 = Arguments::<'_>::new_v1(move _180, move _183) -> bb50;
+    }
+
+    bb50: {
+        _178 = _print(move _179) -> bb51;
+    }
+
+    bb51: {
+        _193 = [const "", const "\n"];
+        _192 = &_193;
+        _191 = _192 as &[&str] (Pointer(Unsize));
+        _199 = const 1_u8;
+        _198 = &_199;
+        _197 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_198) -> bb52;
+    }
+
+    bb52: {
+        _196 = [move _197];
+        _195 = &_196;
+        _194 = _195 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _190 = Arguments::<'_>::new_v1(move _191, move _194) -> bb53;
+    }
+
+    bb53: {
+        _189 = _print(move _190) -> bb54;
+    }
+
+    bb54: {
+        _204 = [const "", const "\n"];
+        _203 = &_204;
+        _202 = _203 as &[&str] (Pointer(Unsize));
+        _210 = const 1_u16;
+        _209 = &_210;
+        _208 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_209) -> bb55;
+    }
+
+    bb55: {
+        _207 = [move _208];
+        _206 = &_207;
+        _205 = _206 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _201 = Arguments::<'_>::new_v1(move _202, move _205) -> bb56;
+    }
+
+    bb56: {
+        _200 = _print(move _201) -> bb57;
+    }
+
+    bb57: {
+        _215 = [const "", const "\n"];
+        _214 = &_215;
+        _213 = _214 as &[&str] (Pointer(Unsize));
+        _221 = const 1_u32;
+        _220 = &_221;
+        _219 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_220) -> bb58;
+    }
+
+    bb58: {
+        _218 = [move _219];
+        _217 = &_218;
+        _216 = _217 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _212 = Arguments::<'_>::new_v1(move _213, move _216) -> bb59;
+    }
+
+    bb59: {
+        _211 = _print(move _212) -> bb60;
+    }
+
+    bb60: {
+        _226 = [const "", const "\n"];
+        _225 = &_226;
+        _224 = _225 as &[&str] (Pointer(Unsize));
+        _232 = const 1_u64;
+        _231 = &_232;
+        _230 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_231) -> bb61;
+    }
+
+    bb61: {
+        _229 = [move _230];
+        _228 = &_229;
+        _227 = _228 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _223 = Arguments::<'_>::new_v1(move _224, move _227) -> bb62;
+    }
+
+    bb62: {
+        _222 = _print(move _223) -> bb63;
+    }
+
+    bb63: {
+        _237 = [const "", const "\n"];
+        _236 = &_237;
+        _235 = _236 as &[&str] (Pointer(Unsize));
+        _243 = const 1_i32 as f32 (IntToFloat);
+        _242 = &_243;
+        _241 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_242) -> bb64;
+    }
+
+    bb64: {
+        _240 = [move _241];
+        _239 = &_240;
+        _238 = _239 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _234 = Arguments::<'_>::new_v1(move _235, move _238) -> bb65;
+    }
+
+    bb65: {
+        _233 = _print(move _234) -> bb66;
+    }
+
+    bb66: {
+        _248 = [const "", const "\n"];
+        _247 = &_248;
+        _246 = _247 as &[&str] (Pointer(Unsize));
+        _254 = const 1_i32 as f64 (IntToFloat);
+        _253 = &_254;
+        _252 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_253) -> bb67;
+    }
+
+    bb67: {
+        _251 = [move _252];
+        _250 = &_251;
+        _249 = _250 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _245 = Arguments::<'_>::new_v1(move _246, move _249) -> bb68;
+    }
+
+    bb68: {
+        _244 = _print(move _245) -> bb69;
+    }
+
+    bb69: {
+        _259 = [const "", const "\n"];
+        _258 = &_259;
+        _257 = _258 as &[&str] (Pointer(Unsize));
+        _265 = const 1_usize as isize (IntToInt);
+        _264 = &_265;
+        _263 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_264) -> bb70;
+    }
+
+    bb70: {
+        _262 = [move _263];
+        _261 = &_262;
+        _260 = _261 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _256 = Arguments::<'_>::new_v1(move _257, move _260) -> bb71;
+    }
+
+    bb71: {
+        _255 = _print(move _256) -> bb72;
+    }
+
+    bb72: {
+        _270 = [const "", const "\n"];
+        _269 = &_270;
+        _268 = _269 as &[&str] (Pointer(Unsize));
+        _276 = const 1_usize;
+        _275 = &_276;
+        _274 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_275) -> bb73;
+    }
+
+    bb73: {
+        _273 = [move _274];
+        _272 = &_273;
+        _271 = _272 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _267 = Arguments::<'_>::new_v1(move _268, move _271) -> bb74;
+    }
+
+    bb74: {
+        _266 = _print(move _267) -> bb75;
+    }
+
+    bb75: {
+        _281 = [const "", const "\n"];
+        _280 = &_281;
+        _279 = _280 as &[&str] (Pointer(Unsize));
+        _287 = const 1_usize as *const std::string::String (PointerFromExposedAddress);
+        _286 = &_287;
+        _285 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_286) -> bb76;
+    }
+
+    bb76: {
+        _284 = [move _285];
+        _283 = &_284;
+        _282 = _283 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _278 = Arguments::<'_>::new_v1(move _279, move _282) -> bb77;
+    }
+
+    bb77: {
+        _277 = _print(move _278) -> bb78;
+    }
+
+    bb78: {
+        _292 = [const "", const "\n"];
+        _291 = &_292;
+        _290 = _291 as &[&str] (Pointer(Unsize));
+        _298 = const 1_usize as i8 (IntToInt);
+        _297 = &_298;
+        _296 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_297) -> bb79;
+    }
+
+    bb79: {
+        _295 = [move _296];
+        _294 = &_295;
+        _293 = _294 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _289 = Arguments::<'_>::new_v1(move _290, move _293) -> bb80;
+    }
+
+    bb80: {
+        _288 = _print(move _289) -> bb81;
+    }
+
+    bb81: {
+        _303 = [const "", const "\n"];
+        _302 = &_303;
+        _301 = _302 as &[&str] (Pointer(Unsize));
+        _309 = const 1_usize as i16 (IntToInt);
+        _308 = &_309;
+        _307 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_308) -> bb82;
+    }
+
+    bb82: {
+        _306 = [move _307];
+        _305 = &_306;
+        _304 = _305 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _300 = Arguments::<'_>::new_v1(move _301, move _304) -> bb83;
+    }
+
+    bb83: {
+        _299 = _print(move _300) -> bb84;
+    }
+
+    bb84: {
+        _314 = [const "", const "\n"];
+        _313 = &_314;
+        _312 = _313 as &[&str] (Pointer(Unsize));
+        _320 = const 1_usize as i32 (IntToInt);
+        _319 = &_320;
+        _318 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_319) -> bb85;
+    }
+
+    bb85: {
+        _317 = [move _318];
+        _316 = &_317;
+        _315 = _316 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _311 = Arguments::<'_>::new_v1(move _312, move _315) -> bb86;
+    }
+
+    bb86: {
+        _310 = _print(move _311) -> bb87;
+    }
+
+    bb87: {
+        _325 = [const "", const "\n"];
+        _324 = &_325;
+        _323 = _324 as &[&str] (Pointer(Unsize));
+        _331 = const 1_usize as i64 (IntToInt);
+        _330 = &_331;
+        _329 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_330) -> bb88;
+    }
+
+    bb88: {
+        _328 = [move _329];
+        _327 = &_328;
+        _326 = _327 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _322 = Arguments::<'_>::new_v1(move _323, move _326) -> bb89;
+    }
+
+    bb89: {
+        _321 = _print(move _322) -> bb90;
+    }
+
+    bb90: {
+        _336 = [const "", const "\n"];
+        _335 = &_336;
+        _334 = _335 as &[&str] (Pointer(Unsize));
+        _342 = const 1_usize as u8 (IntToInt);
+        _341 = &_342;
+        _340 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_341) -> bb91;
+    }
+
+    bb91: {
+        _339 = [move _340];
+        _338 = &_339;
+        _337 = _338 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _333 = Arguments::<'_>::new_v1(move _334, move _337) -> bb92;
+    }
+
+    bb92: {
+        _332 = _print(move _333) -> bb93;
+    }
+
+    bb93: {
+        _347 = [const "", const "\n"];
+        _346 = &_347;
+        _345 = _346 as &[&str] (Pointer(Unsize));
+        _353 = const 1_usize as u16 (IntToInt);
+        _352 = &_353;
+        _351 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_352) -> bb94;
+    }
+
+    bb94: {
+        _350 = [move _351];
+        _349 = &_350;
+        _348 = _349 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _344 = Arguments::<'_>::new_v1(move _345, move _348) -> bb95;
+    }
+
+    bb95: {
+        _343 = _print(move _344) -> bb96;
+    }
+
+    bb96: {
+        _358 = [const "", const "\n"];
+        _357 = &_358;
+        _356 = _357 as &[&str] (Pointer(Unsize));
+        _364 = const 1_usize as u32 (IntToInt);
+        _363 = &_364;
+        _362 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_363) -> bb97;
+    }
+
+    bb97: {
+        _361 = [move _362];
+        _360 = &_361;
+        _359 = _360 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _355 = Arguments::<'_>::new_v1(move _356, move _359) -> bb98;
+    }
+
+    bb98: {
+        _354 = _print(move _355) -> bb99;
+    }
+
+    bb99: {
+        _369 = [const "", const "\n"];
+        _368 = &_369;
+        _367 = _368 as &[&str] (Pointer(Unsize));
+        _375 = const 1_usize as u64 (IntToInt);
+        _374 = &_375;
+        _373 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_374) -> bb100;
+    }
+
+    bb100: {
+        _372 = [move _373];
+        _371 = &_372;
+        _370 = _371 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _366 = Arguments::<'_>::new_v1(move _367, move _370) -> bb101;
+    }
+
+    bb101: {
+        _365 = _print(move _366) -> bb102;
+    }
+
+    bb102: {
+        _380 = [const "", const "\n"];
+        _379 = &_380;
+        _378 = _379 as &[&str] (Pointer(Unsize));
+        _386 = const 1_usize as f32 (IntToFloat);
+        _385 = &_386;
+        _384 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_385) -> bb103;
+    }
+
+    bb103: {
+        _383 = [move _384];
+        _382 = &_383;
+        _381 = _382 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _377 = Arguments::<'_>::new_v1(move _378, move _381) -> bb104;
+    }
+
+    bb104: {
+        _376 = _print(move _377) -> bb105;
+    }
+
+    bb105: {
+        _391 = [const "", const "\n"];
+        _390 = &_391;
+        _389 = _390 as &[&str] (Pointer(Unsize));
+        _397 = const 1_usize as f64 (IntToFloat);
+        _396 = &_397;
+        _395 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_396) -> bb106;
+    }
+
+    bb106: {
+        _394 = [move _395];
+        _393 = &_394;
+        _392 = _393 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _388 = Arguments::<'_>::new_v1(move _389, move _392) -> bb107;
+    }
+
+    bb107: {
+        _387 = _print(move _388) -> bb108;
+    }
+
+    bb108: {
+        _402 = [const "", const "\n"];
+        _401 = &_402;
+        _400 = _401 as &[&str] (Pointer(Unsize));
+        _408 = const 1_i8 as isize (IntToInt);
+        _407 = &_408;
+        _406 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_407) -> bb109;
+    }
+
+    bb109: {
+        _405 = [move _406];
+        _404 = &_405;
+        _403 = _404 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _399 = Arguments::<'_>::new_v1(move _400, move _403) -> bb110;
+    }
+
+    bb110: {
+        _398 = _print(move _399) -> bb111;
+    }
+
+    bb111: {
+        _413 = [const "", const "\n"];
+        _412 = &_413;
+        _411 = _412 as &[&str] (Pointer(Unsize));
+        _419 = const 1_i8 as usize (IntToInt);
+        _418 = &_419;
+        _417 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_418) -> bb112;
+    }
+
+    bb112: {
+        _416 = [move _417];
+        _415 = &_416;
+        _414 = _415 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _410 = Arguments::<'_>::new_v1(move _411, move _414) -> bb113;
+    }
+
+    bb113: {
+        _409 = _print(move _410) -> bb114;
+    }
+
+    bb114: {
+        _424 = [const "", const "\n"];
+        _423 = &_424;
+        _422 = _423 as &[&str] (Pointer(Unsize));
+        _430 = const 1_i8 as *const std::string::String (PointerFromExposedAddress);
+        _429 = &_430;
+        _428 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_429) -> bb115;
+    }
+
+    bb115: {
+        _427 = [move _428];
+        _426 = &_427;
+        _425 = _426 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _421 = Arguments::<'_>::new_v1(move _422, move _425) -> bb116;
+    }
+
+    bb116: {
+        _420 = _print(move _421) -> bb117;
+    }
+
+    bb117: {
+        _435 = [const "", const "\n"];
+        _434 = &_435;
+        _433 = _434 as &[&str] (Pointer(Unsize));
+        _441 = const 1_i8;
+        _440 = &_441;
+        _439 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_440) -> bb118;
+    }
+
+    bb118: {
+        _438 = [move _439];
+        _437 = &_438;
+        _436 = _437 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _432 = Arguments::<'_>::new_v1(move _433, move _436) -> bb119;
+    }
+
+    bb119: {
+        _431 = _print(move _432) -> bb120;
+    }
+
+    bb120: {
+        _446 = [const "", const "\n"];
+        _445 = &_446;
+        _444 = _445 as &[&str] (Pointer(Unsize));
+        _452 = const 1_i8 as i16 (IntToInt);
+        _451 = &_452;
+        _450 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_451) -> bb121;
+    }
+
+    bb121: {
+        _449 = [move _450];
+        _448 = &_449;
+        _447 = _448 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _443 = Arguments::<'_>::new_v1(move _444, move _447) -> bb122;
+    }
+
+    bb122: {
+        _442 = _print(move _443) -> bb123;
+    }
+
+    bb123: {
+        _457 = [const "", const "\n"];
+        _456 = &_457;
+        _455 = _456 as &[&str] (Pointer(Unsize));
+        _463 = const 1_i8 as i32 (IntToInt);
+        _462 = &_463;
+        _461 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_462) -> bb124;
+    }
+
+    bb124: {
+        _460 = [move _461];
+        _459 = &_460;
+        _458 = _459 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _454 = Arguments::<'_>::new_v1(move _455, move _458) -> bb125;
+    }
+
+    bb125: {
+        _453 = _print(move _454) -> bb126;
+    }
+
+    bb126: {
+        _468 = [const "", const "\n"];
+        _467 = &_468;
+        _466 = _467 as &[&str] (Pointer(Unsize));
+        _474 = const 1_i8 as i64 (IntToInt);
+        _473 = &_474;
+        _472 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_473) -> bb127;
+    }
+
+    bb127: {
+        _471 = [move _472];
+        _470 = &_471;
+        _469 = _470 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _465 = Arguments::<'_>::new_v1(move _466, move _469) -> bb128;
+    }
+
+    bb128: {
+        _464 = _print(move _465) -> bb129;
+    }
+
+    bb129: {
+        _479 = [const "", const "\n"];
+        _478 = &_479;
+        _477 = _478 as &[&str] (Pointer(Unsize));
+        _485 = const 1_i8 as u8 (IntToInt);
+        _484 = &_485;
+        _483 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_484) -> bb130;
+    }
+
+    bb130: {
+        _482 = [move _483];
+        _481 = &_482;
+        _480 = _481 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _476 = Arguments::<'_>::new_v1(move _477, move _480) -> bb131;
+    }
+
+    bb131: {
+        _475 = _print(move _476) -> bb132;
+    }
+
+    bb132: {
+        _490 = [const "", const "\n"];
+        _489 = &_490;
+        _488 = _489 as &[&str] (Pointer(Unsize));
+        _496 = const 1_i8 as u16 (IntToInt);
+        _495 = &_496;
+        _494 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_495) -> bb133;
+    }
+
+    bb133: {
+        _493 = [move _494];
+        _492 = &_493;
+        _491 = _492 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _487 = Arguments::<'_>::new_v1(move _488, move _491) -> bb134;
+    }
+
+    bb134: {
+        _486 = _print(move _487) -> bb135;
+    }
+
+    bb135: {
+        _501 = [const "", const "\n"];
+        _500 = &_501;
+        _499 = _500 as &[&str] (Pointer(Unsize));
+        _507 = const 1_i8 as u32 (IntToInt);
+        _506 = &_507;
+        _505 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_506) -> bb136;
+    }
+
+    bb136: {
+        _504 = [move _505];
+        _503 = &_504;
+        _502 = _503 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _498 = Arguments::<'_>::new_v1(move _499, move _502) -> bb137;
+    }
+
+    bb137: {
+        _497 = _print(move _498) -> bb138;
+    }
+
+    bb138: {
+        _512 = [const "", const "\n"];
+        _511 = &_512;
+        _510 = _511 as &[&str] (Pointer(Unsize));
+        _518 = const 1_i8 as u64 (IntToInt);
+        _517 = &_518;
+        _516 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_517) -> bb139;
+    }
+
+    bb139: {
+        _515 = [move _516];
+        _514 = &_515;
+        _513 = _514 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _509 = Arguments::<'_>::new_v1(move _510, move _513) -> bb140;
+    }
+
+    bb140: {
+        _508 = _print(move _509) -> bb141;
+    }
+
+    bb141: {
+        _523 = [const "", const "\n"];
+        _522 = &_523;
+        _521 = _522 as &[&str] (Pointer(Unsize));
+        _529 = const 1_i8 as f32 (IntToFloat);
+        _528 = &_529;
+        _527 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_528) -> bb142;
+    }
+
+    bb142: {
+        _526 = [move _527];
+        _525 = &_526;
+        _524 = _525 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _520 = Arguments::<'_>::new_v1(move _521, move _524) -> bb143;
+    }
+
+    bb143: {
+        _519 = _print(move _520) -> bb144;
+    }
+
+    bb144: {
+        _534 = [const "", const "\n"];
+        _533 = &_534;
+        _532 = _533 as &[&str] (Pointer(Unsize));
+        _540 = const 1_i8 as f64 (IntToFloat);
+        _539 = &_540;
+        _538 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_539) -> bb145;
+    }
+
+    bb145: {
+        _537 = [move _538];
+        _536 = &_537;
+        _535 = _536 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _531 = Arguments::<'_>::new_v1(move _532, move _535) -> bb146;
+    }
+
+    bb146: {
+        _530 = _print(move _531) -> bb147;
+    }
+
+    bb147: {
+        _545 = [const "", const "\n"];
+        _544 = &_545;
+        _543 = _544 as &[&str] (Pointer(Unsize));
+        _551 = const 1_u8 as isize (IntToInt);
+        _550 = &_551;
+        _549 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_550) -> bb148;
+    }
+
+    bb148: {
+        _548 = [move _549];
+        _547 = &_548;
+        _546 = _547 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _542 = Arguments::<'_>::new_v1(move _543, move _546) -> bb149;
+    }
+
+    bb149: {
+        _541 = _print(move _542) -> bb150;
+    }
+
+    bb150: {
+        _556 = [const "", const "\n"];
+        _555 = &_556;
+        _554 = _555 as &[&str] (Pointer(Unsize));
+        _562 = const 1_u8 as usize (IntToInt);
+        _561 = &_562;
+        _560 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_561) -> bb151;
+    }
+
+    bb151: {
+        _559 = [move _560];
+        _558 = &_559;
+        _557 = _558 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _553 = Arguments::<'_>::new_v1(move _554, move _557) -> bb152;
+    }
+
+    bb152: {
+        _552 = _print(move _553) -> bb153;
+    }
+
+    bb153: {
+        _567 = [const "", const "\n"];
+        _566 = &_567;
+        _565 = _566 as &[&str] (Pointer(Unsize));
+        _573 = const 1_u8 as *const std::string::String (PointerFromExposedAddress);
+        _572 = &_573;
+        _571 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_572) -> bb154;
+    }
+
+    bb154: {
+        _570 = [move _571];
+        _569 = &_570;
+        _568 = _569 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _564 = Arguments::<'_>::new_v1(move _565, move _568) -> bb155;
+    }
+
+    bb155: {
+        _563 = _print(move _564) -> bb156;
+    }
+
+    bb156: {
+        _578 = [const "", const "\n"];
+        _577 = &_578;
+        _576 = _577 as &[&str] (Pointer(Unsize));
+        _584 = const 1_u8 as i8 (IntToInt);
+        _583 = &_584;
+        _582 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_583) -> bb157;
+    }
+
+    bb157: {
+        _581 = [move _582];
+        _580 = &_581;
+        _579 = _580 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _575 = Arguments::<'_>::new_v1(move _576, move _579) -> bb158;
+    }
+
+    bb158: {
+        _574 = _print(move _575) -> bb159;
+    }
+
+    bb159: {
+        _589 = [const "", const "\n"];
+        _588 = &_589;
+        _587 = _588 as &[&str] (Pointer(Unsize));
+        _595 = const 1_u8 as i16 (IntToInt);
+        _594 = &_595;
+        _593 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_594) -> bb160;
+    }
+
+    bb160: {
+        _592 = [move _593];
+        _591 = &_592;
+        _590 = _591 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _586 = Arguments::<'_>::new_v1(move _587, move _590) -> bb161;
+    }
+
+    bb161: {
+        _585 = _print(move _586) -> bb162;
+    }
+
+    bb162: {
+        _600 = [const "", const "\n"];
+        _599 = &_600;
+        _598 = _599 as &[&str] (Pointer(Unsize));
+        _606 = const 1_u8 as i32 (IntToInt);
+        _605 = &_606;
+        _604 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_605) -> bb163;
+    }
+
+    bb163: {
+        _603 = [move _604];
+        _602 = &_603;
+        _601 = _602 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _597 = Arguments::<'_>::new_v1(move _598, move _601) -> bb164;
+    }
+
+    bb164: {
+        _596 = _print(move _597) -> bb165;
+    }
+
+    bb165: {
+        _611 = [const "", const "\n"];
+        _610 = &_611;
+        _609 = _610 as &[&str] (Pointer(Unsize));
+        _617 = const 1_u8 as i64 (IntToInt);
+        _616 = &_617;
+        _615 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_616) -> bb166;
+    }
+
+    bb166: {
+        _614 = [move _615];
+        _613 = &_614;
+        _612 = _613 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _608 = Arguments::<'_>::new_v1(move _609, move _612) -> bb167;
+    }
+
+    bb167: {
+        _607 = _print(move _608) -> bb168;
+    }
+
+    bb168: {
+        _622 = [const "", const "\n"];
+        _621 = &_622;
+        _620 = _621 as &[&str] (Pointer(Unsize));
+        _628 = const 1_u8;
+        _627 = &_628;
+        _626 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_627) -> bb169;
+    }
+
+    bb169: {
+        _625 = [move _626];
+        _624 = &_625;
+        _623 = _624 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _619 = Arguments::<'_>::new_v1(move _620, move _623) -> bb170;
+    }
+
+    bb170: {
+        _618 = _print(move _619) -> bb171;
+    }
+
+    bb171: {
+        _633 = [const "", const "\n"];
+        _632 = &_633;
+        _631 = _632 as &[&str] (Pointer(Unsize));
+        _639 = const 1_u8 as u16 (IntToInt);
+        _638 = &_639;
+        _637 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_638) -> bb172;
+    }
+
+    bb172: {
+        _636 = [move _637];
+        _635 = &_636;
+        _634 = _635 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _630 = Arguments::<'_>::new_v1(move _631, move _634) -> bb173;
+    }
+
+    bb173: {
+        _629 = _print(move _630) -> bb174;
+    }
+
+    bb174: {
+        _644 = [const "", const "\n"];
+        _643 = &_644;
+        _642 = _643 as &[&str] (Pointer(Unsize));
+        _650 = const 1_u8 as u32 (IntToInt);
+        _649 = &_650;
+        _648 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_649) -> bb175;
+    }
+
+    bb175: {
+        _647 = [move _648];
+        _646 = &_647;
+        _645 = _646 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _641 = Arguments::<'_>::new_v1(move _642, move _645) -> bb176;
+    }
+
+    bb176: {
+        _640 = _print(move _641) -> bb177;
+    }
+
+    bb177: {
+        _655 = [const "", const "\n"];
+        _654 = &_655;
+        _653 = _654 as &[&str] (Pointer(Unsize));
+        _661 = const 1_u8 as u64 (IntToInt);
+        _660 = &_661;
+        _659 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_660) -> bb178;
+    }
+
+    bb178: {
+        _658 = [move _659];
+        _657 = &_658;
+        _656 = _657 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _652 = Arguments::<'_>::new_v1(move _653, move _656) -> bb179;
+    }
+
+    bb179: {
+        _651 = _print(move _652) -> bb180;
+    }
+
+    bb180: {
+        _666 = [const "", const "\n"];
+        _665 = &_666;
+        _664 = _665 as &[&str] (Pointer(Unsize));
+        _672 = const 1_u8 as f32 (IntToFloat);
+        _671 = &_672;
+        _670 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_671) -> bb181;
+    }
+
+    bb181: {
+        _669 = [move _670];
+        _668 = &_669;
+        _667 = _668 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _663 = Arguments::<'_>::new_v1(move _664, move _667) -> bb182;
+    }
+
+    bb182: {
+        _662 = _print(move _663) -> bb183;
+    }
+
+    bb183: {
+        _677 = [const "", const "\n"];
+        _676 = &_677;
+        _675 = _676 as &[&str] (Pointer(Unsize));
+        _683 = const 1_u8 as f64 (IntToFloat);
+        _682 = &_683;
+        _681 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_682) -> bb184;
+    }
+
+    bb184: {
+        _680 = [move _681];
+        _679 = &_680;
+        _678 = _679 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _674 = Arguments::<'_>::new_v1(move _675, move _678) -> bb185;
+    }
+
+    bb185: {
+        _673 = _print(move _674) -> bb186;
+    }
+
+    bb186: {
+        _688 = [const "", const "\n"];
+        _687 = &_688;
+        _686 = _687 as &[&str] (Pointer(Unsize));
+        _694 = const 1_i16 as isize (IntToInt);
+        _693 = &_694;
+        _692 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_693) -> bb187;
+    }
+
+    bb187: {
+        _691 = [move _692];
+        _690 = &_691;
+        _689 = _690 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _685 = Arguments::<'_>::new_v1(move _686, move _689) -> bb188;
+    }
+
+    bb188: {
+        _684 = _print(move _685) -> bb189;
+    }
+
+    bb189: {
+        _699 = [const "", const "\n"];
+        _698 = &_699;
+        _697 = _698 as &[&str] (Pointer(Unsize));
+        _705 = const 1_i16 as usize (IntToInt);
+        _704 = &_705;
+        _703 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_704) -> bb190;
+    }
+
+    bb190: {
+        _702 = [move _703];
+        _701 = &_702;
+        _700 = _701 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _696 = Arguments::<'_>::new_v1(move _697, move _700) -> bb191;
+    }
+
+    bb191: {
+        _695 = _print(move _696) -> bb192;
+    }
+
+    bb192: {
+        _710 = [const "", const "\n"];
+        _709 = &_710;
+        _708 = _709 as &[&str] (Pointer(Unsize));
+        _716 = const 1_i16 as *const std::string::String (PointerFromExposedAddress);
+        _715 = &_716;
+        _714 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_715) -> bb193;
+    }
+
+    bb193: {
+        _713 = [move _714];
+        _712 = &_713;
+        _711 = _712 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _707 = Arguments::<'_>::new_v1(move _708, move _711) -> bb194;
+    }
+
+    bb194: {
+        _706 = _print(move _707) -> bb195;
+    }
+
+    bb195: {
+        _721 = [const "", const "\n"];
+        _720 = &_721;
+        _719 = _720 as &[&str] (Pointer(Unsize));
+        _727 = const 1_i16 as i8 (IntToInt);
+        _726 = &_727;
+        _725 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_726) -> bb196;
+    }
+
+    bb196: {
+        _724 = [move _725];
+        _723 = &_724;
+        _722 = _723 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _718 = Arguments::<'_>::new_v1(move _719, move _722) -> bb197;
+    }
+
+    bb197: {
+        _717 = _print(move _718) -> bb198;
+    }
+
+    bb198: {
+        _732 = [const "", const "\n"];
+        _731 = &_732;
+        _730 = _731 as &[&str] (Pointer(Unsize));
+        _738 = const 1_i16;
+        _737 = &_738;
+        _736 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_737) -> bb199;
+    }
+
+    bb199: {
+        _735 = [move _736];
+        _734 = &_735;
+        _733 = _734 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _729 = Arguments::<'_>::new_v1(move _730, move _733) -> bb200;
+    }
+
+    bb200: {
+        _728 = _print(move _729) -> bb201;
+    }
+
+    bb201: {
+        _743 = [const "", const "\n"];
+        _742 = &_743;
+        _741 = _742 as &[&str] (Pointer(Unsize));
+        _749 = const 1_i16 as i32 (IntToInt);
+        _748 = &_749;
+        _747 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_748) -> bb202;
+    }
+
+    bb202: {
+        _746 = [move _747];
+        _745 = &_746;
+        _744 = _745 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _740 = Arguments::<'_>::new_v1(move _741, move _744) -> bb203;
+    }
+
+    bb203: {
+        _739 = _print(move _740) -> bb204;
+    }
+
+    bb204: {
+        _754 = [const "", const "\n"];
+        _753 = &_754;
+        _752 = _753 as &[&str] (Pointer(Unsize));
+        _760 = const 1_i16 as i64 (IntToInt);
+        _759 = &_760;
+        _758 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_759) -> bb205;
+    }
+
+    bb205: {
+        _757 = [move _758];
+        _756 = &_757;
+        _755 = _756 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _751 = Arguments::<'_>::new_v1(move _752, move _755) -> bb206;
+    }
+
+    bb206: {
+        _750 = _print(move _751) -> bb207;
+    }
+
+    bb207: {
+        _765 = [const "", const "\n"];
+        _764 = &_765;
+        _763 = _764 as &[&str] (Pointer(Unsize));
+        _771 = const 1_i16 as u8 (IntToInt);
+        _770 = &_771;
+        _769 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_770) -> bb208;
+    }
+
+    bb208: {
+        _768 = [move _769];
+        _767 = &_768;
+        _766 = _767 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _762 = Arguments::<'_>::new_v1(move _763, move _766) -> bb209;
+    }
+
+    bb209: {
+        _761 = _print(move _762) -> bb210;
+    }
+
+    bb210: {
+        _776 = [const "", const "\n"];
+        _775 = &_776;
+        _774 = _775 as &[&str] (Pointer(Unsize));
+        _782 = const 1_i16 as u16 (IntToInt);
+        _781 = &_782;
+        _780 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_781) -> bb211;
+    }
+
+    bb211: {
+        _779 = [move _780];
+        _778 = &_779;
+        _777 = _778 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _773 = Arguments::<'_>::new_v1(move _774, move _777) -> bb212;
+    }
+
+    bb212: {
+        _772 = _print(move _773) -> bb213;
+    }
+
+    bb213: {
+        _787 = [const "", const "\n"];
+        _786 = &_787;
+        _785 = _786 as &[&str] (Pointer(Unsize));
+        _793 = const 1_i16 as u32 (IntToInt);
+        _792 = &_793;
+        _791 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_792) -> bb214;
+    }
+
+    bb214: {
+        _790 = [move _791];
+        _789 = &_790;
+        _788 = _789 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _784 = Arguments::<'_>::new_v1(move _785, move _788) -> bb215;
+    }
+
+    bb215: {
+        _783 = _print(move _784) -> bb216;
+    }
+
+    bb216: {
+        _798 = [const "", const "\n"];
+        _797 = &_798;
+        _796 = _797 as &[&str] (Pointer(Unsize));
+        _804 = const 1_i16 as u64 (IntToInt);
+        _803 = &_804;
+        _802 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_803) -> bb217;
+    }
+
+    bb217: {
+        _801 = [move _802];
+        _800 = &_801;
+        _799 = _800 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _795 = Arguments::<'_>::new_v1(move _796, move _799) -> bb218;
+    }
+
+    bb218: {
+        _794 = _print(move _795) -> bb219;
+    }
+
+    bb219: {
+        _809 = [const "", const "\n"];
+        _808 = &_809;
+        _807 = _808 as &[&str] (Pointer(Unsize));
+        _815 = const 1_i16 as f32 (IntToFloat);
+        _814 = &_815;
+        _813 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_814) -> bb220;
+    }
+
+    bb220: {
+        _812 = [move _813];
+        _811 = &_812;
+        _810 = _811 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _806 = Arguments::<'_>::new_v1(move _807, move _810) -> bb221;
+    }
+
+    bb221: {
+        _805 = _print(move _806) -> bb222;
+    }
+
+    bb222: {
+        _820 = [const "", const "\n"];
+        _819 = &_820;
+        _818 = _819 as &[&str] (Pointer(Unsize));
+        _826 = const 1_i16 as f64 (IntToFloat);
+        _825 = &_826;
+        _824 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_825) -> bb223;
+    }
+
+    bb223: {
+        _823 = [move _824];
+        _822 = &_823;
+        _821 = _822 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _817 = Arguments::<'_>::new_v1(move _818, move _821) -> bb224;
+    }
+
+    bb224: {
+        _816 = _print(move _817) -> bb225;
+    }
+
+    bb225: {
+        _831 = [const "", const "\n"];
+        _830 = &_831;
+        _829 = _830 as &[&str] (Pointer(Unsize));
+        _837 = const 1_u16 as isize (IntToInt);
+        _836 = &_837;
+        _835 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_836) -> bb226;
+    }
+
+    bb226: {
+        _834 = [move _835];
+        _833 = &_834;
+        _832 = _833 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _828 = Arguments::<'_>::new_v1(move _829, move _832) -> bb227;
+    }
+
+    bb227: {
+        _827 = _print(move _828) -> bb228;
+    }
+
+    bb228: {
+        _842 = [const "", const "\n"];
+        _841 = &_842;
+        _840 = _841 as &[&str] (Pointer(Unsize));
+        _848 = const 1_u16 as usize (IntToInt);
+        _847 = &_848;
+        _846 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_847) -> bb229;
+    }
+
+    bb229: {
+        _845 = [move _846];
+        _844 = &_845;
+        _843 = _844 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _839 = Arguments::<'_>::new_v1(move _840, move _843) -> bb230;
+    }
+
+    bb230: {
+        _838 = _print(move _839) -> bb231;
+    }
+
+    bb231: {
+        _853 = [const "", const "\n"];
+        _852 = &_853;
+        _851 = _852 as &[&str] (Pointer(Unsize));
+        _859 = const 1_u16 as *const std::string::String (PointerFromExposedAddress);
+        _858 = &_859;
+        _857 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_858) -> bb232;
+    }
+
+    bb232: {
+        _856 = [move _857];
+        _855 = &_856;
+        _854 = _855 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _850 = Arguments::<'_>::new_v1(move _851, move _854) -> bb233;
+    }
+
+    bb233: {
+        _849 = _print(move _850) -> bb234;
+    }
+
+    bb234: {
+        _864 = [const "", const "\n"];
+        _863 = &_864;
+        _862 = _863 as &[&str] (Pointer(Unsize));
+        _870 = const 1_u16 as i8 (IntToInt);
+        _869 = &_870;
+        _868 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_869) -> bb235;
+    }
+
+    bb235: {
+        _867 = [move _868];
+        _866 = &_867;
+        _865 = _866 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _861 = Arguments::<'_>::new_v1(move _862, move _865) -> bb236;
+    }
+
+    bb236: {
+        _860 = _print(move _861) -> bb237;
+    }
+
+    bb237: {
+        _875 = [const "", const "\n"];
+        _874 = &_875;
+        _873 = _874 as &[&str] (Pointer(Unsize));
+        _881 = const 1_u16 as i16 (IntToInt);
+        _880 = &_881;
+        _879 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_880) -> bb238;
+    }
+
+    bb238: {
+        _878 = [move _879];
+        _877 = &_878;
+        _876 = _877 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _872 = Arguments::<'_>::new_v1(move _873, move _876) -> bb239;
+    }
+
+    bb239: {
+        _871 = _print(move _872) -> bb240;
+    }
+
+    bb240: {
+        _886 = [const "", const "\n"];
+        _885 = &_886;
+        _884 = _885 as &[&str] (Pointer(Unsize));
+        _892 = const 1_u16 as i32 (IntToInt);
+        _891 = &_892;
+        _890 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_891) -> bb241;
+    }
+
+    bb241: {
+        _889 = [move _890];
+        _888 = &_889;
+        _887 = _888 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _883 = Arguments::<'_>::new_v1(move _884, move _887) -> bb242;
+    }
+
+    bb242: {
+        _882 = _print(move _883) -> bb243;
+    }
+
+    bb243: {
+        _897 = [const "", const "\n"];
+        _896 = &_897;
+        _895 = _896 as &[&str] (Pointer(Unsize));
+        _903 = const 1_u16 as i64 (IntToInt);
+        _902 = &_903;
+        _901 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_902) -> bb244;
+    }
+
+    bb244: {
+        _900 = [move _901];
+        _899 = &_900;
+        _898 = _899 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _894 = Arguments::<'_>::new_v1(move _895, move _898) -> bb245;
+    }
+
+    bb245: {
+        _893 = _print(move _894) -> bb246;
+    }
+
+    bb246: {
+        _908 = [const "", const "\n"];
+        _907 = &_908;
+        _906 = _907 as &[&str] (Pointer(Unsize));
+        _914 = const 1_u16 as u8 (IntToInt);
+        _913 = &_914;
+        _912 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_913) -> bb247;
+    }
+
+    bb247: {
+        _911 = [move _912];
+        _910 = &_911;
+        _909 = _910 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _905 = Arguments::<'_>::new_v1(move _906, move _909) -> bb248;
+    }
+
+    bb248: {
+        _904 = _print(move _905) -> bb249;
+    }
+
+    bb249: {
+        _919 = [const "", const "\n"];
+        _918 = &_919;
+        _917 = _918 as &[&str] (Pointer(Unsize));
+        _925 = const 1_u16;
+        _924 = &_925;
+        _923 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_924) -> bb250;
+    }
+
+    bb250: {
+        _922 = [move _923];
+        _921 = &_922;
+        _920 = _921 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _916 = Arguments::<'_>::new_v1(move _917, move _920) -> bb251;
+    }
+
+    bb251: {
+        _915 = _print(move _916) -> bb252;
+    }
+
+    bb252: {
+        _930 = [const "", const "\n"];
+        _929 = &_930;
+        _928 = _929 as &[&str] (Pointer(Unsize));
+        _936 = const 1_u16 as u32 (IntToInt);
+        _935 = &_936;
+        _934 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_935) -> bb253;
+    }
+
+    bb253: {
+        _933 = [move _934];
+        _932 = &_933;
+        _931 = _932 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _927 = Arguments::<'_>::new_v1(move _928, move _931) -> bb254;
+    }
+
+    bb254: {
+        _926 = _print(move _927) -> bb255;
+    }
+
+    bb255: {
+        _941 = [const "", const "\n"];
+        _940 = &_941;
+        _939 = _940 as &[&str] (Pointer(Unsize));
+        _947 = const 1_u16 as u64 (IntToInt);
+        _946 = &_947;
+        _945 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_946) -> bb256;
+    }
+
+    bb256: {
+        _944 = [move _945];
+        _943 = &_944;
+        _942 = _943 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _938 = Arguments::<'_>::new_v1(move _939, move _942) -> bb257;
+    }
+
+    bb257: {
+        _937 = _print(move _938) -> bb258;
+    }
+
+    bb258: {
+        _952 = [const "", const "\n"];
+        _951 = &_952;
+        _950 = _951 as &[&str] (Pointer(Unsize));
+        _958 = const 1_u16 as f32 (IntToFloat);
+        _957 = &_958;
+        _956 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_957) -> bb259;
+    }
+
+    bb259: {
+        _955 = [move _956];
+        _954 = &_955;
+        _953 = _954 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _949 = Arguments::<'_>::new_v1(move _950, move _953) -> bb260;
+    }
+
+    bb260: {
+        _948 = _print(move _949) -> bb261;
+    }
+
+    bb261: {
+        _963 = [const "", const "\n"];
+        _962 = &_963;
+        _961 = _962 as &[&str] (Pointer(Unsize));
+        _969 = const 1_u16 as f64 (IntToFloat);
+        _968 = &_969;
+        _967 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_968) -> bb262;
+    }
+
+    bb262: {
+        _966 = [move _967];
+        _965 = &_966;
+        _964 = _965 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _960 = Arguments::<'_>::new_v1(move _961, move _964) -> bb263;
+    }
+
+    bb263: {
+        _959 = _print(move _960) -> bb264;
+    }
+
+    bb264: {
+        _974 = [const "", const "\n"];
+        _973 = &_974;
+        _972 = _973 as &[&str] (Pointer(Unsize));
+        _980 = const 1_i32 as isize (IntToInt);
+        _979 = &_980;
+        _978 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_979) -> bb265;
+    }
+
+    bb265: {
+        _977 = [move _978];
+        _976 = &_977;
+        _975 = _976 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _971 = Arguments::<'_>::new_v1(move _972, move _975) -> bb266;
+    }
+
+    bb266: {
+        _970 = _print(move _971) -> bb267;
+    }
+
+    bb267: {
+        _985 = [const "", const "\n"];
+        _984 = &_985;
+        _983 = _984 as &[&str] (Pointer(Unsize));
+        _991 = const 1_i32 as usize (IntToInt);
+        _990 = &_991;
+        _989 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_990) -> bb268;
+    }
+
+    bb268: {
+        _988 = [move _989];
+        _987 = &_988;
+        _986 = _987 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _982 = Arguments::<'_>::new_v1(move _983, move _986) -> bb269;
+    }
+
+    bb269: {
+        _981 = _print(move _982) -> bb270;
+    }
+
+    bb270: {
+        _996 = [const "", const "\n"];
+        _995 = &_996;
+        _994 = _995 as &[&str] (Pointer(Unsize));
+        _1002 = const 1_i32 as *const std::string::String (PointerFromExposedAddress);
+        _1001 = &_1002;
+        _1000 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_1001) -> bb271;
+    }
+
+    bb271: {
+        _999 = [move _1000];
+        _998 = &_999;
+        _997 = _998 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _993 = Arguments::<'_>::new_v1(move _994, move _997) -> bb272;
+    }
+
+    bb272: {
+        _992 = _print(move _993) -> bb273;
+    }
+
+    bb273: {
+        _1007 = [const "", const "\n"];
+        _1006 = &_1007;
+        _1005 = _1006 as &[&str] (Pointer(Unsize));
+        _1013 = const 1_i32 as i8 (IntToInt);
+        _1012 = &_1013;
+        _1011 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1012) -> bb274;
+    }
+
+    bb274: {
+        _1010 = [move _1011];
+        _1009 = &_1010;
+        _1008 = _1009 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1004 = Arguments::<'_>::new_v1(move _1005, move _1008) -> bb275;
+    }
+
+    bb275: {
+        _1003 = _print(move _1004) -> bb276;
+    }
+
+    bb276: {
+        _1018 = [const "", const "\n"];
+        _1017 = &_1018;
+        _1016 = _1017 as &[&str] (Pointer(Unsize));
+        _1024 = const 1_i32 as i16 (IntToInt);
+        _1023 = &_1024;
+        _1022 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1023) -> bb277;
+    }
+
+    bb277: {
+        _1021 = [move _1022];
+        _1020 = &_1021;
+        _1019 = _1020 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1015 = Arguments::<'_>::new_v1(move _1016, move _1019) -> bb278;
+    }
+
+    bb278: {
+        _1014 = _print(move _1015) -> bb279;
+    }
+
+    bb279: {
+        _1029 = [const "", const "\n"];
+        _1028 = &_1029;
+        _1027 = _1028 as &[&str] (Pointer(Unsize));
+        _1035 = const 1_i32;
+        _1034 = &_1035;
+        _1033 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1034) -> bb280;
+    }
+
+    bb280: {
+        _1032 = [move _1033];
+        _1031 = &_1032;
+        _1030 = _1031 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1026 = Arguments::<'_>::new_v1(move _1027, move _1030) -> bb281;
+    }
+
+    bb281: {
+        _1025 = _print(move _1026) -> bb282;
+    }
+
+    bb282: {
+        _1040 = [const "", const "\n"];
+        _1039 = &_1040;
+        _1038 = _1039 as &[&str] (Pointer(Unsize));
+        _1046 = const 1_i32 as i64 (IntToInt);
+        _1045 = &_1046;
+        _1044 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1045) -> bb283;
+    }
+
+    bb283: {
+        _1043 = [move _1044];
+        _1042 = &_1043;
+        _1041 = _1042 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1037 = Arguments::<'_>::new_v1(move _1038, move _1041) -> bb284;
+    }
+
+    bb284: {
+        _1036 = _print(move _1037) -> bb285;
+    }
+
+    bb285: {
+        _1051 = [const "", const "\n"];
+        _1050 = &_1051;
+        _1049 = _1050 as &[&str] (Pointer(Unsize));
+        _1057 = const 1_i32 as u8 (IntToInt);
+        _1056 = &_1057;
+        _1055 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1056) -> bb286;
+    }
+
+    bb286: {
+        _1054 = [move _1055];
+        _1053 = &_1054;
+        _1052 = _1053 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1048 = Arguments::<'_>::new_v1(move _1049, move _1052) -> bb287;
+    }
+
+    bb287: {
+        _1047 = _print(move _1048) -> bb288;
+    }
+
+    bb288: {
+        _1062 = [const "", const "\n"];
+        _1061 = &_1062;
+        _1060 = _1061 as &[&str] (Pointer(Unsize));
+        _1068 = const 1_i32 as u16 (IntToInt);
+        _1067 = &_1068;
+        _1066 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1067) -> bb289;
+    }
+
+    bb289: {
+        _1065 = [move _1066];
+        _1064 = &_1065;
+        _1063 = _1064 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1059 = Arguments::<'_>::new_v1(move _1060, move _1063) -> bb290;
+    }
+
+    bb290: {
+        _1058 = _print(move _1059) -> bb291;
+    }
+
+    bb291: {
+        _1073 = [const "", const "\n"];
+        _1072 = &_1073;
+        _1071 = _1072 as &[&str] (Pointer(Unsize));
+        _1079 = const 1_i32 as u32 (IntToInt);
+        _1078 = &_1079;
+        _1077 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1078) -> bb292;
+    }
+
+    bb292: {
+        _1076 = [move _1077];
+        _1075 = &_1076;
+        _1074 = _1075 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1070 = Arguments::<'_>::new_v1(move _1071, move _1074) -> bb293;
+    }
+
+    bb293: {
+        _1069 = _print(move _1070) -> bb294;
+    }
+
+    bb294: {
+        _1084 = [const "", const "\n"];
+        _1083 = &_1084;
+        _1082 = _1083 as &[&str] (Pointer(Unsize));
+        _1090 = const 1_i32 as u64 (IntToInt);
+        _1089 = &_1090;
+        _1088 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1089) -> bb295;
+    }
+
+    bb295: {
+        _1087 = [move _1088];
+        _1086 = &_1087;
+        _1085 = _1086 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1081 = Arguments::<'_>::new_v1(move _1082, move _1085) -> bb296;
+    }
+
+    bb296: {
+        _1080 = _print(move _1081) -> bb297;
+    }
+
+    bb297: {
+        _1095 = [const "", const "\n"];
+        _1094 = &_1095;
+        _1093 = _1094 as &[&str] (Pointer(Unsize));
+        _1101 = const 1_i32 as f32 (IntToFloat);
+        _1100 = &_1101;
+        _1099 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1100) -> bb298;
+    }
+
+    bb298: {
+        _1098 = [move _1099];
+        _1097 = &_1098;
+        _1096 = _1097 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1092 = Arguments::<'_>::new_v1(move _1093, move _1096) -> bb299;
+    }
+
+    bb299: {
+        _1091 = _print(move _1092) -> bb300;
+    }
+
+    bb300: {
+        _1106 = [const "", const "\n"];
+        _1105 = &_1106;
+        _1104 = _1105 as &[&str] (Pointer(Unsize));
+        _1112 = const 1_i32 as f64 (IntToFloat);
+        _1111 = &_1112;
+        _1110 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1111) -> bb301;
+    }
+
+    bb301: {
+        _1109 = [move _1110];
+        _1108 = &_1109;
+        _1107 = _1108 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1103 = Arguments::<'_>::new_v1(move _1104, move _1107) -> bb302;
+    }
+
+    bb302: {
+        _1102 = _print(move _1103) -> bb303;
+    }
+
+    bb303: {
+        _1117 = [const "", const "\n"];
+        _1116 = &_1117;
+        _1115 = _1116 as &[&str] (Pointer(Unsize));
+        _1123 = const 1_u32 as isize (IntToInt);
+        _1122 = &_1123;
+        _1121 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1122) -> bb304;
+    }
+
+    bb304: {
+        _1120 = [move _1121];
+        _1119 = &_1120;
+        _1118 = _1119 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1114 = Arguments::<'_>::new_v1(move _1115, move _1118) -> bb305;
+    }
+
+    bb305: {
+        _1113 = _print(move _1114) -> bb306;
+    }
+
+    bb306: {
+        _1128 = [const "", const "\n"];
+        _1127 = &_1128;
+        _1126 = _1127 as &[&str] (Pointer(Unsize));
+        _1134 = const 1_u32 as usize (IntToInt);
+        _1133 = &_1134;
+        _1132 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1133) -> bb307;
+    }
+
+    bb307: {
+        _1131 = [move _1132];
+        _1130 = &_1131;
+        _1129 = _1130 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1125 = Arguments::<'_>::new_v1(move _1126, move _1129) -> bb308;
+    }
+
+    bb308: {
+        _1124 = _print(move _1125) -> bb309;
+    }
+
+    bb309: {
+        _1139 = [const "", const "\n"];
+        _1138 = &_1139;
+        _1137 = _1138 as &[&str] (Pointer(Unsize));
+        _1145 = const 1_u32 as *const std::string::String (PointerFromExposedAddress);
+        _1144 = &_1145;
+        _1143 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_1144) -> bb310;
+    }
+
+    bb310: {
+        _1142 = [move _1143];
+        _1141 = &_1142;
+        _1140 = _1141 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1136 = Arguments::<'_>::new_v1(move _1137, move _1140) -> bb311;
+    }
+
+    bb311: {
+        _1135 = _print(move _1136) -> bb312;
+    }
+
+    bb312: {
+        _1150 = [const "", const "\n"];
+        _1149 = &_1150;
+        _1148 = _1149 as &[&str] (Pointer(Unsize));
+        _1156 = const 1_u32 as i8 (IntToInt);
+        _1155 = &_1156;
+        _1154 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1155) -> bb313;
+    }
+
+    bb313: {
+        _1153 = [move _1154];
+        _1152 = &_1153;
+        _1151 = _1152 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1147 = Arguments::<'_>::new_v1(move _1148, move _1151) -> bb314;
+    }
+
+    bb314: {
+        _1146 = _print(move _1147) -> bb315;
+    }
+
+    bb315: {
+        _1161 = [const "", const "\n"];
+        _1160 = &_1161;
+        _1159 = _1160 as &[&str] (Pointer(Unsize));
+        _1167 = const 1_u32 as i16 (IntToInt);
+        _1166 = &_1167;
+        _1165 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1166) -> bb316;
+    }
+
+    bb316: {
+        _1164 = [move _1165];
+        _1163 = &_1164;
+        _1162 = _1163 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1158 = Arguments::<'_>::new_v1(move _1159, move _1162) -> bb317;
+    }
+
+    bb317: {
+        _1157 = _print(move _1158) -> bb318;
+    }
+
+    bb318: {
+        _1172 = [const "", const "\n"];
+        _1171 = &_1172;
+        _1170 = _1171 as &[&str] (Pointer(Unsize));
+        _1178 = const 1_u32 as i32 (IntToInt);
+        _1177 = &_1178;
+        _1176 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1177) -> bb319;
+    }
+
+    bb319: {
+        _1175 = [move _1176];
+        _1174 = &_1175;
+        _1173 = _1174 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1169 = Arguments::<'_>::new_v1(move _1170, move _1173) -> bb320;
+    }
+
+    bb320: {
+        _1168 = _print(move _1169) -> bb321;
+    }
+
+    bb321: {
+        _1183 = [const "", const "\n"];
+        _1182 = &_1183;
+        _1181 = _1182 as &[&str] (Pointer(Unsize));
+        _1189 = const 1_u32 as i64 (IntToInt);
+        _1188 = &_1189;
+        _1187 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1188) -> bb322;
+    }
+
+    bb322: {
+        _1186 = [move _1187];
+        _1185 = &_1186;
+        _1184 = _1185 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1180 = Arguments::<'_>::new_v1(move _1181, move _1184) -> bb323;
+    }
+
+    bb323: {
+        _1179 = _print(move _1180) -> bb324;
+    }
+
+    bb324: {
+        _1194 = [const "", const "\n"];
+        _1193 = &_1194;
+        _1192 = _1193 as &[&str] (Pointer(Unsize));
+        _1200 = const 1_u32 as u8 (IntToInt);
+        _1199 = &_1200;
+        _1198 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1199) -> bb325;
+    }
+
+    bb325: {
+        _1197 = [move _1198];
+        _1196 = &_1197;
+        _1195 = _1196 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1191 = Arguments::<'_>::new_v1(move _1192, move _1195) -> bb326;
+    }
+
+    bb326: {
+        _1190 = _print(move _1191) -> bb327;
+    }
+
+    bb327: {
+        _1205 = [const "", const "\n"];
+        _1204 = &_1205;
+        _1203 = _1204 as &[&str] (Pointer(Unsize));
+        _1211 = const 1_u32 as u16 (IntToInt);
+        _1210 = &_1211;
+        _1209 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1210) -> bb328;
+    }
+
+    bb328: {
+        _1208 = [move _1209];
+        _1207 = &_1208;
+        _1206 = _1207 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1202 = Arguments::<'_>::new_v1(move _1203, move _1206) -> bb329;
+    }
+
+    bb329: {
+        _1201 = _print(move _1202) -> bb330;
+    }
+
+    bb330: {
+        _1216 = [const "", const "\n"];
+        _1215 = &_1216;
+        _1214 = _1215 as &[&str] (Pointer(Unsize));
+        _1222 = const 1_u32;
+        _1221 = &_1222;
+        _1220 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1221) -> bb331;
+    }
+
+    bb331: {
+        _1219 = [move _1220];
+        _1218 = &_1219;
+        _1217 = _1218 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1213 = Arguments::<'_>::new_v1(move _1214, move _1217) -> bb332;
+    }
+
+    bb332: {
+        _1212 = _print(move _1213) -> bb333;
+    }
+
+    bb333: {
+        _1227 = [const "", const "\n"];
+        _1226 = &_1227;
+        _1225 = _1226 as &[&str] (Pointer(Unsize));
+        _1233 = const 1_u32 as u64 (IntToInt);
+        _1232 = &_1233;
+        _1231 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1232) -> bb334;
+    }
+
+    bb334: {
+        _1230 = [move _1231];
+        _1229 = &_1230;
+        _1228 = _1229 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1224 = Arguments::<'_>::new_v1(move _1225, move _1228) -> bb335;
+    }
+
+    bb335: {
+        _1223 = _print(move _1224) -> bb336;
+    }
+
+    bb336: {
+        _1238 = [const "", const "\n"];
+        _1237 = &_1238;
+        _1236 = _1237 as &[&str] (Pointer(Unsize));
+        _1244 = const 1_u32 as f32 (IntToFloat);
+        _1243 = &_1244;
+        _1242 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1243) -> bb337;
+    }
+
+    bb337: {
+        _1241 = [move _1242];
+        _1240 = &_1241;
+        _1239 = _1240 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1235 = Arguments::<'_>::new_v1(move _1236, move _1239) -> bb338;
+    }
+
+    bb338: {
+        _1234 = _print(move _1235) -> bb339;
+    }
+
+    bb339: {
+        _1249 = [const "", const "\n"];
+        _1248 = &_1249;
+        _1247 = _1248 as &[&str] (Pointer(Unsize));
+        _1255 = const 1_u32 as f64 (IntToFloat);
+        _1254 = &_1255;
+        _1253 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1254) -> bb340;
+    }
+
+    bb340: {
+        _1252 = [move _1253];
+        _1251 = &_1252;
+        _1250 = _1251 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1246 = Arguments::<'_>::new_v1(move _1247, move _1250) -> bb341;
+    }
+
+    bb341: {
+        _1245 = _print(move _1246) -> bb342;
+    }
+
+    bb342: {
+        _1260 = [const "", const "\n"];
+        _1259 = &_1260;
+        _1258 = _1259 as &[&str] (Pointer(Unsize));
+        _1266 = const 1_i64 as isize (IntToInt);
+        _1265 = &_1266;
+        _1264 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1265) -> bb343;
+    }
+
+    bb343: {
+        _1263 = [move _1264];
+        _1262 = &_1263;
+        _1261 = _1262 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1257 = Arguments::<'_>::new_v1(move _1258, move _1261) -> bb344;
+    }
+
+    bb344: {
+        _1256 = _print(move _1257) -> bb345;
+    }
+
+    bb345: {
+        _1271 = [const "", const "\n"];
+        _1270 = &_1271;
+        _1269 = _1270 as &[&str] (Pointer(Unsize));
+        _1277 = const 1_i64 as usize (IntToInt);
+        _1276 = &_1277;
+        _1275 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1276) -> bb346;
+    }
+
+    bb346: {
+        _1274 = [move _1275];
+        _1273 = &_1274;
+        _1272 = _1273 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1268 = Arguments::<'_>::new_v1(move _1269, move _1272) -> bb347;
+    }
+
+    bb347: {
+        _1267 = _print(move _1268) -> bb348;
+    }
+
+    bb348: {
+        _1282 = [const "", const "\n"];
+        _1281 = &_1282;
+        _1280 = _1281 as &[&str] (Pointer(Unsize));
+        _1288 = const 1_i64 as *const std::string::String (PointerFromExposedAddress);
+        _1287 = &_1288;
+        _1286 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_1287) -> bb349;
+    }
+
+    bb349: {
+        _1285 = [move _1286];
+        _1284 = &_1285;
+        _1283 = _1284 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1279 = Arguments::<'_>::new_v1(move _1280, move _1283) -> bb350;
+    }
+
+    bb350: {
+        _1278 = _print(move _1279) -> bb351;
+    }
+
+    bb351: {
+        _1293 = [const "", const "\n"];
+        _1292 = &_1293;
+        _1291 = _1292 as &[&str] (Pointer(Unsize));
+        _1299 = const 1_i64 as i8 (IntToInt);
+        _1298 = &_1299;
+        _1297 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1298) -> bb352;
+    }
+
+    bb352: {
+        _1296 = [move _1297];
+        _1295 = &_1296;
+        _1294 = _1295 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1290 = Arguments::<'_>::new_v1(move _1291, move _1294) -> bb353;
+    }
+
+    bb353: {
+        _1289 = _print(move _1290) -> bb354;
+    }
+
+    bb354: {
+        _1304 = [const "", const "\n"];
+        _1303 = &_1304;
+        _1302 = _1303 as &[&str] (Pointer(Unsize));
+        _1310 = const 1_i64 as i16 (IntToInt);
+        _1309 = &_1310;
+        _1308 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1309) -> bb355;
+    }
+
+    bb355: {
+        _1307 = [move _1308];
+        _1306 = &_1307;
+        _1305 = _1306 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1301 = Arguments::<'_>::new_v1(move _1302, move _1305) -> bb356;
+    }
+
+    bb356: {
+        _1300 = _print(move _1301) -> bb357;
+    }
+
+    bb357: {
+        _1315 = [const "", const "\n"];
+        _1314 = &_1315;
+        _1313 = _1314 as &[&str] (Pointer(Unsize));
+        _1321 = const 1_i64 as i32 (IntToInt);
+        _1320 = &_1321;
+        _1319 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1320) -> bb358;
+    }
+
+    bb358: {
+        _1318 = [move _1319];
+        _1317 = &_1318;
+        _1316 = _1317 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1312 = Arguments::<'_>::new_v1(move _1313, move _1316) -> bb359;
+    }
+
+    bb359: {
+        _1311 = _print(move _1312) -> bb360;
+    }
+
+    bb360: {
+        _1326 = [const "", const "\n"];
+        _1325 = &_1326;
+        _1324 = _1325 as &[&str] (Pointer(Unsize));
+        _1332 = const 1_i64;
+        _1331 = &_1332;
+        _1330 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1331) -> bb361;
+    }
+
+    bb361: {
+        _1329 = [move _1330];
+        _1328 = &_1329;
+        _1327 = _1328 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1323 = Arguments::<'_>::new_v1(move _1324, move _1327) -> bb362;
+    }
+
+    bb362: {
+        _1322 = _print(move _1323) -> bb363;
+    }
+
+    bb363: {
+        _1337 = [const "", const "\n"];
+        _1336 = &_1337;
+        _1335 = _1336 as &[&str] (Pointer(Unsize));
+        _1343 = const 1_i64 as u8 (IntToInt);
+        _1342 = &_1343;
+        _1341 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1342) -> bb364;
+    }
+
+    bb364: {
+        _1340 = [move _1341];
+        _1339 = &_1340;
+        _1338 = _1339 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1334 = Arguments::<'_>::new_v1(move _1335, move _1338) -> bb365;
+    }
+
+    bb365: {
+        _1333 = _print(move _1334) -> bb366;
+    }
+
+    bb366: {
+        _1348 = [const "", const "\n"];
+        _1347 = &_1348;
+        _1346 = _1347 as &[&str] (Pointer(Unsize));
+        _1354 = const 1_i64 as u16 (IntToInt);
+        _1353 = &_1354;
+        _1352 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1353) -> bb367;
+    }
+
+    bb367: {
+        _1351 = [move _1352];
+        _1350 = &_1351;
+        _1349 = _1350 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1345 = Arguments::<'_>::new_v1(move _1346, move _1349) -> bb368;
+    }
+
+    bb368: {
+        _1344 = _print(move _1345) -> bb369;
+    }
+
+    bb369: {
+        _1359 = [const "", const "\n"];
+        _1358 = &_1359;
+        _1357 = _1358 as &[&str] (Pointer(Unsize));
+        _1365 = const 1_i64 as u32 (IntToInt);
+        _1364 = &_1365;
+        _1363 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1364) -> bb370;
+    }
+
+    bb370: {
+        _1362 = [move _1363];
+        _1361 = &_1362;
+        _1360 = _1361 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1356 = Arguments::<'_>::new_v1(move _1357, move _1360) -> bb371;
+    }
+
+    bb371: {
+        _1355 = _print(move _1356) -> bb372;
+    }
+
+    bb372: {
+        _1370 = [const "", const "\n"];
+        _1369 = &_1370;
+        _1368 = _1369 as &[&str] (Pointer(Unsize));
+        _1376 = const 1_i64 as u64 (IntToInt);
+        _1375 = &_1376;
+        _1374 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1375) -> bb373;
+    }
+
+    bb373: {
+        _1373 = [move _1374];
+        _1372 = &_1373;
+        _1371 = _1372 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1367 = Arguments::<'_>::new_v1(move _1368, move _1371) -> bb374;
+    }
+
+    bb374: {
+        _1366 = _print(move _1367) -> bb375;
+    }
+
+    bb375: {
+        _1381 = [const "", const "\n"];
+        _1380 = &_1381;
+        _1379 = _1380 as &[&str] (Pointer(Unsize));
+        _1387 = const 1_i64 as f32 (IntToFloat);
+        _1386 = &_1387;
+        _1385 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1386) -> bb376;
+    }
+
+    bb376: {
+        _1384 = [move _1385];
+        _1383 = &_1384;
+        _1382 = _1383 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1378 = Arguments::<'_>::new_v1(move _1379, move _1382) -> bb377;
+    }
+
+    bb377: {
+        _1377 = _print(move _1378) -> bb378;
+    }
+
+    bb378: {
+        _1392 = [const "", const "\n"];
+        _1391 = &_1392;
+        _1390 = _1391 as &[&str] (Pointer(Unsize));
+        _1398 = const 1_i64 as f64 (IntToFloat);
+        _1397 = &_1398;
+        _1396 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1397) -> bb379;
+    }
+
+    bb379: {
+        _1395 = [move _1396];
+        _1394 = &_1395;
+        _1393 = _1394 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1389 = Arguments::<'_>::new_v1(move _1390, move _1393) -> bb380;
+    }
+
+    bb380: {
+        _1388 = _print(move _1389) -> bb381;
+    }
+
+    bb381: {
+        _1403 = [const "", const "\n"];
+        _1402 = &_1403;
+        _1401 = _1402 as &[&str] (Pointer(Unsize));
+        _1409 = const 1_u64 as isize (IntToInt);
+        _1408 = &_1409;
+        _1407 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1408) -> bb382;
+    }
+
+    bb382: {
+        _1406 = [move _1407];
+        _1405 = &_1406;
+        _1404 = _1405 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1400 = Arguments::<'_>::new_v1(move _1401, move _1404) -> bb383;
+    }
+
+    bb383: {
+        _1399 = _print(move _1400) -> bb384;
+    }
+
+    bb384: {
+        _1414 = [const "", const "\n"];
+        _1413 = &_1414;
+        _1412 = _1413 as &[&str] (Pointer(Unsize));
+        _1420 = const 1_u64 as usize (IntToInt);
+        _1419 = &_1420;
+        _1418 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1419) -> bb385;
+    }
+
+    bb385: {
+        _1417 = [move _1418];
+        _1416 = &_1417;
+        _1415 = _1416 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1411 = Arguments::<'_>::new_v1(move _1412, move _1415) -> bb386;
+    }
+
+    bb386: {
+        _1410 = _print(move _1411) -> bb387;
+    }
+
+    bb387: {
+        _1425 = [const "", const "\n"];
+        _1424 = &_1425;
+        _1423 = _1424 as &[&str] (Pointer(Unsize));
+        _1431 = const 1_u64 as *const std::string::String (PointerFromExposedAddress);
+        _1430 = &_1431;
+        _1429 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_1430) -> bb388;
+    }
+
+    bb388: {
+        _1428 = [move _1429];
+        _1427 = &_1428;
+        _1426 = _1427 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1422 = Arguments::<'_>::new_v1(move _1423, move _1426) -> bb389;
+    }
+
+    bb389: {
+        _1421 = _print(move _1422) -> bb390;
+    }
+
+    bb390: {
+        _1436 = [const "", const "\n"];
+        _1435 = &_1436;
+        _1434 = _1435 as &[&str] (Pointer(Unsize));
+        _1442 = const 1_u64 as i8 (IntToInt);
+        _1441 = &_1442;
+        _1440 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1441) -> bb391;
+    }
+
+    bb391: {
+        _1439 = [move _1440];
+        _1438 = &_1439;
+        _1437 = _1438 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1433 = Arguments::<'_>::new_v1(move _1434, move _1437) -> bb392;
+    }
+
+    bb392: {
+        _1432 = _print(move _1433) -> bb393;
+    }
+
+    bb393: {
+        _1447 = [const "", const "\n"];
+        _1446 = &_1447;
+        _1445 = _1446 as &[&str] (Pointer(Unsize));
+        _1453 = const 1_u64 as i16 (IntToInt);
+        _1452 = &_1453;
+        _1451 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1452) -> bb394;
+    }
+
+    bb394: {
+        _1450 = [move _1451];
+        _1449 = &_1450;
+        _1448 = _1449 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1444 = Arguments::<'_>::new_v1(move _1445, move _1448) -> bb395;
+    }
+
+    bb395: {
+        _1443 = _print(move _1444) -> bb396;
+    }
+
+    bb396: {
+        _1458 = [const "", const "\n"];
+        _1457 = &_1458;
+        _1456 = _1457 as &[&str] (Pointer(Unsize));
+        _1464 = const 1_u64 as i32 (IntToInt);
+        _1463 = &_1464;
+        _1462 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1463) -> bb397;
+    }
+
+    bb397: {
+        _1461 = [move _1462];
+        _1460 = &_1461;
+        _1459 = _1460 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1455 = Arguments::<'_>::new_v1(move _1456, move _1459) -> bb398;
+    }
+
+    bb398: {
+        _1454 = _print(move _1455) -> bb399;
+    }
+
+    bb399: {
+        _1469 = [const "", const "\n"];
+        _1468 = &_1469;
+        _1467 = _1468 as &[&str] (Pointer(Unsize));
+        _1475 = const 1_u64 as i64 (IntToInt);
+        _1474 = &_1475;
+        _1473 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1474) -> bb400;
+    }
+
+    bb400: {
+        _1472 = [move _1473];
+        _1471 = &_1472;
+        _1470 = _1471 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1466 = Arguments::<'_>::new_v1(move _1467, move _1470) -> bb401;
+    }
+
+    bb401: {
+        _1465 = _print(move _1466) -> bb402;
+    }
+
+    bb402: {
+        _1480 = [const "", const "\n"];
+        _1479 = &_1480;
+        _1478 = _1479 as &[&str] (Pointer(Unsize));
+        _1486 = const 1_u64 as u8 (IntToInt);
+        _1485 = &_1486;
+        _1484 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1485) -> bb403;
+    }
+
+    bb403: {
+        _1483 = [move _1484];
+        _1482 = &_1483;
+        _1481 = _1482 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1477 = Arguments::<'_>::new_v1(move _1478, move _1481) -> bb404;
+    }
+
+    bb404: {
+        _1476 = _print(move _1477) -> bb405;
+    }
+
+    bb405: {
+        _1491 = [const "", const "\n"];
+        _1490 = &_1491;
+        _1489 = _1490 as &[&str] (Pointer(Unsize));
+        _1497 = const 1_u64 as u16 (IntToInt);
+        _1496 = &_1497;
+        _1495 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1496) -> bb406;
+    }
+
+    bb406: {
+        _1494 = [move _1495];
+        _1493 = &_1494;
+        _1492 = _1493 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1488 = Arguments::<'_>::new_v1(move _1489, move _1492) -> bb407;
+    }
+
+    bb407: {
+        _1487 = _print(move _1488) -> bb408;
+    }
+
+    bb408: {
+        _1502 = [const "", const "\n"];
+        _1501 = &_1502;
+        _1500 = _1501 as &[&str] (Pointer(Unsize));
+        _1508 = const 1_u64 as u32 (IntToInt);
+        _1507 = &_1508;
+        _1506 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1507) -> bb409;
+    }
+
+    bb409: {
+        _1505 = [move _1506];
+        _1504 = &_1505;
+        _1503 = _1504 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1499 = Arguments::<'_>::new_v1(move _1500, move _1503) -> bb410;
+    }
+
+    bb410: {
+        _1498 = _print(move _1499) -> bb411;
+    }
+
+    bb411: {
+        _1513 = [const "", const "\n"];
+        _1512 = &_1513;
+        _1511 = _1512 as &[&str] (Pointer(Unsize));
+        _1519 = const 1_u64;
+        _1518 = &_1519;
+        _1517 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1518) -> bb412;
+    }
+
+    bb412: {
+        _1516 = [move _1517];
+        _1515 = &_1516;
+        _1514 = _1515 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1510 = Arguments::<'_>::new_v1(move _1511, move _1514) -> bb413;
+    }
+
+    bb413: {
+        _1509 = _print(move _1510) -> bb414;
+    }
+
+    bb414: {
+        _1524 = [const "", const "\n"];
+        _1523 = &_1524;
+        _1522 = _1523 as &[&str] (Pointer(Unsize));
+        _1530 = const 1_u64 as f32 (IntToFloat);
+        _1529 = &_1530;
+        _1528 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1529) -> bb415;
+    }
+
+    bb415: {
+        _1527 = [move _1528];
+        _1526 = &_1527;
+        _1525 = _1526 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1521 = Arguments::<'_>::new_v1(move _1522, move _1525) -> bb416;
+    }
+
+    bb416: {
+        _1520 = _print(move _1521) -> bb417;
+    }
+
+    bb417: {
+        _1535 = [const "", const "\n"];
+        _1534 = &_1535;
+        _1533 = _1534 as &[&str] (Pointer(Unsize));
+        _1541 = const 1_u64 as f64 (IntToFloat);
+        _1540 = &_1541;
+        _1539 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1540) -> bb418;
+    }
+
+    bb418: {
+        _1538 = [move _1539];
+        _1537 = &_1538;
+        _1536 = _1537 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1532 = Arguments::<'_>::new_v1(move _1533, move _1536) -> bb419;
+    }
+
+    bb419: {
+        _1531 = _print(move _1532) -> bb420;
+    }
+
+    bb420: {
+        _1546 = [const "", const "\n"];
+        _1545 = &_1546;
+        _1544 = _1545 as &[&str] (Pointer(Unsize));
+        _1552 = const 1_u64 as isize (IntToInt);
+        _1551 = &_1552;
+        _1550 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1551) -> bb421;
+    }
+
+    bb421: {
+        _1549 = [move _1550];
+        _1548 = &_1549;
+        _1547 = _1548 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1543 = Arguments::<'_>::new_v1(move _1544, move _1547) -> bb422;
+    }
+
+    bb422: {
+        _1542 = _print(move _1543) -> bb423;
+    }
+
+    bb423: {
+        _1557 = [const "", const "\n"];
+        _1556 = &_1557;
+        _1555 = _1556 as &[&str] (Pointer(Unsize));
+        _1563 = const 1_u64 as usize (IntToInt);
+        _1562 = &_1563;
+        _1561 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1562) -> bb424;
+    }
+
+    bb424: {
+        _1560 = [move _1561];
+        _1559 = &_1560;
+        _1558 = _1559 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1554 = Arguments::<'_>::new_v1(move _1555, move _1558) -> bb425;
+    }
+
+    bb425: {
+        _1553 = _print(move _1554) -> bb426;
+    }
+
+    bb426: {
+        _1568 = [const "", const "\n"];
+        _1567 = &_1568;
+        _1566 = _1567 as &[&str] (Pointer(Unsize));
+        _1574 = const 1_u64 as *const std::string::String (PointerFromExposedAddress);
+        _1573 = &_1574;
+        _1572 = core::fmt::rt::Argument::<'_>::new_debug::<*const String>(_1573) -> bb427;
+    }
+
+    bb427: {
+        _1571 = [move _1572];
+        _1570 = &_1571;
+        _1569 = _1570 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1565 = Arguments::<'_>::new_v1(move _1566, move _1569) -> bb428;
+    }
+
+    bb428: {
+        _1564 = _print(move _1565) -> bb429;
+    }
+
+    bb429: {
+        _1579 = [const "", const "\n"];
+        _1578 = &_1579;
+        _1577 = _1578 as &[&str] (Pointer(Unsize));
+        _1585 = const 1_u64 as i8 (IntToInt);
+        _1584 = &_1585;
+        _1583 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1584) -> bb430;
+    }
+
+    bb430: {
+        _1582 = [move _1583];
+        _1581 = &_1582;
+        _1580 = _1581 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1576 = Arguments::<'_>::new_v1(move _1577, move _1580) -> bb431;
+    }
+
+    bb431: {
+        _1575 = _print(move _1576) -> bb432;
+    }
+
+    bb432: {
+        _1590 = [const "", const "\n"];
+        _1589 = &_1590;
+        _1588 = _1589 as &[&str] (Pointer(Unsize));
+        _1596 = const 1_u64 as i16 (IntToInt);
+        _1595 = &_1596;
+        _1594 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1595) -> bb433;
+    }
+
+    bb433: {
+        _1593 = [move _1594];
+        _1592 = &_1593;
+        _1591 = _1592 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1587 = Arguments::<'_>::new_v1(move _1588, move _1591) -> bb434;
+    }
+
+    bb434: {
+        _1586 = _print(move _1587) -> bb435;
+    }
+
+    bb435: {
+        _1601 = [const "", const "\n"];
+        _1600 = &_1601;
+        _1599 = _1600 as &[&str] (Pointer(Unsize));
+        _1607 = const 1_u64 as i32 (IntToInt);
+        _1606 = &_1607;
+        _1605 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1606) -> bb436;
+    }
+
+    bb436: {
+        _1604 = [move _1605];
+        _1603 = &_1604;
+        _1602 = _1603 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1598 = Arguments::<'_>::new_v1(move _1599, move _1602) -> bb437;
+    }
+
+    bb437: {
+        _1597 = _print(move _1598) -> bb438;
+    }
+
+    bb438: {
+        _1612 = [const "", const "\n"];
+        _1611 = &_1612;
+        _1610 = _1611 as &[&str] (Pointer(Unsize));
+        _1618 = const 1_u64 as i64 (IntToInt);
+        _1617 = &_1618;
+        _1616 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1617) -> bb439;
+    }
+
+    bb439: {
+        _1615 = [move _1616];
+        _1614 = &_1615;
+        _1613 = _1614 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1609 = Arguments::<'_>::new_v1(move _1610, move _1613) -> bb440;
+    }
+
+    bb440: {
+        _1608 = _print(move _1609) -> bb441;
+    }
+
+    bb441: {
+        _1623 = [const "", const "\n"];
+        _1622 = &_1623;
+        _1621 = _1622 as &[&str] (Pointer(Unsize));
+        _1629 = const 1_u64 as u8 (IntToInt);
+        _1628 = &_1629;
+        _1627 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1628) -> bb442;
+    }
+
+    bb442: {
+        _1626 = [move _1627];
+        _1625 = &_1626;
+        _1624 = _1625 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1620 = Arguments::<'_>::new_v1(move _1621, move _1624) -> bb443;
+    }
+
+    bb443: {
+        _1619 = _print(move _1620) -> bb444;
+    }
+
+    bb444: {
+        _1634 = [const "", const "\n"];
+        _1633 = &_1634;
+        _1632 = _1633 as &[&str] (Pointer(Unsize));
+        _1640 = const 1_u64 as u16 (IntToInt);
+        _1639 = &_1640;
+        _1638 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1639) -> bb445;
+    }
+
+    bb445: {
+        _1637 = [move _1638];
+        _1636 = &_1637;
+        _1635 = _1636 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1631 = Arguments::<'_>::new_v1(move _1632, move _1635) -> bb446;
+    }
+
+    bb446: {
+        _1630 = _print(move _1631) -> bb447;
+    }
+
+    bb447: {
+        _1645 = [const "", const "\n"];
+        _1644 = &_1645;
+        _1643 = _1644 as &[&str] (Pointer(Unsize));
+        _1651 = const 1_u64 as u32 (IntToInt);
+        _1650 = &_1651;
+        _1649 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1650) -> bb448;
+    }
+
+    bb448: {
+        _1648 = [move _1649];
+        _1647 = &_1648;
+        _1646 = _1647 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1642 = Arguments::<'_>::new_v1(move _1643, move _1646) -> bb449;
+    }
+
+    bb449: {
+        _1641 = _print(move _1642) -> bb450;
+    }
+
+    bb450: {
+        _1656 = [const "", const "\n"];
+        _1655 = &_1656;
+        _1654 = _1655 as &[&str] (Pointer(Unsize));
+        _1662 = const 1_u64;
+        _1661 = &_1662;
+        _1660 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1661) -> bb451;
+    }
+
+    bb451: {
+        _1659 = [move _1660];
+        _1658 = &_1659;
+        _1657 = _1658 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1653 = Arguments::<'_>::new_v1(move _1654, move _1657) -> bb452;
+    }
+
+    bb452: {
+        _1652 = _print(move _1653) -> bb453;
+    }
+
+    bb453: {
+        _1667 = [const "", const "\n"];
+        _1666 = &_1667;
+        _1665 = _1666 as &[&str] (Pointer(Unsize));
+        _1673 = const 1_u64 as f32 (IntToFloat);
+        _1672 = &_1673;
+        _1671 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1672) -> bb454;
+    }
+
+    bb454: {
+        _1670 = [move _1671];
+        _1669 = &_1670;
+        _1668 = _1669 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1664 = Arguments::<'_>::new_v1(move _1665, move _1668) -> bb455;
+    }
+
+    bb455: {
+        _1663 = _print(move _1664) -> bb456;
+    }
+
+    bb456: {
+        _1678 = [const "", const "\n"];
+        _1677 = &_1678;
+        _1676 = _1677 as &[&str] (Pointer(Unsize));
+        _1684 = const 1_u64 as f64 (IntToFloat);
+        _1683 = &_1684;
+        _1682 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1683) -> bb457;
+    }
+
+    bb457: {
+        _1681 = [move _1682];
+        _1680 = &_1681;
+        _1679 = _1680 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1675 = Arguments::<'_>::new_v1(move _1676, move _1679) -> bb458;
+    }
+
+    bb458: {
+        _1674 = _print(move _1675) -> bb459;
+    }
+
+    bb459: {
+        _1689 = [const "", const "\n"];
+        _1688 = &_1689;
+        _1687 = _1688 as &[&str] (Pointer(Unsize));
+        _1695 = const true as isize (IntToInt);
+        _1694 = &_1695;
+        _1693 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1694) -> bb460;
+    }
+
+    bb460: {
+        _1692 = [move _1693];
+        _1691 = &_1692;
+        _1690 = _1691 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1686 = Arguments::<'_>::new_v1(move _1687, move _1690) -> bb461;
+    }
+
+    bb461: {
+        _1685 = _print(move _1686) -> bb462;
+    }
+
+    bb462: {
+        _1700 = [const "", const "\n"];
+        _1699 = &_1700;
+        _1698 = _1699 as &[&str] (Pointer(Unsize));
+        _1706 = const true as usize (IntToInt);
+        _1705 = &_1706;
+        _1704 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1705) -> bb463;
+    }
+
+    bb463: {
+        _1703 = [move _1704];
+        _1702 = &_1703;
+        _1701 = _1702 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1697 = Arguments::<'_>::new_v1(move _1698, move _1701) -> bb464;
+    }
+
+    bb464: {
+        _1696 = _print(move _1697) -> bb465;
+    }
+
+    bb465: {
+        _1711 = [const "", const "\n"];
+        _1710 = &_1711;
+        _1709 = _1710 as &[&str] (Pointer(Unsize));
+        _1717 = const true as i8 (IntToInt);
+        _1716 = &_1717;
+        _1715 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1716) -> bb466;
+    }
+
+    bb466: {
+        _1714 = [move _1715];
+        _1713 = &_1714;
+        _1712 = _1713 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1708 = Arguments::<'_>::new_v1(move _1709, move _1712) -> bb467;
+    }
+
+    bb467: {
+        _1707 = _print(move _1708) -> bb468;
+    }
+
+    bb468: {
+        _1722 = [const "", const "\n"];
+        _1721 = &_1722;
+        _1720 = _1721 as &[&str] (Pointer(Unsize));
+        _1728 = const true as i16 (IntToInt);
+        _1727 = &_1728;
+        _1726 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1727) -> bb469;
+    }
+
+    bb469: {
+        _1725 = [move _1726];
+        _1724 = &_1725;
+        _1723 = _1724 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1719 = Arguments::<'_>::new_v1(move _1720, move _1723) -> bb470;
+    }
+
+    bb470: {
+        _1718 = _print(move _1719) -> bb471;
+    }
+
+    bb471: {
+        _1733 = [const "", const "\n"];
+        _1732 = &_1733;
+        _1731 = _1732 as &[&str] (Pointer(Unsize));
+        _1739 = const true as i32 (IntToInt);
+        _1738 = &_1739;
+        _1737 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1738) -> bb472;
+    }
+
+    bb472: {
+        _1736 = [move _1737];
+        _1735 = &_1736;
+        _1734 = _1735 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1730 = Arguments::<'_>::new_v1(move _1731, move _1734) -> bb473;
+    }
+
+    bb473: {
+        _1729 = _print(move _1730) -> bb474;
+    }
+
+    bb474: {
+        _1744 = [const "", const "\n"];
+        _1743 = &_1744;
+        _1742 = _1743 as &[&str] (Pointer(Unsize));
+        _1750 = const true as i64 (IntToInt);
+        _1749 = &_1750;
+        _1748 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1749) -> bb475;
+    }
+
+    bb475: {
+        _1747 = [move _1748];
+        _1746 = &_1747;
+        _1745 = _1746 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1741 = Arguments::<'_>::new_v1(move _1742, move _1745) -> bb476;
+    }
+
+    bb476: {
+        _1740 = _print(move _1741) -> bb477;
+    }
+
+    bb477: {
+        _1755 = [const "", const "\n"];
+        _1754 = &_1755;
+        _1753 = _1754 as &[&str] (Pointer(Unsize));
+        _1761 = const true as u8 (IntToInt);
+        _1760 = &_1761;
+        _1759 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1760) -> bb478;
+    }
+
+    bb478: {
+        _1758 = [move _1759];
+        _1757 = &_1758;
+        _1756 = _1757 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1752 = Arguments::<'_>::new_v1(move _1753, move _1756) -> bb479;
+    }
+
+    bb479: {
+        _1751 = _print(move _1752) -> bb480;
+    }
+
+    bb480: {
+        _1766 = [const "", const "\n"];
+        _1765 = &_1766;
+        _1764 = _1765 as &[&str] (Pointer(Unsize));
+        _1772 = const true as u16 (IntToInt);
+        _1771 = &_1772;
+        _1770 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1771) -> bb481;
+    }
+
+    bb481: {
+        _1769 = [move _1770];
+        _1768 = &_1769;
+        _1767 = _1768 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1763 = Arguments::<'_>::new_v1(move _1764, move _1767) -> bb482;
+    }
+
+    bb482: {
+        _1762 = _print(move _1763) -> bb483;
+    }
+
+    bb483: {
+        _1777 = [const "", const "\n"];
+        _1776 = &_1777;
+        _1775 = _1776 as &[&str] (Pointer(Unsize));
+        _1783 = const true as u32 (IntToInt);
+        _1782 = &_1783;
+        _1781 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1782) -> bb484;
+    }
+
+    bb484: {
+        _1780 = [move _1781];
+        _1779 = &_1780;
+        _1778 = _1779 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1774 = Arguments::<'_>::new_v1(move _1775, move _1778) -> bb485;
+    }
+
+    bb485: {
+        _1773 = _print(move _1774) -> bb486;
+    }
+
+    bb486: {
+        _1788 = [const "", const "\n"];
+        _1787 = &_1788;
+        _1786 = _1787 as &[&str] (Pointer(Unsize));
+        _1794 = const true as u64 (IntToInt);
+        _1793 = &_1794;
+        _1792 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1793) -> bb487;
+    }
+
+    bb487: {
+        _1791 = [move _1792];
+        _1790 = &_1791;
+        _1789 = _1790 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1785 = Arguments::<'_>::new_v1(move _1786, move _1789) -> bb488;
+    }
+
+    bb488: {
+        _1784 = _print(move _1785) -> bb489;
+    }
+
+    bb489: {
+        _1799 = [const "", const "\n"];
+        _1798 = &_1799;
+        _1797 = _1798 as &[&str] (Pointer(Unsize));
+        _1805 = const 1f32 as isize (FloatToInt);
+        _1804 = &_1805;
+        _1803 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1804) -> bb490;
+    }
+
+    bb490: {
+        _1802 = [move _1803];
+        _1801 = &_1802;
+        _1800 = _1801 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1796 = Arguments::<'_>::new_v1(move _1797, move _1800) -> bb491;
+    }
+
+    bb491: {
+        _1795 = _print(move _1796) -> bb492;
+    }
+
+    bb492: {
+        _1810 = [const "", const "\n"];
+        _1809 = &_1810;
+        _1808 = _1809 as &[&str] (Pointer(Unsize));
+        _1816 = const 1f32 as usize (FloatToInt);
+        _1815 = &_1816;
+        _1814 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1815) -> bb493;
+    }
+
+    bb493: {
+        _1813 = [move _1814];
+        _1812 = &_1813;
+        _1811 = _1812 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1807 = Arguments::<'_>::new_v1(move _1808, move _1811) -> bb494;
+    }
+
+    bb494: {
+        _1806 = _print(move _1807) -> bb495;
+    }
+
+    bb495: {
+        _1821 = [const "", const "\n"];
+        _1820 = &_1821;
+        _1819 = _1820 as &[&str] (Pointer(Unsize));
+        _1827 = const 1f32 as i8 (FloatToInt);
+        _1826 = &_1827;
+        _1825 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1826) -> bb496;
+    }
+
+    bb496: {
+        _1824 = [move _1825];
+        _1823 = &_1824;
+        _1822 = _1823 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1818 = Arguments::<'_>::new_v1(move _1819, move _1822) -> bb497;
+    }
+
+    bb497: {
+        _1817 = _print(move _1818) -> bb498;
+    }
+
+    bb498: {
+        _1832 = [const "", const "\n"];
+        _1831 = &_1832;
+        _1830 = _1831 as &[&str] (Pointer(Unsize));
+        _1838 = const 1f32 as i16 (FloatToInt);
+        _1837 = &_1838;
+        _1836 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1837) -> bb499;
+    }
+
+    bb499: {
+        _1835 = [move _1836];
+        _1834 = &_1835;
+        _1833 = _1834 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1829 = Arguments::<'_>::new_v1(move _1830, move _1833) -> bb500;
+    }
+
+    bb500: {
+        _1828 = _print(move _1829) -> bb501;
+    }
+
+    bb501: {
+        _1843 = [const "", const "\n"];
+        _1842 = &_1843;
+        _1841 = _1842 as &[&str] (Pointer(Unsize));
+        _1849 = const 1f32 as i32 (FloatToInt);
+        _1848 = &_1849;
+        _1847 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1848) -> bb502;
+    }
+
+    bb502: {
+        _1846 = [move _1847];
+        _1845 = &_1846;
+        _1844 = _1845 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1840 = Arguments::<'_>::new_v1(move _1841, move _1844) -> bb503;
+    }
+
+    bb503: {
+        _1839 = _print(move _1840) -> bb504;
+    }
+
+    bb504: {
+        _1854 = [const "", const "\n"];
+        _1853 = &_1854;
+        _1852 = _1853 as &[&str] (Pointer(Unsize));
+        _1860 = const 1f32 as i64 (FloatToInt);
+        _1859 = &_1860;
+        _1858 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1859) -> bb505;
+    }
+
+    bb505: {
+        _1857 = [move _1858];
+        _1856 = &_1857;
+        _1855 = _1856 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1851 = Arguments::<'_>::new_v1(move _1852, move _1855) -> bb506;
+    }
+
+    bb506: {
+        _1850 = _print(move _1851) -> bb507;
+    }
+
+    bb507: {
+        _1865 = [const "", const "\n"];
+        _1864 = &_1865;
+        _1863 = _1864 as &[&str] (Pointer(Unsize));
+        _1871 = const 1f32 as u8 (FloatToInt);
+        _1870 = &_1871;
+        _1869 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_1870) -> bb508;
+    }
+
+    bb508: {
+        _1868 = [move _1869];
+        _1867 = &_1868;
+        _1866 = _1867 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1862 = Arguments::<'_>::new_v1(move _1863, move _1866) -> bb509;
+    }
+
+    bb509: {
+        _1861 = _print(move _1862) -> bb510;
+    }
+
+    bb510: {
+        _1876 = [const "", const "\n"];
+        _1875 = &_1876;
+        _1874 = _1875 as &[&str] (Pointer(Unsize));
+        _1882 = const 1f32 as u16 (FloatToInt);
+        _1881 = &_1882;
+        _1880 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_1881) -> bb511;
+    }
+
+    bb511: {
+        _1879 = [move _1880];
+        _1878 = &_1879;
+        _1877 = _1878 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1873 = Arguments::<'_>::new_v1(move _1874, move _1877) -> bb512;
+    }
+
+    bb512: {
+        _1872 = _print(move _1873) -> bb513;
+    }
+
+    bb513: {
+        _1887 = [const "", const "\n"];
+        _1886 = &_1887;
+        _1885 = _1886 as &[&str] (Pointer(Unsize));
+        _1893 = const 1f32 as u32 (FloatToInt);
+        _1892 = &_1893;
+        _1891 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_1892) -> bb514;
+    }
+
+    bb514: {
+        _1890 = [move _1891];
+        _1889 = &_1890;
+        _1888 = _1889 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1884 = Arguments::<'_>::new_v1(move _1885, move _1888) -> bb515;
+    }
+
+    bb515: {
+        _1883 = _print(move _1884) -> bb516;
+    }
+
+    bb516: {
+        _1898 = [const "", const "\n"];
+        _1897 = &_1898;
+        _1896 = _1897 as &[&str] (Pointer(Unsize));
+        _1904 = const 1f32 as u64 (FloatToInt);
+        _1903 = &_1904;
+        _1902 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_1903) -> bb517;
+    }
+
+    bb517: {
+        _1901 = [move _1902];
+        _1900 = &_1901;
+        _1899 = _1900 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1895 = Arguments::<'_>::new_v1(move _1896, move _1899) -> bb518;
+    }
+
+    bb518: {
+        _1894 = _print(move _1895) -> bb519;
+    }
+
+    bb519: {
+        _1909 = [const "", const "\n"];
+        _1908 = &_1909;
+        _1907 = _1908 as &[&str] (Pointer(Unsize));
+        _1915 = const 1f32;
+        _1914 = &_1915;
+        _1913 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_1914) -> bb520;
+    }
+
+    bb520: {
+        _1912 = [move _1913];
+        _1911 = &_1912;
+        _1910 = _1911 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1906 = Arguments::<'_>::new_v1(move _1907, move _1910) -> bb521;
+    }
+
+    bb521: {
+        _1905 = _print(move _1906) -> bb522;
+    }
+
+    bb522: {
+        _1920 = [const "", const "\n"];
+        _1919 = &_1920;
+        _1918 = _1919 as &[&str] (Pointer(Unsize));
+        _1926 = const 1f32 as f64 (FloatToFloat);
+        _1925 = &_1926;
+        _1924 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_1925) -> bb523;
+    }
+
+    bb523: {
+        _1923 = [move _1924];
+        _1922 = &_1923;
+        _1921 = _1922 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1917 = Arguments::<'_>::new_v1(move _1918, move _1921) -> bb524;
+    }
+
+    bb524: {
+        _1916 = _print(move _1917) -> bb525;
+    }
+
+    bb525: {
+        _1931 = [const "", const "\n"];
+        _1930 = &_1931;
+        _1929 = _1930 as &[&str] (Pointer(Unsize));
+        _1937 = const 1f64 as isize (FloatToInt);
+        _1936 = &_1937;
+        _1935 = core::fmt::rt::Argument::<'_>::new_debug::<isize>(_1936) -> bb526;
+    }
+
+    bb526: {
+        _1934 = [move _1935];
+        _1933 = &_1934;
+        _1932 = _1933 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1928 = Arguments::<'_>::new_v1(move _1929, move _1932) -> bb527;
+    }
+
+    bb527: {
+        _1927 = _print(move _1928) -> bb528;
+    }
+
+    bb528: {
+        _1942 = [const "", const "\n"];
+        _1941 = &_1942;
+        _1940 = _1941 as &[&str] (Pointer(Unsize));
+        _1948 = const 1f64 as usize (FloatToInt);
+        _1947 = &_1948;
+        _1946 = core::fmt::rt::Argument::<'_>::new_debug::<usize>(_1947) -> bb529;
+    }
+
+    bb529: {
+        _1945 = [move _1946];
+        _1944 = &_1945;
+        _1943 = _1944 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1939 = Arguments::<'_>::new_v1(move _1940, move _1943) -> bb530;
+    }
+
+    bb530: {
+        _1938 = _print(move _1939) -> bb531;
+    }
+
+    bb531: {
+        _1953 = [const "", const "\n"];
+        _1952 = &_1953;
+        _1951 = _1952 as &[&str] (Pointer(Unsize));
+        _1959 = const 1f64 as i8 (FloatToInt);
+        _1958 = &_1959;
+        _1957 = core::fmt::rt::Argument::<'_>::new_debug::<i8>(_1958) -> bb532;
+    }
+
+    bb532: {
+        _1956 = [move _1957];
+        _1955 = &_1956;
+        _1954 = _1955 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1950 = Arguments::<'_>::new_v1(move _1951, move _1954) -> bb533;
+    }
+
+    bb533: {
+        _1949 = _print(move _1950) -> bb534;
+    }
+
+    bb534: {
+        _1964 = [const "", const "\n"];
+        _1963 = &_1964;
+        _1962 = _1963 as &[&str] (Pointer(Unsize));
+        _1970 = const 1f64 as i16 (FloatToInt);
+        _1969 = &_1970;
+        _1968 = core::fmt::rt::Argument::<'_>::new_debug::<i16>(_1969) -> bb535;
+    }
+
+    bb535: {
+        _1967 = [move _1968];
+        _1966 = &_1967;
+        _1965 = _1966 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1961 = Arguments::<'_>::new_v1(move _1962, move _1965) -> bb536;
+    }
+
+    bb536: {
+        _1960 = _print(move _1961) -> bb537;
+    }
+
+    bb537: {
+        _1975 = [const "", const "\n"];
+        _1974 = &_1975;
+        _1973 = _1974 as &[&str] (Pointer(Unsize));
+        _1981 = const 1f64 as i32 (FloatToInt);
+        _1980 = &_1981;
+        _1979 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_1980) -> bb538;
+    }
+
+    bb538: {
+        _1978 = [move _1979];
+        _1977 = &_1978;
+        _1976 = _1977 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1972 = Arguments::<'_>::new_v1(move _1973, move _1976) -> bb539;
+    }
+
+    bb539: {
+        _1971 = _print(move _1972) -> bb540;
+    }
+
+    bb540: {
+        _1986 = [const "", const "\n"];
+        _1985 = &_1986;
+        _1984 = _1985 as &[&str] (Pointer(Unsize));
+        _1992 = const 1f64 as i64 (FloatToInt);
+        _1991 = &_1992;
+        _1990 = core::fmt::rt::Argument::<'_>::new_debug::<i64>(_1991) -> bb541;
+    }
+
+    bb541: {
+        _1989 = [move _1990];
+        _1988 = &_1989;
+        _1987 = _1988 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1983 = Arguments::<'_>::new_v1(move _1984, move _1987) -> bb542;
+    }
+
+    bb542: {
+        _1982 = _print(move _1983) -> bb543;
+    }
+
+    bb543: {
+        _1997 = [const "", const "\n"];
+        _1996 = &_1997;
+        _1995 = _1996 as &[&str] (Pointer(Unsize));
+        _2003 = const 1f64 as u8 (FloatToInt);
+        _2002 = &_2003;
+        _2001 = core::fmt::rt::Argument::<'_>::new_debug::<u8>(_2002) -> bb544;
+    }
+
+    bb544: {
+        _2000 = [move _2001];
+        _1999 = &_2000;
+        _1998 = _1999 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _1994 = Arguments::<'_>::new_v1(move _1995, move _1998) -> bb545;
+    }
+
+    bb545: {
+        _1993 = _print(move _1994) -> bb546;
+    }
+
+    bb546: {
+        _2008 = [const "", const "\n"];
+        _2007 = &_2008;
+        _2006 = _2007 as &[&str] (Pointer(Unsize));
+        _2014 = const 1f64 as u16 (FloatToInt);
+        _2013 = &_2014;
+        _2012 = core::fmt::rt::Argument::<'_>::new_debug::<u16>(_2013) -> bb547;
+    }
+
+    bb547: {
+        _2011 = [move _2012];
+        _2010 = &_2011;
+        _2009 = _2010 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2005 = Arguments::<'_>::new_v1(move _2006, move _2009) -> bb548;
+    }
+
+    bb548: {
+        _2004 = _print(move _2005) -> bb549;
+    }
+
+    bb549: {
+        _2019 = [const "", const "\n"];
+        _2018 = &_2019;
+        _2017 = _2018 as &[&str] (Pointer(Unsize));
+        _2025 = const 1f64 as u32 (FloatToInt);
+        _2024 = &_2025;
+        _2023 = core::fmt::rt::Argument::<'_>::new_debug::<u32>(_2024) -> bb550;
+    }
+
+    bb550: {
+        _2022 = [move _2023];
+        _2021 = &_2022;
+        _2020 = _2021 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2016 = Arguments::<'_>::new_v1(move _2017, move _2020) -> bb551;
+    }
+
+    bb551: {
+        _2015 = _print(move _2016) -> bb552;
+    }
+
+    bb552: {
+        _2030 = [const "", const "\n"];
+        _2029 = &_2030;
+        _2028 = _2029 as &[&str] (Pointer(Unsize));
+        _2036 = const 1f64 as u64 (FloatToInt);
+        _2035 = &_2036;
+        _2034 = core::fmt::rt::Argument::<'_>::new_debug::<u64>(_2035) -> bb553;
+    }
+
+    bb553: {
+        _2033 = [move _2034];
+        _2032 = &_2033;
+        _2031 = _2032 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2027 = Arguments::<'_>::new_v1(move _2028, move _2031) -> bb554;
+    }
+
+    bb554: {
+        _2026 = _print(move _2027) -> bb555;
+    }
+
+    bb555: {
+        _2041 = [const "", const "\n"];
+        _2040 = &_2041;
+        _2039 = _2040 as &[&str] (Pointer(Unsize));
+        _2047 = const 1f64 as f32 (FloatToFloat);
+        _2046 = &_2047;
+        _2045 = core::fmt::rt::Argument::<'_>::new_debug::<f32>(_2046) -> bb556;
+    }
+
+    bb556: {
+        _2044 = [move _2045];
+        _2043 = &_2044;
+        _2042 = _2043 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2038 = Arguments::<'_>::new_v1(move _2039, move _2042) -> bb557;
+    }
+
+    bb557: {
+        _2037 = _print(move _2038) -> bb558;
+    }
+
+    bb558: {
+        _2052 = [const "", const "\n"];
+        _2051 = &_2052;
+        _2050 = _2051 as &[&str] (Pointer(Unsize));
+        _2058 = const 1f64;
+        _2057 = &_2058;
+        _2056 = core::fmt::rt::Argument::<'_>::new_debug::<f64>(_2057) -> bb559;
+    }
+
+    bb559: {
+        _2055 = [move _2056];
+        _2054 = &_2055;
+        _2053 = _2054 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2049 = Arguments::<'_>::new_v1(move _2050, move _2053) -> bb560;
+    }
+
+    bb560: {
+        _2048 = _print(move _2049) -> bb561;
+    }
+
+    bb561: {
+        return;
+    }
+}

@@ -1,0 +1,164 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<isize>;
+    let mut _2: bool;
+    let mut _3: std::vec::Vec<isize>;
+    let mut _4: std::boxed::Box<[isize]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[isize; 1]>;
+    let mut _9: std::vec::Vec<isize>;
+    let mut _10: std::boxed::Box<[isize]>;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: *mut u8;
+    let mut _14: std::boxed::Box<[isize; 1]>;
+    let _15: ();
+    let mut _16: std::fmt::Arguments<'_>;
+    let mut _17: &[&str];
+    let _18: &[&str; 2];
+    let _19: [&str; 2];
+    let mut _20: &[core::fmt::rt::Argument<'_>];
+    let _21: &[core::fmt::rt::Argument<'_>; 1];
+    let _22: [core::fmt::rt::Argument<'_>; 1];
+    let mut _23: core::fmt::rt::Argument<'_>;
+    let _24: &isize;
+    let _25: &isize;
+    let mut _26: &std::vec::Vec<isize>;
+    let mut _27: bool;
+    let mut _28: *const [isize; 1];
+    let mut _29: *const [isize; 1];
+    scope 1 {
+        debug later => _1;
+        let mut _30: *const ();
+        let mut _31: usize;
+        let mut _32: usize;
+        let mut _33: usize;
+        let mut _34: usize;
+        let mut _35: bool;
+        let mut _36: *const ();
+        let mut _37: usize;
+        let mut _38: usize;
+        let mut _39: usize;
+        let mut _40: usize;
+        let mut _41: bool;
+        scope 2 {
+        }
+        scope 3 {
+        }
+    }
+
+    bb0: {
+        _27 = const false;
+        _2 = const true;
+        switchInt(move _2) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = SizeOf([isize; 1]);
+        _6 = AlignOf([isize; 1]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> [return: bb2, unwind: bb15];
+    }
+
+    bb2: {
+        _8 = ShallowInitBox(move _7, [isize; 1]);
+        _28 = (((_8.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _36 = _28 as *const () (PtrToPtr);
+        _37 = _36 as usize (Transmute);
+        _38 = AlignOf(isize);
+        _39 = Sub(_38, const 1_usize);
+        _40 = BitAnd(_37, _39);
+        _41 = Eq(_40, const 0_usize);
+        assert(_41, "misaligned pointer dereference: address must be a multiple of {} but is {}", _38, _37) -> [success: bb17, unwind unreachable];
+    }
+
+    bb3: {
+        _27 = const true;
+        _1 = move _3;
+        goto -> bb7;
+    }
+
+    bb4: {
+        _11 = SizeOf([isize; 1]);
+        _12 = AlignOf([isize; 1]);
+        _13 = alloc::alloc::exchange_malloc(move _11, move _12) -> [return: bb5, unwind: bb15];
+    }
+
+    bb5: {
+        _14 = ShallowInitBox(move _13, [isize; 1]);
+        _29 = (((_14.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _30 = _29 as *const () (PtrToPtr);
+        _31 = _30 as usize (Transmute);
+        _32 = AlignOf(isize);
+        _33 = Sub(_32, const 1_usize);
+        _34 = BitAnd(_31, _33);
+        _35 = Eq(_34, const 0_usize);
+        assert(_35, "misaligned pointer dereference: address must be a multiple of {} but is {}", _32, _31) -> [success: bb16, unwind unreachable];
+    }
+
+    bb6: {
+        _27 = const true;
+        _1 = move _9;
+        goto -> bb7;
+    }
+
+    bb7: {
+        _19 = [const "", const "\n"];
+        _18 = &_19;
+        _17 = _18 as &[&str] (Pointer(Unsize));
+        _26 = &_1;
+        _25 = <Vec<isize> as Index<usize>>::index(move _26, const 0_usize) -> [return: bb8, unwind: bb15];
+    }
+
+    bb8: {
+        _24 = _25;
+        _23 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_24) -> [return: bb9, unwind: bb15];
+    }
+
+    bb9: {
+        _22 = [move _23];
+        _21 = &_22;
+        _20 = _21 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _16 = Arguments::<'_>::new_v1(move _17, move _20) -> [return: bb10, unwind: bb15];
+    }
+
+    bb10: {
+        _15 = _print(move _16) -> [return: bb11, unwind: bb15];
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        _27 = const false;
+        return;
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        switchInt(_27) -> [0: bb13, otherwise: bb14];
+    }
+
+    bb16: {
+        (*_29) = [const 2_isize];
+        _10 = move _14 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _9 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _10) -> [return: bb6, unwind: bb15];
+    }
+
+    bb17: {
+        (*_28) = [const 1_isize];
+        _4 = move _8 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _3 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _4) -> [return: bb3, unwind: bb15];
+    }
+}

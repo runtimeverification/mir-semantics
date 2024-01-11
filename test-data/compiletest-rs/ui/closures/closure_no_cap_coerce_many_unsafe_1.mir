@@ -1,0 +1,218 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn add(_1: i32, _2: i32) -> i32 {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Add(_1, _2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: unsafe fn(i32, i32) -> i32;
+    let mut _2: &str;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: !;
+    let mut _6: (&i32, &i32);
+    let mut _7: &i32;
+    let _8: i32;
+    let mut _9: unsafe fn(i32, i32) -> i32;
+    let mut _10: &i32;
+    let _11: i32;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: i32;
+    let mut _17: i32;
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _22: &str;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: !;
+    let mut _26: (&i32, &i32);
+    let mut _27: &i32;
+    let _28: i32;
+    let mut _29: unsafe fn(i32, i32) -> i32;
+    let mut _30: &i32;
+    let _31: i32;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: i32;
+    let mut _37: i32;
+    let _39: !;
+    let mut _40: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug foo => _1;
+        let _12: &i32;
+        let _13: &i32;
+        let _21: unsafe fn(i32, i32) -> i32;
+        scope 2 {
+        }
+        scope 3 {
+            debug left_val => _12;
+            debug right_val => _13;
+            let _18: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _18;
+            }
+        }
+        scope 5 {
+            debug foo => _21;
+            let _32: &i32;
+            let _33: &i32;
+            scope 6 {
+            }
+            scope 7 {
+                debug left_val => _32;
+                debug right_val => _33;
+                let _38: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _38;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const "+";
+        _3 = <str as PartialEq>::eq(_2, const "+") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _3) -> [0: bb2, otherwise: bb5];
+    }
+
+    bb2: {
+        _4 = <str as PartialEq>::eq(_2, const "-") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb6];
+    }
+
+    bb4: {
+        _5 = core::panicking::panic(const "not implemented");
+    }
+
+    bb5: {
+        _1 = add as unsafe fn(i32, i32) -> i32 (Pointer(ReifyFnPointer));
+        goto -> bb7;
+    }
+
+    bb6: {
+        _1 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_unsafe_1.rs:10:16: 10:22] as unsafe fn(i32, i32) -> i32 (Pointer(ClosureFnPointer(Unsafe)));
+        goto -> bb7;
+    }
+
+    bb7: {
+        _9 = _1;
+        _8 = move _9(const 5_i32, const 5_i32) -> bb8;
+    }
+
+    bb8: {
+        _7 = &_8;
+        _11 = const 10_i32;
+        _10 = &_11;
+        _6 = (move _7, move _10);
+        _12 = (_6.0: &i32);
+        _13 = (_6.1: &i32);
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<i32, i32>(move _18, _12, _13, move _20);
+    }
+
+    bb10: {
+        _22 = const "-";
+        _23 = <str as PartialEq>::eq(_22, const "-") -> bb11;
+    }
+
+    bb11: {
+        switchInt(move _23) -> [0: bb12, otherwise: bb15];
+    }
+
+    bb12: {
+        _24 = <str as PartialEq>::eq(_22, const "+") -> bb13;
+    }
+
+    bb13: {
+        switchInt(move _24) -> [0: bb14, otherwise: bb16];
+    }
+
+    bb14: {
+        _25 = core::panicking::panic(const "not implemented");
+    }
+
+    bb15: {
+        _21 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_unsafe_1.rs:18:16: 18:22] as unsafe fn(i32, i32) -> i32 (Pointer(ClosureFnPointer(Unsafe)));
+        goto -> bb17;
+    }
+
+    bb16: {
+        _21 = add as unsafe fn(i32, i32) -> i32 (Pointer(ReifyFnPointer));
+        goto -> bb17;
+    }
+
+    bb17: {
+        _29 = _21;
+        _28 = move _29(const 5_i32, const 5_i32) -> bb18;
+    }
+
+    bb18: {
+        _27 = &_28;
+        _31 = const 0_i32;
+        _30 = &_31;
+        _26 = (move _27, move _30);
+        _32 = (_26.0: &i32);
+        _33 = (_26.1: &i32);
+        _36 = (*_32);
+        _37 = (*_33);
+        _35 = Eq(move _36, move _37);
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _38 = core::panicking::AssertKind::Eq;
+        _40 = Option::<Arguments<'_>>::None;
+        _39 = core::panicking::assert_failed::<i32, i32>(move _38, _32, _33, move _40);
+    }
+
+    bb20: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_unsafe_1.rs:10:16: 10:22], _2: i32, _3: i32) -> i32 {
+    debug a => _2;
+    debug b => _3;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Sub(_2, _3);
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_unsafe_1.rs:18:16: 18:22], _2: i32, _3: i32) -> i32 {
+    debug a => _2;
+    debug b => _3;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Sub(_2, _3);
+        return;
+    }
+}

@@ -1,0 +1,49 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> impl Copy {
+    let mut _0: impl std::marker::Copy;
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo::{closure#0}(_1: &[closure@ui/impl-trait/closure-calling-parent-fn.rs:10:25: 10:27]) -> impl Copy {
+    let mut _0: impl std::marker::Copy;
+
+    bb0: {
+        _0 = foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar() -> impl Copy {
+    let mut _0: impl std::marker::Copy;
+
+    bb0: {
+        return;
+    }
+}
+
+fn bar::{closure#0}(_1: &[closure@ui/impl-trait/closure-calling-parent-fn.rs:11:25: 11:27]) -> impl Copy {
+    let mut _0: impl std::marker::Copy;
+
+    bb0: {
+        _0 = bar() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

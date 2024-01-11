@@ -1,0 +1,153 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_generic(_1: T, _2: F) -> () {
+    debug expected => _1;
+    debug eq => _2;
+    let mut _0: ();
+    let _3: T;
+    let mut _4: bool;
+    let mut _5: &T;
+    let _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: F;
+    let mut _10: (T, T);
+    let mut _11: T;
+    let mut _12: T;
+    let mut _13: !;
+    let mut _14: bool;
+    let mut _15: bool;
+    scope 1 {
+        debug actual => _3;
+    }
+
+    bb0: {
+        _15 = const false;
+        _14 = const false;
+        _15 = const true;
+        _14 = const true;
+        _4 = const true;
+        switchInt(_4) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _6 = begin_panic::<&str>(const "wat") -> bb10;
+    }
+
+    bb2: {
+        _5 = &_1;
+        _3 = <T as Clone>::clone(move _5) -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _14 = const false;
+        _9 = move _2;
+        _15 = const false;
+        _11 = move _1;
+        _12 = move _3;
+        _10 = (move _11, move _12);
+        _8 = <F as FnOnce<(T, T)>>::call_once(move _9, move _10) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _13 = core::panicking::panic(const "assertion failed: eq(expected, actual)") -> bb10;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        switchInt(_15) -> [0: bb8, otherwise: bb11];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        switchInt(_14) -> [0: bb7, otherwise: bb9];
+    }
+
+    bb11 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+}
+
+fn test_vec() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::boxed::Box<isize>;
+
+    bb0: {
+        _2 = Box::<isize>::new(const 1_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = test_generic::<Box<isize>, fn(Box<isize>, Box<isize>) -> bool {compare_box}>(move _2, compare_box) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn compare_box(_1: Box<isize>, _2: Box<isize>) -> bool {
+    debug v1 => _1;
+    debug v2 => _2;
+    let mut _0: bool;
+    let mut _3: &std::boxed::Box<isize>;
+    let mut _4: &std::boxed::Box<isize>;
+
+    bb0: {
+        _3 = &_1;
+        _4 = &_2;
+        _0 = <Box<isize> as PartialEq>::eq(move _3, move _4) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        drop(_2) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = test_vec() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

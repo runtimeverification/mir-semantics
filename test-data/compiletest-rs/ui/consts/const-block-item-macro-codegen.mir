@@ -1,0 +1,195 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-block-item-macro-codegen.rs:13:1: 13:12>::eval(_1: &MyType, _2: usize) -> usize {
+    debug self => _1;
+    debug a => _2;
+    let mut _0: usize;
+    let mut _3: fn(usize, usize) -> usize;
+    let mut _4: usize;
+
+    bb0: {
+        _3 = ((*_1).2: fn(usize, usize) -> usize);
+        _4 = ((*_1).1: usize);
+        _0 = move _3(move _4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static GENERATED_CODE_1: MyType = {
+    let mut _0: MyType;
+    let mut _1: fn(usize, usize) -> usize;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = GENERATED_CODE_1::generated as fn(usize, usize) -> usize (Pointer(ReifyFnPointer));
+        _0 = MyType { desc: const "test", data: const 100_usize, code: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn GENERATED_CODE_1::generated(_1: usize, _2: usize) -> usize {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: usize;
+    let mut _3: usize;
+
+    bb0: {
+        _3 = Mul(const 2_usize, _2);
+        _0 = Sub(_1, move _3);
+        return;
+    }
+}
+
+static GENERATED_CODE_2: MyType = {
+    let mut _0: MyType;
+    let mut _1: fn(usize, usize) -> usize;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = GENERATED_CODE_2::generated as fn(usize, usize) -> usize (Pointer(ReifyFnPointer));
+        _0 = MyType { desc: const "test", data: const 1000_usize, code: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn GENERATED_CODE_2::generated(_1: usize, _2: usize) -> usize {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: usize;
+    let mut _3: usize;
+
+    bb0: {
+        _3 = Mul(const 5_usize, _2);
+        _0 = Sub(_1, move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let _4: &MyType;
+    let mut _5: &usize;
+    let _6: usize;
+    let _7: &usize;
+    let _8: &usize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: usize;
+    let mut _12: usize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&usize, &usize);
+    let mut _17: &usize;
+    let _18: usize;
+    let _19: &MyType;
+    let mut _20: &usize;
+    let _21: usize;
+    let _22: &usize;
+    let _23: &usize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: usize;
+    let mut _27: usize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _28: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _28;
+        }
+    }
+
+    bb0: {
+        _4 = const {alloc1: &MyType};
+        _3 = MyType::eval(_4, const 10_usize) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _6 = const 80_usize;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &usize);
+        _8 = (_1.1: &usize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<usize, usize>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        _19 = const {alloc2: &MyType};
+        _18 = MyType::eval(_19, const 100_usize) -> bb4;
+    }
+
+    bb4: {
+        _17 = &_18;
+        _21 = const 500_usize;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &usize);
+        _23 = (_16.1: &usize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<usize, usize>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+alloc2 (static: GENERATED_CODE_2, size: 32, align: 8) {
+    0x00 │ ╾───────alloc20───────╼ 04 00 00 00 00 00 00 00 │ ╾──────╼........
+    0x10 │ ╾───────alloc18───────╼ e8 03 00 00 00 00 00 00 │ ╾──────╼........
+}
+
+alloc20 (size: 4, align: 1) {
+    74 65 73 74                                     │ test
+}
+
+alloc18 (fn: GENERATED_CODE_2::generated)
+
+alloc1 (static: GENERATED_CODE_1, size: 32, align: 8) {
+    0x00 │ ╾───────alloc16───────╼ 04 00 00 00 00 00 00 00 │ ╾──────╼........
+    0x10 │ ╾───────alloc14───────╼ 64 00 00 00 00 00 00 00 │ ╾──────╼d.......
+}
+
+alloc16 (size: 4, align: 1) {
+    74 65 73 74                                     │ test
+}
+
+alloc14 (fn: GENERATED_CODE_1::generated)

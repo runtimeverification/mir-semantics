@@ -1,0 +1,557 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: usize) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn bar(_1: usize) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn add(_1: i32, _2: i32) -> i32 {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Add(_1, _2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: &usize;
+    let _6: usize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: usize;
+    let mut _12: usize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: i32;
+    let mut _18: !;
+    let mut _19: (&usize, &usize);
+    let mut _20: &usize;
+    let _21: usize;
+    let mut _22: fn(usize) -> usize;
+    let mut _23: &usize;
+    let _24: usize;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: usize;
+    let mut _30: usize;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: i32;
+    let mut _36: !;
+    let mut _37: (&usize, &usize);
+    let mut _38: &usize;
+    let _39: usize;
+    let mut _40: fn(usize) -> usize;
+    let mut _41: &usize;
+    let _42: usize;
+    let mut _45: bool;
+    let mut _46: bool;
+    let mut _47: usize;
+    let mut _48: usize;
+    let _50: !;
+    let mut _51: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _53: i32;
+    let mut _54: !;
+    let mut _55: (&usize, &usize);
+    let mut _56: &usize;
+    let _57: usize;
+    let mut _58: fn(usize) -> usize;
+    let mut _59: &usize;
+    let _60: usize;
+    let mut _63: bool;
+    let mut _64: bool;
+    let mut _65: usize;
+    let mut _66: usize;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _71: i32;
+    let mut _72: !;
+    let mut _73: (&i32, &i32);
+    let mut _74: &i32;
+    let _75: i32;
+    let mut _76: fn(usize) -> i32;
+    let mut _77: &i32;
+    let _78: i32;
+    let mut _81: bool;
+    let mut _82: bool;
+    let mut _83: i32;
+    let mut _84: i32;
+    let _86: !;
+    let mut _87: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _89: fn(i32, i32) -> i32;
+    let mut _90: fn(i32, i32) -> i32;
+    let mut _91: (&[i32; 2], &[i32; 2]);
+    let mut _92: &[i32; 2];
+    let _93: [i32; 2];
+    let mut _94: i32;
+    let mut _95: fn(i32, i32) -> i32;
+    let _96: usize;
+    let mut _97: usize;
+    let mut _98: bool;
+    let mut _99: i32;
+    let mut _100: fn(i32, i32) -> i32;
+    let _101: usize;
+    let mut _102: usize;
+    let mut _103: bool;
+    let mut _104: &[i32; 2];
+    let _105: [i32; 2];
+    let mut _108: bool;
+    let mut _109: bool;
+    let _111: !;
+    let mut _112: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug c => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:20:13: 20:16];
+        let _1: fn(usize) -> usize;
+        scope 2 {
+            debug c_pointer => _1;
+            let _7: &usize;
+            let _8: &usize;
+            let _16: fn(usize) -> usize;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+            scope 5 {
+                debug f => _16;
+                let _25: &usize;
+                let _26: &usize;
+                let _34: fn(usize) -> usize;
+                scope 6 {
+                    debug left_val => _25;
+                    debug right_val => _26;
+                    let _31: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _31;
+                    }
+                }
+                scope 8 {
+                    debug f => _34;
+                    let _43: &usize;
+                    let _44: &usize;
+                    let _52: fn(usize) -> usize;
+                    scope 9 {
+                        debug left_val => _43;
+                        debug right_val => _44;
+                        let _49: core::panicking::AssertKind;
+                        scope 10 {
+                            debug kind => _49;
+                        }
+                    }
+                    scope 11 {
+                        debug f => _52;
+                        let _61: &usize;
+                        let _62: &usize;
+                        scope 12 {
+                            debug left_val => _61;
+                            debug right_val => _62;
+                            let _67: core::panicking::AssertKind;
+                            scope 13 {
+                                debug kind => _67;
+                            }
+                        }
+                        scope 14 {
+                            debug clo0 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:46:16: 46:26];
+                            scope 15 {
+                                debug clo1 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:47:16: 47:19];
+                                scope 16 {
+                                    debug clo2 => const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:48:16: 48:19];
+                                    let _70: fn(usize) -> i32;
+                                    scope 17 {
+                                        debug f => _70;
+                                        let _79: &i32;
+                                        let _80: &i32;
+                                        let _88: [fn(i32, i32) -> i32; 2];
+                                        scope 18 {
+                                            debug left_val => _79;
+                                            debug right_val => _80;
+                                            let _85: core::panicking::AssertKind;
+                                            scope 19 {
+                                                debug kind => _85;
+                                            }
+                                        }
+                                        scope 20 {
+                                            debug funcs => _88;
+                                            let _106: &[i32; 2];
+                                            let _107: &[i32; 2];
+                                            scope 21 {
+                                                debug left_val => _106;
+                                                debug right_val => _107;
+                                                let _110: core::panicking::AssertKind;
+                                                scope 22 {
+                                                    debug kind => _110;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:20:13: 20:16] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        _4 = _1(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _6 = const 42_usize;
+        _5 = &_6;
+        _2 = (move _3, move _5);
+        _7 = (_2.0: &usize);
+        _8 = (_2.1: &usize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<usize, usize>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        _17 = const 0_i32;
+        switchInt(_17) -> [0: bb5, 1: bb6, otherwise: bb4];
+    }
+
+    bb4: {
+        _18 = core::panicking::panic(const "not implemented");
+    }
+
+    bb5: {
+        _16 = foo as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        goto -> bb7;
+    }
+
+    bb6: {
+        _16 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:26:14: 26:17] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb7;
+    }
+
+    bb7: {
+        _22 = _16;
+        _21 = move _22(const 42_usize) -> bb8;
+    }
+
+    bb8: {
+        _20 = &_21;
+        _24 = const 0_usize;
+        _23 = &_24;
+        _19 = (move _20, move _23);
+        _25 = (_19.0: &usize);
+        _26 = (_19.1: &usize);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<usize, usize>(move _31, _25, _26, move _33);
+    }
+
+    bb10: {
+        _35 = const 2_i32;
+        switchInt(_35) -> [2: bb12, 0: bb13, otherwise: bb11];
+    }
+
+    bb11: {
+        _36 = core::panicking::panic(const "not implemented");
+    }
+
+    bb12: {
+        _34 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:32:14: 32:17] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb14;
+    }
+
+    bb13: {
+        _34 = foo as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        goto -> bb14;
+    }
+
+    bb14: {
+        _40 = _34;
+        _39 = move _40(const 42_usize) -> bb15;
+    }
+
+    bb15: {
+        _38 = &_39;
+        _42 = const 2_usize;
+        _41 = &_42;
+        _37 = (move _38, move _41);
+        _43 = (_37.0: &usize);
+        _44 = (_37.1: &usize);
+        _47 = (*_43);
+        _48 = (*_44);
+        _46 = Eq(move _47, move _48);
+        _45 = Not(move _46);
+        switchInt(move _45) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _49 = core::panicking::AssertKind::Eq;
+        _51 = Option::<Arguments<'_>>::None;
+        _50 = core::panicking::assert_failed::<usize, usize>(move _49, _43, _44, move _51);
+    }
+
+    bb17: {
+        _53 = const 1_i32;
+        switchInt(_53) -> [0: bb19, 1: bb20, 2: bb21, otherwise: bb18];
+    }
+
+    bb18: {
+        _54 = core::panicking::panic(const "not implemented");
+    }
+
+    bb19: {
+        _52 = foo as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        goto -> bb22;
+    }
+
+    bb20: {
+        _52 = bar as fn(usize) -> usize (Pointer(ReifyFnPointer));
+        goto -> bb22;
+    }
+
+    bb21: {
+        _52 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:41:14: 41:17] as fn(usize) -> usize (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb22;
+    }
+
+    bb22: {
+        _58 = _52;
+        _57 = move _58(const 42_usize) -> bb23;
+    }
+
+    bb23: {
+        _56 = &_57;
+        _60 = const 1_usize;
+        _59 = &_60;
+        _55 = (move _56, move _59);
+        _61 = (_55.0: &usize);
+        _62 = (_55.1: &usize);
+        _65 = (*_61);
+        _66 = (*_62);
+        _64 = Eq(move _65, move _66);
+        _63 = Not(move _64);
+        switchInt(move _63) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<usize, usize>(move _67, _61, _62, move _69);
+    }
+
+    bb25: {
+        _71 = const 0_i32;
+        switchInt(_71) -> [0: bb27, 1: bb28, 2: bb29, otherwise: bb26];
+    }
+
+    bb26: {
+        _72 = core::panicking::panic(const "not implemented");
+    }
+
+    bb27: {
+        _70 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:46:16: 46:26] as fn(usize) -> i32 (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb30;
+    }
+
+    bb28: {
+        _70 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:47:16: 47:19] as fn(usize) -> i32 (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb30;
+    }
+
+    bb29: {
+        _70 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:48:16: 48:19] as fn(usize) -> i32 (Pointer(ClosureFnPointer(Normal)));
+        goto -> bb30;
+    }
+
+    bb30: {
+        _76 = _70;
+        _75 = move _76(const 42_usize) -> bb31;
+    }
+
+    bb31: {
+        _74 = &_75;
+        _78 = const 0_i32;
+        _77 = &_78;
+        _73 = (move _74, move _77);
+        _79 = (_73.0: &i32);
+        _80 = (_73.1: &i32);
+        _83 = (*_79);
+        _84 = (*_80);
+        _82 = Eq(move _83, move _84);
+        _81 = Not(move _82);
+        switchInt(move _81) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _85 = core::panicking::AssertKind::Eq;
+        _87 = Option::<Arguments<'_>>::None;
+        _86 = core::panicking::assert_failed::<i32, i32>(move _85, _79, _80, move _87);
+    }
+
+    bb33: {
+        _89 = add as fn(i32, i32) -> i32 (Pointer(ReifyFnPointer));
+        _90 = const ZeroSized: [closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:57:23: 57:29] as fn(i32, i32) -> i32 (Pointer(ClosureFnPointer(Normal)));
+        _88 = [move _89, move _90];
+        _96 = const 0_usize;
+        _97 = const 2_usize;
+        _98 = Lt(_96, _97);
+        assert(move _98, "index out of bounds: the length is {} but the index is {}", move _97, _96) -> bb34;
+    }
+
+    bb34: {
+        _95 = _88[_96];
+        _94 = move _95(const 5_i32, const 5_i32) -> bb35;
+    }
+
+    bb35: {
+        _101 = const 1_usize;
+        _102 = const 2_usize;
+        _103 = Lt(_101, _102);
+        assert(move _103, "index out of bounds: the length is {} but the index is {}", move _102, _101) -> bb36;
+    }
+
+    bb36: {
+        _100 = _88[_101];
+        _99 = move _100(const 5_i32, const 5_i32) -> bb37;
+    }
+
+    bb37: {
+        _93 = [move _94, move _99];
+        _92 = &_93;
+        _105 = [const 10_i32, const 0_i32];
+        _104 = &_105;
+        _91 = (move _92, move _104);
+        _106 = (_91.0: &[i32; 2]);
+        _107 = (_91.1: &[i32; 2]);
+        _109 = <[i32; 2] as PartialEq>::eq(_106, _107) -> bb38;
+    }
+
+    bb38: {
+        _108 = Not(move _109);
+        switchInt(move _108) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _110 = core::panicking::AssertKind::Eq;
+        _112 = Option::<Arguments<'_>>::None;
+        _111 = core::panicking::assert_failed::<[i32; 2], [i32; 2]>(move _110, _106, _107, move _112);
+    }
+
+    bb40: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:20:13: 20:16], _2: usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:26:14: 26:17], _2: usize) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:32:14: 32:17], _2: usize) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:41:14: 41:17], _2: usize) -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:46:16: 46:26], _2: usize) -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:47:16: 47:19], _2: usize) -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+fn main::{closure#6}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:48:16: 48:19], _2: usize) -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn main::{closure#7}(_1: &[closure@ui/closures/closure_no_cap_coerce_many_run_pass.rs:57:23: 57:29], _2: i32, _3: i32) -> i32 {
+    debug a => _2;
+    debug b => _3;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Sub(_2, _3);
+        return;
+    }
+}

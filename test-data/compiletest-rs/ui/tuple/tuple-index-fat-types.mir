@@ -1,0 +1,134 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &[isize];
+    let _2: &[isize; 3];
+    let _3: [isize; 3];
+    let mut _5: &[isize];
+    let mut _6: (&&[isize], &&[isize]);
+    let mut _7: &&[isize];
+    let mut _8: &&[isize];
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _17: &[isize; 3];
+    let _18: [isize; 3];
+    let mut _20: &[isize];
+    let mut _21: (&&[isize], &&[isize]);
+    let mut _22: &&[isize];
+    let mut _23: &&[isize];
+    let mut _26: bool;
+    let mut _27: bool;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _4: (&[isize],);
+        scope 2 {
+            debug y => _4;
+            let _9: &&[isize];
+            let _10: &&[isize];
+            let _16: &[isize];
+            scope 3 {
+                debug left_val => _9;
+                debug right_val => _10;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+            scope 5 {
+                debug x => _16;
+                let _19: Foo<'_>;
+                scope 6 {
+                    debug y => _19;
+                    let _24: &&[isize];
+                    let _25: &&[isize];
+                    scope 7 {
+                        debug left_val => _24;
+                        debug right_val => _25;
+                        let _28: core::panicking::AssertKind;
+                        scope 8 {
+                            debug kind => _28;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 1_isize, const 2_isize, const 3_isize];
+        _2 = &_3;
+        _1 = _2 as &[isize] (Pointer(Unsize));
+        _5 = _1;
+        _4 = (move _5,);
+        _7 = &(_4.0: &[isize]);
+        _8 = &_1;
+        _6 = (move _7, move _8);
+        _9 = (_6.0: &&[isize]);
+        _10 = (_6.1: &&[isize]);
+        _12 = <&[isize] as PartialEq>::eq(_9, _10) -> bb1;
+    }
+
+    bb1: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<&[isize], &[isize]>(move _13, _9, _10, move _15);
+    }
+
+    bb3: {
+        _18 = [const 1_isize, const 2_isize, const 3_isize];
+        _17 = &_18;
+        _16 = _17 as &[isize] (Pointer(Unsize));
+        _20 = _16;
+        _19 = Foo::<'_>(move _20);
+        _22 = &(_19.0: &[isize]);
+        _23 = &_16;
+        _21 = (move _22, move _23);
+        _24 = (_21.0: &&[isize]);
+        _25 = (_21.1: &&[isize]);
+        _27 = <&[isize] as PartialEq>::eq(_24, _25) -> bb4;
+    }
+
+    bb4: {
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<&[isize], &[isize]>(move _28, _24, _25, move _30);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn Foo(_1: &[isize]) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: &[isize]) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}

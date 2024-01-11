@@ -1,0 +1,78 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn with_bound() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+with_bound::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Eq(const 2_usize, const 0_usize);
+        assert(!move _1, "attempt to divide `{}` by zero", const N) -> bb1;
+    }
+
+    bb1: {
+        _0 = Div(const N, const 2_usize);
+        return;
+    }
+}
+
+with_bound::{constant#2}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Eq(const 2_usize, const 0_usize);
+        assert(!move _1, "attempt to divide `{}` by zero", const N) -> bb1;
+    }
+
+    bb1: {
+        _0 = Div(const N, const 2_usize);
+        return;
+    }
+}
+
+with_bound::{constant#1}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Eq(const 2_usize, const 0_usize);
+        assert(!move _1, "attempt to divide `{}` by zero", const N) -> bb1;
+    }
+
+    bb1: {
+        _0 = Div(const N, const 2_usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = with_bound::<4>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

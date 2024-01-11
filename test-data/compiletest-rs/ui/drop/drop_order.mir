@@ -1,0 +1,3301 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/drop/drop_order.rs:8:10: 8:17>::default() -> DropOrderCollector {
+    let mut _0: DropOrderCollector;
+    let mut _1: std::cell::RefCell<std::vec::Vec<u32>>;
+
+    bb0: {
+        _1 = <RefCell<Vec<u32>> as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = DropOrderCollector(move _1);
+        return;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:13:1: 13:27>::drop(_1: &mut LoudDrop<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &u32;
+    let _12: ();
+    let mut _13: &mut std::vec::Vec<u32>;
+    let mut _14: &mut std::vec::Vec<u32>;
+    let mut _15: &mut std::cell::RefMut<'_, std::vec::Vec<u32>>;
+    let mut _16: std::cell::RefMut<'_, std::vec::Vec<u32>>;
+    let mut _17: &std::cell::RefCell<std::vec::Vec<u32>>;
+    let mut _18: u32;
+    let mut _19: &DropOrderCollector;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).1: u32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _19 = deref_copy ((*_1).0: &DropOrderCollector);
+        _17 = &((*_19).0: std::cell::RefCell<std::vec::Vec<u32>>);
+        _16 = RefCell::<Vec<u32>>::borrow_mut(move _17) -> bb4;
+    }
+
+    bb4: {
+        _15 = &mut _16;
+        _14 = <RefMut<'_, Vec<u32>> as DerefMut>::deref_mut(move _15) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        _13 = _14;
+        _18 = ((*_1).1: u32);
+        _12 = Vec::<u32>::push(move _13, move _18) -> [return: bb6, unwind: bb8];
+    }
+
+    bb6: {
+        drop(_16) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_16) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::option_loud_drop(_1: &DropOrderCollector, _2: u32) -> Option<LoudDrop<'_>> {
+    debug self => _1;
+    debug n => _2;
+    let mut _0: std::option::Option<LoudDrop<'_>>;
+    let mut _3: LoudDrop<'_>;
+
+    bb0: {
+        _3 = LoudDrop::<'_>(_1, _2);
+        _0 = Option::<LoudDrop<'_>>::Some(move _3);
+        return;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::loud_drop(_1: &DropOrderCollector, _2: u32) -> LoudDrop<'_> {
+    debug self => _1;
+    debug n => _2;
+    let mut _0: LoudDrop<'_>;
+
+    bb0: {
+        _0 = LoudDrop::<'_>(_1, _2);
+        return;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::print(_1: &DropOrderCollector, _2: u32) -> () {
+    debug self => _1;
+    debug n => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &u32;
+    let mut _13: &mut std::vec::Vec<u32>;
+    let mut _14: &mut std::vec::Vec<u32>;
+    let mut _15: &mut std::cell::RefMut<'_, std::vec::Vec<u32>>;
+    let mut _16: std::cell::RefMut<'_, std::vec::Vec<u32>>;
+    let mut _17: &std::cell::RefCell<std::vec::Vec<u32>>;
+    let mut _18: u32;
+
+    bb0: {
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_2;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_12) -> bb1;
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = _print(move _4) -> bb3;
+    }
+
+    bb3: {
+        _17 = &((*_1).0: std::cell::RefCell<std::vec::Vec<u32>>);
+        _16 = RefCell::<Vec<u32>>::borrow_mut(move _17) -> bb4;
+    }
+
+    bb4: {
+        _15 = &mut _16;
+        _14 = <RefMut<'_, Vec<u32>> as DerefMut>::deref_mut(move _15) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        _13 = _14;
+        _18 = _2;
+        _0 = Vec::<u32>::push(move _13, move _18) -> [return: bb6, unwind: bb8];
+    }
+
+    bb6: {
+        drop(_16) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_16) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::if_(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: &std::option::Option<LoudDrop<'_>>;
+    let _4: std::option::Option<LoudDrop<'_>>;
+    let _5: ();
+    let mut _6: bool;
+    let mut _7: &std::option::Option<LoudDrop<'_>>;
+    let _8: std::option::Option<LoudDrop<'_>>;
+    let _9: !;
+    let mut _10: bool;
+    let mut _11: &std::option::Option<LoudDrop<'_>>;
+    let _12: std::option::Option<LoudDrop<'_>>;
+    let _13: ();
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: &std::option::Option<LoudDrop<'_>>;
+    let _18: std::option::Option<LoudDrop<'_>>;
+    let mut _19: bool;
+    let mut _20: &std::option::Option<LoudDrop<'_>>;
+    let _21: std::option::Option<LoudDrop<'_>>;
+    let _22: LoudDrop<'_>;
+    let _23: ();
+
+    bb0: {
+        _4 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _2 = Option::<LoudDrop<'_>>::is_some(move _3) -> [return: bb2, unwind: bb36];
+    }
+
+    bb2: {
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _2) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _5 = DropOrderCollector::print(_1, const 2_u32) -> bb5;
+    }
+
+    bb5: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 3_u32) -> bb6;
+    }
+
+    bb6: {
+        _7 = &_8;
+        _6 = Option::<LoudDrop<'_>>::is_none(move _7) -> [return: bb7, unwind: bb35];
+    }
+
+    bb7: {
+        drop(_8) -> bb8;
+    }
+
+    bb8: {
+        switchInt(move _6) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _9 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb10: {
+        _12 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb11;
+    }
+
+    bb11: {
+        _11 = &_12;
+        _10 = Option::<LoudDrop<'_>>::is_some(move _11) -> [return: bb12, unwind: bb34];
+    }
+
+    bb12: {
+        drop(_12) -> bb13;
+    }
+
+    bb13: {
+        switchInt(move _10) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _13 = DropOrderCollector::print(_1, const 5_u32) -> bb15;
+    }
+
+    bb15: {
+        _18 = DropOrderCollector::option_loud_drop(_1, const 6_u32) -> bb19;
+    }
+
+    bb16: {
+        _15 = const false;
+        goto -> bb18;
+    }
+
+    bb17: {
+        _21 = DropOrderCollector::option_loud_drop(_1, const 7_u32) -> bb22;
+    }
+
+    bb18: {
+        switchInt(move _15) -> [0: bb28, otherwise: bb25];
+    }
+
+    bb19: {
+        _17 = &_18;
+        _16 = Option::<LoudDrop<'_>>::is_some(move _17) -> [return: bb20, unwind: bb33];
+    }
+
+    bb20: {
+        drop(_18) -> bb21;
+    }
+
+    bb21: {
+        switchInt(move _16) -> [0: bb16, otherwise: bb17];
+    }
+
+    bb22: {
+        _20 = &_21;
+        _19 = Option::<LoudDrop<'_>>::is_some(move _20) -> [return: bb23, unwind: bb32];
+    }
+
+    bb23: {
+        drop(_21) -> bb24;
+    }
+
+    bb24: {
+        _15 = move _19;
+        goto -> bb18;
+    }
+
+    bb25: {
+        _22 = DropOrderCollector::loud_drop(_1, const 8_u32) -> bb26;
+    }
+
+    bb26: {
+        drop(_22) -> bb27;
+    }
+
+    bb27: {
+        _14 = const true;
+        goto -> bb29;
+    }
+
+    bb28: {
+        _14 = const false;
+        goto -> bb29;
+    }
+
+    bb29: {
+        switchInt(move _14) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb30: {
+        _23 = DropOrderCollector::print(_1, const 9_u32) -> bb31;
+    }
+
+    bb31: {
+        return;
+    }
+
+    bb32 (cleanup): {
+        drop(_21) -> [return: bb37, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_18) -> [return: bb37, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_12) -> [return: bb37, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_8) -> [return: bb37, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        drop(_4) -> [return: bb37, unwind terminate];
+    }
+
+    bb37 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::if_let(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: std::option::Option<LoudDrop<'_>>;
+    let mut _3: isize;
+    let _4: !;
+    let _5: ();
+    let mut _6: std::option::Option<LoudDrop<'_>>;
+    let mut _7: isize;
+    let _8: ();
+    let mut _9: std::option::Option<LoudDrop<'_>>;
+    let mut _10: isize;
+    let _12: ();
+    let mut _13: bool;
+    let mut _14: isize;
+    scope 1 {
+    }
+    scope 2 {
+    }
+    scope 3 {
+        debug _d => _11;
+        let _11: LoudDrop<'_>;
+    }
+
+    bb0: {
+        _13 = const false;
+        _2 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = discriminant(_2);
+        switchInt(move _3) -> [0: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _4 = core::panicking::panic(const "internal error: entered unreachable code") -> bb15;
+    }
+
+    bb3: {
+        _5 = DropOrderCollector::print(_1, const 1_u32) -> [return: bb4, unwind: bb15];
+    }
+
+    bb4: {
+        drop(_2) -> bb5;
+    }
+
+    bb5: {
+        _6 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb6;
+    }
+
+    bb6: {
+        _7 = discriminant(_6);
+        switchInt(move _7) -> [1: bb7, otherwise: bb8];
+    }
+
+    bb7: {
+        _8 = DropOrderCollector::print(_1, const 3_u32) -> [return: bb21, unwind: bb14];
+    }
+
+    bb8: {
+        drop(_6) -> bb9;
+    }
+
+    bb9: {
+        _13 = const true;
+        _9 = DropOrderCollector::option_loud_drop(_1, const 6_u32) -> bb10;
+    }
+
+    bb10: {
+        _10 = discriminant(_9);
+        switchInt(move _10) -> [1: bb11, otherwise: bb20];
+    }
+
+    bb11: {
+        _13 = const false;
+        _11 = move ((_9 as Some).0: LoudDrop<'_>);
+        _12 = DropOrderCollector::print(_1, const 5_u32) -> [return: bb12, unwind: bb13];
+    }
+
+    bb12: {
+        drop(_11) -> bb20;
+    }
+
+    bb13 (cleanup): {
+        drop(_11) -> [return: bb16, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_6) -> [return: bb16, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_2) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        resume;
+    }
+
+    bb17: {
+        _13 = const false;
+        return;
+    }
+
+    bb18: {
+        switchInt(_13) -> [0: bb17, otherwise: bb19];
+    }
+
+    bb19: {
+        drop(((_9 as Some).0: LoudDrop<'_>)) -> bb17;
+    }
+
+    bb20: {
+        _14 = discriminant(_9);
+        switchInt(move _14) -> [1: bb18, otherwise: bb17];
+    }
+
+    bb21: {
+        goto -> bb8;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::match_(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::option::Option<LoudDrop<'_>>;
+    let _4: std::option::Option<LoudDrop<'_>>;
+    let _5: ();
+    let mut _6: std::option::Option<LoudDrop<'_>>;
+    let _7: ();
+    let mut _8: std::option::Option<LoudDrop<'_>>;
+    let mut _9: isize;
+    let mut _10: !;
+    let _11: ();
+    let mut _12: LoudDrop<'_>;
+    let _14: ();
+    let _15: ();
+    let mut _16: std::option::Option<LoudDrop<'_>>;
+    let mut _17: std::option::Option<LoudDrop<'_>>;
+    let _18: ();
+    let mut _19: std::option::Option<LoudDrop<'_>>;
+    let mut _20: std::option::Option<LoudDrop<'_>>;
+    let _21: ();
+    scope 1 {
+        debug _any => _4;
+    }
+    scope 2 {
+        let _13: LoudDrop<'_>;
+        scope 3 {
+            debug _d => _13;
+        }
+    }
+
+    bb0: {
+        _3 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb1;
+    }
+
+    bb1: {
+        _4 = move _3;
+        _2 = DropOrderCollector::print(_1, const 1_u32) -> [return: bb2, unwind: bb37];
+    }
+
+    bb2: {
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        _6 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb4;
+    }
+
+    bb4: {
+        _5 = DropOrderCollector::print(_1, const 3_u32) -> [return: bb5, unwind: bb36];
+    }
+
+    bb5: {
+        drop(_6) -> bb6;
+    }
+
+    bb6: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 6_u32) -> bb7;
+    }
+
+    bb7: {
+        _9 = discriminant(_8);
+        switchInt(move _9) -> [1: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _10 = core::panicking::panic(const "internal error: entered unreachable code") -> bb35;
+    }
+
+    bb9: {
+        _7 = DropOrderCollector::print(_1, const 5_u32) -> [return: bb10, unwind: bb35];
+    }
+
+    bb10: {
+        drop(_8) -> bb11;
+    }
+
+    bb11: {
+        _12 = DropOrderCollector::loud_drop(_1, const 7_u32) -> bb12;
+    }
+
+    bb12: {
+        drop(_12) -> bb13;
+    }
+
+    bb13: {
+        _13 = DropOrderCollector::loud_drop(_1, const 9_u32) -> bb14;
+    }
+
+    bb14: {
+        _14 = DropOrderCollector::print(_1, const 8_u32) -> [return: bb15, unwind: bb34];
+    }
+
+    bb15: {
+        drop(_13) -> bb16;
+    }
+
+    bb16: {
+        _11 = DropOrderCollector::print(_1, const 10_u32) -> bb17;
+    }
+
+    bb17: {
+        _17 = DropOrderCollector::option_loud_drop(_1, const 14_u32) -> bb18;
+    }
+
+    bb18: {
+        _18 = DropOrderCollector::print(_1, const 11_u32) -> [return: bb19, unwind: bb33];
+    }
+
+    bb19: {
+        _16 = DropOrderCollector::option_loud_drop(_1, const 13_u32) -> [return: bb20, unwind: bb33];
+    }
+
+    bb20: {
+        _15 = DropOrderCollector::print(_1, const 12_u32) -> [return: bb21, unwind: bb32];
+    }
+
+    bb21: {
+        drop(_16) -> [return: bb22, unwind: bb33];
+    }
+
+    bb22: {
+        drop(_17) -> bb23;
+    }
+
+    bb23: {
+        _20 = DropOrderCollector::option_loud_drop(_1, const 16_u32) -> bb24;
+    }
+
+    bb24: {
+        _21 = DropOrderCollector::print(_1, const 15_u32) -> [return: bb25, unwind: bb31];
+    }
+
+    bb25: {
+        _19 = DropOrderCollector::option_loud_drop(_1, const 18_u32) -> [return: bb26, unwind: bb31];
+    }
+
+    bb26: {
+        drop(_20) -> bb27;
+    }
+
+    bb27: {
+        _0 = DropOrderCollector::print(_1, const 17_u32) -> [return: bb28, unwind: bb30];
+    }
+
+    bb28: {
+        drop(_19) -> bb29;
+    }
+
+    bb29: {
+        return;
+    }
+
+    bb30 (cleanup): {
+        drop(_19) -> [return: bb38, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_20) -> [return: bb38, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_16) -> [return: bb33, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_17) -> [return: bb38, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_13) -> [return: bb38, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_8) -> [return: bb38, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        drop(_6) -> [return: bb38, unwind terminate];
+    }
+
+    bb37 (cleanup): {
+        drop(_4) -> [return: bb38, unwind terminate];
+    }
+
+    bb38 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::and_chain(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: &std::option::Option<LoudDrop<'_>>;
+    let _8: std::option::Option<LoudDrop<'_>>;
+    let mut _9: bool;
+    let mut _10: &std::option::Option<LoudDrop<'_>>;
+    let _11: std::option::Option<LoudDrop<'_>>;
+    let mut _12: bool;
+    let mut _13: &std::option::Option<LoudDrop<'_>>;
+    let _14: std::option::Option<LoudDrop<'_>>;
+    let mut _15: bool;
+    let mut _16: &std::option::Option<LoudDrop<'_>>;
+    let _17: std::option::Option<LoudDrop<'_>>;
+    let mut _18: bool;
+    let mut _19: &std::option::Option<LoudDrop<'_>>;
+    let _20: std::option::Option<LoudDrop<'_>>;
+    let _21: ();
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: &std::option::Option<LoudDrop<'_>>;
+    let _25: std::option::Option<LoudDrop<'_>>;
+    let mut _26: bool;
+    let mut _27: &std::option::Option<LoudDrop<'_>>;
+    let _28: std::option::Option<LoudDrop<'_>>;
+    let mut _29: bool;
+    let mut _30: &std::option::Option<LoudDrop<'_>>;
+    let _31: std::option::Option<LoudDrop<'_>>;
+    let _32: ();
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: &std::option::Option<LoudDrop<'_>>;
+    let _37: std::option::Option<LoudDrop<'_>>;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: &std::option::Option<LoudDrop<'_>>;
+    let _42: std::option::Option<LoudDrop<'_>>;
+    let mut _43: bool;
+    let mut _44: &std::option::Option<LoudDrop<'_>>;
+    let _45: std::option::Option<LoudDrop<'_>>;
+    let mut _46: bool;
+    let mut _47: &std::option::Option<LoudDrop<'_>>;
+    let _48: std::option::Option<LoudDrop<'_>>;
+    let mut _49: bool;
+    let mut _50: &std::option::Option<LoudDrop<'_>>;
+    let _51: std::option::Option<LoudDrop<'_>>;
+    let _52: ();
+    scope 1 {
+    }
+
+    bb0: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> bb13;
+    }
+
+    bb1: {
+        _2 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _20 = DropOrderCollector::option_loud_drop(_1, const 5_u32) -> bb25;
+    }
+
+    bb3: {
+        switchInt(move _2) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb4: {
+        _3 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _17 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb22;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        _4 = const false;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _14 = DropOrderCollector::option_loud_drop(_1, const 3_u32) -> bb19;
+    }
+
+    bb9: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb10: {
+        _5 = const false;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _11 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb16;
+    }
+
+    bb12: {
+        switchInt(move _5) -> [0: bb7, otherwise: bb8];
+    }
+
+    bb13: {
+        _7 = &_8;
+        _6 = Option::<LoudDrop<'_>>::is_some(move _7) -> [return: bb14, unwind: bb85];
+    }
+
+    bb14: {
+        drop(_8) -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _6) -> [0: bb10, otherwise: bb11];
+    }
+
+    bb16: {
+        _10 = &_11;
+        _9 = Option::<LoudDrop<'_>>::is_some(move _10) -> [return: bb17, unwind: bb84];
+    }
+
+    bb17: {
+        drop(_11) -> bb18;
+    }
+
+    bb18: {
+        _5 = move _9;
+        goto -> bb12;
+    }
+
+    bb19: {
+        _13 = &_14;
+        _12 = Option::<LoudDrop<'_>>::is_some(move _13) -> [return: bb20, unwind: bb83];
+    }
+
+    bb20: {
+        drop(_14) -> bb21;
+    }
+
+    bb21: {
+        _4 = move _12;
+        goto -> bb9;
+    }
+
+    bb22: {
+        _16 = &_17;
+        _15 = Option::<LoudDrop<'_>>::is_some(move _16) -> [return: bb23, unwind: bb82];
+    }
+
+    bb23: {
+        drop(_17) -> bb24;
+    }
+
+    bb24: {
+        _3 = move _15;
+        goto -> bb6;
+    }
+
+    bb25: {
+        _19 = &_20;
+        _18 = Option::<LoudDrop<'_>>::is_some(move _19) -> [return: bb26, unwind: bb81];
+    }
+
+    bb26: {
+        drop(_20) -> bb27;
+    }
+
+    bb27: {
+        _2 = move _18;
+        goto -> bb3;
+    }
+
+    bb28: {
+        _21 = DropOrderCollector::print(_1, const 6_u32) -> bb29;
+    }
+
+    bb29: {
+        _25 = DropOrderCollector::option_loud_drop(_1, const 7_u32) -> bb35;
+    }
+
+    bb30: {
+        _31 = DropOrderCollector::option_loud_drop(_1, const 9_u32) -> bb41;
+    }
+
+    bb31: {
+        _32 = DropOrderCollector::print(_1, const 10_u32) -> bb43;
+    }
+
+    bb32: {
+        _22 = const false;
+        goto -> bb34;
+    }
+
+    bb33: {
+        _28 = DropOrderCollector::option_loud_drop(_1, const 8_u32) -> bb38;
+    }
+
+    bb34: {
+        switchInt(move _22) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb35: {
+        _24 = &_25;
+        _23 = Option::<LoudDrop<'_>>::is_some(move _24) -> [return: bb36, unwind: bb80];
+    }
+
+    bb36: {
+        drop(_25) -> bb37;
+    }
+
+    bb37: {
+        switchInt(move _23) -> [0: bb32, otherwise: bb33];
+    }
+
+    bb38: {
+        _27 = &_28;
+        _26 = Option::<LoudDrop<'_>>::is_some(move _27) -> [return: bb39, unwind: bb79];
+    }
+
+    bb39: {
+        drop(_28) -> bb40;
+    }
+
+    bb40: {
+        _22 = move _26;
+        goto -> bb34;
+    }
+
+    bb41: {
+        _30 = &_31;
+        _29 = Option::<LoudDrop<'_>>::is_some(move _30) -> [return: bb42, unwind: bb78];
+    }
+
+    bb42: {
+        drop(_31) -> bb31;
+    }
+
+    bb43: {
+        _37 = DropOrderCollector::option_loud_drop(_1, const 11_u32) -> bb50;
+    }
+
+    bb44: {
+        _33 = const false;
+        goto -> bb46;
+    }
+
+    bb45: {
+        _51 = DropOrderCollector::option_loud_drop(_1, const 15_u32) -> bb68;
+    }
+
+    bb46: {
+        switchInt(move _33) -> [0: bb72, otherwise: bb71];
+    }
+
+    bb47: {
+        _34 = const false;
+        goto -> bb49;
+    }
+
+    bb48: {
+        _42 = DropOrderCollector::option_loud_drop(_1, const 12_u32) -> bb59;
+    }
+
+    bb49: {
+        switchInt(move _34) -> [0: bb44, otherwise: bb45];
+    }
+
+    bb50: {
+        _36 = &_37;
+        _35 = Option::<LoudDrop<'_>>::is_some(move _36) -> [return: bb51, unwind: bb77];
+    }
+
+    bb51: {
+        drop(_37) -> bb52;
+    }
+
+    bb52: {
+        switchInt(move _35) -> [0: bb47, otherwise: bb48];
+    }
+
+    bb53: {
+        _38 = const false;
+        goto -> bb55;
+    }
+
+    bb54: {
+        _48 = DropOrderCollector::option_loud_drop(_1, const 14_u32) -> bb65;
+    }
+
+    bb55: {
+        _34 = move _38;
+        goto -> bb49;
+    }
+
+    bb56: {
+        _39 = const false;
+        goto -> bb58;
+    }
+
+    bb57: {
+        _45 = DropOrderCollector::option_loud_drop(_1, const 13_u32) -> bb62;
+    }
+
+    bb58: {
+        switchInt(move _39) -> [0: bb53, otherwise: bb54];
+    }
+
+    bb59: {
+        _41 = &_42;
+        _40 = Option::<LoudDrop<'_>>::is_some(move _41) -> [return: bb60, unwind: bb76];
+    }
+
+    bb60: {
+        drop(_42) -> bb61;
+    }
+
+    bb61: {
+        switchInt(move _40) -> [0: bb56, otherwise: bb57];
+    }
+
+    bb62: {
+        _44 = &_45;
+        _43 = Option::<LoudDrop<'_>>::is_some(move _44) -> [return: bb63, unwind: bb75];
+    }
+
+    bb63: {
+        drop(_45) -> bb64;
+    }
+
+    bb64: {
+        _39 = move _43;
+        goto -> bb58;
+    }
+
+    bb65: {
+        _47 = &_48;
+        _46 = Option::<LoudDrop<'_>>::is_some(move _47) -> [return: bb66, unwind: bb74];
+    }
+
+    bb66: {
+        drop(_48) -> bb67;
+    }
+
+    bb67: {
+        _38 = move _46;
+        goto -> bb55;
+    }
+
+    bb68: {
+        _50 = &_51;
+        _49 = Option::<LoudDrop<'_>>::is_some(move _50) -> [return: bb69, unwind: bb73];
+    }
+
+    bb69: {
+        drop(_51) -> bb70;
+    }
+
+    bb70: {
+        _33 = move _49;
+        goto -> bb46;
+    }
+
+    bb71: {
+        _52 = DropOrderCollector::print(_1, const 16_u32) -> bb72;
+    }
+
+    bb72: {
+        return;
+    }
+
+    bb73 (cleanup): {
+        drop(_51) -> [return: bb86, unwind terminate];
+    }
+
+    bb74 (cleanup): {
+        drop(_48) -> [return: bb86, unwind terminate];
+    }
+
+    bb75 (cleanup): {
+        drop(_45) -> [return: bb86, unwind terminate];
+    }
+
+    bb76 (cleanup): {
+        drop(_42) -> [return: bb86, unwind terminate];
+    }
+
+    bb77 (cleanup): {
+        drop(_37) -> [return: bb86, unwind terminate];
+    }
+
+    bb78 (cleanup): {
+        drop(_31) -> [return: bb86, unwind terminate];
+    }
+
+    bb79 (cleanup): {
+        drop(_28) -> [return: bb86, unwind terminate];
+    }
+
+    bb80 (cleanup): {
+        drop(_25) -> [return: bb86, unwind terminate];
+    }
+
+    bb81 (cleanup): {
+        drop(_20) -> [return: bb86, unwind terminate];
+    }
+
+    bb82 (cleanup): {
+        drop(_17) -> [return: bb86, unwind terminate];
+    }
+
+    bb83 (cleanup): {
+        drop(_14) -> [return: bb86, unwind terminate];
+    }
+
+    bb84 (cleanup): {
+        drop(_11) -> [return: bb86, unwind terminate];
+    }
+
+    bb85 (cleanup): {
+        drop(_8) -> [return: bb86, unwind terminate];
+    }
+
+    bb86 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::or_chain(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: &std::option::Option<LoudDrop<'_>>;
+    let _8: std::option::Option<LoudDrop<'_>>;
+    let mut _9: bool;
+    let mut _10: &std::option::Option<LoudDrop<'_>>;
+    let _11: std::option::Option<LoudDrop<'_>>;
+    let mut _12: bool;
+    let mut _13: &std::option::Option<LoudDrop<'_>>;
+    let _14: std::option::Option<LoudDrop<'_>>;
+    let mut _15: bool;
+    let mut _16: &std::option::Option<LoudDrop<'_>>;
+    let _17: std::option::Option<LoudDrop<'_>>;
+    let mut _18: bool;
+    let mut _19: &std::option::Option<LoudDrop<'_>>;
+    let _20: std::option::Option<LoudDrop<'_>>;
+    let _21: ();
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: &std::option::Option<LoudDrop<'_>>;
+    let _25: std::option::Option<LoudDrop<'_>>;
+    let mut _26: bool;
+    let mut _27: &std::option::Option<LoudDrop<'_>>;
+    let _28: std::option::Option<LoudDrop<'_>>;
+    let mut _29: bool;
+    let mut _30: &std::option::Option<LoudDrop<'_>>;
+    let _31: std::option::Option<LoudDrop<'_>>;
+    let _32: ();
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: &std::option::Option<LoudDrop<'_>>;
+    let _37: std::option::Option<LoudDrop<'_>>;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: &std::option::Option<LoudDrop<'_>>;
+    let _42: std::option::Option<LoudDrop<'_>>;
+    let mut _43: bool;
+    let mut _44: &std::option::Option<LoudDrop<'_>>;
+    let _45: std::option::Option<LoudDrop<'_>>;
+    let mut _46: bool;
+    let mut _47: &std::option::Option<LoudDrop<'_>>;
+    let _48: std::option::Option<LoudDrop<'_>>;
+    let mut _49: bool;
+    let mut _50: &std::option::Option<LoudDrop<'_>>;
+    let _51: std::option::Option<LoudDrop<'_>>;
+    let _52: ();
+    scope 1 {
+    }
+
+    bb0: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> bb13;
+    }
+
+    bb1: {
+        _2 = const true;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _20 = DropOrderCollector::option_loud_drop(_1, const 5_u32) -> bb25;
+    }
+
+    bb3: {
+        switchInt(move _2) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb4: {
+        _3 = const true;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _17 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb22;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb7: {
+        _4 = const true;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _14 = DropOrderCollector::option_loud_drop(_1, const 3_u32) -> bb19;
+    }
+
+    bb9: {
+        switchInt(move _4) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb10: {
+        _5 = const true;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _11 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb16;
+    }
+
+    bb12: {
+        switchInt(move _5) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb13: {
+        _7 = &_8;
+        _6 = Option::<LoudDrop<'_>>::is_none(move _7) -> [return: bb14, unwind: bb85];
+    }
+
+    bb14: {
+        drop(_8) -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _6) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb16: {
+        _10 = &_11;
+        _9 = Option::<LoudDrop<'_>>::is_none(move _10) -> [return: bb17, unwind: bb84];
+    }
+
+    bb17: {
+        drop(_11) -> bb18;
+    }
+
+    bb18: {
+        _5 = move _9;
+        goto -> bb12;
+    }
+
+    bb19: {
+        _13 = &_14;
+        _12 = Option::<LoudDrop<'_>>::is_none(move _13) -> [return: bb20, unwind: bb83];
+    }
+
+    bb20: {
+        drop(_14) -> bb21;
+    }
+
+    bb21: {
+        _4 = move _12;
+        goto -> bb9;
+    }
+
+    bb22: {
+        _16 = &_17;
+        _15 = Option::<LoudDrop<'_>>::is_none(move _16) -> [return: bb23, unwind: bb82];
+    }
+
+    bb23: {
+        drop(_17) -> bb24;
+    }
+
+    bb24: {
+        _3 = move _15;
+        goto -> bb6;
+    }
+
+    bb25: {
+        _19 = &_20;
+        _18 = Option::<LoudDrop<'_>>::is_some(move _19) -> [return: bb26, unwind: bb81];
+    }
+
+    bb26: {
+        drop(_20) -> bb27;
+    }
+
+    bb27: {
+        _2 = move _18;
+        goto -> bb3;
+    }
+
+    bb28: {
+        _21 = DropOrderCollector::print(_1, const 6_u32) -> bb29;
+    }
+
+    bb29: {
+        _25 = DropOrderCollector::option_loud_drop(_1, const 7_u32) -> bb35;
+    }
+
+    bb30: {
+        _31 = DropOrderCollector::option_loud_drop(_1, const 9_u32) -> bb41;
+    }
+
+    bb31: {
+        _32 = DropOrderCollector::print(_1, const 10_u32) -> bb43;
+    }
+
+    bb32: {
+        _22 = const true;
+        goto -> bb34;
+    }
+
+    bb33: {
+        _28 = DropOrderCollector::option_loud_drop(_1, const 8_u32) -> bb38;
+    }
+
+    bb34: {
+        switchInt(move _22) -> [0: bb30, otherwise: bb31];
+    }
+
+    bb35: {
+        _24 = &_25;
+        _23 = Option::<LoudDrop<'_>>::is_none(move _24) -> [return: bb36, unwind: bb80];
+    }
+
+    bb36: {
+        drop(_25) -> bb37;
+    }
+
+    bb37: {
+        switchInt(move _23) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb38: {
+        _27 = &_28;
+        _26 = Option::<LoudDrop<'_>>::is_none(move _27) -> [return: bb39, unwind: bb79];
+    }
+
+    bb39: {
+        drop(_28) -> bb40;
+    }
+
+    bb40: {
+        _22 = move _26;
+        goto -> bb34;
+    }
+
+    bb41: {
+        _30 = &_31;
+        _29 = Option::<LoudDrop<'_>>::is_none(move _30) -> [return: bb42, unwind: bb78];
+    }
+
+    bb42: {
+        drop(_31) -> bb31;
+    }
+
+    bb43: {
+        _37 = DropOrderCollector::option_loud_drop(_1, const 11_u32) -> bb50;
+    }
+
+    bb44: {
+        _33 = const true;
+        goto -> bb46;
+    }
+
+    bb45: {
+        _51 = DropOrderCollector::option_loud_drop(_1, const 15_u32) -> bb68;
+    }
+
+    bb46: {
+        switchInt(move _33) -> [0: bb72, otherwise: bb71];
+    }
+
+    bb47: {
+        _34 = const true;
+        goto -> bb49;
+    }
+
+    bb48: {
+        _42 = DropOrderCollector::option_loud_drop(_1, const 12_u32) -> bb59;
+    }
+
+    bb49: {
+        switchInt(move _34) -> [0: bb45, otherwise: bb44];
+    }
+
+    bb50: {
+        _36 = &_37;
+        _35 = Option::<LoudDrop<'_>>::is_none(move _36) -> [return: bb51, unwind: bb77];
+    }
+
+    bb51: {
+        drop(_37) -> bb52;
+    }
+
+    bb52: {
+        switchInt(move _35) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb53: {
+        _38 = const true;
+        goto -> bb55;
+    }
+
+    bb54: {
+        _48 = DropOrderCollector::option_loud_drop(_1, const 14_u32) -> bb65;
+    }
+
+    bb55: {
+        _34 = move _38;
+        goto -> bb49;
+    }
+
+    bb56: {
+        _39 = const true;
+        goto -> bb58;
+    }
+
+    bb57: {
+        _45 = DropOrderCollector::option_loud_drop(_1, const 13_u32) -> bb62;
+    }
+
+    bb58: {
+        switchInt(move _39) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb59: {
+        _41 = &_42;
+        _40 = Option::<LoudDrop<'_>>::is_none(move _41) -> [return: bb60, unwind: bb76];
+    }
+
+    bb60: {
+        drop(_42) -> bb61;
+    }
+
+    bb61: {
+        switchInt(move _40) -> [0: bb57, otherwise: bb56];
+    }
+
+    bb62: {
+        _44 = &_45;
+        _43 = Option::<LoudDrop<'_>>::is_none(move _44) -> [return: bb63, unwind: bb75];
+    }
+
+    bb63: {
+        drop(_45) -> bb64;
+    }
+
+    bb64: {
+        _39 = move _43;
+        goto -> bb58;
+    }
+
+    bb65: {
+        _47 = &_48;
+        _46 = Option::<LoudDrop<'_>>::is_none(move _47) -> [return: bb66, unwind: bb74];
+    }
+
+    bb66: {
+        drop(_48) -> bb67;
+    }
+
+    bb67: {
+        _38 = move _46;
+        goto -> bb55;
+    }
+
+    bb68: {
+        _50 = &_51;
+        _49 = Option::<LoudDrop<'_>>::is_some(move _50) -> [return: bb69, unwind: bb73];
+    }
+
+    bb69: {
+        drop(_51) -> bb70;
+    }
+
+    bb70: {
+        _33 = move _49;
+        goto -> bb46;
+    }
+
+    bb71: {
+        _52 = DropOrderCollector::print(_1, const 16_u32) -> bb72;
+    }
+
+    bb72: {
+        return;
+    }
+
+    bb73 (cleanup): {
+        drop(_51) -> [return: bb86, unwind terminate];
+    }
+
+    bb74 (cleanup): {
+        drop(_48) -> [return: bb86, unwind terminate];
+    }
+
+    bb75 (cleanup): {
+        drop(_45) -> [return: bb86, unwind terminate];
+    }
+
+    bb76 (cleanup): {
+        drop(_42) -> [return: bb86, unwind terminate];
+    }
+
+    bb77 (cleanup): {
+        drop(_37) -> [return: bb86, unwind terminate];
+    }
+
+    bb78 (cleanup): {
+        drop(_31) -> [return: bb86, unwind terminate];
+    }
+
+    bb79 (cleanup): {
+        drop(_28) -> [return: bb86, unwind terminate];
+    }
+
+    bb80 (cleanup): {
+        drop(_25) -> [return: bb86, unwind terminate];
+    }
+
+    bb81 (cleanup): {
+        drop(_20) -> [return: bb86, unwind terminate];
+    }
+
+    bb82 (cleanup): {
+        drop(_17) -> [return: bb86, unwind terminate];
+    }
+
+    bb83 (cleanup): {
+        drop(_14) -> [return: bb86, unwind terminate];
+    }
+
+    bb84 (cleanup): {
+        drop(_11) -> [return: bb86, unwind terminate];
+    }
+
+    bb85 (cleanup): {
+        drop(_8) -> [return: bb86, unwind terminate];
+    }
+
+    bb86 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::mixed_and_or_chain(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: &std::option::Option<LoudDrop<'_>>;
+    let _8: std::option::Option<LoudDrop<'_>>;
+    let mut _9: bool;
+    let mut _10: &std::option::Option<LoudDrop<'_>>;
+    let _11: std::option::Option<LoudDrop<'_>>;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: &std::option::Option<LoudDrop<'_>>;
+    let _16: std::option::Option<LoudDrop<'_>>;
+    let mut _17: bool;
+    let mut _18: &std::option::Option<LoudDrop<'_>>;
+    let _19: std::option::Option<LoudDrop<'_>>;
+    let mut _20: bool;
+    let mut _21: &std::option::Option<LoudDrop<'_>>;
+    let _22: std::option::Option<LoudDrop<'_>>;
+    let mut _23: bool;
+    let mut _24: &std::option::Option<LoudDrop<'_>>;
+    let _25: std::option::Option<LoudDrop<'_>>;
+    let mut _26: bool;
+    let mut _27: &std::option::Option<LoudDrop<'_>>;
+    let _28: std::option::Option<LoudDrop<'_>>;
+    let _29: ();
+
+    bb0: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> bb13;
+    }
+
+    bb1: {
+        _2 = const true;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _28 = DropOrderCollector::option_loud_drop(_1, const 7_u32) -> bb37;
+    }
+
+    bb3: {
+        switchInt(move _2) -> [0: bb41, otherwise: bb40];
+    }
+
+    bb4: {
+        _3 = const true;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _25 = DropOrderCollector::option_loud_drop(_1, const 6_u32) -> bb34;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb7: {
+        _4 = const true;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _16 = DropOrderCollector::option_loud_drop(_1, const 3_u32) -> bb25;
+    }
+
+    bb9: {
+        switchInt(move _4) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb10: {
+        _5 = const true;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _11 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb16;
+    }
+
+    bb12: {
+        switchInt(move _5) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb13: {
+        _7 = &_8;
+        _6 = Option::<LoudDrop<'_>>::is_none(move _7) -> [return: bb14, unwind: bb48];
+    }
+
+    bb14: {
+        drop(_8) -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _6) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb16: {
+        _10 = &_11;
+        _9 = Option::<LoudDrop<'_>>::is_none(move _10) -> [return: bb17, unwind: bb47];
+    }
+
+    bb17: {
+        drop(_11) -> bb18;
+    }
+
+    bb18: {
+        _5 = move _9;
+        goto -> bb12;
+    }
+
+    bb19: {
+        _12 = const false;
+        goto -> bb21;
+    }
+
+    bb20: {
+        _22 = DropOrderCollector::option_loud_drop(_1, const 5_u32) -> bb31;
+    }
+
+    bb21: {
+        _4 = move _12;
+        goto -> bb9;
+    }
+
+    bb22: {
+        _13 = const false;
+        goto -> bb24;
+    }
+
+    bb23: {
+        _19 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb28;
+    }
+
+    bb24: {
+        switchInt(move _13) -> [0: bb19, otherwise: bb20];
+    }
+
+    bb25: {
+        _15 = &_16;
+        _14 = Option::<LoudDrop<'_>>::is_some(move _15) -> [return: bb26, unwind: bb46];
+    }
+
+    bb26: {
+        drop(_16) -> bb27;
+    }
+
+    bb27: {
+        switchInt(move _14) -> [0: bb22, otherwise: bb23];
+    }
+
+    bb28: {
+        _18 = &_19;
+        _17 = Option::<LoudDrop<'_>>::is_some(move _18) -> [return: bb29, unwind: bb45];
+    }
+
+    bb29: {
+        drop(_19) -> bb30;
+    }
+
+    bb30: {
+        _13 = move _17;
+        goto -> bb24;
+    }
+
+    bb31: {
+        _21 = &_22;
+        _20 = Option::<LoudDrop<'_>>::is_none(move _21) -> [return: bb32, unwind: bb44];
+    }
+
+    bb32: {
+        drop(_22) -> bb33;
+    }
+
+    bb33: {
+        _12 = move _20;
+        goto -> bb21;
+    }
+
+    bb34: {
+        _24 = &_25;
+        _23 = Option::<LoudDrop<'_>>::is_none(move _24) -> [return: bb35, unwind: bb43];
+    }
+
+    bb35: {
+        drop(_25) -> bb36;
+    }
+
+    bb36: {
+        _3 = move _23;
+        goto -> bb6;
+    }
+
+    bb37: {
+        _27 = &_28;
+        _26 = Option::<LoudDrop<'_>>::is_some(move _27) -> [return: bb38, unwind: bb42];
+    }
+
+    bb38: {
+        drop(_28) -> bb39;
+    }
+
+    bb39: {
+        _2 = move _26;
+        goto -> bb3;
+    }
+
+    bb40: {
+        _29 = DropOrderCollector::print(_1, const 8_u32) -> bb41;
+    }
+
+    bb41: {
+        return;
+    }
+
+    bb42 (cleanup): {
+        drop(_28) -> [return: bb49, unwind terminate];
+    }
+
+    bb43 (cleanup): {
+        drop(_25) -> [return: bb49, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_22) -> [return: bb49, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_19) -> [return: bb49, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_16) -> [return: bb49, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        drop(_11) -> [return: bb49, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_8) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::let_chain(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    debug _d => _11;
+    debug _d => _29;
+    debug _e => _35;
+    debug _d => _39;
+    debug _e => _42;
+    debug _d => _59;
+    debug _e => _62;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: &std::option::Option<LoudDrop<'_>>;
+    let _5: std::option::Option<LoudDrop<'_>>;
+    let mut _6: bool;
+    let mut _7: &std::option::Option<LoudDrop<'_>>;
+    let _8: std::option::Option<LoudDrop<'_>>;
+    let mut _9: std::option::Option<LoudDrop<'_>>;
+    let mut _10: isize;
+    let _11: LoudDrop<'_>;
+    let _12: ();
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: &std::option::Option<LoudDrop<'_>>;
+    let _16: std::option::Option<LoudDrop<'_>>;
+    let mut _17: bool;
+    let mut _18: &std::option::Option<LoudDrop<'_>>;
+    let _19: std::option::Option<LoudDrop<'_>>;
+    let mut _20: std::option::Option<LoudDrop<'_>>;
+    let mut _21: isize;
+    let _22: !;
+    let _23: ();
+    let mut _24: bool;
+    let mut _25: &std::option::Option<LoudDrop<'_>>;
+    let _26: std::option::Option<LoudDrop<'_>>;
+    let mut _27: std::option::Option<LoudDrop<'_>>;
+    let mut _28: isize;
+    let _29: LoudDrop<'_>;
+    let mut _30: bool;
+    let mut _31: &std::option::Option<LoudDrop<'_>>;
+    let _32: std::option::Option<LoudDrop<'_>>;
+    let mut _33: std::option::Option<LoudDrop<'_>>;
+    let mut _34: isize;
+    let _35: LoudDrop<'_>;
+    let _36: ();
+    let mut _37: std::option::Option<LoudDrop<'_>>;
+    let mut _38: isize;
+    let _39: LoudDrop<'_>;
+    let mut _40: std::option::Option<LoudDrop<'_>>;
+    let mut _41: isize;
+    let _42: LoudDrop<'_>;
+    let mut _43: bool;
+    let mut _44: &std::option::Option<LoudDrop<'_>>;
+    let _45: std::option::Option<LoudDrop<'_>>;
+    let mut _46: bool;
+    let mut _47: &std::option::Option<LoudDrop<'_>>;
+    let _48: std::option::Option<LoudDrop<'_>>;
+    let _49: ();
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: &std::option::Option<LoudDrop<'_>>;
+    let _53: std::option::Option<LoudDrop<'_>>;
+    let mut _54: bool;
+    let mut _55: &std::option::Option<LoudDrop<'_>>;
+    let _56: std::option::Option<LoudDrop<'_>>;
+    let mut _57: std::option::Option<LoudDrop<'_>>;
+    let mut _58: isize;
+    let _59: LoudDrop<'_>;
+    let mut _60: std::option::Option<LoudDrop<'_>>;
+    let mut _61: isize;
+    let _62: LoudDrop<'_>;
+    let _63: ();
+    let mut _64: bool;
+    let mut _65: bool;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: bool;
+    let mut _69: bool;
+    let mut _70: bool;
+    let mut _71: bool;
+    let mut _72: bool;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: bool;
+    let mut _77: bool;
+    let mut _78: isize;
+    let mut _79: isize;
+    let mut _80: isize;
+    let mut _81: isize;
+    let mut _82: isize;
+    let mut _83: isize;
+    let mut _84: isize;
+    let mut _85: isize;
+    let mut _86: isize;
+    let mut _87: isize;
+    let mut _88: isize;
+    let mut _89: isize;
+    let mut _90: isize;
+
+    bb0: {
+        _64 = const false;
+        _66 = const false;
+        _69 = const false;
+        _67 = const false;
+        _71 = const false;
+        _76 = const false;
+        _74 = const false;
+        _65 = const false;
+        _70 = const false;
+        _68 = const false;
+        _73 = const false;
+        _72 = const false;
+        _77 = const false;
+        _75 = const false;
+        _5 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> bb4;
+    }
+
+    bb1: {
+        _2 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _8 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> bb7;
+    }
+
+    bb3: {
+        switchInt(move _2) -> [0: bb14, otherwise: bb10];
+    }
+
+    bb4: {
+        _4 = &_5;
+        _3 = Option::<LoudDrop<'_>>::is_some(move _4) -> [return: bb5, unwind: bb100];
+    }
+
+    bb5: {
+        drop(_5) -> bb6;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        _7 = &_8;
+        _6 = Option::<LoudDrop<'_>>::is_some(move _7) -> [return: bb8, unwind: bb99];
+    }
+
+    bb8: {
+        drop(_8) -> bb9;
+    }
+
+    bb9: {
+        _2 = move _6;
+        goto -> bb3;
+    }
+
+    bb10: {
+        _64 = const true;
+        _65 = const true;
+        _9 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb11;
+    }
+
+    bb11: {
+        _10 = discriminant(_9);
+        switchInt(move _10) -> [1: bb12, otherwise: bb14];
+    }
+
+    bb12: {
+        _65 = const false;
+        _11 = move ((_9 as Some).0: LoudDrop<'_>);
+        _12 = DropOrderCollector::print(_1, const 3_u32) -> [return: bb13, unwind: bb98];
+    }
+
+    bb13: {
+        drop(_11) -> bb14;
+    }
+
+    bb14: {
+        switchInt(_64) -> [0: bb102, otherwise: bb105];
+    }
+
+    bb15: {
+        _13 = const false;
+        goto -> bb17;
+    }
+
+    bb16: {
+        _19 = DropOrderCollector::option_loud_drop(_1, const 6_u32) -> bb21;
+    }
+
+    bb17: {
+        switchInt(move _13) -> [0: bb27, otherwise: bb24];
+    }
+
+    bb18: {
+        _15 = &_16;
+        _14 = Option::<LoudDrop<'_>>::is_some(move _15) -> [return: bb19, unwind: bb97];
+    }
+
+    bb19: {
+        drop(_16) -> bb20;
+    }
+
+    bb20: {
+        switchInt(move _14) -> [0: bb15, otherwise: bb16];
+    }
+
+    bb21: {
+        _18 = &_19;
+        _17 = Option::<LoudDrop<'_>>::is_some(move _18) -> [return: bb22, unwind: bb96];
+    }
+
+    bb22: {
+        drop(_19) -> bb23;
+    }
+
+    bb23: {
+        _13 = move _17;
+        goto -> bb17;
+    }
+
+    bb24: {
+        _66 = const true;
+        _20 = DropOrderCollector::option_loud_drop(_1, const 8_u32) -> bb25;
+    }
+
+    bb25: {
+        _21 = discriminant(_20);
+        switchInt(move _21) -> [0: bb26, otherwise: bb27];
+    }
+
+    bb26: {
+        _22 = core::panicking::panic(const "internal error: entered unreachable code") -> bb152;
+    }
+
+    bb27: {
+        _23 = DropOrderCollector::print(_1, const 7_u32) -> [return: bb28, unwind: bb152];
+    }
+
+    bb28: {
+        switchInt(_66) -> [0: bb29, otherwise: bb106];
+    }
+
+    bb29: {
+        _66 = const false;
+        _26 = DropOrderCollector::option_loud_drop(_1, const 9_u32) -> bb30;
+    }
+
+    bb30: {
+        _25 = &_26;
+        _24 = Option::<LoudDrop<'_>>::is_some(move _25) -> [return: bb31, unwind: bb95];
+    }
+
+    bb31: {
+        drop(_26) -> bb32;
+    }
+
+    bb32: {
+        switchInt(move _24) -> [0: bb45, otherwise: bb33];
+    }
+
+    bb33: {
+        _69 = const true;
+        _70 = const true;
+        _27 = DropOrderCollector::option_loud_drop(_1, const 13_u32) -> bb34;
+    }
+
+    bb34: {
+        _28 = discriminant(_27);
+        switchInt(move _28) -> [1: bb35, otherwise: bb45];
+    }
+
+    bb35: {
+        _70 = const false;
+        _29 = move ((_27 as Some).0: LoudDrop<'_>);
+        _32 = DropOrderCollector::option_loud_drop(_1, const 10_u32) -> [return: bb36, unwind: bb94];
+    }
+
+    bb36: {
+        _31 = &_32;
+        _30 = Option::<LoudDrop<'_>>::is_some(move _31) -> [return: bb37, unwind: bb93];
+    }
+
+    bb37: {
+        drop(_32) -> [return: bb38, unwind: bb94];
+    }
+
+    bb38: {
+        switchInt(move _30) -> [0: bb43, otherwise: bb39];
+    }
+
+    bb39: {
+        _33 = DropOrderCollector::option_loud_drop(_1, const 12_u32) -> [return: bb40, unwind: bb94];
+    }
+
+    bb40: {
+        _67 = const true;
+        _68 = const true;
+        _34 = discriminant(_33);
+        switchInt(move _34) -> [1: bb41, otherwise: bb43];
+    }
+
+    bb41: {
+        _68 = const false;
+        _35 = move ((_33 as Some).0: LoudDrop<'_>);
+        _36 = DropOrderCollector::print(_1, const 11_u32) -> [return: bb42, unwind: bb91];
+    }
+
+    bb42: {
+        drop(_35) -> [return: bb44, unwind: bb92];
+    }
+
+    bb43: {
+        drop(_29) -> [return: bb45, unwind: bb146];
+    }
+
+    bb44: {
+        drop(_29) -> [return: bb45, unwind: bb146];
+    }
+
+    bb45: {
+        switchInt(_67) -> [0: bb107, otherwise: bb110];
+    }
+
+    bb46: {
+        _38 = discriminant(_37);
+        switchInt(move _38) -> [1: bb47, otherwise: bb62];
+    }
+
+    bb47: {
+        _73 = const false;
+        _39 = move ((_37 as Some).0: LoudDrop<'_>);
+        _40 = DropOrderCollector::option_loud_drop(_1, const 17_u32) -> [return: bb48, unwind: bb90];
+    }
+
+    bb48: {
+        _71 = const true;
+        _72 = const true;
+        _41 = discriminant(_40);
+        switchInt(move _41) -> [1: bb49, otherwise: bb60];
+    }
+
+    bb49: {
+        _72 = const false;
+        _42 = move ((_40 as Some).0: LoudDrop<'_>);
+        _45 = DropOrderCollector::option_loud_drop(_1, const 14_u32) -> [return: bb50, unwind: bb88];
+    }
+
+    bb50: {
+        _44 = &_45;
+        _43 = Option::<LoudDrop<'_>>::is_some(move _44) -> [return: bb51, unwind: bb87];
+    }
+
+    bb51: {
+        drop(_45) -> [return: bb52, unwind: bb88];
+    }
+
+    bb52: {
+        switchInt(move _43) -> [0: bb59, otherwise: bb53];
+    }
+
+    bb53: {
+        _48 = DropOrderCollector::option_loud_drop(_1, const 15_u32) -> [return: bb54, unwind: bb88];
+    }
+
+    bb54: {
+        _47 = &_48;
+        _46 = Option::<LoudDrop<'_>>::is_some(move _47) -> [return: bb55, unwind: bb86];
+    }
+
+    bb55: {
+        drop(_48) -> [return: bb56, unwind: bb88];
+    }
+
+    bb56: {
+        switchInt(move _46) -> [0: bb59, otherwise: bb57];
+    }
+
+    bb57: {
+        _49 = DropOrderCollector::print(_1, const 16_u32) -> [return: bb58, unwind: bb88];
+    }
+
+    bb58: {
+        drop(_42) -> [return: bb61, unwind: bb89];
+    }
+
+    bb59: {
+        drop(_42) -> [return: bb60, unwind: bb89];
+    }
+
+    bb60: {
+        drop(_39) -> [return: bb62, unwind: bb139];
+    }
+
+    bb61: {
+        drop(_39) -> [return: bb62, unwind: bb139];
+    }
+
+    bb62: {
+        switchInt(_71) -> [0: bb115, otherwise: bb118];
+    }
+
+    bb63: {
+        _50 = const false;
+        goto -> bb65;
+    }
+
+    bb64: {
+        _56 = DropOrderCollector::option_loud_drop(_1, const 20_u32) -> bb69;
+    }
+
+    bb65: {
+        switchInt(move _50) -> [0: bb80, otherwise: bb72];
+    }
+
+    bb66: {
+        _52 = &_53;
+        _51 = Option::<LoudDrop<'_>>::is_some(move _52) -> [return: bb67, unwind: bb85];
+    }
+
+    bb67: {
+        drop(_53) -> bb68;
+    }
+
+    bb68: {
+        switchInt(move _51) -> [0: bb63, otherwise: bb64];
+    }
+
+    bb69: {
+        _55 = &_56;
+        _54 = Option::<LoudDrop<'_>>::is_some(move _55) -> [return: bb70, unwind: bb84];
+    }
+
+    bb70: {
+        drop(_56) -> bb71;
+    }
+
+    bb71: {
+        _50 = move _54;
+        goto -> bb65;
+    }
+
+    bb72: {
+        _76 = const true;
+        _77 = const true;
+        _57 = DropOrderCollector::option_loud_drop(_1, const 23_u32) -> bb73;
+    }
+
+    bb73: {
+        _58 = discriminant(_57);
+        switchInt(move _58) -> [1: bb74, otherwise: bb80];
+    }
+
+    bb74: {
+        _77 = const false;
+        _59 = move ((_57 as Some).0: LoudDrop<'_>);
+        _60 = DropOrderCollector::option_loud_drop(_1, const 22_u32) -> [return: bb75, unwind: bb83];
+    }
+
+    bb75: {
+        _74 = const true;
+        _75 = const true;
+        _61 = discriminant(_60);
+        switchInt(move _61) -> [1: bb76, otherwise: bb78];
+    }
+
+    bb76: {
+        _75 = const false;
+        _62 = move ((_60 as Some).0: LoudDrop<'_>);
+        _63 = DropOrderCollector::print(_1, const 21_u32) -> [return: bb77, unwind: bb81];
+    }
+
+    bb77: {
+        drop(_62) -> [return: bb79, unwind: bb82];
+    }
+
+    bb78: {
+        drop(_59) -> [return: bb80, unwind: bb132];
+    }
+
+    bb79: {
+        drop(_59) -> [return: bb80, unwind: bb132];
+    }
+
+    bb80: {
+        switchInt(_74) -> [0: bb122, otherwise: bb125];
+    }
+
+    bb81 (cleanup): {
+        drop(_62) -> [return: bb82, unwind terminate];
+    }
+
+    bb82 (cleanup): {
+        drop(_59) -> [return: bb132, unwind terminate];
+    }
+
+    bb83 (cleanup): {
+        drop(_59) -> [return: bb136, unwind terminate];
+    }
+
+    bb84 (cleanup): {
+        drop(_56) -> [return: bb101, unwind terminate];
+    }
+
+    bb85 (cleanup): {
+        drop(_53) -> [return: bb101, unwind terminate];
+    }
+
+    bb86 (cleanup): {
+        drop(_48) -> [return: bb88, unwind terminate];
+    }
+
+    bb87 (cleanup): {
+        drop(_45) -> [return: bb88, unwind terminate];
+    }
+
+    bb88 (cleanup): {
+        drop(_42) -> [return: bb89, unwind terminate];
+    }
+
+    bb89 (cleanup): {
+        drop(_39) -> [return: bb139, unwind terminate];
+    }
+
+    bb90 (cleanup): {
+        drop(_39) -> [return: bb142, unwind terminate];
+    }
+
+    bb91 (cleanup): {
+        drop(_35) -> [return: bb92, unwind terminate];
+    }
+
+    bb92 (cleanup): {
+        drop(_29) -> [return: bb146, unwind terminate];
+    }
+
+    bb93 (cleanup): {
+        drop(_32) -> [return: bb94, unwind terminate];
+    }
+
+    bb94 (cleanup): {
+        drop(_29) -> [return: bb150, unwind terminate];
+    }
+
+    bb95 (cleanup): {
+        drop(_26) -> [return: bb101, unwind terminate];
+    }
+
+    bb96 (cleanup): {
+        drop(_19) -> [return: bb101, unwind terminate];
+    }
+
+    bb97 (cleanup): {
+        drop(_16) -> [return: bb101, unwind terminate];
+    }
+
+    bb98 (cleanup): {
+        drop(_11) -> [return: bb101, unwind terminate];
+    }
+
+    bb99 (cleanup): {
+        drop(_8) -> [return: bb101, unwind terminate];
+    }
+
+    bb100 (cleanup): {
+        drop(_5) -> [return: bb101, unwind terminate];
+    }
+
+    bb101 (cleanup): {
+        resume;
+    }
+
+    bb102: {
+        _64 = const false;
+        _64 = const false;
+        _65 = const false;
+        _16 = DropOrderCollector::option_loud_drop(_1, const 5_u32) -> bb18;
+    }
+
+    bb103: {
+        switchInt(_65) -> [0: bb102, otherwise: bb104];
+    }
+
+    bb104: {
+        drop(((_9 as Some).0: LoudDrop<'_>)) -> bb102;
+    }
+
+    bb105: {
+        _78 = discriminant(_9);
+        switchInt(move _78) -> [1: bb103, otherwise: bb102];
+    }
+
+    bb106: {
+        drop(_20) -> bb29;
+    }
+
+    bb107: {
+        _67 = const false;
+        _67 = const false;
+        _68 = const false;
+        switchInt(_69) -> [0: bb111, otherwise: bb114];
+    }
+
+    bb108: {
+        switchInt(_68) -> [0: bb107, otherwise: bb109];
+    }
+
+    bb109: {
+        drop(((_33 as Some).0: LoudDrop<'_>)) -> [return: bb107, unwind: bb150];
+    }
+
+    bb110: {
+        _79 = discriminant(_33);
+        switchInt(move _79) -> [1: bb108, otherwise: bb107];
+    }
+
+    bb111: {
+        _69 = const false;
+        _69 = const false;
+        _70 = const false;
+        _73 = const true;
+        _37 = DropOrderCollector::option_loud_drop(_1, const 18_u32) -> bb46;
+    }
+
+    bb112: {
+        switchInt(_70) -> [0: bb111, otherwise: bb113];
+    }
+
+    bb113: {
+        drop(((_27 as Some).0: LoudDrop<'_>)) -> bb111;
+    }
+
+    bb114: {
+        _80 = discriminant(_27);
+        switchInt(move _80) -> [1: bb112, otherwise: bb111];
+    }
+
+    bb115: {
+        _71 = const false;
+        _71 = const false;
+        _72 = const false;
+        _82 = discriminant(_37);
+        switchInt(move _82) -> [1: bb120, otherwise: bb119];
+    }
+
+    bb116: {
+        switchInt(_72) -> [0: bb115, otherwise: bb117];
+    }
+
+    bb117: {
+        drop(((_40 as Some).0: LoudDrop<'_>)) -> [return: bb115, unwind: bb142];
+    }
+
+    bb118: {
+        _81 = discriminant(_40);
+        switchInt(move _81) -> [1: bb116, otherwise: bb115];
+    }
+
+    bb119: {
+        _73 = const false;
+        _53 = DropOrderCollector::option_loud_drop(_1, const 19_u32) -> bb66;
+    }
+
+    bb120: {
+        switchInt(_73) -> [0: bb119, otherwise: bb121];
+    }
+
+    bb121: {
+        drop(((_37 as Some).0: LoudDrop<'_>)) -> bb119;
+    }
+
+    bb122: {
+        _74 = const false;
+        _74 = const false;
+        _75 = const false;
+        switchInt(_76) -> [0: bb126, otherwise: bb129];
+    }
+
+    bb123: {
+        switchInt(_75) -> [0: bb122, otherwise: bb124];
+    }
+
+    bb124: {
+        drop(((_60 as Some).0: LoudDrop<'_>)) -> [return: bb122, unwind: bb136];
+    }
+
+    bb125: {
+        _83 = discriminant(_60);
+        switchInt(move _83) -> [1: bb123, otherwise: bb122];
+    }
+
+    bb126: {
+        _76 = const false;
+        _76 = const false;
+        _77 = const false;
+        return;
+    }
+
+    bb127: {
+        switchInt(_77) -> [0: bb126, otherwise: bb128];
+    }
+
+    bb128: {
+        drop(((_57 as Some).0: LoudDrop<'_>)) -> bb126;
+    }
+
+    bb129: {
+        _84 = discriminant(_57);
+        switchInt(move _84) -> [1: bb127, otherwise: bb126];
+    }
+
+    bb130 (cleanup): {
+        switchInt(_75) -> [0: bb136, otherwise: bb131];
+    }
+
+    bb131 (cleanup): {
+        drop(((_60 as Some).0: LoudDrop<'_>)) -> [return: bb136, unwind terminate];
+    }
+
+    bb132 (cleanup): {
+        _85 = discriminant(_60);
+        switchInt(move _85) -> [1: bb130, otherwise: bb136];
+    }
+
+    bb133 (cleanup): {
+        switchInt(_77) -> [0: bb101, otherwise: bb134];
+    }
+
+    bb134 (cleanup): {
+        drop(((_57 as Some).0: LoudDrop<'_>)) -> [return: bb101, unwind terminate];
+    }
+
+    bb135 (cleanup): {
+        _86 = discriminant(_57);
+        switchInt(move _86) -> [1: bb133, otherwise: bb101];
+    }
+
+    bb136 (cleanup): {
+        switchInt(_76) -> [0: bb101, otherwise: bb135];
+    }
+
+    bb137 (cleanup): {
+        switchInt(_72) -> [0: bb142, otherwise: bb138];
+    }
+
+    bb138 (cleanup): {
+        drop(((_40 as Some).0: LoudDrop<'_>)) -> [return: bb142, unwind terminate];
+    }
+
+    bb139 (cleanup): {
+        _87 = discriminant(_40);
+        switchInt(move _87) -> [1: bb137, otherwise: bb142];
+    }
+
+    bb140 (cleanup): {
+        switchInt(_73) -> [0: bb101, otherwise: bb141];
+    }
+
+    bb141 (cleanup): {
+        drop(((_37 as Some).0: LoudDrop<'_>)) -> [return: bb101, unwind terminate];
+    }
+
+    bb142 (cleanup): {
+        _88 = discriminant(_37);
+        switchInt(move _88) -> [1: bb140, otherwise: bb101];
+    }
+
+    bb143 (cleanup): {
+        switchInt(_68) -> [0: bb150, otherwise: bb144];
+    }
+
+    bb144 (cleanup): {
+        drop(((_33 as Some).0: LoudDrop<'_>)) -> [return: bb150, unwind terminate];
+    }
+
+    bb145 (cleanup): {
+        _89 = discriminant(_33);
+        switchInt(move _89) -> [1: bb143, otherwise: bb150];
+    }
+
+    bb146 (cleanup): {
+        switchInt(_67) -> [0: bb150, otherwise: bb145];
+    }
+
+    bb147 (cleanup): {
+        switchInt(_70) -> [0: bb101, otherwise: bb148];
+    }
+
+    bb148 (cleanup): {
+        drop(((_27 as Some).0: LoudDrop<'_>)) -> [return: bb101, unwind terminate];
+    }
+
+    bb149 (cleanup): {
+        _90 = discriminant(_27);
+        switchInt(move _90) -> [1: bb147, otherwise: bb101];
+    }
+
+    bb150 (cleanup): {
+        switchInt(_69) -> [0: bb101, otherwise: bb149];
+    }
+
+    bb151 (cleanup): {
+        drop(_20) -> [return: bb101, unwind terminate];
+    }
+
+    bb152 (cleanup): {
+        switchInt(_66) -> [0: bb101, otherwise: bb151];
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::while_(_1: &DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: std::option::Option<LoudDrop<'_>>;
+    let mut _3: isize;
+    let mut _5: bool;
+    let mut _6: &std::option::Option<LoudDrop<'_>>;
+    let _7: std::option::Option<LoudDrop<'_>>;
+    let mut _8: bool;
+    let mut _9: &std::option::Option<LoudDrop<'_>>;
+    let _10: std::option::Option<LoudDrop<'_>>;
+    let _11: ();
+    let mut _12: std::option::Option<LoudDrop<'_>>;
+    let mut _13: bool;
+    let mut _14: isize;
+    let mut _15: isize;
+    scope 1 {
+        debug v => _2;
+        debug _d => _4;
+        let _4: LoudDrop<'_>;
+    }
+
+    bb0: {
+        _13 = const false;
+        _13 = const true;
+        _2 = DropOrderCollector::option_loud_drop(_1, const 4_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = discriminant(_2);
+        switchInt(move _3) -> [1: bb2, otherwise: bb13];
+    }
+
+    bb2: {
+        _13 = const false;
+        _4 = move ((_2 as Some).0: LoudDrop<'_>);
+        _7 = DropOrderCollector::option_loud_drop(_1, const 1_u32) -> [return: bb3, unwind: bb16];
+    }
+
+    bb3: {
+        _6 = &_7;
+        _5 = Option::<LoudDrop<'_>>::is_some(move _6) -> [return: bb4, unwind: bb15];
+    }
+
+    bb4: {
+        drop(_7) -> [return: bb5, unwind: bb16];
+    }
+
+    bb5: {
+        switchInt(move _5) -> [0: bb12, otherwise: bb6];
+    }
+
+    bb6: {
+        _10 = DropOrderCollector::option_loud_drop(_1, const 2_u32) -> [return: bb7, unwind: bb16];
+    }
+
+    bb7: {
+        _9 = &_10;
+        _8 = Option::<LoudDrop<'_>>::is_some(move _9) -> [return: bb8, unwind: bb14];
+    }
+
+    bb8: {
+        drop(_10) -> [return: bb9, unwind: bb16];
+    }
+
+    bb9: {
+        switchInt(move _8) -> [0: bb12, otherwise: bb10];
+    }
+
+    bb10: {
+        _11 = DropOrderCollector::print(_1, const 3_u32) -> [return: bb11, unwind: bb16];
+    }
+
+    bb11: {
+        _12 = Option::<LoudDrop<'_>>::None;
+        _13 = const true;
+        _2 = move _12;
+        drop(_4) -> [return: bb1, unwind: bb23];
+    }
+
+    bb12: {
+        drop(_4) -> [return: bb13, unwind: bb23];
+    }
+
+    bb13: {
+        _14 = discriminant(_2);
+        switchInt(move _14) -> [1: bb19, otherwise: bb18];
+    }
+
+    bb14 (cleanup): {
+        drop(_10) -> [return: bb16, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_7) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        drop(_4) -> [return: bb23, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        resume;
+    }
+
+    bb18: {
+        _13 = const false;
+        return;
+    }
+
+    bb19: {
+        switchInt(_13) -> [0: bb18, otherwise: bb20];
+    }
+
+    bb20: {
+        drop(((_2 as Some).0: LoudDrop<'_>)) -> bb18;
+    }
+
+    bb21 (cleanup): {
+        switchInt(_13) -> [0: bb17, otherwise: bb22];
+    }
+
+    bb22 (cleanup): {
+        drop(((_2 as Some).0: LoudDrop<'_>)) -> [return: bb17, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        _15 = discriminant(_2);
+        switchInt(move _15) -> [1: bb21, otherwise: bb17];
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::assert_sorted(_1: DropOrderCollector) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: &mut std::iter::Enumerate<std::vec::IntoIter<u32>>;
+    let mut _5: std::iter::Enumerate<std::vec::IntoIter<u32>>;
+    let mut _6: std::vec::IntoIter<u32>;
+    let mut _7: std::vec::Vec<u32>;
+    let mut _8: std::cell::RefCell<std::vec::Vec<u32>>;
+    let mut _9: !;
+
+    bb0: {
+        _8 = move (_1.0: std::cell::RefCell<std::vec::Vec<u32>>);
+        _7 = RefCell::<Vec<u32>>::into_inner(move _8) -> bb1;
+    }
+
+    bb1: {
+        _6 = <Vec<u32> as IntoIterator>::into_iter(move _7) -> bb2;
+    }
+
+    bb2: {
+        _5 = <std::vec::IntoIter<u32> as Iterator>::enumerate(move _6) -> bb3;
+    }
+
+    bb3: {
+        _4 = &mut _5;
+        _3 = <Enumerate<std::vec::IntoIter<u32>> as Iterator>::all::<[closure@ui/drop/drop_order.rs:247:22: 247:35]>(move _4, const ZeroSized: [closure@ui/drop/drop_order.rs:247:22: 247:35]) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _2 = Not(move _3);
+        drop(_5) -> bb5;
+    }
+
+    bb5: {
+        switchInt(move _2) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _9 = core::panicking::panic(const "assertion failed: self.0.into_inner().into_iter().enumerate().all(|(idx, item)|\\n        idx + 1 == item.try_into().unwrap())");
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_5) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/drop/drop_order.rs:20:1: 20:24>::assert_sorted::{closure#0}(_1: &mut [closure@ui/drop/drop_order.rs:247:22: 247:35], _2: (usize, u32)) -> bool {
+    let mut _0: bool;
+    let _3: usize;
+    let _4: u32;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: std::result::Result<usize, std::num::TryFromIntError>;
+    scope 1 {
+        debug idx => _3;
+        debug item => _4;
+    }
+
+    bb0: {
+        _3 = (_2.0: usize);
+        _4 = (_2.1: u32);
+        _5 = Add(_3, const 1_usize);
+        _7 = <u32 as TryInto<usize>>::try_into(_4) -> bb1;
+    }
+
+    bb1: {
+        _6 = Result::<usize, TryFromIntError>::unwrap(move _7) -> bb2;
+    }
+
+    bb2: {
+        _0 = Eq(move _5, move _6);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+    let _6: DropOrderCollector;
+    let _7: ();
+    let mut _8: &DropOrderCollector;
+    let _9: ();
+    let mut _10: DropOrderCollector;
+    let _11: ();
+    let mut _12: std::fmt::Arguments<'_>;
+    let mut _13: &[&str];
+    let _14: &[&str; 1];
+    let _15: [&str; 1];
+    let _17: ();
+    let mut _18: &DropOrderCollector;
+    let _19: ();
+    let mut _20: DropOrderCollector;
+    let _21: ();
+    let mut _22: std::fmt::Arguments<'_>;
+    let mut _23: &[&str];
+    let _24: &[&str; 1];
+    let _25: [&str; 1];
+    let _27: ();
+    let mut _28: &DropOrderCollector;
+    let _29: ();
+    let mut _30: DropOrderCollector;
+    let _31: ();
+    let mut _32: std::fmt::Arguments<'_>;
+    let mut _33: &[&str];
+    let _34: &[&str; 1];
+    let _35: [&str; 1];
+    let _37: ();
+    let mut _38: &DropOrderCollector;
+    let _39: ();
+    let mut _40: DropOrderCollector;
+    let _41: ();
+    let mut _42: std::fmt::Arguments<'_>;
+    let mut _43: &[&str];
+    let _44: &[&str; 1];
+    let _45: [&str; 1];
+    let _47: ();
+    let mut _48: &DropOrderCollector;
+    let _49: ();
+    let mut _50: DropOrderCollector;
+    let _51: ();
+    let mut _52: std::fmt::Arguments<'_>;
+    let mut _53: &[&str];
+    let _54: &[&str; 1];
+    let _55: [&str; 1];
+    let _57: ();
+    let mut _58: &DropOrderCollector;
+    let _59: ();
+    let mut _60: DropOrderCollector;
+    let _61: ();
+    let mut _62: std::fmt::Arguments<'_>;
+    let mut _63: &[&str];
+    let _64: &[&str; 1];
+    let _65: [&str; 1];
+    let _67: ();
+    let mut _68: &DropOrderCollector;
+    let _69: ();
+    let mut _70: DropOrderCollector;
+    let _71: ();
+    let mut _72: std::fmt::Arguments<'_>;
+    let mut _73: &[&str];
+    let _74: &[&str; 1];
+    let _75: [&str; 1];
+    let _77: ();
+    let mut _78: &DropOrderCollector;
+    let _79: ();
+    let mut _80: DropOrderCollector;
+    let mut _81: bool;
+    let mut _82: bool;
+    let mut _83: bool;
+    let mut _84: bool;
+    let mut _85: bool;
+    let mut _86: bool;
+    let mut _87: bool;
+    let mut _88: bool;
+    scope 1 {
+        debug collector => _6;
+        let _16: DropOrderCollector;
+        scope 2 {
+            debug collector => _16;
+            let _26: DropOrderCollector;
+            scope 3 {
+                debug collector => _26;
+                let _36: DropOrderCollector;
+                scope 4 {
+                    debug collector => _36;
+                    let _46: DropOrderCollector;
+                    scope 5 {
+                        debug collector => _46;
+                        let _56: DropOrderCollector;
+                        scope 6 {
+                            debug collector => _56;
+                            let _66: DropOrderCollector;
+                            scope 7 {
+                                debug collector => _66;
+                                let _76: DropOrderCollector;
+                                scope 8 {
+                                    debug collector => _76;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _88 = const false;
+        _87 = const false;
+        _86 = const false;
+        _85 = const false;
+        _84 = const false;
+        _83 = const false;
+        _82 = const false;
+        _81 = const false;
+        _5 = [const "-- if --\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _print(move _2) -> bb2;
+    }
+
+    bb2: {
+        _88 = const true;
+        _6 = <DropOrderCollector as Default>::default() -> bb3;
+    }
+
+    bb3: {
+        _8 = &_6;
+        _7 = DropOrderCollector::if_(move _8) -> [return: bb4, unwind: bb57];
+    }
+
+    bb4: {
+        _88 = const false;
+        _10 = move _6;
+        _9 = DropOrderCollector::assert_sorted(move _10) -> [return: bb5, unwind: bb57];
+    }
+
+    bb5: {
+        _15 = [const "-- and chain --\n"];
+        _14 = &_15;
+        _13 = _14 as &[&str] (Pointer(Unsize));
+        _12 = Arguments::<'_>::new_const(move _13) -> [return: bb6, unwind: bb57];
+    }
+
+    bb6: {
+        _11 = _print(move _12) -> [return: bb7, unwind: bb57];
+    }
+
+    bb7: {
+        _16 = <DropOrderCollector as Default>::default() -> [return: bb8, unwind: bb57];
+    }
+
+    bb8: {
+        _87 = const true;
+        _18 = &_16;
+        _17 = DropOrderCollector::and_chain(move _18) -> [return: bb9, unwind: bb55];
+    }
+
+    bb9: {
+        _87 = const false;
+        _20 = move _16;
+        _19 = DropOrderCollector::assert_sorted(move _20) -> [return: bb10, unwind: bb55];
+    }
+
+    bb10: {
+        _25 = [const "-- or chain --\n"];
+        _24 = &_25;
+        _23 = _24 as &[&str] (Pointer(Unsize));
+        _22 = Arguments::<'_>::new_const(move _23) -> [return: bb11, unwind: bb55];
+    }
+
+    bb11: {
+        _21 = _print(move _22) -> [return: bb12, unwind: bb55];
+    }
+
+    bb12: {
+        _26 = <DropOrderCollector as Default>::default() -> [return: bb13, unwind: bb55];
+    }
+
+    bb13: {
+        _86 = const true;
+        _28 = &_26;
+        _27 = DropOrderCollector::or_chain(move _28) -> [return: bb14, unwind: bb53];
+    }
+
+    bb14: {
+        _86 = const false;
+        _30 = move _26;
+        _29 = DropOrderCollector::assert_sorted(move _30) -> [return: bb15, unwind: bb53];
+    }
+
+    bb15: {
+        _35 = [const "-- mixed and/or chain --\n"];
+        _34 = &_35;
+        _33 = _34 as &[&str] (Pointer(Unsize));
+        _32 = Arguments::<'_>::new_const(move _33) -> [return: bb16, unwind: bb53];
+    }
+
+    bb16: {
+        _31 = _print(move _32) -> [return: bb17, unwind: bb53];
+    }
+
+    bb17: {
+        _36 = <DropOrderCollector as Default>::default() -> [return: bb18, unwind: bb53];
+    }
+
+    bb18: {
+        _85 = const true;
+        _38 = &_36;
+        _37 = DropOrderCollector::mixed_and_or_chain(move _38) -> [return: bb19, unwind: bb51];
+    }
+
+    bb19: {
+        _85 = const false;
+        _40 = move _36;
+        _39 = DropOrderCollector::assert_sorted(move _40) -> [return: bb20, unwind: bb51];
+    }
+
+    bb20: {
+        _45 = [const "-- if let --\n"];
+        _44 = &_45;
+        _43 = _44 as &[&str] (Pointer(Unsize));
+        _42 = Arguments::<'_>::new_const(move _43) -> [return: bb21, unwind: bb51];
+    }
+
+    bb21: {
+        _41 = _print(move _42) -> [return: bb22, unwind: bb51];
+    }
+
+    bb22: {
+        _46 = <DropOrderCollector as Default>::default() -> [return: bb23, unwind: bb51];
+    }
+
+    bb23: {
+        _84 = const true;
+        _48 = &_46;
+        _47 = DropOrderCollector::if_let(move _48) -> [return: bb24, unwind: bb49];
+    }
+
+    bb24: {
+        _84 = const false;
+        _50 = move _46;
+        _49 = DropOrderCollector::assert_sorted(move _50) -> [return: bb25, unwind: bb49];
+    }
+
+    bb25: {
+        _55 = [const "-- match --\n"];
+        _54 = &_55;
+        _53 = _54 as &[&str] (Pointer(Unsize));
+        _52 = Arguments::<'_>::new_const(move _53) -> [return: bb26, unwind: bb49];
+    }
+
+    bb26: {
+        _51 = _print(move _52) -> [return: bb27, unwind: bb49];
+    }
+
+    bb27: {
+        _56 = <DropOrderCollector as Default>::default() -> [return: bb28, unwind: bb49];
+    }
+
+    bb28: {
+        _83 = const true;
+        _58 = &_56;
+        _57 = DropOrderCollector::match_(move _58) -> [return: bb29, unwind: bb47];
+    }
+
+    bb29: {
+        _83 = const false;
+        _60 = move _56;
+        _59 = DropOrderCollector::assert_sorted(move _60) -> [return: bb30, unwind: bb47];
+    }
+
+    bb30: {
+        _65 = [const "-- let chain --\n"];
+        _64 = &_65;
+        _63 = _64 as &[&str] (Pointer(Unsize));
+        _62 = Arguments::<'_>::new_const(move _63) -> [return: bb31, unwind: bb47];
+    }
+
+    bb31: {
+        _61 = _print(move _62) -> [return: bb32, unwind: bb47];
+    }
+
+    bb32: {
+        _66 = <DropOrderCollector as Default>::default() -> [return: bb33, unwind: bb47];
+    }
+
+    bb33: {
+        _82 = const true;
+        _68 = &_66;
+        _67 = DropOrderCollector::let_chain(move _68) -> [return: bb34, unwind: bb45];
+    }
+
+    bb34: {
+        _82 = const false;
+        _70 = move _66;
+        _69 = DropOrderCollector::assert_sorted(move _70) -> [return: bb35, unwind: bb45];
+    }
+
+    bb35: {
+        _75 = [const "-- while --\n"];
+        _74 = &_75;
+        _73 = _74 as &[&str] (Pointer(Unsize));
+        _72 = Arguments::<'_>::new_const(move _73) -> [return: bb36, unwind: bb45];
+    }
+
+    bb36: {
+        _71 = _print(move _72) -> [return: bb37, unwind: bb45];
+    }
+
+    bb37: {
+        _76 = <DropOrderCollector as Default>::default() -> [return: bb38, unwind: bb45];
+    }
+
+    bb38: {
+        _81 = const true;
+        _78 = &_76;
+        _77 = DropOrderCollector::while_(move _78) -> [return: bb39, unwind: bb43];
+    }
+
+    bb39: {
+        _81 = const false;
+        _80 = move _76;
+        _79 = DropOrderCollector::assert_sorted(move _80) -> [return: bb40, unwind: bb43];
+    }
+
+    bb40: {
+        _81 = const false;
+        _82 = const false;
+        _83 = const false;
+        _84 = const false;
+        _85 = const false;
+        _86 = const false;
+        _87 = const false;
+        _88 = const false;
+        return;
+    }
+
+    bb41 (cleanup): {
+        resume;
+    }
+
+    bb42 (cleanup): {
+        drop(_76) -> [return: bb45, unwind terminate];
+    }
+
+    bb43 (cleanup): {
+        switchInt(_81) -> [0: bb45, otherwise: bb42];
+    }
+
+    bb44 (cleanup): {
+        drop(_66) -> [return: bb47, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        switchInt(_82) -> [0: bb47, otherwise: bb44];
+    }
+
+    bb46 (cleanup): {
+        drop(_56) -> [return: bb49, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        switchInt(_83) -> [0: bb49, otherwise: bb46];
+    }
+
+    bb48 (cleanup): {
+        drop(_46) -> [return: bb51, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        switchInt(_84) -> [0: bb51, otherwise: bb48];
+    }
+
+    bb50 (cleanup): {
+        drop(_36) -> [return: bb53, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        switchInt(_85) -> [0: bb53, otherwise: bb50];
+    }
+
+    bb52 (cleanup): {
+        drop(_26) -> [return: bb55, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        switchInt(_86) -> [0: bb55, otherwise: bb52];
+    }
+
+    bb54 (cleanup): {
+        drop(_16) -> [return: bb57, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        switchInt(_87) -> [0: bb57, otherwise: bb54];
+    }
+
+    bb56 (cleanup): {
+        drop(_6) -> [return: bb41, unwind terminate];
+    }
+
+    bb57 (cleanup): {
+        switchInt(_88) -> [0: bb41, otherwise: bb56];
+    }
+}
+
+fn DropOrderCollector(_1: RefCell<Vec<u32>>) -> DropOrderCollector {
+    let mut _0: DropOrderCollector;
+
+    bb0: {
+        _0 = DropOrderCollector(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn DropOrderCollector(_1: RefCell<Vec<u32>>) -> DropOrderCollector {
+    let mut _0: DropOrderCollector;
+
+    bb0: {
+        _0 = DropOrderCollector(move _1);
+        return;
+    }
+}
+
+fn LoudDrop(_1: &DropOrderCollector, _2: u32) -> LoudDrop<'_> {
+    let mut _0: LoudDrop<'_>;
+
+    bb0: {
+        _0 = LoudDrop::<'_>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn LoudDrop(_1: &DropOrderCollector, _2: u32) -> LoudDrop<'_> {
+    let mut _0: LoudDrop<'_>;
+
+    bb0: {
+        _0 = LoudDrop::<'_>(move _1, move _2);
+        return;
+    }
+}

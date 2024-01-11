@@ -1,0 +1,180 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/lazy-type-alias-impl-trait/freeze_cycle.rs:13:10: 13:15>::fmt(_1: &ResumeTy, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&std::ptr::NonNull<std::task::Context<'_>>;
+    let _6: &std::ptr::NonNull<std::task::Context<'_>>;
+
+    bb0: {
+        _3 = const "ResumeTy";
+        _6 = &((*_1).0: std::ptr::NonNull<std::task::Context<'_>>);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/lazy-type-alias-impl-trait/freeze_cycle.rs:13:23: 13:28>::clone(_1: &ResumeTy) -> ResumeTy {
+    debug self => _1;
+    let mut _0: ResumeTy;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn from_generator(_1: T) -> impl Future {
+    debug gen => _1;
+    let mut _0: impl std::future::Future;
+
+    bb0: {
+        _0 = GenFuture::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn from_generator(_1: T) -> impl Future {
+    debug gen => _1;
+    let mut _0: impl std::future::Future;
+    let mut _2: T;
+
+    bb0: {
+        StorageLive(_2);
+        _2 = move _1;
+        _0 = GenFuture::<T>(move _2);
+        StorageDead(_2);
+        return;
+    }
+}
+
+fn from_generator::<impl at ui/lazy-type-alias-impl-trait/freeze_cycle.rs:30:5: 30:69>::poll(_1: Pin<&mut GenFuture<T>>, _2: &mut Context<'_>) -> Poll<<T as Generator<ResumeTy>>::Return> {
+    debug self => _1;
+    debug cx => _2;
+    let mut _0: std::task::Poll<<T as std::ops::Generator<ResumeTy>>::Return>;
+    let _3: std::pin::Pin<&mut T>;
+    let mut _4: std::ops::GeneratorState<(), <T as std::ops::Generator<ResumeTy>>::Return>;
+    let mut _5: std::pin::Pin<&mut T>;
+    let mut _6: ResumeTy;
+    let mut _7: std::ptr::NonNull<std::task::Context<'_>>;
+    let mut _8: std::ptr::NonNull<std::task::Context<'_>>;
+    let mut _9: isize;
+    scope 1 {
+        debug gen => _3;
+        let _10: <T as std::ops::Generator<ResumeTy>>::Return;
+        scope 3 {
+            debug x => _10;
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = Pin::<&mut GenFuture<T>>::map_unchecked_mut::<T, [closure@ui/lazy-type-alias-impl-trait/freeze_cycle.rs:34:61: 34:64]>(move _1, const ZeroSized: [closure@ui/lazy-type-alias-impl-trait/freeze_cycle.rs:34:61: 34:64]) -> bb1;
+    }
+
+    bb1: {
+        _5 = move _3;
+        _8 = <NonNull<Context<'_>> as From<&mut Context<'_>>>::from(move _2) -> bb2;
+    }
+
+    bb2: {
+        _7 = NonNull::<Context<'_>>::cast::<Context<'_>>(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = ResumeTy(move _7);
+        _4 = <T as Generator<ResumeTy>>::resume(move _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        _9 = discriminant(_4);
+        switchInt(move _9) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _10 = move ((_4 as Complete).0: <T as std::ops::Generator<ResumeTy>>::Return);
+        _0 = Poll::<<T as Generator<ResumeTy>>::Return>::Ready(move _10);
+        goto -> bb8;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _0 = Poll::<<T as Generator<ResumeTy>>::Return>::Pending;
+        goto -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+fn from_generator::<impl at ui/lazy-type-alias-impl-trait/freeze_cycle.rs:30:5: 30:69>::poll::{closure#0}(_1: [closure@ui/lazy-type-alias-impl-trait/freeze_cycle.rs:34:61: 34:64], _2: &mut GenFuture<T>) -> &mut T {
+    debug s => _2;
+    let mut _0: &mut T;
+
+    bb0: {
+        _0 = &mut ((*_2).0: T);
+        return;
+    }
+}
+
+fn ResumeTy(_1: NonNull<Context<'_>>) -> ResumeTy {
+    let mut _0: ResumeTy;
+
+    bb0: {
+        _0 = ResumeTy(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ResumeTy(_1: NonNull<Context<'_>>) -> ResumeTy {
+    let mut _0: ResumeTy;
+
+    bb0: {
+        _0 = ResumeTy(move _1);
+        return;
+    }
+}
+
+fn GenFuture(_1: T) -> GenFuture<T> {
+    let mut _0: from_generator::GenFuture<T>;
+
+    bb0: {
+        _0 = GenFuture::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn GenFuture(_1: T) -> GenFuture<T> {
+    let mut _0: from_generator::GenFuture<T>;
+
+    bb0: {
+        _0 = GenFuture::<T>(move _1);
+        return;
+    }
+}

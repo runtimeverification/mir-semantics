@@ -1,0 +1,188 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/in-trait/success.rs:12:1: 12:17>::bar(_1: &i32) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/in-trait/success.rs:18:1: 18:26>::bar(_1: &&str) -> &str {
+    debug self => _1;
+    let mut _0: &str;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/in-trait/success.rs:26:1: 26:17>::bar(_1: &Yay) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = <String as From<&str>>::from(const ":^)") -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo_generically(_1: T) -> () {
+    debug t => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &impl std::fmt::Display;
+    let _12: impl std::fmt::Display;
+    let mut _13: &T;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _13 = &_1;
+        _12 = <T as Foo>::bar(move _13) -> [return: bb1, unwind: bb8];
+    }
+
+    bb1: {
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<impl std::fmt::Display>(_11) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _2 = _print(move _3) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        drop(_12) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        drop(_1) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_12) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        drop(_1) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &&str;
+    let _11: &str;
+    let mut _12: &&str;
+    let _13: &str;
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 2];
+    let _18: [&str; 2];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 1];
+    let _21: [core::fmt::rt::Argument<'_>; 1];
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let _23: &i32;
+    let _24: i32;
+    let mut _25: &i32;
+    let _26: i32;
+    let _27: ();
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _13 = const "Hello, world.";
+        _12 = &_13;
+        _11 = <&str as Foo>::bar(move _12) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_11;
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_10) -> bb2;
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb3;
+    }
+
+    bb3: {
+        _1 = _print(move _2) -> bb4;
+    }
+
+    bb4: {
+        _18 = [const "The answer is ", const "!\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _26 = const 42_i32;
+        _25 = &_26;
+        _24 = <i32 as Foo>::bar(move _25) -> bb5;
+    }
+
+    bb5: {
+        _23 = &_24;
+        _22 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_23) -> bb6;
+    }
+
+    bb6: {
+        _21 = [move _22];
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> bb7;
+    }
+
+    bb7: {
+        _14 = _print(move _15) -> bb8;
+    }
+
+    bb8: {
+        _27 = foo_generically::<Yay>(const Yay) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}

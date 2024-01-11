@@ -1,0 +1,62 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn problematic_function() -> () {
+    let mut _0: ();
+    let _1: Edge2dElement;
+    let mut _2: Point;
+    let mut _3: (Ure, R1, <DefaultAlloc as Allocator<Ure, R1>>::Buffer);
+    let mut _4: &Edge2dElement;
+    scope 1 {
+        debug e => const Edge2dElement;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _4 = &_1;
+        _3 = <Edge2dElement as FiniteElement<R1>>::map_reference_coords(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <(Ure, R1, <DefaultAlloc as Allocator<Ure, R1>>::Buffer) as Into<Point>>::into(const (Ure, R1, MStorage)) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn <impl at ui/associated-item/issue-105449.rs:18:1: 18:41>::from(_1: (N, D, <DefaultAlloc as Allocator<N, D>>::Buffer)) -> Point {
+    let mut _0: Point;
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not implemented") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_1) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/associated-item/issue-105449.rs:32:1: 32:41>::map_reference_coords(_1: &Edge2dElement) -> (Ure, R1, MStorage) {
+    debug self => _1;
+    let mut _0: (Ure, R1, MStorage);
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not implemented");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

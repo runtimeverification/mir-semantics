@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: bool) -> () {
+    debug _cond => _1;
+    let mut _0: ();
+    let _2: isize;
+    scope 1 {
+        debug v => _2;
+    }
+
+    bb0: {
+        _2 = const 1_isize;
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

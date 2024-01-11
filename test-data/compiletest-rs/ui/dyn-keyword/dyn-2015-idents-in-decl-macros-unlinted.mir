@@ -1,0 +1,70 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Trait::hello(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: X;
+    let _2: ();
+    let mut _3: &dyn Trait;
+    let _4: &dyn Trait;
+    let _5: &X;
+    let _6: ();
+    let mut _7: &dyn Trait;
+    let _8: &dyn Trait;
+    let _9: &X;
+    scope 1 {
+        debug x => const X;
+    }
+
+    bb0: {
+        _5 = &_1;
+        _4 = f_tt(_5) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = <dyn Trait as Trait>::hello(move _3) -> bb2;
+    }
+
+    bb2: {
+        _9 = &_1;
+        _8 = f_id(_9) -> bb3;
+    }
+
+    bb3: {
+        _7 = _8;
+        _6 = <dyn Trait as Trait>::hello(move _7) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn f_tt(_1: &X) -> &dyn Trait {
+    debug x => _1;
+    let mut _0: &dyn Trait;
+
+    bb0: {
+        _0 = _1 as &dyn Trait (Pointer(Unsize));
+        return;
+    }
+}
+
+fn f_id(_1: &X) -> &dyn Trait {
+    debug x => _1;
+    let mut _0: &dyn Trait;
+
+    bb0: {
+        _0 = _1 as &dyn Trait (Pointer(Unsize));
+        return;
+    }
+}

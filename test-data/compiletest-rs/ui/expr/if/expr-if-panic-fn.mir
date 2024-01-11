@@ -1,0 +1,45 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f() -> ! {
+    let mut _0: !;
+
+    bb0: {
+        _0 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn g() -> isize {
+    let mut _0: isize;
+    let mut _1: bool;
+    let mut _2: !;
+    scope 1 {
+        debug x => _0;
+    }
+
+    bb0: {
+        _1 = const true;
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = f();
+    }
+
+    bb2: {
+        _0 = const 10_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+
+    bb0: {
+        _1 = g() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

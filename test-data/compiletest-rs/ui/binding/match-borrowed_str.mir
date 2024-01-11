@@ -1,0 +1,1133 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn f1(_1: &str) -> String {
+    debug ref_string => _1;
+    let mut _0: std::string::String;
+    let mut _2: bool;
+    let mut _3: bool;
+    let _4: &str;
+    let _5: &str;
+    let _6: &str;
+
+    bb0: {
+        _2 = <str as PartialEq>::eq(_1, const "a") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _2) -> [0: bb2, otherwise: bb5];
+    }
+
+    bb2: {
+        _3 = <str as PartialEq>::eq(_1, const "b") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb6];
+    }
+
+    bb4: {
+        _6 = const "not found";
+        _0 = <str as ToString>::to_string(_6) -> bb7;
+    }
+
+    bb5: {
+        _4 = const "found a";
+        _0 = <str as ToString>::to_string(_4) -> bb7;
+    }
+
+    bb6: {
+        _5 = const "found b";
+        _0 = <str as ToString>::to_string(_5) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn f2(_1: &str) -> String {
+    debug ref_string => _1;
+    let mut _0: std::string::String;
+    let mut _2: bool;
+    let mut _3: bool;
+    let _4: &str;
+    let _5: &str;
+    let _6: &str;
+    let mut _8: std::fmt::Arguments<'_>;
+    let mut _9: &[&str];
+    let _10: &[&str; 2];
+    let _11: [&str; 2];
+    let mut _12: &[core::fmt::rt::Argument<'_>];
+    let _13: &[core::fmt::rt::Argument<'_>; 1];
+    let _14: [core::fmt::rt::Argument<'_>; 1];
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &&str;
+    scope 1 {
+        debug s => _6;
+        let _7: std::string::String;
+        scope 2 {
+            debug res => _7;
+        }
+    }
+
+    bb0: {
+        _2 = <str as PartialEq>::eq(_1, const "a") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _2) -> [0: bb2, otherwise: bb5];
+    }
+
+    bb2: {
+        _3 = <str as PartialEq>::eq(_1, const "b") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb6];
+    }
+
+    bb4: {
+        _6 = _1;
+        _11 = [const "not found (", const ")"];
+        _10 = &_11;
+        _9 = _10 as &[&str] (Pointer(Unsize));
+        _16 = &_6;
+        _15 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_16) -> bb7;
+    }
+
+    bb5: {
+        _4 = const "found a";
+        _0 = <str as ToString>::to_string(_4) -> bb10;
+    }
+
+    bb6: {
+        _5 = const "found b";
+        _0 = <str as ToString>::to_string(_5) -> bb10;
+    }
+
+    bb7: {
+        _14 = [move _15];
+        _13 = &_14;
+        _12 = _13 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _8 = Arguments::<'_>::new_v1(move _9, move _12) -> bb8;
+    }
+
+    bb8: {
+        _7 = format(move _8) -> bb9;
+    }
+
+    bb9: {
+        _0 = move _7;
+        goto -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+}
+
+fn g1(_1: &str, _2: &str) -> String {
+    debug ref_1 => _1;
+    debug ref_2 => _2;
+    let mut _0: std::string::String;
+    let mut _3: (&str, &str);
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let _8: &str;
+    let _9: &str;
+    let _10: &str;
+
+    bb0: {
+        _3 = (_1, _2);
+        _4 = <str as PartialEq>::eq((_3.0: &str), const "a") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = <str as PartialEq>::eq((_3.1: &str), const "b") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _5) -> [0: bb4, otherwise: bb9];
+    }
+
+    bb4: {
+        _6 = <str as PartialEq>::eq((_3.0: &str), const "b") -> bb5;
+    }
+
+    bb5: {
+        switchInt(move _6) -> [0: bb8, otherwise: bb6];
+    }
+
+    bb6: {
+        _7 = <str as PartialEq>::eq((_3.1: &str), const "c") -> bb7;
+    }
+
+    bb7: {
+        switchInt(move _7) -> [0: bb8, otherwise: bb10];
+    }
+
+    bb8: {
+        _10 = const "not found";
+        _0 = <str as ToString>::to_string(_10) -> bb11;
+    }
+
+    bb9: {
+        _8 = const "found a,b";
+        _0 = <str as ToString>::to_string(_8) -> bb11;
+    }
+
+    bb10: {
+        _9 = const "found b,c";
+        _0 = <str as ToString>::to_string(_9) -> bb11;
+    }
+
+    bb11: {
+        return;
+    }
+}
+
+fn g2(_1: &str, _2: &str) -> String {
+    debug ref_1 => _1;
+    debug ref_2 => _2;
+    let mut _0: std::string::String;
+    let mut _3: (&str, &str);
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let _8: &str;
+    let _9: &str;
+    let _10: &str;
+    let _11: &str;
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 3];
+    let _16: [&str; 3];
+    let mut _17: &[core::fmt::rt::Argument<'_>];
+    let _18: &[core::fmt::rt::Argument<'_>; 2];
+    let _19: [core::fmt::rt::Argument<'_>; 2];
+    let mut _20: core::fmt::rt::Argument<'_>;
+    let _21: &&str;
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let _23: &&str;
+    scope 1 {
+        debug s1 => _10;
+        debug s2 => _11;
+        let _12: std::string::String;
+        scope 2 {
+            debug res => _12;
+        }
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _4 = <str as PartialEq>::eq((_3.0: &str), const "a") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = <str as PartialEq>::eq((_3.1: &str), const "b") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _5) -> [0: bb4, otherwise: bb9];
+    }
+
+    bb4: {
+        _6 = <str as PartialEq>::eq((_3.0: &str), const "b") -> bb5;
+    }
+
+    bb5: {
+        switchInt(move _6) -> [0: bb8, otherwise: bb6];
+    }
+
+    bb6: {
+        _7 = <str as PartialEq>::eq((_3.1: &str), const "c") -> bb7;
+    }
+
+    bb7: {
+        switchInt(move _7) -> [0: bb8, otherwise: bb10];
+    }
+
+    bb8: {
+        _10 = (_3.0: &str);
+        _11 = (_3.1: &str);
+        _16 = [const "not found (", const ", ", const ")"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _21 = &_10;
+        _20 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_21) -> bb11;
+    }
+
+    bb9: {
+        _8 = const "found a,b";
+        _0 = <str as ToString>::to_string(_8) -> bb15;
+    }
+
+    bb10: {
+        _9 = const "found b,c";
+        _0 = <str as ToString>::to_string(_9) -> bb15;
+    }
+
+    bb11: {
+        _23 = &_11;
+        _22 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_23) -> bb12;
+    }
+
+    bb12: {
+        _19 = [move _20, move _22];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_v1(move _14, move _17) -> bb13;
+    }
+
+    bb13: {
+        _12 = format(move _13) -> bb14;
+    }
+
+    bb14: {
+        _0 = move _12;
+        goto -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::string::String, &std::string::String);
+    let mut _2: &std::string::String;
+    let _3: std::string::String;
+    let _4: &str;
+    let mut _5: &std::string::String;
+    let _6: std::string::String;
+    let _7: &str;
+    let _8: &std::string::String;
+    let _9: &std::string::String;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&std::string::String, &std::string::String);
+    let mut _16: &std::string::String;
+    let _17: std::string::String;
+    let _18: &str;
+    let mut _19: &std::string::String;
+    let _20: std::string::String;
+    let _21: &str;
+    let _22: &std::string::String;
+    let _23: &std::string::String;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&std::string::String, &std::string::String);
+    let mut _30: &std::string::String;
+    let _31: std::string::String;
+    let _32: &str;
+    let mut _33: &std::string::String;
+    let _34: std::string::String;
+    let _35: &str;
+    let _36: &std::string::String;
+    let _37: &std::string::String;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&std::string::String, &std::string::String);
+    let mut _44: &std::string::String;
+    let _45: std::string::String;
+    let _46: &str;
+    let mut _47: &std::string::String;
+    let _48: std::string::String;
+    let _49: &str;
+    let _50: &std::string::String;
+    let _51: &std::string::String;
+    let mut _52: bool;
+    let mut _53: bool;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&std::string::String, &std::string::String);
+    let mut _58: &std::string::String;
+    let _59: std::string::String;
+    let _60: &str;
+    let mut _61: &std::string::String;
+    let _62: std::string::String;
+    let _63: &str;
+    let _64: &std::string::String;
+    let _65: &std::string::String;
+    let mut _66: bool;
+    let mut _67: bool;
+    let _69: !;
+    let mut _70: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _71: (&std::string::String, &std::string::String);
+    let mut _72: &std::string::String;
+    let _73: std::string::String;
+    let _74: &str;
+    let mut _75: &std::string::String;
+    let _76: std::string::String;
+    let _77: &str;
+    let _78: &std::string::String;
+    let _79: &std::string::String;
+    let mut _80: bool;
+    let mut _81: bool;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _85: (&std::string::String, &std::string::String);
+    let mut _86: &std::string::String;
+    let _87: std::string::String;
+    let _88: &str;
+    let _89: &str;
+    let mut _90: &std::string::String;
+    let _91: std::string::String;
+    let _92: &str;
+    let _93: &std::string::String;
+    let _94: &std::string::String;
+    let mut _95: bool;
+    let mut _96: bool;
+    let _98: !;
+    let mut _99: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _100: (&std::string::String, &std::string::String);
+    let mut _101: &std::string::String;
+    let _102: std::string::String;
+    let _103: &str;
+    let _104: &str;
+    let mut _105: &std::string::String;
+    let _106: std::string::String;
+    let _107: &str;
+    let _108: &std::string::String;
+    let _109: &std::string::String;
+    let mut _110: bool;
+    let mut _111: bool;
+    let _113: !;
+    let mut _114: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _115: (&std::string::String, &std::string::String);
+    let mut _116: &std::string::String;
+    let _117: std::string::String;
+    let _118: &str;
+    let _119: &str;
+    let mut _120: &std::string::String;
+    let _121: std::string::String;
+    let _122: &str;
+    let _123: &std::string::String;
+    let _124: &std::string::String;
+    let mut _125: bool;
+    let mut _126: bool;
+    let _128: !;
+    let mut _129: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _130: (&std::string::String, &std::string::String);
+    let mut _131: &std::string::String;
+    let _132: std::string::String;
+    let _133: &str;
+    let _134: &str;
+    let mut _135: &std::string::String;
+    let _136: std::string::String;
+    let _137: &str;
+    let _138: &std::string::String;
+    let _139: &std::string::String;
+    let mut _140: bool;
+    let mut _141: bool;
+    let _143: !;
+    let mut _144: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _145: (&std::string::String, &std::string::String);
+    let mut _146: &std::string::String;
+    let _147: std::string::String;
+    let _148: &str;
+    let _149: &str;
+    let mut _150: &std::string::String;
+    let _151: std::string::String;
+    let _152: &str;
+    let _153: &std::string::String;
+    let _154: &std::string::String;
+    let mut _155: bool;
+    let mut _156: bool;
+    let _158: !;
+    let mut _159: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _160: (&std::string::String, &std::string::String);
+    let mut _161: &std::string::String;
+    let _162: std::string::String;
+    let _163: &str;
+    let _164: &str;
+    let mut _165: &std::string::String;
+    let _166: std::string::String;
+    let _167: &str;
+    let _168: &std::string::String;
+    let _169: &std::string::String;
+    let mut _170: bool;
+    let mut _171: bool;
+    let _173: !;
+    let mut _174: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _36;
+        debug right_val => _37;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+        debug left_val => _50;
+        debug right_val => _51;
+        let _54: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _54;
+        }
+    }
+    scope 9 {
+        debug left_val => _64;
+        debug right_val => _65;
+        let _68: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _68;
+        }
+    }
+    scope 11 {
+        debug left_val => _78;
+        debug right_val => _79;
+        let _82: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _82;
+        }
+    }
+    scope 13 {
+        debug left_val => _93;
+        debug right_val => _94;
+        let _97: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _97;
+        }
+    }
+    scope 15 {
+        debug left_val => _108;
+        debug right_val => _109;
+        let _112: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _112;
+        }
+    }
+    scope 17 {
+        debug left_val => _123;
+        debug right_val => _124;
+        let _127: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _127;
+        }
+    }
+    scope 19 {
+        debug left_val => _138;
+        debug right_val => _139;
+        let _142: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _142;
+        }
+    }
+    scope 21 {
+        debug left_val => _153;
+        debug right_val => _154;
+        let _157: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _157;
+        }
+    }
+    scope 23 {
+        debug left_val => _168;
+        debug right_val => _169;
+        let _172: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _172;
+        }
+    }
+
+    bb0: {
+        _4 = const "b";
+        _3 = f1(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const "found b";
+        _6 = <str as ToString>::to_string(_7) -> [return: bb2, unwind: bb108];
+    }
+
+    bb2: {
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _8 = (_1.0: &std::string::String);
+        _9 = (_1.1: &std::string::String);
+        _11 = <String as PartialEq>::eq(_8, _9) -> [return: bb3, unwind: bb107];
+    }
+
+    bb3: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<String, String>(move _12, _8, _9, move _14) -> bb107;
+    }
+
+    bb5: {
+        drop(_6) -> [return: bb6, unwind: bb108];
+    }
+
+    bb6: {
+        drop(_3) -> bb7;
+    }
+
+    bb7: {
+        _18 = const "c";
+        _17 = f1(_18) -> bb8;
+    }
+
+    bb8: {
+        _16 = &_17;
+        _21 = const "not found";
+        _20 = <str as ToString>::to_string(_21) -> [return: bb9, unwind: bb106];
+    }
+
+    bb9: {
+        _19 = &_20;
+        _15 = (move _16, move _19);
+        _22 = (_15.0: &std::string::String);
+        _23 = (_15.1: &std::string::String);
+        _25 = <String as PartialEq>::eq(_22, _23) -> [return: bb10, unwind: bb105];
+    }
+
+    bb10: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<String, String>(move _26, _22, _23, move _28) -> bb105;
+    }
+
+    bb12: {
+        drop(_20) -> [return: bb13, unwind: bb106];
+    }
+
+    bb13: {
+        drop(_17) -> bb14;
+    }
+
+    bb14: {
+        _32 = const "d";
+        _31 = f1(_32) -> bb15;
+    }
+
+    bb15: {
+        _30 = &_31;
+        _35 = const "not found";
+        _34 = <str as ToString>::to_string(_35) -> [return: bb16, unwind: bb104];
+    }
+
+    bb16: {
+        _33 = &_34;
+        _29 = (move _30, move _33);
+        _36 = (_29.0: &std::string::String);
+        _37 = (_29.1: &std::string::String);
+        _39 = <String as PartialEq>::eq(_36, _37) -> [return: bb17, unwind: bb103];
+    }
+
+    bb17: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<String, String>(move _40, _36, _37, move _42) -> bb103;
+    }
+
+    bb19: {
+        drop(_34) -> [return: bb20, unwind: bb104];
+    }
+
+    bb20: {
+        drop(_31) -> bb21;
+    }
+
+    bb21: {
+        _46 = const "b";
+        _45 = f2(_46) -> bb22;
+    }
+
+    bb22: {
+        _44 = &_45;
+        _49 = const "found b";
+        _48 = <str as ToString>::to_string(_49) -> [return: bb23, unwind: bb102];
+    }
+
+    bb23: {
+        _47 = &_48;
+        _43 = (move _44, move _47);
+        _50 = (_43.0: &std::string::String);
+        _51 = (_43.1: &std::string::String);
+        _53 = <String as PartialEq>::eq(_50, _51) -> [return: bb24, unwind: bb101];
+    }
+
+    bb24: {
+        _52 = Not(move _53);
+        switchInt(move _52) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<String, String>(move _54, _50, _51, move _56) -> bb101;
+    }
+
+    bb26: {
+        drop(_48) -> [return: bb27, unwind: bb102];
+    }
+
+    bb27: {
+        drop(_45) -> bb28;
+    }
+
+    bb28: {
+        _60 = const "c";
+        _59 = f2(_60) -> bb29;
+    }
+
+    bb29: {
+        _58 = &_59;
+        _63 = const "not found (c)";
+        _62 = <str as ToString>::to_string(_63) -> [return: bb30, unwind: bb100];
+    }
+
+    bb30: {
+        _61 = &_62;
+        _57 = (move _58, move _61);
+        _64 = (_57.0: &std::string::String);
+        _65 = (_57.1: &std::string::String);
+        _67 = <String as PartialEq>::eq(_64, _65) -> [return: bb31, unwind: bb99];
+    }
+
+    bb31: {
+        _66 = Not(move _67);
+        switchInt(move _66) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _68 = core::panicking::AssertKind::Eq;
+        _70 = Option::<Arguments<'_>>::None;
+        _69 = core::panicking::assert_failed::<String, String>(move _68, _64, _65, move _70) -> bb99;
+    }
+
+    bb33: {
+        drop(_62) -> [return: bb34, unwind: bb100];
+    }
+
+    bb34: {
+        drop(_59) -> bb35;
+    }
+
+    bb35: {
+        _74 = const "d";
+        _73 = f2(_74) -> bb36;
+    }
+
+    bb36: {
+        _72 = &_73;
+        _77 = const "not found (d)";
+        _76 = <str as ToString>::to_string(_77) -> [return: bb37, unwind: bb98];
+    }
+
+    bb37: {
+        _75 = &_76;
+        _71 = (move _72, move _75);
+        _78 = (_71.0: &std::string::String);
+        _79 = (_71.1: &std::string::String);
+        _81 = <String as PartialEq>::eq(_78, _79) -> [return: bb38, unwind: bb97];
+    }
+
+    bb38: {
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb40, otherwise: bb39];
+    }
+
+    bb39: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<String, String>(move _82, _78, _79, move _84) -> bb97;
+    }
+
+    bb40: {
+        drop(_76) -> [return: bb41, unwind: bb98];
+    }
+
+    bb41: {
+        drop(_73) -> bb42;
+    }
+
+    bb42: {
+        _88 = const "b";
+        _89 = const "c";
+        _87 = g1(_88, _89) -> bb43;
+    }
+
+    bb43: {
+        _86 = &_87;
+        _92 = const "found b,c";
+        _91 = <str as ToString>::to_string(_92) -> [return: bb44, unwind: bb96];
+    }
+
+    bb44: {
+        _90 = &_91;
+        _85 = (move _86, move _90);
+        _93 = (_85.0: &std::string::String);
+        _94 = (_85.1: &std::string::String);
+        _96 = <String as PartialEq>::eq(_93, _94) -> [return: bb45, unwind: bb95];
+    }
+
+    bb45: {
+        _95 = Not(move _96);
+        switchInt(move _95) -> [0: bb47, otherwise: bb46];
+    }
+
+    bb46: {
+        _97 = core::panicking::AssertKind::Eq;
+        _99 = Option::<Arguments<'_>>::None;
+        _98 = core::panicking::assert_failed::<String, String>(move _97, _93, _94, move _99) -> bb95;
+    }
+
+    bb47: {
+        drop(_91) -> [return: bb48, unwind: bb96];
+    }
+
+    bb48: {
+        drop(_87) -> bb49;
+    }
+
+    bb49: {
+        _103 = const "c";
+        _104 = const "d";
+        _102 = g1(_103, _104) -> bb50;
+    }
+
+    bb50: {
+        _101 = &_102;
+        _107 = const "not found";
+        _106 = <str as ToString>::to_string(_107) -> [return: bb51, unwind: bb94];
+    }
+
+    bb51: {
+        _105 = &_106;
+        _100 = (move _101, move _105);
+        _108 = (_100.0: &std::string::String);
+        _109 = (_100.1: &std::string::String);
+        _111 = <String as PartialEq>::eq(_108, _109) -> [return: bb52, unwind: bb93];
+    }
+
+    bb52: {
+        _110 = Not(move _111);
+        switchInt(move _110) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb53: {
+        _112 = core::panicking::AssertKind::Eq;
+        _114 = Option::<Arguments<'_>>::None;
+        _113 = core::panicking::assert_failed::<String, String>(move _112, _108, _109, move _114) -> bb93;
+    }
+
+    bb54: {
+        drop(_106) -> [return: bb55, unwind: bb94];
+    }
+
+    bb55: {
+        drop(_102) -> bb56;
+    }
+
+    bb56: {
+        _118 = const "d";
+        _119 = const "e";
+        _117 = g1(_118, _119) -> bb57;
+    }
+
+    bb57: {
+        _116 = &_117;
+        _122 = const "not found";
+        _121 = <str as ToString>::to_string(_122) -> [return: bb58, unwind: bb92];
+    }
+
+    bb58: {
+        _120 = &_121;
+        _115 = (move _116, move _120);
+        _123 = (_115.0: &std::string::String);
+        _124 = (_115.1: &std::string::String);
+        _126 = <String as PartialEq>::eq(_123, _124) -> [return: bb59, unwind: bb91];
+    }
+
+    bb59: {
+        _125 = Not(move _126);
+        switchInt(move _125) -> [0: bb61, otherwise: bb60];
+    }
+
+    bb60: {
+        _127 = core::panicking::AssertKind::Eq;
+        _129 = Option::<Arguments<'_>>::None;
+        _128 = core::panicking::assert_failed::<String, String>(move _127, _123, _124, move _129) -> bb91;
+    }
+
+    bb61: {
+        drop(_121) -> [return: bb62, unwind: bb92];
+    }
+
+    bb62: {
+        drop(_117) -> bb63;
+    }
+
+    bb63: {
+        _133 = const "b";
+        _134 = const "c";
+        _132 = g2(_133, _134) -> bb64;
+    }
+
+    bb64: {
+        _131 = &_132;
+        _137 = const "found b,c";
+        _136 = <str as ToString>::to_string(_137) -> [return: bb65, unwind: bb90];
+    }
+
+    bb65: {
+        _135 = &_136;
+        _130 = (move _131, move _135);
+        _138 = (_130.0: &std::string::String);
+        _139 = (_130.1: &std::string::String);
+        _141 = <String as PartialEq>::eq(_138, _139) -> [return: bb66, unwind: bb89];
+    }
+
+    bb66: {
+        _140 = Not(move _141);
+        switchInt(move _140) -> [0: bb68, otherwise: bb67];
+    }
+
+    bb67: {
+        _142 = core::panicking::AssertKind::Eq;
+        _144 = Option::<Arguments<'_>>::None;
+        _143 = core::panicking::assert_failed::<String, String>(move _142, _138, _139, move _144) -> bb89;
+    }
+
+    bb68: {
+        drop(_136) -> [return: bb69, unwind: bb90];
+    }
+
+    bb69: {
+        drop(_132) -> bb70;
+    }
+
+    bb70: {
+        _148 = const "c";
+        _149 = const "d";
+        _147 = g2(_148, _149) -> bb71;
+    }
+
+    bb71: {
+        _146 = &_147;
+        _152 = const "not found (c, d)";
+        _151 = <str as ToString>::to_string(_152) -> [return: bb72, unwind: bb88];
+    }
+
+    bb72: {
+        _150 = &_151;
+        _145 = (move _146, move _150);
+        _153 = (_145.0: &std::string::String);
+        _154 = (_145.1: &std::string::String);
+        _156 = <String as PartialEq>::eq(_153, _154) -> [return: bb73, unwind: bb87];
+    }
+
+    bb73: {
+        _155 = Not(move _156);
+        switchInt(move _155) -> [0: bb75, otherwise: bb74];
+    }
+
+    bb74: {
+        _157 = core::panicking::AssertKind::Eq;
+        _159 = Option::<Arguments<'_>>::None;
+        _158 = core::panicking::assert_failed::<String, String>(move _157, _153, _154, move _159) -> bb87;
+    }
+
+    bb75: {
+        drop(_151) -> [return: bb76, unwind: bb88];
+    }
+
+    bb76: {
+        drop(_147) -> bb77;
+    }
+
+    bb77: {
+        _163 = const "d";
+        _164 = const "e";
+        _162 = g2(_163, _164) -> bb78;
+    }
+
+    bb78: {
+        _161 = &_162;
+        _167 = const "not found (d, e)";
+        _166 = <str as ToString>::to_string(_167) -> [return: bb79, unwind: bb86];
+    }
+
+    bb79: {
+        _165 = &_166;
+        _160 = (move _161, move _165);
+        _168 = (_160.0: &std::string::String);
+        _169 = (_160.1: &std::string::String);
+        _171 = <String as PartialEq>::eq(_168, _169) -> [return: bb80, unwind: bb85];
+    }
+
+    bb80: {
+        _170 = Not(move _171);
+        switchInt(move _170) -> [0: bb82, otherwise: bb81];
+    }
+
+    bb81: {
+        _172 = core::panicking::AssertKind::Eq;
+        _174 = Option::<Arguments<'_>>::None;
+        _173 = core::panicking::assert_failed::<String, String>(move _172, _168, _169, move _174) -> bb85;
+    }
+
+    bb82: {
+        drop(_166) -> [return: bb83, unwind: bb86];
+    }
+
+    bb83: {
+        drop(_162) -> bb84;
+    }
+
+    bb84: {
+        return;
+    }
+
+    bb85 (cleanup): {
+        drop(_166) -> [return: bb86, unwind terminate];
+    }
+
+    bb86 (cleanup): {
+        drop(_162) -> [return: bb109, unwind terminate];
+    }
+
+    bb87 (cleanup): {
+        drop(_151) -> [return: bb88, unwind terminate];
+    }
+
+    bb88 (cleanup): {
+        drop(_147) -> [return: bb109, unwind terminate];
+    }
+
+    bb89 (cleanup): {
+        drop(_136) -> [return: bb90, unwind terminate];
+    }
+
+    bb90 (cleanup): {
+        drop(_132) -> [return: bb109, unwind terminate];
+    }
+
+    bb91 (cleanup): {
+        drop(_121) -> [return: bb92, unwind terminate];
+    }
+
+    bb92 (cleanup): {
+        drop(_117) -> [return: bb109, unwind terminate];
+    }
+
+    bb93 (cleanup): {
+        drop(_106) -> [return: bb94, unwind terminate];
+    }
+
+    bb94 (cleanup): {
+        drop(_102) -> [return: bb109, unwind terminate];
+    }
+
+    bb95 (cleanup): {
+        drop(_91) -> [return: bb96, unwind terminate];
+    }
+
+    bb96 (cleanup): {
+        drop(_87) -> [return: bb109, unwind terminate];
+    }
+
+    bb97 (cleanup): {
+        drop(_76) -> [return: bb98, unwind terminate];
+    }
+
+    bb98 (cleanup): {
+        drop(_73) -> [return: bb109, unwind terminate];
+    }
+
+    bb99 (cleanup): {
+        drop(_62) -> [return: bb100, unwind terminate];
+    }
+
+    bb100 (cleanup): {
+        drop(_59) -> [return: bb109, unwind terminate];
+    }
+
+    bb101 (cleanup): {
+        drop(_48) -> [return: bb102, unwind terminate];
+    }
+
+    bb102 (cleanup): {
+        drop(_45) -> [return: bb109, unwind terminate];
+    }
+
+    bb103 (cleanup): {
+        drop(_34) -> [return: bb104, unwind terminate];
+    }
+
+    bb104 (cleanup): {
+        drop(_31) -> [return: bb109, unwind terminate];
+    }
+
+    bb105 (cleanup): {
+        drop(_20) -> [return: bb106, unwind terminate];
+    }
+
+    bb106 (cleanup): {
+        drop(_17) -> [return: bb109, unwind terminate];
+    }
+
+    bb107 (cleanup): {
+        drop(_6) -> [return: bb108, unwind terminate];
+    }
+
+    bb108 (cleanup): {
+        drop(_3) -> [return: bb109, unwind terminate];
+    }
+
+    bb109 (cleanup): {
+        resume;
+    }
+}

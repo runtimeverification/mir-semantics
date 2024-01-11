@@ -1,0 +1,170 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &mut Result<(u32, u32), (u32, u32)>) -> u32 {
+    debug x => _1;
+    let mut _0: u32;
+    let mut _2: isize;
+    let _3: &mut u32;
+    let _4: &&mut u32;
+    let mut _5: bool;
+    let mut _6: u32;
+    let mut _7: bool;
+    let mut _8: u32;
+    let mut _9: &mut u32;
+    let mut _10: &mut u32;
+    scope 1 {
+        debug v => _3;
+        debug v => _4;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb4, otherwise: bb6];
+    }
+
+    bb1: {
+        _0 = const 0_u32;
+        goto -> bb5;
+    }
+
+    bb2: {
+        _0 = (*_3);
+        goto -> bb5;
+    }
+
+    bb3: {
+        _3 = &mut ((((*_1) as Ok).0: (u32, u32)).0: u32);
+        _4 = &_3;
+        _9 = deref_copy (*_4);
+        _6 = (*_9);
+        _5 = Gt(move _6, const 0_u32);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb4: {
+        _3 = &mut ((((*_1) as Err).0: (u32, u32)).1: u32);
+        _4 = &_3;
+        _10 = deref_copy (*_4);
+        _8 = (*_10);
+        _7 = Gt(move _8, const 0_u32);
+        switchInt(move _7) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        unreachable;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: &mut std::result::Result<(u32, u32), (u32, u32)>;
+    let mut _5: std::result::Result<(u32, u32), (u32, u32)>;
+    let mut _6: (u32, u32);
+    let mut _7: &u32;
+    let _8: u32;
+    let _9: &u32;
+    let _10: &u32;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: u32;
+    let mut _14: u32;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&u32, &u32);
+    let mut _19: &u32;
+    let _20: u32;
+    let mut _21: &mut std::result::Result<(u32, u32), (u32, u32)>;
+    let mut _22: std::result::Result<(u32, u32), (u32, u32)>;
+    let mut _23: (u32, u32);
+    let mut _24: &u32;
+    let _25: u32;
+    let _26: &u32;
+    let _27: &u32;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: u32;
+    let mut _31: u32;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _15;
+        }
+    }
+    scope 3 {
+        debug left_val => _26;
+        debug right_val => _27;
+        let _32: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _32;
+        }
+    }
+
+    bb0: {
+        _6 = (const 3_u32, const 4_u32);
+        _5 = Result::<(u32, u32), (u32, u32)>::Ok(move _6);
+        _4 = &mut _5;
+        _3 = foo(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _8 = const 3_u32;
+        _7 = &_8;
+        _1 = (move _2, move _7);
+        _9 = (_1.0: &u32);
+        _10 = (_1.1: &u32);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<u32, u32>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _23 = (const 3_u32, const 4_u32);
+        _22 = Result::<(u32, u32), (u32, u32)>::Err(move _23);
+        _21 = &mut _22;
+        _20 = foo(_21) -> bb4;
+    }
+
+    bb4: {
+        _19 = &_20;
+        _25 = const 4_u32;
+        _24 = &_25;
+        _18 = (move _19, move _24);
+        _26 = (_18.0: &u32);
+        _27 = (_18.1: &u32);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<u32, u32>(move _32, _26, _27, move _34);
+    }
+
+    bb6: {
+        return;
+    }
+}

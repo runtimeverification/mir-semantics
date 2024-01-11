@@ -1,0 +1,736 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+CEnum::Hello::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 30_isize;
+        return;
+    }
+}
+
+CEnum::World::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 60_isize;
+        return;
+    }
+}
+
+fn test1(_1: CEnum) -> i32 {
+    debug c => _1;
+    let mut _0: i32;
+    let _2: CEnum;
+    let mut _3: (CEnum, CEnum);
+    let mut _4: isize;
+    let mut _5: isize;
+    let mut _6: isize;
+    scope 1 {
+        debug c2 => _2;
+    }
+
+    bb0: {
+        _2 = CEnum::Hello;
+        _3 = (move _1, move _2);
+        _6 = discriminant((_3.0: CEnum));
+        switchInt(move _6) -> [30: bb1, 60: bb3, otherwise: bb7];
+    }
+
+    bb1: {
+        _4 = discriminant((_3.1: CEnum));
+        switchInt(move _4) -> [30: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _0 = const 1_i32;
+        goto -> bb6;
+    }
+
+    bb3: {
+        _5 = discriminant((_3.1: CEnum));
+        switchInt(move _5) -> [30: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _0 = const 42_i32;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = const 0_i32;
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}
+
+fn <impl at ui/mir/mir_adt_construction.rs:30:1: 30:25>::fmt(_1: &Pakd, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: u64;
+    let _4: u32;
+    let _5: u16;
+    let _6: u8;
+    let _7: ();
+    let mut _8: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _9: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _10: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _11: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _12: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _13: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _14: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _15: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _16: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _17: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _18: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _19: std::fmt::DebugStruct<'_, '_>;
+    let _20: &str;
+    let _21: &str;
+    let mut _22: &dyn std::fmt::Debug;
+    let _23: &u64;
+    let _24: &str;
+    let mut _25: &dyn std::fmt::Debug;
+    let _26: &u32;
+    let _27: &str;
+    let mut _28: &dyn std::fmt::Debug;
+    let _29: &u16;
+    let _30: &str;
+    let mut _31: &dyn std::fmt::Debug;
+    let _32: &u8;
+    let _33: &str;
+    let mut _34: &dyn std::fmt::Debug;
+    let _35: &();
+    scope 1 {
+        debug a => _3;
+        debug b => _4;
+        debug c => _5;
+        debug d => _6;
+        debug e => const ();
+    }
+
+    bb0: {
+        _3 = ((*_1).0: u64);
+        _4 = ((*_1).1: u32);
+        _5 = ((*_1).2: u16);
+        _6 = ((*_1).3: u8);
+        _20 = const "Pakd";
+        _19 = Formatter::<'_>::debug_struct(_2, _20) -> bb1;
+    }
+
+    bb1: {
+        _18 = &mut _19;
+        _21 = const "a";
+        _23 = &_3;
+        _22 = _23 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _17 = DebugStruct::<'_, '_>::field(move _18, _21, move _22) -> bb2;
+    }
+
+    bb2: {
+        _16 = _17;
+        _24 = const "b";
+        _26 = &_4;
+        _25 = _26 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _15 = DebugStruct::<'_, '_>::field(move _16, _24, move _25) -> bb3;
+    }
+
+    bb3: {
+        _14 = _15;
+        _27 = const "c";
+        _29 = &_5;
+        _28 = _29 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _13 = DebugStruct::<'_, '_>::field(move _14, _27, move _28) -> bb4;
+    }
+
+    bb4: {
+        _12 = _13;
+        _30 = const "d";
+        _32 = &_6;
+        _31 = _32 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _11 = DebugStruct::<'_, '_>::field(move _12, _30, move _31) -> bb5;
+    }
+
+    bb5: {
+        _10 = _11;
+        _33 = const "e";
+        _35 = &_7;
+        _34 = _35 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _9 = DebugStruct::<'_, '_>::field(move _10, _33, move _34) -> bb6;
+    }
+
+    bb6: {
+        _8 = _9;
+        _0 = DebugStruct::<'_, '_>::finish(move _8) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_adt_construction.rs:48:1: 48:24>::eq(_1: &Pakd, _2: &Pakd) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: u64;
+    let mut _8: u64;
+    let mut _9: bool;
+    let mut _10: u32;
+    let mut _11: u32;
+    let mut _12: bool;
+    let mut _13: u16;
+    let mut _14: u16;
+    let mut _15: bool;
+    let mut _16: u8;
+    let mut _17: u8;
+    let mut _18: bool;
+    let mut _19: &();
+    let mut _20: &();
+
+    bb0: {
+        _7 = ((*_1).0: u64);
+        _8 = ((*_2).0: u64);
+        _6 = Eq(move _7, move _8);
+        switchInt(move _6) -> [0: bb10, otherwise: bb11];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _19 = &((*_1).4: ());
+        _20 = &((*_2).4: ());
+        _18 = <() as PartialEq>::eq(move _19, move _20) -> bb13;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _3 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _16 = ((*_1).3: u8);
+        _17 = ((*_2).3: u8);
+        _15 = Eq(move _16, move _17);
+        _3 = move _15;
+        goto -> bb6;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        _4 = const false;
+        goto -> bb9;
+    }
+
+    bb8: {
+        _13 = ((*_1).2: u16);
+        _14 = ((*_2).2: u16);
+        _12 = Eq(move _13, move _14);
+        _4 = move _12;
+        goto -> bb9;
+    }
+
+    bb9: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb10: {
+        _5 = const false;
+        goto -> bb12;
+    }
+
+    bb11: {
+        _10 = ((*_1).1: u32);
+        _11 = ((*_2).1: u32);
+        _9 = Eq(move _10, move _11);
+        _5 = move _9;
+        goto -> bb12;
+    }
+
+    bb12: {
+        switchInt(move _5) -> [0: bb7, otherwise: bb8];
+    }
+
+    bb13: {
+        _0 = move _18;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/mir/mir_adt_construction.rs:58:1: 58:19>::drop(_1: &mut Pakd) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn test2() -> Pakd {
+    let mut _0: Pakd;
+
+    bb0: {
+        _0 = Pakd { a: const 42_u64, b: const 42_u32, c: const 42_u16, d: const 42_u8, e: const () };
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_adt_construction.rs:66:10: 66:19>::eq(_1: &TupleLike, _2: &TupleLike) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u64;
+    let mut _5: u64;
+    let mut _6: bool;
+    let mut _7: u32;
+    let mut _8: u32;
+
+    bb0: {
+        _4 = ((*_1).0: u64);
+        _5 = ((*_2).0: u64);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: u32);
+        _8 = ((*_2).1: u32);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_adt_construction.rs:66:21: 66:26>::fmt(_1: &TupleLike, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &u64;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&u32;
+    let _8: &u32;
+
+    bb0: {
+        _3 = const "TupleLike";
+        _5 = &((*_1).0: u64);
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _8 = &((*_1).1: u32);
+        _7 = &_8;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field2_finish(_2, _3, move _4, move _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test3() -> TupleLike {
+    let mut _0: TupleLike;
+
+    bb0: {
+        _0 = TupleLike(const 42_u64, const 42_u32);
+        return;
+    }
+}
+
+fn test4(_1: fn(u64, u32) -> TupleLike) -> (TupleLike, TupleLike) {
+    debug x => _1;
+    let mut _0: (TupleLike, TupleLike);
+    let mut _2: TupleLike;
+    let mut _3: TupleLike;
+    scope 1 {
+        debug y => TupleLike;
+    }
+
+    bb0: {
+        _2 = _1(const 42_u64, const 84_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = TupleLike(const 42_u64, const 84_u32) -> bb2;
+    }
+
+    bb2: {
+        _0 = (move _2, move _3);
+        return;
+    }
+}
+
+fn test5(_1: fn(u32) -> Option<u32>) -> (Option<u32>, Option<u32>) {
+    debug x => _1;
+    let mut _0: (std::option::Option<u32>, std::option::Option<u32>);
+    let mut _2: std::option::Option<u32>;
+    let mut _3: std::option::Option<u32>;
+    scope 1 {
+        debug y => Option::<u32>::Some;
+    }
+
+    bb0: {
+        _2 = _1(const 42_u32) -> bb1;
+    }
+
+    bb1: {
+        _3 = Option::<u32>::Some(const 42_u32) -> bb2;
+    }
+
+    bb2: {
+        _0 = (move _2, move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i32, &i32);
+    let mut _2: &i32;
+    let _3: i32;
+    let mut _4: CEnum;
+    let mut _5: &i32;
+    let _6: i32;
+    let _7: &i32;
+    let _8: &i32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: i32;
+    let mut _12: i32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&i32, &i32);
+    let mut _17: &i32;
+    let _18: i32;
+    let mut _19: CEnum;
+    let mut _20: &i32;
+    let _21: i32;
+    let _22: &i32;
+    let _23: &i32;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: i32;
+    let mut _27: i32;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&Pakd, &Pakd);
+    let mut _32: &Pakd;
+    let _33: Pakd;
+    let mut _34: &Pakd;
+    let _35: Pakd;
+    let _36: &Pakd;
+    let _37: &Pakd;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&TupleLike, &TupleLike);
+    let mut _44: &TupleLike;
+    let _45: TupleLike;
+    let mut _46: &TupleLike;
+    let _47: TupleLike;
+    let _48: &TupleLike;
+    let _49: &TupleLike;
+    let mut _50: bool;
+    let mut _51: bool;
+    let _53: !;
+    let mut _54: std::option::Option<std::fmt::Arguments<'_>>;
+    let _55: (TupleLike, TupleLike);
+    let mut _56: fn(u64, u32) -> TupleLike;
+    let mut _57: (&TupleLike, &TupleLike);
+    let mut _58: &TupleLike;
+    let mut _59: &TupleLike;
+    let mut _62: bool;
+    let mut _63: bool;
+    let _65: !;
+    let mut _66: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _68: fn(u32) -> std::option::Option<u32>;
+    let mut _69: (&std::option::Option<u32>, &std::option::Option<u32>);
+    let mut _70: &std::option::Option<u32>;
+    let mut _71: &std::option::Option<u32>;
+    let mut _74: bool;
+    let mut _75: bool;
+    let _77: !;
+    let mut _78: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _28: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _28;
+        }
+    }
+    scope 5 {
+        debug left_val => _36;
+        debug right_val => _37;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+        debug left_val => _48;
+        debug right_val => _49;
+        let _52: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _52;
+        }
+    }
+    scope 9 {
+        debug t4 => _55;
+        let _60: &TupleLike;
+        let _61: &TupleLike;
+        let _67: (std::option::Option<u32>, std::option::Option<u32>);
+        scope 10 {
+            debug left_val => _60;
+            debug right_val => _61;
+            let _64: core::panicking::AssertKind;
+            scope 11 {
+                debug kind => _64;
+            }
+        }
+        scope 12 {
+            debug t5 => _67;
+            let _72: &std::option::Option<u32>;
+            let _73: &std::option::Option<u32>;
+            scope 13 {
+                debug left_val => _72;
+                debug right_val => _73;
+                let _76: core::panicking::AssertKind;
+                scope 14 {
+                    debug kind => _76;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = CEnum::Hello;
+        _3 = test1(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _6 = const 42_i32;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &i32);
+        _8 = (_1.1: &i32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<i32, i32>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        _19 = CEnum::World;
+        _18 = test1(move _19) -> bb4;
+    }
+
+    bb4: {
+        _17 = &_18;
+        _21 = const 0_i32;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &i32);
+        _23 = (_16.1: &i32);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<i32, i32>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        _33 = test2() -> bb7;
+    }
+
+    bb7: {
+        _32 = &_33;
+        _35 = Pakd { a: const 42_u64, b: const 42_u32, c: const 42_u16, d: const 42_u8, e: const () };
+        _34 = &_35;
+        _31 = (move _32, move _34);
+        _36 = (_31.0: &Pakd);
+        _37 = (_31.1: &Pakd);
+        _39 = <Pakd as PartialEq>::eq(_36, _37) -> [return: bb8, unwind: bb25];
+    }
+
+    bb8: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<Pakd, Pakd>(move _40, _36, _37, move _42) -> bb25;
+    }
+
+    bb10: {
+        drop(_35) -> [return: bb11, unwind: bb26];
+    }
+
+    bb11: {
+        drop(_33) -> bb12;
+    }
+
+    bb12: {
+        _45 = test3() -> bb13;
+    }
+
+    bb13: {
+        _44 = &_45;
+        _47 = TupleLike(const 42_u64, const 42_u32);
+        _46 = &_47;
+        _43 = (move _44, move _46);
+        _48 = (_43.0: &TupleLike);
+        _49 = (_43.1: &TupleLike);
+        _51 = <TupleLike as PartialEq>::eq(_48, _49) -> bb14;
+    }
+
+    bb14: {
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _52 = core::panicking::AssertKind::Eq;
+        _54 = Option::<Arguments<'_>>::None;
+        _53 = core::panicking::assert_failed::<TupleLike, TupleLike>(move _52, _48, _49, move _54);
+    }
+
+    bb16: {
+        _56 = TupleLike as fn(u64, u32) -> TupleLike (Pointer(ReifyFnPointer));
+        _55 = test4(move _56) -> bb17;
+    }
+
+    bb17: {
+        _58 = &(_55.0: TupleLike);
+        _59 = &(_55.1: TupleLike);
+        _57 = (move _58, move _59);
+        _60 = (_57.0: &TupleLike);
+        _61 = (_57.1: &TupleLike);
+        _63 = <TupleLike as PartialEq>::eq(_60, _61) -> bb18;
+    }
+
+    bb18: {
+        _62 = Not(move _63);
+        switchInt(move _62) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _64 = core::panicking::AssertKind::Eq;
+        _66 = Option::<Arguments<'_>>::None;
+        _65 = core::panicking::assert_failed::<TupleLike, TupleLike>(move _64, _60, _61, move _66);
+    }
+
+    bb20: {
+        _68 = Option::<u32>::Some as fn(u32) -> std::option::Option<u32> (Pointer(ReifyFnPointer));
+        _67 = test5(move _68) -> bb21;
+    }
+
+    bb21: {
+        _70 = &(_67.0: std::option::Option<u32>);
+        _71 = &(_67.1: std::option::Option<u32>);
+        _69 = (move _70, move _71);
+        _72 = (_69.0: &std::option::Option<u32>);
+        _73 = (_69.1: &std::option::Option<u32>);
+        _75 = <Option<u32> as PartialEq>::eq(_72, _73) -> bb22;
+    }
+
+    bb22: {
+        _74 = Not(move _75);
+        switchInt(move _74) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _76 = core::panicking::AssertKind::Eq;
+        _78 = Option::<Arguments<'_>>::None;
+        _77 = core::panicking::assert_failed::<Option<u32>, Option<u32>>(move _76, _72, _73, move _78);
+    }
+
+    bb24: {
+        return;
+    }
+
+    bb25 (cleanup): {
+        drop(_35) -> [return: bb26, unwind terminate];
+    }
+
+    bb26 (cleanup): {
+        drop(_33) -> [return: bb27, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        resume;
+    }
+}
+
+fn TupleLike(_1: u64, _2: u32) -> TupleLike {
+    let mut _0: TupleLike;
+
+    bb0: {
+        _0 = TupleLike(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn TupleLike(_1: u64, _2: u32) -> TupleLike {
+    let mut _0: TupleLike;
+
+    bb0: {
+        _0 = TupleLike(move _1, move _2);
+        return;
+    }
+}

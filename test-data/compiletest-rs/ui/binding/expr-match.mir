@@ -1,0 +1,168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_basic() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: !;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: !;
+    scope 1 {
+        debug rs => _1;
+    }
+
+    bb0: {
+        _2 = const true;
+        _1 = _2;
+        _4 = _1;
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb2: {
+        _7 = const false;
+        _6 = Not(_7);
+        _1 = move _6;
+        _9 = _1;
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn test_inferrence() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: !;
+    scope 1 {
+        debug rs => _1;
+    }
+
+    bb0: {
+        _1 = const true;
+        _2 = Not(_1);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn test_alt_as_alt_head() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: !;
+    scope 1 {
+        debug rs => _1;
+    }
+
+    bb0: {
+        _2 = const false;
+        _1 = Not(_2);
+        _3 = Not(_1);
+        switchInt(move _3) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _4 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn test_alt_as_block_result() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: !;
+    scope 1 {
+        debug rs => _1;
+    }
+
+    bb0: {
+        _2 = const false;
+        switchInt(_2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _3 = const true;
+        _1 = _3;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _1 = const false;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _5 = _1;
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _6 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+
+    bb0: {
+        _1 = test_basic() -> bb1;
+    }
+
+    bb1: {
+        _2 = test_inferrence() -> bb2;
+    }
+
+    bb2: {
+        _3 = test_alt_as_alt_head() -> bb3;
+    }
+
+    bb3: {
+        _4 = test_alt_as_block_result() -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

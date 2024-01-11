@@ -1,0 +1,331 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/overloaded/overloaded_deref_with_ref_pattern.rs:11:1: 11:29>::deref(_1: &DerefOk<T>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+
+    bb0: {
+        _0 = &((*_1).0: T);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded_deref_with_ref_pattern.rs:18:1: 18:32>::deref_mut(_1: &mut DerefOk<T>) -> &mut T {
+    debug self => _1;
+    let mut _0: &mut T;
+    let mut _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn <impl at ui/overloaded/overloaded_deref_with_ref_pattern.rs:24:1: 24:32>::deref(_1: &DerefMutOk<T>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+    let mut _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn <impl at ui/overloaded/overloaded_deref_with_ref_pattern.rs:31:1: 31:35>::deref_mut(_1: &mut DerefMutOk<T>) -> &mut T {
+    debug self => _1;
+    let mut _0: &mut T;
+
+    bb0: {
+        _0 = &mut ((*_1).0: T);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: DerefMutOk<i32>;
+    let mut _2: &mut i32;
+    let mut _3: &mut DerefMutOk<i32>;
+    let mut _7: &mut i32;
+    let mut _8: &mut DerefMutOk<i32>;
+    let mut _10: &i32;
+    let mut _11: &DerefOk<i32>;
+    let mut _15: &i32;
+    let mut _16: &DerefOk<i32>;
+    let mut _18: (i32, i32);
+    let mut _19: &mut (i32, i32);
+    let mut _20: &mut DerefMutOk<(i32, i32)>;
+    let mut _24: (i32, i32);
+    let mut _25: &mut (i32, i32);
+    let mut _26: &mut DerefMutOk<(i32, i32)>;
+    let mut _30: (i32, i32);
+    let mut _33: &mut (i32, i32);
+    let mut _34: &mut DerefMutOk<(i32, i32)>;
+    let mut _36: (i32, i32);
+    let mut _39: &mut (i32, i32);
+    let mut _40: &mut DerefMutOk<(i32, i32)>;
+    let mut _42: (i32, i32);
+    let mut _43: &(i32, i32);
+    let mut _44: &DerefOk<(i32, i32)>;
+    let mut _48: (i32, i32);
+    let mut _51: &(i32, i32);
+    let mut _52: &DerefOk<(i32, i32)>;
+    let mut _54: (i32, i32);
+    let mut _55: &mut (i32, i32);
+    let mut _56: &mut DerefMutOk<(i32, i32)>;
+    let mut _60: (i32, i32);
+    let mut _63: &mut (i32, i32);
+    let mut _64: &mut DerefMutOk<(i32, i32)>;
+    scope 1 {
+        debug b => _1;
+        let _4: &mut i32;
+        let mut _5: DerefMutOk<i32>;
+        scope 2 {
+            debug n => _4;
+        }
+        scope 3 {
+            debug y => _5;
+            let _6: &mut i32;
+            scope 4 {
+                debug z => _6;
+                let mut _9: DerefOk<i32>;
+                scope 5 {
+                    debug b => _9;
+                    let _12: &i32;
+                    let mut _13: DerefOk<i32>;
+                    scope 6 {
+                        debug n => _12;
+                    }
+                    scope 7 {
+                        debug y => _13;
+                        let _14: &i32;
+                        scope 8 {
+                            debug z => _14;
+                            let mut _17: DerefMutOk<(i32, i32)>;
+                            scope 9 {
+                                debug b => _17;
+                                let _21: &mut i32;
+                                let _22: &i32;
+                                let mut _23: DerefMutOk<(i32, i32)>;
+                                scope 10 {
+                                    debug n => _21;
+                                    debug m => _22;
+                                }
+                                scope 11 {
+                                    debug b => _23;
+                                    let _27: &i32;
+                                    let _28: &mut i32;
+                                    let mut _29: DerefMutOk<(i32, i32)>;
+                                    scope 12 {
+                                        debug n => _27;
+                                        debug m => _28;
+                                    }
+                                    scope 13 {
+                                        debug y => _29;
+                                        let _31: &mut i32;
+                                        let _32: &i32;
+                                        scope 14 {
+                                            debug z => _31;
+                                            debug a => _32;
+                                            let mut _35: DerefMutOk<(i32, i32)>;
+                                            scope 15 {
+                                                debug y => _35;
+                                                let _37: &i32;
+                                                let _38: &mut i32;
+                                                scope 16 {
+                                                    debug z => _37;
+                                                    debug a => _38;
+                                                    let mut _41: DerefOk<(i32, i32)>;
+                                                    scope 17 {
+                                                        debug b => _41;
+                                                        let _45: &i32;
+                                                        let _46: &i32;
+                                                        let mut _47: DerefOk<(i32, i32)>;
+                                                        scope 18 {
+                                                            debug n => _45;
+                                                            debug m => _46;
+                                                        }
+                                                        scope 19 {
+                                                            debug y => _47;
+                                                            let _49: &i32;
+                                                            let _50: &i32;
+                                                            scope 20 {
+                                                                debug z => _49;
+                                                                debug a => _50;
+                                                                let mut _53: DerefMutOk<(i32, i32)>;
+                                                                scope 21 {
+                                                                    debug b => _53;
+                                                                    let _57: &mut i32;
+                                                                    let _58: &mut i32;
+                                                                    let mut _59: DerefMutOk<(i32, i32)>;
+                                                                    scope 22 {
+                                                                        debug n => _57;
+                                                                        debug m => _58;
+                                                                    }
+                                                                    scope 23 {
+                                                                        debug y => _59;
+                                                                        let _61: &mut i32;
+                                                                        let _62: &mut i32;
+                                                                        scope 24 {
+                                                                            debug z => _61;
+                                                                            debug a => _62;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = DerefMutOk::<i32>(const 0_i32);
+        _3 = &mut _1;
+        _2 = <DerefMutOk<i32> as DerefMut>::deref_mut(move _3) -> bb1;
+    }
+
+    bb1: {
+        _4 = _2;
+        _5 = DerefMutOk::<i32>(const 1_i32);
+        _8 = &mut _5;
+        _7 = <DerefMutOk<i32> as DerefMut>::deref_mut(move _8) -> bb2;
+    }
+
+    bb2: {
+        _6 = _7;
+        _9 = DerefOk::<i32>(const 2_i32);
+        _11 = &_9;
+        _10 = <DerefOk<i32> as Deref>::deref(move _11) -> bb3;
+    }
+
+    bb3: {
+        _12 = _10;
+        _13 = DerefOk::<i32>(const 3_i32);
+        _16 = &_13;
+        _15 = <DerefOk<i32> as Deref>::deref(move _16) -> bb4;
+    }
+
+    bb4: {
+        _14 = _15;
+        _18 = (const 0_i32, const 9_i32);
+        _17 = DerefMutOk::<(i32, i32)>(move _18);
+        _20 = &mut _17;
+        _19 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _20) -> bb5;
+    }
+
+    bb5: {
+        _21 = &mut ((*_19).0: i32);
+        _22 = &((*_19).1: i32);
+        _24 = (const 0_i32, const 9_i32);
+        _23 = DerefMutOk::<(i32, i32)>(move _24);
+        _26 = &mut _23;
+        _25 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _26) -> bb6;
+    }
+
+    bb6: {
+        _27 = &((*_25).0: i32);
+        _28 = &mut ((*_25).1: i32);
+        _30 = (const 1_i32, const 8_i32);
+        _29 = DerefMutOk::<(i32, i32)>(move _30);
+        _34 = &mut _29;
+        _33 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _34) -> bb7;
+    }
+
+    bb7: {
+        _31 = &mut ((*_33).0: i32);
+        _32 = &((*_33).1: i32);
+        _36 = (const 1_i32, const 8_i32);
+        _35 = DerefMutOk::<(i32, i32)>(move _36);
+        _40 = &mut _35;
+        _39 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _40) -> bb8;
+    }
+
+    bb8: {
+        _37 = &((*_39).0: i32);
+        _38 = &mut ((*_39).1: i32);
+        _42 = (const 2_i32, const 7_i32);
+        _41 = DerefOk::<(i32, i32)>(move _42);
+        _44 = &_41;
+        _43 = <DerefOk<(i32, i32)> as Deref>::deref(move _44) -> bb9;
+    }
+
+    bb9: {
+        _45 = &((*_43).0: i32);
+        _46 = &((*_43).1: i32);
+        _48 = (const 3_i32, const 6_i32);
+        _47 = DerefOk::<(i32, i32)>(move _48);
+        _52 = &_47;
+        _51 = <DerefOk<(i32, i32)> as Deref>::deref(move _52) -> bb10;
+    }
+
+    bb10: {
+        _49 = &((*_51).0: i32);
+        _50 = &((*_51).1: i32);
+        _54 = (const 4_i32, const 5_i32);
+        _53 = DerefMutOk::<(i32, i32)>(move _54);
+        _56 = &mut _53;
+        _55 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _56) -> bb11;
+    }
+
+    bb11: {
+        _57 = &mut ((*_55).0: i32);
+        _58 = &mut ((*_55).1: i32);
+        _60 = (const 5_i32, const 4_i32);
+        _59 = DerefMutOk::<(i32, i32)>(move _60);
+        _64 = &mut _59;
+        _63 = <DerefMutOk<(i32, i32)> as DerefMut>::deref_mut(move _64) -> bb12;
+    }
+
+    bb12: {
+        _61 = &mut ((*_63).0: i32);
+        _62 = &mut ((*_63).1: i32);
+        return;
+    }
+}
+
+fn DerefOk(_1: T) -> DerefOk<T> {
+    let mut _0: DerefOk<T>;
+
+    bb0: {
+        _0 = DerefOk::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn DerefOk(_1: T) -> DerefOk<T> {
+    let mut _0: DerefOk<T>;
+
+    bb0: {
+        _0 = DerefOk::<T>(move _1);
+        return;
+    }
+}
+
+fn DerefMutOk(_1: T) -> DerefMutOk<T> {
+    let mut _0: DerefMutOk<T>;
+
+    bb0: {
+        _0 = DerefMutOk::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn DerefMutOk(_1: T) -> DerefMutOk<T> {
+    let mut _0: DerefMutOk<T>;
+
+    bb0: {
+        _0 = DerefMutOk::<T>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,331 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generator/iterator-count.rs:13:1: 13:62>::next(_1: &mut W<T>) -> Option<<T as Generator>::Yield> {
+    debug self => _1;
+    let mut _0: std::option::Option<<T as std::ops::Generator>::Yield>;
+    let mut _2: std::ops::GeneratorState<<T as std::ops::Generator>::Yield, ()>;
+    let mut _3: std::pin::Pin<&mut T>;
+    let mut _4: &mut T;
+    let mut _5: isize;
+    let _6: <T as std::ops::Generator>::Yield;
+    scope 1 {
+        debug v => _6;
+    }
+
+    bb0: {
+        _4 = &mut ((*_1).0: T);
+        _3 = Pin::<&mut T>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <T as Generator>::resume(move _3, const ()) -> bb2;
+    }
+
+    bb2: {
+        _5 = discriminant(_2);
+        switchInt(move _5) -> [0: bb3, 1: bb5, otherwise: bb4];
+    }
+
+    bb3: {
+        _6 = move ((_2 as Yielded).0: <T as std::ops::Generator>::Yield);
+        _0 = Option::<<T as Generator>::Yield>::Some(move _6);
+        goto -> bb6;
+    }
+
+    bb4: {
+        unreachable;
+    }
+
+    bb5: {
+        _0 = Option::<<T as Generator>::Yield>::None;
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn test() -> impl Generator<Return = (), Yield = u8> + Unpin {
+    let mut _0: impl std::ops::Generator<Return = (), Yield = u8> + std::marker::Unpin;
+
+    bb0: {
+        _0 = [generator@ui/generator/iterator-count.rs:25:5: 25:7 (#0)];
+        return;
+    }
+}
+
+fn test::{closure#0}(_1: Pin<&mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]>, _2: ()) -> GeneratorState<u8, ()> {
+    let mut _0: std::ops::GeneratorState<u8, ()>;
+    let mut _3: std::ops::Range<u8>;
+    let mut _4: std::ops::Range<u8>;
+    let mut _5: std::option::Option<u8>;
+    let mut _6: &mut std::ops::Range<u8>;
+    let mut _7: isize;
+    let mut _9: ();
+    let mut _10: u32;
+    let mut _11: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    let mut _12: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    let mut _13: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    let mut _14: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    let mut _15: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    let mut _16: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7];
+    scope 1 {
+        debug iter => (((*(_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7])) as variant#3).0: std::ops::Range<u8>);
+        let _8: u8;
+        scope 2 {
+            debug i => _8;
+        }
+    }
+
+    bb0: {
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        _10 = discriminant((*_11));
+        switchInt(move _10) -> [0: bb1, 1: bb10, 2: bb9, 3: bb3, otherwise: bb6];
+    }
+
+    bb1: {
+        _4 = std::ops::Range::<u8> { start: const 1_u8, end: const 6_u8 };
+        _3 = <std::ops::Range<u8> as IntoIterator>::into_iter(move _4) -> [return: bb2, unwind: bb8];
+    }
+
+    bb2: {
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        (((*_12) as variant#3).0: std::ops::Range<u8>) = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        _6 = &mut (((*_13) as variant#3).0: std::ops::Range<u8>);
+        _5 = <std::ops::Range<u8> as Iterator>::next(_6) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _8 = ((_5 as Some).0: u8);
+        _0 = GeneratorState::<u8, ()>::Yielded(_8);
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        discriminant((*_14)) = 3;
+        return;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _9 = const ();
+        _0 = GeneratorState::<u8, ()>::Complete(move _9);
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        discriminant((*_15)) = 1;
+        return;
+    }
+
+    bb8 (cleanup): {
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:25:5: 25:7]);
+        discriminant((*_16)) = 2;
+        resume;
+    }
+
+    bb9: {
+        assert(const false, "generator resumed after panicking") -> bb9;
+    }
+
+    bb10: {
+        assert(const false, "generator resumed after completion") -> bb10;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: u8;
+    let mut _3: &u8;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: std::iter::Chain<W<impl std::ops::Generator<Return = (), Yield = u8> + std::marker::Unpin>, W<[generator@ui/generator/iterator-count.rs:36:9: 36:16]>>;
+    let mut _7: W<impl std::ops::Generator<Return = (), Yield = u8> + std::marker::Unpin>;
+    let mut _8: impl std::ops::Generator<Return = (), Yield = u8> + std::marker::Unpin;
+    let mut _9: W<[generator@ui/generator/iterator-count.rs:36:9: 36:16]>;
+    let mut _10: [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _11: &[closure@ui/generator/iterator-count.rs:35:24: 35:31];
+    let mut _12: (u8,);
+    let mut _13: std::ops::Range<u8>;
+    let mut _14: !;
+    scope 1 {
+        debug end => _1;
+        let _2: [closure@ui/generator/iterator-count.rs:35:24: 35:31];
+        scope 2 {
+            debug closure_test => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 11_u8;
+        _3 = &_1;
+        _2 = [closure@ui/generator/iterator-count.rs:35:24: 35:31] { end: move _3 };
+        _8 = test() -> bb1;
+    }
+
+    bb1: {
+        _7 = W::<impl Generator<Return = (), Yield = u8> + Unpin>(move _8);
+        _11 = &_2;
+        _12 = (const 6_u8,);
+        _10 = <[closure@ui/generator/iterator-count.rs:35:24: 35:31] as Fn<(u8,)>>::call(move _11, move _12) -> bb2;
+    }
+
+    bb2: {
+        _9 = W::<[generator@ui/generator/iterator-count.rs:36:9: 36:16]>(move _10);
+        _6 = <W<impl Generator<Return = (), Yield = u8> + Unpin> as Iterator>::chain::<W<[generator@ui/generator/iterator-count.rs:36:9: 36:16]>>(move _7, move _9) -> bb3;
+    }
+
+    bb3: {
+        _13 = std::ops::Range::<u8> { start: const 1_u8, end: const 11_u8 };
+        _5 = <std::iter::Chain<W<impl Generator<Return = (), Yield = u8> + Unpin>, W<[generator@ui/generator/iterator-count.rs:36:9: 36:16]>> as Iterator>::eq::<std::ops::Range<u8>>(move _6, move _13) -> bb4;
+    }
+
+    bb4: {
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _14 = core::panicking::panic(const "assertion failed: W(test()).chain(W(closure_test(6))).eq(1..11)");
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/generator/iterator-count.rs:35:24: 35:31], _2: u8) -> [generator@ui/generator/iterator-count.rs:36:9: 36:16] {
+    debug start => _2;
+    debug end => (*((*_1).0: &u8));
+    let mut _0: [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _3: &u8;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &u8);
+        _0 = [generator@ui/generator/iterator-count.rs:36:9: 36:16 (#0)] { start: _2, end: (*_3) };
+        return;
+    }
+}
+
+fn main::{closure#0}::{closure#0}(_1: Pin<&mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]>, _2: ()) -> GeneratorState<u8, ()> {
+    debug start => ((*(_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16])).0: u8);
+    debug end => ((*(_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16])).1: u8);
+    let mut _0: std::ops::GeneratorState<u8, ()>;
+    let mut _3: std::ops::Range<u8>;
+    let mut _4: std::ops::Range<u8>;
+    let mut _5: u8;
+    let mut _6: u8;
+    let mut _7: std::option::Option<u8>;
+    let mut _8: &mut std::ops::Range<u8>;
+    let mut _9: isize;
+    let mut _11: ();
+    let mut _12: u32;
+    let mut _13: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _14: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _15: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _16: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _17: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _18: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _19: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    let mut _20: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16];
+    scope 1 {
+        debug iter => (((*(_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16])) as variant#3).0: std::ops::Range<u8>);
+        let _10: u8;
+        scope 2 {
+            debug i => _10;
+        }
+    }
+
+    bb0: {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        _12 = discriminant((*_13));
+        switchInt(move _12) -> [0: bb1, 1: bb10, 2: bb9, 3: bb3, otherwise: bb6];
+    }
+
+    bb1: {
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        _5 = ((*_14).0: u8);
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        _6 = ((*_15).1: u8);
+        _4 = std::ops::Range::<u8> { start: move _5, end: move _6 };
+        _3 = <std::ops::Range<u8> as IntoIterator>::into_iter(move _4) -> [return: bb2, unwind: bb8];
+    }
+
+    bb2: {
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        (((*_16) as variant#3).0: std::ops::Range<u8>) = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _17 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        _8 = &mut (((*_17) as variant#3).0: std::ops::Range<u8>);
+        _7 = <std::ops::Range<u8> as Iterator>::next(_8) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _9 = discriminant(_7);
+        switchInt(move _9) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _10 = ((_7 as Some).0: u8);
+        _0 = GeneratorState::<u8, ()>::Yielded(_10);
+        _18 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        discriminant((*_18)) = 3;
+        return;
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _11 = const ();
+        _0 = GeneratorState::<u8, ()>::Complete(move _11);
+        _19 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        discriminant((*_19)) = 1;
+        return;
+    }
+
+    bb8 (cleanup): {
+        _20 = deref_copy (_1.0: &mut [generator@ui/generator/iterator-count.rs:36:9: 36:16]);
+        discriminant((*_20)) = 2;
+        resume;
+    }
+
+    bb9: {
+        assert(const false, "generator resumed after panicking") -> bb9;
+    }
+
+    bb10: {
+        assert(const false, "generator resumed after completion") -> bb10;
+    }
+}
+
+fn W(_1: T) -> W<T> {
+    let mut _0: W<T>;
+
+    bb0: {
+        _0 = W::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn W(_1: T) -> W<T> {
+    let mut _0: W<T>;
+
+    bb0: {
+        _0 = W::<T>(move _1);
+        return;
+    }
+}

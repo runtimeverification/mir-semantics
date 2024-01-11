@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn print_error_count(_1: &Registry) -> () {
+    debug registry => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn print_error_count::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/issue-88118-2.rs:8:5: 8:19], _2: &Registry) -> () {
+    debug x => _2;
+    debug registry => (*((*_1).0: &&Registry));
+    let mut _0: ();
+    let mut _3: ();
+    let mut _4: &&Registry;
+    let mut _5: &Registry;
+
+    bb0: {
+        _4 = deref_copy ((*_1).0: &&Registry);
+        _5 = deref_copy (*_4);
+        _3 = Registry::try_find_description(_5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/issue-88118-2.rs:18:1: 18:14>::try_find_description(_1: &Registry) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not implemented");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn str_contains(_1: &str, _2: &str) -> bool {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = core::str::<impl str>::contains::<'_, &str>(_1, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generic-associated-types/issue-93342.rs:41:1: 41:70>::new(_1: F) -> BinaryExpression<A, B, O, F> {
+    debug f => _1;
+    let mut _0: BinaryExpression<A, B, O, F>;
+
+    bb0: {
+        _0 = BinaryExpression::<A, B, O, F> { f: move _1, _phantom: const ZeroSized: PhantomData<(A, B, O)> };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: BinaryExpression<std::string::String, std::string::String, bool, for<'a, 'b> fn(&'a str, &'b str) -> bool {str_contains}>;
+
+    bb0: {
+        _1 = BinaryExpression::<String, String, bool, for<'a, 'b> fn(&'a str, &'b str) -> bool {str_contains}>::new(str_contains) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

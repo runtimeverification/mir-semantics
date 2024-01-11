@@ -1,0 +1,22 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Bar::<impl at ui/traits/impl-2.rs:14:5: 14:37>::bar(_1: &dyn Trait) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        _0 = <dyn Trait as Trait>::foo(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

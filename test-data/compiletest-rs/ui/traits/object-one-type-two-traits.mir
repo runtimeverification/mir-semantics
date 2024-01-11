@@ -1,0 +1,123 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/object-one-type-two-traits.rs:14:1: 14:20>::get(_1: &isize) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/object-one-type-two-traits.rs:14:1: 14:20>::wrap(_1: Box<isize>) -> Box<dyn Any> {
+    debug self => _1;
+    let mut _0: std::boxed::Box<dyn std::any::Any>;
+
+    bb0: {
+        _0 = move _1 as std::boxed::Box<dyn std::any::Any> (Pointer(Unsize));
+        return;
+    }
+}
+
+fn is(_1: &dyn Any) -> bool {
+    debug x => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = <(dyn Any + 'static)>::is::<T>(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn Wrap>;
+    let mut _2: std::boxed::Box<dyn Wrap>;
+    let mut _3: std::boxed::Box<isize>;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &isize;
+    let _14: isize;
+    let mut _15: &dyn Wrap;
+    let mut _17: std::boxed::Box<dyn Wrap>;
+    let mut _18: bool;
+    let mut _19: *const dyn Wrap;
+    scope 1 {
+        debug x => _1;
+        let _16: std::boxed::Box<dyn std::any::Any>;
+        scope 2 {
+            debug y => _16;
+        }
+    }
+
+    bb0: {
+        _18 = const false;
+        _3 = Box::<isize>::new(const 22_isize) -> bb1;
+    }
+
+    bb1: {
+        _2 = move _3 as std::boxed::Box<dyn Wrap> (Pointer(Unsize));
+        _18 = const true;
+        _1 = move _2;
+        _8 = [const "x=", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _19 = (((_1.0: std::ptr::Unique<dyn Wrap>).0: std::ptr::NonNull<dyn Wrap>).0: *const dyn Wrap);
+        _15 = &(*_19);
+        _14 = <dyn Wrap as Wrap>::get(move _15) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _13 = &_14;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_13) -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _4 = _print(move _5) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        _18 = const false;
+        _17 = move _1;
+        _16 = <dyn Wrap as Wrap>::wrap(move _17) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        drop(_16) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        _18 = const false;
+        return;
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        switchInt(_18) -> [0: bb8, otherwise: bb9];
+    }
+}

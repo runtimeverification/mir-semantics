@@ -1,0 +1,111 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static FOO: [isize; 3] = {
+    let mut _0: [isize; 3];
+
+    bb0: {
+        _0 = [const 1_isize, const 2_isize, const 3_isize];
+        return;
+    }
+}
+
+FOO::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 4];
+    let _5: [&str; 4];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 3];
+    let _8: [core::fmt::rt::Argument<'_>; 3];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &isize;
+    let _11: &[isize; 3];
+    let _12: usize;
+    let mut _13: usize;
+    let mut _14: bool;
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &isize;
+    let _17: &[isize; 3];
+    let _18: usize;
+    let mut _19: usize;
+    let mut _20: bool;
+    let mut _21: core::fmt::rt::Argument<'_>;
+    let _22: &isize;
+    let _23: &[isize; 3];
+    let _24: usize;
+    let mut _25: usize;
+    let mut _26: bool;
+
+    bb0: {
+        _5 = [const "", const " ", const " ", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _11 = const {alloc1: &[isize; 3]};
+        _12 = const 0_usize;
+        _13 = const 3_usize;
+        _14 = Lt(_12, _13);
+        assert(move _14, "index out of bounds: the length is {} but the index is {}", move _13, _12) -> bb1;
+    }
+
+    bb1: {
+        _10 = &(*_11)[_12];
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_10) -> bb2;
+    }
+
+    bb2: {
+        _17 = const {alloc1: &[isize; 3]};
+        _18 = const 1_usize;
+        _19 = const 3_usize;
+        _20 = Lt(_18, _19);
+        assert(move _20, "index out of bounds: the length is {} but the index is {}", move _19, _18) -> bb3;
+    }
+
+    bb3: {
+        _16 = &(*_17)[_18];
+        _15 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_16) -> bb4;
+    }
+
+    bb4: {
+        _23 = const {alloc1: &[isize; 3]};
+        _24 = const 2_usize;
+        _25 = const 3_usize;
+        _26 = Lt(_24, _25);
+        assert(move _26, "index out of bounds: the length is {} but the index is {}", move _25, _24) -> bb5;
+    }
+
+    bb5: {
+        _22 = &(*_23)[_24];
+        _21 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_22) -> bb6;
+    }
+
+    bb6: {
+        _8 = [move _9, move _15, move _21];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb7;
+    }
+
+    bb7: {
+        _1 = _print(move _2) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+alloc1 (static: FOO, size: 24, align: 8) {
+    0x00 │ 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 │ ................
+    0x10 │ 03 00 00 00 00 00 00 00                         │ ........
+}

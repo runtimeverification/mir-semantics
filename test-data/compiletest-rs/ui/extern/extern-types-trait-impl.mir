@@ -1,0 +1,54 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Foo::foo(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/extern/extern-types-trait-impl.rs:14:1: 14:15>::foo(_1: &A) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn assert_foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn use_foo(_1: &dyn Foo) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = <dyn Foo as Foo>::foo(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = assert_foo::<A>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

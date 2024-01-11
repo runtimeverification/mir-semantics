@@ -1,0 +1,87 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &mut dyn FnMut(isize) -> isize) -> isize {
+    debug f => _1;
+    let mut _0: isize;
+    let mut _2: (isize,);
+
+    bb0: {
+        _2 = (const 22_isize,);
+        _0 = <dyn FnMut(isize) -> isize as FnMut<(isize,)>>::call_mut(_1, move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    let mut _2: &mut dyn std::ops::FnMut(isize) -> isize;
+    let mut _3: &mut [closure@ui/overloaded/overloaded-calls-object-one-arg.rs:11:22: 11:25];
+    let mut _4: [closure@ui/overloaded/overloaded-calls-object-one-arg.rs:11:22: 11:25];
+    let mut _5: (&isize, &isize);
+    let mut _6: &isize;
+    let mut _7: &isize;
+    let _8: isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug z => _1;
+        let _9: &isize;
+        let _10: &isize;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = &mut _4;
+        _2 = _3 as &mut dyn std::ops::FnMut(isize) -> isize (Pointer(Unsize));
+        _1 = foo(move _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_1;
+        _8 = const 2200_isize;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &isize);
+        _10 = (_5.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/overloaded/overloaded-calls-object-one-arg.rs:11:22: 11:25], _2: isize) -> isize {
+    debug x => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = Mul(_2, const 100_isize);
+        return;
+    }
+}

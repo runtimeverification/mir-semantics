@@ -1,0 +1,4 @@
+i32 and bool (42, true)
+&str and f32 ("Hello world", 13.0)
+i32 and bool and f32 (42, true, 42.5)
+&str and f32 and i32: ("Hello world", 13.0, 42)

@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn next(_1: &mut dyn SVec<Item = T, Output = T>) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: &dyn SVec<Item = T, Output = T>;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = &(*_1);
+        _2 = <dyn SVec<Item = T, Output = T> as SVec>::len(move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,239 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn bar(_1: &mut [usize]) -> Vec<usize> {
+    debug v => _1;
+    let mut _0: std::vec::Vec<usize>;
+    let mut _2: &[usize];
+
+    bb0: {
+        _2 = &(*_1);
+        _0 = slice::<impl [usize]>::to_vec(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bip(_1: &[usize]) -> Vec<usize> {
+    debug v => _1;
+    let mut _0: std::vec::Vec<usize>;
+
+    bb0: {
+        _0 = slice::<impl [usize]>::to_vec(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<usize>;
+    let mut _2: std::boxed::Box<[usize]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[usize; 4]>;
+    let mut _7: (&std::vec::Vec<usize>, &std::vec::Vec<usize>);
+    let mut _8: &std::vec::Vec<usize>;
+    let _9: std::vec::Vec<usize>;
+    let mut _10: &std::vec::Vec<usize>;
+    let mut _11: &std::vec::Vec<usize>;
+    let _12: std::vec::Vec<usize>;
+    let mut _13: &mut [usize];
+    let mut _14: &mut [usize];
+    let mut _15: &mut std::vec::Vec<usize>;
+    let mut _18: bool;
+    let mut _19: bool;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _23: (&std::vec::Vec<usize>, &std::vec::Vec<usize>);
+    let mut _24: &std::vec::Vec<usize>;
+    let _25: std::vec::Vec<usize>;
+    let mut _26: &std::vec::Vec<usize>;
+    let mut _27: &std::vec::Vec<usize>;
+    let _28: std::vec::Vec<usize>;
+    let mut _29: &[usize];
+    let _30: &[usize];
+    let _31: &std::vec::Vec<usize>;
+    let mut _34: bool;
+    let mut _35: bool;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: *const [usize; 4];
+    let mut _40: *const ();
+    let mut _41: usize;
+    let mut _42: usize;
+    let mut _43: usize;
+    let mut _44: usize;
+    let mut _45: bool;
+    scope 1 {
+        debug the_vec => _1;
+        let _16: &std::vec::Vec<usize>;
+        let _17: &std::vec::Vec<usize>;
+        let _32: &std::vec::Vec<usize>;
+        let _33: &std::vec::Vec<usize>;
+        scope 3 {
+            debug left_val => _16;
+            debug right_val => _17;
+            let _20: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _20;
+            }
+        }
+        scope 5 {
+            debug left_val => _32;
+            debug right_val => _33;
+            let _36: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _36;
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([usize; 4]);
+        _4 = AlignOf([usize; 4]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [usize; 4]);
+        _39 = (((_6.0: std::ptr::Unique<[usize; 4]>).0: std::ptr::NonNull<[usize; 4]>).0: *const [usize; 4]);
+        _40 = _39 as *const () (PtrToPtr);
+        _41 = _40 as usize (Transmute);
+        _42 = AlignOf(usize);
+        _43 = Sub(_42, const 1_usize);
+        _44 = BitAnd(_41, _43);
+        _45 = Eq(_44, const 0_usize);
+        assert(_45, "misaligned pointer dereference: address must be a multiple of {} but is {}", _42, _41) -> [success: bb26, unwind unreachable];
+    }
+
+    bb2: {
+        _10 = &_1;
+        _9 = <Vec<usize> as Clone>::clone(move _10) -> [return: bb3, unwind: bb24];
+    }
+
+    bb3: {
+        _8 = &_9;
+        _15 = &mut _1;
+        _14 = <Vec<usize> as DerefMut>::deref_mut(_15) -> [return: bb4, unwind: bb23];
+    }
+
+    bb4: {
+        _13 = _14;
+        _12 = bar(move _13) -> [return: bb5, unwind: bb23];
+    }
+
+    bb5: {
+        _11 = &_12;
+        _7 = (move _8, move _11);
+        _16 = (_7.0: &std::vec::Vec<usize>);
+        _17 = (_7.1: &std::vec::Vec<usize>);
+        _19 = <Vec<usize> as PartialEq>::eq(_16, _17) -> [return: bb6, unwind: bb22];
+    }
+
+    bb6: {
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<Vec<usize>, Vec<usize>>(move _20, _16, _17, move _22) -> bb22;
+    }
+
+    bb8: {
+        drop(_12) -> [return: bb9, unwind: bb23];
+    }
+
+    bb9: {
+        drop(_9) -> [return: bb10, unwind: bb24];
+    }
+
+    bb10: {
+        _26 = &_1;
+        _25 = <Vec<usize> as Clone>::clone(move _26) -> [return: bb11, unwind: bb24];
+    }
+
+    bb11: {
+        _24 = &_25;
+        _31 = &_1;
+        _30 = <Vec<usize> as Deref>::deref(_31) -> [return: bb12, unwind: bb21];
+    }
+
+    bb12: {
+        _29 = _30;
+        _28 = bip(move _29) -> [return: bb13, unwind: bb21];
+    }
+
+    bb13: {
+        _27 = &_28;
+        _23 = (move _24, move _27);
+        _32 = (_23.0: &std::vec::Vec<usize>);
+        _33 = (_23.1: &std::vec::Vec<usize>);
+        _35 = <Vec<usize> as PartialEq>::eq(_32, _33) -> [return: bb14, unwind: bb20];
+    }
+
+    bb14: {
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<Vec<usize>, Vec<usize>>(move _36, _32, _33, move _38) -> bb20;
+    }
+
+    bb16: {
+        drop(_28) -> [return: bb17, unwind: bb21];
+    }
+
+    bb17: {
+        drop(_25) -> [return: bb18, unwind: bb24];
+    }
+
+    bb18: {
+        drop(_1) -> bb19;
+    }
+
+    bb19: {
+        return;
+    }
+
+    bb20 (cleanup): {
+        drop(_28) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_25) -> [return: bb24, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_12) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_9) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_1) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+
+    bb26: {
+        (*_39) = [const 1_usize, const 2_usize, const 3_usize, const 100_usize];
+        _2 = move _6 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _1 = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}

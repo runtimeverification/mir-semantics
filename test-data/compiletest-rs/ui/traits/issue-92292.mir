@@ -1,0 +1,36 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-92292.rs:11:1: 11:52>::from(_1: MyGenericType<T>) -> MyNonGenericType {
+    let mut _0: MyNonGenericType;
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not yet implemented");
+    }
+}
+
+const <impl at ui/traits/issue-92292.rs:21:1: 21:37>::MY_CONSTANT: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+const <impl at ui/traits/issue-92292.rs:28:1: 28:25>::MY_OTHER_CONSTANT: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

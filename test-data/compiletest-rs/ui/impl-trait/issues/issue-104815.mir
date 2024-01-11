@@ -1,0 +1,381 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/issues/issue-104815.rs:9:1: 9:10>::new() -> Data {
+    let mut _0: Data;
+    let mut _1: std::vec::Vec<It>;
+    let mut _2: std::boxed::Box<[It]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[It; 2]>;
+    let mut _7: *const [It; 2];
+    let mut _8: *const ();
+    let mut _9: usize;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: bool;
+    scope 1 {
+    }
+
+    bb0: {
+        _3 = SizeOf([It; 2]);
+        _4 = AlignOf([It; 2]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [It; 2]);
+        _7 = (((_6.0: std::ptr::Unique<[It; 2]>).0: std::ptr::NonNull<[It; 2]>).0: *const [It; 2]);
+        _8 = _7 as *const () (PtrToPtr);
+        _9 = _8 as usize (Transmute);
+        _10 = AlignOf(It);
+        _11 = Sub(_10, const 1_usize);
+        _12 = BitAnd(_9, _11);
+        _13 = Eq(_12, const 0_usize);
+        assert(_13, "misaligned pointer dereference: address must be a multiple of {} but is {}", _10, _9) -> [success: bb3, unwind unreachable];
+    }
+
+    bb2: {
+        _0 = Data { items: move _1 };
+        return;
+    }
+
+    bb3: {
+        _2 = move _6 as std::boxed::Box<[It]> (Pointer(Unsize));
+        _1 = slice::<impl [It]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-104815.rs:9:1: 9:10>::content(_1: &Data) -> impl Iterator<Item = &It> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &It>;
+    let mut _2: &[It];
+    let _3: &[It];
+    let mut _4: &std::vec::Vec<It>;
+
+    bb0: {
+        _4 = &((*_1).0: std::vec::Vec<It>);
+        _3 = <Vec<It> as Deref>::deref(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = _3;
+        _0 = core::slice::<impl [It]>::iter(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-104815.rs:26:1: 26:23>::new(_1: &str, _2: R) -> Container<'_> {
+    debug name => _1;
+    debug resolver => _2;
+    let mut _0: Container<'_>;
+    let mut _3: std::string::String;
+    let mut _4: std::boxed::Box<dyn Resolver>;
+    let mut _5: std::boxed::Box<R>;
+    let mut _6: R;
+    let mut _7: bool;
+
+    bb0: {
+        _7 = const false;
+        _7 = const true;
+        _3 = <str as ToOwned>::to_owned(_1) -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _7 = const false;
+        _6 = move _2;
+        _5 = Box::<R>::new(move _6) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _4 = move _5 as std::boxed::Box<dyn Resolver> (Pointer(Unsize));
+        _0 = Container::<'_> { name: move _3, resolver: move _4 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_3) -> [return: bb6, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        switchInt(_7) -> [0: bb4, otherwise: bb5];
+    }
+}
+
+fn get(_1: impl Iterator<Item = &'a It>) -> impl Resolver + '_ {
+    debug items => _1;
+    let mut _0: impl Resolver + '_;
+    let mut _2: std::option::Option<&It>;
+    let mut _3: &mut impl Iterator<Item = &'a It>;
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = <impl Iterator<Item = &'a It> as Iterator>::next(move _3) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        _0 = Option::<&It>::unwrap(move _2) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn get2(_1: impl Iterator<Item = &'a It>) -> impl Resolver + '_ {
+    debug items => _1;
+    let mut _0: impl Resolver + '_;
+    let mut _2: std::option::Option<&It>;
+    let mut _3: &mut impl Iterator<Item = &'a It>;
+
+    bb0: {
+        _3 = &mut _1;
+        _2 = <impl Iterator<Item = &'a It> as Iterator>::next(move _3) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        _0 = Option::<&It>::unwrap(move _2) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Data;
+    let mut _3: impl std::iter::Iterator<Item = &It>;
+    let mut _4: &Data;
+    let mut _5: std::vec::Vec<std::string::String>;
+    let mut _6: std::iter::Map<std::iter::Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18]>, [closure@ui/impl-trait/issues/issue-104815.rs:56:14: 56:17]>;
+    let mut _7: std::iter::Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18]>;
+    let mut _8: std::slice::Iter<'_, &str>;
+    let mut _9: &[&str];
+    let mut _10: &[&str; 2];
+    let _11: [&str; 2];
+    let _12: &str;
+    let mut _13: [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18];
+    let mut _14: &impl Resolver + '_;
+    let mut _16: impl std::iter::Iterator<Item = &It>;
+    let mut _17: &Data;
+    let mut _18: std::vec::Vec<std::string::String>;
+    let mut _19: std::iter::Map<std::iter::Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18]>, [closure@ui/impl-trait/issues/issue-104815.rs:64:14: 64:17]>;
+    let mut _20: std::iter::Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18]>;
+    let mut _21: std::slice::Iter<'_, &str>;
+    let mut _22: &[&str];
+    let mut _23: &[&str; 2];
+    let _24: [&str; 2];
+    let _25: &str;
+    let mut _26: [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18];
+    let mut _27: &impl Resolver + '_;
+    scope 1 {
+        debug data => _1;
+        let _2: impl Resolver + '_;
+        scope 2 {
+            debug resolver => _2;
+            scope 3 {
+                let _15: impl Resolver + '_;
+                scope 4 {
+                    debug resolver => _15;
+                    scope 5 {
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Data::new() -> bb1;
+    }
+
+    bb1: {
+        _4 = &_1;
+        _3 = Data::content(move _4) -> [return: bb2, unwind: bb17];
+    }
+
+    bb2: {
+        _2 = get::<'_, impl Iterator<Item = &It>>(move _3) -> [return: bb3, unwind: bb17];
+    }
+
+    bb3: {
+        _12 = const "b";
+        _11 = [const "a", _12];
+        _10 = &_11;
+        _9 = move _10 as &[&str] (Pointer(Unsize));
+        _8 = core::slice::<impl [&str]>::iter(move _9) -> [return: bb4, unwind: bb17];
+    }
+
+    bb4: {
+        _14 = &_2;
+        _13 = [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18] { resolver: move _14 };
+        _7 = <std::slice::Iter<'_, &str> as Iterator>::map::<Container<'_>, [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18]>(move _8, move _13) -> [return: bb5, unwind: bb17];
+    }
+
+    bb5: {
+        _6 = <Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18]> as Iterator>::map::<String, [closure@ui/impl-trait/issues/issue-104815.rs:56:14: 56:17]>(move _7, const ZeroSized: [closure@ui/impl-trait/issues/issue-104815.rs:56:14: 56:17]) -> [return: bb6, unwind: bb17];
+    }
+
+    bb6: {
+        _5 = <Map<Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18]>, [closure@ui/impl-trait/issues/issue-104815.rs:56:14: 56:17]> as Iterator>::collect::<Vec<String>>(move _6) -> [return: bb7, unwind: bb17];
+    }
+
+    bb7: {
+        drop(_5) -> [return: bb8, unwind: bb17];
+    }
+
+    bb8: {
+        _17 = &_1;
+        _16 = Data::content(move _17) -> [return: bb9, unwind: bb17];
+    }
+
+    bb9: {
+        _15 = get2::<'_, '_, impl Iterator<Item = &It>>(move _16) -> [return: bb10, unwind: bb17];
+    }
+
+    bb10: {
+        _25 = const "b";
+        _24 = [const "a", _25];
+        _23 = &_24;
+        _22 = move _23 as &[&str] (Pointer(Unsize));
+        _21 = core::slice::<impl [&str]>::iter(move _22) -> [return: bb11, unwind: bb17];
+    }
+
+    bb11: {
+        _27 = &_15;
+        _26 = [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18] { resolver: move _27 };
+        _20 = <std::slice::Iter<'_, &str> as Iterator>::map::<Container<'_>, [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18]>(move _21, move _26) -> [return: bb12, unwind: bb17];
+    }
+
+    bb12: {
+        _19 = <Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18]> as Iterator>::map::<String, [closure@ui/impl-trait/issues/issue-104815.rs:64:14: 64:17]>(move _20, const ZeroSized: [closure@ui/impl-trait/issues/issue-104815.rs:64:14: 64:17]) -> [return: bb13, unwind: bb17];
+    }
+
+    bb13: {
+        _18 = <Map<Map<std::slice::Iter<'_, &str>, [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18]>, [closure@ui/impl-trait/issues/issue-104815.rs:64:14: 64:17]> as Iterator>::collect::<Vec<String>>(move _19) -> [return: bb14, unwind: bb17];
+    }
+
+    bb14: {
+        drop(_18) -> [return: bb15, unwind: bb17];
+    }
+
+    bb15: {
+        drop(_1) -> bb16;
+    }
+
+    bb16: {
+        return;
+    }
+
+    bb17 (cleanup): {
+        drop(_1) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/impl-trait/issues/issue-104815.rs:55:14: 55:18], _2: &&str) -> Container<'_> {
+    debug resolver => (*((*_1).0: &impl Resolver + '_));
+    let mut _0: Container<'_>;
+    let _3: &str;
+    let mut _4: &impl Resolver + '_;
+    scope 1 {
+        debug n => _3;
+    }
+
+    bb0: {
+        _3 = (*_2);
+        _4 = deref_copy ((*_1).0: &impl Resolver + '_);
+        _0 = Container::<'_>::new::<&impl Resolver + '_>(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/impl-trait/issues/issue-104815.rs:56:14: 56:17], _2: Container<'_>) -> String {
+    debug c => _2;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = move (_2.0: std::string::String);
+        drop((_2.1: std::boxed::Box<dyn Resolver>)) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/impl-trait/issues/issue-104815.rs:63:14: 63:18], _2: &&str) -> Container<'_> {
+    debug resolver => (*((*_1).0: &impl Resolver + '_));
+    let mut _0: Container<'_>;
+    let _3: &str;
+    let mut _4: &impl Resolver + '_;
+    scope 1 {
+        debug n => _3;
+    }
+
+    bb0: {
+        _3 = (*_2);
+        _4 = deref_copy ((*_1).0: &impl Resolver + '_);
+        _0 = Container::<'_>::new::<&impl Resolver + '_>(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &mut [closure@ui/impl-trait/issues/issue-104815.rs:64:14: 64:17], _2: Container<'_>) -> String {
+    debug c => _2;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = move (_2.0: std::string::String);
+        drop((_2.1: std::boxed::Box<dyn Resolver>)) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

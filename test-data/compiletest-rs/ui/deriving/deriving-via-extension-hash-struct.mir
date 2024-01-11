@@ -1,0 +1,39 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-via-extension-hash-struct.rs:5:10: 5:14>::hash(_1: &Foo, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: ();
+    let _4: &isize;
+    let _5: ();
+    let _6: &isize;
+    let _7: &isize;
+
+    bb0: {
+        _4 = &((*_1).0: isize);
+        _3 = <isize as Hash>::hash::<__H>(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = &((*_1).1: isize);
+        _5 = <isize as Hash>::hash::<__H>(_6, _2) -> bb2;
+    }
+
+    bb2: {
+        _7 = &((*_1).2: isize);
+        _0 = <isize as Hash>::hash::<__H>(_7, _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

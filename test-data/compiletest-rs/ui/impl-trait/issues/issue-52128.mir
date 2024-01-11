@@ -1,0 +1,98 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/issues/issue-52128.rs:11:10: 11:12>::assert_receiver_is_total_eq(_1: &Range) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:11:14: 11:23>::eq(_1: &Range, _2: &Range) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:11:25: 11:28>::cmp(_1: &Range, _2: &Range) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+
+    bb0: {
+        _0 = Equal;
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:11:30: 11:40>::partial_cmp(_1: &Range, _2: &Range) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: std::cmp::Ordering;
+
+    bb0: {
+        _3 = Equal;
+        _0 = Option::<std::cmp::Ordering>::Some(move _3);
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:14:1: 14:14>::iter_with_range(_1: &RangeMap) -> impl Iterator<Item = (&Range, &u8)> + '_ {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = (&Range, &u8)> + '_;
+    let mut _2: &std::collections::BTreeMap<Range, u8>;
+
+    bb0: {
+        _2 = &((*_1).0: std::collections::BTreeMap<Range, u8>);
+        _0 = BTreeMap::<Range, u8>::range::<Range, std::ops::Range<Range>>(move _2, const std::ops::Range::<Range> {{ start: Range, end: Range }}) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:14:1: 14:14>::iter(_1: &RangeMap) -> impl Iterator<Item = &u8> + '_ {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &u8> + '_;
+    let mut _2: impl std::iter::Iterator<Item = (&Range, &u8)> + '_;
+
+    bb0: {
+        _2 = RangeMap::iter_with_range(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = <impl Iterator<Item = (&Range, &u8)> + '_ as Iterator>::map::<&u8, [closure@ui/impl-trait/issues/issue-52128.rs:20:36: 20:47]>(move _2, const ZeroSized: [closure@ui/impl-trait/issues/issue-52128.rs:20:36: 20:47]) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/issues/issue-52128.rs:14:1: 14:14>::iter::{closure#0}(_1: &mut [closure@ui/impl-trait/issues/issue-52128.rs:20:36: 20:47], _2: (&Range, &u8)) -> &u8 {
+    let mut _0: &u8;
+    scope 1 {
+        debug data => _0;
+    }
+
+    bb0: {
+        _0 = (_2.1: &u8);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

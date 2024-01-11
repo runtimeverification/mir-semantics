@@ -1,0 +1,61 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/defaults/type-default-const-param-name.rs:6:1: 6:9>::new() -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo;
+    scope 1 {
+    }
+
+    bb0: {
+        _1 = Foo::new() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn Foo(_1: T) -> Foo<N, T> {
+    let mut _0: Foo<N, T>;
+
+    bb0: {
+        _0 = Foo::<N, T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: T) -> Foo<N, T> {
+    let mut _0: Foo<N, T>;
+
+    bb0: {
+        _0 = Foo::<N, T>(move _1);
+        return;
+    }
+}

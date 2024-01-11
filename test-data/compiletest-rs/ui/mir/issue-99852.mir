@@ -1,0 +1,200 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn lambda() -> U {
+    let mut _0: U;
+    let _1: std::result::Result<T, ()>;
+    let mut _2: T;
+    let mut _4: isize;
+    let mut _6: std::result::Result<U, ()>;
+    let mut _7: isize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let mut _15: isize;
+    let mut _16: isize;
+    let mut _17: isize;
+    scope 1 {
+        debug foo => _1;
+        let _3: U;
+        scope 2 {
+            debug baz => _3;
+            debug foo => _5;
+            debug bar => _8;
+            let _5: T;
+            let _8: U;
+        }
+    }
+
+    bb0: {
+        _9 = const false;
+        _11 = const false;
+        _10 = const false;
+        _12 = const false;
+        _2 = <T as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _10 = const true;
+        _1 = Result::<T, ()>::Ok(move _2);
+        _3 = <U as Default>::default() -> [return: bb2, unwind: bb28];
+    }
+
+    bb2: {
+        _9 = const true;
+        _4 = discriminant(_1);
+        switchInt(move _4) -> [0: bb3, otherwise: bb6];
+    }
+
+    bb3: {
+        _10 = const false;
+        _5 = move ((_1 as Ok).0: T);
+        _6 = transform::<T, U>(move _5) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _11 = const true;
+        _12 = const true;
+        _7 = discriminant(_6);
+        switchInt(move _7) -> [0: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _12 = const false;
+        _8 = move ((_6 as Ok).0: U);
+        _0 = move _8;
+        goto -> bb13;
+    }
+
+    bb6: {
+        _9 = const false;
+        _0 = move _3;
+        goto -> bb13;
+    }
+
+    bb7: {
+        _9 = const false;
+        _13 = discriminant(_1);
+        switchInt(move _13) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb8 (cleanup): {
+        _15 = discriminant(_1);
+        switchInt(move _15) -> [0: bb21, otherwise: bb9];
+    }
+
+    bb9 (cleanup): {
+        switchInt(_11) -> [0: bb11, otherwise: bb25];
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb28, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12: {
+        drop(_3) -> [return: bb7, unwind: bb8];
+    }
+
+    bb13: {
+        switchInt(_9) -> [0: bb7, otherwise: bb12];
+    }
+
+    bb14: {
+        _10 = const false;
+        switchInt(_11) -> [0: bb17, otherwise: bb20];
+    }
+
+    bb15: {
+        switchInt(_10) -> [0: bb14, otherwise: bb16];
+    }
+
+    bb16: {
+        drop(((_1 as Ok).0: T)) -> [return: bb14, unwind: bb9];
+    }
+
+    bb17: {
+        _11 = const false;
+        _11 = const false;
+        _12 = const false;
+        return;
+    }
+
+    bb18: {
+        switchInt(_12) -> [0: bb17, otherwise: bb19];
+    }
+
+    bb19: {
+        drop(((_6 as Ok).0: U)) -> bb17;
+    }
+
+    bb20: {
+        _14 = discriminant(_6);
+        switchInt(move _14) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb21 (cleanup): {
+        switchInt(_10) -> [0: bb9, otherwise: bb22];
+    }
+
+    bb22 (cleanup): {
+        drop(((_1 as Ok).0: T)) -> [return: bb9, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        switchInt(_12) -> [0: bb11, otherwise: bb24];
+    }
+
+    bb24 (cleanup): {
+        drop(((_6 as Ok).0: U)) -> [return: bb11, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        _16 = discriminant(_6);
+        switchInt(move _16) -> [0: bb23, otherwise: bb11];
+    }
+
+    bb26 (cleanup): {
+        switchInt(_10) -> [0: bb11, otherwise: bb27];
+    }
+
+    bb27 (cleanup): {
+        drop(((_1 as Ok).0: T)) -> [return: bb11, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        _17 = discriminant(_1);
+        switchInt(move _17) -> [0: bb26, otherwise: bb11];
+    }
+}
+
+fn transform(_1: T) -> Result<U, ()> {
+    debug input => _1;
+    let mut _0: std::result::Result<U, ()>;
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not yet implemented") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_1) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

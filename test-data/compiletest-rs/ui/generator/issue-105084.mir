@@ -1,0 +1,168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn copy(_1: T) -> T {
+    debug x => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let _2: std::ops::GeneratorState<(), ()>;
+    let mut _3: std::pin::Pin<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>;
+    let mut _4: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _6: [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let _7: std::ops::GeneratorState<(), ()>;
+    let mut _8: std::pin::Pin<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>;
+    let mut _9: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let _10: std::ops::GeneratorState<(), ()>;
+    let mut _11: std::pin::Pin<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>;
+    let mut _12: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    scope 1 {
+        debug g => _1;
+        let mut _5: [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+        scope 2 {
+            debug h => _5;
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/issue-105084.rs:22:17: 22:19 (#0)];
+        _4 = &mut _1;
+        _3 = Pin::<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <[generator@ui/generator/issue-105084.rs:22:17: 22:19] as Generator>::resume(move _3, const ()) -> bb2;
+    }
+
+    bb2: {
+        _6 = _1;
+        _5 = copy::<[generator@ui/generator/issue-105084.rs:22:17: 22:19]>(move _6) -> bb3;
+    }
+
+    bb3: {
+        _9 = &mut _1;
+        _8 = Pin::<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>::new(move _9) -> bb4;
+    }
+
+    bb4: {
+        _7 = <[generator@ui/generator/issue-105084.rs:22:17: 22:19] as Generator>::resume(move _8, const ()) -> bb5;
+    }
+
+    bb5: {
+        _12 = &mut _5;
+        _11 = Pin::<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>::new(move _12) -> bb6;
+    }
+
+    bb6: {
+        _10 = <[generator@ui/generator/issue-105084.rs:22:17: 22:19] as Generator>::resume(move _11, const ()) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: std::boxed::Box<(i32, ())>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: ();
+    let _8: ();
+    let mut _9: *const (i32, ());
+    let mut _10: ();
+    let mut _11: u32;
+    let mut _12: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _13: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _14: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _15: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _16: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _17: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _18: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19];
+    let mut _19: *const ();
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: usize;
+    let mut _23: usize;
+    let mut _24: bool;
+    scope 1 {
+        debug t => _3;
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        _11 = discriminant((*_12));
+        switchInt(move _11) -> [0: bb1, 1: bb7, 2: bb6, 3: bb5, otherwise: bb8];
+    }
+
+    bb1: {
+        _4 = SizeOf((i32, ()));
+        _5 = AlignOf((i32, ()));
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        (((*_13) as variant#3).0: std::boxed::Box<(i32, ())>) = ShallowInitBox(move _6, (i32, ()));
+        _7 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _7);
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        discriminant((*_14)) = 3;
+        return;
+    }
+
+    bb3: {
+        _10 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _10);
+        _17 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        discriminant((*_17)) = 1;
+        return;
+    }
+
+    bb4 (cleanup): {
+        _18 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        discriminant((*_18)) = 2;
+        resume;
+    }
+
+    bb5: {
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        _9 = ((((((*_15) as variant#3).0: std::boxed::Box<(i32, ())>).0: std::ptr::Unique<(i32, ())>).0: std::ptr::NonNull<(i32, ())>).0: *const (i32, ()));
+        _19 = _9 as *const () (PtrToPtr);
+        _20 = _19 as usize (Transmute);
+        _21 = AlignOf((i32, ()));
+        _22 = Sub(_21, const 1_usize);
+        _23 = BitAnd(_20, _22);
+        _24 = Eq(_23, const 0_usize);
+        assert(_24, "misaligned pointer dereference: address must be a multiple of {} but is {}", _21, _20) -> [success: bb9, unwind unreachable];
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after panicking") -> bb6;
+    }
+
+    bb7: {
+        assert(const false, "generator resumed after completion") -> bb7;
+    }
+
+    bb8: {
+        unreachable;
+    }
+
+    bb9: {
+        (*_9) = (const 5_i32, move _2);
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/issue-105084.rs:22:17: 22:19]);
+        _3 = move (((*_16) as variant#3).0: std::boxed::Box<(i32, ())>);
+        _8 = std::mem::drop::<Box<(i32, ())>>(move _3) -> [return: bb3, unwind: bb4];
+    }
+}

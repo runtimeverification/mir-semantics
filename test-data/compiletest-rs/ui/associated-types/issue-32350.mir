@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/issue-32350.rs:21:1: 21:36>::get_cx(_1: &MyEmitter) -> &MyCtxt {
+    debug self => _1;
+    let mut _0: &MyCtxt;
+
+    bb0: {
+        _0 = &((*_1).0: MyCtxt);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

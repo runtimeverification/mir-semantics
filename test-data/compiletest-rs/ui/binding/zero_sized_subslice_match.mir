@@ -1,0 +1,84 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [(); 2];
+    let mut _3: (&*const (), &*const ());
+    let mut _4: &*const ();
+    let _5: *const ();
+    let _6: &();
+    let _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let mut _10: &*const ();
+    let _11: *const ();
+    let _12: &();
+    let _13: usize;
+    let mut _14: usize;
+    let mut _15: bool;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: *const ();
+    let mut _21: *const ();
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => const [(), ()];
+        let _2: &[(); 1];
+        scope 2 {
+            debug y => _2;
+            let _16: &*const ();
+            let _17: &*const ();
+            scope 3 {
+                debug left_val => _16;
+                debug right_val => _17;
+                let _22: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _22;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &_1[1..2];
+        _7 = const 1_usize;
+        _8 = const 2_usize;
+        _9 = Lt(_7, _8);
+        assert(move _9, "index out of bounds: the length is {} but the index is {}", move _8, _7) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_1[_7];
+        _5 = &raw const (*_6);
+        _4 = &_5;
+        _13 = const 0_usize;
+        _14 = const 1_usize;
+        _15 = Lt(_13, _14);
+        assert(move _15, "index out of bounds: the length is {} but the index is {}", move _14, _13) -> bb2;
+    }
+
+    bb2: {
+        _12 = &(*_2)[_13];
+        _11 = &raw const (*_12);
+        _10 = &_11;
+        _3 = (move _4, move _10);
+        _16 = (_3.0: &*const ());
+        _17 = (_3.1: &*const ());
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<*const (), *const ()>(move _22, _16, _17, move _24);
+    }
+
+    bb4: {
+        return;
+    }
+}

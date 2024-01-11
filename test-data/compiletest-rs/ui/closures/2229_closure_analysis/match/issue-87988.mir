@@ -1,0 +1,52 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 1_i32;
+        return;
+    }
+}
+
+const LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 2_i32;
+        return;
+    }
+}
+
+fn hotplug_callback(_1: i32) -> () {
+    debug event => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn hotplug_callback::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/match/issue-87988.rs:8:13: 8:15]) -> () {
+    debug event => (*((*_1).0: &i32));
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = hotplug_callback(const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

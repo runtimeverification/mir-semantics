@@ -1,0 +1,58 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn tuple() -> (Option<T>,) {
+    let mut _0: (std::option::Option<T>,);
+    let mut _1: std::option::Option<T>;
+
+    bb0: {
+        _1 = Option::<T>::None;
+        _0 = (move _1,);
+        return;
+    }
+}
+
+fn <impl at ui/generic-associated-types/issue-93141.rs:16:1: 16:13>::fail1() -> Handle<FooImpl> {
+    let mut _0: Handle<FooImpl>;
+    let _1: std::option::Option<std::boxed::Box<dyn for<'a, 'c> std::ops::Fn(&'a mut <FooImpl as Fooey>::Context<'c>)>>;
+    let mut _2: (std::option::Option<std::boxed::Box<dyn for<'a, 'c> std::ops::Fn(&'a mut &'c ())>>,);
+    scope 1 {
+        debug tx => _1;
+    }
+
+    bb0: {
+        _2 = tuple::<Box<dyn for<'a, 'c> Fn(&'a mut &'c ())>>() -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_2.0: std::option::Option<std::boxed::Box<dyn for<'a, 'c> std::ops::Fn(&'a mut <FooImpl as Fooey>::Context<'c>)>>);
+        _0 = Handle::<FooImpl>(move _1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Handle(_1: Option<Box<dyn for<'a, 'b> Fn(&'a mut <E as Fooey>::Context<'b>)>>) -> Handle<E> {
+    let mut _0: Handle<E>;
+
+    bb0: {
+        _0 = Handle::<E>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Handle(_1: Option<Box<dyn for<'a, 'b> Fn(&'a mut <E as Fooey>::Context<'b>)>>) -> Handle<E> {
+    let mut _0: Handle<E>;
+
+    bb0: {
+        _0 = Handle::<E>(move _1);
+        return;
+    }
+}

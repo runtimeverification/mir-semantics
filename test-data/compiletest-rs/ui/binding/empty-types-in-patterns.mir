@@ -1,0 +1,193 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: !) -> () {
+    debug z => const ZeroSized: !;
+    let mut _0: ();
+    scope 1 {
+        debug x => const Result::<!, !>::Ok(ZeroSized: !);
+        scope 2 {
+            debug _y => const ZeroSized: !;
+            scope 3 {
+                debug _y => const ZeroSized: !;
+                scope 4 {
+                    debug x => const [ZeroSized: !];
+                    scope 5 {
+                        debug q => const ZeroSized: !;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        unreachable;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn bar(_1: &[!]) -> () {
+    debug nevers => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: bool;
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 0_usize;
+        _4 = Eq(move _2, move _3);
+        switchInt(move _4) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _11 = Len((*_1));
+        _12 = const 0_usize;
+        _13 = Eq(move _11, move _12);
+        switchInt(move _13) -> [0: bb3, otherwise: bb5];
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _8 = Len((*_1));
+        _9 = const 1_usize;
+        _10 = Eq(move _8, move _9);
+        switchInt(move _10) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _5 = Len((*_1));
+        _6 = const 3_usize;
+        _7 = Ge(move _5, move _6);
+        switchInt(move _7) -> [0: bb2, otherwise: bb5];
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::result::Result<u32, !>;
+    let mut _3: (&u32, &u32);
+    let mut _4: &u32;
+    let _5: u32;
+    let mut _6: &u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: isize;
+    let mut _21: !;
+    let _22: ();
+    let mut _23: &[!];
+    let _24: &[!; 0];
+    let _25: [!; 0];
+    scope 1 {
+        debug x => _1;
+        let _2: u32;
+        scope 2 {
+            debug y => _2;
+            let _7: &u32;
+            let _8: &u32;
+            let _16: u32;
+            let _17: u32;
+            let _18: std::result::Result<u32, &!>;
+            scope 3 {
+                debug left_val => _7;
+                debug right_val => _8;
+                let _13: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _13;
+                }
+            }
+            scope 5 {
+                debug y => _16;
+            }
+            scope 6 {
+                debug y => _17;
+            }
+            scope 7 {
+                debug e => const ZeroSized: !;
+            }
+            scope 8 {
+                debug x => _18;
+                let _20: u32;
+                scope 9 {
+                    debug y => _20;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Result::<u32, !>::Ok(const 123_u32);
+        _2 = ((_1 as Ok).0: u32);
+        _5 = const 123_u32;
+        _4 = &_5;
+        _6 = &_2;
+        _3 = (move _4, move _6);
+        _7 = (_3.0: &u32);
+        _8 = (_3.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb2: {
+        _16 = ((_1 as Ok).0: u32);
+        _17 = ((_1 as Ok).0: u32);
+        _18 = Result::<u32, &!>::Ok(const 123_u32);
+        _19 = discriminant(_18);
+        switchInt(move _19) -> [0: bb4, 1: bb5, otherwise: bb3];
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _20 = ((_18 as Ok).0: u32);
+        _24 = &_25;
+        _23 = _24 as &[!] (Pointer(Unsize));
+        _22 = bar(move _23) -> bb6;
+    }
+
+    bb5: {
+        _21 = core::panicking::panic(const "not implemented");
+    }
+
+    bb6: {
+        return;
+    }
+}

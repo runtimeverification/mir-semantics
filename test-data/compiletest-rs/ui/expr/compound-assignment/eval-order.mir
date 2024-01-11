@@ -1,0 +1,397 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn primitive_compound() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<Side>;
+    let mut _3: i32;
+    let _4: ();
+    let mut _5: &mut std::vec::Vec<Side>;
+    let mut _6: Side;
+    let mut _7: Wrapper<i32>;
+    let _8: ();
+    let mut _9: &mut std::vec::Vec<Side>;
+    let mut _10: Side;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: &[Side];
+    let mut _14: &std::vec::Vec<Side>;
+    let mut _15: isize;
+    let mut _16: isize;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    let mut _20: !;
+    scope 1 {
+        debug side_order => _1;
+        let mut _2: Wrapper<i32>;
+        scope 2 {
+            debug int => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Vec::<Side>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = Wrapper::<i32>(const 0_i32);
+        _5 = &mut _1;
+        _6 = Side::Rhs;
+        _4 = Vec::<Side>::push(move _5, move _6) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _3 = const 0_i32;
+        _9 = &mut _1;
+        _10 = Side::Lhs;
+        _8 = Vec::<Side>::push(move _9, move _10) -> [return: bb3, unwind: bb12];
+    }
+
+    bb3: {
+        _7 = move _2;
+        (_7.0: i32) = Add((_7.0: i32), move _3);
+        _14 = &_1;
+        _13 = <Vec<Side> as Index<RangeFull>>::index(move _14, const RangeFull) -> [return: bb4, unwind: bb12];
+    }
+
+    bb4: {
+        _17 = Len((*_13));
+        _18 = const 2_usize;
+        _19 = Eq(move _17, move _18);
+        switchInt(move _19) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _16 = discriminant((*_13)[0 of 2]);
+        switchInt(move _16) -> [1: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _12 = const false;
+        goto -> bb8;
+    }
+
+    bb7: {
+        _15 = discriminant((*_13)[1 of 2]);
+        _12 = Eq(_15, const 0_isize);
+        goto -> bb8;
+    }
+
+    bb8: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _20 = core::panicking::panic(const "assertion failed: matches!(side_order [..], [Side :: Rhs, Side :: Lhs])") -> bb12;
+    }
+
+    bb10: {
+        drop(_1) -> bb11;
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
+
+fn generic_compound() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<Side>;
+    let mut _3: T;
+    let _4: ();
+    let mut _5: &mut T;
+    let mut _6: Wrapper<T>;
+    let _7: ();
+    let mut _8: &mut std::vec::Vec<Side>;
+    let mut _9: Side;
+    let mut _10: T;
+    let _11: ();
+    let mut _12: &mut std::vec::Vec<Side>;
+    let mut _13: Side;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: &[Side];
+    let mut _17: &std::vec::Vec<Side>;
+    let mut _18: isize;
+    let mut _19: isize;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: bool;
+    let mut _23: !;
+    let mut _24: bool;
+    scope 1 {
+        debug side_order => _1;
+        let mut _2: Wrapper<T>;
+        scope 2 {
+            debug add_assignable => _2;
+        }
+    }
+
+    bb0: {
+        _24 = const false;
+        _1 = Vec::<Side>::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = <T as Default>::default() -> [return: bb2, unwind: bb17];
+    }
+
+    bb2: {
+        _24 = const true;
+        _2 = Wrapper::<T>(move _3);
+        _8 = &mut _1;
+        _9 = Side::Lhs;
+        _7 = Vec::<Side>::push(move _8, move _9) -> [return: bb3, unwind: bb20];
+    }
+
+    bb3: {
+        _24 = const false;
+        _6 = move _2;
+        _5 = &mut (_6.0: T);
+        _12 = &mut _1;
+        _13 = Side::Rhs;
+        _11 = Vec::<Side>::push(move _12, move _13) -> [return: bb4, unwind: bb16];
+    }
+
+    bb4: {
+        _10 = <T as Default>::default() -> [return: bb5, unwind: bb16];
+    }
+
+    bb5: {
+        _4 = <T as AddAssign>::add_assign(move _5, move _10) -> [return: bb6, unwind: bb16];
+    }
+
+    bb6: {
+        drop(_6) -> [return: bb7, unwind: bb20];
+    }
+
+    bb7: {
+        _17 = &_1;
+        _16 = <Vec<Side> as Index<RangeFull>>::index(move _17, const RangeFull) -> [return: bb8, unwind: bb20];
+    }
+
+    bb8: {
+        _20 = Len((*_16));
+        _21 = const 2_usize;
+        _22 = Eq(move _20, move _21);
+        switchInt(move _22) -> [0: bb11, otherwise: bb9];
+    }
+
+    bb9: {
+        _19 = discriminant((*_16)[0 of 2]);
+        switchInt(move _19) -> [0: bb10, otherwise: bb11];
+    }
+
+    bb10: {
+        _18 = discriminant((*_16)[1 of 2]);
+        _15 = Eq(_18, const 1_isize);
+        goto -> bb12;
+    }
+
+    bb11: {
+        _15 = const false;
+        goto -> bb12;
+    }
+
+    bb12: {
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _23 = core::panicking::panic(const "assertion failed: matches!(side_order [..], [Side :: Lhs, Side :: Rhs])") -> bb20;
+    }
+
+    bb14: {
+        _24 = const false;
+        drop(_1) -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16 (cleanup): {
+        drop(_6) -> [return: bb20, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        drop(_1) -> [return: bb18, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        resume;
+    }
+
+    bb19 (cleanup): {
+        drop(_2) -> [return: bb17, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        switchInt(_24) -> [0: bb17, otherwise: bb19];
+    }
+}
+
+fn custom_compound() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<Side>;
+    let _2: ();
+    let mut _3: &mut custom_compound::Custom;
+    let mut _4: Wrapper<custom_compound::Custom>;
+    let _5: ();
+    let mut _6: &mut std::vec::Vec<Side>;
+    let mut _7: Side;
+    let _8: ();
+    let mut _9: &mut std::vec::Vec<Side>;
+    let mut _10: Side;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: &[Side];
+    let mut _14: &std::vec::Vec<Side>;
+    let mut _15: isize;
+    let mut _16: isize;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    let mut _20: !;
+    scope 1 {
+        debug side_order => _1;
+        scope 2 {
+            debug custom => const Wrapper::<Custom>(Custom);
+        }
+    }
+
+    bb0: {
+        _1 = Vec::<Side>::new() -> bb1;
+    }
+
+    bb1: {
+        _6 = &mut _1;
+        _7 = Side::Lhs;
+        _5 = Vec::<Side>::push(move _6, move _7) -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _3 = &mut (_4.0: custom_compound::Custom);
+        _9 = &mut _1;
+        _10 = Side::Rhs;
+        _8 = Vec::<Side>::push(move _9, move _10) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _2 = <Custom as AddAssign<()>>::add_assign(move _3, const ()) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _14 = &_1;
+        _13 = <Vec<Side> as Index<RangeFull>>::index(move _14, const RangeFull) -> [return: bb5, unwind: bb13];
+    }
+
+    bb5: {
+        _17 = Len((*_13));
+        _18 = const 2_usize;
+        _19 = Eq(move _17, move _18);
+        switchInt(move _19) -> [0: bb8, otherwise: bb6];
+    }
+
+    bb6: {
+        _16 = discriminant((*_13)[0 of 2]);
+        switchInt(move _16) -> [0: bb7, otherwise: bb8];
+    }
+
+    bb7: {
+        _15 = discriminant((*_13)[1 of 2]);
+        _12 = Eq(_15, const 1_isize);
+        goto -> bb9;
+    }
+
+    bb8: {
+        _12 = const false;
+        goto -> bb9;
+    }
+
+    bb9: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _20 = core::panicking::panic(const "assertion failed: matches!(side_order [..], [Side :: Lhs, Side :: Rhs])") -> bb13;
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_1) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}
+
+fn custom_compound::<impl at ui/expr/compound-assignment/eval-order.rs:53:5: 53:34>::add_assign(_1: &mut Custom, _2: ()) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+
+    bb0: {
+        _1 = primitive_compound() -> bb1;
+    }
+
+    bb1: {
+        _2 = generic_compound::<i32>() -> bb2;
+    }
+
+    bb2: {
+        _3 = custom_compound() -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn Wrapper(_1: T) -> Wrapper<T> {
+    let mut _0: Wrapper<T>;
+
+    bb0: {
+        _0 = Wrapper::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Wrapper(_1: T) -> Wrapper<T> {
+    let mut _0: Wrapper<T>;
+
+    bb0: {
+        _0 = Wrapper::<T>(move _1);
+        return;
+    }
+}

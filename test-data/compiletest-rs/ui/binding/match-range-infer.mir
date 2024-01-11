@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let mut _2: bool;
+    let mut _3: bool;
+    let _4: !;
+    let mut _5: u16;
+    let mut _6: bool;
+    let mut _7: bool;
+    let _8: !;
+    let mut _9: u16;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _12: !;
+
+    bb0: {
+        _1 = const 1_i32;
+        _2 = Le(const 1_i32, _1);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = Le(_1, const 3_i32);
+        switchInt(move _3) -> [0: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _4 = begin_panic::<&str>(const "should match range");
+    }
+
+    bb3: {
+        _5 = const 1_u16;
+        _6 = Le(const 1_u16, _5);
+        switchInt(move _6) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _7 = Le(_5, const 3_u16);
+        switchInt(move _7) -> [0: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _8 = begin_panic::<&str>(const "should match range with inferred start type");
+    }
+
+    bb6: {
+        _9 = const 1_u16;
+        _10 = Le(const 1_u16, _9);
+        switchInt(move _10) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _11 = Le(_9, const 3_u16);
+        switchInt(move _11) -> [0: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        _12 = begin_panic::<&str>(const "should match range with inferred end type");
+    }
+
+    bb9: {
+        return;
+    }
+}

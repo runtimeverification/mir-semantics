@@ -1,0 +1,53 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: [u8; 1];
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _1 = foo::<1>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo() -> [u8; N] {
+    let mut _0: [u8; N];
+
+    bb0: {
+        _0 = [const 0_u8; N];
+        return;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+foo::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}

@@ -1,0 +1,458 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static COUNTER: AtomicUsize = {
+    let mut _0: std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = AtomicUsize::new(const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-project-from-type-param-via-bound-in-where.rs:21:1: 21:7>::foo(_1: <T as Trait>::Item) -> () {
+    debug _x => _1;
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 1_usize, move _4) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/associated-types/associated-types-project-from-type-param-via-bound-in-where.rs:29:1: 29:13>::foo(_1: <T as Trait>::Item) -> () {
+    debug _x => _1;
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 10_usize, move _4) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn c(_1: <T as Trait>::Item) -> () {
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 100_usize, move _4) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn AnotherTrait::default_method(_1: &Self, _2: <T as Trait>::Item) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _3: usize;
+    let _4: &std::sync::atomic::AtomicUsize;
+    let mut _5: std::sync::atomic::Ordering;
+
+    bb0: {
+        _4 = const {alloc1: &AtomicUsize};
+        _5 = SeqCst;
+        _3 = AtomicUsize::fetch_add(_4, const 1000_usize, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/associated-types/associated-types-project-from-type-param-via-bound-in-where.rs:48:1: 48:24>::method(_1: &D, _2: <T as Trait>::Item) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _3: usize;
+    let _4: &std::sync::atomic::AtomicUsize;
+    let mut _5: std::sync::atomic::Ordering;
+
+    bb0: {
+        _4 = const {alloc1: &AtomicUsize};
+        _5 = SeqCst;
+        _3 = AtomicUsize::fetch_add(_4, const 10000_usize, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn YetAnotherTrait::default_method(_1: &Self, _2: <T as Trait>::Item) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _3: usize;
+    let _4: &std::sync::atomic::AtomicUsize;
+    let mut _5: std::sync::atomic::Ordering;
+
+    bb0: {
+        _4 = const {alloc1: &AtomicUsize};
+        _5 = SeqCst;
+        _3 = AtomicUsize::fetch_add(_4, const 100000_usize, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/associated-types/associated-types-project-from-type-param-via-bound-in-where.rs:64:1: 64:36>::method(_1: &E<T>, _2: <T as Trait>::Item) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _3: usize;
+    let _4: &std::sync::atomic::AtomicUsize;
+    let mut _5: std::sync::atomic::Ordering;
+
+    bb0: {
+        _4 = const {alloc1: &AtomicUsize};
+        _5 = SeqCst;
+        _3 = AtomicUsize::fetch_add(_4, const 1000000_usize, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn <impl at ui/associated-types/associated-types-project-from-type-param-via-bound-in-where.rs:74:1: 74:13>::method(_1: &F<T>, _2: <T as Trait>::Item) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _3: usize;
+    let _4: &std::sync::atomic::AtomicUsize;
+    let mut _5: std::sync::atomic::Ordering;
+
+    bb0: {
+        _4 = const {alloc1: &AtomicUsize};
+        _5 = SeqCst;
+        _3 = AtomicUsize::fetch_add(_4, const 10000000_usize, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let mut _5: &D;
+    let _6: D;
+    let _7: ();
+    let mut _8: &D;
+    let _9: D;
+    let _10: ();
+    let mut _11: &E<Struct>;
+    let _12: E<Struct>;
+    let _13: ();
+    let mut _14: &E<Struct>;
+    let _15: E<Struct>;
+    let _16: ();
+    let mut _17: &F<Struct>;
+    let _18: F<Struct>;
+    let mut _19: (&usize, &usize);
+    let mut _20: &usize;
+    let _21: usize;
+    let _22: &std::sync::atomic::AtomicUsize;
+    let mut _23: std::sync::atomic::Ordering;
+    let mut _24: &usize;
+    let _25: usize;
+    let _26: &usize;
+    let _27: &usize;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: usize;
+    let mut _31: usize;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _26;
+        debug right_val => _27;
+        let _32: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _32;
+        }
+    }
+
+    bb0: {
+        _1 = A::foo::<Struct>(const 22_u32) -> bb1;
+    }
+
+    bb1: {
+        _2 = B::<Struct>::foo(const 22_u32) -> bb2;
+    }
+
+    bb2: {
+        _3 = c::<Struct>(const 22_u32) -> bb3;
+    }
+
+    bb3: {
+        _5 = &_6;
+        _4 = <D as AnotherTrait>::method::<Struct>(move _5, const 22_u32) -> bb4;
+    }
+
+    bb4: {
+        _8 = &_9;
+        _7 = <D as AnotherTrait>::default_method::<Struct>(move _8, const 22_u32) -> bb5;
+    }
+
+    bb5: {
+        _11 = &_12;
+        _10 = <E<Struct> as YetAnotherTrait<Struct>>::method(move _11, const 22_u32) -> bb6;
+    }
+
+    bb6: {
+        _14 = &_15;
+        _13 = <E<Struct> as YetAnotherTrait<Struct>>::default_method(move _14, const 22_u32) -> bb7;
+    }
+
+    bb7: {
+        _17 = &_18;
+        _16 = F::<Struct>::method(move _17, const 22_u32) -> bb8;
+    }
+
+    bb8: {
+        _22 = const {alloc1: &AtomicUsize};
+        _23 = SeqCst;
+        _21 = AtomicUsize::load(_22, move _23) -> bb9;
+    }
+
+    bb9: {
+        _20 = &_21;
+        _25 = const 11111111_usize;
+        _24 = &_25;
+        _19 = (move _20, move _24);
+        _26 = (_19.0: &usize);
+        _27 = (_19.1: &usize);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<usize, usize>(move _32, _26, _27, move _34);
+    }
+
+    bb11: {
+        return;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn B(_1: PhantomData<T>) -> B<T> {
+    let mut _0: B<T>;
+
+    bb0: {
+        _0 = B::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn B(_1: PhantomData<T>) -> B<T> {
+    let mut _0: B<T>;
+
+    bb0: {
+        _0 = B::<T>(move _1);
+        return;
+    }
+}
+
+fn E(_1: PhantomData<T>) -> E<T> {
+    let mut _0: E<T>;
+
+    bb0: {
+        _0 = E::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn E(_1: PhantomData<T>) -> E<T> {
+    let mut _0: E<T>;
+
+    bb0: {
+        _0 = E::<T>(move _1);
+        return;
+    }
+}
+
+fn F(_1: PhantomData<T>) -> F<T> {
+    let mut _0: F<T>;
+
+    bb0: {
+        _0 = F::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn F(_1: PhantomData<T>) -> F<T> {
+    let mut _0: F<T>;
+
+    bb0: {
+        _0 = F::<T>(move _1);
+        return;
+    }
+}

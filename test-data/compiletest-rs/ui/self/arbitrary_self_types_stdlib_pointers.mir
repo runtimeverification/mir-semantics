@@ -1,0 +1,434 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/arbitrary_self_types_stdlib_pointers.rs:19:1: 19:19>::by_rc(_1: Rc<i64>) -> i64 {
+    debug self => _1;
+    let mut _0: i64;
+    let mut _2: &i64;
+    let mut _3: &std::rc::Rc<i64>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Rc<i64> as Deref>::deref(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = (*_2);
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_stdlib_pointers.rs:19:1: 19:19>::by_arc(_1: Arc<i64>) -> i64 {
+    debug self => _1;
+    let mut _0: i64;
+    let mut _2: &i64;
+    let mut _3: &std::sync::Arc<i64>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Arc<i64> as Deref>::deref(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = (*_2);
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_stdlib_pointers.rs:19:1: 19:19>::by_pin_mut(_1: Pin<&mut i64>) -> i64 {
+    debug self => _1;
+    let mut _0: i64;
+    let mut _2: &i64;
+    let mut _3: &std::pin::Pin<&mut i64>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Pin<&mut i64> as Deref>::deref(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_2);
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_stdlib_pointers.rs:19:1: 19:19>::by_pin_box(_1: Pin<Box<i64>>) -> i64 {
+    debug self => _1;
+    let mut _0: i64;
+    let mut _2: &i64;
+    let mut _3: &std::pin::Pin<std::boxed::Box<i64>>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Pin<Box<i64>> as Deref>::deref(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = (*_2);
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_stdlib_pointers.rs:19:1: 19:19>::by_pin_pin_pin_ref(_1: Pin<Pin<Pin<&i64>>>) -> i64 {
+    debug self => _1;
+    let mut _0: i64;
+    let mut _2: &i64;
+    let mut _3: &std::pin::Pin<std::pin::Pin<std::pin::Pin<&i64>>>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Pin<Pin<Pin<&i64>>> as Deref>::deref(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::rc::Rc<dyn Trait>;
+    let mut _2: std::rc::Rc<i64>;
+    let mut _3: (&i64, &i64);
+    let mut _4: &i64;
+    let _5: i64;
+    let mut _6: &i64;
+    let _7: i64;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: i64;
+    let mut _13: i64;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: std::sync::Arc<dyn Trait>;
+    let mut _18: std::sync::Arc<i64>;
+    let mut _19: (&i64, &i64);
+    let mut _20: &i64;
+    let _21: i64;
+    let mut _22: &i64;
+    let _23: i64;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: i64;
+    let mut _29: i64;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: std::pin::Pin<&mut dyn Trait>;
+    let mut _35: std::pin::Pin<&mut i64>;
+    let mut _36: &mut i64;
+    let mut _37: (&i64, &i64);
+    let mut _38: &i64;
+    let _39: i64;
+    let mut _40: &i64;
+    let _41: i64;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: i64;
+    let mut _47: i64;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: std::pin::Pin<std::boxed::Box<dyn Trait>>;
+    let mut _52: std::pin::Pin<std::boxed::Box<i64>>;
+    let mut _53: std::boxed::Box<i64>;
+    let mut _54: (&i64, &i64);
+    let mut _55: &i64;
+    let _56: i64;
+    let mut _57: &i64;
+    let _58: i64;
+    let mut _61: bool;
+    let mut _62: bool;
+    let mut _63: i64;
+    let mut _64: i64;
+    let _66: !;
+    let mut _67: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _69: std::pin::Pin<std::pin::Pin<std::pin::Pin<&dyn Trait>>>;
+    let mut _70: std::pin::Pin<std::pin::Pin<std::pin::Pin<&i64>>>;
+    let mut _71: std::pin::Pin<std::pin::Pin<&i64>>;
+    let mut _72: std::pin::Pin<&i64>;
+    let mut _73: &i64;
+    let mut _74: (&i64, &i64);
+    let mut _75: &i64;
+    let _76: i64;
+    let mut _77: &i64;
+    let _78: i64;
+    let mut _81: bool;
+    let mut _82: bool;
+    let mut _83: i64;
+    let mut _84: i64;
+    let _86: !;
+    let mut _87: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug rc => _1;
+        let _8: &i64;
+        let _9: &i64;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug arc => _17;
+            let _24: &i64;
+            let _25: &i64;
+            let mut _33: i64;
+            scope 5 {
+                debug left_val => _24;
+                debug right_val => _25;
+                let _30: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _30;
+                }
+            }
+            scope 7 {
+                debug value => _33;
+                scope 8 {
+                    debug pin_mut => _34;
+                    let _42: &i64;
+                    let _43: &i64;
+                    scope 9 {
+                        debug left_val => _42;
+                        debug right_val => _43;
+                        let _48: core::panicking::AssertKind;
+                        scope 10 {
+                            debug kind => _48;
+                        }
+                    }
+                    scope 11 {
+                        debug pin_box => _51;
+                        let _59: &i64;
+                        let _60: &i64;
+                        let _68: i64;
+                        scope 12 {
+                            debug left_val => _59;
+                            debug right_val => _60;
+                            let _65: core::panicking::AssertKind;
+                            scope 13 {
+                                debug kind => _65;
+                            }
+                        }
+                        scope 14 {
+                            debug value => _68;
+                            scope 15 {
+                                debug pin_pin_pin_ref => _69;
+                                let _79: &i64;
+                                let _80: &i64;
+                                scope 16 {
+                                    debug left_val => _79;
+                                    debug right_val => _80;
+                                    let _85: core::panicking::AssertKind;
+                                    scope 17 {
+                                        debug kind => _85;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Rc::<i64>::new(const 1_i64) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::rc::Rc<dyn Trait> (Pointer(Unsize));
+        _5 = const 1_i64;
+        _4 = &_5;
+        _7 = <dyn Trait as Trait>::by_rc(move _1) -> bb2;
+    }
+
+    bb2: {
+        _6 = &_7;
+        _3 = (move _4, move _6);
+        _8 = (_3.0: &i64);
+        _9 = (_3.1: &i64);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<i64, i64>(move _14, _8, _9, move _16);
+    }
+
+    bb4: {
+        _18 = Arc::<i64>::new(const 2_i64) -> bb5;
+    }
+
+    bb5: {
+        _17 = move _18 as std::sync::Arc<dyn Trait> (Pointer(Unsize));
+        _21 = const 2_i64;
+        _20 = &_21;
+        _23 = <dyn Trait as Trait>::by_arc(move _17) -> bb6;
+    }
+
+    bb6: {
+        _22 = &_23;
+        _19 = (move _20, move _22);
+        _24 = (_19.0: &i64);
+        _25 = (_19.1: &i64);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<i64, i64>(move _30, _24, _25, move _32);
+    }
+
+    bb8: {
+        _33 = const 3_i64;
+        _36 = &mut _33;
+        _35 = Pin::<&mut i64>::new(move _36) -> bb9;
+    }
+
+    bb9: {
+        _34 = move _35 as std::pin::Pin<&mut dyn Trait> (Pointer(Unsize));
+        _39 = const 3_i64;
+        _38 = &_39;
+        _41 = <dyn Trait as Trait>::by_pin_mut(move _34) -> bb10;
+    }
+
+    bb10: {
+        _40 = &_41;
+        _37 = (move _38, move _40);
+        _42 = (_37.0: &i64);
+        _43 = (_37.1: &i64);
+        _46 = (*_42);
+        _47 = (*_43);
+        _45 = Eq(move _46, move _47);
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<i64, i64>(move _48, _42, _43, move _50);
+    }
+
+    bb12: {
+        _53 = Box::<i64>::new(const 4_i64) -> bb13;
+    }
+
+    bb13: {
+        _52 = <Box<i64> as Into<Pin<Box<i64>>>>::into(move _53) -> bb14;
+    }
+
+    bb14: {
+        _51 = move _52 as std::pin::Pin<std::boxed::Box<dyn Trait>> (Pointer(Unsize));
+        _56 = const 4_i64;
+        _55 = &_56;
+        _58 = <dyn Trait as Trait>::by_pin_box(move _51) -> bb15;
+    }
+
+    bb15: {
+        _57 = &_58;
+        _54 = (move _55, move _57);
+        _59 = (_54.0: &i64);
+        _60 = (_54.1: &i64);
+        _63 = (*_59);
+        _64 = (*_60);
+        _62 = Eq(move _63, move _64);
+        _61 = Not(move _62);
+        switchInt(move _61) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _65 = core::panicking::AssertKind::Eq;
+        _67 = Option::<Arguments<'_>>::None;
+        _66 = core::panicking::assert_failed::<i64, i64>(move _65, _59, _60, move _67);
+    }
+
+    bb17: {
+        _68 = const 5_i64;
+        _73 = &_68;
+        _72 = Pin::<&i64>::new(move _73) -> bb18;
+    }
+
+    bb18: {
+        _71 = Pin::<Pin<&i64>>::new(move _72) -> bb19;
+    }
+
+    bb19: {
+        _70 = Pin::<Pin<Pin<&i64>>>::new(move _71) -> bb20;
+    }
+
+    bb20: {
+        _69 = move _70 as std::pin::Pin<std::pin::Pin<std::pin::Pin<&dyn Trait>>> (Pointer(Unsize));
+        _76 = const 5_i64;
+        _75 = &_76;
+        _78 = <dyn Trait as Trait>::by_pin_pin_pin_ref(_69) -> bb21;
+    }
+
+    bb21: {
+        _77 = &_78;
+        _74 = (move _75, move _77);
+        _79 = (_74.0: &i64);
+        _80 = (_74.1: &i64);
+        _83 = (*_79);
+        _84 = (*_80);
+        _82 = Eq(move _83, move _84);
+        _81 = Not(move _82);
+        switchInt(move _81) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _85 = core::panicking::AssertKind::Eq;
+        _87 = Option::<Arguments<'_>>::None;
+        _86 = core::panicking::assert_failed::<i64, i64>(move _85, _79, _80, move _87);
+    }
+
+    bb23: {
+        return;
+    }
+}

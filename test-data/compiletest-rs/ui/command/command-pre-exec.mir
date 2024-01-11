@@ -1,0 +1,1168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::option::Option<std::string::String>;
+    let mut _2: &mut std::env::Args;
+    let mut _3: std::env::Args;
+    let mut _4: isize;
+    let mut _6: &str;
+    let _7: &str;
+    let mut _8: &std::string::String;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _13: ();
+    let mut _14: std::fmt::Arguments<'_>;
+    let mut _15: &[&str];
+    let _16: &[&str; 1];
+    let _17: [&str; 1];
+    let mut _18: (&std::string::String, &&str);
+    let mut _19: &std::string::String;
+    let _20: std::string::String;
+    let mut _21: std::result::Result<std::string::String, std::env::VarError>;
+    let mut _22: &&str;
+    let _23: &str;
+    let mut _26: bool;
+    let mut _27: bool;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&&str, &&str);
+    let mut _32: &&str;
+    let _33: &str;
+    let mut _34: std::option::Option<&str>;
+    let mut _35: &std::path::Path;
+    let _36: &std::path::Path;
+    let mut _37: &std::path::PathBuf;
+    let _38: std::path::PathBuf;
+    let mut _39: std::result::Result<std::path::PathBuf, std::io::Error>;
+    let mut _40: &&str;
+    let _41: &str;
+    let mut _44: bool;
+    let mut _45: bool;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let _49: !;
+    let mut _50: std::fmt::Arguments<'_>;
+    let mut _51: &[&str];
+    let _52: &[&str; 1];
+    let _53: [&str; 1];
+    let mut _54: &[core::fmt::rt::Argument<'_>];
+    let _55: &[core::fmt::rt::Argument<'_>; 1];
+    let _56: [core::fmt::rt::Argument<'_>; 1];
+    let mut _57: core::fmt::rt::Argument<'_>;
+    let _58: &std::string::String;
+    let _59: std::path::PathBuf;
+    let mut _60: std::result::Result<std::path::PathBuf, std::io::Error>;
+    let mut _62: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _63: &mut std::process::Command;
+    let mut _64: &mut std::process::Command;
+    let mut _65: &mut std::process::Command;
+    let mut _66: &mut std::process::Command;
+    let mut _67: &mut std::process::Command;
+    let mut _68: std::process::Command;
+    let mut _69: &std::path::PathBuf;
+    let mut _70: bool;
+    let mut _71: bool;
+    let mut _72: &std::process::ExitStatus;
+    let mut _73: !;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: &std::vec::Vec<u8>;
+    let mut _77: !;
+    let mut _78: (&std::vec::Vec<u8>, &&[u8; 13]);
+    let mut _79: &std::vec::Vec<u8>;
+    let mut _80: &&[u8; 13];
+    let _81: &[u8; 13];
+    let mut _84: bool;
+    let mut _85: bool;
+    let _87: !;
+    let mut _88: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _90: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _91: &mut std::process::Command;
+    let mut _92: &mut std::process::Command;
+    let mut _93: &mut std::process::Command;
+    let mut _94: &mut std::process::Command;
+    let mut _95: &mut std::process::Command;
+    let mut _96: std::process::Command;
+    let mut _97: &std::path::PathBuf;
+    let mut _98: bool;
+    let mut _99: bool;
+    let mut _100: &std::process::ExitStatus;
+    let mut _101: !;
+    let mut _102: bool;
+    let mut _103: bool;
+    let mut _104: &std::vec::Vec<u8>;
+    let mut _105: !;
+    let mut _106: bool;
+    let mut _107: bool;
+    let mut _108: &std::vec::Vec<u8>;
+    let mut _109: !;
+    let mut _111: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _112: &mut std::process::Command;
+    let mut _113: &mut std::process::Command;
+    let mut _114: &mut std::process::Command;
+    let mut _115: &mut std::process::Command;
+    let mut _116: &mut std::process::Command;
+    let mut _117: std::process::Command;
+    let mut _118: &std::path::PathBuf;
+    let mut _119: (&std::option::Option<i32>, &std::option::Option<i32>);
+    let mut _120: &std::option::Option<i32>;
+    let _121: std::option::Option<i32>;
+    let mut _122: &std::io::Error;
+    let mut _123: &std::option::Option<i32>;
+    let _124: std::option::Option<i32>;
+    let mut _127: bool;
+    let mut _128: bool;
+    let _130: !;
+    let mut _131: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _133: bool;
+    let mut _134: bool;
+    let mut _135: i32;
+    let mut _136: !;
+    let mut _138: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _139: &mut std::process::Command;
+    let mut _140: &mut std::process::Command;
+    let mut _141: &mut std::process::Command;
+    let mut _142: &mut std::process::Command;
+    let mut _143: &mut std::process::Command;
+    let mut _144: std::process::Command;
+    let mut _145: &std::path::PathBuf;
+    let mut _146: [closure@ui/command/command-pre-exec.rs:77:23: 77:30];
+    let mut _147: bool;
+    let mut _148: bool;
+    let mut _149: &std::process::ExitStatus;
+    let mut _150: !;
+    let mut _151: bool;
+    let mut _152: bool;
+    let mut _153: &std::vec::Vec<u8>;
+    let mut _154: !;
+    let mut _155: bool;
+    let mut _156: bool;
+    let mut _157: &std::vec::Vec<u8>;
+    let mut _158: !;
+    let mut _160: std::sync::atomic::AtomicUsize;
+    let mut _162: &std::sync::Arc<std::sync::atomic::AtomicUsize>;
+    let mut _164: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _165: &mut std::process::Command;
+    let mut _166: &mut std::process::Command;
+    let mut _167: &mut std::process::Command;
+    let mut _168: &mut std::process::Command;
+    let mut _169: &mut std::process::Command;
+    let mut _170: std::process::Command;
+    let mut _171: &std::path::PathBuf;
+    let mut _172: [closure@ui/command/command-pre-exec.rs:95:23: 95:30];
+    let mut _173: bool;
+    let mut _174: bool;
+    let mut _175: &std::process::ExitStatus;
+    let mut _176: !;
+    let mut _177: bool;
+    let mut _178: bool;
+    let mut _179: &std::vec::Vec<u8>;
+    let mut _180: !;
+    let mut _181: bool;
+    let mut _182: bool;
+    let mut _183: &std::vec::Vec<u8>;
+    let mut _184: !;
+    let mut _185: (&usize, &usize);
+    let mut _186: &usize;
+    let _187: usize;
+    let mut _188: &std::sync::atomic::AtomicUsize;
+    let _189: &std::sync::atomic::AtomicUsize;
+    let mut _190: &std::sync::Arc<std::sync::atomic::AtomicUsize>;
+    let mut _191: std::sync::atomic::Ordering;
+    let mut _192: &usize;
+    let _193: usize;
+    let mut _196: bool;
+    let mut _197: bool;
+    let mut _198: usize;
+    let mut _199: usize;
+    let _201: !;
+    let mut _202: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _203: bool;
+    scope 1 {
+        debug arg => _5;
+        let _5: std::string::String;
+        let _24: &std::string::String;
+        let _25: &&str;
+        let _42: &&str;
+        let _43: &&str;
+        scope 2 {
+            debug left_val => _24;
+            debug right_val => _25;
+            let _28: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _28;
+            }
+        }
+        scope 4 {
+            debug left_val => _42;
+            debug right_val => _43;
+            let _46: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _46;
+            }
+        }
+    }
+    scope 6 {
+        debug me => _59;
+        let _61: std::process::Output;
+        scope 7 {
+            debug output => _61;
+            let _82: &std::vec::Vec<u8>;
+            let _83: &&[u8; 13];
+            let _89: std::process::Output;
+            scope 9 {
+                debug left_val => _82;
+                debug right_val => _83;
+                let _86: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _86;
+                }
+            }
+            scope 11 {
+                debug output => _89;
+                let _110: std::io::Error;
+                scope 13 {
+                    debug output => _110;
+                    let _125: &std::option::Option<i32>;
+                    let _126: &std::option::Option<i32>;
+                    let _132: i32;
+                    scope 15 {
+                        debug left_val => _125;
+                        debug right_val => _126;
+                        let _129: core::panicking::AssertKind;
+                        scope 16 {
+                            debug kind => _129;
+                        }
+                    }
+                    scope 17 {
+                        debug pid => _132;
+                        let _137: std::process::Output;
+                        scope 19 {
+                            debug output => _137;
+                            let _159: std::sync::Arc<std::sync::atomic::AtomicUsize>;
+                            scope 21 {
+                                debug mem => _159;
+                                let _161: std::sync::Arc<std::sync::atomic::AtomicUsize>;
+                                scope 22 {
+                                    debug mem2 => _161;
+                                    let _163: std::process::Output;
+                                    scope 23 {
+                                        debug output => _163;
+                                        let _194: &usize;
+                                        let _195: &usize;
+                                        scope 25 {
+                                            debug left_val => _194;
+                                            debug right_val => _195;
+                                            let _200: core::panicking::AssertKind;
+                                            scope 26 {
+                                                debug kind => _200;
+                                            }
+                                        }
+                                    }
+                                    scope 24 {
+                                    }
+                                }
+                            }
+                        }
+                        scope 20 {
+                        }
+                    }
+                    scope 18 {
+                    }
+                }
+                scope 14 {
+                }
+            }
+            scope 12 {
+            }
+        }
+        scope 8 {
+        }
+    }
+
+    bb0: {
+        _203 = const false;
+        _3 = args() -> bb1;
+    }
+
+    bb1: {
+        _2 = &mut _3;
+        _1 = <Args as Iterator>::nth(move _2, const 1_usize) -> [return: bb2, unwind: bb141];
+    }
+
+    bb2: {
+        _4 = discriminant(_1);
+        switchInt(move _4) -> [1: bb3, otherwise: bb33];
+    }
+
+    bb3: {
+        _5 = move ((_1 as Some).0: std::string::String);
+        _8 = &_5;
+        _7 = <String as Index<RangeFull>>::index(move _8, const RangeFull) -> [return: bb4, unwind: bb140];
+    }
+
+    bb4: {
+        _6 = _7;
+        _9 = <str as PartialEq>::eq(_6, const "test1") -> [return: bb5, unwind: bb140];
+    }
+
+    bb5: {
+        switchInt(move _9) -> [0: bb6, otherwise: bb13];
+    }
+
+    bb6: {
+        _10 = <str as PartialEq>::eq(_6, const "test2") -> [return: bb7, unwind: bb140];
+    }
+
+    bb7: {
+        switchInt(move _10) -> [0: bb8, otherwise: bb15];
+    }
+
+    bb8: {
+        _11 = <str as PartialEq>::eq(_6, const "test3") -> [return: bb9, unwind: bb140];
+    }
+
+    bb9: {
+        switchInt(move _11) -> [0: bb10, otherwise: bb21];
+    }
+
+    bb10: {
+        _12 = <str as PartialEq>::eq(_6, const "empty") -> [return: bb11, unwind: bb140];
+    }
+
+    bb11: {
+        switchInt(move _12) -> [0: bb12, otherwise: bb32];
+    }
+
+    bb12: {
+        _53 = [const "unknown argument: "];
+        _52 = &_53;
+        _51 = _52 as &[&str] (Pointer(Unsize));
+        _58 = &_5;
+        _57 = core::fmt::rt::Argument::<'_>::new_display::<String>(_58) -> [return: bb30, unwind: bb140];
+    }
+
+    bb13: {
+        _17 = [const "hello2\n"];
+        _16 = &_17;
+        _15 = _16 as &[&str] (Pointer(Unsize));
+        _14 = Arguments::<'_>::new_const(move _15) -> [return: bb14, unwind: bb140];
+    }
+
+    bb14: {
+        _13 = _print(move _14) -> [return: bb145, unwind: bb140];
+    }
+
+    bb15: {
+        _21 = var::<&str>(const "FOO") -> [return: bb16, unwind: bb140];
+    }
+
+    bb16: {
+        _20 = Result::<String, VarError>::unwrap(move _21) -> [return: bb17, unwind: bb140];
+    }
+
+    bb17: {
+        _19 = &_20;
+        _23 = const "BAR";
+        _22 = &_23;
+        _18 = (move _19, move _22);
+        _24 = (_18.0: &std::string::String);
+        _25 = (_18.1: &&str);
+        _27 = <String as PartialEq<&str>>::eq(_24, _25) -> [return: bb18, unwind: bb139];
+    }
+
+    bb18: {
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<String, &str>(move _28, _24, _25, move _30) -> bb139;
+    }
+
+    bb20: {
+        drop(_20) -> [return: bb32, unwind: bb140];
+    }
+
+    bb21: {
+        _39 = current_dir() -> [return: bb22, unwind: bb140];
+    }
+
+    bb22: {
+        _38 = Result::<PathBuf, std::io::Error>::unwrap(move _39) -> [return: bb23, unwind: bb140];
+    }
+
+    bb23: {
+        _37 = &_38;
+        _36 = <PathBuf as Deref>::deref(move _37) -> [return: bb24, unwind: bb138];
+    }
+
+    bb24: {
+        _35 = _36;
+        _34 = Path::to_str(move _35) -> [return: bb25, unwind: bb138];
+    }
+
+    bb25: {
+        _33 = Option::<&str>::unwrap(move _34) -> [return: bb26, unwind: bb138];
+    }
+
+    bb26: {
+        _32 = &_33;
+        _41 = const "/";
+        _40 = &_41;
+        _31 = (move _32, move _40);
+        _42 = (_31.0: &&str);
+        _43 = (_31.1: &&str);
+        _45 = <&str as PartialEq>::eq(_42, _43) -> [return: bb27, unwind: bb138];
+    }
+
+    bb27: {
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb28: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<&str, &str>(move _46, _42, _43, move _48) -> bb138;
+    }
+
+    bb29: {
+        drop(_38) -> [return: bb32, unwind: bb140];
+    }
+
+    bb30: {
+        _56 = [move _57];
+        _55 = &_56;
+        _54 = _55 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _50 = Arguments::<'_>::new_v1(move _51, move _54) -> [return: bb31, unwind: bb140];
+    }
+
+    bb31: {
+        _49 = panic_fmt(move _50) -> bb140;
+    }
+
+    bb32: {
+        drop(_5) -> [return: bb124, unwind: bb141];
+    }
+
+    bb33: {
+        drop(_1) -> [return: bb34, unwind: bb141];
+    }
+
+    bb34: {
+        drop(_3) -> bb35;
+    }
+
+    bb35: {
+        _60 = current_exe() -> bb36;
+    }
+
+    bb36: {
+        _59 = Result::<PathBuf, std::io::Error>::unwrap(move _60) -> bb37;
+    }
+
+    bb37: {
+        _69 = &_59;
+        _68 = Command::new::<&PathBuf>(move _69) -> [return: bb38, unwind: bb137];
+    }
+
+    bb38: {
+        _67 = &mut _68;
+        _66 = Command::arg::<&str>(move _67, const "test1") -> [return: bb39, unwind: bb136];
+    }
+
+    bb39: {
+        _65 = _66;
+        _64 = <Command as std::os::unix::process::CommandExt>::pre_exec::<[closure@ui/command/command-pre-exec.rs:38:23: 38:25]>(move _65, const ZeroSized: [closure@ui/command/command-pre-exec.rs:38:23: 38:25]) -> [return: bb40, unwind: bb136];
+    }
+
+    bb40: {
+        _63 = _64;
+        _62 = Command::output(move _63) -> [return: bb41, unwind: bb136];
+    }
+
+    bb41: {
+        _61 = Result::<Output, std::io::Error>::unwrap(move _62) -> [return: bb42, unwind: bb136];
+    }
+
+    bb42: {
+        drop(_68) -> [return: bb43, unwind: bb135];
+    }
+
+    bb43: {
+        _72 = &(_61.0: std::process::ExitStatus);
+        _71 = ExitStatus::success(move _72) -> [return: bb44, unwind: bb135];
+    }
+
+    bb44: {
+        _70 = Not(move _71);
+        switchInt(move _70) -> [0: bb46, otherwise: bb45];
+    }
+
+    bb45: {
+        _73 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb135;
+    }
+
+    bb46: {
+        _76 = &(_61.2: std::vec::Vec<u8>);
+        _75 = Vec::<u8>::is_empty(move _76) -> [return: bb47, unwind: bb135];
+    }
+
+    bb47: {
+        _74 = Not(move _75);
+        switchInt(move _74) -> [0: bb49, otherwise: bb48];
+    }
+
+    bb48: {
+        _77 = core::panicking::panic(const "assertion failed: output.stderr.is_empty()") -> bb135;
+    }
+
+    bb49: {
+        _79 = &(_61.1: std::vec::Vec<u8>);
+        _81 = const b"hello\nhello2\n";
+        _80 = &_81;
+        _78 = (move _79, move _80);
+        _82 = (_78.0: &std::vec::Vec<u8>);
+        _83 = (_78.1: &&[u8; 13]);
+        _85 = <Vec<u8> as PartialEq<&[u8; 13]>>::eq(_82, _83) -> [return: bb50, unwind: bb135];
+    }
+
+    bb50: {
+        _84 = Not(move _85);
+        switchInt(move _84) -> [0: bb52, otherwise: bb51];
+    }
+
+    bb51: {
+        _86 = core::panicking::AssertKind::Eq;
+        _88 = Option::<Arguments<'_>>::None;
+        _87 = core::panicking::assert_failed::<Vec<u8>, &[u8; 13]>(move _86, _82, _83, move _88) -> bb135;
+    }
+
+    bb52: {
+        _97 = &_59;
+        _96 = Command::new::<&PathBuf>(move _97) -> [return: bb53, unwind: bb135];
+    }
+
+    bb53: {
+        _95 = &mut _96;
+        _94 = Command::arg::<&str>(move _95, const "test3") -> [return: bb54, unwind: bb134];
+    }
+
+    bb54: {
+        _93 = _94;
+        _92 = <Command as std::os::unix::process::CommandExt>::pre_exec::<[closure@ui/command/command-pre-exec.rs:52:23: 52:25]>(move _93, const ZeroSized: [closure@ui/command/command-pre-exec.rs:52:23: 52:25]) -> [return: bb55, unwind: bb134];
+    }
+
+    bb55: {
+        _91 = _92;
+        _90 = Command::output(move _91) -> [return: bb56, unwind: bb134];
+    }
+
+    bb56: {
+        _89 = Result::<Output, std::io::Error>::unwrap(move _90) -> [return: bb57, unwind: bb134];
+    }
+
+    bb57: {
+        drop(_96) -> [return: bb58, unwind: bb133];
+    }
+
+    bb58: {
+        _100 = &(_89.0: std::process::ExitStatus);
+        _99 = ExitStatus::success(move _100) -> [return: bb59, unwind: bb133];
+    }
+
+    bb59: {
+        _98 = Not(move _99);
+        switchInt(move _98) -> [0: bb61, otherwise: bb60];
+    }
+
+    bb60: {
+        _101 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb133;
+    }
+
+    bb61: {
+        _104 = &(_89.2: std::vec::Vec<u8>);
+        _103 = Vec::<u8>::is_empty(move _104) -> [return: bb62, unwind: bb133];
+    }
+
+    bb62: {
+        _102 = Not(move _103);
+        switchInt(move _102) -> [0: bb64, otherwise: bb63];
+    }
+
+    bb63: {
+        _105 = core::panicking::panic(const "assertion failed: output.stderr.is_empty()") -> bb133;
+    }
+
+    bb64: {
+        _108 = &(_89.1: std::vec::Vec<u8>);
+        _107 = Vec::<u8>::is_empty(move _108) -> [return: bb65, unwind: bb133];
+    }
+
+    bb65: {
+        _106 = Not(move _107);
+        switchInt(move _106) -> [0: bb67, otherwise: bb66];
+    }
+
+    bb66: {
+        _109 = core::panicking::panic(const "assertion failed: output.stdout.is_empty()") -> bb133;
+    }
+
+    bb67: {
+        _118 = &_59;
+        _117 = Command::new::<&PathBuf>(move _118) -> [return: bb68, unwind: bb133];
+    }
+
+    bb68: {
+        _116 = &mut _117;
+        _115 = Command::arg::<&str>(move _116, const "bad") -> [return: bb69, unwind: bb132];
+    }
+
+    bb69: {
+        _114 = _115;
+        _113 = <Command as std::os::unix::process::CommandExt>::pre_exec::<[closure@ui/command/command-pre-exec.rs:66:23: 66:25]>(move _114, const ZeroSized: [closure@ui/command/command-pre-exec.rs:66:23: 66:25]) -> [return: bb70, unwind: bb132];
+    }
+
+    bb70: {
+        _112 = _113;
+        _111 = Command::output(move _112) -> [return: bb71, unwind: bb132];
+    }
+
+    bb71: {
+        _110 = Result::<Output, std::io::Error>::unwrap_err(move _111) -> [return: bb72, unwind: bb132];
+    }
+
+    bb72: {
+        drop(_117) -> [return: bb73, unwind: bb131];
+    }
+
+    bb73: {
+        _122 = &_110;
+        _121 = std::io::Error::raw_os_error(move _122) -> [return: bb74, unwind: bb131];
+    }
+
+    bb74: {
+        _120 = &_121;
+        _124 = Option::<i32>::Some(const 102_i32);
+        _123 = &_124;
+        _119 = (move _120, move _123);
+        _125 = (_119.0: &std::option::Option<i32>);
+        _126 = (_119.1: &std::option::Option<i32>);
+        _128 = <Option<i32> as PartialEq>::eq(_125, _126) -> [return: bb75, unwind: bb131];
+    }
+
+    bb75: {
+        _127 = Not(move _128);
+        switchInt(move _127) -> [0: bb77, otherwise: bb76];
+    }
+
+    bb76: {
+        _129 = core::panicking::AssertKind::Eq;
+        _131 = Option::<Arguments<'_>>::None;
+        _130 = core::panicking::assert_failed::<Option<i32>, Option<i32>>(move _129, _125, _126, move _131) -> bb131;
+    }
+
+    bb77: {
+        _132 = getpid() -> [return: bb78, unwind: bb131];
+    }
+
+    bb78: {
+        _135 = _132;
+        _134 = Ge(move _135, const 0_i32);
+        _133 = Not(move _134);
+        switchInt(move _133) -> [0: bb80, otherwise: bb79];
+    }
+
+    bb79: {
+        _136 = core::panicking::panic(const "assertion failed: pid >= 0") -> bb131;
+    }
+
+    bb80: {
+        _145 = &_59;
+        _144 = Command::new::<&PathBuf>(move _145) -> [return: bb81, unwind: bb131];
+    }
+
+    bb81: {
+        _143 = &mut _144;
+        _142 = Command::arg::<&str>(move _143, const "empty") -> [return: bb82, unwind: bb130];
+    }
+
+    bb82: {
+        _141 = _142;
+        _146 = [closure@ui/command/command-pre-exec.rs:77:23: 77:30] { pid: _132 };
+        _140 = <Command as std::os::unix::process::CommandExt>::pre_exec::<[closure@ui/command/command-pre-exec.rs:77:23: 77:30]>(move _141, move _146) -> [return: bb83, unwind: bb130];
+    }
+
+    bb83: {
+        _139 = _140;
+        _138 = Command::output(move _139) -> [return: bb84, unwind: bb130];
+    }
+
+    bb84: {
+        _137 = Result::<Output, std::io::Error>::unwrap(move _138) -> [return: bb85, unwind: bb130];
+    }
+
+    bb85: {
+        drop(_144) -> [return: bb86, unwind: bb129];
+    }
+
+    bb86: {
+        _149 = &(_137.0: std::process::ExitStatus);
+        _148 = ExitStatus::success(move _149) -> [return: bb87, unwind: bb129];
+    }
+
+    bb87: {
+        _147 = Not(move _148);
+        switchInt(move _147) -> [0: bb89, otherwise: bb88];
+    }
+
+    bb88: {
+        _150 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb129;
+    }
+
+    bb89: {
+        _153 = &(_137.2: std::vec::Vec<u8>);
+        _152 = Vec::<u8>::is_empty(move _153) -> [return: bb90, unwind: bb129];
+    }
+
+    bb90: {
+        _151 = Not(move _152);
+        switchInt(move _151) -> [0: bb92, otherwise: bb91];
+    }
+
+    bb91: {
+        _154 = core::panicking::panic(const "assertion failed: output.stderr.is_empty()") -> bb129;
+    }
+
+    bb92: {
+        _157 = &(_137.1: std::vec::Vec<u8>);
+        _156 = Vec::<u8>::is_empty(move _157) -> [return: bb93, unwind: bb129];
+    }
+
+    bb93: {
+        _155 = Not(move _156);
+        switchInt(move _155) -> [0: bb95, otherwise: bb94];
+    }
+
+    bb94: {
+        _158 = core::panicking::panic(const "assertion failed: output.stdout.is_empty()") -> bb129;
+    }
+
+    bb95: {
+        _160 = AtomicUsize::new(const 0_usize) -> [return: bb96, unwind: bb129];
+    }
+
+    bb96: {
+        _159 = Arc::<AtomicUsize>::new(move _160) -> [return: bb97, unwind: bb129];
+    }
+
+    bb97: {
+        _162 = &_159;
+        _161 = <Arc<AtomicUsize> as Clone>::clone(move _162) -> [return: bb98, unwind: bb128];
+    }
+
+    bb98: {
+        _203 = const true;
+        _171 = &_59;
+        _170 = Command::new::<&PathBuf>(move _171) -> [return: bb99, unwind: bb144];
+    }
+
+    bb99: {
+        _169 = &mut _170;
+        _168 = Command::arg::<&str>(move _169, const "empty") -> [return: bb100, unwind: bb127];
+    }
+
+    bb100: {
+        _167 = _168;
+        _203 = const false;
+        _172 = [closure@ui/command/command-pre-exec.rs:95:23: 95:30] { mem2: move _161 };
+        _166 = <Command as std::os::unix::process::CommandExt>::pre_exec::<[closure@ui/command/command-pre-exec.rs:95:23: 95:30]>(move _167, move _172) -> [return: bb101, unwind: bb127];
+    }
+
+    bb101: {
+        _165 = _166;
+        _164 = Command::output(move _165) -> [return: bb102, unwind: bb127];
+    }
+
+    bb102: {
+        _163 = Result::<Output, std::io::Error>::unwrap(move _164) -> [return: bb103, unwind: bb127];
+    }
+
+    bb103: {
+        drop(_170) -> [return: bb104, unwind: bb126];
+    }
+
+    bb104: {
+        _175 = &(_163.0: std::process::ExitStatus);
+        _174 = ExitStatus::success(move _175) -> [return: bb105, unwind: bb126];
+    }
+
+    bb105: {
+        _173 = Not(move _174);
+        switchInt(move _173) -> [0: bb107, otherwise: bb106];
+    }
+
+    bb106: {
+        _176 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb126;
+    }
+
+    bb107: {
+        _179 = &(_163.2: std::vec::Vec<u8>);
+        _178 = Vec::<u8>::is_empty(move _179) -> [return: bb108, unwind: bb126];
+    }
+
+    bb108: {
+        _177 = Not(move _178);
+        switchInt(move _177) -> [0: bb110, otherwise: bb109];
+    }
+
+    bb109: {
+        _180 = core::panicking::panic(const "assertion failed: output.stderr.is_empty()") -> bb126;
+    }
+
+    bb110: {
+        _183 = &(_163.1: std::vec::Vec<u8>);
+        _182 = Vec::<u8>::is_empty(move _183) -> [return: bb111, unwind: bb126];
+    }
+
+    bb111: {
+        _181 = Not(move _182);
+        switchInt(move _181) -> [0: bb113, otherwise: bb112];
+    }
+
+    bb112: {
+        _184 = core::panicking::panic(const "assertion failed: output.stdout.is_empty()") -> bb126;
+    }
+
+    bb113: {
+        _190 = &_159;
+        _189 = <Arc<AtomicUsize> as Deref>::deref(move _190) -> [return: bb114, unwind: bb126];
+    }
+
+    bb114: {
+        _188 = _189;
+        _191 = SeqCst;
+        _187 = AtomicUsize::load(move _188, move _191) -> [return: bb115, unwind: bb126];
+    }
+
+    bb115: {
+        _186 = &_187;
+        _193 = const 0_usize;
+        _192 = &_193;
+        _185 = (move _186, move _192);
+        _194 = (_185.0: &usize);
+        _195 = (_185.1: &usize);
+        _198 = (*_194);
+        _199 = (*_195);
+        _197 = Eq(move _198, move _199);
+        _196 = Not(move _197);
+        switchInt(move _196) -> [0: bb117, otherwise: bb116];
+    }
+
+    bb116: {
+        _200 = core::panicking::AssertKind::Eq;
+        _202 = Option::<Arguments<'_>>::None;
+        _201 = core::panicking::assert_failed::<usize, usize>(move _200, _194, _195, move _202) -> bb126;
+    }
+
+    bb117: {
+        drop(_163) -> [return: bb118, unwind: bb144];
+    }
+
+    bb118: {
+        _203 = const false;
+        drop(_159) -> [return: bb119, unwind: bb129];
+    }
+
+    bb119: {
+        drop(_137) -> [return: bb120, unwind: bb131];
+    }
+
+    bb120: {
+        drop(_110) -> [return: bb121, unwind: bb133];
+    }
+
+    bb121: {
+        drop(_89) -> [return: bb122, unwind: bb135];
+    }
+
+    bb122: {
+        drop(_61) -> [return: bb123, unwind: bb137];
+    }
+
+    bb123: {
+        drop(_59) -> bb125;
+    }
+
+    bb124: {
+        drop(_3) -> bb125;
+    }
+
+    bb125: {
+        return;
+    }
+
+    bb126 (cleanup): {
+        drop(_163) -> [return: bb144, unwind terminate];
+    }
+
+    bb127 (cleanup): {
+        drop(_170) -> [return: bb144, unwind terminate];
+    }
+
+    bb128 (cleanup): {
+        drop(_159) -> [return: bb129, unwind terminate];
+    }
+
+    bb129 (cleanup): {
+        drop(_137) -> [return: bb131, unwind terminate];
+    }
+
+    bb130 (cleanup): {
+        drop(_144) -> [return: bb131, unwind terminate];
+    }
+
+    bb131 (cleanup): {
+        drop(_110) -> [return: bb133, unwind terminate];
+    }
+
+    bb132 (cleanup): {
+        drop(_117) -> [return: bb133, unwind terminate];
+    }
+
+    bb133 (cleanup): {
+        drop(_89) -> [return: bb135, unwind terminate];
+    }
+
+    bb134 (cleanup): {
+        drop(_96) -> [return: bb135, unwind terminate];
+    }
+
+    bb135 (cleanup): {
+        drop(_61) -> [return: bb137, unwind terminate];
+    }
+
+    bb136 (cleanup): {
+        drop(_68) -> [return: bb137, unwind terminate];
+    }
+
+    bb137 (cleanup): {
+        drop(_59) -> [return: bb142, unwind terminate];
+    }
+
+    bb138 (cleanup): {
+        drop(_38) -> [return: bb140, unwind terminate];
+    }
+
+    bb139 (cleanup): {
+        drop(_20) -> [return: bb140, unwind terminate];
+    }
+
+    bb140 (cleanup): {
+        drop(_5) -> [return: bb141, unwind terminate];
+    }
+
+    bb141 (cleanup): {
+        drop(_3) -> [return: bb142, unwind terminate];
+    }
+
+    bb142 (cleanup): {
+        resume;
+    }
+
+    bb143 (cleanup): {
+        drop(_161) -> [return: bb128, unwind terminate];
+    }
+
+    bb144 (cleanup): {
+        switchInt(_203) -> [0: bb128, otherwise: bb143];
+    }
+
+    bb145: {
+        goto -> bb32;
+    }
+}
+
+alloc1 (size: 13, align: 1) {
+    68 65 6c 6c 6f 0a 68 65 6c 6c 6f 32 0a          │ hello.hello2.
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/command/command-pre-exec.rs:38:23: 38:25]) -> Result<(), std::io::Error> {
+    let mut _0: std::result::Result<(), std::io::Error>;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+
+    bb0: {
+        _6 = [const "hello\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_const(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = _print(move _3) -> bb2;
+    }
+
+    bb2: {
+        _0 = Result::<(), std::io::Error>::Ok(const ());
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/command/command-pre-exec.rs:52:23: 52:25]) -> Result<(), std::io::Error> {
+    let mut _0: std::result::Result<(), std::io::Error>;
+    let _2: ();
+    let mut _3: std::result::Result<(), std::io::Error>;
+
+    bb0: {
+        _3 = set_current_dir::<&str>(const "/") -> bb1;
+    }
+
+    bb1: {
+        _2 = Result::<(), std::io::Error>::unwrap(move _3) -> bb2;
+    }
+
+    bb2: {
+        _0 = Result::<(), std::io::Error>::Ok(const ());
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/command/command-pre-exec.rs:66:23: 66:25]) -> Result<(), std::io::Error> {
+    let mut _0: std::result::Result<(), std::io::Error>;
+    let mut _2: std::io::Error;
+
+    bb0: {
+        _2 = std::io::Error::from_raw_os_error(const 102_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Result::<(), std::io::Error>::Err(move _2);
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &mut [closure@ui/command/command-pre-exec.rs:77:23: 77:30]) -> Result<(), std::io::Error> {
+    debug pid => ((*_1).0: i32);
+    let mut _0: std::result::Result<(), std::io::Error>;
+    let _2: i32;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: i32;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: i32;
+    let mut _10: i32;
+    let mut _11: !;
+    scope 1 {
+        debug child => _2;
+    }
+
+    bb0: {
+        _2 = getpid() -> bb1;
+    }
+
+    bb1: {
+        _5 = _2;
+        _4 = Ge(move _5, const 0_i32);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = core::panicking::panic(const "assertion failed: child >= 0");
+    }
+
+    bb3: {
+        _9 = ((*_1).0: i32);
+        _10 = _2;
+        _8 = Ne(move _9, move _10);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _11 = core::panicking::panic(const "assertion failed: pid != child");
+    }
+
+    bb5: {
+        _0 = Result::<(), std::io::Error>::Ok(const ());
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &mut [closure@ui/command/command-pre-exec.rs:95:23: 95:30]) -> Result<(), std::io::Error> {
+    debug mem2 => ((*_1).0: std::sync::Arc<std::sync::atomic::AtomicUsize>);
+    let mut _0: std::result::Result<(), std::io::Error>;
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: &std::sync::atomic::AtomicUsize;
+    let _6: &std::sync::atomic::AtomicUsize;
+    let mut _7: &std::sync::Arc<std::sync::atomic::AtomicUsize>;
+    let mut _8: std::sync::atomic::Ordering;
+    let mut _9: &usize;
+    let _10: usize;
+    let _11: &usize;
+    let _12: &usize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: usize;
+    let mut _16: usize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _11;
+        debug right_val => _12;
+        let _17: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _17;
+        }
+    }
+
+    bb0: {
+        _7 = &((*_1).0: std::sync::Arc<std::sync::atomic::AtomicUsize>);
+        _6 = <Arc<AtomicUsize> as Deref>::deref(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = _6;
+        _8 = SeqCst;
+        _4 = AtomicUsize::fetch_add(move _5, const 1_usize, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _10 = const 0_usize;
+        _9 = &_10;
+        _2 = (move _3, move _9);
+        _11 = (_2.0: &usize);
+        _12 = (_2.1: &usize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<usize, usize>(move _17, _11, _12, move _19);
+    }
+
+    bb4: {
+        _0 = Result::<(), std::io::Error>::Ok(const ());
+        return;
+    }
+}

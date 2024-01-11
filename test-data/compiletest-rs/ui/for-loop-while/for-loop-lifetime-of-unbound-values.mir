@@ -1,0 +1,368 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/for-loop-while/for-loop-lifetime-of-unbound-values.rs:11:1: 11:27>::drop(_1: &mut Flag<'_>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: &std::cell::Cell<bool>;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &std::cell::Cell<bool>);
+        _0 = Cell::<bool>::set(_2, const false) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::cell::Cell<bool>;
+    let mut _2: std::iter::Once<Flag<'_>>;
+    let mut _3: std::iter::Once<Flag<'_>>;
+    let mut _4: Flag<'_>;
+    let _5: &std::cell::Cell<bool>;
+    let mut _7: std::option::Option<Flag<'_>>;
+    let mut _8: &mut std::iter::Once<Flag<'_>>;
+    let mut _9: isize;
+    let mut _11: (&bool, &bool);
+    let mut _12: &bool;
+    let _13: bool;
+    let mut _14: &std::cell::Cell<bool>;
+    let mut _15: &bool;
+    let _16: bool;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: bool;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _26: (&bool, &bool);
+    let mut _27: &bool;
+    let _28: bool;
+    let mut _29: &std::cell::Cell<bool>;
+    let mut _30: &bool;
+    let _31: bool;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: bool;
+    let mut _37: bool;
+    let _39: !;
+    let mut _40: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _42: std::iter::Once<Flag<'_>>;
+    let mut _43: std::iter::Once<Flag<'_>>;
+    let mut _44: Flag<'_>;
+    let _45: &std::cell::Cell<bool>;
+    let mut _47: std::option::Option<Flag<'_>>;
+    let mut _48: &mut std::iter::Once<Flag<'_>>;
+    let mut _49: isize;
+    let mut _50: (&bool, &bool);
+    let mut _51: &bool;
+    let _52: bool;
+    let mut _53: &std::cell::Cell<bool>;
+    let mut _54: &bool;
+    let _55: bool;
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: bool;
+    let mut _61: bool;
+    let _63: !;
+    let mut _64: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _65: (&bool, &bool);
+    let mut _66: &bool;
+    let _67: bool;
+    let mut _68: &std::cell::Cell<bool>;
+    let mut _69: &bool;
+    let _70: bool;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: bool;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug alive2 => _1;
+        let mut _6: std::iter::Once<Flag<'_>>;
+        let _32: &bool;
+        let _33: &bool;
+        let _41: std::cell::Cell<bool>;
+        scope 2 {
+            debug iter => _6;
+            let _10: Flag<'_>;
+            scope 3 {
+                debug _i => _10;
+                let _17: &bool;
+                let _18: &bool;
+                scope 4 {
+                    debug left_val => _17;
+                    debug right_val => _18;
+                    let _23: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _23;
+                    }
+                }
+            }
+        }
+        scope 6 {
+            debug left_val => _32;
+            debug right_val => _33;
+            let _38: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _38;
+            }
+        }
+        scope 8 {
+            debug alive => _41;
+            let mut _46: std::iter::Once<Flag<'_>>;
+            let _71: &bool;
+            let _72: &bool;
+            scope 9 {
+                debug iter => _46;
+                let _56: &bool;
+                let _57: &bool;
+                scope 10 {
+                    debug left_val => _56;
+                    debug right_val => _57;
+                    let _62: core::panicking::AssertKind;
+                    scope 11 {
+                        debug kind => _62;
+                    }
+                }
+            }
+            scope 12 {
+                debug left_val => _71;
+                debug right_val => _72;
+                let _77: core::panicking::AssertKind;
+                scope 13 {
+                    debug kind => _77;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Cell::<bool>::new(const true) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_1;
+        _4 = Flag::<'_>(_5);
+        _3 = once::<Flag<'_>>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = <std::iter::Once<Flag<'_>> as IntoIterator>::into_iter(move _3) -> bb3;
+    }
+
+    bb3: {
+        _6 = move _2;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _8 = &mut _6;
+        _7 = <std::iter::Once<Flag<'_>> as Iterator>::next(_8) -> [return: bb5, unwind: bb34];
+    }
+
+    bb5: {
+        _9 = discriminant(_7);
+        switchInt(move _9) -> [0: bb8, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _10 = move ((_7 as Some).0: Flag<'_>);
+        _14 = &_1;
+        _13 = Cell::<bool>::get(move _14) -> [return: bb9, unwind: bb33];
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        drop(_6) -> bb12;
+    }
+
+    bb9: {
+        _12 = &_13;
+        _16 = const true;
+        _15 = &_16;
+        _11 = (move _12, move _15);
+        _17 = (_11.0: &bool);
+        _18 = (_11.1: &bool);
+        _21 = (*_17);
+        _22 = (*_18);
+        _20 = Eq(move _21, move _22);
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<bool, bool>(move _23, _17, _18, move _25) -> bb33;
+    }
+
+    bb11: {
+        drop(_10) -> [return: bb4, unwind: bb34];
+    }
+
+    bb12: {
+        _29 = &_1;
+        _28 = Cell::<bool>::get(move _29) -> bb13;
+    }
+
+    bb13: {
+        _27 = &_28;
+        _31 = const false;
+        _30 = &_31;
+        _26 = (move _27, move _30);
+        _32 = (_26.0: &bool);
+        _33 = (_26.1: &bool);
+        _36 = (*_32);
+        _37 = (*_33);
+        _35 = Eq(move _36, move _37);
+        _34 = Not(move _35);
+        switchInt(move _34) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _38 = core::panicking::AssertKind::Eq;
+        _40 = Option::<Arguments<'_>>::None;
+        _39 = core::panicking::assert_failed::<bool, bool>(move _38, _32, _33, move _40);
+    }
+
+    bb15: {
+        _41 = Cell::<bool>::new(const true) -> bb16;
+    }
+
+    bb16: {
+        _45 = &_41;
+        _44 = Flag::<'_>(_45);
+        _43 = once::<Flag<'_>>(move _44) -> bb17;
+    }
+
+    bb17: {
+        _42 = <std::iter::Once<Flag<'_>> as IntoIterator>::into_iter(move _43) -> bb18;
+    }
+
+    bb18: {
+        _46 = move _42;
+        goto -> bb19;
+    }
+
+    bb19: {
+        _48 = &mut _46;
+        _47 = <std::iter::Once<Flag<'_>> as Iterator>::next(_48) -> [return: bb20, unwind: bb32];
+    }
+
+    bb20: {
+        _49 = discriminant(_47);
+        switchInt(move _49) -> [0: bb22, 1: bb21, otherwise: bb7];
+    }
+
+    bb21: {
+        _53 = &_41;
+        _52 = Cell::<bool>::get(move _53) -> [return: bb23, unwind: bb31];
+    }
+
+    bb22: {
+        drop(_47) -> [return: bb26, unwind: bb32];
+    }
+
+    bb23: {
+        _51 = &_52;
+        _55 = const true;
+        _54 = &_55;
+        _50 = (move _51, move _54);
+        _56 = (_50.0: &bool);
+        _57 = (_50.1: &bool);
+        _60 = (*_56);
+        _61 = (*_57);
+        _59 = Eq(move _60, move _61);
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _62 = core::panicking::AssertKind::Eq;
+        _64 = Option::<Arguments<'_>>::None;
+        _63 = core::panicking::assert_failed::<bool, bool>(move _62, _56, _57, move _64) -> bb31;
+    }
+
+    bb25: {
+        drop(_47) -> [return: bb19, unwind: bb32];
+    }
+
+    bb26: {
+        drop(_46) -> bb27;
+    }
+
+    bb27: {
+        _68 = &_41;
+        _67 = Cell::<bool>::get(move _68) -> bb28;
+    }
+
+    bb28: {
+        _66 = &_67;
+        _70 = const false;
+        _69 = &_70;
+        _65 = (move _66, move _69);
+        _71 = (_65.0: &bool);
+        _72 = (_65.1: &bool);
+        _75 = (*_71);
+        _76 = (*_72);
+        _74 = Eq(move _75, move _76);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<bool, bool>(move _77, _71, _72, move _79);
+    }
+
+    bb30: {
+        return;
+    }
+
+    bb31 (cleanup): {
+        drop(_47) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_46) -> [return: bb35, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_10) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_6) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        resume;
+    }
+}
+
+fn Flag(_1: &Cell<bool>) -> Flag<'_> {
+    let mut _0: Flag<'_>;
+
+    bb0: {
+        _0 = Flag::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Flag(_1: &Cell<bool>) -> Flag<'_> {
+    let mut _0: Flag<'_>;
+
+    bb0: {
+        _0 = Flag::<'_>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,190 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: &mut [i32];
+    let mut _2: &mut [i32; 3];
+    let mut _3: [i32; 3];
+    let _5: &std::cell::Cell<[i32]>;
+    let _7: &[std::cell::Cell<i32>];
+    let mut _8: (&usize, &usize);
+    let mut _9: &usize;
+    let _10: usize;
+    let mut _11: &usize;
+    let _12: usize;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: usize;
+    let mut _18: usize;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    let _24: &std::cell::Cell<[i32; 3]>;
+    let mut _25: &mut [i32; 3];
+    let _27: &[std::cell::Cell<i32>; 3];
+    let _28: ();
+    let mut _29: &std::cell::Cell<i32>;
+    let _30: usize;
+    let mut _31: usize;
+    let mut _32: bool;
+    let mut _33: (&[i32; 3], &[i32; 3]);
+    let mut _34: &[i32; 3];
+    let mut _35: &[i32; 3];
+    let _36: [i32; 3];
+    let mut _39: bool;
+    let mut _40: bool;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug slice => _1;
+        let _4: &std::cell::Cell<[i32]>;
+        scope 2 {
+            debug cell_slice => _4;
+            let _6: &[std::cell::Cell<i32>];
+            scope 3 {
+                debug slice_cell => _6;
+                let _13: &usize;
+                let _14: &usize;
+                let mut _22: [i32; 3];
+                scope 4 {
+                    debug left_val => _13;
+                    debug right_val => _14;
+                    let _19: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _19;
+                    }
+                }
+                scope 6 {
+                    debug array => _22;
+                    let _23: &std::cell::Cell<[i32; 3]>;
+                    scope 7 {
+                        debug cell_array => _23;
+                        let _26: &[std::cell::Cell<i32>; 3];
+                        scope 8 {
+                            debug array_cell => _26;
+                            let _37: &[i32; 3];
+                            let _38: &[i32; 3];
+                            scope 9 {
+                                debug left_val => _37;
+                                debug right_val => _38;
+                                let _41: core::panicking::AssertKind;
+                                scope 10 {
+                                    debug kind => _41;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 1_i32, const 2_i32, const 3_i32];
+        _2 = &mut _3;
+        _1 = _2 as &mut [i32] (Pointer(Unsize));
+        _5 = Cell::<[i32]>::from_mut(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = _5;
+        _7 = Cell::<[i32]>::as_slice_of_cells(_4) -> bb2;
+    }
+
+    bb2: {
+        _6 = _7;
+        _10 = Len((*_6));
+        _9 = &_10;
+        _12 = const 3_usize;
+        _11 = &_12;
+        _8 = (move _9, move _11);
+        _13 = (_8.0: &usize);
+        _14 = (_8.1: &usize);
+        _17 = (*_13);
+        _18 = (*_14);
+        _16 = Eq(move _17, move _18);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<usize, usize>(move _19, _13, _14, move _21);
+    }
+
+    bb4: {
+        _22 = [const 1_i32, const 2_i32, const 3_i32];
+        _25 = &mut _22;
+        _24 = Cell::<[i32; 3]>::from_mut(_25) -> bb5;
+    }
+
+    bb5: {
+        _23 = _24;
+        _27 = Cell::<[i32; 3]>::as_array_of_cells(_23) -> bb6;
+    }
+
+    bb6: {
+        _26 = _27;
+        _30 = const 0_usize;
+        _31 = const 3_usize;
+        _32 = Lt(_30, _31);
+        assert(move _32, "index out of bounds: the length is {} but the index is {}", move _31, _30) -> bb7;
+    }
+
+    bb7: {
+        _29 = &(*_26)[_30];
+        _28 = Cell::<i32>::set(move _29, const 99_i32) -> bb8;
+    }
+
+    bb8: {
+        _34 = &_22;
+        _36 = [const 99_i32, const 2_i32, const 3_i32];
+        _35 = &_36;
+        _33 = (move _34, move _35);
+        _37 = (_33.0: &[i32; 3]);
+        _38 = (_33.1: &[i32; 3]);
+        _40 = <[i32; 3] as PartialEq>::eq(_37, _38) -> bb9;
+    }
+
+    bb9: {
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<[i32; 3], [i32; 3]>(move _41, _37, _38, move _43);
+    }
+
+    bb11: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}

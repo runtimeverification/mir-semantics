@@ -1,0 +1,132 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<f64>;
+    let mut _2: std::boxed::Box<[f64]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[f64; 5]>;
+    let mut _7: std::slice::Iter<'_, f64>;
+    let mut _8: &std::vec::Vec<f64>;
+    let mut _10: std::option::Option<&f64>;
+    let mut _11: &mut std::slice::Iter<'_, f64>;
+    let mut _12: isize;
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 2];
+    let _18: [&str; 2];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 1];
+    let _21: [core::fmt::rt::Argument<'_>; 1];
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let mut _23: *const [f64; 5];
+    let mut _24: *const ();
+    let mut _25: usize;
+    let mut _26: usize;
+    let mut _27: usize;
+    let mut _28: usize;
+    let mut _29: bool;
+    scope 1 {
+        debug v => _1;
+        let mut _9: std::slice::Iter<'_, f64>;
+        scope 3 {
+            debug iter => _9;
+            let _13: &f64;
+            scope 4 {
+                debug i => _13;
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([f64; 5]);
+        _4 = AlignOf([f64; 5]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [f64; 5]);
+        _23 = (((_6.0: std::ptr::Unique<[f64; 5]>).0: std::ptr::NonNull<[f64; 5]>).0: *const [f64; 5]);
+        _24 = _23 as *const () (PtrToPtr);
+        _25 = _24 as usize (Transmute);
+        _26 = AlignOf(f64);
+        _27 = Sub(_26, const 1_usize);
+        _28 = BitAnd(_25, _27);
+        _29 = Eq(_28, const 0_usize);
+        assert(_29, "misaligned pointer dereference: address must be a multiple of {} but is {}", _26, _25) -> [success: bb14, unwind unreachable];
+    }
+
+    bb2: {
+        _8 = &_1;
+        _7 = <&Vec<f64> as IntoIterator>::into_iter(move _8) -> [return: bb3, unwind: bb12];
+    }
+
+    bb3: {
+        _9 = move _7;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _11 = &mut _9;
+        _10 = <std::slice::Iter<'_, f64> as Iterator>::next(_11) -> [return: bb5, unwind: bb12];
+    }
+
+    bb5: {
+        _12 = discriminant(_10);
+        switchInt(move _12) -> [0: bb8, 1: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _13 = ((_10 as Some).0: &f64);
+        _18 = [const "", const "\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _22 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_13) -> [return: bb9, unwind: bb12];
+    }
+
+    bb7: {
+        unreachable;
+    }
+
+    bb8: {
+        drop(_1) -> bb11;
+    }
+
+    bb9: {
+        _21 = [move _22];
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> [return: bb10, unwind: bb12];
+    }
+
+    bb10: {
+        _14 = _print(move _15) -> [return: bb15, unwind: bb12];
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14: {
+        (*_23) = [const -1f64, const 0f64, const 1f64, const 2f64, const 3f64];
+        _2 = move _6 as std::boxed::Box<[f64]> (Pointer(Unsize));
+        _1 = slice::<impl [f64]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+
+    bb15: {
+        goto -> bb4;
+    }
+}

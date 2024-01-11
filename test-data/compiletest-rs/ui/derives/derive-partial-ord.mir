@@ -1,0 +1,780 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/derives/derive-partial-ord.rs:6:10: 6:19>::eq(_1: &P, _2: &P) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: f64;
+    let mut _5: f64;
+    let mut _6: bool;
+    let mut _7: f64;
+    let mut _8: f64;
+
+    bb0: {
+        _4 = ((*_1).0: f64);
+        _5 = ((*_2).0: f64);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: f64);
+        _8 = ((*_2).1: f64);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-partial-ord.rs:6:21: 6:31>::partial_cmp(_1: &P, _2: &P) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: std::option::Option<std::cmp::Ordering>;
+    let _4: &f64;
+    let _5: &f64;
+    let mut _6: i8;
+    let mut _7: isize;
+    let _8: &f64;
+    let _9: &f64;
+    let _10: std::option::Option<std::cmp::Ordering>;
+    scope 1 {
+        debug cmp => _10;
+    }
+
+    bb0: {
+        _4 = &((*_1).0: f64);
+        _5 = &((*_2).0: f64);
+        _3 = <f64 as PartialOrd>::partial_cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = discriminant(_3);
+        switchInt(move _7) -> [1: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = _3;
+        _0 = _10;
+        goto -> bb5;
+    }
+
+    bb3: {
+        _6 = discriminant(((_3 as Some).0: std::cmp::Ordering));
+        switchInt(move _6) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb4: {
+        _8 = &((*_1).1: f64);
+        _9 = &((*_2).1: f64);
+        _0 = <f64 as PartialOrd>::partial_cmp(_8, _9) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &[f64];
+    let _2: &[f64; 3];
+    let _3: [f64; 3];
+    let mut _4: std::slice::Iter<'_, f64>;
+    let mut _6: std::option::Option<&f64>;
+    let mut _7: &mut std::slice::Iter<'_, f64>;
+    let mut _8: isize;
+    let mut _10: std::slice::Iter<'_, f64>;
+    let mut _12: std::option::Option<&f64>;
+    let mut _13: &mut std::slice::Iter<'_, f64>;
+    let mut _14: isize;
+    let mut _16: std::slice::Iter<'_, f64>;
+    let mut _18: std::option::Option<&f64>;
+    let mut _19: &mut std::slice::Iter<'_, f64>;
+    let mut _20: isize;
+    let mut _22: std::slice::Iter<'_, f64>;
+    let mut _24: std::option::Option<&f64>;
+    let mut _25: &mut std::slice::Iter<'_, f64>;
+    let mut _26: isize;
+    let _28: ();
+    let _29: &(f64, f64);
+    let _30: (f64, f64);
+    let mut _31: f64;
+    let mut _32: f64;
+    let _33: &(f64, f64);
+    let _34: (f64, f64);
+    let mut _35: f64;
+    let mut _36: f64;
+    let _37: ();
+    let _38: &P;
+    let _39: P;
+    let mut _40: f64;
+    let mut _41: f64;
+    let _42: &P;
+    let _43: P;
+    let mut _44: f64;
+    let mut _45: f64;
+    let mut _46: (&std::option::Option<std::cmp::Ordering>, &std::option::Option<std::cmp::Ordering>);
+    let mut _47: &std::option::Option<std::cmp::Ordering>;
+    let _48: std::option::Option<std::cmp::Ordering>;
+    let _49: &(f64, f64);
+    let _50: (f64, f64);
+    let mut _51: f64;
+    let mut _52: f64;
+    let _53: &(f64, f64);
+    let _54: (f64, f64);
+    let mut _55: f64;
+    let mut _56: f64;
+    let mut _57: &std::option::Option<std::cmp::Ordering>;
+    let _58: std::option::Option<std::cmp::Ordering>;
+    let _59: &P;
+    let _60: P;
+    let mut _61: f64;
+    let mut _62: f64;
+    let _63: &P;
+    let _64: P;
+    let mut _65: f64;
+    let mut _66: f64;
+    let mut _69: bool;
+    let mut _70: bool;
+    let _72: !;
+    let mut _73: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug values => _1;
+        let mut _5: std::slice::Iter<'_, f64>;
+        scope 2 {
+            debug iter => _5;
+            let _9: &f64;
+            scope 3 {
+                debug a => _9;
+                let mut _11: std::slice::Iter<'_, f64>;
+                scope 4 {
+                    debug iter => _11;
+                    let _15: &f64;
+                    scope 5 {
+                        debug b => _15;
+                        let mut _17: std::slice::Iter<'_, f64>;
+                        scope 6 {
+                            debug iter => _17;
+                            let _21: &f64;
+                            scope 7 {
+                                debug c => _21;
+                                let mut _23: std::slice::Iter<'_, f64>;
+                                scope 8 {
+                                    debug iter => _23;
+                                    let _27: &f64;
+                                    scope 9 {
+                                        debug d => _27;
+                                        let _67: &std::option::Option<std::cmp::Ordering>;
+                                        let _68: &std::option::Option<std::cmp::Ordering>;
+                                        scope 10 {
+                                            debug left_val => _67;
+                                            debug right_val => _68;
+                                            let _71: core::panicking::AssertKind;
+                                            scope 11 {
+                                                debug kind => _71;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 1f64, const 2f64, const _];
+        _2 = &_3;
+        _1 = _2 as &[f64] (Pointer(Unsize));
+        _4 = <&[f64] as IntoIterator>::into_iter(_1) -> bb1;
+    }
+
+    bb1: {
+        _5 = move _4;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _5;
+        _6 = <std::slice::Iter<'_, f64> as Iterator>::next(_7) -> bb3;
+    }
+
+    bb3: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _9 = ((_6 as Some).0: &f64);
+        _10 = <&[f64] as IntoIterator>::into_iter(_1) -> bb7;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        _11 = move _10;
+        goto -> bb8;
+    }
+
+    bb8: {
+        _13 = &mut _11;
+        _12 = <std::slice::Iter<'_, f64> as Iterator>::next(_13) -> bb9;
+    }
+
+    bb9: {
+        _14 = discriminant(_12);
+        switchInt(move _14) -> [0: bb2, 1: bb10, otherwise: bb5];
+    }
+
+    bb10: {
+        _15 = ((_12 as Some).0: &f64);
+        _16 = <&[f64] as IntoIterator>::into_iter(_1) -> bb11;
+    }
+
+    bb11: {
+        _17 = move _16;
+        goto -> bb12;
+    }
+
+    bb12: {
+        _19 = &mut _17;
+        _18 = <std::slice::Iter<'_, f64> as Iterator>::next(_19) -> bb13;
+    }
+
+    bb13: {
+        _20 = discriminant(_18);
+        switchInt(move _20) -> [0: bb8, 1: bb14, otherwise: bb5];
+    }
+
+    bb14: {
+        _21 = ((_18 as Some).0: &f64);
+        _22 = <&[f64] as IntoIterator>::into_iter(_1) -> bb15;
+    }
+
+    bb15: {
+        _23 = move _22;
+        goto -> bb16;
+    }
+
+    bb16: {
+        _25 = &mut _23;
+        _24 = <std::slice::Iter<'_, f64> as Iterator>::next(_25) -> bb17;
+    }
+
+    bb17: {
+        _26 = discriminant(_24);
+        switchInt(move _26) -> [0: bb12, 1: bb18, otherwise: bb5];
+    }
+
+    bb18: {
+        _27 = ((_24 as Some).0: &f64);
+        _31 = (*_9);
+        _32 = (*_15);
+        _30 = (move _31, move _32);
+        _29 = &_30;
+        _35 = (*_21);
+        _36 = (*_27);
+        _34 = (move _35, move _36);
+        _33 = &_34;
+        _28 = check::<(f64, f64)>(_29, _33) -> bb19;
+    }
+
+    bb19: {
+        _40 = (*_9);
+        _41 = (*_15);
+        _39 = P(move _40, move _41);
+        _38 = &_39;
+        _44 = (*_21);
+        _45 = (*_27);
+        _43 = P(move _44, move _45);
+        _42 = &_43;
+        _37 = check::<P>(_38, _42) -> bb20;
+    }
+
+    bb20: {
+        _51 = (*_9);
+        _52 = (*_15);
+        _50 = (move _51, move _52);
+        _49 = &_50;
+        _55 = (*_21);
+        _56 = (*_27);
+        _54 = (move _55, move _56);
+        _53 = &_54;
+        _48 = <(f64, f64) as PartialOrd>::partial_cmp(_49, _53) -> bb21;
+    }
+
+    bb21: {
+        _47 = &_48;
+        _61 = (*_9);
+        _62 = (*_15);
+        _60 = P(move _61, move _62);
+        _59 = &_60;
+        _65 = (*_21);
+        _66 = (*_27);
+        _64 = P(move _65, move _66);
+        _63 = &_64;
+        _58 = <P as PartialOrd>::partial_cmp(_59, _63) -> bb22;
+    }
+
+    bb22: {
+        _57 = &_58;
+        _46 = (move _47, move _57);
+        _67 = (_46.0: &std::option::Option<std::cmp::Ordering>);
+        _68 = (_46.1: &std::option::Option<std::cmp::Ordering>);
+        _70 = <Option<std::cmp::Ordering> as PartialEq>::eq(_67, _68) -> bb23;
+    }
+
+    bb23: {
+        _69 = Not(move _70);
+        switchInt(move _69) -> [0: bb16, otherwise: bb24];
+    }
+
+    bb24: {
+        _71 = core::panicking::AssertKind::Eq;
+        _73 = Option::<Arguments<'_>>::None;
+        _72 = core::panicking::assert_failed::<Option<std::cmp::Ordering>, Option<std::cmp::Ordering>>(move _71, _67, _68, move _73);
+    }
+}
+
+fn check(_1: &T, _2: &T) -> () {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: ();
+    let mut _3: std::option::Option<std::cmp::Ordering>;
+    let mut _4: &T;
+    let mut _5: i8;
+    let mut _6: isize;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: &&T;
+    let mut _11: &&T;
+    let _12: &T;
+    let mut _13: !;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: &&T;
+    let mut _18: &&T;
+    let _19: &T;
+    let mut _20: !;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: &&T;
+    let mut _25: &&T;
+    let _26: &T;
+    let mut _27: !;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: &&T;
+    let mut _32: &&T;
+    let _33: &T;
+    let mut _34: !;
+    let mut _35: bool;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: &&T;
+    let mut _39: &&T;
+    let _40: &T;
+    let mut _41: !;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: &&T;
+    let mut _45: &&T;
+    let _46: &T;
+    let mut _47: !;
+    let mut _48: bool;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: &&T;
+    let mut _52: &&T;
+    let _53: &T;
+    let mut _54: !;
+    let mut _55: bool;
+    let mut _56: bool;
+    let mut _57: &&T;
+    let mut _58: &&T;
+    let _59: &T;
+    let mut _60: !;
+    let mut _61: bool;
+    let mut _62: bool;
+    let mut _63: &&T;
+    let mut _64: &&T;
+    let _65: &T;
+    let mut _66: !;
+    let mut _67: bool;
+    let mut _68: bool;
+    let mut _69: &&T;
+    let mut _70: &&T;
+    let _71: &T;
+    let mut _72: !;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: bool;
+    let mut _76: &&T;
+    let mut _77: &&T;
+    let _78: &T;
+    let mut _79: !;
+    let mut _80: bool;
+    let mut _81: bool;
+    let mut _82: bool;
+    let mut _83: &&T;
+    let mut _84: &&T;
+    let _85: &T;
+    let mut _86: !;
+    let mut _87: bool;
+    let mut _88: bool;
+    let mut _89: bool;
+    let mut _90: &&T;
+    let mut _91: &&T;
+    let _92: &T;
+    let mut _93: !;
+    let mut _94: bool;
+    let mut _95: bool;
+    let mut _96: bool;
+    let mut _97: &&T;
+    let mut _98: &&T;
+    let _99: &T;
+    let mut _100: !;
+    let mut _101: bool;
+    let mut _102: bool;
+    let mut _103: &&T;
+    let mut _104: &&T;
+    let _105: &T;
+    let mut _106: !;
+    let mut _107: bool;
+    let mut _108: bool;
+    let mut _109: &&T;
+    let mut _110: &&T;
+    let _111: &T;
+    let mut _112: !;
+
+    bb0: {
+        _4 = _1;
+        _3 = <T as PartialOrd>::partial_cmp(move _4, _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = discriminant(_3);
+        switchInt(move _6) -> [0: bb5, 1: bb2, otherwise: bb4];
+    }
+
+    bb2: {
+        _5 = discriminant(((_3 as Some).0: std::cmp::Ordering));
+        switchInt(move _5) -> [255: bb29, 0: bb17, 1: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        _90 = &_1;
+        _92 = _2;
+        _91 = &_92;
+        _89 = <&T as PartialOrd>::lt(move _90, move _91) -> bb41;
+    }
+
+    bb4: {
+        unreachable;
+    }
+
+    bb5: {
+        _10 = &_1;
+        _12 = _2;
+        _11 = &_12;
+        _9 = <&T as PartialOrd>::lt(move _10, move _11) -> bb6;
+    }
+
+    bb6: {
+        _8 = Not(move _9);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _13 = core::panicking::panic(const "assertion failed: !(a < b)");
+    }
+
+    bb8: {
+        _17 = &_1;
+        _19 = _2;
+        _18 = &_19;
+        _16 = <&T as PartialOrd>::le(move _17, move _18) -> bb9;
+    }
+
+    bb9: {
+        _15 = Not(move _16);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _20 = core::panicking::panic(const "assertion failed: !(a <= b)");
+    }
+
+    bb11: {
+        _24 = &_1;
+        _26 = _2;
+        _25 = &_26;
+        _23 = <&T as PartialOrd>::gt(move _24, move _25) -> bb12;
+    }
+
+    bb12: {
+        _22 = Not(move _23);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _27 = core::panicking::panic(const "assertion failed: !(a > b)");
+    }
+
+    bb14: {
+        _31 = &_1;
+        _33 = _2;
+        _32 = &_33;
+        _30 = <&T as PartialOrd>::ge(move _31, move _32) -> bb15;
+    }
+
+    bb15: {
+        _29 = Not(move _30);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb52, otherwise: bb16];
+    }
+
+    bb16: {
+        _34 = core::panicking::panic(const "assertion failed: !(a >= b)");
+    }
+
+    bb17: {
+        _38 = &_1;
+        _40 = _2;
+        _39 = &_40;
+        _37 = <&T as PartialOrd>::lt(move _38, move _39) -> bb18;
+    }
+
+    bb18: {
+        _36 = Not(move _37);
+        _35 = Not(move _36);
+        switchInt(move _35) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _41 = core::panicking::panic(const "assertion failed: !(a < b)");
+    }
+
+    bb20: {
+        _44 = &_1;
+        _46 = _2;
+        _45 = &_46;
+        _43 = <&T as PartialOrd>::le(move _44, move _45) -> bb21;
+    }
+
+    bb21: {
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _47 = core::panicking::panic(const "assertion failed: a <= b");
+    }
+
+    bb23: {
+        _51 = &_1;
+        _53 = _2;
+        _52 = &_53;
+        _50 = <&T as PartialOrd>::gt(move _51, move _52) -> bb24;
+    }
+
+    bb24: {
+        _49 = Not(move _50);
+        _48 = Not(move _49);
+        switchInt(move _48) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _54 = core::panicking::panic(const "assertion failed: !(a > b)");
+    }
+
+    bb26: {
+        _57 = &_1;
+        _59 = _2;
+        _58 = &_59;
+        _56 = <&T as PartialOrd>::ge(move _57, move _58) -> bb27;
+    }
+
+    bb27: {
+        _55 = Not(move _56);
+        switchInt(move _55) -> [0: bb52, otherwise: bb28];
+    }
+
+    bb28: {
+        _60 = core::panicking::panic(const "assertion failed: a >= b");
+    }
+
+    bb29: {
+        _63 = &_1;
+        _65 = _2;
+        _64 = &_65;
+        _62 = <&T as PartialOrd>::lt(move _63, move _64) -> bb30;
+    }
+
+    bb30: {
+        _61 = Not(move _62);
+        switchInt(move _61) -> [0: bb32, otherwise: bb31];
+    }
+
+    bb31: {
+        _66 = core::panicking::panic(const "assertion failed: a < b");
+    }
+
+    bb32: {
+        _69 = &_1;
+        _71 = _2;
+        _70 = &_71;
+        _68 = <&T as PartialOrd>::le(move _69, move _70) -> bb33;
+    }
+
+    bb33: {
+        _67 = Not(move _68);
+        switchInt(move _67) -> [0: bb35, otherwise: bb34];
+    }
+
+    bb34: {
+        _72 = core::panicking::panic(const "assertion failed: a <= b");
+    }
+
+    bb35: {
+        _76 = &_1;
+        _78 = _2;
+        _77 = &_78;
+        _75 = <&T as PartialOrd>::gt(move _76, move _77) -> bb36;
+    }
+
+    bb36: {
+        _74 = Not(move _75);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _79 = core::panicking::panic(const "assertion failed: !(a > b)");
+    }
+
+    bb38: {
+        _83 = &_1;
+        _85 = _2;
+        _84 = &_85;
+        _82 = <&T as PartialOrd>::ge(move _83, move _84) -> bb39;
+    }
+
+    bb39: {
+        _81 = Not(move _82);
+        _80 = Not(move _81);
+        switchInt(move _80) -> [0: bb52, otherwise: bb40];
+    }
+
+    bb40: {
+        _86 = core::panicking::panic(const "assertion failed: !(a >= b)");
+    }
+
+    bb41: {
+        _88 = Not(move _89);
+        _87 = Not(move _88);
+        switchInt(move _87) -> [0: bb43, otherwise: bb42];
+    }
+
+    bb42: {
+        _93 = core::panicking::panic(const "assertion failed: !(a < b)");
+    }
+
+    bb43: {
+        _97 = &_1;
+        _99 = _2;
+        _98 = &_99;
+        _96 = <&T as PartialOrd>::le(move _97, move _98) -> bb44;
+    }
+
+    bb44: {
+        _95 = Not(move _96);
+        _94 = Not(move _95);
+        switchInt(move _94) -> [0: bb46, otherwise: bb45];
+    }
+
+    bb45: {
+        _100 = core::panicking::panic(const "assertion failed: !(a <= b)");
+    }
+
+    bb46: {
+        _103 = &_1;
+        _105 = _2;
+        _104 = &_105;
+        _102 = <&T as PartialOrd>::gt(move _103, move _104) -> bb47;
+    }
+
+    bb47: {
+        _101 = Not(move _102);
+        switchInt(move _101) -> [0: bb49, otherwise: bb48];
+    }
+
+    bb48: {
+        _106 = core::panicking::panic(const "assertion failed: a > b");
+    }
+
+    bb49: {
+        _109 = &_1;
+        _111 = _2;
+        _110 = &_111;
+        _108 = <&T as PartialOrd>::ge(move _109, move _110) -> bb50;
+    }
+
+    bb50: {
+        _107 = Not(move _108);
+        switchInt(move _107) -> [0: bb52, otherwise: bb51];
+    }
+
+    bb51: {
+        _112 = core::panicking::panic(const "assertion failed: a >= b");
+    }
+
+    bb52: {
+        return;
+    }
+}
+
+fn P(_1: f64, _2: f64) -> P {
+    let mut _0: P;
+
+    bb0: {
+        _0 = P(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn P(_1: f64, _2: f64) -> P {
+    let mut _0: P;
+
+    bb0: {
+        _0 = P(move _1, move _2);
+        return;
+    }
+}

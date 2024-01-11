@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn write() -> () {
+    let mut _0: ();
+    let mut _1: impl FnOnce();
+
+    bb0: {
+        _1 = create() -> bb1;
+    }
+
+    bb1: {
+        _0 = <impl FnOnce() as FnOnce<()>>::call_once(const ZeroSized: impl FnOnce(), const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn create() -> impl FnOnce() {
+    let mut _0: impl FnOnce();
+
+    bb0: {
+        return;
+    }
+}
+
+fn create::{closure#0}(_1: [closure@ui/mir/mir-inlining/ice-issue-77306-1.rs:12:4: 12:6]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = write() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,174 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/arbitrary_self_types_struct.rs:10:1: 10:9>::x(_1: &Rc<Foo>) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+    let mut _2: &Foo;
+
+    bb0: {
+        _2 = <Rc<Foo> as Deref>::deref(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = ((*_2).0: i32);
+        return;
+    }
+}
+
+fn <impl at ui/self/arbitrary_self_types_struct.rs:10:1: 10:9>::y(_1: Rc<Foo>) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+    let mut _2: &Foo;
+    let mut _3: &std::rc::Rc<Foo>;
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Rc<Foo> as Deref>::deref(move _3) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = ((*_2).1: i32);
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::rc::Rc<Foo>;
+    let mut _2: Foo;
+    let mut _3: (&i32, &i32);
+    let mut _4: &i32;
+    let _5: i32;
+    let mut _6: &i32;
+    let _7: i32;
+    let mut _8: &std::rc::Rc<Foo>;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: i32;
+    let mut _14: i32;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&i32, &i32);
+    let mut _19: &i32;
+    let _20: i32;
+    let mut _21: &i32;
+    let _22: i32;
+    let mut _23: std::rc::Rc<Foo>;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: i32;
+    let mut _29: i32;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: bool;
+    scope 1 {
+        debug foo => _1;
+        let _9: &i32;
+        let _10: &i32;
+        let _24: &i32;
+        let _25: &i32;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+        scope 4 {
+            debug left_val => _24;
+            debug right_val => _25;
+            let _30: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _30;
+            }
+        }
+    }
+
+    bb0: {
+        _33 = const false;
+        _2 = Foo { x: const 3_i32, y: const 4_i32 };
+        _33 = const true;
+        _1 = Rc::<Foo>::new(move _2) -> bb1;
+    }
+
+    bb1: {
+        _5 = const 3_i32;
+        _4 = &_5;
+        _8 = &_1;
+        _7 = Foo::x(move _8) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _6 = &_7;
+        _3 = (move _4, move _6);
+        _9 = (_3.0: &i32);
+        _10 = (_3.1: &i32);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<i32, i32>(move _15, _9, _10, move _17) -> bb10;
+    }
+
+    bb4: {
+        _20 = const 4_i32;
+        _19 = &_20;
+        _33 = const false;
+        _23 = move _1;
+        _22 = Foo::y(move _23) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _24 = (_18.0: &i32);
+        _25 = (_18.1: &i32);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<i32, i32>(move _30, _24, _25, move _32) -> bb10;
+    }
+
+    bb7: {
+        _33 = const false;
+        return;
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        switchInt(_33) -> [0: bb8, otherwise: bb9];
+    }
+}

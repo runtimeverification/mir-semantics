@@ -1,0 +1,119 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn nested(_1: t) -> () {
+    debug o => _1;
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: isize;
+    let _4: isize;
+    let _5: ();
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 1];
+    let _9: [&str; 1];
+    let mut _10: !;
+    let _11: ();
+    let mut _12: std::fmt::Arguments<'_>;
+    let mut _13: &[&str];
+    let _14: &[&str; 1];
+    let _15: [&str; 1];
+    scope 1 {
+        debug _i => _4;
+    }
+
+    bb0: {
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _15 = [const "succeeded\n"];
+        _14 = &_15;
+        _13 = _14 as &[&str] (Pointer(Unsize));
+        _12 = Arguments::<'_>::new_const(move _13) -> bb6;
+    }
+
+    bb2: {
+        _2 = discriminant(((_1 as bar).1: std::option::Option<isize>));
+        switchInt(move _2) -> [1: bb3, otherwise: bb1];
+    }
+
+    bb3: {
+        _4 = ((_1 as bar).0: isize);
+        _9 = [const "wrong pattern matched\n"];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _6 = Arguments::<'_>::new_const(move _7) -> bb4;
+    }
+
+    bb4: {
+        _5 = _print(move _6) -> bb5;
+    }
+
+    bb5: {
+        _10 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb6: {
+        _11 = _print(move _12) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: t;
+    let mut _3: std::option::Option<isize>;
+
+    bb0: {
+        _3 = Option::<isize>::None;
+        _2 = t::bar(const 1_isize, move _3);
+        _1 = nested(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn t::foo(_1: isize, _2: usize) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::foo(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn t::foo(_1: isize, _2: usize) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::foo(move _1, move _2);
+        return;
+    }
+}
+
+fn t::bar(_1: isize, _2: Option<isize>) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::bar(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn t::bar(_1: isize, _2: Option<isize>) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::bar(move _1, move _2);
+        return;
+    }
+}

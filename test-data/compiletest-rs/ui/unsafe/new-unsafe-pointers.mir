@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: *const isize;
+    scope 1 {
+        debug _a => _1;
+        let _2: *mut isize;
+        scope 2 {
+            debug _a => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 3_usize as *const isize (PointerFromExposedAddress);
+        _2 = const 3_usize as *mut isize (PointerFromExposedAddress);
+        return;
+    }
+}

@@ -1,0 +1,141 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/const-generics/type-dependent/const-arg-in-const-arg.rs:8:1: 8:9>::foo(_1: &Foo) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+    let mut _2: usize;
+    scope 1 {
+        debug f => _1;
+    }
+
+    bb0: {
+        _2 = Foo::bar::<7>(_1) -> bb1;
+    }
+
+    bb1: {
+        _0 = Add(move _2, const N);
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/const-arg-in-const-arg.rs:8:1: 8:9>::foo::{constant#0}: usize = {
+    let mut _0: usize;
+    let _1: Foo;
+    let mut _2: &Foo;
+    scope 1 {
+        debug f => _1;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Foo;
+        StorageLive(_2);
+        _2 = &_1;
+        ConstEvalCounter;
+        _0 = Foo::bar::<7>(move _2) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+<impl at ui/const-generics/type-dependent/const-arg-in-const-arg.rs:8:1: 8:9>::foo::{constant#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 7_usize;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/type-dependent/const-arg-in-const-arg.rs:8:1: 8:9>::bar(_1: &Foo) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/const-generics/type-dependent/const-arg-in-const-arg.rs:8:1: 8:9>::bar(_1: &Foo) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const M;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo;
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: &Foo;
+    let mut _6: &usize;
+    let _7: usize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: usize;
+    let mut _13: usize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug f => const Foo;
+        let _8: &usize;
+        let _9: &usize;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+    }
+
+    bb0: {
+        _5 = &_1;
+        _4 = Foo::foo::<13>(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _7 = const 20_usize;
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _8 = (_2.0: &usize);
+        _9 = (_2.1: &usize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<usize, usize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}

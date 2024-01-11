@@ -1,0 +1,10 @@
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:61:10
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:93:16
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:105:16
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:116:25
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:148:16
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:160:16
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:171:25
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:201:13
+thread 'main' panicked at 'this panic is caught :D', ui/rfcs/rfc1857-drop-order.rs:213:13

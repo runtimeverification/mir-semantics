@@ -1,0 +1,63 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn frob(_1: &str) -> impl Deref<Target = Path> + '_ {
+    debug path => _1;
+    let mut _0: impl std::ops::Deref<Target = std::path::Path> + '_;
+    let mut _2: &std::ffi::OsStr;
+    let _3: &std::ffi::OsStr;
+
+    bb0: {
+        _3 = OsStr::new::<str>(_1) -> bb1;
+    }
+
+    bb1: {
+        _2 = _3;
+        _0 = <OsStr as AsRef<Path>>::as_ref(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn open_parent(_1: &Path) -> () {
+    debug _path => _1;
+    let mut _0: ();
+    let mut _2: !;
+
+    bb0: {
+        _2 = core::panicking::panic(const "not yet implemented");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: impl std::ops::Deref<Target = std::path::Path> + '_;
+    let _2: &str;
+    let _3: ();
+    let mut _4: &std::path::Path;
+    let _5: &std::path::Path;
+    let _6: &impl std::ops::Deref<Target = std::path::Path> + '_;
+    scope 1 {
+        debug old_path => _1;
+    }
+
+    bb0: {
+        _2 = const "hello";
+        _1 = frob(_2) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_1;
+        _5 = <impl Deref<Target = Path> + '_ as Deref>::deref(_6) -> bb2;
+    }
+
+    bb2: {
+        _4 = _5;
+        _3 = open_parent(move _4) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

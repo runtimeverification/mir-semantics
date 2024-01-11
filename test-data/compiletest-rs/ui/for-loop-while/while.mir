@@ -1,0 +1,141 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let mut _3: bool;
+    let mut _4: isize;
+    let mut _5: isize;
+    let _6: ();
+    let mut _7: std::fmt::Arguments<'_>;
+    let mut _8: &[&str];
+    let _9: &[&str; 2];
+    let _10: [&str; 2];
+    let mut _11: &[core::fmt::rt::Argument<'_>];
+    let _12: &[core::fmt::rt::Argument<'_>; 1];
+    let _13: [core::fmt::rt::Argument<'_>; 1];
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &isize;
+    let _16: ();
+    let mut _17: std::fmt::Arguments<'_>;
+    let mut _18: &[&str];
+    let _19: &[&str; 1];
+    let _20: [&str; 1];
+    let mut _21: isize;
+    let mut _22: bool;
+    let mut _23: isize;
+    let _24: ();
+    let mut _25: std::fmt::Arguments<'_>;
+    let mut _26: &[&str];
+    let _27: &[&str; 1];
+    let _28: [&str; 1];
+    let mut _29: isize;
+    let _30: ();
+    let mut _31: std::fmt::Arguments<'_>;
+    let mut _32: &[&str];
+    let _33: &[&str; 2];
+    let _34: [&str; 2];
+    let mut _35: &[core::fmt::rt::Argument<'_>];
+    let _36: &[core::fmt::rt::Argument<'_>; 1];
+    let _37: [core::fmt::rt::Argument<'_>; 1];
+    let mut _38: core::fmt::rt::Argument<'_>;
+    let _39: &isize;
+    scope 1 {
+        debug x => _1;
+        let mut _2: isize;
+        scope 2 {
+            debug y => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 10_isize;
+        _2 = const 0_isize;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _4 = _2;
+        _5 = _1;
+        _3 = Lt(move _4, move _5);
+        switchInt(move _3) -> [0: bb8, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = [const "", const "\n"];
+        _9 = &_10;
+        _8 = _9 as &[&str] (Pointer(Unsize));
+        _15 = &_2;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_15) -> bb3;
+    }
+
+    bb3: {
+        _13 = [move _14];
+        _12 = &_13;
+        _11 = _12 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _7 = Arguments::<'_>::new_v1(move _8, move _11) -> bb4;
+    }
+
+    bb4: {
+        _6 = _print(move _7) -> bb5;
+    }
+
+    bb5: {
+        _20 = [const "hello\n"];
+        _19 = &_20;
+        _18 = _19 as &[&str] (Pointer(Unsize));
+        _17 = Arguments::<'_>::new_const(move _18) -> bb6;
+    }
+
+    bb6: {
+        _16 = _print(move _17) -> bb7;
+    }
+
+    bb7: {
+        _21 = _2;
+        _2 = Add(move _21, const 1_isize);
+        goto -> bb1;
+    }
+
+    bb8: {
+        _23 = _1;
+        _22 = Gt(move _23, const 0_isize);
+        switchInt(move _22) -> [0: bb14, otherwise: bb9];
+    }
+
+    bb9: {
+        _28 = [const "goodbye\n"];
+        _27 = &_28;
+        _26 = _27 as &[&str] (Pointer(Unsize));
+        _25 = Arguments::<'_>::new_const(move _26) -> bb10;
+    }
+
+    bb10: {
+        _24 = _print(move _25) -> bb11;
+    }
+
+    bb11: {
+        _29 = _1;
+        _1 = Sub(move _29, const 1_isize);
+        _34 = [const "", const "\n"];
+        _33 = &_34;
+        _32 = _33 as &[&str] (Pointer(Unsize));
+        _39 = &_1;
+        _38 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_39) -> bb12;
+    }
+
+    bb12: {
+        _37 = [move _38];
+        _36 = &_37;
+        _35 = _36 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _31 = Arguments::<'_>::new_v1(move _32, move _35) -> bb13;
+    }
+
+    bb13: {
+        _30 = _print(move _31) -> bb8;
+    }
+
+    bb14: {
+        return;
+    }
+}

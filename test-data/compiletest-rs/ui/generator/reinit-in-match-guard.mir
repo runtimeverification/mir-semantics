@@ -1,0 +1,202 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    scope 1 {
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15 (#0)];
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: std::boxed::Box<[usize]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[usize; 1]>;
+    let _8: ();
+    let mut _9: std::vec::Vec<usize>;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: std::vec::Vec<usize>;
+    let mut _13: ();
+    let mut _14: *const [usize; 1];
+    let mut _15: ();
+    let mut _16: u32;
+    let mut _17: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _18: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _19: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _20: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _21: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _22: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _23: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _24: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _25: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _26: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _27: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _28: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _29: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _30: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _31: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _32: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15];
+    let mut _33: *const ();
+    let mut _34: usize;
+    let mut _35: usize;
+    let mut _36: usize;
+    let mut _37: usize;
+    let mut _38: bool;
+    scope 1 {
+        debug x => (((*(_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15])) as variant#3).0: std::vec::Vec<usize>);
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _17 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        _16 = discriminant((*_17));
+        switchInt(move _16) -> [0: bb1, 1: bb18, 2: bb17, 3: bb16, otherwise: bb19];
+    }
+
+    bb1: {
+        _18 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_18) as variant#3).1: bool) = const false;
+        _4 = SizeOf([usize; 1]);
+        _5 = AlignOf([usize; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _7 = ShallowInitBox(move _6, [usize; 1]);
+        _14 = (((_7.0: std::ptr::Unique<[usize; 1]>).0: std::ptr::NonNull<[usize; 1]>).0: *const [usize; 1]);
+        _33 = _14 as *const () (PtrToPtr);
+        _34 = _33 as usize (Transmute);
+        _35 = AlignOf(usize);
+        _36 = Sub(_35, const 1_usize);
+        _37 = BitAnd(_34, _36);
+        _38 = Eq(_37, const 0_usize);
+        assert(_38, "misaligned pointer dereference: address must be a multiple of {} but is {}", _35, _34) -> [success: bb20, unwind unreachable];
+    }
+
+    bb3: {
+        _20 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_20) as variant#3).1: bool) = const true;
+        _21 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_21) as variant#3).1: bool) = const false;
+        _22 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        _9 = move (((*_22) as variant#3).0: std::vec::Vec<usize>);
+        _8 = std::mem::drop::<Vec<usize>>(move _9) -> [return: bb4, unwind: bb12];
+    }
+
+    bb4: {
+        _10 = y() -> [return: bb5, unwind: bb11];
+    }
+
+    bb5: {
+        switchInt(_10) -> [0: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _13 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _13);
+        _23 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        discriminant((*_23)) = 3;
+        return;
+    }
+
+    bb7: {
+        _12 = Vec::<usize>::new() -> [return: bb8, unwind: bb11];
+    }
+
+    bb8: {
+        _24 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_24) as variant#3).1: bool) = const true;
+        _25 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_25) as variant#3).0: std::vec::Vec<usize>) = move _12;
+        _11 = const false;
+        switchInt(move _11) -> [0: bb6, otherwise: bb9];
+    }
+
+    bb9: {
+        _15 = const ();
+        goto -> bb14;
+    }
+
+    bb10: {
+        _26 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_26) as variant#3).1: bool) = const false;
+        _0 = GeneratorState::<(), ()>::Complete(move _15);
+        _27 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        discriminant((*_27)) = 1;
+        return;
+    }
+
+    bb11 (cleanup): {
+        _28 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_28) as variant#3).1: bool) = const false;
+        goto -> bb15;
+    }
+
+    bb12 (cleanup): {
+        _29 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_29) as variant#3).1: bool) = const false;
+        goto -> bb15;
+    }
+
+    bb13: {
+        _30 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        drop((((*_30) as variant#3).0: std::vec::Vec<usize>)) -> [return: bb10, unwind: bb11];
+    }
+
+    bb14: {
+        _31 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        switchInt((((*_31) as variant#3).1: bool)) -> [0: bb10, otherwise: bb13];
+    }
+
+    bb15 (cleanup): {
+        _32 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        discriminant((*_32)) = 2;
+        resume;
+    }
+
+    bb16: {
+        _15 = const ();
+        goto -> bb14;
+    }
+
+    bb17: {
+        assert(const false, "generator resumed after panicking") -> bb17;
+    }
+
+    bb18: {
+        assert(const false, "generator resumed after completion") -> bb18;
+    }
+
+    bb19: {
+        unreachable;
+    }
+
+    bb20: {
+        (*_14) = [const 22_usize];
+        _3 = move _7 as std::boxed::Box<[usize]> (Pointer(Unsize));
+        _19 = deref_copy (_1.0: &mut [generator@ui/generator/reinit-in-match-guard.rs:8:13: 8:15]);
+        (((*_19) as variant#3).0: std::vec::Vec<usize>) = slice::<impl [usize]>::into_vec::<std::alloc::Global>(move _3) -> [return: bb3, unwind: bb12];
+    }
+}
+
+fn y() -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}

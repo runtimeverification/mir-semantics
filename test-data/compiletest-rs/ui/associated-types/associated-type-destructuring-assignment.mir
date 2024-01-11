@@ -1,0 +1,32 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn E::V() -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::V;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn E::V() -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::V;
+        return;
+    }
+}

@@ -1,0 +1,261 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const BE_U32: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = core::num::<impl u32>::to_be(const 55_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const LE_U32: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = core::num::<impl u32>::to_le(const 55_u32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let mut _4: &u32;
+    let _5: u32;
+    let mut _6: u32;
+    let _7: &u32;
+    let _8: &u32;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: u32;
+    let mut _12: u32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&u32, &u32);
+    let mut _17: &u32;
+    let _18: u32;
+    let mut _19: &u32;
+    let _20: u32;
+    let mut _21: u32;
+    let _22: &u32;
+    let _23: &u32;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: u32;
+    let mut _27: u32;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: (&u128, &u128);
+    let mut _32: &u128;
+    let _33: u128;
+    let mut _34: &u128;
+    let _35: u128;
+    let mut _36: u128;
+    let _37: &u128;
+    let _38: &u128;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: u128;
+    let mut _42: u128;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _46: (&i128, &i128);
+    let mut _47: &i128;
+    let _48: i128;
+    let mut _49: &i128;
+    let _50: i128;
+    let mut _51: i128;
+    let _52: &i128;
+    let _53: &i128;
+    let mut _54: bool;
+    let mut _55: bool;
+    let mut _56: i128;
+    let mut _57: i128;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _28: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _28;
+        }
+    }
+    scope 5 {
+        debug left_val => _37;
+        debug right_val => _38;
+        let _43: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _43;
+        }
+    }
+    scope 7 {
+        debug left_val => _52;
+        debug right_val => _53;
+        let _58: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _58;
+        }
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &_3;
+        _6 = test::black_box::<u32>(const 55_u32) -> bb1;
+    }
+
+    bb1: {
+        _5 = core::num::<impl u32>::to_be(move _6) -> bb2;
+    }
+
+    bb2: {
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _7 = (_1.0: &u32);
+        _8 = (_1.1: &u32);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<u32, u32>(move _13, _7, _8, move _15);
+    }
+
+    bb4: {
+        _18 = const _;
+        _17 = &_18;
+        _21 = test::black_box::<u32>(const 55_u32) -> bb5;
+    }
+
+    bb5: {
+        _20 = core::num::<impl u32>::to_le(move _21) -> bb6;
+    }
+
+    bb6: {
+        _19 = &_20;
+        _16 = (move _17, move _19);
+        _22 = (_16.0: &u32);
+        _23 = (_16.1: &u32);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<u32, u32>(move _28, _22, _23, move _30);
+    }
+
+    bb8: {
+        _33 = const _;
+        _32 = &_33;
+        _36 = test::black_box::<u128>(const 999999_u128) -> bb9;
+    }
+
+    bb9: {
+        _35 = core::num::<impl u128>::to_be(move _36) -> bb10;
+    }
+
+    bb10: {
+        _34 = &_35;
+        _31 = (move _32, move _34);
+        _37 = (_31.0: &u128);
+        _38 = (_31.1: &u128);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<u128, u128>(move _43, _37, _38, move _45);
+    }
+
+    bb12: {
+        _48 = const _;
+        _47 = &_48;
+        _51 = test::black_box::<i128>(const -999999_i128) -> bb13;
+    }
+
+    bb13: {
+        _50 = core::num::<impl i128>::to_le(move _51) -> bb14;
+    }
+
+    bb14: {
+        _49 = &_50;
+        _46 = (move _47, move _49);
+        _52 = (_46.0: &i128);
+        _53 = (_46.1: &i128);
+        _56 = (*_52);
+        _57 = (*_53);
+        _55 = Eq(move _56, move _57);
+        _54 = Not(move _55);
+        switchInt(move _54) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<i128, i128>(move _58, _52, _53, move _60);
+    }
+
+    bb16: {
+        return;
+    }
+}
+
+const BE_U128: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = core::num::<impl u128>::to_be(const 999999_u128) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const LE_I128: i128 = {
+    let mut _0: i128;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = core::num::<impl i128>::to_le(const -999999_i128) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

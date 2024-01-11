@@ -1,0 +1,198 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: Box<Vec<isize>>) -> () {
+    debug foo => _1;
+    let mut _0: ();
+    let mut _2: (&isize, &isize);
+    let mut _3: &isize;
+    let _4: &isize;
+    let mut _5: &std::vec::Vec<isize>;
+    let mut _6: &isize;
+    let _7: isize;
+    let _8: &isize;
+    let _9: &isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: *const std::vec::Vec<isize>;
+    let mut _18: *const ();
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: usize;
+    let mut _23: bool;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+
+    bb0: {
+        _17 = (((_1.0: std::ptr::Unique<std::vec::Vec<isize>>).0: std::ptr::NonNull<std::vec::Vec<isize>>).0: *const std::vec::Vec<isize>);
+        _18 = _17 as *const () (PtrToPtr);
+        _19 = _18 as usize (Transmute);
+        _20 = AlignOf(std::vec::Vec<isize>);
+        _21 = Sub(_20, const 1_usize);
+        _22 = BitAnd(_19, _21);
+        _23 = Eq(_22, const 0_usize);
+        assert(_23, "misaligned pointer dereference: address must be a multiple of {} but is {}", _20, _19) -> [success: bb7, unwind unreachable];
+    }
+
+    bb1: {
+        _3 = _4;
+        _7 = const 10_isize;
+        _6 = &_7;
+        _2 = (move _3, move _6);
+        _8 = (_2.0: &isize);
+        _9 = (_2.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16) -> bb5;
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        _5 = &(*_17);
+        _4 = <Vec<isize> as Index<usize>>::index(move _5, const 0_usize) -> [return: bb1, unwind: bb5];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<std::vec::Vec<isize>>;
+    let mut _2: std::vec::Vec<isize>;
+    let mut _3: std::boxed::Box<[isize]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[isize; 1]>;
+    let _8: ();
+    let mut _9: std::boxed::Box<std::vec::Vec<isize>>;
+    let _10: ();
+    let mut _11: std::boxed::Box<std::vec::Vec<isize>>;
+    let mut _12: std::vec::Vec<isize>;
+    let mut _13: std::boxed::Box<[isize]>;
+    let mut _14: usize;
+    let mut _15: usize;
+    let mut _16: *mut u8;
+    let mut _17: std::boxed::Box<[isize; 1]>;
+    let mut _18: *const [isize; 1];
+    let mut _19: *const [isize; 1];
+    let mut _26: *const ();
+    let mut _27: usize;
+    let mut _28: usize;
+    let mut _29: usize;
+    let mut _30: usize;
+    let mut _31: bool;
+    scope 1 {
+        debug x => _1;
+        let mut _20: *const ();
+        let mut _21: usize;
+        let mut _22: usize;
+        let mut _23: usize;
+        let mut _24: usize;
+        let mut _25: bool;
+        scope 3 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _4 = SizeOf([isize; 1]);
+        _5 = AlignOf([isize; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [isize; 1]);
+        _18 = (((_7.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _26 = _18 as *const () (PtrToPtr);
+        _27 = _26 as usize (Transmute);
+        _28 = AlignOf(isize);
+        _29 = Sub(_28, const 1_usize);
+        _30 = BitAnd(_27, _29);
+        _31 = Eq(_30, const 0_usize);
+        assert(_31, "misaligned pointer dereference: address must be a multiple of {} but is {}", _28, _27) -> [success: bb10, unwind unreachable];
+    }
+
+    bb2: {
+        _1 = Box::<Vec<isize>>::new(move _2) -> bb3;
+    }
+
+    bb3: {
+        _9 = move _1;
+        _8 = test(move _9) -> bb4;
+    }
+
+    bb4: {
+        _14 = SizeOf([isize; 1]);
+        _15 = AlignOf([isize; 1]);
+        _16 = alloc::alloc::exchange_malloc(move _14, move _15) -> bb5;
+    }
+
+    bb5: {
+        _17 = ShallowInitBox(move _16, [isize; 1]);
+        _19 = (((_17.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _20 = _19 as *const () (PtrToPtr);
+        _21 = _20 as usize (Transmute);
+        _22 = AlignOf(isize);
+        _23 = Sub(_22, const 1_usize);
+        _24 = BitAnd(_21, _23);
+        _25 = Eq(_24, const 0_usize);
+        assert(_25, "misaligned pointer dereference: address must be a multiple of {} but is {}", _22, _21) -> [success: bb9, unwind unreachable];
+    }
+
+    bb6: {
+        _11 = Box::<Vec<isize>>::new(move _12) -> bb7;
+    }
+
+    bb7: {
+        _10 = test(move _11) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9: {
+        (*_19) = [const 10_isize];
+        _13 = move _17 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _12 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _13) -> bb6;
+    }
+
+    bb10: {
+        (*_18) = [const 10_isize];
+        _3 = move _7 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _2 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}

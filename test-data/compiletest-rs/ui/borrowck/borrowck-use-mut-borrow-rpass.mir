@@ -1,0 +1,296 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn field_copy_after_field_borrow() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let mut _2: std::boxed::Box<isize>;
+    let _4: ();
+    let mut _5: isize;
+    let mut _6: std::boxed::Box<isize>;
+    let mut _7: *const isize;
+    scope 1 {
+        debug x => _1;
+        let _3: &mut std::boxed::Box<isize>;
+        scope 2 {
+            debug p => _3;
+            let mut _8: *const ();
+            let mut _9: usize;
+            let mut _10: usize;
+            let mut _11: usize;
+            let mut _12: usize;
+            let mut _13: bool;
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = A { a: const 1_isize, b: move _2 };
+        _3 = &mut (_1.1: std::boxed::Box<isize>);
+        _5 = (_1.0: isize);
+        _4 = std::mem::drop::<isize>(move _5) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _6 = deref_copy (*_3);
+        _7 = (((_6.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _8 = _7 as *const () (PtrToPtr);
+        _9 = _8 as usize (Transmute);
+        _10 = AlignOf(isize);
+        _11 = Sub(_10, const 1_usize);
+        _12 = BitAnd(_9, _11);
+        _13 = Eq(_12, const 0_usize);
+        assert(_13, "misaligned pointer dereference: address must be a multiple of {} but is {}", _10, _9) -> [success: bb6, unwind unreachable];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+
+    bb6: {
+        (*_7) = const 3_isize;
+        drop(_1) -> bb3;
+    }
+}
+
+fn fu_field_copy_after_field_borrow() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let mut _2: std::boxed::Box<isize>;
+    let mut _5: std::boxed::Box<isize>;
+    let _6: ();
+    let mut _7: std::boxed::Box<isize>;
+    let mut _8: *const isize;
+    scope 1 {
+        debug x => _1;
+        let _3: &mut std::boxed::Box<isize>;
+        scope 2 {
+            debug p => _3;
+            let _4: A;
+            scope 3 {
+                debug y => _4;
+                let mut _9: *const ();
+                let mut _10: usize;
+                let mut _11: usize;
+                let mut _12: usize;
+                let mut _13: usize;
+                let mut _14: bool;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = A { a: const 1_isize, b: move _2 };
+        _3 = &mut (_1.1: std::boxed::Box<isize>);
+        _5 = Box::<isize>::new(const 3_isize) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _4 = A { a: (_1.0: isize), b: move _5 };
+        _6 = std::mem::drop::<A>(move _4) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        _7 = deref_copy (*_3);
+        _8 = (((_7.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _9 = _8 as *const () (PtrToPtr);
+        _10 = _9 as usize (Transmute);
+        _11 = AlignOf(isize);
+        _12 = Sub(_11, const 1_usize);
+        _13 = BitAnd(_10, _12);
+        _14 = Eq(_13, const 0_usize);
+        assert(_14, "misaligned pointer dereference: address must be a multiple of {} but is {}", _11, _10) -> [success: bb7, unwind unreachable];
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_1) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        (*_8) = const 4_isize;
+        drop(_1) -> bb4;
+    }
+}
+
+fn field_deref_after_field_borrow() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let mut _2: std::boxed::Box<isize>;
+    let _4: ();
+    let mut _5: isize;
+    let mut _6: std::boxed::Box<isize>;
+    let mut _7: *const isize;
+    scope 1 {
+        debug x => _1;
+        let _3: &mut isize;
+        scope 2 {
+            debug p => _3;
+            let mut _8: *const ();
+            let mut _9: usize;
+            let mut _10: usize;
+            let mut _11: usize;
+            let mut _12: usize;
+            let mut _13: bool;
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = A { a: const 1_isize, b: move _2 };
+        _3 = &mut (_1.0: isize);
+        _6 = deref_copy (_1.1: std::boxed::Box<isize>);
+        _7 = (((_6.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _8 = _7 as *const () (PtrToPtr);
+        _9 = _8 as usize (Transmute);
+        _10 = AlignOf(isize);
+        _11 = Sub(_10, const 1_usize);
+        _12 = BitAnd(_9, _11);
+        _13 = Eq(_12, const 0_usize);
+        assert(_13, "misaligned pointer dereference: address must be a multiple of {} but is {}", _10, _9) -> [success: bb6, unwind unreachable];
+    }
+
+    bb2: {
+        (*_3) = const 3_isize;
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+
+    bb6: {
+        _5 = (*_7);
+        _4 = std::mem::drop::<isize>(move _5) -> [return: bb2, unwind: bb4];
+    }
+}
+
+fn field_move_after_field_borrow() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let mut _2: std::boxed::Box<isize>;
+    let _4: ();
+    let mut _5: std::boxed::Box<isize>;
+    scope 1 {
+        debug x => _1;
+        let _3: &mut isize;
+        scope 2 {
+            debug p => _3;
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = A { a: const 1_isize, b: move _2 };
+        _3 = &mut (_1.0: isize);
+        _5 = move (_1.1: std::boxed::Box<isize>);
+        _4 = std::mem::drop::<Box<isize>>(move _5) -> bb2;
+    }
+
+    bb2: {
+        (*_3) = const 3_isize;
+        return;
+    }
+}
+
+fn fu_field_move_after_field_borrow() -> () {
+    let mut _0: ();
+    let mut _1: A;
+    let mut _2: std::boxed::Box<isize>;
+    let _5: ();
+    scope 1 {
+        debug x => _1;
+        let _3: &mut isize;
+        scope 2 {
+            debug p => _3;
+            let _4: A;
+            scope 3 {
+                debug y => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = A { a: const 1_isize, b: move _2 };
+        _3 = &mut (_1.0: isize);
+        _4 = A { a: const 3_isize, b: move (_1.1: std::boxed::Box<isize>) };
+        _5 = std::mem::drop::<A>(move _4) -> bb2;
+    }
+
+    bb2: {
+        (*_3) = const 4_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+
+    bb0: {
+        _1 = field_copy_after_field_borrow() -> bb1;
+    }
+
+    bb1: {
+        _2 = fu_field_copy_after_field_borrow() -> bb2;
+    }
+
+    bb2: {
+        _3 = field_deref_after_field_borrow() -> bb3;
+    }
+
+    bb3: {
+        _4 = field_move_after_field_borrow() -> bb4;
+    }
+
+    bb4: {
+        _5 = fu_field_move_after_field_borrow() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}

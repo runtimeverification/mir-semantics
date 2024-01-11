@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/inheritance/num5.rs:13:1: 13:21>::from(_1: i32) -> Option<f32> {
+    debug i => _1;
+    let mut _0: std::option::Option<f32>;
+    let mut _2: f32;
+
+    bb0: {
+        _2 = _1 as f32 (IntToFloat);
+        _0 = Option::<f32>::Some(move _2);
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/num5.rs:16:1: 16:23>::from(_1: i32) -> Option<isize> {
+    debug i => _1;
+    let mut _0: std::option::Option<isize>;
+    let mut _2: isize;
+
+    bb0: {
+        _2 = _1 as isize (IntToInt);
+        _0 = Option::<isize>::Some(move _2);
+        return;
+    }
+}
+
+fn num_eq_one() -> T {
+    let mut _0: T;
+    let mut _1: std::option::Option<T>;
+
+    bb0: {
+        _1 = <T as NumCast>::from(const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Option::<T>::unwrap(move _1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+
+    bb0: {
+        _1 = num_eq_one::<isize>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

@@ -1,0 +1,568 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:5:10: 5:19>::eq(_1: &DerefCounter<T>, _2: &DerefCounter<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: &std::cell::Cell<usize>;
+    let mut _6: &std::cell::Cell<usize>;
+    let mut _7: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _11: &T;
+    let mut _12: &T;
+
+    bb0: {
+        _5 = &((*_1).0: std::cell::Cell<usize>);
+        _6 = &((*_2).0: std::cell::Cell<usize>);
+        _4 = <Cell<usize> as PartialEq>::eq(move _5, move _6) -> bb7;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _11 = &((*_1).2: T);
+        _12 = &((*_2).2: T);
+        _10 = <T as PartialEq>::eq(move _11, move _12) -> bb8;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _3 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _8 = ((*_1).1: usize);
+        _9 = ((*_2).1: usize);
+        _7 = Eq(move _8, move _9);
+        _3 = move _7;
+        goto -> bb6;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb8: {
+        _0 = move _10;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:12:1: 12:24>::new(_1: T) -> DerefCounter<T> {
+    debug value => _1;
+    let mut _0: DerefCounter<T>;
+    let mut _2: std::cell::Cell<usize>;
+    let mut _3: T;
+
+    bb0: {
+        _2 = Cell::<usize>::new(const 0_usize) -> [return: bb1, unwind: bb2];
+    }
+
+    bb1: {
+        _3 = move _1;
+        _0 = DerefCounter::<T> { count_imm: move _2, count_mut: const 0_usize, value: move _3 };
+        return;
+    }
+
+    bb2 (cleanup): {
+        drop(_1) -> [return: bb3, unwind terminate];
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:12:1: 12:24>::counts(_1: &DerefCounter<T>) -> (usize, usize) {
+    debug self => _1;
+    let mut _0: (usize, usize);
+    let mut _2: usize;
+    let mut _3: &std::cell::Cell<usize>;
+    let mut _4: usize;
+
+    bb0: {
+        _3 = &((*_1).0: std::cell::Cell<usize>);
+        _2 = Cell::<usize>::get(move _3) -> bb1;
+    }
+
+    bb1: {
+        _4 = ((*_1).1: usize);
+        _0 = (move _2, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:26:1: 26:34>::deref(_1: &DerefCounter<T>) -> &T {
+    debug self => _1;
+    let mut _0: &T;
+    let _2: ();
+    let mut _3: &std::cell::Cell<usize>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: &std::cell::Cell<usize>;
+
+    bb0: {
+        _3 = &((*_1).0: std::cell::Cell<usize>);
+        _6 = &((*_1).0: std::cell::Cell<usize>);
+        _5 = Cell::<usize>::get(move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = Add(move _5, const 1_usize);
+        _2 = Cell::<usize>::set(move _3, move _4) -> bb2;
+    }
+
+    bb2: {
+        _0 = &((*_1).2: T);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:35:1: 35:37>::deref_mut(_1: &mut DerefCounter<T>) -> &mut T {
+    debug self => _1;
+    let mut _0: &mut T;
+
+    bb0: {
+        ((*_1).1: usize) = Add(((*_1).1: usize), const 1_usize);
+        _0 = &mut ((*_1).2: T);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:42:10: 42:19>::eq(_1: &Point, _2: &Point) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: isize;
+    let mut _5: isize;
+    let mut _6: bool;
+    let mut _7: isize;
+    let mut _8: isize;
+
+    bb0: {
+        _4 = ((*_1).0: isize);
+        _5 = ((*_2).0: isize);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: isize);
+        _8 = ((*_2).1: isize);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:42:21: 42:26>::fmt(_1: &Point, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &isize;
+    let _7: &str;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &&isize;
+    let _10: &isize;
+
+    bb0: {
+        _3 = const "Point";
+        _4 = const "x";
+        _6 = &((*_1).0: isize);
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _7 = const "y";
+        _10 = &((*_1).1: isize);
+        _9 = &_10;
+        _8 = _9 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field2_finish(_2, _3, _4, move _5, _7, move _8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-autoderef-count.rs:48:1: 48:11>::get(_1: &Point) -> (isize, isize) {
+    debug self => _1;
+    let mut _0: (isize, isize);
+    let mut _2: isize;
+    let mut _3: isize;
+
+    bb0: {
+        _2 = ((*_1).0: isize);
+        _3 = ((*_1).1: isize);
+        _0 = (move _2, move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: DerefCounter<Point>;
+    let mut _2: Point;
+    let mut _3: &Point;
+    let mut _4: &DerefCounter<Point>;
+    let mut _5: (&(usize, usize), &(usize, usize));
+    let mut _6: &(usize, usize);
+    let _7: (usize, usize);
+    let mut _8: &DerefCounter<Point>;
+    let mut _9: &(usize, usize);
+    let _10: (usize, usize);
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let _18: &Point;
+    let mut _19: &DerefCounter<Point>;
+    let mut _20: (&(usize, usize), &(usize, usize));
+    let mut _21: &(usize, usize);
+    let _22: (usize, usize);
+    let mut _23: &DerefCounter<Point>;
+    let mut _24: &(usize, usize);
+    let _25: (usize, usize);
+    let mut _28: bool;
+    let mut _29: bool;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: &mut Point;
+    let mut _34: &mut DerefCounter<Point>;
+    let mut _35: (&(usize, usize), &(usize, usize));
+    let mut _36: &(usize, usize);
+    let _37: (usize, usize);
+    let mut _38: &DerefCounter<Point>;
+    let mut _39: &(usize, usize);
+    let _40: (usize, usize);
+    let mut _43: bool;
+    let mut _44: bool;
+    let _46: !;
+    let mut _47: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _48: &mut Point;
+    let mut _49: &mut DerefCounter<Point>;
+    let mut _50: (&(usize, usize), &(usize, usize));
+    let mut _51: &(usize, usize);
+    let _52: (usize, usize);
+    let mut _53: &DerefCounter<Point>;
+    let mut _54: &(usize, usize);
+    let _55: (usize, usize);
+    let mut _58: bool;
+    let mut _59: bool;
+    let _61: !;
+    let mut _62: std::option::Option<std::fmt::Arguments<'_>>;
+    let _63: (isize, isize);
+    let mut _64: &Point;
+    let _65: &Point;
+    let mut _66: &DerefCounter<Point>;
+    let mut _67: (&(usize, usize), &(usize, usize));
+    let mut _68: &(usize, usize);
+    let _69: (usize, usize);
+    let mut _70: &DerefCounter<Point>;
+    let mut _71: &(usize, usize);
+    let _72: (usize, usize);
+    let mut _75: bool;
+    let mut _76: bool;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _80: (&Point, &Point);
+    let mut _81: &Point;
+    let _82: &Point;
+    let mut _83: &DerefCounter<Point>;
+    let mut _84: &Point;
+    let _85: Point;
+    let mut _88: bool;
+    let mut _89: bool;
+    let _91: !;
+    let mut _92: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug p => _1;
+        scope 2 {
+            let _11: &(usize, usize);
+            let _12: &(usize, usize);
+            scope 3 {
+                debug left_val => _11;
+                debug right_val => _12;
+                let _15: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _15;
+                }
+            }
+            scope 5 {
+                let _26: &(usize, usize);
+                let _27: &(usize, usize);
+                scope 6 {
+                    debug left_val => _26;
+                    debug right_val => _27;
+                    let _30: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _30;
+                    }
+                }
+                scope 8 {
+                    let _41: &(usize, usize);
+                    let _42: &(usize, usize);
+                    let _56: &(usize, usize);
+                    let _57: &(usize, usize);
+                    let _73: &(usize, usize);
+                    let _74: &(usize, usize);
+                    let _86: &Point;
+                    let _87: &Point;
+                    scope 9 {
+                        debug left_val => _41;
+                        debug right_val => _42;
+                        let _45: core::panicking::AssertKind;
+                        scope 10 {
+                            debug kind => _45;
+                        }
+                    }
+                    scope 11 {
+                        debug left_val => _56;
+                        debug right_val => _57;
+                        let _60: core::panicking::AssertKind;
+                        scope 12 {
+                            debug kind => _60;
+                        }
+                    }
+                    scope 13 {
+                        debug left_val => _73;
+                        debug right_val => _74;
+                        let _77: core::panicking::AssertKind;
+                        scope 14 {
+                            debug kind => _77;
+                        }
+                    }
+                    scope 15 {
+                        debug left_val => _86;
+                        debug right_val => _87;
+                        let _90: core::panicking::AssertKind;
+                        scope 16 {
+                            debug kind => _90;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Point { x: const 0_isize, y: const 0_isize };
+        _1 = DerefCounter::<Point>::new(move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_1;
+        _3 = <DerefCounter<Point> as Deref>::deref(move _4) -> bb2;
+    }
+
+    bb2: {
+        _8 = &_1;
+        _7 = DerefCounter::<Point>::counts(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = &_7;
+        _10 = (const 1_usize, const 0_usize);
+        _9 = &_10;
+        _5 = (move _6, move _9);
+        _11 = (_5.0: &(usize, usize));
+        _12 = (_5.1: &(usize, usize));
+        _14 = <(usize, usize) as PartialEq>::eq(_11, _12) -> bb4;
+    }
+
+    bb4: {
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _15, _11, _12, move _17);
+    }
+
+    bb6: {
+        _19 = &_1;
+        _18 = <DerefCounter<Point> as Deref>::deref(move _19) -> bb7;
+    }
+
+    bb7: {
+        _23 = &_1;
+        _22 = DerefCounter::<Point>::counts(move _23) -> bb8;
+    }
+
+    bb8: {
+        _21 = &_22;
+        _25 = (const 2_usize, const 0_usize);
+        _24 = &_25;
+        _20 = (move _21, move _24);
+        _26 = (_20.0: &(usize, usize));
+        _27 = (_20.1: &(usize, usize));
+        _29 = <(usize, usize) as PartialEq>::eq(_26, _27) -> bb9;
+    }
+
+    bb9: {
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _30, _26, _27, move _32);
+    }
+
+    bb11: {
+        _34 = &mut _1;
+        _33 = <DerefCounter<Point> as DerefMut>::deref_mut(move _34) -> bb12;
+    }
+
+    bb12: {
+        _38 = &_1;
+        _37 = DerefCounter::<Point>::counts(move _38) -> bb13;
+    }
+
+    bb13: {
+        _36 = &_37;
+        _40 = (const 2_usize, const 1_usize);
+        _39 = &_40;
+        _35 = (move _36, move _39);
+        _41 = (_35.0: &(usize, usize));
+        _42 = (_35.1: &(usize, usize));
+        _44 = <(usize, usize) as PartialEq>::eq(_41, _42) -> bb14;
+    }
+
+    bb14: {
+        _43 = Not(move _44);
+        switchInt(move _43) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _45 = core::panicking::AssertKind::Eq;
+        _47 = Option::<Arguments<'_>>::None;
+        _46 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _45, _41, _42, move _47);
+    }
+
+    bb16: {
+        _49 = &mut _1;
+        _48 = <DerefCounter<Point> as DerefMut>::deref_mut(move _49) -> bb17;
+    }
+
+    bb17: {
+        ((*_48).0: isize) = Add(((*_48).0: isize), const 3_isize);
+        _53 = &_1;
+        _52 = DerefCounter::<Point>::counts(move _53) -> bb18;
+    }
+
+    bb18: {
+        _51 = &_52;
+        _55 = (const 2_usize, const 2_usize);
+        _54 = &_55;
+        _50 = (move _51, move _54);
+        _56 = (_50.0: &(usize, usize));
+        _57 = (_50.1: &(usize, usize));
+        _59 = <(usize, usize) as PartialEq>::eq(_56, _57) -> bb19;
+    }
+
+    bb19: {
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _60 = core::panicking::AssertKind::Eq;
+        _62 = Option::<Arguments<'_>>::None;
+        _61 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _60, _56, _57, move _62);
+    }
+
+    bb21: {
+        _66 = &_1;
+        _65 = <DerefCounter<Point> as Deref>::deref(move _66) -> bb22;
+    }
+
+    bb22: {
+        _64 = _65;
+        _63 = Point::get(move _64) -> bb23;
+    }
+
+    bb23: {
+        _70 = &_1;
+        _69 = DerefCounter::<Point>::counts(move _70) -> bb24;
+    }
+
+    bb24: {
+        _68 = &_69;
+        _72 = (const 3_usize, const 2_usize);
+        _71 = &_72;
+        _67 = (move _68, move _71);
+        _73 = (_67.0: &(usize, usize));
+        _74 = (_67.1: &(usize, usize));
+        _76 = <(usize, usize) as PartialEq>::eq(_73, _74) -> bb25;
+    }
+
+    bb25: {
+        _75 = Not(move _76);
+        switchInt(move _75) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _77 = core::panicking::AssertKind::Eq;
+        _79 = Option::<Arguments<'_>>::None;
+        _78 = core::panicking::assert_failed::<(usize, usize), (usize, usize)>(move _77, _73, _74, move _79);
+    }
+
+    bb27: {
+        _83 = &_1;
+        _82 = <DerefCounter<Point> as Deref>::deref(move _83) -> bb28;
+    }
+
+    bb28: {
+        _81 = _82;
+        _85 = Point { x: const 3_isize, y: const 0_isize };
+        _84 = &_85;
+        _80 = (move _81, move _84);
+        _86 = (_80.0: &Point);
+        _87 = (_80.1: &Point);
+        _89 = <Point as PartialEq>::eq(_86, _87) -> bb29;
+    }
+
+    bb29: {
+        _88 = Not(move _89);
+        switchInt(move _88) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb30: {
+        _90 = core::panicking::AssertKind::Eq;
+        _92 = Option::<Arguments<'_>>::None;
+        _91 = core::panicking::assert_failed::<Point, Point>(move _90, _86, _87, move _92);
+    }
+
+    bb31: {
+        return;
+    }
+}

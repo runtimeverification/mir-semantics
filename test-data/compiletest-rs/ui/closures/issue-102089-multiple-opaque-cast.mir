@@ -1,0 +1,48 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/issue-102089-multiple-opaque-cast.rs:9:1: 9:27>::error_trying_to_destructure_self_in_closure(_1: Example<'_, T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: [closure@ui/closures/issue-102089-multiple-opaque-cast.rs:11:19: 11:21];
+    scope 1 {
+        debug closure => _2;
+    }
+
+    bb0: {
+        _2 = [closure@ui/closures/issue-102089-multiple-opaque-cast.rs:11:19: 11:21] { self: move _1 };
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/issue-102089-multiple-opaque-cast.rs:9:1: 9:27>::error_trying_to_destructure_self_in_closure::{closure#0}(_1: [closure@ui/closures/issue-102089-multiple-opaque-cast.rs:11:19: 11:21]) -> () {
+    debug self => (_1.0: Example<'_, T>);
+    let mut _0: ();
+    let _2: T;
+    let _3: &T;
+    scope 1 {
+        debug a => _2;
+        debug b => _3;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: Example<'_, T>).0: T);
+        _3 = ((_1.0: Example<'_, T>).1: &T);
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

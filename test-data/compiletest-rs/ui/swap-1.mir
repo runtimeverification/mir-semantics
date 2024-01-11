@@ -1,0 +1,108 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let _3: ();
+    let mut _4: &mut i32;
+    let mut _5: &mut i32;
+    let mut _6: (&i32, &i32);
+    let mut _7: &i32;
+    let mut _8: &i32;
+    let _9: i32;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: i32;
+    let mut _15: i32;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _19: (&i32, &i32);
+    let mut _20: &i32;
+    let mut _21: &i32;
+    let _22: i32;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: i32;
+    let mut _28: i32;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let mut _2: i32;
+        scope 2 {
+            debug y => _2;
+            let _10: &i32;
+            let _11: &i32;
+            let _23: &i32;
+            let _24: &i32;
+            scope 3 {
+                debug left_val => _10;
+                debug right_val => _11;
+                let _16: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _16;
+                }
+            }
+            scope 5 {
+                debug left_val => _23;
+                debug right_val => _24;
+                let _29: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _29;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3_i32;
+        _2 = const 7_i32;
+        _4 = &mut _1;
+        _5 = &mut _2;
+        _3 = std::mem::swap::<i32>(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = &_1;
+        _9 = const 7_i32;
+        _8 = &_9;
+        _6 = (move _7, move _8);
+        _10 = (_6.0: &i32);
+        _11 = (_6.1: &i32);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<i32, i32>(move _16, _10, _11, move _18);
+    }
+
+    bb3: {
+        _20 = &_2;
+        _22 = const 3_i32;
+        _21 = &_22;
+        _19 = (move _20, move _21);
+        _23 = (_19.0: &i32);
+        _24 = (_19.1: &i32);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<i32, i32>(move _29, _23, _24, move _31);
+    }
+
+    bb5: {
+        return;
+    }
+}

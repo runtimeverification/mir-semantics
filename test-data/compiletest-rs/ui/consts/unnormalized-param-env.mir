@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Obstacle::trajectory_free::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const N: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+<impl at ui/consts/unnormalized-param-env.rs:22:1: 22:48>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/consts/unnormalized-param-env.rs:22:1: 22:48>::trajectory_free(_1: &ObstacleSpace2df32, _2: &TF) -> () {
+    debug self => _1;
+    debug t => _2;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/consts/unnormalized-param-env.rs:22:1: 22:48>::trajectory_free::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

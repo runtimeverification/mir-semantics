@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: std::mem::MaybeUninit<Foo>;
+    let mut _4: std::mem::MaybeUninit<[Foo; 2]>;
+    scope 1 {
+        let _1: Foo;
+        scope 2 {
+            debug _x => const Foo;
+            let _3: [Foo; 2];
+            scope 3 {
+                debug _x => const [Foo, Foo];
+                let _5: Foo;
+                scope 4 {
+                    debug _x => const Foo;
+                    let _6: [Foo; 2];
+                    scope 5 {
+                        debug _x => const [Foo, Foo];
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = MaybeUninit::<Foo>::uninit() -> bb1;
+    }
+
+    bb1: {
+        _1 = MaybeUninit::<Foo>::assume_init(const MaybeUninit::<Foo> {{ uninit: (), value: ManuallyDrop::<Foo> {{ value: Foo }} }}) -> bb2;
+    }
+
+    bb2: {
+        _4 = MaybeUninit::<[Foo; 2]>::uninit() -> bb3;
+    }
+
+    bb3: {
+        _3 = MaybeUninit::<[Foo; 2]>::assume_init(const MaybeUninit::<[Foo; 2]> {{ uninit: (), value: ManuallyDrop::<[Foo; 2]> {{ value: [Foo, Foo] }} }}) -> bb4;
+    }
+
+    bb4: {
+        _5 = uninitialized::<Foo>() -> bb5;
+    }
+
+    bb5: {
+        _6 = uninitialized::<[Foo; 2]>() -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}

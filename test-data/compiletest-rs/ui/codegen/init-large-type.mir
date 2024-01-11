@@ -1,0 +1,65 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const SIZE: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedMul(const 1024_usize, const 1024_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} * {}`, which would overflow", const 1024_usize, const 1024_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _2: std::thread::JoinHandle<()>;
+
+    bb0: {
+        _2 = spawn::<[closure@ui/codegen/init-large-type.rs:20:19: 20:21], ()>(const ZeroSized: [closure@ui/codegen/init-large-type.rs:20:19: 20:21]) -> bb1;
+    }
+
+    bb1: {
+        _1 = JoinHandle::<()>::join(move _2) -> bb2;
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/codegen/init-large-type.rs:20:19: 20:21]) -> () {
+    let mut _0: ();
+    let _2: [u8; 1048576];
+    scope 1 {
+        debug _memory => _2;
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _2 = zeroed::<[u8; 1048576]>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{closure#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}

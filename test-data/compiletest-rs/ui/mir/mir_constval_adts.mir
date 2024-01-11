@@ -1,0 +1,340 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_constval_adts.rs:2:10: 2:19>::eq(_1: &Point, _2: &Point) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: i32;
+    let mut _5: i32;
+    let mut _6: bool;
+    let mut _7: i32;
+    let mut _8: i32;
+
+    bb0: {
+        _4 = ((*_1).0: i32);
+        _5 = ((*_2).0: i32);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: i32);
+        _8 = ((*_2).1: i32);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_constval_adts.rs:2:21: 2:26>::fmt(_1: &Point, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &i32;
+    let _7: &str;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &&i32;
+    let _10: &i32;
+
+    bb0: {
+        _3 = const "Point";
+        _4 = const "_x";
+        _6 = &((*_1).0: i32);
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _7 = const "_y";
+        _10 = &((*_1).1: i32);
+        _9 = &_10;
+        _8 = _9 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field2_finish(_2, _3, _4, move _5, _7, move _8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_constval_adts.rs:8:10: 8:19>::eq(_1: &Newtype<T>, _2: &Newtype<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &T;
+    let mut _4: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _4 = &((*_2).0: T);
+        _0 = <T as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_constval_adts.rs:8:21: 8:23>::assert_receiver_is_total_eq(_1: &Newtype<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_constval_adts.rs:8:25: 8:30>::fmt(_1: &Newtype<T>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&T;
+    let _6: &T;
+
+    bb0: {
+        _3 = const "Newtype";
+        _6 = &((*_1).0: T);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const STRUCT: Point = {
+    let mut _0: Point;
+
+    bb0: {
+        _0 = Point { _x: const 42_i32, _y: const 42_i32 };
+        return;
+    }
+}
+
+const TUPLE1: (i32, i32) = {
+    let mut _0: (i32, i32);
+
+    bb0: {
+        _0 = (const 42_i32, const 42_i32);
+        return;
+    }
+}
+
+const TUPLE2: (&str, &str) = {
+    let mut _0: (&str, &str);
+
+    bb0: {
+        _0 = (const "hello", const "world");
+        return;
+    }
+}
+
+const PAIR_NEWTYPE: (Newtype<i32>, Newtype<i32>) = {
+    let mut _0: (Newtype<i32>, Newtype<i32>);
+    let mut _1: Newtype<i32>;
+    let mut _2: Newtype<i32>;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Newtype::<i32>(const 42_i32);
+        StorageLive(_2);
+        _2 = Newtype::<i32>(const 42_i32);
+        _0 = (move _1, move _2);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn mir() -> (Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)) {
+    let mut _0: (Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let _1: Point;
+    scope 1 {
+        debug struct1 => _1;
+        let _2: (i32, i32);
+        scope 2 {
+            debug tuple1 => _2;
+            let _3: (&str, &str);
+            scope 3 {
+                debug tuple2 => _3;
+                let _4: (Newtype<i32>, Newtype<i32>);
+                scope 4 {
+                    debug pair_newtype => _4;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const _;
+        _2 = const _;
+        _3 = const _;
+        _4 = const _;
+        _0 = (move _1, _2, _3, move _4);
+        return;
+    }
+}
+
+const NEWTYPE: Newtype<&str> = {
+    let mut _0: Newtype<&str>;
+    let mut _1: &str;
+    let _2: &str;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const "foobar";
+        _1 = &(*_2);
+        _0 = Newtype::<&str>(move _1);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn test_promoted_newtype_str_ref() -> () {
+    let mut _0: ();
+    let _1: &Newtype<&str>;
+    let _2: Newtype<&str>;
+    let mut _3: (&&Newtype<&str>, &&Newtype<&str>);
+    let mut _4: &&Newtype<&str>;
+    let mut _5: &&Newtype<&str>;
+    let _6: &Newtype<&str>;
+    let _7: Newtype<&str>;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _8: &&Newtype<&str>;
+        let _9: &&Newtype<&str>;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _12: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const _;
+        _1 = &_2;
+        _4 = &_1;
+        _7 = Newtype::<&str>(const "foobar");
+        _6 = &_7;
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _8 = (_3.0: &&Newtype<&str>);
+        _9 = (_3.1: &&Newtype<&str>);
+        _11 = <&Newtype<&str> as PartialEq>::eq(_8, _9) -> bb1;
+    }
+
+    bb1: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<&Newtype<&str>, &Newtype<&str>>(move _12, _8, _9, move _14);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)), &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)));
+    let mut _2: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let _3: (Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let mut _4: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let _5: (Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let _6: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let _7: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>));
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let _13: ();
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+
+    bb0: {
+        _3 = mir() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = (const _, const _, const _, const _);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)));
+        _7 = (_1.1: &(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)));
+        _9 = <(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)) as PartialEq>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<(Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>)), (Point, (i32, i32), (&str, &str), (Newtype<i32>, Newtype<i32>))>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        _13 = test_promoted_newtype_str_ref() -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn Newtype(_1: T) -> Newtype<T> {
+    let mut _0: Newtype<T>;
+
+    bb0: {
+        _0 = Newtype::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Newtype(_1: T) -> Newtype<T> {
+    let mut _0: Newtype<T>;
+
+    bb0: {
+        _0 = Newtype::<T>(move _1);
+        return;
+    }
+}

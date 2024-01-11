@@ -1,0 +1,32 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn qqq(_1: impl Iterator<Item = u32>) -> impl Iterator<Item = u64> {
+    debug lol => _1;
+    let mut _0: impl std::iter::Iterator<Item = u64>;
+
+    bb0: {
+        _0 = <impl Iterator<Item = u32> as Iterator>::map::<u64, [closure@ui/impl-trait/issue-46959.rs:6:17: 6:20]>(move _1, const ZeroSized: [closure@ui/impl-trait/issue-46959.rs:6:17: 6:20]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn qqq::{closure#0}(_1: &mut [closure@ui/impl-trait/issue-46959.rs:6:17: 6:20], _2: u32) -> u64 {
+    debug x => _2;
+    let mut _0: u64;
+
+    bb0: {
+        _0 = _2 as u64 (IntToInt);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

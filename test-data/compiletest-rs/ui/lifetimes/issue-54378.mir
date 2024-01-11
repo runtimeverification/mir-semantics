@@ -1,0 +1,18 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/lifetimes/issue-54378.rs:18:1: 19:45>::MUT_STATIC_KIND: Option<!> = {
+    let mut _0: std::option::Option<!>;
+
+    bb0: {
+        _0 = Option::<!>::None;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

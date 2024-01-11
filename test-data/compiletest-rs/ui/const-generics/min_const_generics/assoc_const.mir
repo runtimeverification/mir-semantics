@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/min_const_generics/assoc_const.rs:4:1: 4:28>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/min_const_generics/assoc_const.rs:4:1: 4:28>::VALUE: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedMul(const N, const 2_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} * {}`, which would overflow", const N, const 2_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+<impl at ui/const-generics/min_const_generics/assoc_const.rs:12:1: 12:36>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/min_const_generics/assoc_const.rs:12:1: 12:36>::ASSOC: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedMul(const N, const 3_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} * {}`, which would overflow", const N, const 3_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,14 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = const 0_isize;
+        return;
+    }
+}

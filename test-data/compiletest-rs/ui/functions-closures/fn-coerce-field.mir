@@ -1,0 +1,24 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: r<fn()>;
+    let mut _2: fn();
+    scope 1 {
+        debug _i => _1;
+    }
+
+    bb0: {
+        _2 = f as fn() (Pointer(ReifyFnPointer));
+        _1 = r::<fn()> { field: move _2 };
+        return;
+    }
+}
+
+fn f() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

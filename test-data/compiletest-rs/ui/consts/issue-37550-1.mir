@@ -1,0 +1,69 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn x() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _3: &bool;
+    scope 1 {
+        debug t => _1;
+        let _2: [closure@ui/consts/issue-37550-1.rs:5:13: 5:15];
+        scope 2 {
+            debug x => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const true;
+        _3 = &_1;
+        _2 = [closure@ui/consts/issue-37550-1.rs:5:13: 5:15] { t: move _3 };
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn x() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _3: &bool;
+    scope 1 {
+        debug t => _1;
+        let _2: [closure@ui/consts/issue-37550-1.rs:5:13: 5:15];
+        scope 2 {
+            debug x => _2;
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const true;
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = &_1;
+        _2 = [closure@ui/consts/issue-37550-1.rs:5:13: 5:15] { t: move _3 };
+        StorageDead(_3);
+        _0 = const ();
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn x::{closure#0}(_1: &[closure@ui/consts/issue-37550-1.rs:5:13: 5:15]) -> bool {
+    debug t => (*((*_1).0: &bool));
+    let mut _0: bool;
+    let mut _2: &bool;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &bool);
+        _0 = (*_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

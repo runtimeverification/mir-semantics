@@ -1,0 +1,377 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/dropck/issue-28498-ugeh-with-passed-to-fn.rs:15:10: 15:15>::fmt(_1: &ScribbleOnDrop, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&std::string::String;
+    let _6: &std::string::String;
+
+    bb0: {
+        _3 = const "ScribbleOnDrop";
+        _6 = &((*_1).0: std::string::String);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/dropck/issue-28498-ugeh-with-passed-to-fn.rs:18:1: 18:29>::drop(_1: &mut ScribbleOnDrop) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: std::string::String;
+    let _3: std::string::String;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    scope 1 {
+        debug res => _3;
+    }
+
+    bb0: {
+        _7 = [const "DROPPED"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_const(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = format(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = move _3;
+        drop(((*_1).0: std::string::String)) -> [return: bb3, unwind: bb4];
+    }
+
+    bb3: {
+        ((*_1).0: std::string::String) = move _2;
+        return;
+    }
+
+    bb4 (cleanup): {
+        ((*_1).0: std::string::String) = move _2;
+        resume;
+    }
+}
+
+fn <impl at ui/dropck/issue-28498-ugeh-with-passed-to-fn.rs:26:1: 26:45>::drop(_1: &mut Foo<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &u32;
+
+    bb0: {
+        _6 = [const "Dropping Foo(", const ", _)\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: u32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn callback(_1: &&ScribbleOnDrop) -> String {
+    debug s => _1;
+    let mut _0: std::string::String;
+    let _2: std::string::String;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&&ScribbleOnDrop;
+    scope 1 {
+        debug res => _2;
+    }
+
+    bb0: {
+        _6 = [const ""];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<&&ScribbleOnDrop>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = format(move _3) -> bb3;
+    }
+
+    bb3: {
+        _0 = move _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ScribbleOnDrop;
+    let _2: Foo<&ScribbleOnDrop>;
+    let mut _5: ScribbleOnDrop;
+    let mut _6: std::string::String;
+    let mut _8: std::fmt::Arguments<'_>;
+    let mut _9: &[&str];
+    let _10: &[&str; 1];
+    let _11: [&str; 1];
+    let mut _12: ScribbleOnDrop;
+    let mut _13: std::string::String;
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 1];
+    let _18: [&str; 1];
+    let mut _19: Foo<&ScribbleOnDrop>;
+    let mut _20: &ScribbleOnDrop;
+    let mut _21: std::boxed::Box<for<'r> fn(&'r &ScribbleOnDrop) -> std::string::String>;
+    let mut _22: for<'a, 'b> fn(&'a &'b ScribbleOnDrop) -> std::string::String;
+    let mut _23: Foo<&ScribbleOnDrop>;
+    let mut _24: &ScribbleOnDrop;
+    let mut _25: std::boxed::Box<for<'r> fn(&'r &ScribbleOnDrop) -> std::string::String>;
+    let mut _26: for<'a, 'b> fn(&'a &'b ScribbleOnDrop) -> std::string::String;
+    let _27: ();
+    let mut _28: std::fmt::Arguments<'_>;
+    let mut _29: &[&str];
+    let _30: &[&str; 3];
+    let _31: [&str; 3];
+    let mut _32: &[core::fmt::rt::Argument<'_>];
+    let _33: &[core::fmt::rt::Argument<'_>; 2];
+    let _34: [core::fmt::rt::Argument<'_>; 2];
+    let mut _35: core::fmt::rt::Argument<'_>;
+    let _36: &&ScribbleOnDrop;
+    let mut _37: core::fmt::rt::Argument<'_>;
+    let _38: &&ScribbleOnDrop;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: bool;
+    let mut _42: bool;
+    scope 1 {
+        debug last_dropped => _1;
+        debug foo0 => _2;
+        let _3: Foo<&ScribbleOnDrop>;
+        let _4: ScribbleOnDrop;
+        scope 2 {
+            debug foo1 => _3;
+            debug first_dropped => _4;
+            let _7: std::string::String;
+            let _14: std::string::String;
+            scope 3 {
+                debug res => _7;
+            }
+            scope 4 {
+                debug res => _14;
+            }
+        }
+    }
+
+    bb0: {
+        _42 = const false;
+        _41 = const false;
+        _40 = const false;
+        _39 = const false;
+        _11 = [const "last"];
+        _10 = &_11;
+        _9 = _10 as &[&str] (Pointer(Unsize));
+        _8 = Arguments::<'_>::new_const(move _9) -> [return: bb1, unwind: bb17];
+    }
+
+    bb1: {
+        _7 = format(move _8) -> [return: bb2, unwind: bb17];
+    }
+
+    bb2: {
+        _6 = move _7;
+        _5 = ScribbleOnDrop(move _6);
+        _42 = const true;
+        _1 = move _5;
+        _18 = [const "first"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_const(move _16) -> [return: bb3, unwind: bb17];
+    }
+
+    bb3: {
+        _14 = format(move _15) -> [return: bb4, unwind: bb17];
+    }
+
+    bb4: {
+        _13 = move _14;
+        _12 = ScribbleOnDrop(move _13);
+        _39 = const true;
+        _4 = move _12;
+        _20 = &_1;
+        _22 = callback as for<'a, 'b> fn(&'a &'b ScribbleOnDrop) -> std::string::String (Pointer(ReifyFnPointer));
+        _21 = Box::<for<'r> fn(&'r &ScribbleOnDrop) -> String>::new(move _22) -> [return: bb5, unwind: bb17];
+    }
+
+    bb5: {
+        _19 = Foo::<&ScribbleOnDrop>(const 0_u32, move _20, move _21);
+        _41 = const true;
+        _2 = move _19;
+        _24 = &_4;
+        _26 = callback as for<'a, 'b> fn(&'a &'b ScribbleOnDrop) -> std::string::String (Pointer(ReifyFnPointer));
+        _25 = Box::<for<'r> fn(&'r &ScribbleOnDrop) -> String>::new(move _26) -> [return: bb6, unwind: bb17];
+    }
+
+    bb6: {
+        _23 = Foo::<&ScribbleOnDrop>(const 1_u32, move _24, move _25);
+        _40 = const true;
+        _3 = move _23;
+        _31 = [const "foo0.1: ", const " foo1.1: ", const "\n"];
+        _30 = &_31;
+        _29 = _30 as &[&str] (Pointer(Unsize));
+        _36 = &(_2.1: &ScribbleOnDrop);
+        _35 = core::fmt::rt::Argument::<'_>::new_debug::<&ScribbleOnDrop>(_36) -> [return: bb7, unwind: bb17];
+    }
+
+    bb7: {
+        _38 = &(_3.1: &ScribbleOnDrop);
+        _37 = core::fmt::rt::Argument::<'_>::new_debug::<&ScribbleOnDrop>(_38) -> [return: bb8, unwind: bb17];
+    }
+
+    bb8: {
+        _34 = [move _35, move _37];
+        _33 = &_34;
+        _32 = _33 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _28 = Arguments::<'_>::new_v1(move _29, move _32) -> [return: bb9, unwind: bb17];
+    }
+
+    bb9: {
+        _27 = _print(move _28) -> [return: bb10, unwind: bb17];
+    }
+
+    bb10: {
+        drop(_4) -> [return: bb11, unwind: bb19];
+    }
+
+    bb11: {
+        _39 = const false;
+        drop(_3) -> [return: bb12, unwind: bb21];
+    }
+
+    bb12: {
+        _40 = const false;
+        drop(_2) -> [return: bb13, unwind: bb23];
+    }
+
+    bb13: {
+        _41 = const false;
+        drop(_1) -> bb14;
+    }
+
+    bb14: {
+        _42 = const false;
+        return;
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+
+    bb16 (cleanup): {
+        drop(_4) -> [return: bb19, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        switchInt(_39) -> [0: bb19, otherwise: bb16];
+    }
+
+    bb18 (cleanup): {
+        drop(_3) -> [return: bb21, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        switchInt(_40) -> [0: bb21, otherwise: bb18];
+    }
+
+    bb20 (cleanup): {
+        drop(_2) -> [return: bb23, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        switchInt(_41) -> [0: bb23, otherwise: bb20];
+    }
+
+    bb22 (cleanup): {
+        drop(_1) -> [return: bb15, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        switchInt(_42) -> [0: bb15, otherwise: bb22];
+    }
+}
+
+fn ScribbleOnDrop(_1: String) -> ScribbleOnDrop {
+    let mut _0: ScribbleOnDrop;
+
+    bb0: {
+        _0 = ScribbleOnDrop(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ScribbleOnDrop(_1: String) -> ScribbleOnDrop {
+    let mut _0: ScribbleOnDrop;
+
+    bb0: {
+        _0 = ScribbleOnDrop(move _1);
+        return;
+    }
+}
+
+fn Foo(_1: u32, _2: T, _3: Box<for<'a> fn(&'a T) -> String>) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: u32, _2: T, _3: Box<for<'a> fn(&'a T) -> String>) -> Foo<T> {
+    let mut _0: Foo<T>;
+
+    bb0: {
+        _0 = Foo::<T>(move _1, move _2, move _3);
+        return;
+    }
+}

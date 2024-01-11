@@ -1,0 +1,291 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const _X: () = {
+    let mut _0: ();
+    let _2: ();
+    let mut _3: *mut u8;
+    scope 1 {
+        let _1: *mut u8;
+        scope 2 {
+            debug ptr => _1;
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        ConstEvalCounter;
+        _1 = const_allocate(const 4_usize, const 4_usize) -> bb1;
+    }
+
+    bb1: {
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = _1;
+        ConstEvalCounter;
+        _2 = const_deallocate(move _3, const 4_usize, const 4_usize) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_3);
+        StorageDead(_2);
+        _0 = const ();
+        StorageDead(_1);
+        return;
+    }
+}
+
+const Y: &u32 = {
+    let mut _0: &u32;
+    let mut _2: *mut u8;
+    let _3: &u32;
+    scope 1 {
+        let _1: *mut u32;
+        scope 2 {
+            debug ptr => _1;
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = const_allocate(const 4_usize, const 4_usize) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as *mut u32 (PtrToPtr);
+        StorageDead(_2);
+        (*_1) = const 42_u32;
+        StorageLive(_3);
+        _3 = &(*_1);
+        _0 = &(*_3);
+        StorageDead(_1);
+        StorageDead(_3);
+        return;
+    }
+}
+
+const Z: &u32 = {
+    let mut _0: &u32;
+    let _1: &u32;
+    let _2: u32;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const 42_u32;
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const _Z: () = {
+    let mut _0: ();
+    let mut _2: *const u32;
+    let mut _3: *const u32;
+    let _4: &u32;
+    let _5: ();
+    let mut _6: *mut u8;
+    let _7: ();
+    let mut _8: *mut u8;
+    let _9: ();
+    let mut _10: *mut u8;
+    let mut _12: *const u32;
+    let mut _13: *const u32;
+    let _14: &u32;
+    let _15: ();
+    let mut _16: *mut u8;
+    let _17: ();
+    let mut _18: *mut u8;
+    let _19: ();
+    let mut _20: *mut u8;
+    scope 1 {
+        let _1: *mut u8;
+        scope 2 {
+            debug ptr1 => _1;
+            let _11: *mut u8;
+            scope 3 {
+                debug ptr2 => _11;
+            }
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = const _;
+        _3 = &raw const (*_4);
+        _2 = _3;
+        _1 = move _2 as *mut u8 (PtrToPtr);
+        StorageDead(_2);
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = _1;
+        ConstEvalCounter;
+        _5 = const_deallocate(move _6, const 4_usize, const 4_usize) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_6);
+        StorageDead(_5);
+        StorageLive(_7);
+        StorageLive(_8);
+        _8 = _1;
+        ConstEvalCounter;
+        _7 = const_deallocate(move _8, const 2_usize, const 4_usize) -> bb2;
+    }
+
+    bb2: {
+        StorageDead(_8);
+        StorageDead(_7);
+        StorageLive(_9);
+        StorageLive(_10);
+        _10 = _1;
+        ConstEvalCounter;
+        _9 = const_deallocate(move _10, const 4_usize, const 2_usize) -> bb3;
+    }
+
+    bb3: {
+        StorageDead(_10);
+        StorageDead(_9);
+        StorageLive(_11);
+        StorageLive(_12);
+        StorageLive(_13);
+        StorageLive(_14);
+        _14 = const _;
+        _13 = &raw const (*_14);
+        _12 = _13;
+        _11 = move _12 as *mut u8 (PtrToPtr);
+        StorageDead(_12);
+        StorageDead(_14);
+        StorageDead(_13);
+        StorageLive(_15);
+        StorageLive(_16);
+        _16 = _11;
+        ConstEvalCounter;
+        _15 = const_deallocate(move _16, const 4_usize, const 4_usize) -> bb4;
+    }
+
+    bb4: {
+        StorageDead(_16);
+        StorageDead(_15);
+        StorageLive(_17);
+        StorageLive(_18);
+        _18 = _11;
+        ConstEvalCounter;
+        _17 = const_deallocate(move _18, const 2_usize, const 4_usize) -> bb5;
+    }
+
+    bb5: {
+        StorageDead(_18);
+        StorageDead(_17);
+        StorageLive(_19);
+        StorageLive(_20);
+        _20 = _11;
+        ConstEvalCounter;
+        _19 = const_deallocate(move _20, const 4_usize, const 2_usize) -> bb6;
+    }
+
+    bb6: {
+        StorageDead(_20);
+        StorageDead(_19);
+        _0 = const ();
+        StorageDead(_11);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let _2: &u32;
+    let mut _3: &u32;
+    let _4: u32;
+    let _5: &u32;
+    let _6: &u32;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: u32;
+    let mut _10: u32;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _14: (&u32, &u32);
+    let _15: &u32;
+    let mut _16: &u32;
+    let _17: u32;
+    let _18: &u32;
+    let _19: &u32;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: u32;
+    let mut _23: u32;
+    let _25: !;
+    let mut _26: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _5;
+        debug right_val => _6;
+        let _11: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _11;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _24: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _24;
+        }
+    }
+
+    bb0: {
+        _2 = const _;
+        _4 = const 42_u32;
+        _3 = &_4;
+        _1 = (_2, move _3);
+        _5 = (_1.0: &u32);
+        _6 = (_1.1: &u32);
+        _9 = (*_5);
+        _10 = (*_6);
+        _8 = Eq(move _9, move _10);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _11 = core::panicking::AssertKind::Eq;
+        _13 = Option::<Arguments<'_>>::None;
+        _12 = core::panicking::assert_failed::<u32, u32>(move _11, _5, _6, move _13);
+    }
+
+    bb2: {
+        _15 = const _;
+        _17 = const 42_u32;
+        _16 = &_17;
+        _14 = (_15, move _16);
+        _18 = (_14.0: &u32);
+        _19 = (_14.1: &u32);
+        _22 = (*_18);
+        _23 = (*_19);
+        _21 = Eq(move _22, move _23);
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _24 = core::panicking::AssertKind::Eq;
+        _26 = Option::<Arguments<'_>>::None;
+        _25 = core::panicking::assert_failed::<u32, u32>(move _24, _18, _19, move _26);
+    }
+
+    bb4: {
+        return;
+    }
+}

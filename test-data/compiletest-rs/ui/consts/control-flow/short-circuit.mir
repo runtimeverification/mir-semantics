@@ -1,0 +1,79 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const TRUE: bool = {
+    let mut _0: bool;
+    let mut _1: bool;
+    let mut _2: !;
+
+    bb0: {
+        switchInt(const true) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = const true;
+        StorageDead(_1);
+        return;
+    }
+
+    bb2: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+const FALSE: bool = {
+    let mut _0: bool;
+    let mut _1: bool;
+    let mut _2: !;
+
+    bb0: {
+        switchInt(const false) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        StorageDead(_1);
+        return;
+    }
+
+    bb2: {
+        StorageLive(_1);
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: !;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: !;
+
+    bb0: {
+        _1 = Not(const _);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = core::panicking::panic(const "assertion failed: TRUE");
+    }
+
+    bb2: {
+        _4 = Not(const _);
+        _3 = Not(move _4);
+        switchInt(move _3) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _5 = core::panicking::panic(const "assertion failed: !FALSE");
+    }
+
+    bb4: {
+        return;
+    }
+}

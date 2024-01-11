@@ -1,0 +1,638 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static A: AtomicUsize = {
+    let mut _0: std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = AtomicUsize::new(const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generator/conditional-drop.rs:16:1: 16:16>::drop(_1: &mut B) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 1_usize, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: A, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn test() -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn test2() -> bool {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = t1() -> bb1;
+    }
+
+    bb1: {
+        _2 = t2() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn t1() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+    let _5: std::ops::GeneratorState<(), ()>;
+    let mut _6: std::pin::Pin<&mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]>;
+    let mut _7: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _8: (&usize, &usize);
+    let mut _9: &usize;
+    let _10: usize;
+    let _11: &std::sync::atomic::AtomicUsize;
+    let mut _12: std::sync::atomic::Ordering;
+    let mut _13: &usize;
+    let _14: usize;
+    let mut _15: usize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let _25: std::ops::GeneratorState<(), ()>;
+    let mut _26: std::pin::Pin<&mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]>;
+    let mut _27: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _28: (&usize, &usize);
+    let mut _29: &usize;
+    let _30: usize;
+    let _31: &std::sync::atomic::AtomicUsize;
+    let mut _32: std::sync::atomic::Ordering;
+    let mut _33: &usize;
+    let _34: usize;
+    let mut _35: usize;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: usize;
+    let mut _41: usize;
+    let _43: !;
+    let mut _44: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: usize;
+        scope 2 {
+            debug n => _2;
+            let _16: &usize;
+            let _17: &usize;
+            let _36: &usize;
+            let _37: &usize;
+            scope 3 {
+                debug left_val => _16;
+                debug right_val => _17;
+                let _22: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _22;
+                }
+            }
+            scope 5 {
+                debug left_val => _36;
+                debug right_val => _37;
+                let _42: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _42;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/conditional-drop.rs:32:17: 32:19 (#0)];
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::load(_3, move _4) -> [return: bb1, unwind: bb13];
+    }
+
+    bb1: {
+        _7 = &mut _1;
+        _6 = Pin::<&mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]>::new(move _7) -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _5 = <[generator@ui/generator/conditional-drop.rs:32:17: 32:19] as Generator>::resume(move _6, const ()) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _11 = const {alloc1: &AtomicUsize};
+        _12 = SeqCst;
+        _10 = AtomicUsize::load(_11, move _12) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _9 = &_10;
+        _15 = _2;
+        _14 = Add(move _15, const 1_usize);
+        _13 = &_14;
+        _8 = (move _9, move _13);
+        _16 = (_8.0: &usize);
+        _17 = (_8.1: &usize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<usize, usize>(move _22, _16, _17, move _24) -> bb13;
+    }
+
+    bb6: {
+        _27 = &mut _1;
+        _26 = Pin::<&mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]>::new(move _27) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _25 = <[generator@ui/generator/conditional-drop.rs:32:17: 32:19] as Generator>::resume(move _26, const ()) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _31 = const {alloc1: &AtomicUsize};
+        _32 = SeqCst;
+        _30 = AtomicUsize::load(_31, move _32) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        _29 = &_30;
+        _35 = _2;
+        _34 = Add(move _35, const 1_usize);
+        _33 = &_34;
+        _28 = (move _29, move _33);
+        _36 = (_28.0: &usize);
+        _37 = (_28.1: &usize);
+        _40 = (*_36);
+        _41 = (*_37);
+        _39 = Eq(move _40, move _41);
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _42 = core::panicking::AssertKind::Eq;
+        _44 = Option::<Arguments<'_>>::None;
+        _43 = core::panicking::assert_failed::<usize, usize>(move _42, _36, _37, move _44) -> bb13;
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_1) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: A, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn t1::{closure#0}(_1: Pin<&mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: bool;
+    let _4: ();
+    let mut _5: B;
+    let mut _6: ();
+    let mut _7: ();
+    let mut _8: u32;
+    let mut _9: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _10: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _11: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _12: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _13: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _14: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _15: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _16: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _17: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _18: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _19: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _20: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _21: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _22: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    let mut _23: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19];
+    scope 1 {
+        debug b => (((*(_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19])) as variant#3).0: B);
+    }
+
+    bb0: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        _8 = discriminant((*_9));
+        switchInt(move _8) -> [0: bb1, 1: bb12, 2: bb11, 3: bb10, otherwise: bb13];
+    }
+
+    bb1: {
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_10) as variant#3).1: bool) = const false;
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_11) as variant#3).1: bool) = const true;
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_12) as variant#3).0: B) = B;
+        _3 = test() -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_13) as variant#3).1: bool) = const false;
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        _5 = move (((*_14) as variant#3).0: B);
+        _4 = std::mem::drop::<B>(move _5) -> [return: bb14, unwind: bb6];
+    }
+
+    bb4: {
+        _6 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _6);
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        discriminant((*_15)) = 3;
+        return;
+    }
+
+    bb5: {
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_16) as variant#3).1: bool) = const false;
+        _0 = GeneratorState::<(), ()>::Complete(move _7);
+        _17 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        discriminant((*_17)) = 1;
+        return;
+    }
+
+    bb6 (cleanup): {
+        _22 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        switchInt((((*_22) as variant#3).1: bool)) -> [0: bb7, otherwise: bb9];
+    }
+
+    bb7 (cleanup): {
+        _18 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        (((*_18) as variant#3).1: bool) = const false;
+        _23 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        discriminant((*_23)) = 2;
+        resume;
+    }
+
+    bb8: {
+        _19 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        drop((((*_19) as variant#3).0: B)) -> [return: bb5, unwind: bb7];
+    }
+
+    bb9 (cleanup): {
+        _21 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        drop((((*_21) as variant#3).0: B)) -> [return: bb7, unwind terminate];
+    }
+
+    bb10: {
+        _7 = const ();
+        _20 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:32:17: 32:19]);
+        switchInt((((*_20) as variant#3).1: bool)) -> [0: bb5, otherwise: bb8];
+    }
+
+    bb11: {
+        assert(const false, "generator resumed after panicking") -> bb11;
+    }
+
+    bb12: {
+        assert(const false, "generator resumed after completion") -> bb12;
+    }
+
+    bb13: {
+        unreachable;
+    }
+
+    bb14: {
+        goto -> bb4;
+    }
+}
+
+fn t2() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+    let _5: std::ops::GeneratorState<(), ()>;
+    let mut _6: std::pin::Pin<&mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]>;
+    let mut _7: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _8: (&usize, &usize);
+    let mut _9: &usize;
+    let _10: usize;
+    let _11: &std::sync::atomic::AtomicUsize;
+    let mut _12: std::sync::atomic::Ordering;
+    let mut _13: &usize;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: usize;
+    let mut _19: usize;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    let _23: std::ops::GeneratorState<(), ()>;
+    let mut _24: std::pin::Pin<&mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]>;
+    let mut _25: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _26: (&usize, &usize);
+    let mut _27: &usize;
+    let _28: usize;
+    let _29: &std::sync::atomic::AtomicUsize;
+    let mut _30: std::sync::atomic::Ordering;
+    let mut _31: &usize;
+    let _32: usize;
+    let mut _33: usize;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: usize;
+    let mut _39: usize;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: usize;
+        scope 2 {
+            debug n => _2;
+            let _14: &usize;
+            let _15: &usize;
+            let _34: &usize;
+            let _35: &usize;
+            scope 3 {
+                debug left_val => _14;
+                debug right_val => _15;
+                let _20: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _20;
+                }
+            }
+            scope 5 {
+                debug left_val => _34;
+                debug right_val => _35;
+                let _40: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _40;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/conditional-drop.rs:48:17: 48:19 (#0)];
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::load(_3, move _4) -> [return: bb1, unwind: bb13];
+    }
+
+    bb1: {
+        _7 = &mut _1;
+        _6 = Pin::<&mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]>::new(move _7) -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _5 = <[generator@ui/generator/conditional-drop.rs:48:17: 48:19] as Generator>::resume(move _6, const ()) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _11 = const {alloc1: &AtomicUsize};
+        _12 = SeqCst;
+        _10 = AtomicUsize::load(_11, move _12) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _9 = &_10;
+        _13 = &_2;
+        _8 = (move _9, move _13);
+        _14 = (_8.0: &usize);
+        _15 = (_8.1: &usize);
+        _18 = (*_14);
+        _19 = (*_15);
+        _17 = Eq(move _18, move _19);
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<usize, usize>(move _20, _14, _15, move _22) -> bb13;
+    }
+
+    bb6: {
+        _25 = &mut _1;
+        _24 = Pin::<&mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]>::new(move _25) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        _23 = <[generator@ui/generator/conditional-drop.rs:48:17: 48:19] as Generator>::resume(move _24, const ()) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _29 = const {alloc1: &AtomicUsize};
+        _30 = SeqCst;
+        _28 = AtomicUsize::load(_29, move _30) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        _27 = &_28;
+        _33 = _2;
+        _32 = Add(move _33, const 1_usize);
+        _31 = &_32;
+        _26 = (move _27, move _31);
+        _34 = (_26.0: &usize);
+        _35 = (_26.1: &usize);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<usize, usize>(move _40, _34, _35, move _42) -> bb13;
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_1) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: A, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn t2::{closure#0}(_1: Pin<&mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: bool;
+    let _4: ();
+    let mut _5: B;
+    let mut _6: ();
+    let mut _7: ();
+    let mut _8: u32;
+    let mut _9: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _10: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _11: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _12: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _13: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _14: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _15: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _16: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _17: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _18: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _19: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _20: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _21: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _22: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    let mut _23: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19];
+    scope 1 {
+        debug b => (((*(_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19])) as variant#3).0: B);
+    }
+
+    bb0: {
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        _8 = discriminant((*_9));
+        switchInt(move _8) -> [0: bb1, 1: bb12, 2: bb11, 3: bb10, otherwise: bb13];
+    }
+
+    bb1: {
+        _10 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_10) as variant#3).1: bool) = const false;
+        _11 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_11) as variant#3).1: bool) = const true;
+        _12 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_12) as variant#3).0: B) = B;
+        _3 = test2() -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_13) as variant#3).1: bool) = const false;
+        _14 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        _5 = move (((*_14) as variant#3).0: B);
+        _4 = std::mem::drop::<B>(move _5) -> [return: bb14, unwind: bb6];
+    }
+
+    bb4: {
+        _6 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _6);
+        _15 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        discriminant((*_15)) = 3;
+        return;
+    }
+
+    bb5: {
+        _16 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_16) as variant#3).1: bool) = const false;
+        _0 = GeneratorState::<(), ()>::Complete(move _7);
+        _17 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        discriminant((*_17)) = 1;
+        return;
+    }
+
+    bb6 (cleanup): {
+        _22 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        switchInt((((*_22) as variant#3).1: bool)) -> [0: bb7, otherwise: bb9];
+    }
+
+    bb7 (cleanup): {
+        _18 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        (((*_18) as variant#3).1: bool) = const false;
+        _23 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        discriminant((*_23)) = 2;
+        resume;
+    }
+
+    bb8: {
+        _19 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        drop((((*_19) as variant#3).0: B)) -> [return: bb5, unwind: bb7];
+    }
+
+    bb9 (cleanup): {
+        _21 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        drop((((*_21) as variant#3).0: B)) -> [return: bb7, unwind terminate];
+    }
+
+    bb10: {
+        _7 = const ();
+        _20 = deref_copy (_1.0: &mut [generator@ui/generator/conditional-drop.rs:48:17: 48:19]);
+        switchInt((((*_20) as variant#3).1: bool)) -> [0: bb5, otherwise: bb8];
+    }
+
+    bb11: {
+        assert(const false, "generator resumed after panicking") -> bb11;
+    }
+
+    bb12: {
+        assert(const false, "generator resumed after completion") -> bb12;
+    }
+
+    bb13: {
+        unreachable;
+    }
+
+    bb14: {
+        goto -> bb4;
+    }
+}

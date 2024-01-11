@@ -1,0 +1,200 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn pad() -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn three() -> usize {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: usize;
+
+    bb0: {
+        _1 = one() -> bb1;
+    }
+
+    bb1: {
+        _2 = two() -> bb2;
+    }
+
+    bb2: {
+        _0 = Add(move _1, move _2);
+        return;
+    }
+}
+
+fn two() -> usize {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: usize;
+
+    bb0: {
+        _1 = one() -> bb1;
+    }
+
+    bb1: {
+        _2 = one() -> bb2;
+    }
+
+    bb2: {
+        _0 = Add(move _1, move _2);
+        return;
+    }
+}
+
+fn one() -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let mut _4: &usize;
+    let _5: usize;
+    let _6: &usize;
+    let _7: &usize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&usize, &usize);
+    let mut _16: &usize;
+    let _17: usize;
+    let mut _18: &usize;
+    let _19: usize;
+    let _20: &usize;
+    let _21: &usize;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: usize;
+    let mut _25: usize;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&usize, &usize);
+    let mut _30: &usize;
+    let _31: usize;
+    let mut _32: &usize;
+    let _33: usize;
+    let _34: &usize;
+    let _35: &usize;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: usize;
+    let mut _39: usize;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _34;
+        debug right_val => _35;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+
+    bb0: {
+        _3 = one() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const 1_usize;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &usize);
+        _7 = (_1.1: &usize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<usize, usize>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        _17 = two() -> bb4;
+    }
+
+    bb4: {
+        _16 = &_17;
+        _19 = const 2_usize;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &usize);
+        _21 = (_15.1: &usize);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<usize, usize>(move _26, _20, _21, move _28);
+    }
+
+    bb6: {
+        _31 = three() -> bb7;
+    }
+
+    bb7: {
+        _30 = &_31;
+        _33 = const 3_usize;
+        _32 = &_33;
+        _29 = (move _30, move _32);
+        _34 = (_29.0: &usize);
+        _35 = (_29.1: &usize);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<usize, usize>(move _40, _34, _35, move _42);
+    }
+
+    bb9: {
+        return;
+    }
+}

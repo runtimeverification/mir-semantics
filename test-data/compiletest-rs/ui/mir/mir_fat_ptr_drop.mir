@@ -1,0 +1,130 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static COUNTER: AtomicUsize = {
+    let mut _0: std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = AtomicUsize::new(const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_fat_ptr_drop.rs:18:1: 18:21>::drop(_1: &mut DropMe) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: usize;
+    let _3: &std::sync::atomic::AtomicUsize;
+    let mut _4: std::sync::atomic::Ordering;
+
+    bb0: {
+        _3 = const {alloc1: &AtomicUsize};
+        _4 = SeqCst;
+        _2 = AtomicUsize::fetch_add(_3, const 1_usize, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn fat_ptr_move_then_drop(_1: Box<[DropMe]>) -> () {
+    debug a => _1;
+    let mut _0: ();
+    let _2: std::boxed::Box<[DropMe]>;
+    scope 1 {
+        debug b => _2;
+    }
+
+    bb0: {
+        _2 = move _1;
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<[DropMe]>;
+    let mut _2: std::boxed::Box<[DropMe; 1]>;
+    let _3: ();
+    let mut _4: (&usize, &usize);
+    let mut _5: &usize;
+    let _6: usize;
+    let _7: &std::sync::atomic::AtomicUsize;
+    let mut _8: std::sync::atomic::Ordering;
+    let mut _9: &usize;
+    let _10: usize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: usize;
+    let mut _16: usize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _11: &usize;
+        let _12: &usize;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Box::<[DropMe; 1]>::new(const [DropMe {{  }}]) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::boxed::Box<[DropMe]> (Pointer(Unsize));
+        _3 = fat_ptr_move_then_drop(move _1) -> bb2;
+    }
+
+    bb2: {
+        _7 = const {alloc1: &AtomicUsize};
+        _8 = SeqCst;
+        _6 = AtomicUsize::load(_7, move _8) -> bb3;
+    }
+
+    bb3: {
+        _5 = &_6;
+        _10 = const 1_usize;
+        _9 = &_10;
+        _4 = (move _5, move _9);
+        _11 = (_4.0: &usize);
+        _12 = (_4.1: &usize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<usize, usize>(move _17, _11, _12, move _19);
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+alloc1 (static: COUNTER, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}

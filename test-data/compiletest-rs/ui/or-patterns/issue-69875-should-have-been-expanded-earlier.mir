@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    scope 1 {
+        scope 2 {
+        }
+        scope 3 {
+            debug x => _2;
+            let _2: i32;
+        }
+    }
+
+    bb0: {
+        _1 = const 0_i32;
+        switchInt(_1) -> [0: bb1, 1: bb2, 2: bb3, otherwise: bb4];
+    }
+
+    bb1: {
+        _2 = _1;
+        goto -> bb4;
+    }
+
+    bb2: {
+        _2 = _1;
+        goto -> bb4;
+    }
+
+    bb3: {
+        _2 = _1;
+        goto -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

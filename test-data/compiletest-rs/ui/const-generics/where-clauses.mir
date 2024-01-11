@@ -1,0 +1,196 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Bar::bar() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn test() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = <T as Bar<N>>::bar() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+test::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+test::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:11:1: 11:28>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/where-clauses.rs:11:1: 11:28>::test() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = <T as Bar<N>>::bar() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:11:1: 11:28>::test::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:11:1: 11:28>::test::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn Fiz::fiz() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = <T as Bar<N>>::bar() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+Fiz::fiz::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+Fiz::fiz::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:23:1: 23:35>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:24:1: 24:35>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/where-clauses.rs:25:1: 25:35>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+
+    bb0: {
+        _1 = test::<u8, 13>() -> bb1;
+    }
+
+    bb1: {
+        _2 = Faz::<3>::test::<u8>() -> bb2;
+    }
+
+    bb2: {
+        _3 = <u8 as Fiz<13>>::fiz::<u8>() -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 13_usize;
+        return;
+    }
+}

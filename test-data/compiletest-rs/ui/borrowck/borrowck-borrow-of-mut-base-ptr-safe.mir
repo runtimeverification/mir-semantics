@@ -1,0 +1,41 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &mut isize, _2: &mut isize) -> () {
+    debug t0 => _1;
+    debug t1 => _2;
+    let mut _0: ();
+    let _3: &isize;
+    let _5: &isize;
+    let _6: &isize;
+    let mut _7: &mut isize;
+    scope 1 {
+        debug p => _3;
+        let mut _4: &&mut isize;
+        scope 2 {
+            debug t2 => _4;
+            scope 3 {
+                debug q => _5;
+                scope 4 {
+                    debug r => _6;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = &(*_1);
+        _4 = &_1;
+        _7 = deref_copy (*_4);
+        _5 = &(*_7);
+        _6 = &(*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

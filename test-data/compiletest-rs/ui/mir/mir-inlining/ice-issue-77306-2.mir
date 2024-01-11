@@ -1,0 +1,153 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir-inlining/ice-issue-77306-2.rs:7:1: 7:25>::next(_1: &mut Cursor) -> Option<TokenTree> {
+    debug self => _1;
+    let mut _0: std::option::Option<TokenTree>;
+
+    bb0: {
+        _0 = Option::<TokenTree>::None;
+        return;
+    }
+}
+
+fn tokenstream_probably_equal_for_proc_macro() -> () {
+    let mut _0: ();
+    let mut _3: std::iter::Zip<&mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>, &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>>;
+    let mut _4: std::iter::Zip<&mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>, &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>>;
+    let mut _5: &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+    let mut _6: &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+    let mut _7: &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+    let mut _8: &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+    let mut _9: &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+    let mut _11: std::option::Option<(TokenTree, TokenTree)>;
+    let mut _12: &mut std::iter::Zip<&mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>, &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>>;
+    let mut _13: isize;
+    scope 1 {
+        debug c1 => const Cursor {{  }};
+        scope 2 {
+            debug c2 => const Cursor {{  }};
+            let mut _1: std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+            scope 3 {
+                debug t1 => _1;
+                let mut _2: std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>;
+                scope 4 {
+                    debug t2 => _2;
+                    let mut _10: std::iter::Zip<&mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>, &mut std::iter::FlatMap<Cursor, impl std::iter::Iterator<Item = TokenTree>, fn(TokenTree) -> impl std::iter::Iterator<Item = TokenTree> {tokenstream_probably_equal_for_proc_macro::break_tokens}>>;
+                    scope 5 {
+                        debug iter => _10;
+                        scope 6 {
+                            debug _t1 => const TokenTree {{  }};
+                            debug _t2 => const TokenTree {{  }};
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = <Cursor as Iterator>::flat_map::<impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>(const Cursor {{  }}, break_tokens) -> bb1;
+    }
+
+    bb1: {
+        _2 = <Cursor as Iterator>::flat_map::<impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>(const Cursor {{  }}, break_tokens) -> [return: bb2, unwind: bb14];
+    }
+
+    bb2: {
+        _7 = &mut _1;
+        _6 = <FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}> as Iterator>::by_ref(move _7) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _5 = _6;
+        _9 = &mut _2;
+        _8 = <FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}> as Iterator>::by_ref(move _9) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _4 = <&mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}> as Iterator>::zip::<&mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>>(move _5, move _8) -> [return: bb5, unwind: bb13];
+    }
+
+    bb5: {
+        _3 = <Zip<&mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>, &mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>> as IntoIterator>::into_iter(move _4) -> [return: bb6, unwind: bb13];
+    }
+
+    bb6: {
+        _10 = move _3;
+        goto -> bb7;
+    }
+
+    bb7: {
+        _12 = &mut _10;
+        _11 = <Zip<&mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>, &mut FlatMap<Cursor, impl Iterator<Item = TokenTree>, fn(TokenTree) -> impl Iterator<Item = TokenTree> {break_tokens}>> as Iterator>::next(_12) -> [return: bb8, unwind: bb13];
+    }
+
+    bb8: {
+        _13 = discriminant(_11);
+        switchInt(move _13) -> [0: bb10, 1: bb7, otherwise: bb9];
+    }
+
+    bb9: {
+        unreachable;
+    }
+
+    bb10: {
+        drop(_2) -> [return: bb11, unwind: bb14];
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_2) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_1) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+}
+
+fn break_tokens(_1: TokenTree) -> impl Iterator<Item = TokenTree> {
+    debug _tree => const TokenTree {{  }};
+    let mut _0: impl std::iter::Iterator<Item = TokenTree>;
+    let _2: std::vec::Vec<TokenTree>;
+    let mut _3: std::vec::Vec<TokenTree>;
+    scope 1 {
+        debug token_trees => _2;
+    }
+
+    bb0: {
+        _2 = Vec::<TokenTree>::new() -> bb1;
+    }
+
+    bb1: {
+        _3 = move _2;
+        _0 = <Vec<TokenTree> as IntoIterator>::into_iter(move _3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = tokenstream_probably_equal_for_proc_macro() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

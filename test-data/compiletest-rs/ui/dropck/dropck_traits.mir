@@ -1,0 +1,90 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/dropck/dropck_traits.rs:17:1: 17:24>::drop(_1: &mut Foo<L>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/dropck/dropck_traits.rs:32:1: 32:47>::drop(_1: &mut Foo2<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/dropck/dropck_traits.rs:50:1: 50:24>::drop(_1: &mut Bar<L>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/dropck/dropck_traits.rs:60:1: 60:85>::drop(_1: &mut FnHolder<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo<i32>;
+    scope 1 {
+        debug _foo => _1;
+        let _2: Bar<i32>;
+        scope 2 {
+            debug _bar => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Foo::<i32> { l: const 0_i32 };
+        _2 = Bar::<i32> { l: const 0_i32 };
+        drop(_2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn FnHolder(_1: T) -> FnHolder<T> {
+    let mut _0: FnHolder<T>;
+
+    bb0: {
+        _0 = FnHolder::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn FnHolder(_1: T) -> FnHolder<T> {
+    let mut _0: FnHolder<T>;
+
+    bb0: {
+        _0 = FnHolder::<T>(move _1);
+        return;
+    }
+}

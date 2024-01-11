@@ -1,0 +1,58 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/match/issue-72896.rs:11:10: 11:19>::eq(_1: &EnumSet<T>, _2: &EnumSet<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &<T as EnumSetType>::Repr;
+    let mut _4: &<T as EnumSetType>::Repr;
+
+    bb0: {
+        _3 = &((*_1).0: <T as EnumSetType>::Repr);
+        _4 = &((*_2).0: <T as EnumSetType>::Repr);
+        _0 = <<T as EnumSetType>::Repr as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/match/issue-72896.rs:11:21: 11:23>::assert_receiver_is_total_eq(_1: &EnumSet<T>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+const CONST_SET: EnumSet<Enum8> = {
+    let mut _0: EnumSet<Enum8>;
+
+    bb0: {
+        _0 = EnumSet::<Enum8> { __enumset_underlying: const 3_u8 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: EnumSet<Enum8>;
+    let _2: !;
+
+    bb0: {
+        _1 = const _;
+        switchInt((_1.0: u8)) -> [3: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = begin_panic::<&str>(const "match fell through?");
+    }
+
+    bb2: {
+        return;
+    }
+}

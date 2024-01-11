@@ -1,0 +1,20 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _3: !;
+    scope 1 {
+        debug x => _1;
+        let _2: &i32;
+        scope 2 {
+            debug y => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 2_i32;
+        _2 = &_1;
+        _3 = begin_panic::<&str>(const "panic 1");
+    }
+}

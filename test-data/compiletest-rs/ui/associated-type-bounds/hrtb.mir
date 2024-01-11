@@ -1,0 +1,49 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo2() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo3() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo4() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo5() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,187 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const 3_i64;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo() -> i64 {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const 3_i64;
+        return;
+    }
+}
+
+fn bar(_1: i64) -> i64 {
+    debug x => _1;
+    let mut _0: i64;
+
+    bb0: {
+        _0 = Mul(_1, const 2_i64);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn bar(_1: i64) -> i64 {
+    debug x => _1;
+    let mut _0: i64;
+    let mut _2: i64;
+
+    bb0: {
+        StorageLive(_2);
+        _2 = _1;
+        _0 = Mul(move _2, const 2_i64);
+        StorageDead(_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &i64;
+    let _2: i64;
+    let mut _3: i64;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: (&i64, &i64);
+    let mut _9: &i64;
+    let _10: i64;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: i64;
+    let mut _16: i64;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let _21: i64;
+    let mut _22: i64;
+    let mut _23: i64;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: (&i64, &i64);
+    let mut _29: &i64;
+    let _30: i64;
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: i64;
+    let mut _36: i64;
+    let _38: !;
+    let mut _39: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug val => _1;
+        let _11: &i64;
+        let _12: &i64;
+        let _20: &i64;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+        scope 4 {
+            debug val2 => _20;
+            let _31: &i64;
+            let _32: &i64;
+            scope 5 {
+                debug left_val => _31;
+                debug right_val => _32;
+                let _37: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _37;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = foo() -> bb1;
+    }
+
+    bb1: {
+        _4 = Eq(const 2_i64, const 0_i64);
+        assert(!move _4, "attempt to calculate the remainder of `{}` with a divisor of zero", _3) -> bb2;
+    }
+
+    bb2: {
+        _5 = Eq(const 2_i64, const -1_i64);
+        _6 = Eq(_3, const i64::MIN);
+        _7 = BitAnd(move _5, move _6);
+        assert(!move _7, "attempt to compute the remainder of `{} % {}`, which would overflow", _3, const 2_i64) -> bb3;
+    }
+
+    bb3: {
+        _2 = Rem(move _3, const 2_i64);
+        _1 = &_2;
+        _10 = const 1_i64;
+        _9 = &_10;
+        _8 = (_1, move _9);
+        _11 = (_8.0: &i64);
+        _12 = (_8.1: &i64);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<i64, i64>(move _17, _11, _12, move _19);
+    }
+
+    bb5: {
+        _23 = Add(const 1_i64, const 1_i64);
+        _22 = bar(move _23) -> bb6;
+    }
+
+    bb6: {
+        _24 = Eq(const 3_i64, const 0_i64);
+        assert(!move _24, "attempt to calculate the remainder of `{}` with a divisor of zero", _22) -> bb7;
+    }
+
+    bb7: {
+        _25 = Eq(const 3_i64, const -1_i64);
+        _26 = Eq(_22, const i64::MIN);
+        _27 = BitAnd(move _25, move _26);
+        assert(!move _27, "attempt to compute the remainder of `{} % {}`, which would overflow", _22, const 3_i64) -> bb8;
+    }
+
+    bb8: {
+        _21 = Rem(move _22, const 3_i64);
+        _20 = &_21;
+        _30 = const 1_i64;
+        _29 = &_30;
+        _28 = (_20, move _29);
+        _31 = (_28.0: &i64);
+        _32 = (_28.1: &i64);
+        _35 = (*_31);
+        _36 = (*_32);
+        _34 = Eq(move _35, move _36);
+        _33 = Not(move _34);
+        switchInt(move _33) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _37 = core::panicking::AssertKind::Eq;
+        _39 = Option::<Arguments<'_>>::None;
+        _38 = core::panicking::assert_failed::<i64, i64>(move _37, _31, _32, move _39);
+    }
+
+    bb10: {
+        return;
+    }
+}

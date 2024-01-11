@@ -1,0 +1,1929 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&f32, &f32);
+    let mut _2: &f32;
+    let _3: f32;
+    let mut _4: &f32;
+    let _5: f32;
+    let _6: &f32;
+    let _7: &f32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: f32;
+    let mut _11: f32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 1];
+    let _18: [&str; 1];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 0];
+    let _21: [core::fmt::rt::Argument<'_>; 0];
+    let mut _22: (&f32, &f32);
+    let mut _23: &f32;
+    let _24: f32;
+    let mut _25: u128;
+    let mut _26: &f32;
+    let _27: f32;
+    let _28: &f32;
+    let _29: &f32;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: f32;
+    let mut _33: f32;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: std::fmt::Arguments<'_>;
+    let mut _38: &[&str];
+    let _39: &[&str; 1];
+    let _40: [&str; 1];
+    let mut _41: &[core::fmt::rt::Argument<'_>];
+    let _42: &[core::fmt::rt::Argument<'_>; 0];
+    let _43: [core::fmt::rt::Argument<'_>; 0];
+    let mut _44: (&f32, &f32);
+    let mut _45: &f32;
+    let _46: f32;
+    let mut _47: &f32;
+    let _48: f32;
+    let _49: &f32;
+    let _50: &f32;
+    let mut _51: bool;
+    let mut _52: bool;
+    let mut _53: f32;
+    let mut _54: f32;
+    let _56: !;
+    let mut _57: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _58: std::fmt::Arguments<'_>;
+    let mut _59: &[&str];
+    let _60: &[&str; 1];
+    let _61: [&str; 1];
+    let mut _62: &[core::fmt::rt::Argument<'_>];
+    let _63: &[core::fmt::rt::Argument<'_>; 0];
+    let _64: [core::fmt::rt::Argument<'_>; 0];
+    let mut _65: (&f32, &f32);
+    let mut _66: &f32;
+    let _67: f32;
+    let mut _68: u128;
+    let mut _69: &f32;
+    let _70: f32;
+    let _71: &f32;
+    let _72: &f32;
+    let mut _73: bool;
+    let mut _74: bool;
+    let mut _75: f32;
+    let mut _76: f32;
+    let _78: !;
+    let mut _79: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _80: std::fmt::Arguments<'_>;
+    let mut _81: &[&str];
+    let _82: &[&str; 1];
+    let _83: [&str; 1];
+    let mut _84: &[core::fmt::rt::Argument<'_>];
+    let _85: &[core::fmt::rt::Argument<'_>; 0];
+    let _86: [core::fmt::rt::Argument<'_>; 0];
+    let mut _87: (&f32, &f32);
+    let mut _88: &f32;
+    let _89: f32;
+    let mut _90: &f32;
+    let _91: f32;
+    let _92: &f32;
+    let _93: &f32;
+    let mut _94: bool;
+    let mut _95: bool;
+    let mut _96: f32;
+    let mut _97: f32;
+    let _99: !;
+    let mut _100: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _101: std::fmt::Arguments<'_>;
+    let mut _102: &[&str];
+    let _103: &[&str; 1];
+    let _104: [&str; 1];
+    let mut _105: &[core::fmt::rt::Argument<'_>];
+    let _106: &[core::fmt::rt::Argument<'_>; 0];
+    let _107: [core::fmt::rt::Argument<'_>; 0];
+    let mut _108: (&f32, &f32);
+    let mut _109: &f32;
+    let _110: f32;
+    let mut _111: u128;
+    let mut _112: &f32;
+    let _113: f32;
+    let _114: &f32;
+    let _115: &f32;
+    let mut _116: bool;
+    let mut _117: bool;
+    let mut _118: f32;
+    let mut _119: f32;
+    let _121: !;
+    let mut _122: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _123: std::fmt::Arguments<'_>;
+    let mut _124: &[&str];
+    let _125: &[&str; 1];
+    let _126: [&str; 1];
+    let mut _127: &[core::fmt::rt::Argument<'_>];
+    let _128: &[core::fmt::rt::Argument<'_>; 0];
+    let _129: [core::fmt::rt::Argument<'_>; 0];
+    let mut _130: (&f32, &f32);
+    let mut _131: &f32;
+    let _132: f32;
+    let mut _133: &f32;
+    let _134: f32;
+    let _135: &f32;
+    let _136: &f32;
+    let mut _137: bool;
+    let mut _138: bool;
+    let mut _139: f32;
+    let mut _140: f32;
+    let _142: !;
+    let mut _143: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _144: std::fmt::Arguments<'_>;
+    let mut _145: &[&str];
+    let _146: &[&str; 1];
+    let _147: [&str; 1];
+    let mut _148: &[core::fmt::rt::Argument<'_>];
+    let _149: &[core::fmt::rt::Argument<'_>; 0];
+    let _150: [core::fmt::rt::Argument<'_>; 0];
+    let mut _151: (&f32, &f32);
+    let mut _152: &f32;
+    let _153: f32;
+    let mut _154: u128;
+    let mut _155: &f32;
+    let _156: f32;
+    let _157: &f32;
+    let _158: &f32;
+    let mut _159: bool;
+    let mut _160: bool;
+    let mut _161: f32;
+    let mut _162: f32;
+    let _164: !;
+    let mut _165: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _166: std::fmt::Arguments<'_>;
+    let mut _167: &[&str];
+    let _168: &[&str; 1];
+    let _169: [&str; 1];
+    let mut _170: &[core::fmt::rt::Argument<'_>];
+    let _171: &[core::fmt::rt::Argument<'_>; 0];
+    let _172: [core::fmt::rt::Argument<'_>; 0];
+    let mut _173: (&f32, &f32);
+    let mut _174: &f32;
+    let _175: f32;
+    let mut _176: &f32;
+    let _177: f32;
+    let _178: &f32;
+    let _179: &f32;
+    let mut _180: bool;
+    let mut _181: bool;
+    let mut _182: f32;
+    let mut _183: f32;
+    let _185: !;
+    let mut _186: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _187: std::fmt::Arguments<'_>;
+    let mut _188: &[&str];
+    let _189: &[&str; 1];
+    let _190: [&str; 1];
+    let mut _191: &[core::fmt::rt::Argument<'_>];
+    let _192: &[core::fmt::rt::Argument<'_>; 0];
+    let _193: [core::fmt::rt::Argument<'_>; 0];
+    let mut _194: (&f32, &f32);
+    let mut _195: &f32;
+    let _196: f32;
+    let mut _197: u128;
+    let mut _198: &f32;
+    let _199: f32;
+    let _200: &f32;
+    let _201: &f32;
+    let mut _202: bool;
+    let mut _203: bool;
+    let mut _204: f32;
+    let mut _205: f32;
+    let _207: !;
+    let mut _208: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _209: std::fmt::Arguments<'_>;
+    let mut _210: &[&str];
+    let _211: &[&str; 1];
+    let _212: [&str; 1];
+    let mut _213: &[core::fmt::rt::Argument<'_>];
+    let _214: &[core::fmt::rt::Argument<'_>; 0];
+    let _215: [core::fmt::rt::Argument<'_>; 0];
+    let mut _216: (&f32, &f32);
+    let mut _217: &f32;
+    let _218: f32;
+    let mut _219: &f32;
+    let _220: f32;
+    let _221: &f32;
+    let _222: &f32;
+    let mut _223: bool;
+    let mut _224: bool;
+    let mut _225: f32;
+    let mut _226: f32;
+    let _228: !;
+    let mut _229: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _230: std::fmt::Arguments<'_>;
+    let mut _231: &[&str];
+    let _232: &[&str; 1];
+    let _233: [&str; 1];
+    let mut _234: &[core::fmt::rt::Argument<'_>];
+    let _235: &[core::fmt::rt::Argument<'_>; 0];
+    let _236: [core::fmt::rt::Argument<'_>; 0];
+    let mut _237: (&f32, &f32);
+    let mut _238: &f32;
+    let _239: f32;
+    let mut _240: u128;
+    let mut _241: &f32;
+    let _242: f32;
+    let _243: &f32;
+    let _244: &f32;
+    let mut _245: bool;
+    let mut _246: bool;
+    let mut _247: f32;
+    let mut _248: f32;
+    let _250: !;
+    let mut _251: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _252: std::fmt::Arguments<'_>;
+    let mut _253: &[&str];
+    let _254: &[&str; 1];
+    let _255: [&str; 1];
+    let mut _256: &[core::fmt::rt::Argument<'_>];
+    let _257: &[core::fmt::rt::Argument<'_>; 0];
+    let _258: [core::fmt::rt::Argument<'_>; 0];
+    let mut _259: (&f32, &f32);
+    let mut _260: &f32;
+    let _261: f32;
+    let mut _262: &f32;
+    let _263: f32;
+    let _264: &f32;
+    let _265: &f32;
+    let mut _266: bool;
+    let mut _267: bool;
+    let mut _268: f32;
+    let mut _269: f32;
+    let _271: !;
+    let mut _272: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _273: std::fmt::Arguments<'_>;
+    let mut _274: &[&str];
+    let _275: &[&str; 1];
+    let _276: [&str; 1];
+    let mut _277: &[core::fmt::rt::Argument<'_>];
+    let _278: &[core::fmt::rt::Argument<'_>; 0];
+    let _279: [core::fmt::rt::Argument<'_>; 0];
+    let mut _280: (&f32, &f32);
+    let mut _281: &f32;
+    let _282: f32;
+    let mut _283: u128;
+    let mut _284: &f32;
+    let _285: f32;
+    let _286: &f32;
+    let _287: &f32;
+    let mut _288: bool;
+    let mut _289: bool;
+    let mut _290: f32;
+    let mut _291: f32;
+    let _293: !;
+    let mut _294: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _295: std::fmt::Arguments<'_>;
+    let mut _296: &[&str];
+    let _297: &[&str; 1];
+    let _298: [&str; 1];
+    let mut _299: &[core::fmt::rt::Argument<'_>];
+    let _300: &[core::fmt::rt::Argument<'_>; 0];
+    let _301: [core::fmt::rt::Argument<'_>; 0];
+    let mut _302: (&f32, &f32);
+    let mut _303: &f32;
+    let _304: f32;
+    let mut _305: &f32;
+    let _306: f32;
+    let _307: &f32;
+    let _308: &f32;
+    let mut _309: bool;
+    let mut _310: bool;
+    let mut _311: f32;
+    let mut _312: f32;
+    let _314: !;
+    let mut _315: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _316: std::fmt::Arguments<'_>;
+    let mut _317: &[&str];
+    let _318: &[&str; 1];
+    let _319: [&str; 1];
+    let mut _320: &[core::fmt::rt::Argument<'_>];
+    let _321: &[core::fmt::rt::Argument<'_>; 0];
+    let _322: [core::fmt::rt::Argument<'_>; 0];
+    let mut _323: (&f32, &f32);
+    let mut _324: &f32;
+    let _325: f32;
+    let mut _326: u128;
+    let mut _327: &f32;
+    let _328: f32;
+    let _329: &f32;
+    let _330: &f32;
+    let mut _331: bool;
+    let mut _332: bool;
+    let mut _333: f32;
+    let mut _334: f32;
+    let _336: !;
+    let mut _337: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _338: std::fmt::Arguments<'_>;
+    let mut _339: &[&str];
+    let _340: &[&str; 1];
+    let _341: [&str; 1];
+    let mut _342: &[core::fmt::rt::Argument<'_>];
+    let _343: &[core::fmt::rt::Argument<'_>; 0];
+    let _344: [core::fmt::rt::Argument<'_>; 0];
+    let mut _345: (&f32, &f32);
+    let mut _346: &f32;
+    let _347: f32;
+    let mut _348: &f32;
+    let _349: f32;
+    let _350: &f32;
+    let _351: &f32;
+    let mut _352: bool;
+    let mut _353: bool;
+    let mut _354: f32;
+    let mut _355: f32;
+    let _357: !;
+    let mut _358: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _359: std::fmt::Arguments<'_>;
+    let mut _360: &[&str];
+    let _361: &[&str; 1];
+    let _362: [&str; 1];
+    let mut _363: &[core::fmt::rt::Argument<'_>];
+    let _364: &[core::fmt::rt::Argument<'_>; 0];
+    let _365: [core::fmt::rt::Argument<'_>; 0];
+    let mut _366: (&f32, &f32);
+    let mut _367: &f32;
+    let _368: f32;
+    let mut _369: u128;
+    let mut _370: &f32;
+    let _371: f32;
+    let _372: &f32;
+    let _373: &f32;
+    let mut _374: bool;
+    let mut _375: bool;
+    let mut _376: f32;
+    let mut _377: f32;
+    let _379: !;
+    let mut _380: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _381: std::fmt::Arguments<'_>;
+    let mut _382: &[&str];
+    let _383: &[&str; 1];
+    let _384: [&str; 1];
+    let mut _385: &[core::fmt::rt::Argument<'_>];
+    let _386: &[core::fmt::rt::Argument<'_>; 0];
+    let _387: [core::fmt::rt::Argument<'_>; 0];
+    let mut _388: (&f32, &f32);
+    let mut _389: &f32;
+    let _390: f32;
+    let mut _391: &f32;
+    let _392: f32;
+    let _393: &f32;
+    let _394: &f32;
+    let mut _395: bool;
+    let mut _396: bool;
+    let mut _397: f32;
+    let mut _398: f32;
+    let _400: !;
+    let mut _401: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _402: std::fmt::Arguments<'_>;
+    let mut _403: &[&str];
+    let _404: &[&str; 1];
+    let _405: [&str; 1];
+    let mut _406: &[core::fmt::rt::Argument<'_>];
+    let _407: &[core::fmt::rt::Argument<'_>; 0];
+    let _408: [core::fmt::rt::Argument<'_>; 0];
+    let mut _409: (&f32, &f32);
+    let mut _410: &f32;
+    let _411: f32;
+    let mut _412: u128;
+    let mut _413: &f32;
+    let _414: f32;
+    let _415: &f32;
+    let _416: &f32;
+    let mut _417: bool;
+    let mut _418: bool;
+    let mut _419: f32;
+    let mut _420: f32;
+    let _422: !;
+    let mut _423: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _424: std::fmt::Arguments<'_>;
+    let mut _425: &[&str];
+    let _426: &[&str; 1];
+    let _427: [&str; 1];
+    let mut _428: &[core::fmt::rt::Argument<'_>];
+    let _429: &[core::fmt::rt::Argument<'_>; 0];
+    let _430: [core::fmt::rt::Argument<'_>; 0];
+    let mut _431: (&f32, &f32);
+    let mut _432: &f32;
+    let _433: f32;
+    let mut _434: &f32;
+    let _435: f32;
+    let _436: &f32;
+    let _437: &f32;
+    let mut _438: bool;
+    let mut _439: bool;
+    let mut _440: f32;
+    let mut _441: f32;
+    let _443: !;
+    let mut _444: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _445: std::fmt::Arguments<'_>;
+    let mut _446: &[&str];
+    let _447: &[&str; 1];
+    let _448: [&str; 1];
+    let mut _449: &[core::fmt::rt::Argument<'_>];
+    let _450: &[core::fmt::rt::Argument<'_>; 0];
+    let _451: [core::fmt::rt::Argument<'_>; 0];
+    let mut _452: (&f32, &f32);
+    let mut _453: &f32;
+    let _454: f32;
+    let mut _455: u128;
+    let mut _456: &f32;
+    let _457: f32;
+    let _458: &f32;
+    let _459: &f32;
+    let mut _460: bool;
+    let mut _461: bool;
+    let mut _462: f32;
+    let mut _463: f32;
+    let _465: !;
+    let mut _466: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _467: std::fmt::Arguments<'_>;
+    let mut _468: &[&str];
+    let _469: &[&str; 1];
+    let _470: [&str; 1];
+    let mut _471: &[core::fmt::rt::Argument<'_>];
+    let _472: &[core::fmt::rt::Argument<'_>; 0];
+    let _473: [core::fmt::rt::Argument<'_>; 0];
+    let mut _474: (&f64, &f64);
+    let mut _475: &f64;
+    let _476: f64;
+    let mut _477: &f64;
+    let _478: f64;
+    let _479: &f64;
+    let _480: &f64;
+    let mut _481: bool;
+    let mut _482: bool;
+    let mut _483: f64;
+    let mut _484: f64;
+    let _486: !;
+    let mut _487: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _488: std::fmt::Arguments<'_>;
+    let mut _489: &[&str];
+    let _490: &[&str; 1];
+    let _491: [&str; 1];
+    let mut _492: &[core::fmt::rt::Argument<'_>];
+    let _493: &[core::fmt::rt::Argument<'_>; 0];
+    let _494: [core::fmt::rt::Argument<'_>; 0];
+    let mut _495: (&f64, &f64);
+    let mut _496: &f64;
+    let _497: f64;
+    let mut _498: u128;
+    let mut _499: &f64;
+    let _500: f64;
+    let _501: &f64;
+    let _502: &f64;
+    let mut _503: bool;
+    let mut _504: bool;
+    let mut _505: f64;
+    let mut _506: f64;
+    let _508: !;
+    let mut _509: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _510: std::fmt::Arguments<'_>;
+    let mut _511: &[&str];
+    let _512: &[&str; 1];
+    let _513: [&str; 1];
+    let mut _514: &[core::fmt::rt::Argument<'_>];
+    let _515: &[core::fmt::rt::Argument<'_>; 0];
+    let _516: [core::fmt::rt::Argument<'_>; 0];
+    let mut _517: (&f64, &f64);
+    let mut _518: &f64;
+    let _519: f64;
+    let mut _520: &f64;
+    let _521: f64;
+    let _522: &f64;
+    let _523: &f64;
+    let mut _524: bool;
+    let mut _525: bool;
+    let mut _526: f64;
+    let mut _527: f64;
+    let _529: !;
+    let mut _530: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _531: std::fmt::Arguments<'_>;
+    let mut _532: &[&str];
+    let _533: &[&str; 1];
+    let _534: [&str; 1];
+    let mut _535: &[core::fmt::rt::Argument<'_>];
+    let _536: &[core::fmt::rt::Argument<'_>; 0];
+    let _537: [core::fmt::rt::Argument<'_>; 0];
+    let mut _538: (&f64, &f64);
+    let mut _539: &f64;
+    let _540: f64;
+    let mut _541: u128;
+    let mut _542: &f64;
+    let _543: f64;
+    let _544: &f64;
+    let _545: &f64;
+    let mut _546: bool;
+    let mut _547: bool;
+    let mut _548: f64;
+    let mut _549: f64;
+    let _551: !;
+    let mut _552: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _553: std::fmt::Arguments<'_>;
+    let mut _554: &[&str];
+    let _555: &[&str; 1];
+    let _556: [&str; 1];
+    let mut _557: &[core::fmt::rt::Argument<'_>];
+    let _558: &[core::fmt::rt::Argument<'_>; 0];
+    let _559: [core::fmt::rt::Argument<'_>; 0];
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _28;
+        debug right_val => _29;
+        let _34: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _34;
+        }
+    }
+    scope 5 {
+        debug left_val => _49;
+        debug right_val => _50;
+        let _55: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _55;
+        }
+    }
+    scope 7 {
+        debug left_val => _71;
+        debug right_val => _72;
+        let _77: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _77;
+        }
+    }
+    scope 9 {
+        debug left_val => _92;
+        debug right_val => _93;
+        let _98: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _98;
+        }
+    }
+    scope 11 {
+        debug left_val => _114;
+        debug right_val => _115;
+        let _120: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _120;
+        }
+    }
+    scope 13 {
+        debug left_val => _135;
+        debug right_val => _136;
+        let _141: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _141;
+        }
+    }
+    scope 15 {
+        debug left_val => _157;
+        debug right_val => _158;
+        let _163: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _163;
+        }
+    }
+    scope 17 {
+        debug left_val => _178;
+        debug right_val => _179;
+        let _184: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _184;
+        }
+    }
+    scope 19 {
+        debug left_val => _200;
+        debug right_val => _201;
+        let _206: core::panicking::AssertKind;
+        scope 20 {
+            debug kind => _206;
+        }
+    }
+    scope 21 {
+        debug left_val => _221;
+        debug right_val => _222;
+        let _227: core::panicking::AssertKind;
+        scope 22 {
+            debug kind => _227;
+        }
+    }
+    scope 23 {
+        debug left_val => _243;
+        debug right_val => _244;
+        let _249: core::panicking::AssertKind;
+        scope 24 {
+            debug kind => _249;
+        }
+    }
+    scope 25 {
+        debug left_val => _264;
+        debug right_val => _265;
+        let _270: core::panicking::AssertKind;
+        scope 26 {
+            debug kind => _270;
+        }
+    }
+    scope 27 {
+        debug left_val => _286;
+        debug right_val => _287;
+        let _292: core::panicking::AssertKind;
+        scope 28 {
+            debug kind => _292;
+        }
+    }
+    scope 29 {
+        debug left_val => _307;
+        debug right_val => _308;
+        let _313: core::panicking::AssertKind;
+        scope 30 {
+            debug kind => _313;
+        }
+    }
+    scope 31 {
+        debug left_val => _329;
+        debug right_val => _330;
+        let _335: core::panicking::AssertKind;
+        scope 32 {
+            debug kind => _335;
+        }
+    }
+    scope 33 {
+        debug left_val => _350;
+        debug right_val => _351;
+        let _356: core::panicking::AssertKind;
+        scope 34 {
+            debug kind => _356;
+        }
+    }
+    scope 35 {
+        debug left_val => _372;
+        debug right_val => _373;
+        let _378: core::panicking::AssertKind;
+        scope 36 {
+            debug kind => _378;
+        }
+    }
+    scope 37 {
+        debug left_val => _393;
+        debug right_val => _394;
+        let _399: core::panicking::AssertKind;
+        scope 38 {
+            debug kind => _399;
+        }
+    }
+    scope 39 {
+        debug left_val => _415;
+        debug right_val => _416;
+        let _421: core::panicking::AssertKind;
+        scope 40 {
+            debug kind => _421;
+        }
+    }
+    scope 41 {
+        debug left_val => _436;
+        debug right_val => _437;
+        let _442: core::panicking::AssertKind;
+        scope 42 {
+            debug kind => _442;
+        }
+    }
+    scope 43 {
+        debug left_val => _458;
+        debug right_val => _459;
+        let _464: core::panicking::AssertKind;
+        scope 44 {
+            debug kind => _464;
+        }
+    }
+    scope 45 {
+        debug left_val => _479;
+        debug right_val => _480;
+        let _485: core::panicking::AssertKind;
+        scope 46 {
+            debug kind => _485;
+        }
+    }
+    scope 47 {
+        debug left_val => _501;
+        debug right_val => _502;
+        let _507: core::panicking::AssertKind;
+        scope 48 {
+            debug kind => _507;
+        }
+    }
+    scope 49 {
+        debug left_val => _522;
+        debug right_val => _523;
+        let _528: core::panicking::AssertKind;
+        scope 50 {
+            debug kind => _528;
+        }
+    }
+    scope 51 {
+        debug left_val => _544;
+        debug right_val => _545;
+        let _550: core::panicking::AssertKind;
+        scope 52 {
+            debug kind => _550;
+        }
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &_3;
+        _5 = const _;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &f32);
+        _7 = (_1.1: &f32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _18 = [const "const eval u128 -> f32"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _21 = core::fmt::rt::Argument::<'_>::none() -> bb2;
+    }
+
+    bb2: {
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> bb3;
+    }
+
+    bb3: {
+        _14 = Option::<Arguments<'_>>::Some(move _15);
+        _13 = core::panicking::assert_failed::<f32, f32>(move _12, _6, _7, move _14);
+    }
+
+    bb4: {
+        _25 = test::black_box::<u128>(const 340282326356119256160033759537265639424_u128) -> bb5;
+    }
+
+    bb5: {
+        _24 = move _25 as f32 (IntToFloat);
+        _23 = &_24;
+        _27 = const _;
+        _26 = &_27;
+        _22 = (move _23, move _26);
+        _28 = (_22.0: &f32);
+        _29 = (_22.1: &f32);
+        _32 = (*_28);
+        _33 = (*_29);
+        _31 = Eq(move _32, move _33);
+        _30 = Not(move _31);
+        switchInt(move _30) -> [0: bb9, otherwise: bb6];
+    }
+
+    bb6: {
+        _34 = core::panicking::AssertKind::Eq;
+        _40 = [const "run-time u128 -> f32"];
+        _39 = &_40;
+        _38 = _39 as &[&str] (Pointer(Unsize));
+        _43 = core::fmt::rt::Argument::<'_>::none() -> bb7;
+    }
+
+    bb7: {
+        _42 = &_43;
+        _41 = _42 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _37 = Arguments::<'_>::new_v1(move _38, move _41) -> bb8;
+    }
+
+    bb8: {
+        _36 = Option::<Arguments<'_>>::Some(move _37);
+        _35 = core::panicking::assert_failed::<f32, f32>(move _34, _28, _29, move _36);
+    }
+
+    bb9: {
+        _46 = const _;
+        _45 = &_46;
+        _48 = const _;
+        _47 = &_48;
+        _44 = (move _45, move _47);
+        _49 = (_44.0: &f32);
+        _50 = (_44.1: &f32);
+        _53 = (*_49);
+        _54 = (*_50);
+        _52 = Eq(move _53, move _54);
+        _51 = Not(move _52);
+        switchInt(move _51) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _55 = core::panicking::AssertKind::Eq;
+        _61 = [const "const eval u128 -> f32"];
+        _60 = &_61;
+        _59 = _60 as &[&str] (Pointer(Unsize));
+        _64 = core::fmt::rt::Argument::<'_>::none() -> bb12;
+    }
+
+    bb11: {
+        _68 = test::black_box::<u128>(const 340282336497324057985868971510891282431_u128) -> bb14;
+    }
+
+    bb12: {
+        _63 = &_64;
+        _62 = _63 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _58 = Arguments::<'_>::new_v1(move _59, move _62) -> bb13;
+    }
+
+    bb13: {
+        _57 = Option::<Arguments<'_>>::Some(move _58);
+        _56 = core::panicking::assert_failed::<f32, f32>(move _55, _49, _50, move _57);
+    }
+
+    bb14: {
+        _67 = move _68 as f32 (IntToFloat);
+        _66 = &_67;
+        _70 = const _;
+        _69 = &_70;
+        _65 = (move _66, move _69);
+        _71 = (_65.0: &f32);
+        _72 = (_65.1: &f32);
+        _75 = (*_71);
+        _76 = (*_72);
+        _74 = Eq(move _75, move _76);
+        _73 = Not(move _74);
+        switchInt(move _73) -> [0: bb18, otherwise: bb15];
+    }
+
+    bb15: {
+        _77 = core::panicking::AssertKind::Eq;
+        _83 = [const "run-time u128 -> f32"];
+        _82 = &_83;
+        _81 = _82 as &[&str] (Pointer(Unsize));
+        _86 = core::fmt::rt::Argument::<'_>::none() -> bb16;
+    }
+
+    bb16: {
+        _85 = &_86;
+        _84 = _85 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _80 = Arguments::<'_>::new_v1(move _81, move _84) -> bb17;
+    }
+
+    bb17: {
+        _79 = Option::<Arguments<'_>>::Some(move _80);
+        _78 = core::panicking::assert_failed::<f32, f32>(move _77, _71, _72, move _79);
+    }
+
+    bb18: {
+        _89 = const _;
+        _88 = &_89;
+        _91 = const _;
+        _90 = &_91;
+        _87 = (move _88, move _90);
+        _92 = (_87.0: &f32);
+        _93 = (_87.1: &f32);
+        _96 = (*_92);
+        _97 = (*_93);
+        _95 = Eq(move _96, move _97);
+        _94 = Not(move _95);
+        switchInt(move _94) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _98 = core::panicking::AssertKind::Eq;
+        _104 = [const "const eval u128 -> f32"];
+        _103 = &_104;
+        _102 = _103 as &[&str] (Pointer(Unsize));
+        _107 = core::fmt::rt::Argument::<'_>::none() -> bb21;
+    }
+
+    bb20: {
+        _111 = test::black_box::<u128>(const 340282336497324057985868971510891282432_u128) -> bb23;
+    }
+
+    bb21: {
+        _106 = &_107;
+        _105 = _106 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _101 = Arguments::<'_>::new_v1(move _102, move _105) -> bb22;
+    }
+
+    bb22: {
+        _100 = Option::<Arguments<'_>>::Some(move _101);
+        _99 = core::panicking::assert_failed::<f32, f32>(move _98, _92, _93, move _100);
+    }
+
+    bb23: {
+        _110 = move _111 as f32 (IntToFloat);
+        _109 = &_110;
+        _113 = const _;
+        _112 = &_113;
+        _108 = (move _109, move _112);
+        _114 = (_108.0: &f32);
+        _115 = (_108.1: &f32);
+        _118 = (*_114);
+        _119 = (*_115);
+        _117 = Eq(move _118, move _119);
+        _116 = Not(move _117);
+        switchInt(move _116) -> [0: bb27, otherwise: bb24];
+    }
+
+    bb24: {
+        _120 = core::panicking::AssertKind::Eq;
+        _126 = [const "run-time u128 -> f32"];
+        _125 = &_126;
+        _124 = _125 as &[&str] (Pointer(Unsize));
+        _129 = core::fmt::rt::Argument::<'_>::none() -> bb25;
+    }
+
+    bb25: {
+        _128 = &_129;
+        _127 = _128 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _123 = Arguments::<'_>::new_v1(move _124, move _127) -> bb26;
+    }
+
+    bb26: {
+        _122 = Option::<Arguments<'_>>::Some(move _123);
+        _121 = core::panicking::assert_failed::<f32, f32>(move _120, _114, _115, move _122);
+    }
+
+    bb27: {
+        _132 = const _;
+        _131 = &_132;
+        _134 = const _;
+        _133 = &_134;
+        _130 = (move _131, move _133);
+        _135 = (_130.0: &f32);
+        _136 = (_130.1: &f32);
+        _139 = (*_135);
+        _140 = (*_136);
+        _138 = Eq(move _139, move _140);
+        _137 = Not(move _138);
+        switchInt(move _137) -> [0: bb29, otherwise: bb28];
+    }
+
+    bb28: {
+        _141 = core::panicking::AssertKind::Eq;
+        _147 = [const "const eval u128 -> f32"];
+        _146 = &_147;
+        _145 = _146 as &[&str] (Pointer(Unsize));
+        _150 = core::fmt::rt::Argument::<'_>::none() -> bb30;
+    }
+
+    bb29: {
+        _154 = test::black_box::<u128>(const 340282336497324057985868971510891282433_u128) -> bb32;
+    }
+
+    bb30: {
+        _149 = &_150;
+        _148 = _149 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _144 = Arguments::<'_>::new_v1(move _145, move _148) -> bb31;
+    }
+
+    bb31: {
+        _143 = Option::<Arguments<'_>>::Some(move _144);
+        _142 = core::panicking::assert_failed::<f32, f32>(move _141, _135, _136, move _143);
+    }
+
+    bb32: {
+        _153 = move _154 as f32 (IntToFloat);
+        _152 = &_153;
+        _156 = const _;
+        _155 = &_156;
+        _151 = (move _152, move _155);
+        _157 = (_151.0: &f32);
+        _158 = (_151.1: &f32);
+        _161 = (*_157);
+        _162 = (*_158);
+        _160 = Eq(move _161, move _162);
+        _159 = Not(move _160);
+        switchInt(move _159) -> [0: bb36, otherwise: bb33];
+    }
+
+    bb33: {
+        _163 = core::panicking::AssertKind::Eq;
+        _169 = [const "run-time u128 -> f32"];
+        _168 = &_169;
+        _167 = _168 as &[&str] (Pointer(Unsize));
+        _172 = core::fmt::rt::Argument::<'_>::none() -> bb34;
+    }
+
+    bb34: {
+        _171 = &_172;
+        _170 = _171 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _166 = Arguments::<'_>::new_v1(move _167, move _170) -> bb35;
+    }
+
+    bb35: {
+        _165 = Option::<Arguments<'_>>::Some(move _166);
+        _164 = core::panicking::assert_failed::<f32, f32>(move _163, _157, _158, move _165);
+    }
+
+    bb36: {
+        _175 = const _;
+        _174 = &_175;
+        _177 = const _;
+        _176 = &_177;
+        _173 = (move _174, move _176);
+        _178 = (_173.0: &f32);
+        _179 = (_173.1: &f32);
+        _182 = (*_178);
+        _183 = (*_179);
+        _181 = Eq(move _182, move _183);
+        _180 = Not(move _181);
+        switchInt(move _180) -> [0: bb38, otherwise: bb37];
+    }
+
+    bb37: {
+        _184 = core::panicking::AssertKind::Eq;
+        _190 = [const "const eval u128 -> f32"];
+        _189 = &_190;
+        _188 = _189 as &[&str] (Pointer(Unsize));
+        _193 = core::fmt::rt::Argument::<'_>::none() -> bb39;
+    }
+
+    bb38: {
+        _197 = test::black_box::<u128>(const 340282346638528859811704183484516925439_u128) -> bb41;
+    }
+
+    bb39: {
+        _192 = &_193;
+        _191 = _192 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _187 = Arguments::<'_>::new_v1(move _188, move _191) -> bb40;
+    }
+
+    bb40: {
+        _186 = Option::<Arguments<'_>>::Some(move _187);
+        _185 = core::panicking::assert_failed::<f32, f32>(move _184, _178, _179, move _186);
+    }
+
+    bb41: {
+        _196 = move _197 as f32 (IntToFloat);
+        _195 = &_196;
+        _199 = const _;
+        _198 = &_199;
+        _194 = (move _195, move _198);
+        _200 = (_194.0: &f32);
+        _201 = (_194.1: &f32);
+        _204 = (*_200);
+        _205 = (*_201);
+        _203 = Eq(move _204, move _205);
+        _202 = Not(move _203);
+        switchInt(move _202) -> [0: bb45, otherwise: bb42];
+    }
+
+    bb42: {
+        _206 = core::panicking::AssertKind::Eq;
+        _212 = [const "run-time u128 -> f32"];
+        _211 = &_212;
+        _210 = _211 as &[&str] (Pointer(Unsize));
+        _215 = core::fmt::rt::Argument::<'_>::none() -> bb43;
+    }
+
+    bb43: {
+        _214 = &_215;
+        _213 = _214 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _209 = Arguments::<'_>::new_v1(move _210, move _213) -> bb44;
+    }
+
+    bb44: {
+        _208 = Option::<Arguments<'_>>::Some(move _209);
+        _207 = core::panicking::assert_failed::<f32, f32>(move _206, _200, _201, move _208);
+    }
+
+    bb45: {
+        _218 = const _;
+        _217 = &_218;
+        _220 = const _;
+        _219 = &_220;
+        _216 = (move _217, move _219);
+        _221 = (_216.0: &f32);
+        _222 = (_216.1: &f32);
+        _225 = (*_221);
+        _226 = (*_222);
+        _224 = Eq(move _225, move _226);
+        _223 = Not(move _224);
+        switchInt(move _223) -> [0: bb47, otherwise: bb46];
+    }
+
+    bb46: {
+        _227 = core::panicking::AssertKind::Eq;
+        _233 = [const "const eval u128 -> f32"];
+        _232 = &_233;
+        _231 = _232 as &[&str] (Pointer(Unsize));
+        _236 = core::fmt::rt::Argument::<'_>::none() -> bb48;
+    }
+
+    bb47: {
+        _240 = test::black_box::<u128>(const 340282346638528859811704183484516925440_u128) -> bb50;
+    }
+
+    bb48: {
+        _235 = &_236;
+        _234 = _235 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _230 = Arguments::<'_>::new_v1(move _231, move _234) -> bb49;
+    }
+
+    bb49: {
+        _229 = Option::<Arguments<'_>>::Some(move _230);
+        _228 = core::panicking::assert_failed::<f32, f32>(move _227, _221, _222, move _229);
+    }
+
+    bb50: {
+        _239 = move _240 as f32 (IntToFloat);
+        _238 = &_239;
+        _242 = const _;
+        _241 = &_242;
+        _237 = (move _238, move _241);
+        _243 = (_237.0: &f32);
+        _244 = (_237.1: &f32);
+        _247 = (*_243);
+        _248 = (*_244);
+        _246 = Eq(move _247, move _248);
+        _245 = Not(move _246);
+        switchInt(move _245) -> [0: bb54, otherwise: bb51];
+    }
+
+    bb51: {
+        _249 = core::panicking::AssertKind::Eq;
+        _255 = [const "run-time u128 -> f32"];
+        _254 = &_255;
+        _253 = _254 as &[&str] (Pointer(Unsize));
+        _258 = core::fmt::rt::Argument::<'_>::none() -> bb52;
+    }
+
+    bb52: {
+        _257 = &_258;
+        _256 = _257 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _252 = Arguments::<'_>::new_v1(move _253, move _256) -> bb53;
+    }
+
+    bb53: {
+        _251 = Option::<Arguments<'_>>::Some(move _252);
+        _250 = core::panicking::assert_failed::<f32, f32>(move _249, _243, _244, move _251);
+    }
+
+    bb54: {
+        _261 = const _;
+        _260 = &_261;
+        _263 = const _;
+        _262 = &_263;
+        _259 = (move _260, move _262);
+        _264 = (_259.0: &f32);
+        _265 = (_259.1: &f32);
+        _268 = (*_264);
+        _269 = (*_265);
+        _267 = Eq(move _268, move _269);
+        _266 = Not(move _267);
+        switchInt(move _266) -> [0: bb56, otherwise: bb55];
+    }
+
+    bb55: {
+        _270 = core::panicking::AssertKind::Eq;
+        _276 = [const "const eval u128 -> f32"];
+        _275 = &_276;
+        _274 = _275 as &[&str] (Pointer(Unsize));
+        _279 = core::fmt::rt::Argument::<'_>::none() -> bb57;
+    }
+
+    bb56: {
+        _283 = test::black_box::<u128>(const 340282346638528859811704183484516925441_u128) -> bb59;
+    }
+
+    bb57: {
+        _278 = &_279;
+        _277 = _278 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _273 = Arguments::<'_>::new_v1(move _274, move _277) -> bb58;
+    }
+
+    bb58: {
+        _272 = Option::<Arguments<'_>>::Some(move _273);
+        _271 = core::panicking::assert_failed::<f32, f32>(move _270, _264, _265, move _272);
+    }
+
+    bb59: {
+        _282 = move _283 as f32 (IntToFloat);
+        _281 = &_282;
+        _285 = const _;
+        _284 = &_285;
+        _280 = (move _281, move _284);
+        _286 = (_280.0: &f32);
+        _287 = (_280.1: &f32);
+        _290 = (*_286);
+        _291 = (*_287);
+        _289 = Eq(move _290, move _291);
+        _288 = Not(move _289);
+        switchInt(move _288) -> [0: bb63, otherwise: bb60];
+    }
+
+    bb60: {
+        _292 = core::panicking::AssertKind::Eq;
+        _298 = [const "run-time u128 -> f32"];
+        _297 = &_298;
+        _296 = _297 as &[&str] (Pointer(Unsize));
+        _301 = core::fmt::rt::Argument::<'_>::none() -> bb61;
+    }
+
+    bb61: {
+        _300 = &_301;
+        _299 = _300 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _295 = Arguments::<'_>::new_v1(move _296, move _299) -> bb62;
+    }
+
+    bb62: {
+        _294 = Option::<Arguments<'_>>::Some(move _295);
+        _293 = core::panicking::assert_failed::<f32, f32>(move _292, _286, _287, move _294);
+    }
+
+    bb63: {
+        _304 = const _;
+        _303 = &_304;
+        _306 = const _;
+        _305 = &_306;
+        _302 = (move _303, move _305);
+        _307 = (_302.0: &f32);
+        _308 = (_302.1: &f32);
+        _311 = (*_307);
+        _312 = (*_308);
+        _310 = Eq(move _311, move _312);
+        _309 = Not(move _310);
+        switchInt(move _309) -> [0: bb65, otherwise: bb64];
+    }
+
+    bb64: {
+        _313 = core::panicking::AssertKind::Eq;
+        _319 = [const "const eval u128 -> f32"];
+        _318 = &_319;
+        _317 = _318 as &[&str] (Pointer(Unsize));
+        _322 = core::fmt::rt::Argument::<'_>::none() -> bb66;
+    }
+
+    bb65: {
+        _326 = test::black_box::<u128>(const 340282356779733661637539395458142568447_u128) -> bb68;
+    }
+
+    bb66: {
+        _321 = &_322;
+        _320 = _321 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _316 = Arguments::<'_>::new_v1(move _317, move _320) -> bb67;
+    }
+
+    bb67: {
+        _315 = Option::<Arguments<'_>>::Some(move _316);
+        _314 = core::panicking::assert_failed::<f32, f32>(move _313, _307, _308, move _315);
+    }
+
+    bb68: {
+        _325 = move _326 as f32 (IntToFloat);
+        _324 = &_325;
+        _328 = const _;
+        _327 = &_328;
+        _323 = (move _324, move _327);
+        _329 = (_323.0: &f32);
+        _330 = (_323.1: &f32);
+        _333 = (*_329);
+        _334 = (*_330);
+        _332 = Eq(move _333, move _334);
+        _331 = Not(move _332);
+        switchInt(move _331) -> [0: bb72, otherwise: bb69];
+    }
+
+    bb69: {
+        _335 = core::panicking::AssertKind::Eq;
+        _341 = [const "run-time u128 -> f32"];
+        _340 = &_341;
+        _339 = _340 as &[&str] (Pointer(Unsize));
+        _344 = core::fmt::rt::Argument::<'_>::none() -> bb70;
+    }
+
+    bb70: {
+        _343 = &_344;
+        _342 = _343 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _338 = Arguments::<'_>::new_v1(move _339, move _342) -> bb71;
+    }
+
+    bb71: {
+        _337 = Option::<Arguments<'_>>::Some(move _338);
+        _336 = core::panicking::assert_failed::<f32, f32>(move _335, _329, _330, move _337);
+    }
+
+    bb72: {
+        _347 = const _;
+        _346 = &_347;
+        _349 = const _;
+        _348 = &_349;
+        _345 = (move _346, move _348);
+        _350 = (_345.0: &f32);
+        _351 = (_345.1: &f32);
+        _354 = (*_350);
+        _355 = (*_351);
+        _353 = Eq(move _354, move _355);
+        _352 = Not(move _353);
+        switchInt(move _352) -> [0: bb74, otherwise: bb73];
+    }
+
+    bb73: {
+        _356 = core::panicking::AssertKind::Eq;
+        _362 = [const "const eval u128 -> f32"];
+        _361 = &_362;
+        _360 = _361 as &[&str] (Pointer(Unsize));
+        _365 = core::fmt::rt::Argument::<'_>::none() -> bb75;
+    }
+
+    bb74: {
+        _369 = test::black_box::<u128>(const 340282356779733661637539395458142568448_u128) -> bb77;
+    }
+
+    bb75: {
+        _364 = &_365;
+        _363 = _364 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _359 = Arguments::<'_>::new_v1(move _360, move _363) -> bb76;
+    }
+
+    bb76: {
+        _358 = Option::<Arguments<'_>>::Some(move _359);
+        _357 = core::panicking::assert_failed::<f32, f32>(move _356, _350, _351, move _358);
+    }
+
+    bb77: {
+        _368 = move _369 as f32 (IntToFloat);
+        _367 = &_368;
+        _371 = const _;
+        _370 = &_371;
+        _366 = (move _367, move _370);
+        _372 = (_366.0: &f32);
+        _373 = (_366.1: &f32);
+        _376 = (*_372);
+        _377 = (*_373);
+        _375 = Eq(move _376, move _377);
+        _374 = Not(move _375);
+        switchInt(move _374) -> [0: bb81, otherwise: bb78];
+    }
+
+    bb78: {
+        _378 = core::panicking::AssertKind::Eq;
+        _384 = [const "run-time u128 -> f32"];
+        _383 = &_384;
+        _382 = _383 as &[&str] (Pointer(Unsize));
+        _387 = core::fmt::rt::Argument::<'_>::none() -> bb79;
+    }
+
+    bb79: {
+        _386 = &_387;
+        _385 = _386 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _381 = Arguments::<'_>::new_v1(move _382, move _385) -> bb80;
+    }
+
+    bb80: {
+        _380 = Option::<Arguments<'_>>::Some(move _381);
+        _379 = core::panicking::assert_failed::<f32, f32>(move _378, _372, _373, move _380);
+    }
+
+    bb81: {
+        _390 = const _;
+        _389 = &_390;
+        _392 = const _;
+        _391 = &_392;
+        _388 = (move _389, move _391);
+        _393 = (_388.0: &f32);
+        _394 = (_388.1: &f32);
+        _397 = (*_393);
+        _398 = (*_394);
+        _396 = Eq(move _397, move _398);
+        _395 = Not(move _396);
+        switchInt(move _395) -> [0: bb83, otherwise: bb82];
+    }
+
+    bb82: {
+        _399 = core::panicking::AssertKind::Eq;
+        _405 = [const "const eval u128 -> f32"];
+        _404 = &_405;
+        _403 = _404 as &[&str] (Pointer(Unsize));
+        _408 = core::fmt::rt::Argument::<'_>::none() -> bb84;
+    }
+
+    bb83: {
+        _412 = test::black_box::<u128>(const 340282356779733666064757973148434956288_u128) -> bb86;
+    }
+
+    bb84: {
+        _407 = &_408;
+        _406 = _407 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _402 = Arguments::<'_>::new_v1(move _403, move _406) -> bb85;
+    }
+
+    bb85: {
+        _401 = Option::<Arguments<'_>>::Some(move _402);
+        _400 = core::panicking::assert_failed::<f32, f32>(move _399, _393, _394, move _401);
+    }
+
+    bb86: {
+        _411 = move _412 as f32 (IntToFloat);
+        _410 = &_411;
+        _414 = const _;
+        _413 = &_414;
+        _409 = (move _410, move _413);
+        _415 = (_409.0: &f32);
+        _416 = (_409.1: &f32);
+        _419 = (*_415);
+        _420 = (*_416);
+        _418 = Eq(move _419, move _420);
+        _417 = Not(move _418);
+        switchInt(move _417) -> [0: bb90, otherwise: bb87];
+    }
+
+    bb87: {
+        _421 = core::panicking::AssertKind::Eq;
+        _427 = [const "run-time u128 -> f32"];
+        _426 = &_427;
+        _425 = _426 as &[&str] (Pointer(Unsize));
+        _430 = core::fmt::rt::Argument::<'_>::none() -> bb88;
+    }
+
+    bb88: {
+        _429 = &_430;
+        _428 = _429 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _424 = Arguments::<'_>::new_v1(move _425, move _428) -> bb89;
+    }
+
+    bb89: {
+        _423 = Option::<Arguments<'_>>::Some(move _424);
+        _422 = core::panicking::assert_failed::<f32, f32>(move _421, _415, _416, move _423);
+    }
+
+    bb90: {
+        _433 = const _;
+        _432 = &_433;
+        _435 = const _;
+        _434 = &_435;
+        _431 = (move _432, move _434);
+        _436 = (_431.0: &f32);
+        _437 = (_431.1: &f32);
+        _440 = (*_436);
+        _441 = (*_437);
+        _439 = Eq(move _440, move _441);
+        _438 = Not(move _439);
+        switchInt(move _438) -> [0: bb92, otherwise: bb91];
+    }
+
+    bb91: {
+        _442 = core::panicking::AssertKind::Eq;
+        _448 = [const "const eval u128 -> f32"];
+        _447 = &_448;
+        _446 = _447 as &[&str] (Pointer(Unsize));
+        _451 = core::fmt::rt::Argument::<'_>::none() -> bb93;
+    }
+
+    bb92: {
+        _455 = test::black_box::<u128>(const 340282357413558961751654096202199203841_u128) -> bb95;
+    }
+
+    bb93: {
+        _450 = &_451;
+        _449 = _450 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _445 = Arguments::<'_>::new_v1(move _446, move _449) -> bb94;
+    }
+
+    bb94: {
+        _444 = Option::<Arguments<'_>>::Some(move _445);
+        _443 = core::panicking::assert_failed::<f32, f32>(move _442, _436, _437, move _444);
+    }
+
+    bb95: {
+        _454 = move _455 as f32 (IntToFloat);
+        _453 = &_454;
+        _457 = const _;
+        _456 = &_457;
+        _452 = (move _453, move _456);
+        _458 = (_452.0: &f32);
+        _459 = (_452.1: &f32);
+        _462 = (*_458);
+        _463 = (*_459);
+        _461 = Eq(move _462, move _463);
+        _460 = Not(move _461);
+        switchInt(move _460) -> [0: bb99, otherwise: bb96];
+    }
+
+    bb96: {
+        _464 = core::panicking::AssertKind::Eq;
+        _470 = [const "run-time u128 -> f32"];
+        _469 = &_470;
+        _468 = _469 as &[&str] (Pointer(Unsize));
+        _473 = core::fmt::rt::Argument::<'_>::none() -> bb97;
+    }
+
+    bb97: {
+        _472 = &_473;
+        _471 = _472 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _467 = Arguments::<'_>::new_v1(move _468, move _471) -> bb98;
+    }
+
+    bb98: {
+        _466 = Option::<Arguments<'_>>::Some(move _467);
+        _465 = core::panicking::assert_failed::<f32, f32>(move _464, _458, _459, move _466);
+    }
+
+    bb99: {
+        _476 = const _;
+        _475 = &_476;
+        _478 = const 3.4028235677973366E+38f64;
+        _477 = &_478;
+        _474 = (move _475, move _477);
+        _479 = (_474.0: &f64);
+        _480 = (_474.1: &f64);
+        _483 = (*_479);
+        _484 = (*_480);
+        _482 = Eq(move _483, move _484);
+        _481 = Not(move _482);
+        switchInt(move _481) -> [0: bb101, otherwise: bb100];
+    }
+
+    bb100: {
+        _485 = core::panicking::AssertKind::Eq;
+        _491 = [const "const eval u128 -> f64"];
+        _490 = &_491;
+        _489 = _490 as &[&str] (Pointer(Unsize));
+        _494 = core::fmt::rt::Argument::<'_>::none() -> bb102;
+    }
+
+    bb101: {
+        _498 = test::black_box::<u128>(const 340282356779733661637539395458142568448_u128) -> bb104;
+    }
+
+    bb102: {
+        _493 = &_494;
+        _492 = _493 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _488 = Arguments::<'_>::new_v1(move _489, move _492) -> bb103;
+    }
+
+    bb103: {
+        _487 = Option::<Arguments<'_>>::Some(move _488);
+        _486 = core::panicking::assert_failed::<f64, f64>(move _485, _479, _480, move _487);
+    }
+
+    bb104: {
+        _497 = move _498 as f64 (IntToFloat);
+        _496 = &_497;
+        _500 = const 3.4028235677973366E+38f64;
+        _499 = &_500;
+        _495 = (move _496, move _499);
+        _501 = (_495.0: &f64);
+        _502 = (_495.1: &f64);
+        _505 = (*_501);
+        _506 = (*_502);
+        _504 = Eq(move _505, move _506);
+        _503 = Not(move _504);
+        switchInt(move _503) -> [0: bb108, otherwise: bb105];
+    }
+
+    bb105: {
+        _507 = core::panicking::AssertKind::Eq;
+        _513 = [const "run-time u128 -> f64"];
+        _512 = &_513;
+        _511 = _512 as &[&str] (Pointer(Unsize));
+        _516 = core::fmt::rt::Argument::<'_>::none() -> bb106;
+    }
+
+    bb106: {
+        _515 = &_516;
+        _514 = _515 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _510 = Arguments::<'_>::new_v1(move _511, move _514) -> bb107;
+    }
+
+    bb107: {
+        _509 = Option::<Arguments<'_>>::Some(move _510);
+        _508 = core::panicking::assert_failed::<f64, f64>(move _507, _501, _502, move _509);
+    }
+
+    bb108: {
+        _519 = const _;
+        _518 = &_519;
+        _521 = const 3.4028236692093846E+38f64;
+        _520 = &_521;
+        _517 = (move _518, move _520);
+        _522 = (_517.0: &f64);
+        _523 = (_517.1: &f64);
+        _526 = (*_522);
+        _527 = (*_523);
+        _525 = Eq(move _526, move _527);
+        _524 = Not(move _525);
+        switchInt(move _524) -> [0: bb110, otherwise: bb109];
+    }
+
+    bb109: {
+        _528 = core::panicking::AssertKind::Eq;
+        _534 = [const "const eval u128 -> f64"];
+        _533 = &_534;
+        _532 = _533 as &[&str] (Pointer(Unsize));
+        _537 = core::fmt::rt::Argument::<'_>::none() -> bb111;
+    }
+
+    bb110: {
+        _541 = test::black_box::<u128>(const _) -> bb113;
+    }
+
+    bb111: {
+        _536 = &_537;
+        _535 = _536 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _531 = Arguments::<'_>::new_v1(move _532, move _535) -> bb112;
+    }
+
+    bb112: {
+        _530 = Option::<Arguments<'_>>::Some(move _531);
+        _529 = core::panicking::assert_failed::<f64, f64>(move _528, _522, _523, move _530);
+    }
+
+    bb113: {
+        _540 = move _541 as f64 (IntToFloat);
+        _539 = &_540;
+        _543 = const 3.4028236692093846E+38f64;
+        _542 = &_543;
+        _538 = (move _539, move _542);
+        _544 = (_538.0: &f64);
+        _545 = (_538.1: &f64);
+        _548 = (*_544);
+        _549 = (*_545);
+        _547 = Eq(move _548, move _549);
+        _546 = Not(move _547);
+        switchInt(move _546) -> [0: bb117, otherwise: bb114];
+    }
+
+    bb114: {
+        _550 = core::panicking::AssertKind::Eq;
+        _556 = [const "run-time u128 -> f64"];
+        _555 = &_556;
+        _554 = _555 as &[&str] (Pointer(Unsize));
+        _559 = core::fmt::rt::Argument::<'_>::none() -> bb115;
+    }
+
+    bb115: {
+        _558 = &_559;
+        _557 = _558 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _553 = Arguments::<'_>::new_v1(move _554, move _557) -> bb116;
+    }
+
+    bb116: {
+        _552 = Option::<Arguments<'_>>::Some(move _553);
+        _551 = core::panicking::assert_failed::<f64, f64>(move _550, _544, _545, move _552);
+    }
+
+    bb117: {
+        return;
+    }
+}
+
+const SECOND_LARGEST_F32: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const 3.40282326E+38f32;
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282326356119256160033759537265639424_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282336497324057985868971510891282431_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282336497324057985868971510891282432_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282336497324057985868971510891282433_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282346638528859811704183484516925439_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282346638528859811704183484516925440_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282346638528859811704183484516925441_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282356779733661637539395458142568447_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282356779733661637539395458142568448_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282356779733666064757973148434956288_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282357413558961751654096202199203841_u128;
+        return;
+    }
+}
+
+const main::Y: f32 = {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const _ as f32 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const 340282356779733661637539395458142568448_u128;
+        return;
+    }
+}
+
+const main::Y: f64 = {
+    let mut _0: f64;
+
+    bb0: {
+        _0 = const _ as f64 (IntToFloat);
+        return;
+    }
+}
+
+const main::X: u128 = {
+    let mut _0: u128;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+const main::Y: f64 = {
+    let mut _0: f64;
+
+    bb0: {
+        _0 = const _ as f64 (IntToFloat);
+        return;
+    }
+}

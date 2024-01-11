@@ -1,0 +1,450 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/macros/assert-eq-macro-success.rs:2:10: 2:19>::eq(_1: &Point, _2: &Point) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: isize;
+    let mut _4: isize;
+
+    bb0: {
+        _3 = ((*_1).0: isize);
+        _4 = ((*_2).0: isize);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/macros/assert-eq-macro-success.rs:2:21: 2:26>::fmt(_1: &Point, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&isize;
+    let _7: &isize;
+
+    bb0: {
+        _3 = const "Point";
+        _4 = const "x";
+        _7 = &((*_1).0: isize);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i32, &i32);
+    let mut _2: &i32;
+    let _3: i32;
+    let mut _4: &i32;
+    let _5: i32;
+    let _6: &i32;
+    let _7: &i32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: i32;
+    let mut _11: i32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&std::string::String, &std::string::String);
+    let mut _16: &std::string::String;
+    let _17: std::string::String;
+    let _18: &str;
+    let mut _19: &std::string::String;
+    let _20: std::string::String;
+    let _21: &str;
+    let _22: &std::string::String;
+    let _23: &std::string::String;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&std::boxed::Box<Point>, &std::boxed::Box<Point>);
+    let mut _30: &std::boxed::Box<Point>;
+    let _31: std::boxed::Box<Point>;
+    let mut _32: Point;
+    let mut _33: &std::boxed::Box<Point>;
+    let _34: std::boxed::Box<Point>;
+    let mut _35: Point;
+    let _36: &std::boxed::Box<Point>;
+    let _37: &std::boxed::Box<Point>;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&&Point, &&Point);
+    let mut _44: &&Point;
+    let _45: &Point;
+    let _46: Point;
+    let mut _47: &&Point;
+    let _48: &Point;
+    let _49: Point;
+    let _50: &&Point;
+    let _51: &&Point;
+    let mut _52: bool;
+    let mut _53: bool;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&i32, &i32);
+    let mut _58: &i32;
+    let _59: i32;
+    let mut _60: &i32;
+    let _61: i32;
+    let _62: &i32;
+    let _63: &i32;
+    let mut _64: bool;
+    let mut _65: bool;
+    let mut _66: i32;
+    let mut _67: i32;
+    let _69: !;
+    let mut _70: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _71: std::fmt::Arguments<'_>;
+    let mut _72: &[&str];
+    let _73: &[&str; 1];
+    let _74: [&str; 1];
+    let mut _75: (&i32, &i32);
+    let mut _76: &i32;
+    let _77: i32;
+    let mut _78: &i32;
+    let _79: i32;
+    let _80: &i32;
+    let _81: &i32;
+    let mut _82: bool;
+    let mut _83: bool;
+    let mut _84: i32;
+    let mut _85: i32;
+    let _87: !;
+    let mut _88: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _89: std::fmt::Arguments<'_>;
+    let mut _90: &[&str];
+    let _91: &[&str; 1];
+    let _92: [&str; 1];
+    let mut _93: &[core::fmt::rt::Argument<'_>];
+    let _94: &[core::fmt::rt::Argument<'_>; 0];
+    let _95: [core::fmt::rt::Argument<'_>; 0];
+    let mut _96: (&i32, &i32);
+    let mut _97: &i32;
+    let _98: i32;
+    let mut _99: &i32;
+    let _100: i32;
+    let _101: &i32;
+    let _102: &i32;
+    let mut _103: bool;
+    let mut _104: bool;
+    let mut _105: i32;
+    let mut _106: i32;
+    let _108: !;
+    let mut _109: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _110: std::fmt::Arguments<'_>;
+    let mut _111: &[&str];
+    let _112: &[&str; 1];
+    let _113: [&str; 1];
+    let mut _114: &[core::fmt::rt::Argument<'_>];
+    let _115: &[core::fmt::rt::Argument<'_>; 0];
+    let _116: [core::fmt::rt::Argument<'_>; 0];
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _36;
+        debug right_val => _37;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+        debug left_val => _50;
+        debug right_val => _51;
+        let _54: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _54;
+        }
+    }
+    scope 9 {
+        debug left_val => _62;
+        debug right_val => _63;
+        let _68: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _68;
+        }
+    }
+    scope 11 {
+        debug left_val => _80;
+        debug right_val => _81;
+        let _86: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _86;
+        }
+    }
+    scope 13 {
+        debug left_val => _101;
+        debug right_val => _102;
+        let _107: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _107;
+        }
+    }
+
+    bb0: {
+        _3 = const 14_i32;
+        _2 = &_3;
+        _5 = const 14_i32;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &i32);
+        _7 = (_1.1: &i32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<i32, i32>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        _18 = const "abc";
+        _17 = <str as ToString>::to_string(_18) -> bb3;
+    }
+
+    bb3: {
+        _16 = &_17;
+        _21 = const "abc";
+        _20 = <str as ToString>::to_string(_21) -> [return: bb4, unwind: bb34];
+    }
+
+    bb4: {
+        _19 = &_20;
+        _15 = (move _16, move _19);
+        _22 = (_15.0: &std::string::String);
+        _23 = (_15.1: &std::string::String);
+        _25 = <String as PartialEq>::eq(_22, _23) -> [return: bb5, unwind: bb33];
+    }
+
+    bb5: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<String, String>(move _26, _22, _23, move _28) -> bb33;
+    }
+
+    bb7: {
+        drop(_20) -> [return: bb8, unwind: bb34];
+    }
+
+    bb8: {
+        drop(_17) -> bb9;
+    }
+
+    bb9: {
+        _32 = Point { x: const 34_isize };
+        _31 = Box::<Point>::new(move _32) -> bb10;
+    }
+
+    bb10: {
+        _30 = &_31;
+        _35 = Point { x: const 34_isize };
+        _34 = Box::<Point>::new(move _35) -> [return: bb11, unwind: bb32];
+    }
+
+    bb11: {
+        _33 = &_34;
+        _29 = (move _30, move _33);
+        _36 = (_29.0: &std::boxed::Box<Point>);
+        _37 = (_29.1: &std::boxed::Box<Point>);
+        _39 = <Box<Point> as PartialEq>::eq(_36, _37) -> [return: bb12, unwind: bb31];
+    }
+
+    bb12: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<Box<Point>, Box<Point>>(move _40, _36, _37, move _42) -> bb31;
+    }
+
+    bb14: {
+        drop(_34) -> [return: bb15, unwind: bb32];
+    }
+
+    bb15: {
+        drop(_31) -> bb16;
+    }
+
+    bb16: {
+        _46 = Point { x: const 34_isize };
+        _45 = &_46;
+        _44 = &_45;
+        _49 = Point { x: const 34_isize };
+        _48 = &_49;
+        _47 = &_48;
+        _43 = (move _44, move _47);
+        _50 = (_43.0: &&Point);
+        _51 = (_43.1: &&Point);
+        _53 = <&Point as PartialEq>::eq(_50, _51) -> bb17;
+    }
+
+    bb17: {
+        _52 = Not(move _53);
+        switchInt(move _52) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<&Point, &Point>(move _54, _50, _51, move _56);
+    }
+
+    bb19: {
+        _59 = const 42_i32;
+        _58 = &_59;
+        _61 = const 42_i32;
+        _60 = &_61;
+        _57 = (move _58, move _60);
+        _62 = (_57.0: &i32);
+        _63 = (_57.1: &i32);
+        _66 = (*_62);
+        _67 = (*_63);
+        _65 = Eq(move _66, move _67);
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _68 = core::panicking::AssertKind::Eq;
+        _74 = [const "foo bar"];
+        _73 = &_74;
+        _72 = _73 as &[&str] (Pointer(Unsize));
+        _71 = Arguments::<'_>::new_const(move _72) -> bb22;
+    }
+
+    bb21: {
+        _77 = const 42_i32;
+        _76 = &_77;
+        _79 = const 42_i32;
+        _78 = &_79;
+        _75 = (move _76, move _78);
+        _80 = (_75.0: &i32);
+        _81 = (_75.1: &i32);
+        _84 = (*_80);
+        _85 = (*_81);
+        _83 = Eq(move _84, move _85);
+        _82 = Not(move _83);
+        switchInt(move _82) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb22: {
+        _70 = Option::<Arguments<'_>>::Some(move _71);
+        _69 = core::panicking::assert_failed::<i32, i32>(move _68, _62, _63, move _70);
+    }
+
+    bb23: {
+        _86 = core::panicking::AssertKind::Eq;
+        _92 = [const "a b c"];
+        _91 = &_92;
+        _90 = _91 as &[&str] (Pointer(Unsize));
+        _95 = core::fmt::rt::Argument::<'_>::none() -> bb25;
+    }
+
+    bb24: {
+        _98 = const 42_i32;
+        _97 = &_98;
+        _100 = const 42_i32;
+        _99 = &_100;
+        _96 = (move _97, move _99);
+        _101 = (_96.0: &i32);
+        _102 = (_96.1: &i32);
+        _105 = (*_101);
+        _106 = (*_102);
+        _104 = Eq(move _105, move _106);
+        _103 = Not(move _104);
+        switchInt(move _103) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb25: {
+        _94 = &_95;
+        _93 = _94 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _89 = Arguments::<'_>::new_v1(move _90, move _93) -> bb26;
+    }
+
+    bb26: {
+        _88 = Option::<Arguments<'_>>::Some(move _89);
+        _87 = core::panicking::assert_failed::<i32, i32>(move _86, _80, _81, move _88);
+    }
+
+    bb27: {
+        _107 = core::panicking::AssertKind::Eq;
+        _113 = [const "1, 2, 3"];
+        _112 = &_113;
+        _111 = _112 as &[&str] (Pointer(Unsize));
+        _116 = core::fmt::rt::Argument::<'_>::none() -> bb29;
+    }
+
+    bb28: {
+        return;
+    }
+
+    bb29: {
+        _115 = &_116;
+        _114 = _115 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _110 = Arguments::<'_>::new_v1(move _111, move _114) -> bb30;
+    }
+
+    bb30: {
+        _109 = Option::<Arguments<'_>>::Some(move _110);
+        _108 = core::panicking::assert_failed::<i32, i32>(move _107, _101, _102, move _109);
+    }
+
+    bb31 (cleanup): {
+        drop(_34) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_31) -> [return: bb35, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_20) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_17) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        resume;
+    }
+}

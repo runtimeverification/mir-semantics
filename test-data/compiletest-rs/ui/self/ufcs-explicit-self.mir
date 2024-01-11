@@ -1,0 +1,539 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/ufcs-explicit-self.rs:4:16: 4:21>::clone(_1: &Foo) -> Foo {
+    debug self => _1;
+    let mut _0: Foo;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:9:1: 9:9>::foo(_1: Foo, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+    let mut _3: isize;
+
+    bb0: {
+        _3 = (_1.0: isize);
+        _0 = Add(move _3, _2);
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:9:1: 9:9>::bar(_1: &Foo, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+    let mut _3: isize;
+
+    bb0: {
+        _3 = ((*_1).0: isize);
+        _0 = Add(move _3, _2);
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:9:1: 9:9>::baz(_1: Box<Foo>, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+    let mut _3: isize;
+    let mut _4: *const Foo;
+    let mut _5: *const ();
+    let mut _6: usize;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+
+    bb0: {
+        _4 = (((_1.0: std::ptr::Unique<Foo>).0: std::ptr::NonNull<Foo>).0: *const Foo);
+        _5 = _4 as *const () (PtrToPtr);
+        _6 = _5 as usize (Transmute);
+        _7 = AlignOf(Foo);
+        _8 = Sub(_7, const 1_usize);
+        _9 = BitAnd(_6, _8);
+        _10 = Eq(_9, const 0_usize);
+        assert(_10, "misaligned pointer dereference: address must be a multiple of {} but is {}", _7, _6) -> [success: bb2, unwind unreachable];
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        _3 = ((*_4).0: isize);
+        _0 = Add(move _3, _2);
+        drop(_1) -> bb1;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:21:16: 21:21>::clone(_1: &Bar<T>) -> Bar<T> {
+    debug self => _1;
+    let mut _0: Bar<T>;
+    let mut _2: T;
+    let _3: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Bar::<T> { f: move _2 };
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:26:1: 26:15>::foo(_1: Bar<T>, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:26:1: 26:15>::bar(_1: &Bar<T>, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn <impl at ui/self/ufcs-explicit-self.rs:26:1: 26:15>::baz(_1: Bar<T>, _2: isize) -> isize {
+    debug self => _1;
+    debug x => _2;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<Foo>;
+    let mut _2: Foo;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 4];
+    let _7: [&str; 4];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 3];
+    let _10: [core::fmt::rt::Argument<'_>; 3];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &isize;
+    let _13: isize;
+    let mut _14: Foo;
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &isize;
+    let _17: isize;
+    let mut _18: &Foo;
+    let mut _19: core::fmt::rt::Argument<'_>;
+    let _20: &isize;
+    let _21: isize;
+    let mut _22: std::boxed::Box<Foo>;
+    let mut _24: Bar<isize>;
+    let _25: ();
+    let mut _26: std::fmt::Arguments<'_>;
+    let mut _27: &[&str];
+    let _28: &[&str; 4];
+    let _29: [&str; 4];
+    let mut _30: &[core::fmt::rt::Argument<'_>];
+    let _31: &[core::fmt::rt::Argument<'_>; 3];
+    let _32: [core::fmt::rt::Argument<'_>; 3];
+    let mut _33: core::fmt::rt::Argument<'_>;
+    let _34: &isize;
+    let _35: isize;
+    let mut _36: Bar<isize>;
+    let mut _37: core::fmt::rt::Argument<'_>;
+    let _38: &isize;
+    let _39: isize;
+    let mut _40: &Bar<isize>;
+    let mut _41: core::fmt::rt::Argument<'_>;
+    let _42: &isize;
+    let _43: isize;
+    let mut _44: Bar<isize>;
+    let _46: ();
+    let mut _47: std::fmt::Arguments<'_>;
+    let mut _48: &[&str];
+    let _49: &[&str; 4];
+    let _50: [&str; 4];
+    let mut _51: &[core::fmt::rt::Argument<'_>];
+    let _52: &[core::fmt::rt::Argument<'_>; 3];
+    let _53: [core::fmt::rt::Argument<'_>; 3];
+    let mut _54: core::fmt::rt::Argument<'_>;
+    let _55: &isize;
+    let _56: isize;
+    let mut _57: Bar<isize>;
+    let mut _58: core::fmt::rt::Argument<'_>;
+    let _59: &isize;
+    let _60: isize;
+    let mut _61: &Bar<isize>;
+    let mut _62: core::fmt::rt::Argument<'_>;
+    let _63: &isize;
+    let _64: isize;
+    let mut _65: Bar<isize>;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: *const Foo;
+    let mut _69: *const Foo;
+    let mut _70: *const Bar<isize>;
+    let mut _71: *const Bar<isize>;
+    let mut _72: *const Bar<isize>;
+    let mut _73: *const Bar<isize>;
+    let mut _74: *const Bar<isize>;
+    let mut _75: *const Bar<isize>;
+    scope 1 {
+        debug foo => _1;
+        let _23: std::boxed::Box<Bar<isize>>;
+        let mut _112: *const ();
+        let mut _113: usize;
+        let mut _114: usize;
+        let mut _115: usize;
+        let mut _116: usize;
+        let mut _117: bool;
+        let mut _118: *const ();
+        let mut _119: usize;
+        let mut _120: usize;
+        let mut _121: usize;
+        let mut _122: usize;
+        let mut _123: bool;
+        scope 2 {
+            debug bar => _23;
+            let _45: std::boxed::Box<Bar<isize>>;
+            let mut _94: *const ();
+            let mut _95: usize;
+            let mut _96: usize;
+            let mut _97: usize;
+            let mut _98: usize;
+            let mut _99: bool;
+            let mut _100: *const ();
+            let mut _101: usize;
+            let mut _102: usize;
+            let mut _103: usize;
+            let mut _104: usize;
+            let mut _105: bool;
+            let mut _106: *const ();
+            let mut _107: usize;
+            let mut _108: usize;
+            let mut _109: usize;
+            let mut _110: usize;
+            let mut _111: bool;
+            scope 3 {
+                debug bar => _45;
+                let mut _76: *const ();
+                let mut _77: usize;
+                let mut _78: usize;
+                let mut _79: usize;
+                let mut _80: usize;
+                let mut _81: bool;
+                let mut _82: *const ();
+                let mut _83: usize;
+                let mut _84: usize;
+                let mut _85: usize;
+                let mut _86: usize;
+                let mut _87: bool;
+                let mut _88: *const ();
+                let mut _89: usize;
+                let mut _90: usize;
+                let mut _91: usize;
+                let mut _92: usize;
+                let mut _93: bool;
+            }
+        }
+    }
+
+    bb0: {
+        _67 = const false;
+        _66 = const false;
+        _2 = Foo { f: const 1_isize };
+        _67 = const true;
+        _1 = Box::<Foo>::new(move _2) -> bb1;
+    }
+
+    bb1: {
+        _7 = [const "", const " ", const " ", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _68 = (((_1.0: std::ptr::Unique<Foo>).0: std::ptr::NonNull<Foo>).0: *const Foo);
+        _118 = _68 as *const () (PtrToPtr);
+        _119 = _118 as usize (Transmute);
+        _120 = AlignOf(Foo);
+        _121 = Sub(_120, const 1_usize);
+        _122 = BitAnd(_119, _121);
+        _123 = Eq(_122, const 0_usize);
+        assert(_123, "misaligned pointer dereference: address must be a multiple of {} but is {}", _120, _119) -> [success: bb41, unwind unreachable];
+    }
+
+    bb2: {
+        _12 = &_13;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_12) -> [return: bb3, unwind: bb33];
+    }
+
+    bb3: {
+        _69 = (((_1.0: std::ptr::Unique<Foo>).0: std::ptr::NonNull<Foo>).0: *const Foo);
+        _112 = _69 as *const () (PtrToPtr);
+        _113 = _112 as usize (Transmute);
+        _114 = AlignOf(Foo);
+        _115 = Sub(_114, const 1_usize);
+        _116 = BitAnd(_113, _115);
+        _117 = Eq(_116, const 0_usize);
+        assert(_117, "misaligned pointer dereference: address must be a multiple of {} but is {}", _114, _113) -> [success: bb40, unwind unreachable];
+    }
+
+    bb4: {
+        _16 = &_17;
+        _15 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_16) -> [return: bb5, unwind: bb33];
+    }
+
+    bb5: {
+        _67 = const false;
+        _22 = move _1;
+        _21 = Foo::baz(move _22, const 2_isize) -> [return: bb6, unwind: bb33];
+    }
+
+    bb6: {
+        _20 = &_21;
+        _19 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_20) -> [return: bb7, unwind: bb33];
+    }
+
+    bb7: {
+        _10 = [move _11, move _15, move _19];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb8, unwind: bb33];
+    }
+
+    bb8: {
+        _3 = _print(move _4) -> [return: bb9, unwind: bb33];
+    }
+
+    bb9: {
+        _24 = Bar::<isize> { f: const 1_isize };
+        _23 = Box::<Bar<isize>>::new(move _24) -> [return: bb10, unwind: bb33];
+    }
+
+    bb10: {
+        _66 = const true;
+        _29 = [const "", const " ", const " ", const "\n"];
+        _28 = &_29;
+        _27 = _28 as &[&str] (Pointer(Unsize));
+        _70 = (((_23.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _106 = _70 as *const () (PtrToPtr);
+        _107 = _106 as usize (Transmute);
+        _108 = AlignOf(Bar<isize>);
+        _109 = Sub(_108, const 1_usize);
+        _110 = BitAnd(_107, _109);
+        _111 = Eq(_110, const 0_usize);
+        assert(_111, "misaligned pointer dereference: address must be a multiple of {} but is {}", _108, _107) -> [success: bb39, unwind unreachable];
+    }
+
+    bb11: {
+        _34 = &_35;
+        _33 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_34) -> [return: bb12, unwind: bb31];
+    }
+
+    bb12: {
+        _71 = (((_23.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _100 = _71 as *const () (PtrToPtr);
+        _101 = _100 as usize (Transmute);
+        _102 = AlignOf(Bar<isize>);
+        _103 = Sub(_102, const 1_usize);
+        _104 = BitAnd(_101, _103);
+        _105 = Eq(_104, const 0_usize);
+        assert(_105, "misaligned pointer dereference: address must be a multiple of {} but is {}", _102, _101) -> [success: bb38, unwind unreachable];
+    }
+
+    bb13: {
+        _38 = &_39;
+        _37 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_38) -> [return: bb14, unwind: bb31];
+    }
+
+    bb14: {
+        _72 = (((_23.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _94 = _72 as *const () (PtrToPtr);
+        _95 = _94 as usize (Transmute);
+        _96 = AlignOf(Bar<isize>);
+        _97 = Sub(_96, const 1_usize);
+        _98 = BitAnd(_95, _97);
+        _99 = Eq(_98, const 0_usize);
+        assert(_99, "misaligned pointer dereference: address must be a multiple of {} but is {}", _96, _95) -> [success: bb37, unwind unreachable];
+    }
+
+    bb15: {
+        _42 = &_43;
+        _41 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_42) -> [return: bb16, unwind: bb31];
+    }
+
+    bb16: {
+        _32 = [move _33, move _37, move _41];
+        _31 = &_32;
+        _30 = _31 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _26 = Arguments::<'_>::new_v1(move _27, move _30) -> [return: bb17, unwind: bb31];
+    }
+
+    bb17: {
+        _25 = _print(move _26) -> [return: bb18, unwind: bb31];
+    }
+
+    bb18: {
+        _66 = const false;
+        _45 = move _23;
+        _50 = [const "", const " ", const " ", const "\n"];
+        _49 = &_50;
+        _48 = _49 as &[&str] (Pointer(Unsize));
+        _73 = (((_45.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _88 = _73 as *const () (PtrToPtr);
+        _89 = _88 as usize (Transmute);
+        _90 = AlignOf(Bar<isize>);
+        _91 = Sub(_90, const 1_usize);
+        _92 = BitAnd(_89, _91);
+        _93 = Eq(_92, const 0_usize);
+        assert(_93, "misaligned pointer dereference: address must be a multiple of {} but is {}", _90, _89) -> [success: bb36, unwind unreachable];
+    }
+
+    bb19: {
+        _55 = &_56;
+        _54 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_55) -> [return: bb20, unwind: bb28];
+    }
+
+    bb20: {
+        _74 = (((_45.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _82 = _74 as *const () (PtrToPtr);
+        _83 = _82 as usize (Transmute);
+        _84 = AlignOf(Bar<isize>);
+        _85 = Sub(_84, const 1_usize);
+        _86 = BitAnd(_83, _85);
+        _87 = Eq(_86, const 0_usize);
+        assert(_87, "misaligned pointer dereference: address must be a multiple of {} but is {}", _84, _83) -> [success: bb35, unwind unreachable];
+    }
+
+    bb21: {
+        _59 = &_60;
+        _58 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_59) -> [return: bb22, unwind: bb28];
+    }
+
+    bb22: {
+        _75 = (((_45.0: std::ptr::Unique<Bar<isize>>).0: std::ptr::NonNull<Bar<isize>>).0: *const Bar<isize>);
+        _76 = _75 as *const () (PtrToPtr);
+        _77 = _76 as usize (Transmute);
+        _78 = AlignOf(Bar<isize>);
+        _79 = Sub(_78, const 1_usize);
+        _80 = BitAnd(_77, _79);
+        _81 = Eq(_80, const 0_usize);
+        assert(_81, "misaligned pointer dereference: address must be a multiple of {} but is {}", _78, _77) -> [success: bb34, unwind unreachable];
+    }
+
+    bb23: {
+        _63 = &_64;
+        _62 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_63) -> [return: bb24, unwind: bb28];
+    }
+
+    bb24: {
+        _53 = [move _54, move _58, move _62];
+        _52 = &_53;
+        _51 = _52 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _47 = Arguments::<'_>::new_v1(move _48, move _51) -> [return: bb25, unwind: bb28];
+    }
+
+    bb25: {
+        _46 = _print(move _47) -> [return: bb26, unwind: bb28];
+    }
+
+    bb26: {
+        drop(_45) -> [return: bb27, unwind: bb31];
+    }
+
+    bb27: {
+        _66 = const false;
+        _67 = const false;
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_45) -> [return: bb31, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        resume;
+    }
+
+    bb30 (cleanup): {
+        drop(_23) -> [return: bb33, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        switchInt(_66) -> [0: bb33, otherwise: bb30];
+    }
+
+    bb32 (cleanup): {
+        drop(_1) -> [return: bb29, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        switchInt(_67) -> [0: bb29, otherwise: bb32];
+    }
+
+    bb34: {
+        _65 = (*_75);
+        _64 = Bar::<isize>::baz(move _65, const 2_isize) -> [return: bb23, unwind: bb28];
+    }
+
+    bb35: {
+        _61 = &(*_74);
+        _60 = Bar::<isize>::bar(move _61, const 2_isize) -> [return: bb21, unwind: bb28];
+    }
+
+    bb36: {
+        _57 = (*_73);
+        _56 = Bar::<isize>::foo(move _57, const 2_isize) -> [return: bb19, unwind: bb28];
+    }
+
+    bb37: {
+        _44 = (*_72);
+        _43 = Bar::<isize>::baz(move _44, const 2_isize) -> [return: bb15, unwind: bb31];
+    }
+
+    bb38: {
+        _40 = &(*_71);
+        _39 = Bar::<isize>::bar(move _40, const 2_isize) -> [return: bb13, unwind: bb31];
+    }
+
+    bb39: {
+        _36 = (*_70);
+        _35 = Bar::<isize>::foo(move _36, const 2_isize) -> [return: bb11, unwind: bb31];
+    }
+
+    bb40: {
+        _18 = &(*_69);
+        _17 = Foo::bar(move _18, const 2_isize) -> [return: bb4, unwind: bb33];
+    }
+
+    bb41: {
+        _14 = (*_68);
+        _13 = Foo::foo(move _14, const 2_isize) -> [return: bb2, unwind: bb33];
+    }
+}

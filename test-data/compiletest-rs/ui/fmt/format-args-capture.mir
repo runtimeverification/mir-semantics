@@ -1,0 +1,1419 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+    let _3: ();
+    let _4: ();
+    let _5: ();
+    let _6: ();
+
+    bb0: {
+        _1 = named_argument_takes_precedence_to_captured() -> bb1;
+    }
+
+    bb1: {
+        _2 = formatting_parameters_can_be_captured() -> bb2;
+    }
+
+    bb2: {
+        _3 = capture_raw_strings_and_idents() -> bb3;
+    }
+
+    bb3: {
+        _4 = repeated_capture() -> bb4;
+    }
+
+    bb4: {
+        _5 = panic_with_single_argument_does_not_get_formatted() -> bb5;
+    }
+
+    bb5: {
+        _6 = panic_with_multiple_arguments_is_formatted() -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn named_argument_takes_precedence_to_captured() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 0];
+    let _10: [core::fmt::rt::Argument<'_>; 0];
+    let mut _11: (&&std::string::String, &&str);
+    let mut _12: &&std::string::String;
+    let _13: &std::string::String;
+    let mut _14: &&str;
+    let _15: &str;
+    let mut _18: bool;
+    let mut _19: bool;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: std::fmt::Arguments<'_>;
+    let mut _26: &[&str];
+    let _27: &[&str; 1];
+    let _28: [&str; 1];
+    let mut _29: &[core::fmt::rt::Argument<'_>];
+    let _30: &[core::fmt::rt::Argument<'_>; 0];
+    let _31: [core::fmt::rt::Argument<'_>; 0];
+    let mut _32: (&&std::string::String, &&str);
+    let mut _33: &&std::string::String;
+    let _34: &std::string::String;
+    let mut _35: &&str;
+    let _36: &str;
+    let mut _39: bool;
+    let mut _40: bool;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _46: std::fmt::Arguments<'_>;
+    let mut _47: &[&str];
+    let _48: &[&str; 1];
+    let _49: [&str; 1];
+    let mut _50: &[core::fmt::rt::Argument<'_>];
+    let _51: &[core::fmt::rt::Argument<'_>; 1];
+    let _52: [core::fmt::rt::Argument<'_>; 1];
+    let mut _53: core::fmt::rt::Argument<'_>;
+    let _54: &&str;
+    let mut _55: (&&std::string::String, &&str);
+    let mut _56: &&std::string::String;
+    let _57: &std::string::String;
+    let mut _58: &&str;
+    let _59: &str;
+    let mut _62: bool;
+    let mut _63: bool;
+    let _65: !;
+    let mut _66: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug foo => _1;
+        let _2: std::string::String;
+        let _3: std::string::String;
+        scope 2 {
+            debug s => _2;
+            let _16: &&std::string::String;
+            let _17: &&str;
+            let _23: std::string::String;
+            let _24: std::string::String;
+            scope 4 {
+                debug left_val => _16;
+                debug right_val => _17;
+                let _20: core::panicking::AssertKind;
+                scope 5 {
+                    debug kind => _20;
+                }
+            }
+            scope 6 {
+                debug s => _23;
+                let _37: &&std::string::String;
+                let _38: &&str;
+                let _44: std::string::String;
+                let _45: std::string::String;
+                scope 8 {
+                    debug left_val => _37;
+                    debug right_val => _38;
+                    let _41: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _41;
+                    }
+                }
+                scope 10 {
+                    debug s => _44;
+                    let _60: &&std::string::String;
+                    let _61: &&str;
+                    scope 12 {
+                        debug left_val => _60;
+                        debug right_val => _61;
+                        let _64: core::panicking::AssertKind;
+                        scope 13 {
+                            debug kind => _64;
+                        }
+                    }
+                }
+                scope 11 {
+                    debug res => _45;
+                }
+            }
+            scope 7 {
+                debug res => _24;
+            }
+        }
+        scope 3 {
+            debug res => _3;
+        }
+    }
+
+    bb0: {
+        _1 = const "captured";
+        _7 = [const "named"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _10 = core::fmt::rt::Argument::<'_>::none() -> bb1;
+    }
+
+    bb1: {
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = format(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = move _3;
+        _13 = &_2;
+        _12 = &_13;
+        _15 = const "named";
+        _14 = &_15;
+        _11 = (move _12, move _14);
+        _16 = (_11.0: &&std::string::String);
+        _17 = (_11.1: &&str);
+        _19 = <&String as PartialEq<&str>>::eq(_16, _17) -> [return: bb4, unwind: bb24];
+    }
+
+    bb4: {
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<&String, &str>(move _20, _16, _17, move _22) -> bb24;
+    }
+
+    bb6: {
+        _28 = [const "named-named-named"];
+        _27 = &_28;
+        _26 = _27 as &[&str] (Pointer(Unsize));
+        _31 = core::fmt::rt::Argument::<'_>::none() -> [return: bb7, unwind: bb24];
+    }
+
+    bb7: {
+        _30 = &_31;
+        _29 = _30 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _25 = Arguments::<'_>::new_v1(move _26, move _29) -> [return: bb8, unwind: bb24];
+    }
+
+    bb8: {
+        _24 = format(move _25) -> [return: bb9, unwind: bb24];
+    }
+
+    bb9: {
+        _23 = move _24;
+        _34 = &_23;
+        _33 = &_34;
+        _36 = const "named-named-named";
+        _35 = &_36;
+        _32 = (move _33, move _35);
+        _37 = (_32.0: &&std::string::String);
+        _38 = (_32.1: &&str);
+        _40 = <&String as PartialEq<&str>>::eq(_37, _38) -> [return: bb10, unwind: bb23];
+    }
+
+    bb10: {
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<&String, &str>(move _41, _37, _38, move _43) -> bb23;
+    }
+
+    bb12: {
+        _49 = [const "positional-named-"];
+        _48 = &_49;
+        _47 = _48 as &[&str] (Pointer(Unsize));
+        _54 = &_1;
+        _53 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_54) -> [return: bb13, unwind: bb23];
+    }
+
+    bb13: {
+        _52 = [move _53];
+        _51 = &_52;
+        _50 = _51 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _46 = Arguments::<'_>::new_v1(move _47, move _50) -> [return: bb14, unwind: bb23];
+    }
+
+    bb14: {
+        _45 = format(move _46) -> [return: bb15, unwind: bb23];
+    }
+
+    bb15: {
+        _44 = move _45;
+        _57 = &_44;
+        _56 = &_57;
+        _59 = const "positional-named-captured";
+        _58 = &_59;
+        _55 = (move _56, move _58);
+        _60 = (_55.0: &&std::string::String);
+        _61 = (_55.1: &&str);
+        _63 = <&String as PartialEq<&str>>::eq(_60, _61) -> [return: bb16, unwind: bb22];
+    }
+
+    bb16: {
+        _62 = Not(move _63);
+        switchInt(move _62) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _64 = core::panicking::AssertKind::Eq;
+        _66 = Option::<Arguments<'_>>::None;
+        _65 = core::panicking::assert_failed::<&String, &str>(move _64, _60, _61, move _66) -> bb22;
+    }
+
+    bb18: {
+        drop(_44) -> [return: bb19, unwind: bb23];
+    }
+
+    bb19: {
+        drop(_23) -> [return: bb20, unwind: bb24];
+    }
+
+    bb20: {
+        drop(_2) -> bb21;
+    }
+
+    bb21: {
+        return;
+    }
+
+    bb22 (cleanup): {
+        drop(_44) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_23) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_2) -> [return: bb25, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+}
+
+fn capture_raw_strings_and_idents() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &&str;
+    let mut _13: (&&std::string::String, &&str);
+    let mut _14: &&std::string::String;
+    let _15: &std::string::String;
+    let mut _16: &&str;
+    let _17: &str;
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _28: std::fmt::Arguments<'_>;
+    let mut _29: &[&str];
+    let _30: &[&str; 1];
+    let _31: [&str; 1];
+    let mut _32: &[core::fmt::rt::Argument<'_>];
+    let _33: &[core::fmt::rt::Argument<'_>; 1];
+    let _34: [core::fmt::rt::Argument<'_>; 1];
+    let mut _35: core::fmt::rt::Argument<'_>;
+    let _36: &&str;
+    let mut _37: (&&std::string::String, &&str);
+    let mut _38: &&std::string::String;
+    let _39: &std::string::String;
+    let mut _40: &&str;
+    let _41: &str;
+    let mut _44: bool;
+    let mut _45: bool;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug type => _1;
+        let _2: std::string::String;
+        let _3: std::string::String;
+        scope 2 {
+            debug s => _2;
+            let _18: &&std::string::String;
+            let _19: &&str;
+            let _25: &str;
+            scope 4 {
+                debug left_val => _18;
+                debug right_val => _19;
+                let _22: core::panicking::AssertKind;
+                scope 5 {
+                    debug kind => _22;
+                }
+            }
+            scope 6 {
+                debug type => _25;
+                let _26: std::string::String;
+                let _27: std::string::String;
+                scope 7 {
+                    debug s => _26;
+                    let _42: &&std::string::String;
+                    let _43: &&str;
+                    scope 9 {
+                        debug left_val => _42;
+                        debug right_val => _43;
+                        let _46: core::panicking::AssertKind;
+                        scope 10 {
+                            debug kind => _46;
+                        }
+                    }
+                }
+                scope 8 {
+                    debug res => _27;
+                }
+            }
+        }
+        scope 3 {
+            debug res => _3;
+        }
+    }
+
+    bb0: {
+        _1 = const "apple";
+        _7 = [const "The fruit is an "];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_1;
+        _11 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_12) -> bb1;
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> bb2;
+    }
+
+    bb2: {
+        _3 = format(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = move _3;
+        _15 = &_2;
+        _14 = &_15;
+        _17 = const "The fruit is an apple";
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &&std::string::String);
+        _19 = (_13.1: &&str);
+        _21 = <&String as PartialEq<&str>>::eq(_18, _19) -> [return: bb4, unwind: bb16];
+    }
+
+    bb4: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<&String, &str>(move _22, _18, _19, move _24) -> bb16;
+    }
+
+    bb6: {
+        _25 = const "orange";
+        _31 = [const "The fruit is an "];
+        _30 = &_31;
+        _29 = _30 as &[&str] (Pointer(Unsize));
+        _36 = &_25;
+        _35 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_36) -> [return: bb7, unwind: bb16];
+    }
+
+    bb7: {
+        _34 = [move _35];
+        _33 = &_34;
+        _32 = _33 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _28 = Arguments::<'_>::new_v1(move _29, move _32) -> [return: bb8, unwind: bb16];
+    }
+
+    bb8: {
+        _27 = format(move _28) -> [return: bb9, unwind: bb16];
+    }
+
+    bb9: {
+        _26 = move _27;
+        _39 = &_26;
+        _38 = &_39;
+        _41 = const "The fruit is an orange";
+        _40 = &_41;
+        _37 = (move _38, move _40);
+        _42 = (_37.0: &&std::string::String);
+        _43 = (_37.1: &&str);
+        _45 = <&String as PartialEq<&str>>::eq(_42, _43) -> [return: bb10, unwind: bb15];
+    }
+
+    bb10: {
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<&String, &str>(move _46, _42, _43, move _48) -> bb15;
+    }
+
+    bb12: {
+        drop(_26) -> [return: bb13, unwind: bb16];
+    }
+
+    bb13: {
+        drop(_2) -> bb14;
+    }
+
+    bb14: {
+        return;
+    }
+
+    bb15 (cleanup): {
+        drop(_26) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        drop(_2) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        resume;
+    }
+}
+
+fn panic_with_single_argument_does_not_get_formatted() -> () {
+    let mut _0: ();
+    let mut _2: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _3: (&std::option::Option<&&str>, &std::option::Option<&&str>);
+    let mut _4: &std::option::Option<&&str>;
+    let _5: std::option::Option<&&str>;
+    let mut _6: &dyn std::any::Any + std::marker::Send;
+    let mut _7: &std::option::Option<&&str>;
+    let _8: std::option::Option<&&str>;
+    let mut _9: &&str;
+    let _10: &str;
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: *const dyn std::any::Any + std::marker::Send;
+    scope 1 {
+        debug msg => _1;
+        let _11: &std::option::Option<&&str>;
+        let _12: &std::option::Option<&&str>;
+        scope 3 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _15: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _15;
+            }
+        }
+    }
+    scope 2 {
+        let _1: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+    }
+
+    bb0: {
+        _2 = catch_unwind::<[closure@ui/fmt/format-args-capture.rs:45:40: 45:42], ()>(const ZeroSized: [closure@ui/fmt/format-args-capture.rs:45:40: 45:42]) -> bb1;
+    }
+
+    bb1: {
+        _1 = Result::<(), Box<dyn Any + Send>>::unwrap_err(move _2) -> bb2;
+    }
+
+    bb2: {
+        _18 = (((_1.0: std::ptr::Unique<dyn std::any::Any + std::marker::Send>).0: std::ptr::NonNull<dyn std::any::Any + std::marker::Send>).0: *const dyn std::any::Any + std::marker::Send);
+        _6 = &(*_18);
+        _5 = <(dyn Any + Send + 'static)>::downcast_ref::<&str>(move _6) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _4 = &_5;
+        _10 = const "{foo}";
+        _9 = &_10;
+        _8 = Option::<&&str>::Some(move _9);
+        _7 = &_8;
+        _3 = (move _4, move _7);
+        _11 = (_3.0: &std::option::Option<&&str>);
+        _12 = (_3.1: &std::option::Option<&&str>);
+        _14 = <Option<&&str> as PartialEq>::eq(_11, _12) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<Option<&&str>, Option<&&str>>(move _15, _11, _12, move _17) -> bb8;
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_1) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn panic_with_single_argument_does_not_get_formatted::{closure#0}(_1: [closure@ui/fmt/format-args-capture.rs:45:40: 45:42]) -> () {
+    let mut _0: ();
+    let _2: !;
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "{foo}");
+    }
+}
+
+fn panic_with_multiple_arguments_is_formatted() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _3: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _4: [closure@ui/fmt/format-args-capture.rs:57:40: 57:42];
+    let mut _5: &&str;
+    let mut _6: (&std::option::Option<&std::string::String>, &std::option::Option<&std::string::String>);
+    let mut _7: &std::option::Option<&std::string::String>;
+    let _8: std::option::Option<&std::string::String>;
+    let mut _9: &dyn std::any::Any + std::marker::Send;
+    let mut _10: &std::option::Option<&std::string::String>;
+    let _11: std::option::Option<&std::string::String>;
+    let mut _12: &std::string::String;
+    let _13: std::string::String;
+    let _14: &str;
+    let mut _17: bool;
+    let mut _18: bool;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _22: *const dyn std::any::Any + std::marker::Send;
+    scope 1 {
+        debug foo => _1;
+        let _2: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+        scope 2 {
+            debug msg => _2;
+            let _15: &std::option::Option<&std::string::String>;
+            let _16: &std::option::Option<&std::string::String>;
+            scope 3 {
+                debug left_val => _15;
+                debug right_val => _16;
+                let _19: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _19;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const "captured";
+        _5 = &_1;
+        _4 = [closure@ui/fmt/format-args-capture.rs:57:40: 57:42] { foo: move _5 };
+        _3 = catch_unwind::<[closure@ui/fmt/format-args-capture.rs:57:40: 57:42], ()>(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = Result::<(), Box<dyn Any + Send>>::unwrap_err(move _3) -> bb2;
+    }
+
+    bb2: {
+        _22 = (((_2.0: std::ptr::Unique<dyn std::any::Any + std::marker::Send>).0: std::ptr::NonNull<dyn std::any::Any + std::marker::Send>).0: *const dyn std::any::Any + std::marker::Send);
+        _9 = &(*_22);
+        _8 = <(dyn Any + Send + 'static)>::downcast_ref::<String>(move _9) -> [return: bb3, unwind: bb12];
+    }
+
+    bb3: {
+        _7 = &_8;
+        _14 = const "positional-named-captured";
+        _13 = <str as ToString>::to_string(_14) -> [return: bb4, unwind: bb12];
+    }
+
+    bb4: {
+        _12 = &_13;
+        _11 = Option::<&String>::Some(move _12);
+        _10 = &_11;
+        _6 = (move _7, move _10);
+        _15 = (_6.0: &std::option::Option<&std::string::String>);
+        _16 = (_6.1: &std::option::Option<&std::string::String>);
+        _18 = <Option<&String> as PartialEq>::eq(_15, _16) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<Option<&String>, Option<&String>>(move _19, _15, _16, move _21) -> bb10;
+    }
+
+    bb7: {
+        drop(_2) -> [return: bb8, unwind: bb11];
+    }
+
+    bb8: {
+        drop(_13) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_2) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_13) -> [return: bb13, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_2) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
+
+fn panic_with_multiple_arguments_is_formatted::{closure#0}(_1: [closure@ui/fmt/format-args-capture.rs:57:40: 57:42]) -> () {
+    debug foo => (*(_1.0: &&str));
+    let mut _0: ();
+    let _2: !;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let mut _11: &&str;
+
+    bb0: {
+        _6 = [const "positional-named-"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = deref_copy (_1.0: &&str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = panic_fmt(move _3);
+    }
+}
+
+fn formatting_parameters_can_be_captured() -> () {
+    let mut _0: ();
+    let _1: usize;
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 1];
+    let _9: [&str; 1];
+    let mut _10: &[core::fmt::rt::Argument<'_>];
+    let _11: &[core::fmt::rt::Argument<'_>; 2];
+    let _12: [core::fmt::rt::Argument<'_>; 2];
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let _14: &f64;
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &usize;
+    let mut _17: &[core::fmt::rt::Placeholder];
+    let _18: &[core::fmt::rt::Placeholder; 1];
+    let _19: [core::fmt::rt::Placeholder; 1];
+    let mut _20: core::fmt::rt::Placeholder;
+    let mut _21: core::fmt::rt::Alignment;
+    let mut _22: core::fmt::rt::Count;
+    let mut _23: core::fmt::rt::Count;
+    let mut _24: core::fmt::rt::UnsafeArg;
+    let mut _25: (&&std::string::String, &&str);
+    let mut _26: &&std::string::String;
+    let _27: &std::string::String;
+    let mut _28: &&str;
+    let _29: &str;
+    let mut _32: bool;
+    let mut _33: bool;
+    let _35: !;
+    let mut _36: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: std::fmt::Arguments<'_>;
+    let mut _40: &[&str];
+    let _41: &[&str; 1];
+    let _42: [&str; 1];
+    let mut _43: &[core::fmt::rt::Argument<'_>];
+    let _44: &[core::fmt::rt::Argument<'_>; 2];
+    let _45: [core::fmt::rt::Argument<'_>; 2];
+    let mut _46: core::fmt::rt::Argument<'_>;
+    let _47: &f64;
+    let mut _48: core::fmt::rt::Argument<'_>;
+    let _49: &usize;
+    let mut _50: &[core::fmt::rt::Placeholder];
+    let _51: &[core::fmt::rt::Placeholder; 1];
+    let _52: [core::fmt::rt::Placeholder; 1];
+    let mut _53: core::fmt::rt::Placeholder;
+    let mut _54: core::fmt::rt::Alignment;
+    let mut _55: core::fmt::rt::Count;
+    let mut _56: core::fmt::rt::Count;
+    let mut _57: core::fmt::rt::UnsafeArg;
+    let mut _58: (&&std::string::String, &&str);
+    let mut _59: &&std::string::String;
+    let _60: &std::string::String;
+    let mut _61: &&str;
+    let _62: &str;
+    let mut _65: bool;
+    let mut _66: bool;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _72: std::fmt::Arguments<'_>;
+    let mut _73: &[&str];
+    let _74: &[&str; 1];
+    let _75: [&str; 1];
+    let mut _76: &[core::fmt::rt::Argument<'_>];
+    let _77: &[core::fmt::rt::Argument<'_>; 2];
+    let _78: [core::fmt::rt::Argument<'_>; 2];
+    let mut _79: core::fmt::rt::Argument<'_>;
+    let _80: &f64;
+    let mut _81: core::fmt::rt::Argument<'_>;
+    let _82: &usize;
+    let mut _83: &[core::fmt::rt::Placeholder];
+    let _84: &[core::fmt::rt::Placeholder; 1];
+    let _85: [core::fmt::rt::Placeholder; 1];
+    let mut _86: core::fmt::rt::Placeholder;
+    let mut _87: core::fmt::rt::Alignment;
+    let mut _88: core::fmt::rt::Count;
+    let mut _89: core::fmt::rt::Count;
+    let mut _90: core::fmt::rt::UnsafeArg;
+    let mut _91: (&&std::string::String, &&str);
+    let mut _92: &&std::string::String;
+    let _93: &std::string::String;
+    let mut _94: &&str;
+    let _95: &str;
+    let mut _98: bool;
+    let mut _99: bool;
+    let _101: !;
+    let mut _102: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _105: std::fmt::Arguments<'_>;
+    let mut _106: &[&str];
+    let _107: &[&str; 1];
+    let _108: [&str; 1];
+    let mut _109: &[core::fmt::rt::Argument<'_>];
+    let _110: &[core::fmt::rt::Argument<'_>; 3];
+    let _111: [core::fmt::rt::Argument<'_>; 3];
+    let mut _112: core::fmt::rt::Argument<'_>;
+    let _113: &f64;
+    let mut _114: core::fmt::rt::Argument<'_>;
+    let _115: &usize;
+    let mut _116: core::fmt::rt::Argument<'_>;
+    let _117: &usize;
+    let mut _118: &[core::fmt::rt::Placeholder];
+    let _119: &[core::fmt::rt::Placeholder; 1];
+    let _120: [core::fmt::rt::Placeholder; 1];
+    let mut _121: core::fmt::rt::Placeholder;
+    let mut _122: core::fmt::rt::Alignment;
+    let mut _123: core::fmt::rt::Count;
+    let mut _124: core::fmt::rt::Count;
+    let mut _125: core::fmt::rt::UnsafeArg;
+    let mut _126: (&&std::string::String, &&str);
+    let mut _127: &&std::string::String;
+    let _128: &std::string::String;
+    let mut _129: &&str;
+    let _130: &str;
+    let mut _133: bool;
+    let mut _134: bool;
+    let _136: !;
+    let mut _137: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug width => _1;
+        let _2: usize;
+        scope 2 {
+            debug precision => _2;
+            let _3: f64;
+            scope 3 {
+                debug x => _3;
+                let _4: std::string::String;
+                let _5: std::string::String;
+                scope 4 {
+                    debug s => _4;
+                    let _30: &&std::string::String;
+                    let _31: &&str;
+                    let _37: std::string::String;
+                    let _38: std::string::String;
+                    scope 7 {
+                        debug left_val => _30;
+                        debug right_val => _31;
+                        let _34: core::panicking::AssertKind;
+                        scope 8 {
+                            debug kind => _34;
+                        }
+                    }
+                    scope 9 {
+                        debug s => _37;
+                        let _63: &&std::string::String;
+                        let _64: &&str;
+                        let _70: std::string::String;
+                        let _71: std::string::String;
+                        scope 12 {
+                            debug left_val => _63;
+                            debug right_val => _64;
+                            let _67: core::panicking::AssertKind;
+                            scope 13 {
+                                debug kind => _67;
+                            }
+                        }
+                        scope 14 {
+                            debug s => _70;
+                            let _96: &&std::string::String;
+                            let _97: &&str;
+                            let _103: std::string::String;
+                            let _104: std::string::String;
+                            scope 17 {
+                                debug left_val => _96;
+                                debug right_val => _97;
+                                let _100: core::panicking::AssertKind;
+                                scope 18 {
+                                    debug kind => _100;
+                                }
+                            }
+                            scope 19 {
+                                debug s => _103;
+                                let _131: &&std::string::String;
+                                let _132: &&str;
+                                scope 22 {
+                                    debug left_val => _131;
+                                    debug right_val => _132;
+                                    let _135: core::panicking::AssertKind;
+                                    scope 23 {
+                                        debug kind => _135;
+                                    }
+                                }
+                            }
+                            scope 20 {
+                                debug res => _104;
+                            }
+                            scope 21 {
+                            }
+                        }
+                        scope 15 {
+                            debug res => _71;
+                        }
+                        scope 16 {
+                        }
+                    }
+                    scope 10 {
+                        debug res => _38;
+                    }
+                    scope 11 {
+                    }
+                }
+                scope 5 {
+                    debug res => _5;
+                }
+                scope 6 {
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 9_usize;
+        _2 = const 3_usize;
+        _3 = const 7f64;
+        _9 = [const ""];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _14 = &_3;
+        _13 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_14) -> bb1;
+    }
+
+    bb1: {
+        _16 = &_1;
+        _15 = core::fmt::rt::Argument::<'_>::from_usize(_16) -> bb2;
+    }
+
+    bb2: {
+        _12 = [move _13, move _15];
+        _11 = &_12;
+        _10 = _11 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _21 = core::fmt::rt::Alignment::Unknown;
+        _22 = core::fmt::rt::Count::Implied;
+        _23 = core::fmt::rt::Count::Param(const 1_usize) -> bb3;
+    }
+
+    bb3: {
+        _20 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _21, const 0_u32, move _22, move _23) -> bb4;
+    }
+
+    bb4: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _24 = core::fmt::rt::UnsafeArg::new() -> bb5;
+    }
+
+    bb5: {
+        _6 = Arguments::<'_>::new_v1_formatted(move _7, move _10, move _17, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb6;
+    }
+
+    bb6: {
+        _5 = format(move _6) -> bb7;
+    }
+
+    bb7: {
+        _4 = move _5;
+        _27 = &_4;
+        _26 = &_27;
+        _29 = const "        7";
+        _28 = &_29;
+        _25 = (move _26, move _28);
+        _30 = (_25.0: &&std::string::String);
+        _31 = (_25.1: &&str);
+        _33 = <&String as PartialEq<&str>>::eq(_30, _31) -> [return: bb8, unwind: bb50];
+    }
+
+    bb8: {
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _34 = core::panicking::AssertKind::Eq;
+        _36 = Option::<Arguments<'_>>::None;
+        _35 = core::panicking::assert_failed::<&String, &str>(move _34, _30, _31, move _36) -> bb50;
+    }
+
+    bb10: {
+        _42 = [const ""];
+        _41 = &_42;
+        _40 = _41 as &[&str] (Pointer(Unsize));
+        _47 = &_3;
+        _46 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_47) -> [return: bb11, unwind: bb50];
+    }
+
+    bb11: {
+        _49 = &_1;
+        _48 = core::fmt::rt::Argument::<'_>::from_usize(_49) -> [return: bb12, unwind: bb50];
+    }
+
+    bb12: {
+        _45 = [move _46, move _48];
+        _44 = &_45;
+        _43 = _44 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _54 = core::fmt::rt::Alignment::Left;
+        _55 = core::fmt::rt::Count::Implied;
+        _56 = core::fmt::rt::Count::Param(const 1_usize) -> [return: bb13, unwind: bb50];
+    }
+
+    bb13: {
+        _53 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _54, const 0_u32, move _55, move _56) -> [return: bb14, unwind: bb50];
+    }
+
+    bb14: {
+        _52 = [move _53];
+        _51 = &_52;
+        _50 = _51 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _57 = core::fmt::rt::UnsafeArg::new() -> [return: bb15, unwind: bb50];
+    }
+
+    bb15: {
+        _39 = Arguments::<'_>::new_v1_formatted(move _40, move _43, move _50, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> [return: bb16, unwind: bb50];
+    }
+
+    bb16: {
+        _38 = format(move _39) -> [return: bb17, unwind: bb50];
+    }
+
+    bb17: {
+        _37 = move _38;
+        _60 = &_37;
+        _59 = &_60;
+        _62 = const "7        ";
+        _61 = &_62;
+        _58 = (move _59, move _61);
+        _63 = (_58.0: &&std::string::String);
+        _64 = (_58.1: &&str);
+        _66 = <&String as PartialEq<&str>>::eq(_63, _64) -> [return: bb18, unwind: bb49];
+    }
+
+    bb18: {
+        _65 = Not(move _66);
+        switchInt(move _65) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<&String, &str>(move _67, _63, _64, move _69) -> bb49;
+    }
+
+    bb20: {
+        _75 = [const ""];
+        _74 = &_75;
+        _73 = _74 as &[&str] (Pointer(Unsize));
+        _80 = &_3;
+        _79 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_80) -> [return: bb21, unwind: bb49];
+    }
+
+    bb21: {
+        _82 = &_1;
+        _81 = core::fmt::rt::Argument::<'_>::from_usize(_82) -> [return: bb22, unwind: bb49];
+    }
+
+    bb22: {
+        _78 = [move _79, move _81];
+        _77 = &_78;
+        _76 = _77 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _87 = core::fmt::rt::Alignment::Center;
+        _88 = core::fmt::rt::Count::Implied;
+        _89 = core::fmt::rt::Count::Param(const 1_usize) -> [return: bb23, unwind: bb49];
+    }
+
+    bb23: {
+        _86 = core::fmt::rt::Placeholder::new(const 0_usize, const '-', move _87, const 0_u32, move _88, move _89) -> [return: bb24, unwind: bb49];
+    }
+
+    bb24: {
+        _85 = [move _86];
+        _84 = &_85;
+        _83 = _84 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _90 = core::fmt::rt::UnsafeArg::new() -> [return: bb25, unwind: bb49];
+    }
+
+    bb25: {
+        _72 = Arguments::<'_>::new_v1_formatted(move _73, move _76, move _83, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> [return: bb26, unwind: bb49];
+    }
+
+    bb26: {
+        _71 = format(move _72) -> [return: bb27, unwind: bb49];
+    }
+
+    bb27: {
+        _70 = move _71;
+        _93 = &_70;
+        _92 = &_93;
+        _95 = const "----7----";
+        _94 = &_95;
+        _91 = (move _92, move _94);
+        _96 = (_91.0: &&std::string::String);
+        _97 = (_91.1: &&str);
+        _99 = <&String as PartialEq<&str>>::eq(_96, _97) -> [return: bb28, unwind: bb48];
+    }
+
+    bb28: {
+        _98 = Not(move _99);
+        switchInt(move _98) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _100 = core::panicking::AssertKind::Eq;
+        _102 = Option::<Arguments<'_>>::None;
+        _101 = core::panicking::assert_failed::<&String, &str>(move _100, _96, _97, move _102) -> bb48;
+    }
+
+    bb30: {
+        _108 = [const ""];
+        _107 = &_108;
+        _106 = _107 as &[&str] (Pointer(Unsize));
+        _113 = &_3;
+        _112 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_113) -> [return: bb31, unwind: bb48];
+    }
+
+    bb31: {
+        _115 = &_2;
+        _114 = core::fmt::rt::Argument::<'_>::from_usize(_115) -> [return: bb32, unwind: bb48];
+    }
+
+    bb32: {
+        _117 = &_1;
+        _116 = core::fmt::rt::Argument::<'_>::from_usize(_117) -> [return: bb33, unwind: bb48];
+    }
+
+    bb33: {
+        _111 = [move _112, move _114, move _116];
+        _110 = &_111;
+        _109 = _110 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _122 = core::fmt::rt::Alignment::Center;
+        _123 = core::fmt::rt::Count::Param(const 1_usize) -> [return: bb34, unwind: bb48];
+    }
+
+    bb34: {
+        _124 = core::fmt::rt::Count::Param(const 2_usize) -> [return: bb35, unwind: bb48];
+    }
+
+    bb35: {
+        _121 = core::fmt::rt::Placeholder::new(const 0_usize, const '-', move _122, const 0_u32, move _123, move _124) -> [return: bb36, unwind: bb48];
+    }
+
+    bb36: {
+        _120 = [move _121];
+        _119 = &_120;
+        _118 = _119 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _125 = core::fmt::rt::UnsafeArg::new() -> [return: bb37, unwind: bb48];
+    }
+
+    bb37: {
+        _105 = Arguments::<'_>::new_v1_formatted(move _106, move _109, move _118, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> [return: bb38, unwind: bb48];
+    }
+
+    bb38: {
+        _104 = format(move _105) -> [return: bb39, unwind: bb48];
+    }
+
+    bb39: {
+        _103 = move _104;
+        _128 = &_103;
+        _127 = &_128;
+        _130 = const "--7.000--";
+        _129 = &_130;
+        _126 = (move _127, move _129);
+        _131 = (_126.0: &&std::string::String);
+        _132 = (_126.1: &&str);
+        _134 = <&String as PartialEq<&str>>::eq(_131, _132) -> [return: bb40, unwind: bb47];
+    }
+
+    bb40: {
+        _133 = Not(move _134);
+        switchInt(move _133) -> [0: bb42, otherwise: bb41];
+    }
+
+    bb41: {
+        _135 = core::panicking::AssertKind::Eq;
+        _137 = Option::<Arguments<'_>>::None;
+        _136 = core::panicking::assert_failed::<&String, &str>(move _135, _131, _132, move _137) -> bb47;
+    }
+
+    bb42: {
+        drop(_103) -> [return: bb43, unwind: bb48];
+    }
+
+    bb43: {
+        drop(_70) -> [return: bb44, unwind: bb49];
+    }
+
+    bb44: {
+        drop(_37) -> [return: bb45, unwind: bb50];
+    }
+
+    bb45: {
+        drop(_4) -> bb46;
+    }
+
+    bb46: {
+        return;
+    }
+
+    bb47 (cleanup): {
+        drop(_103) -> [return: bb48, unwind terminate];
+    }
+
+    bb48 (cleanup): {
+        drop(_70) -> [return: bb49, unwind terminate];
+    }
+
+    bb49 (cleanup): {
+        drop(_37) -> [return: bb50, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_4) -> [return: bb51, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        resume;
+    }
+}
+
+fn repeated_capture() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 3];
+    let _8: [&str; 3];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 2];
+    let _11: [core::fmt::rt::Argument<'_>; 2];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &i32;
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &i32;
+    let mut _16: &[core::fmt::rt::Placeholder];
+    let _17: &[core::fmt::rt::Placeholder; 3];
+    let _18: [core::fmt::rt::Placeholder; 3];
+    let mut _19: core::fmt::rt::Placeholder;
+    let mut _20: core::fmt::rt::Alignment;
+    let mut _21: core::fmt::rt::Count;
+    let mut _22: core::fmt::rt::Count;
+    let mut _23: core::fmt::rt::Placeholder;
+    let mut _24: core::fmt::rt::Alignment;
+    let mut _25: core::fmt::rt::Count;
+    let mut _26: core::fmt::rt::Count;
+    let mut _27: core::fmt::rt::Placeholder;
+    let mut _28: core::fmt::rt::Alignment;
+    let mut _29: core::fmt::rt::Count;
+    let mut _30: core::fmt::rt::Count;
+    let mut _31: core::fmt::rt::UnsafeArg;
+    let mut _32: (&&std::string::String, &&str);
+    let mut _33: &&std::string::String;
+    let _34: &std::string::String;
+    let mut _35: &&str;
+    let _36: &str;
+    let mut _39: bool;
+    let mut _40: bool;
+    let _42: !;
+    let mut _43: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: i32;
+        scope 2 {
+            debug b => _2;
+            let _3: std::string::String;
+            let _4: std::string::String;
+            scope 3 {
+                debug s => _3;
+                let _37: &&std::string::String;
+                let _38: &&str;
+                scope 6 {
+                    debug left_val => _37;
+                    debug right_val => _38;
+                    let _41: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _41;
+                    }
+                }
+            }
+            scope 4 {
+                debug res => _4;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 1_i32;
+        _2 = const 2_i32;
+        _8 = [const "", const " ", const " "];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_1;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_13) -> bb1;
+    }
+
+    bb1: {
+        _15 = &_2;
+        _14 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_15) -> bb2;
+    }
+
+    bb2: {
+        _11 = [move _12, move _14];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _20 = core::fmt::rt::Alignment::Unknown;
+        _21 = core::fmt::rt::Count::Implied;
+        _22 = core::fmt::rt::Count::Implied;
+        _19 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _20, const 0_u32, move _21, move _22) -> bb3;
+    }
+
+    bb3: {
+        _24 = core::fmt::rt::Alignment::Unknown;
+        _25 = core::fmt::rt::Count::Implied;
+        _26 = core::fmt::rt::Count::Implied;
+        _23 = core::fmt::rt::Placeholder::new(const 1_usize, const ' ', move _24, const 0_u32, move _25, move _26) -> bb4;
+    }
+
+    bb4: {
+        _28 = core::fmt::rt::Alignment::Unknown;
+        _29 = core::fmt::rt::Count::Implied;
+        _30 = core::fmt::rt::Count::Implied;
+        _27 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _28, const 0_u32, move _29, move _30) -> bb5;
+    }
+
+    bb5: {
+        _18 = [move _19, move _23, move _27];
+        _17 = &_18;
+        _16 = _17 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _31 = core::fmt::rt::UnsafeArg::new() -> bb6;
+    }
+
+    bb6: {
+        _5 = Arguments::<'_>::new_v1_formatted(move _6, move _9, move _16, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb7;
+    }
+
+    bb7: {
+        _4 = format(move _5) -> bb8;
+    }
+
+    bb8: {
+        _3 = move _4;
+        _34 = &_3;
+        _33 = &_34;
+        _36 = const "1 2 1";
+        _35 = &_36;
+        _32 = (move _33, move _35);
+        _37 = (_32.0: &&std::string::String);
+        _38 = (_32.1: &&str);
+        _40 = <&String as PartialEq<&str>>::eq(_37, _38) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _41 = core::panicking::AssertKind::Eq;
+        _43 = Option::<Arguments<'_>>::None;
+        _42 = core::panicking::assert_failed::<&String, &str>(move _41, _37, _38, move _43) -> bb13;
+    }
+
+    bb11: {
+        drop(_3) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_3) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}

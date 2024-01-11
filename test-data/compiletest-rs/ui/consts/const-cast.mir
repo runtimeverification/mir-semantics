@@ -1,0 +1,87 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const x: extern "C" fn() = {
+    let mut _0: extern "C" fn();
+
+    bb0: {
+        _0 = foo as extern "C" fn() (Pointer(ReifyFnPointer));
+        return;
+    }
+}
+
+static y: TestStruct = {
+    let mut _0: TestStruct;
+    let mut _1: *const u8;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _ as *const u8 (FnPtrToPtr);
+        _0 = TestStruct { x: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&*const u8, &*const u8);
+    let mut _2: &*const u8;
+    let _3: *const u8;
+    let mut _4: &*const u8;
+    let _5: &TestStruct;
+    let _6: &*const u8;
+    let _7: &*const u8;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: *const u8;
+    let mut _11: *const u8;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _3 = const _ as *const u8 (FnPtrToPtr);
+        _2 = &_3;
+        _5 = const {alloc1: &TestStruct};
+        _4 = &((*_5).0: *const u8);
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &*const u8);
+        _7 = (_1.1: &*const u8);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<*const u8, *const u8>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+alloc1 (static: y, size: 8, align: 8) {
+    ╾───────alloc5────────╼                         │ ╾──────╼
+}
+
+alloc5 (fn: foo)

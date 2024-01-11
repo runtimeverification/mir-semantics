@@ -1,0 +1,193 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn checktrue(_1: bool) -> bool {
+    debug rs => _1;
+    let mut _0: bool;
+    let mut _2: bool;
+    let mut _3: !;
+
+    bb0: {
+        _2 = Not(_1);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = core::panicking::panic(const "assertion failed: (rs)");
+    }
+
+    bb2: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: fn(bool) -> bool;
+    let _3: bool;
+    let mut _4: fn(bool) -> bool;
+    scope 1 {
+        debug k => checktrue;
+    }
+
+    bb0: {
+        _2 = checktrue as fn(bool) -> bool (Pointer(ReifyFnPointer));
+        _1 = evenk(const 42_isize, move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = checktrue as fn(bool) -> bool (Pointer(ReifyFnPointer));
+        _3 = oddk(const 45_isize, move _4) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn evenk(_1: isize, _2: fn(bool) -> bool) -> bool {
+    debug n => _1;
+    debug k => _2;
+    let mut _0: bool;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 2];
+    let _12: [&str; 2];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 1];
+    let _15: [core::fmt::rt::Argument<'_>; 1];
+    let mut _16: core::fmt::rt::Argument<'_>;
+    let _17: &isize;
+    let mut _18: isize;
+    let mut _19: isize;
+    let mut _20: isize;
+
+    bb0: {
+        _7 = [const "evenk\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_const(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = _print(move _4) -> bb2;
+    }
+
+    bb2: {
+        _12 = [const "", const "\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _17 = &_1;
+        _16 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_17) -> bb3;
+    }
+
+    bb3: {
+        _15 = [move _16];
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb4;
+    }
+
+    bb4: {
+        _8 = _print(move _9) -> bb5;
+    }
+
+    bb5: {
+        _18 = _1;
+        switchInt(move _18) -> [0: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _0 = _2(const true) -> bb8;
+    }
+
+    bb7: {
+        _20 = _1;
+        _19 = Sub(move _20, const 1_isize);
+        _0 = oddk(move _19, _2) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+fn oddk(_1: isize, _2: fn(bool) -> bool) -> bool {
+    debug n => _1;
+    debug k => _2;
+    let mut _0: bool;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 2];
+    let _12: [&str; 2];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 1];
+    let _15: [core::fmt::rt::Argument<'_>; 1];
+    let mut _16: core::fmt::rt::Argument<'_>;
+    let _17: &isize;
+    let mut _18: isize;
+    let mut _19: isize;
+    let mut _20: isize;
+
+    bb0: {
+        _7 = [const "oddk\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_const(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = _print(move _4) -> bb2;
+    }
+
+    bb2: {
+        _12 = [const "", const "\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _17 = &_1;
+        _16 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_17) -> bb3;
+    }
+
+    bb3: {
+        _15 = [move _16];
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb4;
+    }
+
+    bb4: {
+        _8 = _print(move _9) -> bb5;
+    }
+
+    bb5: {
+        _18 = _1;
+        switchInt(move _18) -> [0: bb6, otherwise: bb7];
+    }
+
+    bb6: {
+        _0 = _2(const false) -> bb8;
+    }
+
+    bb7: {
+        _20 = _1;
+        _19 = Sub(move _20, const 1_isize);
+        _0 = evenk(move _19, _2) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+}

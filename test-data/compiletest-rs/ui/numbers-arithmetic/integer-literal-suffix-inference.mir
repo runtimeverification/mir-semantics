@@ -1,0 +1,279 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: i8;
+    let _3: i8;
+    let _4: i8;
+    let _7: i16;
+    let _8: i16;
+    let _11: i32;
+    let _12: i32;
+    let _15: i64;
+    let _16: i64;
+    let _19: usize;
+    let _20: usize;
+    let _23: u8;
+    let _24: u8;
+    let _27: u16;
+    let _28: u16;
+    let _31: u32;
+    let _32: u32;
+    let _35: u64;
+    let _36: u64;
+    scope 1 {
+        debug _i => _1;
+        let _2: i8;
+        scope 2 {
+            debug j => _2;
+            let _5: i16;
+            scope 3 {
+                debug _i => _5;
+                let _6: i16;
+                scope 4 {
+                    debug j => _6;
+                    let _9: i32;
+                    scope 5 {
+                        debug _i => _9;
+                        let _10: i32;
+                        scope 6 {
+                            debug j => _10;
+                            let _13: i64;
+                            scope 7 {
+                                debug _i => _13;
+                                let _14: i64;
+                                scope 8 {
+                                    debug j => _14;
+                                    let _17: usize;
+                                    scope 9 {
+                                        debug _i => _17;
+                                        let _18: usize;
+                                        scope 10 {
+                                            debug j => _18;
+                                            let _21: u8;
+                                            scope 11 {
+                                                debug _i => _21;
+                                                let _22: u8;
+                                                scope 12 {
+                                                    debug j => _22;
+                                                    let _25: u16;
+                                                    scope 13 {
+                                                        debug _i => _25;
+                                                        let _26: u16;
+                                                        scope 14 {
+                                                            debug j => _26;
+                                                            let _29: u32;
+                                                            scope 15 {
+                                                                debug _i => _29;
+                                                                let _30: u32;
+                                                                scope 16 {
+                                                                    debug j => _30;
+                                                                    let _33: u64;
+                                                                    scope 17 {
+                                                                        debug _i => _33;
+                                                                        let _34: u64;
+                                                                        scope 18 {
+                                                                            debug j => _34;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const i8::MIN;
+        _2 = const i8::MIN;
+        _3 = id_i8(_2) -> bb1;
+    }
+
+    bb1: {
+        _4 = id_i8(const i8::MIN) -> bb2;
+    }
+
+    bb2: {
+        _5 = const i16::MIN;
+        _6 = const i16::MIN;
+        _7 = id_i16(_6) -> bb3;
+    }
+
+    bb3: {
+        _8 = id_i16(const i16::MIN) -> bb4;
+    }
+
+    bb4: {
+        _9 = const i32::MIN;
+        _10 = const i32::MIN;
+        _11 = id_i32(_10) -> bb5;
+    }
+
+    bb5: {
+        _12 = id_i32(const i32::MIN) -> bb6;
+    }
+
+    bb6: {
+        _13 = const i64::MIN;
+        _14 = const i64::MIN;
+        _15 = id_i64(_14) -> bb7;
+    }
+
+    bb7: {
+        _16 = id_i64(const i64::MIN) -> bb8;
+    }
+
+    bb8: {
+        _17 = const 1_usize;
+        _18 = const 1_usize;
+        _19 = id_uint(_18) -> bb9;
+    }
+
+    bb9: {
+        _20 = id_uint(const 1_usize) -> bb10;
+    }
+
+    bb10: {
+        _21 = const u8::MAX;
+        _22 = const u8::MAX;
+        _23 = id_u8(_22) -> bb11;
+    }
+
+    bb11: {
+        _24 = id_u8(const u8::MAX) -> bb12;
+    }
+
+    bb12: {
+        _25 = const u16::MAX;
+        _26 = const u16::MAX;
+        _27 = id_u16(_26) -> bb13;
+    }
+
+    bb13: {
+        _28 = id_u16(const u16::MAX) -> bb14;
+    }
+
+    bb14: {
+        _29 = const u32::MAX;
+        _30 = const u32::MAX;
+        _31 = id_u32(_30) -> bb15;
+    }
+
+    bb15: {
+        _32 = id_u32(const u32::MAX) -> bb16;
+    }
+
+    bb16: {
+        _33 = const u64::MAX;
+        _34 = const u64::MAX;
+        _35 = id_u64(_34) -> bb17;
+    }
+
+    bb17: {
+        _36 = id_u64(const u64::MAX) -> bb18;
+    }
+
+    bb18: {
+        return;
+    }
+}
+
+fn id_i8(_1: i8) -> i8 {
+    debug n => _1;
+    let mut _0: i8;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_i16(_1: i16) -> i16 {
+    debug n => _1;
+    let mut _0: i16;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_i32(_1: i32) -> i32 {
+    debug n => _1;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_i64(_1: i64) -> i64 {
+    debug n => _1;
+    let mut _0: i64;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_uint(_1: usize) -> usize {
+    debug n => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_u8(_1: u8) -> u8 {
+    debug n => _1;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_u16(_1: u16) -> u16 {
+    debug n => _1;
+    let mut _0: u16;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_u32(_1: u32) -> u32 {
+    debug n => _1;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+fn id_u64(_1: u64) -> u64 {
+    debug n => _1;
+    let mut _0: u64;
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}

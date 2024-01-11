@@ -1,7 +1,7 @@
 [project]
 name = "mir-semantics"
 version = "0.1.0"
-source = "k-src"
+source = "../semantic"
 
 [targets.llvm]
 backend = "llvm"

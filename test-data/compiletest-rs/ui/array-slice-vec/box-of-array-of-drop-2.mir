@@ -1,0 +1,402 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static LOG: AtomicUsize = {
+    let mut _0: std::sync::atomic::AtomicUsize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = AtomicUsize::new(const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/array-slice-vec/box-of-array-of-drop-2.rs:17:1: 17:16>::drop(_1: &mut D) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &u8;
+    let _12: usize;
+    let _13: &std::sync::atomic::AtomicUsize;
+    let mut _14: std::sync::atomic::Ordering;
+    let mut _15: std::result::Result<usize, usize>;
+    let _16: &std::sync::atomic::AtomicUsize;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: usize;
+    let mut _20: usize;
+    let mut _21: usize;
+    let mut _22: u8;
+    let mut _23: std::sync::atomic::Ordering;
+    let mut _24: std::sync::atomic::Ordering;
+    scope 1 {
+        debug old => _12;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _6 = [const "Dropping ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: u8);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<u8>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = const {alloc1: &AtomicUsize};
+        _14 = SeqCst;
+        _12 = AtomicUsize::load(_13, move _14) -> bb4;
+    }
+
+    bb4: {
+        _16 = const {alloc1: &AtomicUsize};
+        _17 = _12;
+        _20 = _12;
+        _19 = Shl(move _20, const 4_i32);
+        _22 = ((*_1).0: u8);
+        _21 = move _22 as usize (IntToInt);
+        _18 = BitOr(move _19, move _21);
+        _23 = SeqCst;
+        _24 = SeqCst;
+        _15 = AtomicUsize::compare_exchange(_16, move _17, move _18, move _23, move _24) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+alloc1 (static: LOG, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::thread::JoinHandle<()>;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _5: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _6: std::thread::JoinHandle<()>;
+    let mut _7: !;
+    let _10: &std::sync::atomic::AtomicUsize;
+    let mut _11: std::sync::atomic::Ordering;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: usize;
+    let mut _15: usize;
+    let _16: !;
+    let mut _17: std::fmt::Arguments<'_>;
+    let mut _18: &[&str];
+    let _19: &[&str; 2];
+    let _20: [&str; 2];
+    let mut _21: &[core::fmt::rt::Argument<'_>];
+    let _22: &[core::fmt::rt::Argument<'_>; 2];
+    let _23: [core::fmt::rt::Argument<'_>; 2];
+    let mut _24: core::fmt::rt::Argument<'_>;
+    let _25: &usize;
+    let mut _26: core::fmt::rt::Argument<'_>;
+    let _27: &usize;
+    scope 1 {
+        debug g => _1;
+        let _8: usize;
+        scope 2 {
+            debug expect => _8;
+            let _9: usize;
+            scope 3 {
+                debug actual => _9;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = spawn::<[closure@ui/array-slice-vec/box-of-array-of-drop-2.rs:32:27: 32:29], ()>(const ZeroSized: [closure@ui/array-slice-vec/box-of-array-of-drop-2.rs:32:27: 32:29]) -> bb1;
+    }
+
+    bb1: {
+        _6 = move _1;
+        _5 = JoinHandle::<()>::join(move _6) -> bb2;
+    }
+
+    bb2: {
+        _4 = &_5;
+        _3 = Result::<(), Box<dyn Any + Send>>::is_err(move _4) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _2 = Not(move _3);
+        drop(_5) -> bb4;
+    }
+
+    bb4: {
+        switchInt(move _2) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _7 = core::panicking::panic(const "assertion failed: g.join().is_err()");
+    }
+
+    bb6: {
+        _8 = const 727300182580_usize;
+        _10 = const {alloc1: &AtomicUsize};
+        _11 = SeqCst;
+        _9 = AtomicUsize::load(_10, move _11) -> bb7;
+    }
+
+    bb7: {
+        _14 = _9;
+        _15 = _8;
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb12, otherwise: bb8];
+    }
+
+    bb8: {
+        _20 = [const "expect: 0x", const " actual: 0x"];
+        _19 = &_20;
+        _18 = _19 as &[&str] (Pointer(Unsize));
+        _25 = &_8;
+        _24 = core::fmt::rt::Argument::<'_>::new_lower_hex::<usize>(_25) -> bb9;
+    }
+
+    bb9: {
+        _27 = &_9;
+        _26 = core::fmt::rt::Argument::<'_>::new_lower_hex::<usize>(_27) -> bb10;
+    }
+
+    bb10: {
+        _23 = [move _24, move _26];
+        _22 = &_23;
+        _21 = _22 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _17 = Arguments::<'_>::new_v1(move _18, move _21) -> bb11;
+    }
+
+    bb11: {
+        _16 = panic_fmt(move _17);
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_5) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (static: LOG, size: 8, align: 8) {
+    00 00 00 00 00 00 00 00                         │ ........
+}
+
+fn die() -> D {
+    let mut _0: D;
+    let _1: !;
+
+    bb0: {
+        _1 = begin_panic::<&str>(const "Oh no");
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/array-slice-vec/box-of-array-of-drop-2.rs:32:27: 32:29]) -> () {
+    let mut _0: ();
+    let _2: std::boxed::Box<[D; 4]>;
+    let mut _3: [D; 4];
+    let mut _4: D;
+    let mut _5: D;
+    let mut _6: D;
+    let mut _7: D;
+    let mut _9: [D; 4];
+    let mut _10: D;
+    let mut _11: D;
+    let mut _12: D;
+    let mut _13: D;
+    let mut _15: [D; 4];
+    let mut _16: D;
+    let mut _17: D;
+    let mut _18: D;
+    let mut _19: D;
+    let mut _21: [D; 4];
+    let mut _22: D;
+    let mut _23: D;
+    let mut _24: D;
+    let mut _25: D;
+    scope 1 {
+        debug _b1 => _2;
+        let _8: std::boxed::Box<[D; 4]>;
+        scope 2 {
+            debug _b2 => _8;
+            let _14: std::boxed::Box<[D; 4]>;
+            scope 3 {
+                debug _b3 => _14;
+                let _20: std::boxed::Box<[D; 4]>;
+                scope 4 {
+                    debug _b4 => _20;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = D(const 1_u8);
+        _5 = D(const 2_u8);
+        _6 = D(const 3_u8);
+        _7 = D(const 4_u8);
+        _3 = [move _4, move _5, move _6, move _7];
+        _2 = Box::<[D; 4]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _10 = D(const 5_u8);
+        _11 = D(const 6_u8);
+        _12 = D(const 7_u8);
+        _13 = D(const 8_u8);
+        _9 = [move _10, move _11, move _12, move _13];
+        _8 = Box::<[D; 4]>::new(move _9) -> [return: bb2, unwind: bb14];
+    }
+
+    bb2: {
+        _16 = D(const 9_u8);
+        _17 = D(const 10_u8);
+        _18 = die() -> [return: bb3, unwind: bb11];
+    }
+
+    bb3: {
+        _19 = D(const 12_u8);
+        _15 = [move _16, move _17, move _18, move _19];
+        _14 = Box::<[D; 4]>::new(move _15) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _22 = D(const 13_u8);
+        _23 = D(const 14_u8);
+        _24 = D(const 15_u8);
+        _25 = D(const 16_u8);
+        _21 = [move _22, move _23, move _24, move _25];
+        _20 = Box::<[D; 4]>::new(move _21) -> [return: bb5, unwind: bb10];
+    }
+
+    bb5: {
+        drop(_20) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        drop(_14) -> [return: bb7, unwind: bb13];
+    }
+
+    bb7: {
+        drop(_8) -> [return: bb8, unwind: bb14];
+    }
+
+    bb8: {
+        drop(_2) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_14) -> [return: bb13, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_17) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_16) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        drop(_8) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_2) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+}
+
+main::{closure#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{closure#0}::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{closure#0}::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{closure#0}::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn D(_1: u8) -> D {
+    let mut _0: D;
+
+    bb0: {
+        _0 = D(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn D(_1: u8) -> D {
+    let mut _0: D;
+
+    bb0: {
+        _0 = D(move _1);
+        return;
+    }
+}

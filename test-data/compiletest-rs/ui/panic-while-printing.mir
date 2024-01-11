@@ -1,0 +1,119 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/panic-while-printing.rs:13:1: 13:19>::fmt(_1: &A, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug _f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: !;
+
+    bb0: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<std::sync::Arc<std::sync::Mutex<std::vec::Vec<u8>>>>;
+    let mut _2: std::option::Option<std::sync::Arc<std::sync::Mutex<std::vec::Vec<u8>>>>;
+    let mut _3: std::sync::Arc<std::sync::Mutex<std::vec::Vec<u8>>>;
+    let mut _4: std::sync::Mutex<std::vec::Vec<u8>>;
+    let mut _5: std::vec::Vec<u8>;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _9: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _10: !;
+
+    bb0: {
+        _5 = Vec::<u8>::new() -> bb1;
+    }
+
+    bb1: {
+        _4 = Mutex::<Vec<u8>>::new(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = Arc::<Mutex<Vec<u8>>>::new(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = Option::<Arc<Mutex<Vec<u8>>>>::Some(move _3);
+        _1 = set_output_capture(move _2) -> bb4;
+    }
+
+    bb4: {
+        drop(_1) -> bb5;
+    }
+
+    bb5: {
+        _9 = catch_unwind::<[closure@ui/panic-while-printing.rs:21:38: 21:40], ()>(const ZeroSized: [closure@ui/panic-while-printing.rs:21:38: 21:40]) -> bb6;
+    }
+
+    bb6: {
+        _8 = &_9;
+        _7 = Result::<(), Box<dyn Any + Send>>::is_err(move _8) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        _6 = Not(move _7);
+        drop(_9) -> bb8;
+    }
+
+    bb8: {
+        switchInt(move _6) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _10 = core::panicking::panic(const "assertion failed: std::panic::catch_unwind(|| { eprintln!(\\\"{}\\\", A); }).is_err()");
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_9) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/panic-while-printing.rs:21:38: 21:40]) -> () {
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &A;
+    let _12: A;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_12;
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<A>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _eprint(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

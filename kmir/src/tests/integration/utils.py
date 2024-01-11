@@ -1,6 +1,6 @@
-from pathlib import Path
+from tests.utils import KMIR_DIR
 
-TEST_DATA_DIR = Path(__file__).parent / 'test-data'
+TEST_DATA_DIR = KMIR_DIR.parent / 'test-data'
 
 ##---------
 # Mir files that were written by hand to test *PARSING*. May not be valid for execution.

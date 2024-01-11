@@ -1,0 +1,54 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/normalization-generality-2.rs:13:1: 13:38>::project(_1: &Yoke<Y>, _2: for<'b, 'a> fn(&'b <Y as Yokeable<'a>>::Output, &'a ()) -> <P as Yokeable<'a>>::Output) -> Yoke<P> {
+    debug self => _1;
+    debug _f => _2;
+    let mut _0: Yoke<P>;
+    let mut _3: !;
+
+    bb0: {
+        _3 = core::panicking::panic(const "not implemented");
+    }
+}
+
+fn slice(_1: Yoke<&str>) -> Yoke<&[u8]> {
+    debug y => const Yoke::<&str> {{ _marker: PhantomData::<&str> }};
+    let mut _0: Yoke<&[u8]>;
+    let mut _2: &Yoke<&str>;
+    let mut _3: for<'a, 'b> fn(&'a &'b str, &'b ()) -> <&[u8] as Yokeable<'b>>::Output;
+
+    bb0: {
+        _2 = &_1;
+        _3 = const ZeroSized: [closure@ui/associated-types/normalization-generality-2.rs:25:15: 25:27] as for<'a, 'b> fn(&'a &'b str, &'b ()) -> <&[u8] as Yokeable<'b>>::Output (Pointer(ClosureFnPointer(Normal)));
+        _0 = Yoke::<&str>::project::<&[u8]>(move _2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn slice::{closure#0}(_1: &[closure@ui/associated-types/normalization-generality-2.rs:25:15: 25:27], _2: &&str, _3: &()) -> &[u8] {
+    debug yk => _2;
+    let mut _0: &[u8];
+    let _4: &[u8];
+    let mut _5: &str;
+
+    bb0: {
+        _5 = deref_copy (*_2);
+        _4 = core::str::<impl str>::as_bytes(_5) -> bb1;
+    }
+
+    bb1: {
+        _0 = _4;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

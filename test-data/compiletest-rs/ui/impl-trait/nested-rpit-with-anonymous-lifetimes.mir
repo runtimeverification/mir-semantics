@@ -1,0 +1,70 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:12:1: 12:23>::vec_number_iterable_per_item_in_auxiliary_object(_1: &VecNumber<'_>) -> impl Iterator<Item = (&usize, impl Iterator<Item = &Number<'_>>)> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = (&usize, impl std::iter::Iterator<Item = &Number<'_>>)>;
+    let mut _2: std::slice::Iter<'_, usize>;
+    let mut _3: &[usize];
+    let _4: &[usize];
+    let mut _5: [closure@ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:16:42: 16:50];
+    let mut _6: &std::vec::Vec<usize>;
+
+    bb0: {
+        _6 = deref_copy ((*_1).1: &std::vec::Vec<usize>);
+        _4 = <Vec<usize> as Deref>::deref(_6) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = core::slice::<impl [usize]>::iter(move _3) -> bb2;
+    }
+
+    bb2: {
+        _5 = [closure@ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:16:42: 16:50] { self: _1 };
+        _0 = <std::slice::Iter<'_, usize> as Iterator>::map::<(&usize, std::slice::Iter<'_, Number<'_>>), [closure@ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:16:42: 16:50]>(move _2, move _5) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:12:1: 12:23>::vec_number_iterable_per_item_in_auxiliary_object::{closure#0}(_1: &mut [closure@ui/impl-trait/nested-rpit-with-anonymous-lifetimes.rs:16:42: 16:50], _2: &usize) -> (&usize, std::slice::Iter<'_, Number<'_>>) {
+    debug n => _2;
+    debug self => ((*_1).0: &VecNumber<'_>);
+    let mut _0: (&usize, std::slice::Iter<'_, Number<'_>>);
+    let _3: std::slice::Iter<'_, Number<'_>>;
+    let mut _4: &[Number<'_>];
+    let _5: &[Number<'_>];
+    let mut _6: &std::vec::Vec<Number<'_>>;
+    let mut _7: std::slice::Iter<'_, Number<'_>>;
+    let mut _8: &VecNumber<'_>;
+    scope 1 {
+        debug iter_number => _3;
+    }
+
+    bb0: {
+        _8 = deref_copy ((*_1).0: &VecNumber<'_>);
+        _6 = &((*_8).0: std::vec::Vec<Number<'_>>);
+        _5 = <Vec<Number<'_>> as Deref>::deref(move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = _5;
+        _3 = core::slice::<impl [Number<'_>]>::iter(move _4) -> bb2;
+    }
+
+    bb2: {
+        _7 = move _3;
+        _0 = (_2, move _7);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

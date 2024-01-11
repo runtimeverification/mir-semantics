@@ -1,0 +1,3560 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static f: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static cmp: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static other: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static state: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static __self_0_0: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static __self_1_0: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static __self_vi: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static __arg_1_0: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+static debug_trait_builder: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = ();
+        return;
+    }
+}
+
+fn MethodsInDerives::debug_tuple(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::debug_struct(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::field(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::finish(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::clone(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::cmp(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::partial_cmp(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::eq(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::ne(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::le(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::lt(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::ge(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::gt(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn MethodsInDerives::hash(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:16: 44:21>::clone(_1: &__H) -> __H {
+    debug self => _1;
+    let mut _0: __H;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:23: 44:32>::eq(_1: &__H, _2: &__H) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &__H;
+    let mut _9: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _8 = deref_copy (_3.0: &__H);
+        _4 = &(((*_8) as V).0: i32);
+        _9 = deref_copy (_3.1: &__H);
+        _5 = &(((*_9) as V).0: i32);
+        _6 = (*_4);
+        _7 = (*_5);
+        _0 = Eq(move _6, move _7);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:34: 44:36>::assert_receiver_is_total_eq(_1: &__H) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:38: 44:48>::partial_cmp(_1: &__H, _2: &__H) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &__H;
+    let mut _7: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as PartialOrd>::partial_cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:50: 44:53>::cmp(_1: &__H, _2: &__H) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &__H;
+    let mut _7: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as Ord>::cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:55: 44:60>::fmt(_1: &__H, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &i32;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _4 = const "V";
+        _6 = &_3;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:44:62: 44:66>::hash(_1: &__H, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _0 = <i32 as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:16: 48:21>::clone(_1: &W) -> W {
+    debug self => _1;
+    let mut _0: W;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:23: 48:32>::eq(_1: &W, _2: &W) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:34: 48:36>::assert_receiver_is_total_eq(_1: &W) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:38: 48:48>::partial_cmp(_1: &W, _2: &W) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as PartialOrd>::partial_cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:50: 48:53>::cmp(_1: &W, _2: &W) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as Ord>::cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:55: 48:60>::fmt(_1: &W, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: i16;
+    let _5: &str;
+    let _6: &str;
+
+    bb0: {
+        _4 = discriminant((*_1));
+        switchInt(move _4) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _6 = const "B";
+        _3 = _6;
+        goto -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _5 = const "A";
+        _3 = _5;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _0 = Formatter::<'_>::write_str(_2, move _3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:48:62: 48:66>::hash(_1: &W, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: i16;
+    let _4: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = &_3;
+        _0 = <i16 as Hash>::hash::<__H>(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:16: 51:21>::clone(_1: &X<A>) -> X<A> {
+    debug self => _1;
+    let mut _0: X<A>;
+    let mut _2: A;
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _2 = <A as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = X::<A> { A: move _2 };
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:23: 51:32>::eq(_1: &X<A>, _2: &X<A>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &A;
+    let mut _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:34: 51:36>::assert_receiver_is_total_eq(_1: &X<A>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:38: 51:48>::partial_cmp(_1: &X<A>, _2: &X<A>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:50: 51:53>::cmp(_1: &X<A>, _2: &X<A>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:55: 51:60>::fmt(_1: &X<A>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&A;
+    let _7: &A;
+
+    bb0: {
+        _3 = const "X";
+        _4 = const "A";
+        _7 = &((*_1).0: A);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:62: 51:69>::default() -> X<A> {
+    let mut _0: X<A>;
+    let mut _1: A;
+
+    bb0: {
+        _1 = <A as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = X::<A> { A: move _1 };
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:51:71: 51:75>::hash(_1: &X<A>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _0 = <A as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:16: 56:21>::clone(_1: &Y<B>) -> Y<B> {
+    debug self => _1;
+    let mut _0: Y<B>;
+    let mut _2: B;
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _2 = <B as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Y::<B>(move _2);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:23: 56:32>::eq(_1: &Y<B>, _2: &Y<B>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &B;
+    let mut _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:34: 56:36>::assert_receiver_is_total_eq(_1: &Y<B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:38: 56:48>::partial_cmp(_1: &Y<B>, _2: &Y<B>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:50: 56:53>::cmp(_1: &Y<B>, _2: &Y<B>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:55: 56:60>::fmt(_1: &Y<B>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&B;
+    let _6: &B;
+
+    bb0: {
+        _3 = const "Y";
+        _6 = &((*_1).0: B);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:62: 56:69>::default() -> Y<B> {
+    let mut _0: Y<B>;
+    let mut _1: B;
+
+    bb0: {
+        _1 = <B as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:56:71: 56:75>::hash(_1: &Y<B>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _0 = <B as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:16: 61:21>::clone(_1: &Z<C>) -> Z<C> {
+    debug self => _1;
+    let mut _0: Z<C>;
+    let mut _2: isize;
+    let _3: &C;
+    let mut _4: C;
+    let _5: &C;
+    let mut _6: C;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+    scope 2 {
+        debug __self_0 => _5;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _5 = &(((*_1) as B).0: C);
+        _6 = <C as Clone>::clone(_5) -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = &(((*_1) as C).0: C);
+        _4 = <C as Clone>::clone(_3) -> bb4;
+    }
+
+    bb4: {
+        _0 = Z::<C>::C(move _4);
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = Z::<C>::B { C: move _6 };
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:23: 61:32>::eq(_1: &Z<C>, _2: &Z<C>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&Z<C>, &Z<C>);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _15: &Z<C>;
+    let mut _16: &Z<C>;
+    let mut _17: &Z<C>;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &C;
+            let _12: &C;
+            let _13: &C;
+            let _14: &C;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+            scope 4 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _15 = deref_copy (_7.0: &Z<C>);
+        _10 = discriminant((*_15));
+        switchInt(move _10) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _16 = deref_copy (_7.1: &Z<C>);
+        _8 = discriminant((*_16));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _17 = deref_copy (_7.1: &Z<C>);
+        _9 = discriminant((*_17));
+        switchInt(move _9) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _18 = deref_copy (_7.0: &Z<C>);
+        _11 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_7.1: &Z<C>);
+        _12 = &(((*_19) as C).0: C);
+        _6 = <C as PartialEq>::eq(_11, _12) -> bb9;
+    }
+
+    bb8: {
+        _20 = deref_copy (_7.0: &Z<C>);
+        _13 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_7.1: &Z<C>);
+        _14 = &(((*_21) as B).0: C);
+        _6 = <C as PartialEq>::eq(_13, _14) -> bb9;
+    }
+
+    bb9: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:34: 61:36>::assert_receiver_is_total_eq(_1: &Z<C>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:38: 61:48>::partial_cmp(_1: &Z<C>, _2: &Z<C>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: isize;
+    let mut _5: (&Z<C>, &Z<C>);
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let _13: &isize;
+    let _14: &isize;
+    let mut _15: &Z<C>;
+    let mut _16: &Z<C>;
+    let mut _17: &Z<C>;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _9: &C;
+            let _10: &C;
+            let _11: &C;
+            let _12: &C;
+            scope 3 {
+                debug __self_0 => _9;
+                debug __arg1_0 => _10;
+            }
+            scope 4 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = (_1, _2);
+        _15 = deref_copy (_5.0: &Z<C>);
+        _8 = discriminant((*_15));
+        switchInt(move _8) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _16 = deref_copy (_5.1: &Z<C>);
+        _6 = discriminant((*_16));
+        switchInt(move _6) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = &_3;
+        _14 = &_4;
+        _0 = <isize as PartialOrd>::partial_cmp(_13, _14) -> bb6;
+    }
+
+    bb3: {
+        _17 = deref_copy (_5.1: &Z<C>);
+        _7 = discriminant((*_17));
+        switchInt(move _7) -> [1: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _18 = deref_copy (_5.0: &Z<C>);
+        _9 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_5.1: &Z<C>);
+        _10 = &(((*_19) as C).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_9, _10) -> bb6;
+    }
+
+    bb5: {
+        _20 = deref_copy (_5.0: &Z<C>);
+        _11 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_5.1: &Z<C>);
+        _12 = &(((*_21) as B).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_11, _12) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:50: 61:53>::cmp(_1: &Z<C>, _2: &Z<C>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: isize;
+    let mut _5: std::cmp::Ordering;
+    let _6: &isize;
+    let _7: &isize;
+    let mut _8: i8;
+    let mut _9: (&Z<C>, &Z<C>);
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    let mut _22: &Z<C>;
+    let mut _23: &Z<C>;
+    let mut _24: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _13: &C;
+            let _14: &C;
+            let _15: &C;
+            let _16: &C;
+            let _17: std::cmp::Ordering;
+            scope 3 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 4 {
+                debug __self_0 => _15;
+                debug __arg1_0 => _16;
+            }
+            scope 5 {
+            }
+            scope 6 {
+                debug cmp => _17;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _6 = &_3;
+        _7 = &_4;
+        _5 = <isize as Ord>::cmp(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = discriminant(_5);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = _5;
+        _0 = _17;
+        goto -> bb9;
+    }
+
+    bb3: {
+        _9 = (_1, _2);
+        _18 = deref_copy (_9.0: &Z<C>);
+        _12 = discriminant((*_18));
+        switchInt(move _12) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb4: {
+        _19 = deref_copy (_9.1: &Z<C>);
+        _10 = discriminant((*_19));
+        switchInt(move _10) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _20 = deref_copy (_9.1: &Z<C>);
+        _11 = discriminant((*_20));
+        switchInt(move _11) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _21 = deref_copy (_9.0: &Z<C>);
+        _13 = &(((*_21) as C).0: C);
+        _22 = deref_copy (_9.1: &Z<C>);
+        _14 = &(((*_22) as C).0: C);
+        _0 = <C as Ord>::cmp(_13, _14) -> bb9;
+    }
+
+    bb8: {
+        _23 = deref_copy (_9.0: &Z<C>);
+        _15 = &(((*_23) as B).0: C);
+        _24 = deref_copy (_9.1: &Z<C>);
+        _16 = &(((*_24) as B).0: C);
+        _0 = <C as Ord>::cmp(_15, _16) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:55: 61:60>::fmt(_1: &Z<C>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &C;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&C;
+    let _8: &C;
+    let _9: &str;
+    let _10: &str;
+    let mut _11: &dyn std::fmt::Debug;
+    let _12: &&C;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+    scope 2 {
+        debug __self_0 => _8;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = &(((*_1) as B).0: C);
+        _9 = const "B";
+        _10 = const "C";
+        _12 = &_8;
+        _11 = _12 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _9, _10, move _11) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as C).0: C);
+        _5 = const "C";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:61:62: 61:66>::hash(_1: &Z<C>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: isize;
+    let _4: ();
+    let _5: &isize;
+    let mut _6: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _7: &C;
+        let _8: &C;
+        scope 2 {
+            debug __self_0 => _7;
+        }
+        scope 3 {
+            debug __self_0 => _8;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _5 = &_3;
+        _4 = <isize as Hash>::hash::<__H>(_5, _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = discriminant((*_1));
+        switchInt(move _6) -> [0: bb4, 1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _8 = &(((*_1) as B).0: C);
+        _0 = <C as Hash>::hash::<__H>(_8, _2) -> bb5;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _7 = &(((*_1) as C).0: C);
+        _0 = <C as Hash>::hash::<__H>(_7, _2) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+const NON_MODULE: () = {
+    let mut _0: ();
+
+    bb0: {
+        _0 = const ();
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:20: 70:25>::clone(_1: &NON_MODULE::__H) -> NON_MODULE::__H {
+    debug self => _1;
+    let mut _0: NON_MODULE::__H;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:27: 70:36>::eq(_1: &NON_MODULE::__H, _2: &NON_MODULE::__H) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: (&NON_MODULE::__H, &NON_MODULE::__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &NON_MODULE::__H;
+    let mut _9: &NON_MODULE::__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _8 = deref_copy (_3.0: &NON_MODULE::__H);
+        _4 = &(((*_8) as V).0: i32);
+        _9 = deref_copy (_3.1: &NON_MODULE::__H);
+        _5 = &(((*_9) as V).0: i32);
+        _6 = (*_4);
+        _7 = (*_5);
+        _0 = Eq(move _6, move _7);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:38: 70:40>::assert_receiver_is_total_eq(_1: &NON_MODULE::__H) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:42: 70:52>::partial_cmp(_1: &NON_MODULE::__H, _2: &NON_MODULE::__H) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: (&NON_MODULE::__H, &NON_MODULE::__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &NON_MODULE::__H;
+    let mut _7: &NON_MODULE::__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &NON_MODULE::__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &NON_MODULE::__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as PartialOrd>::partial_cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:54: 70:57>::cmp(_1: &NON_MODULE::__H, _2: &NON_MODULE::__H) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let mut _3: (&NON_MODULE::__H, &NON_MODULE::__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &NON_MODULE::__H;
+    let mut _7: &NON_MODULE::__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &NON_MODULE::__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &NON_MODULE::__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as Ord>::cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:59: 70:64>::fmt(_1: &NON_MODULE::__H, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &i32;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _4 = const "V";
+        _6 = &_3;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:70:66: 70:70>::hash(_1: &NON_MODULE::__H, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _0 = <i32 as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:20: 74:25>::clone(_1: &NON_MODULE::W) -> NON_MODULE::W {
+    debug self => _1;
+    let mut _0: NON_MODULE::W;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:27: 74:36>::eq(_1: &NON_MODULE::W, _2: &NON_MODULE::W) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:38: 74:40>::assert_receiver_is_total_eq(_1: &NON_MODULE::W) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:42: 74:52>::partial_cmp(_1: &NON_MODULE::W, _2: &NON_MODULE::W) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as PartialOrd>::partial_cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:54: 74:57>::cmp(_1: &NON_MODULE::W, _2: &NON_MODULE::W) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as Ord>::cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:59: 74:64>::fmt(_1: &NON_MODULE::W, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: i16;
+    let _5: &str;
+    let _6: &str;
+
+    bb0: {
+        _4 = discriminant((*_1));
+        switchInt(move _4) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _6 = const "B";
+        _3 = _6;
+        goto -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _5 = const "A";
+        _3 = _5;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _0 = Formatter::<'_>::write_str(_2, move _3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:74:66: 74:70>::hash(_1: &NON_MODULE::W, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: i16;
+    let _4: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = &_3;
+        _0 = <i16 as Hash>::hash::<__H>(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:20: 77:25>::clone(_1: &NON_MODULE::X<A>) -> NON_MODULE::X<A> {
+    debug self => _1;
+    let mut _0: NON_MODULE::X<A>;
+    let mut _2: A;
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _2 = <A as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = NON_MODULE::X::<A> { A: move _2 };
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:27: 77:36>::eq(_1: &NON_MODULE::X<A>, _2: &NON_MODULE::X<A>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &A;
+    let mut _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:38: 77:40>::assert_receiver_is_total_eq(_1: &NON_MODULE::X<A>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:42: 77:52>::partial_cmp(_1: &NON_MODULE::X<A>, _2: &NON_MODULE::X<A>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:54: 77:57>::cmp(_1: &NON_MODULE::X<A>, _2: &NON_MODULE::X<A>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:59: 77:64>::fmt(_1: &NON_MODULE::X<A>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&A;
+    let _7: &A;
+
+    bb0: {
+        _3 = const "X";
+        _4 = const "A";
+        _7 = &((*_1).0: A);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:66: 77:73>::default() -> NON_MODULE::X<A> {
+    let mut _0: NON_MODULE::X<A>;
+    let mut _1: A;
+
+    bb0: {
+        _1 = <A as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = NON_MODULE::X::<A> { A: move _1 };
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:77:75: 77:79>::hash(_1: &NON_MODULE::X<A>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _0 = <A as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:20: 82:25>::clone(_1: &NON_MODULE::Y<B>) -> NON_MODULE::Y<B> {
+    debug self => _1;
+    let mut _0: NON_MODULE::Y<B>;
+    let mut _2: B;
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _2 = <B as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = NON_MODULE::Y::<B>(move _2);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:27: 82:36>::eq(_1: &NON_MODULE::Y<B>, _2: &NON_MODULE::Y<B>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &B;
+    let mut _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:38: 82:40>::assert_receiver_is_total_eq(_1: &NON_MODULE::Y<B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:42: 82:52>::partial_cmp(_1: &NON_MODULE::Y<B>, _2: &NON_MODULE::Y<B>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:54: 82:57>::cmp(_1: &NON_MODULE::Y<B>, _2: &NON_MODULE::Y<B>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:59: 82:64>::fmt(_1: &NON_MODULE::Y<B>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&B;
+    let _6: &B;
+
+    bb0: {
+        _3 = const "Y";
+        _6 = &((*_1).0: B);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:66: 82:73>::default() -> NON_MODULE::Y<B> {
+    let mut _0: NON_MODULE::Y<B>;
+    let mut _1: B;
+
+    bb0: {
+        _1 = <B as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = NON_MODULE::Y::<B>(move _1);
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:82:75: 82:79>::hash(_1: &NON_MODULE::Y<B>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _0 = <B as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:20: 87:25>::clone(_1: &NON_MODULE::Z<C>) -> NON_MODULE::Z<C> {
+    debug self => _1;
+    let mut _0: NON_MODULE::Z<C>;
+    let mut _2: isize;
+    let _3: &C;
+    let mut _4: C;
+    let _5: &C;
+    let mut _6: C;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+    scope 2 {
+        debug __self_0 => _5;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _5 = &(((*_1) as B).0: C);
+        _6 = <C as Clone>::clone(_5) -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = &(((*_1) as C).0: C);
+        _4 = <C as Clone>::clone(_3) -> bb4;
+    }
+
+    bb4: {
+        _0 = NON_MODULE::Z::<C>::C(move _4);
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = NON_MODULE::Z::<C>::B { C: move _6 };
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:27: 87:36>::eq(_1: &NON_MODULE::Z<C>, _2: &NON_MODULE::Z<C>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&NON_MODULE::Z<C>, &NON_MODULE::Z<C>);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _15: &NON_MODULE::Z<C>;
+    let mut _16: &NON_MODULE::Z<C>;
+    let mut _17: &NON_MODULE::Z<C>;
+    let mut _18: &NON_MODULE::Z<C>;
+    let mut _19: &NON_MODULE::Z<C>;
+    let mut _20: &NON_MODULE::Z<C>;
+    let mut _21: &NON_MODULE::Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &C;
+            let _12: &C;
+            let _13: &C;
+            let _14: &C;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+            scope 4 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _15 = deref_copy (_7.0: &NON_MODULE::Z<C>);
+        _10 = discriminant((*_15));
+        switchInt(move _10) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _16 = deref_copy (_7.1: &NON_MODULE::Z<C>);
+        _8 = discriminant((*_16));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _17 = deref_copy (_7.1: &NON_MODULE::Z<C>);
+        _9 = discriminant((*_17));
+        switchInt(move _9) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _18 = deref_copy (_7.0: &NON_MODULE::Z<C>);
+        _11 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_7.1: &NON_MODULE::Z<C>);
+        _12 = &(((*_19) as C).0: C);
+        _6 = <C as PartialEq>::eq(_11, _12) -> bb9;
+    }
+
+    bb8: {
+        _20 = deref_copy (_7.0: &NON_MODULE::Z<C>);
+        _13 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_7.1: &NON_MODULE::Z<C>);
+        _14 = &(((*_21) as B).0: C);
+        _6 = <C as PartialEq>::eq(_13, _14) -> bb9;
+    }
+
+    bb9: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:38: 87:40>::assert_receiver_is_total_eq(_1: &NON_MODULE::Z<C>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:42: 87:52>::partial_cmp(_1: &NON_MODULE::Z<C>, _2: &NON_MODULE::Z<C>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: isize;
+    let mut _5: (&NON_MODULE::Z<C>, &NON_MODULE::Z<C>);
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let _13: &isize;
+    let _14: &isize;
+    let mut _15: &NON_MODULE::Z<C>;
+    let mut _16: &NON_MODULE::Z<C>;
+    let mut _17: &NON_MODULE::Z<C>;
+    let mut _18: &NON_MODULE::Z<C>;
+    let mut _19: &NON_MODULE::Z<C>;
+    let mut _20: &NON_MODULE::Z<C>;
+    let mut _21: &NON_MODULE::Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _9: &C;
+            let _10: &C;
+            let _11: &C;
+            let _12: &C;
+            scope 3 {
+                debug __self_0 => _9;
+                debug __arg1_0 => _10;
+            }
+            scope 4 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = (_1, _2);
+        _15 = deref_copy (_5.0: &NON_MODULE::Z<C>);
+        _8 = discriminant((*_15));
+        switchInt(move _8) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _16 = deref_copy (_5.1: &NON_MODULE::Z<C>);
+        _6 = discriminant((*_16));
+        switchInt(move _6) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = &_3;
+        _14 = &_4;
+        _0 = <isize as PartialOrd>::partial_cmp(_13, _14) -> bb6;
+    }
+
+    bb3: {
+        _17 = deref_copy (_5.1: &NON_MODULE::Z<C>);
+        _7 = discriminant((*_17));
+        switchInt(move _7) -> [1: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _18 = deref_copy (_5.0: &NON_MODULE::Z<C>);
+        _9 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_5.1: &NON_MODULE::Z<C>);
+        _10 = &(((*_19) as C).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_9, _10) -> bb6;
+    }
+
+    bb5: {
+        _20 = deref_copy (_5.0: &NON_MODULE::Z<C>);
+        _11 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_5.1: &NON_MODULE::Z<C>);
+        _12 = &(((*_21) as B).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_11, _12) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:54: 87:57>::cmp(_1: &NON_MODULE::Z<C>, _2: &NON_MODULE::Z<C>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: isize;
+    let mut _5: std::cmp::Ordering;
+    let _6: &isize;
+    let _7: &isize;
+    let mut _8: i8;
+    let mut _9: (&NON_MODULE::Z<C>, &NON_MODULE::Z<C>);
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let mut _18: &NON_MODULE::Z<C>;
+    let mut _19: &NON_MODULE::Z<C>;
+    let mut _20: &NON_MODULE::Z<C>;
+    let mut _21: &NON_MODULE::Z<C>;
+    let mut _22: &NON_MODULE::Z<C>;
+    let mut _23: &NON_MODULE::Z<C>;
+    let mut _24: &NON_MODULE::Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _13: &C;
+            let _14: &C;
+            let _15: &C;
+            let _16: &C;
+            let _17: std::cmp::Ordering;
+            scope 3 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 4 {
+                debug __self_0 => _15;
+                debug __arg1_0 => _16;
+            }
+            scope 5 {
+            }
+            scope 6 {
+                debug cmp => _17;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _6 = &_3;
+        _7 = &_4;
+        _5 = <isize as Ord>::cmp(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = discriminant(_5);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = _5;
+        _0 = _17;
+        goto -> bb9;
+    }
+
+    bb3: {
+        _9 = (_1, _2);
+        _18 = deref_copy (_9.0: &NON_MODULE::Z<C>);
+        _12 = discriminant((*_18));
+        switchInt(move _12) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb4: {
+        _19 = deref_copy (_9.1: &NON_MODULE::Z<C>);
+        _10 = discriminant((*_19));
+        switchInt(move _10) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _20 = deref_copy (_9.1: &NON_MODULE::Z<C>);
+        _11 = discriminant((*_20));
+        switchInt(move _11) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _21 = deref_copy (_9.0: &NON_MODULE::Z<C>);
+        _13 = &(((*_21) as C).0: C);
+        _22 = deref_copy (_9.1: &NON_MODULE::Z<C>);
+        _14 = &(((*_22) as C).0: C);
+        _0 = <C as Ord>::cmp(_13, _14) -> bb9;
+    }
+
+    bb8: {
+        _23 = deref_copy (_9.0: &NON_MODULE::Z<C>);
+        _15 = &(((*_23) as B).0: C);
+        _24 = deref_copy (_9.1: &NON_MODULE::Z<C>);
+        _16 = &(((*_24) as B).0: C);
+        _0 = <C as Ord>::cmp(_15, _16) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:59: 87:64>::fmt(_1: &NON_MODULE::Z<C>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &C;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&C;
+    let _8: &C;
+    let _9: &str;
+    let _10: &str;
+    let mut _11: &dyn std::fmt::Debug;
+    let _12: &&C;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+    scope 2 {
+        debug __self_0 => _8;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = &(((*_1) as B).0: C);
+        _9 = const "B";
+        _10 = const "C";
+        _12 = &_8;
+        _11 = _12 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _9, _10, move _11) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as C).0: C);
+        _5 = const "C";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn NON_MODULE::<impl at ui/derives/derive-hygiene.rs:87:66: 87:70>::hash(_1: &NON_MODULE::Z<C>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: isize;
+    let _4: ();
+    let _5: &isize;
+    let mut _6: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _7: &C;
+        let _8: &C;
+        scope 2 {
+            debug __self_0 => _7;
+        }
+        scope 3 {
+            debug __self_0 => _8;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _5 = &_3;
+        _4 = <isize as Hash>::hash::<__H>(_5, _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = discriminant((*_1));
+        switchInt(move _6) -> [0: bb4, 1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _8 = &(((*_1) as B).0: C);
+        _0 = <C as Hash>::hash::<__H>(_8, _2) -> bb5;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _7 = &(((*_1) as C).0: C);
+        _0 = <C as Hash>::hash::<__H>(_7, _2) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:20: 95:25>::clone(_1: &__H) -> __H {
+    debug self => _1;
+    let mut _0: __H;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:27: 95:36>::eq(_1: &__H, _2: &__H) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &__H;
+    let mut _9: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _8 = deref_copy (_3.0: &__H);
+        _4 = &(((*_8) as V).0: i32);
+        _9 = deref_copy (_3.1: &__H);
+        _5 = &(((*_9) as V).0: i32);
+        _6 = (*_4);
+        _7 = (*_5);
+        _0 = Eq(move _6, move _7);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:38: 95:40>::assert_receiver_is_total_eq(_1: &__H) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:42: 95:52>::partial_cmp(_1: &__H, _2: &__H) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &__H;
+    let mut _7: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as PartialOrd>::partial_cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:54: 95:57>::cmp(_1: &__H, _2: &__H) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let mut _3: (&__H, &__H);
+    let _4: &i32;
+    let _5: &i32;
+    let mut _6: &__H;
+    let mut _7: &__H;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __arg1_0 => _5;
+    }
+
+    bb0: {
+        _3 = (_1, _2);
+        _6 = deref_copy (_3.0: &__H);
+        _4 = &(((*_6) as V).0: i32);
+        _7 = deref_copy (_3.1: &__H);
+        _5 = &(((*_7) as V).0: i32);
+        _0 = <i32 as Ord>::cmp(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:59: 95:64>::fmt(_1: &__H, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &i32;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _4 = const "V";
+        _6 = &_3;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:95:66: 95:70>::hash(_1: &__H, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &i32;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+
+    bb0: {
+        _3 = &(((*_1) as V).0: i32);
+        _0 = <i32 as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:20: 99:25>::clone(_1: &W) -> W {
+    debug self => _1;
+    let mut _0: W;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:27: 99:36>::eq(_1: &W, _2: &W) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:38: 99:40>::assert_receiver_is_total_eq(_1: &W) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:42: 99:52>::partial_cmp(_1: &W, _2: &W) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as PartialOrd>::partial_cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:54: 99:57>::cmp(_1: &W, _2: &W) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: i16;
+    let _5: &i16;
+    let _6: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i16;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = &_3;
+        _6 = &_4;
+        _0 = <i16 as Ord>::cmp(_5, _6) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:59: 99:64>::fmt(_1: &W, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: i16;
+    let _5: &str;
+    let _6: &str;
+
+    bb0: {
+        _4 = discriminant((*_1));
+        switchInt(move _4) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _6 = const "B";
+        _3 = _6;
+        goto -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _5 = const "A";
+        _3 = _5;
+        goto -> bb4;
+    }
+
+    bb4: {
+        _0 = Formatter::<'_>::write_str(_2, move _3) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:99:66: 99:70>::hash(_1: &W, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: i16;
+    let _4: &i16;
+    scope 1 {
+        debug __self_tag => _3;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = &_3;
+        _0 = <i16 as Hash>::hash::<__H>(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:20: 102:25>::clone(_1: &X<A>) -> X<A> {
+    debug self => _1;
+    let mut _0: X<A>;
+    let mut _2: A;
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _2 = <A as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = X::<A> { A: move _2 };
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:27: 102:36>::eq(_1: &X<A>, _2: &X<A>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &A;
+    let mut _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:38: 102:40>::assert_receiver_is_total_eq(_1: &X<A>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:42: 102:52>::partial_cmp(_1: &X<A>, _2: &X<A>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:54: 102:57>::cmp(_1: &X<A>, _2: &X<A>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &A;
+    let _4: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _4 = &((*_2).0: A);
+        _0 = <A as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:59: 102:64>::fmt(_1: &X<A>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&A;
+    let _7: &A;
+
+    bb0: {
+        _3 = const "X";
+        _4 = const "A";
+        _7 = &((*_1).0: A);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:66: 102:73>::default() -> X<A> {
+    let mut _0: X<A>;
+    let mut _1: A;
+
+    bb0: {
+        _1 = <A as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = X::<A> { A: move _1 };
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:102:75: 102:79>::hash(_1: &X<A>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &A;
+
+    bb0: {
+        _3 = &((*_1).0: A);
+        _0 = <A as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:20: 107:25>::clone(_1: &Y<B>) -> Y<B> {
+    debug self => _1;
+    let mut _0: Y<B>;
+    let mut _2: B;
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _2 = <B as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Y::<B>(move _2);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:27: 107:36>::eq(_1: &Y<B>, _2: &Y<B>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &B;
+    let mut _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:38: 107:40>::assert_receiver_is_total_eq(_1: &Y<B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:42: 107:52>::partial_cmp(_1: &Y<B>, _2: &Y<B>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as PartialOrd>::partial_cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:54: 107:57>::cmp(_1: &Y<B>, _2: &Y<B>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: &B;
+    let _4: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _4 = &((*_2).0: B);
+        _0 = <B as Ord>::cmp(_3, _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:59: 107:64>::fmt(_1: &Y<B>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&B;
+    let _6: &B;
+
+    bb0: {
+        _3 = const "Y";
+        _6 = &((*_1).0: B);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:66: 107:73>::default() -> Y<B> {
+    let mut _0: Y<B>;
+    let mut _1: B;
+
+    bb0: {
+        _1 = <B as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:107:75: 107:79>::hash(_1: &Y<B>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: &B;
+
+    bb0: {
+        _3 = &((*_1).0: B);
+        _0 = <B as Hash>::hash::<__H>(_3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:20: 112:25>::clone(_1: &Z<C>) -> Z<C> {
+    debug self => _1;
+    let mut _0: Z<C>;
+    let mut _2: isize;
+    let _3: &C;
+    let mut _4: C;
+    let _5: &C;
+    let mut _6: C;
+    scope 1 {
+        debug __self_0 => _3;
+    }
+    scope 2 {
+        debug __self_0 => _5;
+    }
+
+    bb0: {
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _5 = &(((*_1) as B).0: C);
+        _6 = <C as Clone>::clone(_5) -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _3 = &(((*_1) as C).0: C);
+        _4 = <C as Clone>::clone(_3) -> bb4;
+    }
+
+    bb4: {
+        _0 = Z::<C>::C(move _4);
+        goto -> bb6;
+    }
+
+    bb5: {
+        _0 = Z::<C>::B { C: move _6 };
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:27: 112:36>::eq(_1: &Z<C>, _2: &Z<C>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&Z<C>, &Z<C>);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _15: &Z<C>;
+    let mut _16: &Z<C>;
+    let mut _17: &Z<C>;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &C;
+            let _12: &C;
+            let _13: &C;
+            let _14: &C;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+            scope 4 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _15 = deref_copy (_7.0: &Z<C>);
+        _10 = discriminant((*_15));
+        switchInt(move _10) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _16 = deref_copy (_7.1: &Z<C>);
+        _8 = discriminant((*_16));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _17 = deref_copy (_7.1: &Z<C>);
+        _9 = discriminant((*_17));
+        switchInt(move _9) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _18 = deref_copy (_7.0: &Z<C>);
+        _11 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_7.1: &Z<C>);
+        _12 = &(((*_19) as C).0: C);
+        _6 = <C as PartialEq>::eq(_11, _12) -> bb9;
+    }
+
+    bb8: {
+        _20 = deref_copy (_7.0: &Z<C>);
+        _13 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_7.1: &Z<C>);
+        _14 = &(((*_21) as B).0: C);
+        _6 = <C as PartialEq>::eq(_13, _14) -> bb9;
+    }
+
+    bb9: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:38: 112:40>::assert_receiver_is_total_eq(_1: &Z<C>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:42: 112:52>::partial_cmp(_1: &Z<C>, _2: &Z<C>) -> Option<std::cmp::Ordering> {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::option::Option<std::cmp::Ordering>;
+    let _3: isize;
+    let mut _5: (&Z<C>, &Z<C>);
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let _13: &isize;
+    let _14: &isize;
+    let mut _15: &Z<C>;
+    let mut _16: &Z<C>;
+    let mut _17: &Z<C>;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _9: &C;
+            let _10: &C;
+            let _11: &C;
+            let _12: &C;
+            scope 3 {
+                debug __self_0 => _9;
+                debug __arg1_0 => _10;
+            }
+            scope 4 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = (_1, _2);
+        _15 = deref_copy (_5.0: &Z<C>);
+        _8 = discriminant((*_15));
+        switchInt(move _8) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _16 = deref_copy (_5.1: &Z<C>);
+        _6 = discriminant((*_16));
+        switchInt(move _6) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = &_3;
+        _14 = &_4;
+        _0 = <isize as PartialOrd>::partial_cmp(_13, _14) -> bb6;
+    }
+
+    bb3: {
+        _17 = deref_copy (_5.1: &Z<C>);
+        _7 = discriminant((*_17));
+        switchInt(move _7) -> [1: bb5, otherwise: bb2];
+    }
+
+    bb4: {
+        _18 = deref_copy (_5.0: &Z<C>);
+        _9 = &(((*_18) as C).0: C);
+        _19 = deref_copy (_5.1: &Z<C>);
+        _10 = &(((*_19) as C).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_9, _10) -> bb6;
+    }
+
+    bb5: {
+        _20 = deref_copy (_5.0: &Z<C>);
+        _11 = &(((*_20) as B).0: C);
+        _21 = deref_copy (_5.1: &Z<C>);
+        _12 = &(((*_21) as B).0: C);
+        _0 = <C as PartialOrd>::partial_cmp(_11, _12) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:54: 112:57>::cmp(_1: &Z<C>, _2: &Z<C>) -> std::cmp::Ordering {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: std::cmp::Ordering;
+    let _3: isize;
+    let mut _5: std::cmp::Ordering;
+    let _6: &isize;
+    let _7: &isize;
+    let mut _8: i8;
+    let mut _9: (&Z<C>, &Z<C>);
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    let mut _18: &Z<C>;
+    let mut _19: &Z<C>;
+    let mut _20: &Z<C>;
+    let mut _21: &Z<C>;
+    let mut _22: &Z<C>;
+    let mut _23: &Z<C>;
+    let mut _24: &Z<C>;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _13: &C;
+            let _14: &C;
+            let _15: &C;
+            let _16: &C;
+            let _17: std::cmp::Ordering;
+            scope 3 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 4 {
+                debug __self_0 => _15;
+                debug __arg1_0 => _16;
+            }
+            scope 5 {
+            }
+            scope 6 {
+                debug cmp => _17;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _6 = &_3;
+        _7 = &_4;
+        _5 = <isize as Ord>::cmp(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = discriminant(_5);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = _5;
+        _0 = _17;
+        goto -> bb9;
+    }
+
+    bb3: {
+        _9 = (_1, _2);
+        _18 = deref_copy (_9.0: &Z<C>);
+        _12 = discriminant((*_18));
+        switchInt(move _12) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb4: {
+        _19 = deref_copy (_9.1: &Z<C>);
+        _10 = discriminant((*_19));
+        switchInt(move _10) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _20 = deref_copy (_9.1: &Z<C>);
+        _11 = discriminant((*_20));
+        switchInt(move _11) -> [1: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _21 = deref_copy (_9.0: &Z<C>);
+        _13 = &(((*_21) as C).0: C);
+        _22 = deref_copy (_9.1: &Z<C>);
+        _14 = &(((*_22) as C).0: C);
+        _0 = <C as Ord>::cmp(_13, _14) -> bb9;
+    }
+
+    bb8: {
+        _23 = deref_copy (_9.0: &Z<C>);
+        _15 = &(((*_23) as B).0: C);
+        _24 = deref_copy (_9.1: &Z<C>);
+        _16 = &(((*_24) as B).0: C);
+        _0 = <C as Ord>::cmp(_15, _16) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:59: 112:64>::fmt(_1: &Z<C>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &C;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&C;
+    let _8: &C;
+    let _9: &str;
+    let _10: &str;
+    let mut _11: &dyn std::fmt::Debug;
+    let _12: &&C;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+    scope 2 {
+        debug __self_0 => _8;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = &(((*_1) as B).0: C);
+        _9 = const "B";
+        _10 = const "C";
+        _12 = &_8;
+        _11 = _12 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _9, _10, move _11) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as C).0: C);
+        _5 = const "C";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/derives/derive-hygiene.rs:112:66: 112:70>::hash(_1: &Z<C>, _2: &mut __H) -> () {
+    debug self => _1;
+    debug state => _2;
+    let mut _0: ();
+    let _3: isize;
+    let _4: ();
+    let _5: &isize;
+    let mut _6: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _7: &C;
+        let _8: &C;
+        scope 2 {
+            debug __self_0 => _7;
+        }
+        scope 3 {
+            debug __self_0 => _8;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _5 = &_3;
+        _4 = <isize as Hash>::hash::<__H>(_5, _2) -> bb1;
+    }
+
+    bb1: {
+        _6 = discriminant((*_1));
+        switchInt(move _6) -> [0: bb4, 1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _8 = &(((*_1) as B).0: C);
+        _0 = <C as Hash>::hash::<__H>(_8, _2) -> bb5;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _7 = &(((*_1) as C).0: C);
+        _0 = <C as Hash>::hash::<__H>(_7, _2) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn __H::V(_1: i32) -> __H {
+    let mut _0: __H;
+
+    bb0: {
+        _0 = __H::V(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn __H::V(_1: i32) -> __H {
+    let mut _0: __H;
+
+    bb0: {
+        _0 = __H::V(move _1);
+        return;
+    }
+}
+
+fn Y(_1: B) -> Y<B> {
+    let mut _0: Y<B>;
+
+    bb0: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Y(_1: B) -> Y<B> {
+    let mut _0: Y<B>;
+
+    bb0: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+fn Z::C(_1: C) -> Z<C> {
+    let mut _0: Z<C>;
+
+    bb0: {
+        _0 = Z::<C>::C(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Z::C(_1: C) -> Z<C> {
+    let mut _0: Z<C>;
+
+    bb0: {
+        _0 = Z::<C>::C(move _1);
+        return;
+    }
+}
+
+fn NON_MODULE::__H::V(_1: i32) -> NON_MODULE::__H {
+    let mut _0: NON_MODULE::__H;
+
+    bb0: {
+        _0 = NON_MODULE::__H::V(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NON_MODULE::__H::V(_1: i32) -> NON_MODULE::__H {
+    let mut _0: NON_MODULE::__H;
+
+    bb0: {
+        _0 = NON_MODULE::__H::V(move _1);
+        return;
+    }
+}
+
+fn NON_MODULE::Y(_1: B) -> NON_MODULE::Y<B> {
+    let mut _0: NON_MODULE::Y<B>;
+
+    bb0: {
+        _0 = NON_MODULE::Y::<B>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NON_MODULE::Y(_1: B) -> NON_MODULE::Y<B> {
+    let mut _0: NON_MODULE::Y<B>;
+
+    bb0: {
+        _0 = NON_MODULE::Y::<B>(move _1);
+        return;
+    }
+}
+
+fn NON_MODULE::Z::C(_1: C) -> NON_MODULE::Z<C> {
+    let mut _0: NON_MODULE::Z<C>;
+
+    bb0: {
+        _0 = NON_MODULE::Z::<C>::C(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NON_MODULE::Z::C(_1: C) -> NON_MODULE::Z<C> {
+    let mut _0: NON_MODULE::Z<C>;
+
+    bb0: {
+        _0 = NON_MODULE::Z::<C>::C(move _1);
+        return;
+    }
+}
+
+fn __H::V(_1: i32) -> __H {
+    let mut _0: __H;
+
+    bb0: {
+        _0 = __H::V(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn __H::V(_1: i32) -> __H {
+    let mut _0: __H;
+
+    bb0: {
+        _0 = __H::V(move _1);
+        return;
+    }
+}
+
+fn Y(_1: B) -> Y<B> {
+    let mut _0: Y<B>;
+
+    bb0: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Y(_1: B) -> Y<B> {
+    let mut _0: Y<B>;
+
+    bb0: {
+        _0 = Y::<B>(move _1);
+        return;
+    }
+}
+
+fn Z::C(_1: C) -> Z<C> {
+    let mut _0: Z<C>;
+
+    bb0: {
+        _0 = Z::<C>::C(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Z::C(_1: C) -> Z<C> {
+    let mut _0: Z<C>;
+
+    bb0: {
+        _0 = Z::<C>::C(move _1);
+        return;
+    }
+}

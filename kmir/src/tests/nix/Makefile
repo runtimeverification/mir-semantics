@@ -1,4 +1,4 @@
-TEST_DIR := src/tests/integration/test-data/run-rs/functions/
+TEST_DIR := ../../../../test-data/run-rs/functions/
 
 default: mir-outputs
 

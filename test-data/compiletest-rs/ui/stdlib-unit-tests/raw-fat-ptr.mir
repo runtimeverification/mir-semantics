@@ -1,0 +1,1475 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn assert_inorder(_1: &[T]) -> () {
+    debug a => _1;
+    let mut _0: ();
+    let mut _2: std::ops::Range<usize>;
+    let mut _3: std::ops::Range<usize>;
+    let mut _4: usize;
+    let mut _5: std::ops::Range<usize>;
+    let mut _6: std::option::Option<usize>;
+    let mut _7: &mut std::ops::Range<usize>;
+    let mut _8: isize;
+    let mut _10: std::ops::Range<usize>;
+    let mut _11: std::ops::Range<usize>;
+    let mut _12: usize;
+    let mut _14: std::option::Option<usize>;
+    let mut _15: &mut std::ops::Range<usize>;
+    let mut _16: isize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &T;
+    let mut _22: usize;
+    let mut _23: bool;
+    let mut _24: &T;
+    let mut _25: usize;
+    let mut _26: bool;
+    let mut _27: !;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: &T;
+    let mut _31: usize;
+    let mut _32: bool;
+    let mut _33: &T;
+    let mut _34: usize;
+    let mut _35: bool;
+    let mut _36: !;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: &T;
+    let mut _41: usize;
+    let mut _42: bool;
+    let mut _43: &T;
+    let mut _44: usize;
+    let mut _45: bool;
+    let mut _46: !;
+    let mut _47: bool;
+    let mut _48: bool;
+    let mut _49: &T;
+    let mut _50: usize;
+    let mut _51: bool;
+    let mut _52: &T;
+    let mut _53: usize;
+    let mut _54: bool;
+    let mut _55: !;
+    let mut _56: bool;
+    let mut _57: bool;
+    let mut _58: bool;
+    let mut _59: &T;
+    let mut _60: usize;
+    let mut _61: bool;
+    let mut _62: &T;
+    let mut _63: usize;
+    let mut _64: bool;
+    let mut _65: !;
+    let mut _66: bool;
+    let mut _67: bool;
+    let mut _68: bool;
+    let mut _69: &T;
+    let mut _70: usize;
+    let mut _71: bool;
+    let mut _72: &T;
+    let mut _73: usize;
+    let mut _74: bool;
+    let mut _75: !;
+    let mut _76: bool;
+    let mut _77: bool;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: &T;
+    let mut _81: usize;
+    let mut _82: bool;
+    let mut _83: &T;
+    let mut _84: usize;
+    let mut _85: bool;
+    let mut _86: !;
+    let mut _87: bool;
+    let mut _88: bool;
+    let mut _89: &T;
+    let mut _90: usize;
+    let mut _91: bool;
+    let mut _92: &T;
+    let mut _93: usize;
+    let mut _94: bool;
+    let mut _95: !;
+    let mut _96: bool;
+    let mut _97: bool;
+    let mut _98: &T;
+    let mut _99: usize;
+    let mut _100: bool;
+    let mut _101: &T;
+    let mut _102: usize;
+    let mut _103: bool;
+    let mut _104: !;
+    let mut _105: bool;
+    let mut _106: bool;
+    let mut _107: bool;
+    let mut _108: &T;
+    let mut _109: usize;
+    let mut _110: bool;
+    let mut _111: &T;
+    let mut _112: usize;
+    let mut _113: bool;
+    let mut _114: !;
+    let mut _115: bool;
+    let mut _116: bool;
+    let mut _117: &T;
+    let mut _118: usize;
+    let mut _119: bool;
+    let mut _120: &T;
+    let mut _121: usize;
+    let mut _122: bool;
+    let mut _123: !;
+    let mut _124: bool;
+    let mut _125: bool;
+    let mut _126: bool;
+    let mut _127: &T;
+    let mut _128: usize;
+    let mut _129: bool;
+    let mut _130: &T;
+    let mut _131: usize;
+    let mut _132: bool;
+    let mut _133: !;
+    let mut _134: bool;
+    let mut _135: bool;
+    let mut _136: bool;
+    let mut _137: &T;
+    let mut _138: usize;
+    let mut _139: bool;
+    let mut _140: &T;
+    let mut _141: usize;
+    let mut _142: bool;
+    let mut _143: !;
+    let mut _144: bool;
+    let mut _145: bool;
+    let mut _146: bool;
+    let mut _147: &T;
+    let mut _148: usize;
+    let mut _149: bool;
+    let mut _150: &T;
+    let mut _151: usize;
+    let mut _152: bool;
+    let mut _153: !;
+    let mut _154: bool;
+    let mut _155: bool;
+    let mut _156: bool;
+    let mut _157: &T;
+    let mut _158: usize;
+    let mut _159: bool;
+    let mut _160: &T;
+    let mut _161: usize;
+    let mut _162: bool;
+    let mut _163: !;
+    let mut _164: bool;
+    let mut _165: bool;
+    let mut _166: &T;
+    let mut _167: usize;
+    let mut _168: bool;
+    let mut _169: &T;
+    let mut _170: usize;
+    let mut _171: bool;
+    let mut _172: !;
+    let mut _173: bool;
+    let mut _174: bool;
+    let mut _175: &T;
+    let mut _176: usize;
+    let mut _177: bool;
+    let mut _178: &T;
+    let mut _179: usize;
+    let mut _180: bool;
+    let mut _181: !;
+    let mut _182: bool;
+    let mut _183: bool;
+    let mut _184: &T;
+    let mut _185: usize;
+    let mut _186: bool;
+    let mut _187: &T;
+    let mut _188: usize;
+    let mut _189: bool;
+    let mut _190: !;
+    scope 1 {
+        debug iter => _5;
+        let _9: usize;
+        scope 2 {
+            debug i => _9;
+            let mut _13: std::ops::Range<usize>;
+            scope 3 {
+                debug iter => _13;
+                let _17: usize;
+                scope 4 {
+                    debug j => _17;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = Len((*_1));
+        _3 = std::ops::Range::<usize> { start: const 0_usize, end: move _4 };
+        _2 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _3) -> bb1;
+    }
+
+    bb1: {
+        _5 = move _2;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _5;
+        _6 = <std::ops::Range<usize> as Iterator>::next(_7) -> bb3;
+    }
+
+    bb3: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _9 = ((_6 as Some).0: usize);
+        _12 = Len((*_1));
+        _11 = std::ops::Range::<usize> { start: const 0_usize, end: move _12 };
+        _10 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _11) -> bb7;
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7: {
+        _13 = move _10;
+        goto -> bb8;
+    }
+
+    bb8: {
+        _15 = &mut _13;
+        _14 = <std::ops::Range<usize> as Iterator>::next(_15) -> bb9;
+    }
+
+    bb9: {
+        _16 = discriminant(_14);
+        switchInt(move _16) -> [0: bb2, 1: bb10, otherwise: bb5];
+    }
+
+    bb10: {
+        _17 = ((_14 as Some).0: usize);
+        _18 = Lt(_9, _17);
+        switchInt(move _18) -> [0: bb41, otherwise: bb11];
+    }
+
+    bb11: {
+        _22 = Len((*_1));
+        _23 = Lt(_9, _22);
+        assert(move _23, "index out of bounds: the length is {} but the index is {}", move _22, _9) -> bb12;
+    }
+
+    bb12: {
+        _21 = &(*_1)[_9];
+        _25 = Len((*_1));
+        _26 = Lt(_17, _25);
+        assert(move _26, "index out of bounds: the length is {} but the index is {}", move _25, _17) -> bb13;
+    }
+
+    bb13: {
+        _24 = &(*_1)[_17];
+        _20 = <T as PartialOrd>::lt(move _21, move _24) -> bb14;
+    }
+
+    bb14: {
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _27 = core::panicking::panic(const "assertion failed: a[i] < a[j]");
+    }
+
+    bb16: {
+        _31 = Len((*_1));
+        _32 = Lt(_9, _31);
+        assert(move _32, "index out of bounds: the length is {} but the index is {}", move _31, _9) -> bb17;
+    }
+
+    bb17: {
+        _30 = &(*_1)[_9];
+        _34 = Len((*_1));
+        _35 = Lt(_17, _34);
+        assert(move _35, "index out of bounds: the length is {} but the index is {}", move _34, _17) -> bb18;
+    }
+
+    bb18: {
+        _33 = &(*_1)[_17];
+        _29 = <T as PartialOrd>::le(move _30, move _33) -> bb19;
+    }
+
+    bb19: {
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _36 = core::panicking::panic(const "assertion failed: a[i] <= a[j]");
+    }
+
+    bb21: {
+        _41 = Len((*_1));
+        _42 = Lt(_9, _41);
+        assert(move _42, "index out of bounds: the length is {} but the index is {}", move _41, _9) -> bb22;
+    }
+
+    bb22: {
+        _40 = &(*_1)[_9];
+        _44 = Len((*_1));
+        _45 = Lt(_17, _44);
+        assert(move _45, "index out of bounds: the length is {} but the index is {}", move _44, _17) -> bb23;
+    }
+
+    bb23: {
+        _43 = &(*_1)[_17];
+        _39 = <T as PartialEq>::eq(move _40, move _43) -> bb24;
+    }
+
+    bb24: {
+        _38 = Not(move _39);
+        _37 = Not(move _38);
+        switchInt(move _37) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _46 = core::panicking::panic(const "assertion failed: !(a[i] == a[j])");
+    }
+
+    bb26: {
+        _50 = Len((*_1));
+        _51 = Lt(_9, _50);
+        assert(move _51, "index out of bounds: the length is {} but the index is {}", move _50, _9) -> bb27;
+    }
+
+    bb27: {
+        _49 = &(*_1)[_9];
+        _53 = Len((*_1));
+        _54 = Lt(_17, _53);
+        assert(move _54, "index out of bounds: the length is {} but the index is {}", move _53, _17) -> bb28;
+    }
+
+    bb28: {
+        _52 = &(*_1)[_17];
+        _48 = <T as PartialEq>::ne(move _49, move _52) -> bb29;
+    }
+
+    bb29: {
+        _47 = Not(move _48);
+        switchInt(move _47) -> [0: bb31, otherwise: bb30];
+    }
+
+    bb30: {
+        _55 = core::panicking::panic(const "assertion failed: a[i] != a[j]");
+    }
+
+    bb31: {
+        _60 = Len((*_1));
+        _61 = Lt(_9, _60);
+        assert(move _61, "index out of bounds: the length is {} but the index is {}", move _60, _9) -> bb32;
+    }
+
+    bb32: {
+        _59 = &(*_1)[_9];
+        _63 = Len((*_1));
+        _64 = Lt(_17, _63);
+        assert(move _64, "index out of bounds: the length is {} but the index is {}", move _63, _17) -> bb33;
+    }
+
+    bb33: {
+        _62 = &(*_1)[_17];
+        _58 = <T as PartialOrd>::ge(move _59, move _62) -> bb34;
+    }
+
+    bb34: {
+        _57 = Not(move _58);
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _65 = core::panicking::panic(const "assertion failed: !(a[i] >= a[j])");
+    }
+
+    bb36: {
+        _70 = Len((*_1));
+        _71 = Lt(_9, _70);
+        assert(move _71, "index out of bounds: the length is {} but the index is {}", move _70, _9) -> bb37;
+    }
+
+    bb37: {
+        _69 = &(*_1)[_9];
+        _73 = Len((*_1));
+        _74 = Lt(_17, _73);
+        assert(move _74, "index out of bounds: the length is {} but the index is {}", move _73, _17) -> bb38;
+    }
+
+    bb38: {
+        _72 = &(*_1)[_17];
+        _68 = <T as PartialOrd>::gt(move _69, move _72) -> bb39;
+    }
+
+    bb39: {
+        _67 = Not(move _68);
+        _66 = Not(move _67);
+        switchInt(move _66) -> [0: bb8, otherwise: bb40];
+    }
+
+    bb40: {
+        _75 = core::panicking::panic(const "assertion failed: !(a[i] > a[j])");
+    }
+
+    bb41: {
+        _76 = Eq(_9, _17);
+        switchInt(move _76) -> [0: bb72, otherwise: bb42];
+    }
+
+    bb42: {
+        _81 = Len((*_1));
+        _82 = Lt(_9, _81);
+        assert(move _82, "index out of bounds: the length is {} but the index is {}", move _81, _9) -> bb43;
+    }
+
+    bb43: {
+        _80 = &(*_1)[_9];
+        _84 = Len((*_1));
+        _85 = Lt(_17, _84);
+        assert(move _85, "index out of bounds: the length is {} but the index is {}", move _84, _17) -> bb44;
+    }
+
+    bb44: {
+        _83 = &(*_1)[_17];
+        _79 = <T as PartialOrd>::lt(move _80, move _83) -> bb45;
+    }
+
+    bb45: {
+        _78 = Not(move _79);
+        _77 = Not(move _78);
+        switchInt(move _77) -> [0: bb47, otherwise: bb46];
+    }
+
+    bb46: {
+        _86 = core::panicking::panic(const "assertion failed: !(a[i] < a[j])");
+    }
+
+    bb47: {
+        _90 = Len((*_1));
+        _91 = Lt(_9, _90);
+        assert(move _91, "index out of bounds: the length is {} but the index is {}", move _90, _9) -> bb48;
+    }
+
+    bb48: {
+        _89 = &(*_1)[_9];
+        _93 = Len((*_1));
+        _94 = Lt(_17, _93);
+        assert(move _94, "index out of bounds: the length is {} but the index is {}", move _93, _17) -> bb49;
+    }
+
+    bb49: {
+        _92 = &(*_1)[_17];
+        _88 = <T as PartialOrd>::le(move _89, move _92) -> bb50;
+    }
+
+    bb50: {
+        _87 = Not(move _88);
+        switchInt(move _87) -> [0: bb52, otherwise: bb51];
+    }
+
+    bb51: {
+        _95 = core::panicking::panic(const "assertion failed: a[i] <= a[j]");
+    }
+
+    bb52: {
+        _99 = Len((*_1));
+        _100 = Lt(_9, _99);
+        assert(move _100, "index out of bounds: the length is {} but the index is {}", move _99, _9) -> bb53;
+    }
+
+    bb53: {
+        _98 = &(*_1)[_9];
+        _102 = Len((*_1));
+        _103 = Lt(_17, _102);
+        assert(move _103, "index out of bounds: the length is {} but the index is {}", move _102, _17) -> bb54;
+    }
+
+    bb54: {
+        _101 = &(*_1)[_17];
+        _97 = <T as PartialEq>::eq(move _98, move _101) -> bb55;
+    }
+
+    bb55: {
+        _96 = Not(move _97);
+        switchInt(move _96) -> [0: bb57, otherwise: bb56];
+    }
+
+    bb56: {
+        _104 = core::panicking::panic(const "assertion failed: a[i] == a[j]");
+    }
+
+    bb57: {
+        _109 = Len((*_1));
+        _110 = Lt(_9, _109);
+        assert(move _110, "index out of bounds: the length is {} but the index is {}", move _109, _9) -> bb58;
+    }
+
+    bb58: {
+        _108 = &(*_1)[_9];
+        _112 = Len((*_1));
+        _113 = Lt(_17, _112);
+        assert(move _113, "index out of bounds: the length is {} but the index is {}", move _112, _17) -> bb59;
+    }
+
+    bb59: {
+        _111 = &(*_1)[_17];
+        _107 = <T as PartialEq>::ne(move _108, move _111) -> bb60;
+    }
+
+    bb60: {
+        _106 = Not(move _107);
+        _105 = Not(move _106);
+        switchInt(move _105) -> [0: bb62, otherwise: bb61];
+    }
+
+    bb61: {
+        _114 = core::panicking::panic(const "assertion failed: !(a[i] != a[j])");
+    }
+
+    bb62: {
+        _118 = Len((*_1));
+        _119 = Lt(_9, _118);
+        assert(move _119, "index out of bounds: the length is {} but the index is {}", move _118, _9) -> bb63;
+    }
+
+    bb63: {
+        _117 = &(*_1)[_9];
+        _121 = Len((*_1));
+        _122 = Lt(_17, _121);
+        assert(move _122, "index out of bounds: the length is {} but the index is {}", move _121, _17) -> bb64;
+    }
+
+    bb64: {
+        _120 = &(*_1)[_17];
+        _116 = <T as PartialOrd>::ge(move _117, move _120) -> bb65;
+    }
+
+    bb65: {
+        _115 = Not(move _116);
+        switchInt(move _115) -> [0: bb67, otherwise: bb66];
+    }
+
+    bb66: {
+        _123 = core::panicking::panic(const "assertion failed: a[i] >= a[j]");
+    }
+
+    bb67: {
+        _128 = Len((*_1));
+        _129 = Lt(_9, _128);
+        assert(move _129, "index out of bounds: the length is {} but the index is {}", move _128, _9) -> bb68;
+    }
+
+    bb68: {
+        _127 = &(*_1)[_9];
+        _131 = Len((*_1));
+        _132 = Lt(_17, _131);
+        assert(move _132, "index out of bounds: the length is {} but the index is {}", move _131, _17) -> bb69;
+    }
+
+    bb69: {
+        _130 = &(*_1)[_17];
+        _126 = <T as PartialOrd>::gt(move _127, move _130) -> bb70;
+    }
+
+    bb70: {
+        _125 = Not(move _126);
+        _124 = Not(move _125);
+        switchInt(move _124) -> [0: bb8, otherwise: bb71];
+    }
+
+    bb71: {
+        _133 = core::panicking::panic(const "assertion failed: !(a[i] > a[j])");
+    }
+
+    bb72: {
+        _138 = Len((*_1));
+        _139 = Lt(_9, _138);
+        assert(move _139, "index out of bounds: the length is {} but the index is {}", move _138, _9) -> bb73;
+    }
+
+    bb73: {
+        _137 = &(*_1)[_9];
+        _141 = Len((*_1));
+        _142 = Lt(_17, _141);
+        assert(move _142, "index out of bounds: the length is {} but the index is {}", move _141, _17) -> bb74;
+    }
+
+    bb74: {
+        _140 = &(*_1)[_17];
+        _136 = <T as PartialOrd>::lt(move _137, move _140) -> bb75;
+    }
+
+    bb75: {
+        _135 = Not(move _136);
+        _134 = Not(move _135);
+        switchInt(move _134) -> [0: bb77, otherwise: bb76];
+    }
+
+    bb76: {
+        _143 = core::panicking::panic(const "assertion failed: !(a[i] < a[j])");
+    }
+
+    bb77: {
+        _148 = Len((*_1));
+        _149 = Lt(_9, _148);
+        assert(move _149, "index out of bounds: the length is {} but the index is {}", move _148, _9) -> bb78;
+    }
+
+    bb78: {
+        _147 = &(*_1)[_9];
+        _151 = Len((*_1));
+        _152 = Lt(_17, _151);
+        assert(move _152, "index out of bounds: the length is {} but the index is {}", move _151, _17) -> bb79;
+    }
+
+    bb79: {
+        _150 = &(*_1)[_17];
+        _146 = <T as PartialOrd>::le(move _147, move _150) -> bb80;
+    }
+
+    bb80: {
+        _145 = Not(move _146);
+        _144 = Not(move _145);
+        switchInt(move _144) -> [0: bb82, otherwise: bb81];
+    }
+
+    bb81: {
+        _153 = core::panicking::panic(const "assertion failed: !(a[i] <= a[j])");
+    }
+
+    bb82: {
+        _158 = Len((*_1));
+        _159 = Lt(_9, _158);
+        assert(move _159, "index out of bounds: the length is {} but the index is {}", move _158, _9) -> bb83;
+    }
+
+    bb83: {
+        _157 = &(*_1)[_9];
+        _161 = Len((*_1));
+        _162 = Lt(_17, _161);
+        assert(move _162, "index out of bounds: the length is {} but the index is {}", move _161, _17) -> bb84;
+    }
+
+    bb84: {
+        _160 = &(*_1)[_17];
+        _156 = <T as PartialEq>::eq(move _157, move _160) -> bb85;
+    }
+
+    bb85: {
+        _155 = Not(move _156);
+        _154 = Not(move _155);
+        switchInt(move _154) -> [0: bb87, otherwise: bb86];
+    }
+
+    bb86: {
+        _163 = core::panicking::panic(const "assertion failed: !(a[i] == a[j])");
+    }
+
+    bb87: {
+        _167 = Len((*_1));
+        _168 = Lt(_9, _167);
+        assert(move _168, "index out of bounds: the length is {} but the index is {}", move _167, _9) -> bb88;
+    }
+
+    bb88: {
+        _166 = &(*_1)[_9];
+        _170 = Len((*_1));
+        _171 = Lt(_17, _170);
+        assert(move _171, "index out of bounds: the length is {} but the index is {}", move _170, _17) -> bb89;
+    }
+
+    bb89: {
+        _169 = &(*_1)[_17];
+        _165 = <T as PartialEq>::ne(move _166, move _169) -> bb90;
+    }
+
+    bb90: {
+        _164 = Not(move _165);
+        switchInt(move _164) -> [0: bb92, otherwise: bb91];
+    }
+
+    bb91: {
+        _172 = core::panicking::panic(const "assertion failed: a[i] != a[j]");
+    }
+
+    bb92: {
+        _176 = Len((*_1));
+        _177 = Lt(_9, _176);
+        assert(move _177, "index out of bounds: the length is {} but the index is {}", move _176, _9) -> bb93;
+    }
+
+    bb93: {
+        _175 = &(*_1)[_9];
+        _179 = Len((*_1));
+        _180 = Lt(_17, _179);
+        assert(move _180, "index out of bounds: the length is {} but the index is {}", move _179, _17) -> bb94;
+    }
+
+    bb94: {
+        _178 = &(*_1)[_17];
+        _174 = <T as PartialOrd>::ge(move _175, move _178) -> bb95;
+    }
+
+    bb95: {
+        _173 = Not(move _174);
+        switchInt(move _173) -> [0: bb97, otherwise: bb96];
+    }
+
+    bb96: {
+        _181 = core::panicking::panic(const "assertion failed: a[i] >= a[j]");
+    }
+
+    bb97: {
+        _185 = Len((*_1));
+        _186 = Lt(_9, _185);
+        assert(move _186, "index out of bounds: the length is {} but the index is {}", move _185, _9) -> bb98;
+    }
+
+    bb98: {
+        _184 = &(*_1)[_9];
+        _188 = Len((*_1));
+        _189 = Lt(_17, _188);
+        assert(move _189, "index out of bounds: the length is {} but the index is {}", move _188, _17) -> bb99;
+    }
+
+    bb99: {
+        _187 = &(*_1)[_17];
+        _183 = <T as PartialOrd>::gt(move _184, move _187) -> bb100;
+    }
+
+    bb100: {
+        _182 = Not(move _183);
+        switchInt(move _182) -> [0: bb8, otherwise: bb101];
+    }
+
+    bb101: {
+        _190 = core::panicking::panic(const "assertion failed: a[i] > a[j]");
+    }
+}
+
+fn <impl at ui/stdlib-unit-tests/raw-fat-ptr.rs:36:1: 36:18>::foo(_1: &T) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [u8; 5];
+    let mut _4: std::boxed::Box<[*const [u8]]>;
+    let mut _5: std::boxed::Box<[*const [u8]; 4]>;
+    let mut _6: usize;
+    let mut _7: usize;
+    let mut _8: *mut u8;
+    let mut _9: std::boxed::Box<[*const [u8]; 4]>;
+    let mut _10: *const [u8];
+    let _11: &[u8];
+    let _12: &[u8];
+    let mut _13: &[u8; 5];
+    let mut _14: std::ops::Range<usize>;
+    let mut _15: *const [u8];
+    let _16: &[u8];
+    let _17: &[u8];
+    let mut _18: &[u8; 5];
+    let mut _19: std::ops::Range<usize>;
+    let mut _20: *const [u8];
+    let mut _21: *const [u8; 5];
+    let _22: &[u8; 5];
+    let mut _23: *const [u8];
+    let _24: &[u8];
+    let _25: &[u8];
+    let mut _26: &[u8; 5];
+    let mut _27: std::ops::RangeFrom<usize>;
+    let mut _29: *const u8;
+    let mut _30: *const [u8];
+    let mut _31: *const [u8; 5];
+    let _32: &[u8; 5];
+    let mut _34: *const u8;
+    let mut _35: *const [u8];
+    let mut _36: *const [u8; 5];
+    let _37: &[u8; 5];
+    let mut _38: bool;
+    let _39: ();
+    let mut _40: &mut std::vec::Vec<*const [u8]>;
+    let mut _41: *const [u8];
+    let mut _42: *const [u8; 5];
+    let _43: &[u8; 5];
+    let _44: ();
+    let mut _45: &mut std::vec::Vec<*const [u8]>;
+    let mut _46: *const [u8];
+    let mut _47: *const [u8; 5];
+    let _48: &[u8; 5];
+    let _49: ();
+    let mut _50: &[*const [u8]];
+    let _51: &[*const [u8]];
+    let _52: &std::vec::Vec<*const [u8]>;
+    let mut _54: std::boxed::Box<[*mut [u8]]>;
+    let mut _55: std::boxed::Box<[*mut [u8]; 4]>;
+    let mut _56: usize;
+    let mut _57: usize;
+    let mut _58: *mut u8;
+    let mut _59: std::boxed::Box<[*mut [u8]; 4]>;
+    let mut _60: *mut [u8];
+    let mut _61: &mut [u8];
+    let mut _62: &mut [u8];
+    let mut _63: &mut [u8; 5];
+    let mut _64: std::ops::Range<usize>;
+    let mut _65: *mut [u8];
+    let mut _66: &mut [u8];
+    let mut _67: &mut [u8];
+    let mut _68: &mut [u8; 5];
+    let mut _69: std::ops::Range<usize>;
+    let mut _70: *mut [u8];
+    let mut _71: *mut [u8; 5];
+    let mut _72: &mut [u8; 5];
+    let mut _73: *mut [u8];
+    let mut _74: &mut [u8];
+    let mut _75: &mut [u8];
+    let mut _76: &mut [u8; 5];
+    let mut _77: std::ops::RangeFrom<usize>;
+    let mut _79: *mut u8;
+    let mut _80: *mut [u8];
+    let mut _81: *mut [u8; 5];
+    let mut _82: &mut [u8; 5];
+    let mut _84: *mut u8;
+    let mut _85: *mut [u8];
+    let mut _86: *mut [u8; 5];
+    let mut _87: &mut [u8; 5];
+    let mut _88: bool;
+    let _89: ();
+    let mut _90: &mut std::vec::Vec<*mut [u8]>;
+    let mut _91: *mut [u8];
+    let mut _92: *mut [u8; 5];
+    let mut _93: &mut [u8; 5];
+    let _94: ();
+    let mut _95: &mut std::vec::Vec<*mut [u8]>;
+    let mut _96: *mut [u8];
+    let mut _97: *mut [u8; 5];
+    let mut _98: &mut [u8; 5];
+    let _99: ();
+    let mut _100: &[*mut [u8]];
+    let _101: &[*mut [u8]];
+    let _102: &std::vec::Vec<*mut [u8]>;
+    let mut _106: &mut [*const dyn Foo; 4];
+    let mut _107: [*const dyn Foo; 4];
+    let mut _108: *const dyn Foo;
+    let mut _109: *const (u8, u8);
+    let _110: &(u8, u8);
+    let mut _111: *const dyn Foo;
+    let mut _112: *const u8;
+    let _113: &u8;
+    let mut _114: *const dyn Foo;
+    let mut _115: *const (u32, u32);
+    let _116: &(u32, u32);
+    let mut _117: *const dyn Foo;
+    let mut _118: *const u32;
+    let _119: &u32;
+    let _120: ();
+    let _121: ();
+    let mut _122: &[*const dyn Foo];
+    let mut _124: &mut [*mut dyn Foo; 4];
+    let mut _125: [*mut dyn Foo; 4];
+    let mut _126: *mut dyn Foo;
+    let mut _127: *mut (u8, u8);
+    let mut _128: &mut (u8, u8);
+    let mut _129: *mut dyn Foo;
+    let mut _130: *mut u8;
+    let mut _131: &mut u8;
+    let mut _132: *mut dyn Foo;
+    let mut _133: *mut (u32, u32);
+    let mut _134: &mut (u32, u32);
+    let mut _135: *mut dyn Foo;
+    let mut _136: *mut u32;
+    let mut _137: &mut u32;
+    let _138: ();
+    let _139: ();
+    let mut _140: &[*mut dyn Foo];
+    let mut _142: S<[u8; 2]>;
+    let mut _143: [u8; 2];
+    let mut _144: S<[u8; 3]>;
+    let mut _145: [u8; 3];
+    let mut _146: S<[u8; 2]>;
+    let mut _147: [u8; 2];
+    let _148: ();
+    let mut _149: &[*const S<[u8]>];
+    let _150: &[*const S<[u8]>; 3];
+    let _151: [*const S<[u8]>; 3];
+    let mut _152: *const S<[u8]>;
+    let mut _153: *const S<[u8; 2]>;
+    let _154: &S<[u8; 2]>;
+    let mut _155: *const S<[u8]>;
+    let mut _156: *const S<[u8; 3]>;
+    let _157: &S<[u8; 3]>;
+    let mut _158: *const S<[u8]>;
+    let mut _159: *const S<[u8; 2]>;
+    let _160: &S<[u8; 2]>;
+    let mut _161: &mut std::boxed::Box<[*mut [u8]; 4]>;
+    let mut _162: ();
+    let mut _163: &mut std::boxed::Box<[*const [u8]; 4]>;
+    let mut _164: ();
+    let mut _165: *const [*const [u8]; 4];
+    let mut _166: *const [*mut [u8]; 4];
+    scope 1 {
+        debug array => _1;
+        let mut _2: [u8; 5];
+        scope 2 {
+            debug array2 => _2;
+            let mut _3: std::vec::Vec<*const [u8]>;
+            let mut _173: *const ();
+            let mut _174: usize;
+            let mut _175: usize;
+            let mut _176: usize;
+            let mut _177: usize;
+            let mut _178: bool;
+            scope 3 {
+                debug ptrs => _3;
+                let _28: usize;
+                scope 5 {
+                    debug array_addr => _28;
+                    let _33: usize;
+                    scope 6 {
+                        debug array2_addr => _33;
+                        let mut _53: std::vec::Vec<*mut [u8]>;
+                        let mut _167: *const ();
+                        let mut _168: usize;
+                        let mut _169: usize;
+                        let mut _170: usize;
+                        let mut _171: usize;
+                        let mut _172: bool;
+                        scope 7 {
+                            debug ptrs => _53;
+                            let _78: usize;
+                            scope 9 {
+                                debug array_addr => _78;
+                                let _83: usize;
+                                scope 10 {
+                                    debug array2_addr => _83;
+                                    let mut _103: (u8, u8);
+                                    scope 11 {
+                                        debug u8_ => _103;
+                                        let mut _104: (u32, u32);
+                                        scope 12 {
+                                            debug u32_ => _104;
+                                            let _105: &mut [*const dyn Foo];
+                                            scope 13 {
+                                                debug buf => _105;
+                                                let _123: &mut [*mut dyn Foo];
+                                                scope 14 {
+                                                    debug buf => _123;
+                                                    let _141: (S<[u8; 2]>, S<[u8; 3]>, S<[u8; 2]>);
+                                                    scope 15 {
+                                                        debug ss => _141;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        scope 8 {
+                        }
+                    }
+                }
+            }
+            scope 4 {
+            }
+        }
+    }
+
+    bb0: {
+        _1 = [const 0_u8, const 1_u8, const 2_u8, const 3_u8, const 4_u8];
+        _2 = [const 5_u8, const 6_u8, const 7_u8, const 8_u8, const 9_u8];
+        _6 = SizeOf([*const [u8]; 4]);
+        _7 = AlignOf([*const [u8]; 4]);
+        _8 = alloc::alloc::exchange_malloc(move _6, move _7) -> bb1;
+    }
+
+    bb1: {
+        _9 = ShallowInitBox(move _8, [*const [u8]; 4]);
+        _13 = &_1;
+        _14 = std::ops::Range::<usize> { start: const 0_usize, end: const 0_usize };
+        _12 = <[u8; 5] as Index<std::ops::Range<usize>>>::index(move _13, move _14) -> [return: bb2, unwind: bb32];
+    }
+
+    bb2: {
+        _11 = _12;
+        _10 = &raw const (*_11);
+        _18 = &_1;
+        _19 = std::ops::Range::<usize> { start: const 0_usize, end: const 1_usize };
+        _17 = <[u8; 5] as Index<std::ops::Range<usize>>>::index(move _18, move _19) -> [return: bb3, unwind: bb32];
+    }
+
+    bb3: {
+        _16 = _17;
+        _15 = &raw const (*_16);
+        _22 = &_1;
+        _21 = &raw const (*_22);
+        _20 = move _21 as *const [u8] (Pointer(Unsize));
+        _26 = &_1;
+        _27 = RangeFrom::<usize> { start: const 1_usize };
+        _25 = <[u8; 5] as Index<RangeFrom<usize>>>::index(move _26, move _27) -> [return: bb4, unwind: bb32];
+    }
+
+    bb4: {
+        _24 = _25;
+        _23 = &raw const (*_24);
+        _165 = (((_9.0: std::ptr::Unique<[*const [u8]; 4]>).0: std::ptr::NonNull<[*const [u8]; 4]>).0: *const [*const [u8]; 4]);
+        _173 = _165 as *const () (PtrToPtr);
+        _174 = _173 as usize (Transmute);
+        _175 = AlignOf(*const [u8]);
+        _176 = Sub(_175, const 1_usize);
+        _177 = BitAnd(_174, _176);
+        _178 = Eq(_177, const 0_usize);
+        assert(_178, "misaligned pointer dereference: address must be a multiple of {} but is {}", _175, _174) -> [success: bb34, unwind unreachable];
+    }
+
+    bb5: {
+        _32 = &_1;
+        _31 = &raw const (*_32);
+        _30 = move _31 as *const [u8] (Pointer(Unsize));
+        _29 = move _30 as *const u8 (PtrToPtr);
+        _28 = move _29 as usize (PointerExposeAddress);
+        _37 = &_2;
+        _36 = &raw const (*_37);
+        _35 = move _36 as *const [u8] (Pointer(Unsize));
+        _34 = move _35 as *const u8 (PtrToPtr);
+        _33 = move _34 as usize (PointerExposeAddress);
+        _38 = Lt(_33, _28);
+        switchInt(move _38) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _40 = &mut _3;
+        _43 = &_2;
+        _42 = &raw const (*_43);
+        _41 = move _42 as *const [u8] (Pointer(Unsize));
+        _39 = Vec::<*const [u8]>::insert(move _40, const 0_usize, move _41) -> [return: bb35, unwind: bb29];
+    }
+
+    bb7: {
+        _45 = &mut _3;
+        _48 = &_2;
+        _47 = &raw const (*_48);
+        _46 = move _47 as *const [u8] (Pointer(Unsize));
+        _44 = Vec::<*const [u8]>::push(move _45, move _46) -> [return: bb36, unwind: bb29];
+    }
+
+    bb8: {
+        _52 = &_3;
+        _51 = <Vec<*const [u8]> as Deref>::deref(_52) -> [return: bb9, unwind: bb29];
+    }
+
+    bb9: {
+        _50 = _51;
+        _49 = assert_inorder::<*const [u8]>(move _50) -> [return: bb10, unwind: bb29];
+    }
+
+    bb10: {
+        _56 = SizeOf([*mut [u8]; 4]);
+        _57 = AlignOf([*mut [u8]; 4]);
+        _58 = alloc::alloc::exchange_malloc(move _56, move _57) -> [return: bb11, unwind: bb29];
+    }
+
+    bb11: {
+        _59 = ShallowInitBox(move _58, [*mut [u8]; 4]);
+        _63 = &mut _1;
+        _64 = std::ops::Range::<usize> { start: const 0_usize, end: const 0_usize };
+        _62 = <[u8; 5] as IndexMut<std::ops::Range<usize>>>::index_mut(move _63, move _64) -> [return: bb12, unwind: bb31];
+    }
+
+    bb12: {
+        _61 = _62;
+        _60 = &raw mut (*_61);
+        _68 = &mut _1;
+        _69 = std::ops::Range::<usize> { start: const 0_usize, end: const 1_usize };
+        _67 = <[u8; 5] as IndexMut<std::ops::Range<usize>>>::index_mut(move _68, move _69) -> [return: bb13, unwind: bb31];
+    }
+
+    bb13: {
+        _66 = _67;
+        _65 = &raw mut (*_66);
+        _72 = &mut _1;
+        _71 = &raw mut (*_72);
+        _70 = move _71 as *mut [u8] (Pointer(Unsize));
+        _76 = &mut _1;
+        _77 = RangeFrom::<usize> { start: const 1_usize };
+        _75 = <[u8; 5] as IndexMut<RangeFrom<usize>>>::index_mut(move _76, move _77) -> [return: bb14, unwind: bb31];
+    }
+
+    bb14: {
+        _74 = _75;
+        _73 = &raw mut (*_74);
+        _166 = (((_59.0: std::ptr::Unique<[*mut [u8]; 4]>).0: std::ptr::NonNull<[*mut [u8]; 4]>).0: *const [*mut [u8]; 4]);
+        _167 = _166 as *const () (PtrToPtr);
+        _168 = _167 as usize (Transmute);
+        _169 = AlignOf(*mut [u8]);
+        _170 = Sub(_169, const 1_usize);
+        _171 = BitAnd(_168, _170);
+        _172 = Eq(_171, const 0_usize);
+        assert(_172, "misaligned pointer dereference: address must be a multiple of {} but is {}", _169, _168) -> [success: bb33, unwind unreachable];
+    }
+
+    bb15: {
+        _82 = &mut _1;
+        _81 = &raw mut (*_82);
+        _80 = move _81 as *mut [u8] (Pointer(Unsize));
+        _79 = move _80 as *mut u8 (PtrToPtr);
+        _78 = move _79 as usize (PointerExposeAddress);
+        _87 = &mut _2;
+        _86 = &raw mut (*_87);
+        _85 = move _86 as *mut [u8] (Pointer(Unsize));
+        _84 = move _85 as *mut u8 (PtrToPtr);
+        _83 = move _84 as usize (PointerExposeAddress);
+        _88 = Lt(_83, _78);
+        switchInt(move _88) -> [0: bb17, otherwise: bb16];
+    }
+
+    bb16: {
+        _90 = &mut _53;
+        _93 = &mut _2;
+        _92 = &raw mut (*_93);
+        _91 = move _92 as *mut [u8] (Pointer(Unsize));
+        _89 = Vec::<*mut [u8]>::insert(move _90, const 0_usize, move _91) -> [return: bb37, unwind: bb28];
+    }
+
+    bb17: {
+        _95 = &mut _53;
+        _98 = &mut _2;
+        _97 = &raw mut (*_98);
+        _96 = move _97 as *mut [u8] (Pointer(Unsize));
+        _94 = Vec::<*mut [u8]>::push(move _95, move _96) -> [return: bb38, unwind: bb28];
+    }
+
+    bb18: {
+        _102 = &_53;
+        _101 = <Vec<*mut [u8]> as Deref>::deref(_102) -> [return: bb19, unwind: bb28];
+    }
+
+    bb19: {
+        _100 = _101;
+        _99 = assert_inorder::<*mut [u8]>(move _100) -> [return: bb20, unwind: bb28];
+    }
+
+    bb20: {
+        _103 = (const 0_u8, const 1_u8);
+        _104 = (const 4_u32, const 5_u32);
+        _110 = &_103;
+        _109 = &raw const (*_110);
+        _108 = move _109 as *const dyn Foo (Pointer(Unsize));
+        _113 = &(_103.0: u8);
+        _112 = &raw const (*_113);
+        _111 = move _112 as *const dyn Foo (Pointer(Unsize));
+        _116 = &_104;
+        _115 = &raw const (*_116);
+        _114 = move _115 as *const dyn Foo (Pointer(Unsize));
+        _119 = &(_104.0: u32);
+        _118 = &raw const (*_119);
+        _117 = move _118 as *const dyn Foo (Pointer(Unsize));
+        _107 = [move _108, move _111, move _114, move _117];
+        _106 = &mut _107;
+        _105 = _106 as &mut [*const dyn Foo] (Pointer(Unsize));
+        _120 = slice::<impl [*const dyn Foo]>::sort_by::<[closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:87:17: 87:22]>(_105, const ZeroSized: [closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:87:17: 87:22]) -> [return: bb21, unwind: bb28];
+    }
+
+    bb21: {
+        _122 = &(*_105);
+        _121 = assert_inorder::<*const dyn Foo>(move _122) -> [return: bb22, unwind: bb28];
+    }
+
+    bb22: {
+        _128 = &mut _103;
+        _127 = &raw mut (*_128);
+        _126 = move _127 as *mut dyn Foo (Pointer(Unsize));
+        _131 = &mut (_103.0: u8);
+        _130 = &raw mut (*_131);
+        _129 = move _130 as *mut dyn Foo (Pointer(Unsize));
+        _134 = &mut _104;
+        _133 = &raw mut (*_134);
+        _132 = move _133 as *mut dyn Foo (Pointer(Unsize));
+        _137 = &mut (_104.0: u32);
+        _136 = &raw mut (*_137);
+        _135 = move _136 as *mut dyn Foo (Pointer(Unsize));
+        _125 = [move _126, move _129, move _132, move _135];
+        _124 = &mut _125;
+        _123 = _124 as &mut [*mut dyn Foo] (Pointer(Unsize));
+        _138 = slice::<impl [*mut dyn Foo]>::sort_by::<[closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:99:17: 99:22]>(_123, const ZeroSized: [closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:99:17: 99:22]) -> [return: bb23, unwind: bb28];
+    }
+
+    bb23: {
+        _140 = &(*_123);
+        _139 = assert_inorder::<*mut dyn Foo>(move _140) -> [return: bb24, unwind: bb28];
+    }
+
+    bb24: {
+        _143 = [const 8_u8, const 9_u8];
+        _142 = S::<[u8; 2]>(const 7_u32, move _143);
+        _145 = [const 11_u8, const 12_u8, const 13_u8];
+        _144 = S::<[u8; 3]>(const 10_u32, move _145);
+        _147 = [const 5_u8, const 6_u8];
+        _146 = S::<[u8; 2]>(const 4_u32, move _147);
+        _141 = (move _142, move _144, move _146);
+        _154 = &(_141.0: S<[u8; 2]>);
+        _153 = &raw const (*_154);
+        _152 = move _153 as *const S<[u8]> (Pointer(Unsize));
+        _157 = &(_141.1: S<[u8; 3]>);
+        _156 = &raw const (*_157);
+        _155 = move _156 as *const S<[u8]> (Pointer(Unsize));
+        _160 = &(_141.2: S<[u8; 2]>);
+        _159 = &raw const (*_160);
+        _158 = move _159 as *const S<[u8]> (Pointer(Unsize));
+        _151 = [move _152, move _155, move _158];
+        _150 = &_151;
+        _149 = _150 as &[*const S<[u8]>] (Pointer(Unsize));
+        _148 = assert_inorder::<*const S<[u8]>>(move _149) -> [return: bb25, unwind: bb28];
+    }
+
+    bb25: {
+        drop(_53) -> [return: bb26, unwind: bb29];
+    }
+
+    bb26: {
+        drop(_3) -> bb27;
+    }
+
+    bb27: {
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_53) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_3) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        resume;
+    }
+
+    bb31 (cleanup): {
+        _161 = &mut _59;
+        _162 = <Box<[*mut [u8]; 4]> as Drop>::drop(move _161) -> [return: bb39, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        _163 = &mut _9;
+        _164 = <Box<[*const [u8]; 4]> as Drop>::drop(move _163) -> [return: bb40, unwind terminate];
+    }
+
+    bb33: {
+        (*_166) = [move _60, move _65, move _70, move _73];
+        _55 = move _59;
+        _54 = move _55 as std::boxed::Box<[*mut [u8]]> (Pointer(Unsize));
+        _53 = slice::<impl [*mut [u8]]>::into_vec::<std::alloc::Global>(move _54) -> [return: bb15, unwind: bb29];
+    }
+
+    bb34: {
+        (*_165) = [move _10, move _15, move _20, move _23];
+        _5 = move _9;
+        _4 = move _5 as std::boxed::Box<[*const [u8]]> (Pointer(Unsize));
+        _3 = slice::<impl [*const [u8]]>::into_vec::<std::alloc::Global>(move _4) -> bb5;
+    }
+
+    bb35: {
+        goto -> bb8;
+    }
+
+    bb36: {
+        goto -> bb8;
+    }
+
+    bb37: {
+        goto -> bb18;
+    }
+
+    bb38: {
+        goto -> bb18;
+    }
+
+    bb39 (cleanup): {
+        goto -> bb29;
+    }
+
+    bb40 (cleanup): {
+        goto -> bb30;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:87:17: 87:22], _2: &*const dyn Foo, _3: &*const dyn Foo) -> std::cmp::Ordering {
+    debug u => _2;
+    debug v => _3;
+    let mut _0: std::cmp::Ordering;
+    let _4: [*const (); 2];
+    let mut _5: *const dyn Foo;
+    let mut _7: *const dyn Foo;
+    let mut _8: &[*const (); 2];
+    let _9: &[*const (); 2];
+    scope 1 {
+        debug u => _4;
+        let _6: [*const (); 2];
+        scope 3 {
+            debug v => _6;
+        }
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _5 = (*_2);
+        _4 = move _5 as [*const (); 2] (Transmute);
+        _7 = (*_3);
+        _6 = move _7 as [*const (); 2] (Transmute);
+        _8 = &_4;
+        _9 = &_6;
+        _0 = <[*const (); 2] as Ord>::cmp(move _8, _9) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{closure#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{closure#0}::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/stdlib-unit-tests/raw-fat-ptr.rs:99:17: 99:22], _2: &*mut dyn Foo, _3: &*mut dyn Foo) -> std::cmp::Ordering {
+    debug u => _2;
+    debug v => _3;
+    let mut _0: std::cmp::Ordering;
+    let _4: [*const (); 2];
+    let mut _5: *mut dyn Foo;
+    let mut _7: *mut dyn Foo;
+    let mut _8: &[*const (); 2];
+    let _9: &[*const (); 2];
+    scope 1 {
+        debug u => _4;
+        let _6: [*const (); 2];
+        scope 3 {
+            debug v => _6;
+        }
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _5 = (*_2);
+        _4 = move _5 as [*const (); 2] (Transmute);
+        _7 = (*_3);
+        _6 = move _7 as [*const (); 2] (Transmute);
+        _8 = &_4;
+        _9 = &_6;
+        _0 = <[*const (); 2] as Ord>::cmp(move _8, _9) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+main::{closure#1}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{closure#1}::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn S(_1: u32, _2: T) -> S<T> {
+    let mut _0: S<T>;
+
+    bb0: {
+        _0 = S::<T>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn S(_1: u32, _2: T) -> S<T> {
+    let mut _0: S<T>;
+
+    bb0: {
+        _0 = S::<T>(move _1, move _2);
+        return;
+    }
+}

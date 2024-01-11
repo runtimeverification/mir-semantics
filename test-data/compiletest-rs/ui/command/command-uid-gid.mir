@@ -1,0 +1,204 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        _0 = run() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn run() -> () {
+    let mut _0: ();
+    let mut _1: std::process::Child;
+    let mut _2: std::result::Result<std::process::Child, std::io::Error>;
+    let mut _3: &mut std::process::Command;
+    let mut _4: &mut std::process::Command;
+    let mut _5: &mut std::process::Command;
+    let mut _6: &mut std::process::Command;
+    let mut _7: &mut std::process::Command;
+    let mut _8: &mut std::process::Command;
+    let mut _9: &mut std::process::Command;
+    let mut _10: &mut std::process::Command;
+    let mut _11: &mut std::process::Command;
+    let mut _12: std::process::Command;
+    let mut _13: u32;
+    let mut _14: u32;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: &std::process::ExitStatus;
+    let _18: std::process::ExitStatus;
+    let mut _19: std::result::Result<std::process::ExitStatus, std::io::Error>;
+    let mut _20: &mut std::process::Child;
+    let mut _21: !;
+    let mut _22: u32;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: &std::result::Result<std::process::Child, std::io::Error>;
+    let _26: std::result::Result<std::process::Child, std::io::Error>;
+    let mut _27: &mut std::process::Command;
+    let mut _28: &mut std::process::Command;
+    let mut _29: &mut std::process::Command;
+    let mut _30: &mut std::process::Command;
+    let mut _31: &mut std::process::Command;
+    let mut _32: std::process::Command;
+    let mut _33: !;
+    scope 1 {
+        debug p => _1;
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+    scope 3 {
+    }
+
+    bb0: {
+        _12 = Command::new::<&str>(const "/bin/sh") -> bb1;
+    }
+
+    bb1: {
+        _11 = &mut _12;
+        _10 = Command::arg::<&str>(move _11, const "-c") -> [return: bb2, unwind: bb31];
+    }
+
+    bb2: {
+        _9 = _10;
+        _8 = Command::arg::<&str>(move _9, const "true") -> [return: bb3, unwind: bb31];
+    }
+
+    bb3: {
+        _7 = _8;
+        _13 = getuid() -> [return: bb4, unwind: bb31];
+    }
+
+    bb4: {
+        _6 = <Command as std::os::unix::process::CommandExt>::uid(move _7, move _13) -> [return: bb5, unwind: bb31];
+    }
+
+    bb5: {
+        _5 = _6;
+        _14 = getgid() -> [return: bb6, unwind: bb31];
+    }
+
+    bb6: {
+        _4 = <Command as std::os::unix::process::CommandExt>::gid(move _5, move _14) -> [return: bb7, unwind: bb31];
+    }
+
+    bb7: {
+        _3 = _4;
+        _2 = Command::spawn(move _3) -> [return: bb8, unwind: bb31];
+    }
+
+    bb8: {
+        _1 = Result::<Child, std::io::Error>::unwrap(move _2) -> [return: bb9, unwind: bb31];
+    }
+
+    bb9: {
+        drop(_12) -> [return: bb10, unwind: bb30];
+    }
+
+    bb10: {
+        _20 = &mut _1;
+        _19 = Child::wait(move _20) -> [return: bb11, unwind: bb30];
+    }
+
+    bb11: {
+        _18 = Result::<ExitStatus, std::io::Error>::unwrap(move _19) -> [return: bb12, unwind: bb30];
+    }
+
+    bb12: {
+        _17 = &_18;
+        _16 = ExitStatus::success(move _17) -> [return: bb13, unwind: bb30];
+    }
+
+    bb13: {
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _21 = core::panicking::panic(const "assertion failed: p.wait().unwrap().success()") -> bb30;
+    }
+
+    bb15: {
+        _22 = getuid() -> [return: bb16, unwind: bb30];
+    }
+
+    bb16: {
+        switchInt(move _22) -> [0: bb26, otherwise: bb17];
+    }
+
+    bb17: {
+        _32 = Command::new::<&str>(const "/bin/ls") -> [return: bb18, unwind: bb30];
+    }
+
+    bb18: {
+        _31 = &mut _32;
+        _30 = <Command as std::os::unix::process::CommandExt>::uid(move _31, const 0_u32) -> [return: bb19, unwind: bb29];
+    }
+
+    bb19: {
+        _29 = _30;
+        _28 = <Command as std::os::unix::process::CommandExt>::gid(move _29, const 0_u32) -> [return: bb20, unwind: bb29];
+    }
+
+    bb20: {
+        _27 = _28;
+        _26 = Command::spawn(move _27) -> [return: bb21, unwind: bb29];
+    }
+
+    bb21: {
+        _25 = &_26;
+        _24 = Result::<Child, std::io::Error>::is_err(move _25) -> [return: bb22, unwind: bb28];
+    }
+
+    bb22: {
+        _23 = Not(move _24);
+        drop(_26) -> [return: bb23, unwind: bb29];
+    }
+
+    bb23: {
+        drop(_32) -> [return: bb24, unwind: bb30];
+    }
+
+    bb24: {
+        switchInt(move _23) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _33 = core::panicking::panic(const "assertion failed: Command::new(\\\"/bin/ls\\\").uid(0).gid(0).spawn().is_err()") -> bb30;
+    }
+
+    bb26: {
+        drop(_1) -> bb27;
+    }
+
+    bb27: {
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_26) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_32) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_1) -> [return: bb32, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_12) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        resume;
+    }
+}

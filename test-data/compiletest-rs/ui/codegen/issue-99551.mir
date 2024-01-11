@@ -1,0 +1,111 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: T) -> Option<&mut dyn B> {
+    debug view => _1;
+    let mut _0: std::option::Option<&mut dyn B>;
+    let mut _2: &mut dyn B;
+    let mut _3: &mut dyn B;
+    let mut _4: std::option::Option<&mut dyn B>;
+    let mut _5: &mut <T as std::iter::IntoIterator>::IntoIter;
+    let mut _6: <T as std::iter::IntoIterator>::IntoIter;
+
+    bb0: {
+        _6 = <T as IntoIterator>::into_iter(move _1) -> bb1;
+    }
+
+    bb1: {
+        _5 = &mut _6;
+        _4 = <<T as IntoIterator>::IntoIter as Iterator>::next(move _5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _3 = Option::<&mut dyn B>::unwrap(move _4) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        _2 = _3;
+        _0 = Option::<&mut dyn B>::Some(move _2);
+        drop(_6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_6) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<std::boxed::Box<dyn C>>;
+    let _2: std::option::Option<&mut dyn B>;
+    let mut _3: std::iter::Map<std::slice::IterMut<'_, std::boxed::Box<dyn C>>, [closure@ui/codegen/issue-99551.rs:19:27: 19:30]>;
+    let mut _4: std::slice::IterMut<'_, std::boxed::Box<dyn C>>;
+    let mut _5: &mut [std::boxed::Box<dyn C>];
+    let mut _6: &mut [std::boxed::Box<dyn C>];
+    let mut _7: &mut std::vec::Vec<std::boxed::Box<dyn C>>;
+    scope 1 {
+        debug a => _1;
+    }
+
+    bb0: {
+        _1 = Vec::<Box<dyn C>>::new() -> bb1;
+    }
+
+    bb1: {
+        _7 = &mut _1;
+        _6 = <Vec<Box<dyn C>> as DerefMut>::deref_mut(move _7) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _5 = _6;
+        _4 = core::slice::<impl [Box<dyn C>]>::iter_mut(move _5) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _3 = <std::slice::IterMut<'_, Box<dyn C>> as Iterator>::map::<&mut dyn B, [closure@ui/codegen/issue-99551.rs:19:27: 19:30]>(move _4, const ZeroSized: [closure@ui/codegen/issue-99551.rs:19:27: 19:30]) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        _2 = test::<'_, Map<std::slice::IterMut<'_, Box<dyn C>>, [closure@ui/codegen/issue-99551.rs:19:27: 19:30]>>(move _3) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        drop(_1) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/codegen/issue-99551.rs:19:27: 19:30], _2: &mut Box<dyn C>) -> &mut dyn B {
+    debug c => _2;
+    let mut _0: &mut dyn B;
+    let mut _3: &mut dyn C;
+    let mut _4: &mut dyn C;
+
+    bb0: {
+        _4 = <Box<dyn C> as AsMut<dyn C>>::as_mut(_2) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _0 = move _3 as &mut dyn B (Pointer(Unsize));
+        return;
+    }
+}

@@ -1,0 +1,34 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn needs_super(_1: F) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = needs_super::<[closure@ui/closures/supertrait-hint-cycle-3.rs:15:17: 15:25]>(const ZeroSized: [closure@ui/closures/supertrait-hint-cycle-3.rs:15:17: 15:25]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/supertrait-hint-cycle-3.rs:15:17: 15:25], _2: u32) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

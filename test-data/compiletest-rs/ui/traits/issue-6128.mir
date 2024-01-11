@@ -1,0 +1,65 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-6128.rs:10:1: 10:50>::f(_1: &HashMap<isize, isize>, _2: E) -> () {
+    debug self => _1;
+    debug _e => _2;
+    let mut _0: ();
+    let mut _3: !;
+
+    bb0: {
+        _3 = begin_panic::<&str>(const "explicit panic") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_2) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/traits/issue-6128.rs:10:1: 10:50>::g(_1: &HashMap<isize, isize>, _2: isize) -> () {
+    debug self => _1;
+    debug _e => _2;
+    let mut _0: ();
+    let mut _3: !;
+
+    bb0: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<std::collections::HashMap<isize, isize>>;
+    let mut _2: std::collections::HashMap<isize, isize>;
+    let mut _4: std::boxed::Box<dyn Graph<isize, isize>>;
+    let mut _5: std::boxed::Box<std::collections::HashMap<isize, isize>>;
+    scope 1 {
+        debug g => _1;
+        let _3: std::boxed::Box<dyn Graph<isize, isize>>;
+        scope 2 {
+            debug _g2 => _3;
+        }
+    }
+
+    bb0: {
+        _2 = HashMap::<isize, isize>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = Box::<HashMap<isize, isize>>::new(move _2) -> bb2;
+    }
+
+    bb2: {
+        _5 = move _1;
+        _4 = move _5 as std::boxed::Box<dyn Graph<isize, isize>> (Pointer(Unsize));
+        _3 = move _4;
+        drop(_3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

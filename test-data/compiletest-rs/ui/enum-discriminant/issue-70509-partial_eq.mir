@@ -1,0 +1,295 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Test::A::{constant#0}: i128 = {
+    let mut _0: i128;
+
+    bb0: {
+        _0 = const 0_i128;
+        return;
+    }
+}
+
+Test::B::{constant#0}: i128 = {
+    let mut _0: i128;
+    let mut _1: i128;
+    let mut _2: (i128, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _ as i128 (IntToInt);
+        _2 = CheckedAdd(_1, const 1_i128);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", move _1, const 1_i128) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_2.0: i128);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn <impl at ui/enum-discriminant/issue-70509-partial_eq.rs:5:10: 5:19>::eq(_1: &Test, _2: &Test) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: i128;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&Test, &Test);
+    let mut _8: i128;
+    let mut _9: i128;
+    let mut _10: i128;
+    let mut _15: usize;
+    let mut _16: usize;
+    let mut _17: &Test;
+    let mut _18: &Test;
+    let mut _19: &Test;
+    let mut _20: &Test;
+    let mut _21: &Test;
+    let mut _22: &Test;
+    let mut _23: &Test;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: i128;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &std::boxed::Box<u64>;
+            let _12: &std::boxed::Box<u64>;
+            let _13: &usize;
+            let _14: &usize;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __arg1_0 => _12;
+            }
+            scope 4 {
+                debug __self_0 => _13;
+                debug __arg1_0 => _14;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _17 = deref_copy (_7.0: &Test);
+        _10 = discriminant((*_17));
+        switchInt(move _10) -> [0: bb4, 18446744073709551616: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _18 = deref_copy (_7.1: &Test);
+        _8 = discriminant((*_18));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _19 = deref_copy (_7.1: &Test);
+        _9 = discriminant((*_19));
+        switchInt(move _9) -> [18446744073709551616: bb8, otherwise: bb5];
+    }
+
+    bb7: {
+        _20 = deref_copy (_7.0: &Test);
+        _11 = &(((*_20) as A).0: std::boxed::Box<u64>);
+        _21 = deref_copy (_7.1: &Test);
+        _12 = &(((*_21) as A).0: std::boxed::Box<u64>);
+        _6 = <Box<u64> as PartialEq>::eq(_11, _12) -> bb9;
+    }
+
+    bb8: {
+        _22 = deref_copy (_7.0: &Test);
+        _13 = &(((*_22) as B).0: usize);
+        _23 = deref_copy (_7.1: &Test);
+        _14 = &(((*_23) as B).0: usize);
+        _15 = (*_13);
+        _16 = (*_14);
+        _6 = Eq(move _15, move _16);
+        goto -> bb9;
+    }
+
+    bb9: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/enum-discriminant/issue-70509-partial_eq.rs:5:21: 5:26>::fmt(_1: &Test, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: i128;
+    let _4: &std::boxed::Box<u64>;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&std::boxed::Box<u64>;
+    let _8: &usize;
+    let _9: &str;
+    let mut _10: &dyn std::fmt::Debug;
+    let _11: &&usize;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+    scope 2 {
+        debug __self_0 => _8;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 18446744073709551616: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = &(((*_1) as B).0: usize);
+        _9 = const "B";
+        _11 = &_8;
+        _10 = _11 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _9, move _10) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as A).0: std::boxed::Box<u64>);
+        _5 = const "A";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&Test, &Test);
+    let mut _2: &Test;
+    let _3: Test;
+    let mut _4: std::boxed::Box<u64>;
+    let mut _5: &Test;
+    let _6: Test;
+    let _7: &Test;
+    let _8: &Test;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+
+    bb0: {
+        _4 = Box::<u64>::new(const 2_u64) -> bb1;
+    }
+
+    bb1: {
+        _3 = Test::A(move _4);
+        _2 = &_3;
+        _6 = Test::B(const 0_usize);
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &Test);
+        _8 = (_1.1: &Test);
+        _9 = <Test as PartialEq>::eq(_7, _8) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        switchInt(move _9) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Ne;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<Test, Test>(move _10, _7, _8, move _12) -> bb7;
+    }
+
+    bb4: {
+        drop(_6) -> [return: bb5, unwind: bb8];
+    }
+
+    bb5: {
+        drop(_3) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_6) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        drop(_3) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+}
+
+fn Test::A(_1: Box<u64>) -> Test {
+    let mut _0: Test;
+
+    bb0: {
+        _0 = Test::A(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Test::A(_1: Box<u64>) -> Test {
+    let mut _0: Test;
+
+    bb0: {
+        _0 = Test::A(move _1);
+        return;
+    }
+}
+
+fn Test::B(_1: usize) -> Test {
+    let mut _0: Test;
+
+    bb0: {
+        _0 = Test::B(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Test::B(_1: usize) -> Test {
+    let mut _0: Test;
+
+    bb0: {
+        _0 = Test::B(move _1);
+        return;
+    }
+}

@@ -1,0 +1,896 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/drop/dropck-eyepatch.rs:43:1: 43:28>::drop(_1: &mut Dt<A>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+    let _12: ();
+    let mut _13: &A;
+    let mut _14: &str;
+
+    bb0: {
+        _6 = [const "drop ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: &str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = &((*_1).1: A);
+        _14 = deref_copy ((*_1).0: &str);
+        _12 = <A as Foo>::foo(move _13, _14) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/drop/dropck-eyepatch.rs:46:1: 46:36>::drop(_1: &mut Dr<'_, B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+    let _12: ();
+    let mut _13: &B;
+    let mut _14: &str;
+
+    bb0: {
+        _6 = [const "drop ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: &str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = deref_copy ((*_1).1: &B);
+        _14 = deref_copy ((*_1).0: &str);
+        _12 = <B as Foo>::foo(_13, _14) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/drop/dropck-eyepatch.rs:49:1: 49:55>::drop(_1: &mut Pt<A, B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+    let _12: ();
+    let mut _13: &B;
+    let mut _14: &str;
+
+    bb0: {
+        _6 = [const "drop ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: &str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = &((*_1).2: B);
+        _14 = deref_copy ((*_1).0: &str);
+        _12 = <B as Foo>::foo(move _13, _14) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/drop/dropck-eyepatch.rs:53:1: 53:65>::drop(_1: &mut Pr<'_, '_, B>) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &&str;
+    let _12: ();
+    let mut _13: &B;
+    let mut _14: &str;
+
+    bb0: {
+        _6 = [const "drop ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: &str);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        _13 = deref_copy ((*_1).2: &B);
+        _14 = deref_copy ((*_1).0: &str);
+        _12 = <B as Foo>::foo(_13, _14) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: main::CheckOnDrop;
+    let mut _7: main::CheckOnDrop;
+    let mut _8: std::cell::RefCell<std::string::String>;
+    let mut _9: std::string::String;
+    let _10: &str;
+    let mut _11: main::CheckOnDrop;
+    let mut _12: std::cell::RefCell<std::string::String>;
+    let mut _13: std::string::String;
+    let _14: &str;
+    let mut _15: Dt<&std::cell::RefCell<std::string::String>>;
+    let mut _16: &std::cell::RefCell<std::string::String>;
+    let mut _17: Dr<'_, std::cell::RefCell<std::string::String>>;
+    let _18: &std::cell::RefCell<std::string::String>;
+    let mut _19: Pt<&std::cell::RefCell<std::string::String>, &std::cell::RefCell<std::string::String>>;
+    let mut _20: &std::cell::RefCell<std::string::String>;
+    let mut _21: &std::cell::RefCell<std::string::String>;
+    let mut _22: Pr<'_, '_, std::cell::RefCell<std::string::String>>;
+    let _23: &std::cell::RefCell<std::string::String>;
+    let _24: &std::cell::RefCell<std::string::String>;
+    let mut _25: St<&std::cell::RefCell<std::string::String>>;
+    let mut _26: &std::cell::RefCell<std::string::String>;
+    let mut _27: Sr<'_, std::cell::RefCell<std::string::String>>;
+    let _28: &std::cell::RefCell<std::string::String>;
+    let _29: ();
+    let mut _30: std::fmt::Arguments<'_>;
+    let mut _31: &[&str];
+    let _32: &[&str; 2];
+    let _33: [&str; 2];
+    let mut _34: &[core::fmt::rt::Argument<'_>];
+    let _35: &[core::fmt::rt::Argument<'_>; 1];
+    let _36: [core::fmt::rt::Argument<'_>; 1];
+    let mut _37: core::fmt::rt::Argument<'_>;
+    let _38: &(&str, &str, &str, &str, &str, &str);
+    let _39: (&str, &str, &str, &str, &str, &str);
+    let mut _40: &str;
+    let mut _41: &str;
+    let mut _42: &str;
+    let mut _43: &str;
+    let mut _44: &str;
+    let mut _45: &str;
+    let mut _46: (&std::string::String, &&str);
+    let mut _47: &std::string::String;
+    let _48: &std::string::String;
+    let mut _49: &std::cell::Ref<'_, std::string::String>;
+    let _50: std::cell::Ref<'_, std::string::String>;
+    let mut _51: &std::cell::RefCell<std::string::String>;
+    let mut _52: &&str;
+    let _53: &str;
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: (&std::string::String, &&str);
+    let mut _62: &std::string::String;
+    let _63: &std::string::String;
+    let mut _64: &std::cell::Ref<'_, std::string::String>;
+    let _65: std::cell::Ref<'_, std::string::String>;
+    let mut _66: &std::cell::RefCell<std::string::String>;
+    let mut _67: &&str;
+    let _68: &str;
+    let mut _71: bool;
+    let mut _72: bool;
+    let _74: !;
+    let mut _75: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _76: bool;
+    let mut _77: bool;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: bool;
+    let mut _81: bool;
+    scope 1 {
+        debug c_long => _1;
+        let _2: main::CheckOnDrop;
+        let _3: Dt<&std::cell::RefCell<std::string::String>>;
+        let _4: Dr<'_, std::cell::RefCell<std::string::String>>;
+        let _5: Pt<&std::cell::RefCell<std::string::String>, &std::cell::RefCell<std::string::String>>;
+        let _6: Pr<'_, '_, std::cell::RefCell<std::string::String>>;
+        scope 2 {
+            debug c => _2;
+            debug dt => _3;
+            debug dr => _4;
+            debug pt => _5;
+            debug pr => _6;
+            debug st => _25;
+            debug sr => _27;
+            let _54: &std::string::String;
+            let _55: &&str;
+            let _69: &std::string::String;
+            let _70: &&str;
+            scope 3 {
+                debug left_val => _54;
+                debug right_val => _55;
+                let _58: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _58;
+                }
+            }
+            scope 5 {
+                debug left_val => _69;
+                debug right_val => _70;
+                let _73: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _73;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _81 = const false;
+        _80 = const false;
+        _79 = const false;
+        _78 = const false;
+        _77 = const false;
+        _76 = const false;
+        _10 = const "c_long";
+        _9 = <str as ToString>::to_string(_10) -> [return: bb1, unwind: bb30];
+    }
+
+    bb1: {
+        _8 = RefCell::<String>::new(move _9) -> [return: bb2, unwind: bb30];
+    }
+
+    bb2: {
+        _7 = CheckOnDrop(move _8, const "c_long|pr|pt|dr|dt");
+        _81 = const true;
+        _1 = move _7;
+        _14 = const "c";
+        _13 = <str as ToString>::to_string(_14) -> [return: bb3, unwind: bb30];
+    }
+
+    bb3: {
+        _12 = RefCell::<String>::new(move _13) -> [return: bb4, unwind: bb30];
+    }
+
+    bb4: {
+        _11 = CheckOnDrop(move _12, const "c");
+        _80 = const true;
+        _2 = move _11;
+        _16 = &(_1.0: std::cell::RefCell<std::string::String>);
+        _15 = Dt::<&RefCell<String>>(const "dt", move _16);
+        _79 = const true;
+        _3 = move _15;
+        _18 = &(_1.0: std::cell::RefCell<std::string::String>);
+        _17 = Dr::<'_, RefCell<String>>(const "dr", _18);
+        _78 = const true;
+        _4 = move _17;
+        _20 = &(_2.0: std::cell::RefCell<std::string::String>);
+        _21 = &(_1.0: std::cell::RefCell<std::string::String>);
+        _19 = Pt::<&RefCell<String>, &RefCell<String>>(const "pt", move _20, move _21);
+        _77 = const true;
+        _5 = move _19;
+        _23 = &(_2.0: std::cell::RefCell<std::string::String>);
+        _24 = &(_1.0: std::cell::RefCell<std::string::String>);
+        _22 = Pr::<'_, '_, RefCell<String>>(const "pr", _23, _24);
+        _76 = const true;
+        _6 = move _22;
+        _26 = &(_2.0: std::cell::RefCell<std::string::String>);
+        _25 = St::<&RefCell<String>>(const "st", move _26);
+        _28 = &(_2.0: std::cell::RefCell<std::string::String>);
+        _27 = Sr::<'_, RefCell<String>>(const "sr", _28);
+        _33 = [const "", const "\n"];
+        _32 = &_33;
+        _31 = _32 as &[&str] (Pointer(Unsize));
+        _40 = (_3.0: &str);
+        _41 = (_4.0: &str);
+        _42 = (_5.0: &str);
+        _43 = (_6.0: &str);
+        _44 = (_25.0: &str);
+        _45 = (_27.0: &str);
+        _39 = (move _40, move _41, move _42, move _43, move _44, move _45);
+        _38 = &_39;
+        _37 = core::fmt::rt::Argument::<'_>::new_debug::<(&str, &str, &str, &str, &str, &str)>(_38) -> [return: bb5, unwind: bb30];
+    }
+
+    bb5: {
+        _36 = [move _37];
+        _35 = &_36;
+        _34 = _35 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _30 = Arguments::<'_>::new_v1(move _31, move _34) -> [return: bb6, unwind: bb30];
+    }
+
+    bb6: {
+        _29 = _print(move _30) -> [return: bb7, unwind: bb30];
+    }
+
+    bb7: {
+        _51 = &(_1.0: std::cell::RefCell<std::string::String>);
+        _50 = RefCell::<String>::borrow(move _51) -> [return: bb8, unwind: bb30];
+    }
+
+    bb8: {
+        _49 = &_50;
+        _48 = <Ref<'_, String> as Deref>::deref(move _49) -> [return: bb9, unwind: bb27];
+    }
+
+    bb9: {
+        _47 = _48;
+        _53 = const "c_long";
+        _52 = &_53;
+        _46 = (move _47, move _52);
+        _54 = (_46.0: &std::string::String);
+        _55 = (_46.1: &&str);
+        _57 = <String as PartialEq<&str>>::eq(_54, _55) -> [return: bb10, unwind: bb27];
+    }
+
+    bb10: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<String, &str>(move _58, _54, _55, move _60) -> bb27;
+    }
+
+    bb12: {
+        drop(_50) -> [return: bb13, unwind: bb30];
+    }
+
+    bb13: {
+        _66 = &(_2.0: std::cell::RefCell<std::string::String>);
+        _65 = RefCell::<String>::borrow(move _66) -> [return: bb14, unwind: bb30];
+    }
+
+    bb14: {
+        _64 = &_65;
+        _63 = <Ref<'_, String> as Deref>::deref(move _64) -> [return: bb15, unwind: bb26];
+    }
+
+    bb15: {
+        _62 = _63;
+        _68 = const "c";
+        _67 = &_68;
+        _61 = (move _62, move _67);
+        _69 = (_61.0: &std::string::String);
+        _70 = (_61.1: &&str);
+        _72 = <String as PartialEq<&str>>::eq(_69, _70) -> [return: bb16, unwind: bb26];
+    }
+
+    bb16: {
+        _71 = Not(move _72);
+        switchInt(move _71) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _73 = core::panicking::AssertKind::Eq;
+        _75 = Option::<Arguments<'_>>::None;
+        _74 = core::panicking::assert_failed::<String, &str>(move _73, _69, _70, move _75) -> bb26;
+    }
+
+    bb18: {
+        drop(_65) -> [return: bb19, unwind: bb30];
+    }
+
+    bb19: {
+        drop(_6) -> [return: bb20, unwind: bb32];
+    }
+
+    bb20: {
+        _76 = const false;
+        drop(_5) -> [return: bb21, unwind: bb34];
+    }
+
+    bb21: {
+        _77 = const false;
+        drop(_4) -> [return: bb22, unwind: bb36];
+    }
+
+    bb22: {
+        _78 = const false;
+        drop(_3) -> [return: bb23, unwind: bb38];
+    }
+
+    bb23: {
+        _79 = const false;
+        drop(_2) -> [return: bb24, unwind: bb40];
+    }
+
+    bb24: {
+        _80 = const false;
+        drop(_1) -> bb25;
+    }
+
+    bb25: {
+        _81 = const false;
+        return;
+    }
+
+    bb26 (cleanup): {
+        drop(_65) -> [return: bb30, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        drop(_50) -> [return: bb30, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        resume;
+    }
+
+    bb29 (cleanup): {
+        drop(_6) -> [return: bb32, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        switchInt(_76) -> [0: bb32, otherwise: bb29];
+    }
+
+    bb31 (cleanup): {
+        drop(_5) -> [return: bb34, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        switchInt(_77) -> [0: bb34, otherwise: bb31];
+    }
+
+    bb33 (cleanup): {
+        drop(_4) -> [return: bb36, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        switchInt(_78) -> [0: bb36, otherwise: bb33];
+    }
+
+    bb35 (cleanup): {
+        drop(_3) -> [return: bb38, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        switchInt(_79) -> [0: bb38, otherwise: bb35];
+    }
+
+    bb37 (cleanup): {
+        drop(_2) -> [return: bb40, unwind terminate];
+    }
+
+    bb38 (cleanup): {
+        switchInt(_80) -> [0: bb40, otherwise: bb37];
+    }
+
+    bb39 (cleanup): {
+        drop(_1) -> [return: bb28, unwind terminate];
+    }
+
+    bb40 (cleanup): {
+        switchInt(_81) -> [0: bb28, otherwise: bb39];
+    }
+}
+
+fn main::<impl at ui/drop/dropck-eyepatch.rs:61:5: 61:33>::foo(_1: &RefCell<String>, _2: &str) -> () {
+    debug self => _1;
+    debug s => _2;
+    let mut _0: ();
+    let _3: std::string::String;
+    let _4: std::string::String;
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 2];
+    let _11: [core::fmt::rt::Argument<'_>; 2];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &std::string::String;
+    let _14: &std::string::String;
+    let mut _15: &std::cell::Ref<'_, std::string::String>;
+    let _16: std::cell::Ref<'_, std::string::String>;
+    let mut _17: core::fmt::rt::Argument<'_>;
+    let _18: &&str;
+    let mut _19: std::string::String;
+    let mut _20: &mut std::string::String;
+    let mut _21: &mut std::cell::RefMut<'_, std::string::String>;
+    let mut _22: std::cell::RefMut<'_, std::string::String>;
+    let mut _23: bool;
+    scope 1 {
+        debug s2 => _3;
+    }
+    scope 2 {
+        debug res => _4;
+    }
+
+    bb0: {
+        _23 = const false;
+        _8 = [const "", const "|"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _16 = RefCell::<String>::borrow(_1) -> bb1;
+    }
+
+    bb1: {
+        _15 = &_16;
+        _14 = <Ref<'_, String> as Deref>::deref(move _15) -> [return: bb2, unwind: bb16];
+    }
+
+    bb2: {
+        _13 = _14;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<String>(_13) -> [return: bb3, unwind: bb16];
+    }
+
+    bb3: {
+        _18 = &_2;
+        _17 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_18) -> [return: bb4, unwind: bb16];
+    }
+
+    bb4: {
+        _11 = [move _12, move _17];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> [return: bb5, unwind: bb16];
+    }
+
+    bb5: {
+        _4 = format(move _5) -> [return: bb6, unwind: bb16];
+    }
+
+    bb6: {
+        drop(_16) -> [return: bb7, unwind: bb15];
+    }
+
+    bb7: {
+        _3 = move _4;
+        _23 = const true;
+        _19 = move _3;
+        _22 = RefCell::<String>::borrow_mut(_1) -> [return: bb8, unwind: bb14];
+    }
+
+    bb8: {
+        _21 = &mut _22;
+        _20 = <RefMut<'_, String> as DerefMut>::deref_mut(move _21) -> [return: bb9, unwind: bb19];
+    }
+
+    bb9: {
+        drop((*_20)) -> [return: bb10, unwind: bb11];
+    }
+
+    bb10: {
+        _23 = const false;
+        (*_20) = move _19;
+        _23 = const false;
+        drop(_22) -> bb12;
+    }
+
+    bb11 (cleanup): {
+        _23 = const false;
+        (*_20) = move _19;
+        goto -> bb19;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_22) -> [return: bb17, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        drop(_19) -> [return: bb17, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        drop(_4) -> [return: bb17, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        drop(_16) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        resume;
+    }
+
+    bb18 (cleanup): {
+        drop(_19) -> [return: bb13, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        switchInt(_23) -> [0: bb13, otherwise: bb18];
+    }
+}
+
+fn main::<impl at ui/drop/dropck-eyepatch.rs:68:5: 68:34>::foo(_1: &&T, _2: &str) -> () {
+    debug self => _1;
+    debug s => _2;
+    let mut _0: ();
+    let _3: ();
+    let mut _4: &T;
+
+    bb0: {
+        _4 = deref_copy (*_1);
+        _3 = <T as Foo>::foo(_4, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::<impl at ui/drop/dropck-eyepatch.rs:75:5: 75:30>::drop(_1: &mut CheckOnDrop) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: (&std::string::String, &&str);
+    let mut _3: &std::string::String;
+    let _4: &std::string::String;
+    let mut _5: &std::cell::Ref<'_, std::string::String>;
+    let _6: std::cell::Ref<'_, std::string::String>;
+    let mut _7: &std::cell::RefCell<std::string::String>;
+    let mut _8: &&str;
+    let _9: &std::string::String;
+    let _10: &&str;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+
+    bb0: {
+        _7 = &((*_1).0: std::cell::RefCell<std::string::String>);
+        _6 = RefCell::<String>::borrow(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _4 = <Ref<'_, String> as Deref>::deref(move _5) -> [return: bb2, unwind: bb7];
+    }
+
+    bb2: {
+        _3 = _4;
+        _8 = &((*_1).1: &str);
+        _2 = (move _3, move _8);
+        _9 = (_2.0: &std::string::String);
+        _10 = (_2.1: &&str);
+        _12 = <String as PartialEq<&str>>::eq(_9, _10) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<String, &str>(move _13, _9, _10, move _15) -> bb7;
+    }
+
+    bb5: {
+        drop(_6) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_6) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+}
+
+fn Dt(_1: &str, _2: A) -> Dt<A> {
+    let mut _0: Dt<A>;
+
+    bb0: {
+        _0 = Dt::<A>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Dt(_1: &str, _2: A) -> Dt<A> {
+    let mut _0: Dt<A>;
+
+    bb0: {
+        _0 = Dt::<A>(move _1, move _2);
+        return;
+    }
+}
+
+fn Dr(_1: &str, _2: &B) -> Dr<'_, B> {
+    let mut _0: Dr<'_, B>;
+
+    bb0: {
+        _0 = Dr::<'_, B>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Dr(_1: &str, _2: &B) -> Dr<'_, B> {
+    let mut _0: Dr<'_, B>;
+
+    bb0: {
+        _0 = Dr::<'_, B>(move _1, move _2);
+        return;
+    }
+}
+
+fn Pt(_1: &str, _2: A, _3: B) -> Pt<A, B> {
+    let mut _0: Pt<A, B>;
+
+    bb0: {
+        _0 = Pt::<A, B>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Pt(_1: &str, _2: A, _3: B) -> Pt<A, B> {
+    let mut _0: Pt<A, B>;
+
+    bb0: {
+        _0 = Pt::<A, B>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+fn Pr(_1: &str, _2: &B, _3: &B) -> Pr<'_, '_, B> {
+    let mut _0: Pr<'_, '_, B>;
+
+    bb0: {
+        _0 = Pr::<'_, '_, B>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Pr(_1: &str, _2: &B, _3: &B) -> Pr<'_, '_, B> {
+    let mut _0: Pr<'_, '_, B>;
+
+    bb0: {
+        _0 = Pr::<'_, '_, B>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+fn St(_1: &str, _2: A) -> St<A> {
+    let mut _0: St<A>;
+
+    bb0: {
+        _0 = St::<A>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn St(_1: &str, _2: A) -> St<A> {
+    let mut _0: St<A>;
+
+    bb0: {
+        _0 = St::<A>(move _1, move _2);
+        return;
+    }
+}
+
+fn Sr(_1: &str, _2: &B) -> Sr<'_, B> {
+    let mut _0: Sr<'_, B>;
+
+    bb0: {
+        _0 = Sr::<'_, B>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Sr(_1: &str, _2: &B) -> Sr<'_, B> {
+    let mut _0: Sr<'_, B>;
+
+    bb0: {
+        _0 = Sr::<'_, B>(move _1, move _2);
+        return;
+    }
+}
+
+fn CheckOnDrop(_1: RefCell<String>, _2: &str) -> CheckOnDrop {
+    let mut _0: main::CheckOnDrop;
+
+    bb0: {
+        _0 = CheckOnDrop(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn CheckOnDrop(_1: RefCell<String>, _2: &str) -> CheckOnDrop {
+    let mut _0: main::CheckOnDrop;
+
+    bb0: {
+        _0 = CheckOnDrop(move _1, move _2);
+        return;
+    }
+}

@@ -1,0 +1,173 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-pattern-not-const-evaluable.rs:3:10: 3:19>::eq(_1: &Cake, _2: &Cake) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn <impl at ui/consts/const-pattern-not-const-evaluable.rs:3:21: 3:23>::assert_receiver_is_total_eq(_1: &Cake) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const BOO: Pair<Cake, Cake> = {
+    let mut _0: Pair<Cake, Cake>;
+    let mut _1: Cake;
+    let mut _2: Cake;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Cake::Marmor;
+        StorageLive(_2);
+        _2 = Cake::BlackForest;
+        _0 = Pair::<Cake, Cake>(move _1, move _2);
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const FOO: Cake = {
+    let mut _0: Cake;
+    let mut _1: Pair<Cake, Cake>;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        _0 = move (_1.1: Cake);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn foo() -> Cake {
+    let mut _0: Cake;
+
+    bb0: {
+        _0 = Cake::Marmor;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo() -> Cake {
+    let mut _0: Cake;
+
+    bb0: {
+        _0 = Cake::Marmor;
+        return;
+    }
+}
+
+const WORKS: Cake = {
+    let mut _0: Cake;
+
+    bb0: {
+        _0 = Cake::Marmor;
+        return;
+    }
+}
+
+const GOO: Cake = {
+    let mut _0: Cake;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = foo() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Cake;
+    let mut _2: isize;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 1];
+    let _7: [&str; 1];
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 1];
+    let _12: [&str; 1];
+
+    bb0: {
+        _1 = Cake::BlackForest;
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb1, 1: bb3, otherwise: bb6];
+    }
+
+    bb1: {
+        _7 = [const "hi\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_const(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = _print(move _4) -> bb5;
+    }
+
+    bb3: {
+        _12 = [const "meh\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_const(move _10) -> bb4;
+    }
+
+    bb4: {
+        _8 = _print(move _9) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6: {
+        unreachable;
+    }
+}
+
+fn Pair(_1: A, _2: B) -> Pair<A, B> {
+    let mut _0: Pair<A, B>;
+
+    bb0: {
+        _0 = Pair::<A, B>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Pair(_1: A, _2: B) -> Pair<A, B> {
+    let mut _0: Pair<A, B>;
+
+    bb0: {
+        _0 = Pair::<A, B>(move _1, move _2);
+        return;
+    }
+}

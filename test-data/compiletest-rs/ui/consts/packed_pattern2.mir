@@ -1,0 +1,127 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/packed_pattern2.rs:3:10: 3:19>::eq(_1: &Foo, _2: &Foo) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &(u8, u16);
+    let _4: (u8, u16);
+    let mut _5: &(u8, u16);
+    let _6: (u8, u16);
+
+    bb0: {
+        _4 = ((*_1).0: (u8, u16));
+        _3 = &_4;
+        _6 = ((*_2).0: (u8, u16));
+        _5 = &_6;
+        _0 = <(u8, u16) as PartialEq>::eq(move _3, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern2.rs:3:21: 3:23>::assert_receiver_is_total_eq(_1: &Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern2.rs:3:31: 3:36>::clone(_1: &Foo) -> Foo {
+    debug self => _1;
+    let mut _0: Foo;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern2.rs:9:10: 9:19>::eq(_1: &Bar, _2: &Bar) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &Foo;
+    let mut _4: &Foo;
+
+    bb0: {
+        _3 = &((*_1).0: Foo);
+        _4 = &((*_2).0: Foo);
+        _0 = <Foo as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern2.rs:9:21: 9:23>::assert_receiver_is_total_eq(_1: &Bar) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern2.rs:9:31: 9:36>::clone(_1: &Bar) -> Bar {
+    debug self => _1;
+    let mut _0: Bar;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+const FOO: Bar = {
+    let mut _0: Bar;
+    let mut _1: Foo;
+    let mut _2: (u8, u16);
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = (const 5_u8, const 6_u16);
+        _1 = Foo { field: move _2 };
+        StorageDead(_2);
+        _0 = Bar { a: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Bar;
+    let mut _2: !;
+
+    bb0: {
+        _1 = const _;
+        switchInt((((_1.0: Foo).0: (u8, u16)).0: u8)) -> [5: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        switchInt((((_1.0: Foo).0: (u8, u16)).1: u16)) -> [6: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _2 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb3: {
+        return;
+    }
+}

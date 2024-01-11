@@ -1,0 +1,93 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<u8>;
+    scope 1 {
+        debug _container => _1;
+        let _2: u8;
+        scope 2 {
+            debug _item => _2;
+            let _3: std::vec::Vec<u16>;
+            scope 3 {
+                debug _container => _3;
+                let _4: u16;
+                scope 4 {
+                    debug _item => _4;
+                    let _5: std::string::String;
+                    scope 5 {
+                        debug _container => _5;
+                        let _6: u8;
+                        scope 6 {
+                            debug _item => _6;
+                            let _7: std::vec::Vec<()>;
+                            scope 7 {
+                                debug _container => _7;
+                                let _8: u32;
+                                scope 8 {
+                                    debug _item => _8;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Vec::<u8>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = const 0_u8;
+        _3 = Vec::<u16>::new() -> [return: bb2, unwind: bb11];
+    }
+
+    bb2: {
+        _4 = const 0_u16;
+        _5 = String::new() -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _6 = const 0_u8;
+        _7 = Vec::<()>::new() -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        _8 = const 0_u32;
+        drop(_7) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        drop(_5) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        drop(_3) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        drop(_1) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_5) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_1) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+}

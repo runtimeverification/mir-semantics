@@ -1,0 +1,36 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: !;
+    let _2: &i32;
+    let _3: &i32;
+    let _5: &i32;
+    let _6: &i32;
+    let _8: i32;
+    scope 1 {
+        debug left_val => _2;
+        debug right_val => _3;
+        let _4: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _4;
+        }
+    }
+    scope 3 {
+        debug left_val => _5;
+        debug right_val => _6;
+        let _7: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _7;
+        }
+    }
+    scope 5 {
+        debug tmp => _8;
+        scope 6 {
+        }
+    }
+
+    bb0: {
+        _1 = begin_panic::<&str>(const "explicit panic");
+    }
+}

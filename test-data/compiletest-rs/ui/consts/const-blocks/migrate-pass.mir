@@ -1,0 +1,901 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn constants::no_impl_copy_empty_value_no_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::no_impl_copy_empty_value_no_elements::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+
+    bb0: {
+        _0 = Option::<Bar>::None;
+        return;
+    }
+}
+
+const constants::no_impl_copy_empty_value_no_elements::ARR: [Option<Bar>; 0] = {
+    let mut _0: [std::option::Option<Bar>; 0];
+
+    bb0: {
+        _0 = [];
+        return;
+    }
+}
+
+constants::no_impl_copy_empty_value_no_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+constants::no_impl_copy_empty_value_no_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn constants::no_impl_copy_empty_value_single_element() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::no_impl_copy_empty_value_single_element::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+
+    bb0: {
+        _0 = Option::<Bar>::None;
+        return;
+    }
+}
+
+const constants::no_impl_copy_empty_value_single_element::ARR: [Option<Bar>; 1] = {
+    let mut _0: [std::option::Option<Bar>; 1];
+
+    bb0: {
+        _0 = [const _; 1];
+        return;
+    }
+}
+
+constants::no_impl_copy_empty_value_single_element::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+constants::no_impl_copy_empty_value_single_element::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn no_impl_copy_empty_value_multiple_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const no_impl_copy_empty_value_multiple_elements::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+
+    bb0: {
+        _0 = Option::<Bar>::None;
+        return;
+    }
+}
+
+const no_impl_copy_empty_value_multiple_elements::ARR: [Option<Bar>; 2] = {
+    let mut _0: [std::option::Option<Bar>; 2];
+
+    bb0: {
+        _0 = [const _; 2];
+        return;
+    }
+}
+
+no_impl_copy_empty_value_multiple_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+no_impl_copy_empty_value_multiple_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn constants::no_impl_copy_value_no_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::no_impl_copy_value_no_elements::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+    let mut _1: Bar;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Bar;
+        _0 = Option::<Bar>::Some(move _1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const constants::no_impl_copy_value_no_elements::ARR: [Option<Bar>; 0] = {
+    let mut _0: [std::option::Option<Bar>; 0];
+
+    bb0: {
+        _0 = [];
+        return;
+    }
+}
+
+constants::no_impl_copy_value_no_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+constants::no_impl_copy_value_no_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn constants::no_impl_copy_value_single_element() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::no_impl_copy_value_single_element::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+    let mut _1: Bar;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Bar;
+        _0 = Option::<Bar>::Some(move _1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const constants::no_impl_copy_value_single_element::ARR: [Option<Bar>; 1] = {
+    let mut _0: [std::option::Option<Bar>; 1];
+
+    bb0: {
+        _0 = [const _; 1];
+        return;
+    }
+}
+
+constants::no_impl_copy_value_single_element::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+constants::no_impl_copy_value_single_element::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn no_impl_copy_value_multiple_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const no_impl_copy_value_multiple_elements::FOO: Option<Bar> = {
+    let mut _0: std::option::Option<Bar>;
+    let mut _1: Bar;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Bar;
+        _0 = Option::<Bar>::Some(move _1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const no_impl_copy_value_multiple_elements::ARR: [Option<Bar>; 2] = {
+    let mut _0: [std::option::Option<Bar>; 2];
+
+    bb0: {
+        _0 = [const _; 2];
+        return;
+    }
+}
+
+no_impl_copy_value_multiple_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+no_impl_copy_value_multiple_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_empty_value_no_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_no_elements::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::None;
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_no_elements::ARR: [Option<u32>; 0] = {
+    let mut _0: [std::option::Option<u32>; 0];
+
+    bb0: {
+        _0 = [];
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_no_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_no_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_empty_value_one_element() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_one_element::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::None;
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_one_element::ARR: [Option<u32>; 1] = {
+    let mut _0: [std::option::Option<u32>; 1];
+
+    bb0: {
+        _0 = [const _; 1];
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_one_element::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_one_element::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_empty_value_multiple_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_multiple_elements::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::None;
+        return;
+    }
+}
+
+const constants::impl_copy_empty_value_multiple_elements::ARR: [Option<u32>; 2] = {
+    let mut _0: [std::option::Option<u32>; 2];
+
+    bb0: {
+        _0 = [const _; 2];
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_multiple_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+constants::impl_copy_empty_value_multiple_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_value_no_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_value_no_elements::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::Some(const 4_u32);
+        return;
+    }
+}
+
+const constants::impl_copy_value_no_elements::ARR: [Option<u32>; 0] = {
+    let mut _0: [std::option::Option<u32>; 0];
+
+    bb0: {
+        _0 = [];
+        return;
+    }
+}
+
+constants::impl_copy_value_no_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+constants::impl_copy_value_no_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_value_one_element() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_value_one_element::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::Some(const 4_u32);
+        return;
+    }
+}
+
+const constants::impl_copy_value_one_element::ARR: [Option<u32>; 1] = {
+    let mut _0: [std::option::Option<u32>; 1];
+
+    bb0: {
+        _0 = [const _; 1];
+        return;
+    }
+}
+
+constants::impl_copy_value_one_element::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+constants::impl_copy_value_one_element::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn constants::impl_copy_value_multiple_elements() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const constants::impl_copy_value_multiple_elements::FOO: Option<u32> = {
+    let mut _0: std::option::Option<u32>;
+
+    bb0: {
+        _0 = Option::<u32>::Some(const 4_u32);
+        return;
+    }
+}
+
+const constants::impl_copy_value_multiple_elements::ARR: [Option<u32>; 2] = {
+    let mut _0: [std::option::Option<u32>; 2];
+
+    bb0: {
+        _0 = [const _; 2];
+        return;
+    }
+}
+
+constants::impl_copy_value_multiple_elements::ARR::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+constants::impl_copy_value_multiple_elements::ARR::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn non_constants::no_impl_copy_empty_value_no_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<Bar>;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            debug arr => const [];
+        }
+    }
+
+    bb0: {
+        _1 = Option::<Bar>::None;
+        return;
+    }
+}
+
+non_constants::no_impl_copy_empty_value_no_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+non_constants::no_impl_copy_empty_value_no_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn non_constants::no_impl_copy_empty_value_single_element() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<Bar>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<Bar>; 1];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<Bar>::None;
+        _2 = [move _1; 1];
+        return;
+    }
+}
+
+non_constants::no_impl_copy_empty_value_single_element::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+non_constants::no_impl_copy_empty_value_single_element::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn non_constants::no_impl_copy_value_no_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<Bar>;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            debug arr => const [];
+        }
+    }
+
+    bb0: {
+        _1 = Option::<Bar>::Some(const Bar);
+        return;
+    }
+}
+
+non_constants::no_impl_copy_value_no_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+non_constants::no_impl_copy_value_no_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn non_constants::no_impl_copy_value_single_element() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<Bar>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<Bar>; 1];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<Bar>::Some(const Bar);
+        _2 = [move _1; 1];
+        return;
+    }
+}
+
+non_constants::no_impl_copy_value_single_element::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+non_constants::no_impl_copy_value_single_element::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_empty_value_no_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            debug arr => const [];
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::None;
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_no_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_no_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_empty_value_one_element() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<u32>; 1];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::None;
+        _2 = [_1; 1];
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_one_element::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_one_element::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_empty_value_multiple_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<u32>; 2];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::None;
+        _2 = [_1; 2];
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_multiple_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_empty_value_multiple_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_value_no_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            debug arr => const [];
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::Some(const 4_u32);
+        return;
+    }
+}
+
+non_constants::impl_copy_value_no_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_value_no_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_value_one_element() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<u32>; 1];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::Some(const 4_u32);
+        _2 = [_1; 1];
+        return;
+    }
+}
+
+non_constants::impl_copy_value_one_element::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_value_one_element::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn non_constants::impl_copy_value_multiple_elements() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u32>;
+    scope 1 {
+        debug x => _1;
+        let _2: [std::option::Option<u32>; 2];
+        scope 2 {
+            debug arr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Option::<u32>::Some(const 4_u32);
+        _2 = [_1; 2];
+        return;
+    }
+}
+
+non_constants::impl_copy_value_multiple_elements::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+non_constants::impl_copy_value_multiple_elements::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

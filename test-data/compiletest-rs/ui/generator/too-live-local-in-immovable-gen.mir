@@ -1,0 +1,58 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: i32;
+    let mut _4: ();
+    let mut _5: ();
+    let mut _6: u32;
+    let mut _7: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23];
+    let mut _8: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23];
+    let mut _9: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23];
+    scope 1 {
+        debug a => _3;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _7 = deref_copy (_1.0: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23]);
+        _6 = discriminant((*_7));
+        switchInt(move _6) -> [0: bb1, 1: bb3, 3: bb2, otherwise: bb4];
+    }
+
+    bb1: {
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _8 = deref_copy (_1.0: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23]);
+        discriminant((*_8)) = 3;
+        return;
+    }
+
+    bb2: {
+        _3 = const 4_i32;
+        _5 = const ();
+        _0 = GeneratorState::<(), ()>::Complete(move _5);
+        _9 = deref_copy (_1.0: &mut [static generator@ui/generator/too-live-local-in-immovable-gen.rs:8:9: 8:23]);
+        discriminant((*_9)) = 1;
+        return;
+    }
+
+    bb3: {
+        assert(const false, "generator resumed after completion") -> bb3;
+    }
+
+    bb4: {
+        unreachable;
+    }
+}

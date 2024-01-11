@@ -1,0 +1,147 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const A: LocalKey<usize> = {
+    let mut _0: std::thread::LocalKey<usize>;
+    let mut _1: for<'a> unsafe fn(core::option::Option<&'a mut core::option::Option<usize>>) -> core::option::Option<&usize>;
+    scope 1 {
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = __getit as for<'a> unsafe fn(core::option::Option<&'a mut core::option::Option<usize>>) -> core::option::Option<&usize> (Pointer(ReifyFnPointer));
+        ConstEvalCounter;
+        _0 = LocalKey::<usize>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn __init() -> usize {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 30_usize;
+        return;
+    }
+}
+
+fn __getit(_1: Option<&mut Option<usize>>) -> Option<&usize> {
+    debug init => _1;
+    let mut _0: core::option::Option<&usize>;
+    let _2: &std::thread::local_impl::Key<usize>;
+    let mut _3: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38];
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _2 = &/*tls*/ __KEY;
+        _3 = [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38] { init: move _1 };
+        _0 = Key::<usize>::get::<[closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38]>(_2, move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+static __KEY: Key<usize> = {
+    let mut _0: std::thread::local_impl::Key<usize>;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = Key::<usize>::new() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn __getit::{closure#0}(_1: [closure@/rustc/46514218f6f31ad3a1510ecc32af47e9e486c27d/library/std/src/sys/common/thread_local/fast_local.rs:95:31: 95:38]) -> usize {
+    debug init => (_1.0: core::option::Option<&mut core::option::Option<usize>>);
+    let mut _0: usize;
+    let mut _2: isize;
+    let mut _4: core::option::Option<usize>;
+    let mut _5: isize;
+    let mut _7: bool;
+    let _8: !;
+    let mut _9: core::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 1];
+    let _12: [&str; 1];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 0];
+    let _15: [core::fmt::rt::Argument<'_>; 0];
+    scope 1 {
+        debug init => _3;
+        let _3: &mut core::option::Option<usize>;
+        scope 2 {
+            debug value => _6;
+            let _6: usize;
+        }
+    }
+
+    bb0: {
+        _2 = discriminant((_1.0: core::option::Option<&mut core::option::Option<usize>>));
+        switchInt(move _2) -> [1: bb1, otherwise: bb8];
+    }
+
+    bb1: {
+        _3 = move (((_1.0: core::option::Option<&mut core::option::Option<usize>>) as Some).0: &mut core::option::Option<usize>);
+        _4 = Option::<usize>::take(_3) -> bb2;
+    }
+
+    bb2: {
+        _5 = discriminant(_4);
+        switchInt(move _5) -> [1: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        _6 = ((_4 as Some).0: usize);
+        _0 = _6;
+        goto -> bb9;
+    }
+
+    bb4: {
+        _7 = const true;
+        switchInt(move _7) -> [0: bb8, otherwise: bb5];
+    }
+
+    bb5: {
+        _12 = [const "internal error: entered unreachable code: missing default value"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _15 = core::fmt::rt::Argument::<'_>::none() -> bb6;
+    }
+
+    bb6: {
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb7;
+    }
+
+    bb7: {
+        _8 = panic_fmt(move _9);
+    }
+
+    bb8: {
+        _0 = __init() -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

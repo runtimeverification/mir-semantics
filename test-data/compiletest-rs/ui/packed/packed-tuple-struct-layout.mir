@@ -1,0 +1,176 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+S4::1::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: [u8; 3];
+    let mut _4: (&[u8; 4], &[u8; 4]);
+    let mut _5: &[u8; 4];
+    let mut _6: &[u8; 4];
+    let _7: [u8; 4];
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&[u8; 5], &[u8; 5]);
+    let mut _18: &[u8; 5];
+    let mut _19: &[u8; 5];
+    let _20: [u8; 5];
+    let mut _23: bool;
+    let mut _24: bool;
+    let _26: !;
+    let mut _27: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        let _1: S4;
+        scope 2 {
+            debug s4 => _1;
+            let _3: [u8; 4];
+            scope 3 {
+                debug transd => _3;
+                let _8: &[u8; 4];
+                let _9: &[u8; 4];
+                let _15: S5;
+                scope 4 {
+                    debug left_val => _8;
+                    debug right_val => _9;
+                    let _12: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _12;
+                    }
+                }
+                scope 6 {
+                    debug s5 => _15;
+                    let _16: [u8; 5];
+                    scope 7 {
+                        debug transd => _16;
+                        let _21: &[u8; 5];
+                        let _22: &[u8; 5];
+                        scope 8 {
+                            debug left_val => _21;
+                            debug right_val => _22;
+                            let _25: core::panicking::AssertKind;
+                            scope 9 {
+                                debug kind => _25;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = [const 2_u8, const 3_u8, const 4_u8];
+        _1 = S4(const 1_u8, move _2);
+        _3 = move _1 as [u8; 4] (Transmute);
+        _5 = &_3;
+        _7 = [const 1_u8, const 2_u8, const 3_u8, const 4_u8];
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &[u8; 4]);
+        _9 = (_4.1: &[u8; 4]);
+        _11 = <[u8; 4] as PartialEq>::eq(_8, _9) -> bb1;
+    }
+
+    bb1: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<[u8; 4], [u8; 4]>(move _12, _8, _9, move _14);
+    }
+
+    bb3: {
+        _15 = S5(const 1_u8, const 4278190335_u32);
+        _16 = move _15 as [u8; 5] (Transmute);
+        _18 = &_16;
+        _20 = [const 1_u8, const u8::MAX, const 0_u8, const 0_u8, const u8::MAX];
+        _19 = &_20;
+        _17 = (move _18, move _19);
+        _21 = (_17.0: &[u8; 5]);
+        _22 = (_17.1: &[u8; 5]);
+        _24 = <[u8; 5] as PartialEq>::eq(_21, _22) -> bb4;
+    }
+
+    bb4: {
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _25 = core::panicking::AssertKind::Eq;
+        _27 = Option::<Arguments<'_>>::None;
+        _26 = core::panicking::assert_failed::<[u8; 5], [u8; 5]>(move _25, _21, _22, move _27);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 5_usize;
+        return;
+    }
+}
+
+fn S4(_1: u8, _2: [u8; 3]) -> S4 {
+    let mut _0: S4;
+
+    bb0: {
+        _0 = S4(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn S4(_1: u8, _2: [u8; 3]) -> S4 {
+    let mut _0: S4;
+
+    bb0: {
+        _0 = S4(move _1, move _2);
+        return;
+    }
+}
+
+fn S5(_1: u8, _2: u32) -> S5 {
+    let mut _0: S5;
+
+    bb0: {
+        _0 = S5(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn S5(_1: u8, _2: u32) -> S5 {
+    let mut _0: S5;
+
+    bb0: {
+        _0 = S5(move _1, move _2);
+        return;
+    }
+}

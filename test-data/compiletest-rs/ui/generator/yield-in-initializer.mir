@@ -1,0 +1,46 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [static generator@ui/generator/yield-in-initializer.rs:6:5: 6:14]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let _3: bool;
+    let mut _4: ();
+    let mut _5: u32;
+    let mut _6: &mut [static generator@ui/generator/yield-in-initializer.rs:6:5: 6:14];
+    let mut _7: &mut [static generator@ui/generator/yield-in-initializer.rs:6:5: 6:14];
+    scope 1 {
+        debug opt => _3;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _6 = deref_copy (_1.0: &mut [static generator@ui/generator/yield-in-initializer.rs:6:5: 6:14]);
+        _5 = discriminant((*_6));
+        switchInt(move _5) -> [0: bb1, 3: bb2, otherwise: bb3];
+    }
+
+    bb1: {
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _7 = deref_copy (_1.0: &mut [static generator@ui/generator/yield-in-initializer.rs:6:5: 6:14]);
+        discriminant((*_7)) = 3;
+        return;
+    }
+
+    bb2: {
+        _3 = const true;
+        goto -> bb1;
+    }
+
+    bb3: {
+        unreachable;
+    }
+}

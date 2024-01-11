@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Tr::present(_1: &Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/associated-types-method.rs:15:1: 15:44>::present(_1: &Foo<D, <D as Device>::Resources>) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo<Dev, Res>;
+    let _2: ();
+    let mut _3: &Foo<Dev, Res>;
+    scope 1 {
+        debug foo => const Foo::<Dev, Res>(Dev, Res);
+    }
+
+    bb0: {
+        _3 = &_1;
+        _2 = <Foo<Dev, Res> as Tr>::present(move _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Foo(_1: D, _2: R) -> Foo<D, R> {
+    let mut _0: Foo<D, R>;
+
+    bb0: {
+        _0 = Foo::<D, R>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: D, _2: R) -> Foo<D, R> {
+    let mut _0: Foo<D, R>;
+
+    bb0: {
+        _0 = Foo::<D, R>(move _1, move _2);
+        return;
+    }
+}

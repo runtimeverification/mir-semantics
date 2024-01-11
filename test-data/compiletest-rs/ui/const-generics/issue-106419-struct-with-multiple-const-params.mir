@@ -1,0 +1,90 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Bar::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const A;
+        return;
+    }
+}
+
+Bar::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const B;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const A;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const B;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const A;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const B;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::clone(_1: &Bar<A, B>) -> Bar<A, B> {
+    debug self => _1;
+    let mut _0: Bar<A, B>;
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::clone::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const A;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issue-106419-struct-with-multiple-const-params.rs:5:10: 5:15>::clone::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const B;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,142 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn example_let_else(_1: Option<String>) -> () {
+    debug value => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &std::option::Option<std::string::String>;
+    let _12: std::string::String;
+    let mut _13: isize;
+    let _14: ();
+    let mut _15: std::fmt::Arguments<'_>;
+    let mut _16: &[&str];
+    let _17: &[&str; 2];
+    let _18: [&str; 2];
+    let mut _19: &[core::fmt::rt::Argument<'_>];
+    let _20: &[core::fmt::rt::Argument<'_>; 1];
+    let _21: [core::fmt::rt::Argument<'_>; 1];
+    let mut _22: core::fmt::rt::Argument<'_>;
+    let _23: &std::string::String;
+    let mut _24: bool;
+    let mut _25: isize;
+    scope 1 {
+        debug inner => _12;
+    }
+
+    bb0: {
+        _24 = const false;
+        _24 = const true;
+        _13 = discriminant(_1);
+        switchInt(move _13) -> [1: bb4, otherwise: bb5];
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> [return: bb2, unwind: bb14];
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        drop(_1) -> bb9;
+    }
+
+    bb4: {
+        _24 = const false;
+        _12 = move ((_1 as Some).0: std::string::String);
+        _18 = [const "inner: ", const "\n"];
+        _17 = &_18;
+        _16 = _17 as &[&str] (Pointer(Unsize));
+        _23 = &_12;
+        _22 = core::fmt::rt::Argument::<'_>::new_display::<String>(_23) -> [return: bb6, unwind: bb10];
+    }
+
+    bb5: {
+        _6 = [const "other: ", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &_1;
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<Option<String>>(_11) -> [return: bb1, unwind: bb14];
+    }
+
+    bb6: {
+        _21 = [move _22];
+        _20 = &_21;
+        _19 = _20 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _15 = Arguments::<'_>::new_v1(move _16, move _19) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        _14 = _print(move _15) -> [return: bb8, unwind: bb10];
+    }
+
+    bb8: {
+        drop(_12) -> [return: bb9, unwind: bb14];
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_12) -> [return: bb14, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12 (cleanup): {
+        switchInt(_24) -> [0: bb11, otherwise: bb13];
+    }
+
+    bb13 (cleanup): {
+        drop(((_1 as Some).0: std::string::String)) -> [return: bb11, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        _25 = discriminant(_1);
+        switchInt(move _25) -> [1: bb12, otherwise: bb11];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::option::Option<std::string::String>;
+    let mut _3: std::string::String;
+    let _4: &str;
+    let _5: ();
+    let mut _6: std::option::Option<std::string::String>;
+
+    bb0: {
+        _4 = const "foo";
+        _3 = <&str as Into<String>>::into(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = Option::<String>::Some(move _3);
+        _1 = example_let_else(move _2) -> bb2;
+    }
+
+    bb2: {
+        _6 = Option::<String>::None;
+        _5 = example_let_else(move _6) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

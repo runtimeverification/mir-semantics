@@ -1,0 +1,1180 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/packed/packed-struct-vec.rs:7:16: 7:21>::clone(_1: &Foo1) -> Foo1 {
+    debug self => _1;
+    let mut _0: Foo1;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:13:1: 13:24>::eq(_1: &Foo1, _2: &Foo1) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u8;
+    let mut _5: u8;
+    let mut _6: bool;
+    let mut _7: u64;
+    let mut _8: u64;
+
+    bb0: {
+        _4 = ((*_1).0: u8);
+        _5 = ((*_2).0: u8);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: u64);
+        _8 = ((*_2).1: u64);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:19:1: 19:25>::fmt(_1: &Foo1, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: u8;
+    let mut _5: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _6: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _7: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _8: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _9: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _10: std::fmt::DebugStruct<'_, '_>;
+    let _11: &str;
+    let _12: &str;
+    let mut _13: &dyn std::fmt::Debug;
+    let _14: &u8;
+    let _15: &str;
+    let mut _16: &dyn std::fmt::Debug;
+    let _17: &u64;
+    scope 1 {
+        debug bar => _3;
+        let _4: u64;
+        scope 2 {
+            debug baz => _4;
+        }
+    }
+
+    bb0: {
+        _3 = ((*_1).0: u8);
+        _4 = ((*_1).1: u64);
+        _11 = const "Foo1";
+        _10 = Formatter::<'_>::debug_struct(_2, _11) -> bb1;
+    }
+
+    bb1: {
+        _9 = &mut _10;
+        _12 = const "bar";
+        _14 = &_3;
+        _13 = _14 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _8 = DebugStruct::<'_, '_>::field(move _9, _12, move _13) -> bb2;
+    }
+
+    bb2: {
+        _7 = _8;
+        _15 = const "baz";
+        _17 = &_4;
+        _16 = _17 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _6 = DebugStruct::<'_, '_>::field(move _7, _15, move _16) -> bb3;
+    }
+
+    bb3: {
+        _5 = _6;
+        _0 = DebugStruct::<'_, '_>::finish(move _5) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:32:16: 32:21>::clone(_1: &Foo2) -> Foo2 {
+    debug self => _1;
+    let mut _0: Foo2;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:38:1: 38:24>::eq(_1: &Foo2, _2: &Foo2) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u8;
+    let mut _5: u8;
+    let mut _6: bool;
+    let mut _7: u64;
+    let mut _8: u64;
+
+    bb0: {
+        _4 = ((*_1).0: u8);
+        _5 = ((*_2).0: u8);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: u64);
+        _8 = ((*_2).1: u64);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:44:1: 44:25>::fmt(_1: &Foo2, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: u8;
+    let mut _5: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _6: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _7: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _8: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _9: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _10: std::fmt::DebugStruct<'_, '_>;
+    let _11: &str;
+    let _12: &str;
+    let mut _13: &dyn std::fmt::Debug;
+    let _14: &u8;
+    let _15: &str;
+    let mut _16: &dyn std::fmt::Debug;
+    let _17: &u64;
+    scope 1 {
+        debug bar => _3;
+        let _4: u64;
+        scope 2 {
+            debug baz => _4;
+        }
+    }
+
+    bb0: {
+        _3 = ((*_1).0: u8);
+        _4 = ((*_1).1: u64);
+        _11 = const "Foo2";
+        _10 = Formatter::<'_>::debug_struct(_2, _11) -> bb1;
+    }
+
+    bb1: {
+        _9 = &mut _10;
+        _12 = const "bar";
+        _14 = &_3;
+        _13 = _14 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _8 = DebugStruct::<'_, '_>::field(move _9, _12, move _13) -> bb2;
+    }
+
+    bb2: {
+        _7 = _8;
+        _15 = const "baz";
+        _17 = &_4;
+        _16 = _17 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _6 = DebugStruct::<'_, '_>::field(move _7, _15, move _16) -> bb3;
+    }
+
+    bb3: {
+        _5 = _6;
+        _0 = DebugStruct::<'_, '_>::finish(move _5) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:57:16: 57:21>::clone(_1: &Foo4C) -> Foo4C {
+    debug self => _1;
+    let mut _0: Foo4C;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:63:1: 63:25>::eq(_1: &Foo4C, _2: &Foo4C) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: u8;
+    let mut _5: u8;
+    let mut _6: bool;
+    let mut _7: u64;
+    let mut _8: u64;
+
+    bb0: {
+        _4 = ((*_1).0: u8);
+        _5 = ((*_2).0: u8);
+        _3 = Eq(move _4, move _5);
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = ((*_1).1: u64);
+        _8 = ((*_2).1: u64);
+        _6 = Eq(move _7, move _8);
+        _0 = move _6;
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/packed/packed-struct-vec.rs:69:1: 69:26>::fmt(_1: &Foo4C, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: u8;
+    let mut _5: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _6: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _7: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _8: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _9: &mut std::fmt::DebugStruct<'_, '_>;
+    let mut _10: std::fmt::DebugStruct<'_, '_>;
+    let _11: &str;
+    let _12: &str;
+    let mut _13: &dyn std::fmt::Debug;
+    let _14: &u8;
+    let _15: &str;
+    let mut _16: &dyn std::fmt::Debug;
+    let _17: &u64;
+    scope 1 {
+        debug bar => _3;
+        let _4: u64;
+        scope 2 {
+            debug baz => _4;
+        }
+    }
+
+    bb0: {
+        _3 = ((*_1).0: u8);
+        _4 = ((*_1).1: u64);
+        _11 = const "Foo4C";
+        _10 = Formatter::<'_>::debug_struct(_2, _11) -> bb1;
+    }
+
+    bb1: {
+        _9 = &mut _10;
+        _12 = const "bar";
+        _14 = &_3;
+        _13 = _14 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _8 = DebugStruct::<'_, '_>::field(move _9, _12, move _13) -> bb2;
+    }
+
+    bb2: {
+        _7 = _8;
+        _15 = const "baz";
+        _17 = &_4;
+        _16 = _17 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _6 = DebugStruct::<'_, '_>::field(move _7, _15, move _16) -> bb3;
+    }
+
+    bb3: {
+        _5 = _6;
+        _0 = DebugStruct::<'_, '_>::finish(move _5) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [Foo1; 10];
+    let mut _2: Foo1;
+    let mut _3: (&usize, &usize);
+    let mut _4: &usize;
+    let _5: usize;
+    let mut _6: &usize;
+    let _7: usize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: usize;
+    let mut _13: usize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&usize, &usize);
+    let mut _18: &usize;
+    let _19: usize;
+    let mut _20: &usize;
+    let _21: usize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: usize;
+    let mut _27: usize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _31: std::ops::Range<usize>;
+    let mut _32: std::ops::Range<usize>;
+    let mut _34: std::option::Option<usize>;
+    let mut _35: &mut std::ops::Range<usize>;
+    let mut _36: isize;
+    let mut _38: (&Foo1, &Foo1);
+    let mut _39: &Foo1;
+    let mut _40: usize;
+    let mut _41: bool;
+    let mut _42: &Foo1;
+    let _43: Foo1;
+    let mut _46: bool;
+    let mut _47: bool;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: std::slice::Iter<'_, Foo1>;
+    let mut _52: &[Foo1; 10];
+    let mut _54: std::option::Option<&Foo1>;
+    let mut _55: &mut std::slice::Iter<'_, Foo1>;
+    let mut _56: isize;
+    let mut _58: (&Foo1, &Foo1);
+    let mut _59: &Foo1;
+    let mut _60: &Foo1;
+    let _61: Foo1;
+    let mut _64: bool;
+    let mut _65: bool;
+    let _67: !;
+    let mut _68: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _70: Foo2;
+    let mut _71: (&usize, &usize);
+    let mut _72: &usize;
+    let _73: usize;
+    let mut _74: &usize;
+    let _75: usize;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: usize;
+    let mut _81: usize;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _85: (&usize, &usize);
+    let mut _86: &usize;
+    let _87: usize;
+    let mut _88: &usize;
+    let _89: usize;
+    let mut _92: bool;
+    let mut _93: bool;
+    let mut _94: usize;
+    let mut _95: usize;
+    let _97: !;
+    let mut _98: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _99: std::ops::Range<usize>;
+    let mut _100: std::ops::Range<usize>;
+    let mut _102: std::option::Option<usize>;
+    let mut _103: &mut std::ops::Range<usize>;
+    let mut _104: isize;
+    let mut _106: (&Foo2, &Foo2);
+    let mut _107: &Foo2;
+    let mut _108: usize;
+    let mut _109: bool;
+    let mut _110: &Foo2;
+    let _111: Foo2;
+    let mut _114: bool;
+    let mut _115: bool;
+    let _117: !;
+    let mut _118: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _119: std::slice::Iter<'_, Foo2>;
+    let mut _120: &[Foo2; 10];
+    let mut _122: std::option::Option<&Foo2>;
+    let mut _123: &mut std::slice::Iter<'_, Foo2>;
+    let mut _124: isize;
+    let mut _126: (&Foo2, &Foo2);
+    let mut _127: &Foo2;
+    let mut _128: &Foo2;
+    let _129: Foo2;
+    let mut _132: bool;
+    let mut _133: bool;
+    let _135: !;
+    let mut _136: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _138: Foo4C;
+    let mut _139: (&usize, &usize);
+    let mut _140: &usize;
+    let _141: usize;
+    let mut _142: &usize;
+    let _143: usize;
+    let mut _146: bool;
+    let mut _147: bool;
+    let mut _148: usize;
+    let mut _149: usize;
+    let _151: !;
+    let mut _152: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _153: (&usize, &usize);
+    let mut _154: &usize;
+    let _155: usize;
+    let mut _156: &usize;
+    let _157: usize;
+    let mut _160: bool;
+    let mut _161: bool;
+    let mut _162: usize;
+    let mut _163: usize;
+    let _165: !;
+    let mut _166: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _167: std::ops::Range<usize>;
+    let mut _168: std::ops::Range<usize>;
+    let mut _170: std::option::Option<usize>;
+    let mut _171: &mut std::ops::Range<usize>;
+    let mut _172: isize;
+    let mut _174: (&Foo4C, &Foo4C);
+    let mut _175: &Foo4C;
+    let mut _176: usize;
+    let mut _177: bool;
+    let mut _178: &Foo4C;
+    let _179: Foo4C;
+    let mut _182: bool;
+    let mut _183: bool;
+    let _185: !;
+    let mut _186: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _187: std::slice::Iter<'_, Foo4C>;
+    let mut _188: &[Foo4C; 10];
+    let mut _190: std::option::Option<&Foo4C>;
+    let mut _191: &mut std::slice::Iter<'_, Foo4C>;
+    let mut _192: isize;
+    let mut _194: (&Foo4C, &Foo4C);
+    let mut _195: &Foo4C;
+    let mut _196: &Foo4C;
+    let _197: Foo4C;
+    let mut _200: bool;
+    let mut _201: bool;
+    let _203: !;
+    let mut _204: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _205: &Foo1;
+    let mut _206: &Foo2;
+    let mut _207: &Foo4C;
+    scope 1 {
+        debug foo1s => _1;
+        let _8: &usize;
+        let _9: &usize;
+        let _22: &usize;
+        let _23: &usize;
+        let mut _33: std::ops::Range<usize>;
+        let mut _53: std::slice::Iter<'_, Foo1>;
+        let _69: [Foo2; 10];
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug left_val => _22;
+            debug right_val => _23;
+            let _28: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _28;
+            }
+        }
+        scope 6 {
+            debug iter => _33;
+            let _37: usize;
+            scope 7 {
+                debug i => _37;
+                let _44: &Foo1;
+                let _45: &Foo1;
+                scope 8 {
+                    debug left_val => _44;
+                    debug right_val => _45;
+                    let _48: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _48;
+                    }
+                }
+            }
+        }
+        scope 10 {
+            debug iter => _53;
+            let _57: Foo1;
+            scope 11 {
+                debug foo => _57;
+                let _62: &Foo1;
+                let _63: &Foo1;
+                scope 12 {
+                    debug left_val => _62;
+                    debug right_val => _63;
+                    let _66: core::panicking::AssertKind;
+                    scope 13 {
+                        debug kind => _66;
+                    }
+                }
+            }
+        }
+        scope 14 {
+            debug foo2s => _69;
+            let _76: &usize;
+            let _77: &usize;
+            let _90: &usize;
+            let _91: &usize;
+            let mut _101: std::ops::Range<usize>;
+            let mut _121: std::slice::Iter<'_, Foo2>;
+            let _137: [Foo4C; 10];
+            scope 15 {
+                debug left_val => _76;
+                debug right_val => _77;
+                let _82: core::panicking::AssertKind;
+                scope 16 {
+                    debug kind => _82;
+                }
+            }
+            scope 17 {
+                debug left_val => _90;
+                debug right_val => _91;
+                let _96: core::panicking::AssertKind;
+                scope 18 {
+                    debug kind => _96;
+                }
+            }
+            scope 19 {
+                debug iter => _101;
+                let _105: usize;
+                scope 20 {
+                    debug i => _105;
+                    let _112: &Foo2;
+                    let _113: &Foo2;
+                    scope 21 {
+                        debug left_val => _112;
+                        debug right_val => _113;
+                        let _116: core::panicking::AssertKind;
+                        scope 22 {
+                            debug kind => _116;
+                        }
+                    }
+                }
+            }
+            scope 23 {
+                debug iter => _121;
+                let _125: Foo2;
+                scope 24 {
+                    debug foo => _125;
+                    let _130: &Foo2;
+                    let _131: &Foo2;
+                    scope 25 {
+                        debug left_val => _130;
+                        debug right_val => _131;
+                        let _134: core::panicking::AssertKind;
+                        scope 26 {
+                            debug kind => _134;
+                        }
+                    }
+                }
+            }
+            scope 27 {
+                debug foo4s => _137;
+                let _144: &usize;
+                let _145: &usize;
+                let _158: &usize;
+                let _159: &usize;
+                let mut _169: std::ops::Range<usize>;
+                let mut _189: std::slice::Iter<'_, Foo4C>;
+                scope 28 {
+                    debug left_val => _144;
+                    debug right_val => _145;
+                    let _150: core::panicking::AssertKind;
+                    scope 29 {
+                        debug kind => _150;
+                    }
+                }
+                scope 30 {
+                    debug left_val => _158;
+                    debug right_val => _159;
+                    let _164: core::panicking::AssertKind;
+                    scope 31 {
+                        debug kind => _164;
+                    }
+                }
+                scope 32 {
+                    debug iter => _169;
+                    let _173: usize;
+                    scope 33 {
+                        debug i => _173;
+                        let _180: &Foo4C;
+                        let _181: &Foo4C;
+                        scope 34 {
+                            debug left_val => _180;
+                            debug right_val => _181;
+                            let _184: core::panicking::AssertKind;
+                            scope 35 {
+                                debug kind => _184;
+                            }
+                        }
+                    }
+                }
+                scope 36 {
+                    debug iter => _189;
+                    let _193: Foo4C;
+                    scope 37 {
+                        debug foo => _193;
+                        let _198: &Foo4C;
+                        let _199: &Foo4C;
+                        scope 38 {
+                            debug left_val => _198;
+                            debug right_val => _199;
+                            let _202: core::panicking::AssertKind;
+                            scope 39 {
+                                debug kind => _202;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Foo1 { bar: const 1_u8, baz: const 2_u64 };
+        _1 = [move _2; 10];
+        _5 = align_of::<[Foo1; 10]>() -> bb1;
+    }
+
+    bb1: {
+        _4 = &_5;
+        _7 = const 1_usize;
+        _6 = &_7;
+        _3 = (move _4, move _6);
+        _8 = (_3.0: &usize);
+        _9 = (_3.1: &usize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<usize, usize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _19 = std::mem::size_of::<[Foo1; 10]>() -> bb4;
+    }
+
+    bb4: {
+        _18 = &_19;
+        _21 = const 90_usize;
+        _20 = &_21;
+        _17 = (move _18, move _20);
+        _22 = (_17.0: &usize);
+        _23 = (_17.1: &usize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<usize, usize>(move _28, _22, _23, move _30);
+    }
+
+    bb6: {
+        _32 = std::ops::Range::<usize> { start: const 0_usize, end: const 10_usize };
+        _31 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _32) -> bb7;
+    }
+
+    bb7: {
+        _33 = move _31;
+        goto -> bb8;
+    }
+
+    bb8: {
+        _35 = &mut _33;
+        _34 = <std::ops::Range<usize> as Iterator>::next(_35) -> bb9;
+    }
+
+    bb9: {
+        _36 = discriminant(_34);
+        switchInt(move _36) -> [0: bb12, 1: bb10, otherwise: bb11];
+    }
+
+    bb10: {
+        _37 = ((_34 as Some).0: usize);
+        _40 = const 10_usize;
+        _41 = Lt(_37, _40);
+        assert(move _41, "index out of bounds: the length is {} but the index is {}", move _40, _37) -> bb13;
+    }
+
+    bb11: {
+        unreachable;
+    }
+
+    bb12: {
+        _52 = &_1;
+        _51 = <&[Foo1; 10] as IntoIterator>::into_iter(move _52) -> bb16;
+    }
+
+    bb13: {
+        _39 = &_1[_37];
+        _43 = Foo1 { bar: const 1_u8, baz: const 2_u64 };
+        _42 = &_43;
+        _38 = (move _39, move _42);
+        _44 = (_38.0: &Foo1);
+        _45 = (_38.1: &Foo1);
+        _47 = <Foo1 as PartialEq>::eq(_44, _45) -> bb14;
+    }
+
+    bb14: {
+        _46 = Not(move _47);
+        switchInt(move _46) -> [0: bb8, otherwise: bb15];
+    }
+
+    bb15: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<Foo1, Foo1>(move _48, _44, _45, move _50);
+    }
+
+    bb16: {
+        _53 = move _51;
+        goto -> bb17;
+    }
+
+    bb17: {
+        _55 = &mut _53;
+        _54 = <std::slice::Iter<'_, Foo1> as Iterator>::next(_55) -> bb18;
+    }
+
+    bb18: {
+        _56 = discriminant(_54);
+        switchInt(move _56) -> [0: bb20, 1: bb19, otherwise: bb11];
+    }
+
+    bb19: {
+        _205 = deref_copy ((_54 as Some).0: &Foo1);
+        _57 = (*_205);
+        _59 = &_57;
+        _61 = Foo1 { bar: const 1_u8, baz: const 2_u64 };
+        _60 = &_61;
+        _58 = (move _59, move _60);
+        _62 = (_58.0: &Foo1);
+        _63 = (_58.1: &Foo1);
+        _65 = <Foo1 as PartialEq>::eq(_62, _63) -> bb21;
+    }
+
+    bb20: {
+        _70 = Foo2 { bar: const 1_u8, baz: const 2_u64 };
+        _69 = [move _70; 10];
+        _73 = align_of::<[Foo2; 10]>() -> bb23;
+    }
+
+    bb21: {
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb17, otherwise: bb22];
+    }
+
+    bb22: {
+        _66 = core::panicking::AssertKind::Eq;
+        _68 = Option::<Arguments<'_>>::None;
+        _67 = core::panicking::assert_failed::<Foo1, Foo1>(move _66, _62, _63, move _68);
+    }
+
+    bb23: {
+        _72 = &_73;
+        _75 = const 2_usize;
+        _74 = &_75;
+        _71 = (move _72, move _74);
+        _76 = (_71.0: &usize);
+        _77 = (_71.1: &usize);
+        _80 = (*_76);
+        _81 = (*_77);
+        _79 = Eq(move _80, move _81);
+        _78 = Not(move _79);
+        switchInt(move _78) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<usize, usize>(move _82, _76, _77, move _84);
+    }
+
+    bb25: {
+        _87 = std::mem::size_of::<[Foo2; 10]>() -> bb26;
+    }
+
+    bb26: {
+        _86 = &_87;
+        _89 = const 100_usize;
+        _88 = &_89;
+        _85 = (move _86, move _88);
+        _90 = (_85.0: &usize);
+        _91 = (_85.1: &usize);
+        _94 = (*_90);
+        _95 = (*_91);
+        _93 = Eq(move _94, move _95);
+        _92 = Not(move _93);
+        switchInt(move _92) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _96 = core::panicking::AssertKind::Eq;
+        _98 = Option::<Arguments<'_>>::None;
+        _97 = core::panicking::assert_failed::<usize, usize>(move _96, _90, _91, move _98);
+    }
+
+    bb28: {
+        _100 = std::ops::Range::<usize> { start: const 0_usize, end: const 10_usize };
+        _99 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _100) -> bb29;
+    }
+
+    bb29: {
+        _101 = move _99;
+        goto -> bb30;
+    }
+
+    bb30: {
+        _103 = &mut _101;
+        _102 = <std::ops::Range<usize> as Iterator>::next(_103) -> bb31;
+    }
+
+    bb31: {
+        _104 = discriminant(_102);
+        switchInt(move _104) -> [0: bb33, 1: bb32, otherwise: bb11];
+    }
+
+    bb32: {
+        _105 = ((_102 as Some).0: usize);
+        _108 = const 10_usize;
+        _109 = Lt(_105, _108);
+        assert(move _109, "index out of bounds: the length is {} but the index is {}", move _108, _105) -> bb34;
+    }
+
+    bb33: {
+        _120 = &_69;
+        _119 = <&[Foo2; 10] as IntoIterator>::into_iter(move _120) -> bb37;
+    }
+
+    bb34: {
+        _107 = &_69[_105];
+        _111 = Foo2 { bar: const 1_u8, baz: const 2_u64 };
+        _110 = &_111;
+        _106 = (move _107, move _110);
+        _112 = (_106.0: &Foo2);
+        _113 = (_106.1: &Foo2);
+        _115 = <Foo2 as PartialEq>::eq(_112, _113) -> bb35;
+    }
+
+    bb35: {
+        _114 = Not(move _115);
+        switchInt(move _114) -> [0: bb30, otherwise: bb36];
+    }
+
+    bb36: {
+        _116 = core::panicking::AssertKind::Eq;
+        _118 = Option::<Arguments<'_>>::None;
+        _117 = core::panicking::assert_failed::<Foo2, Foo2>(move _116, _112, _113, move _118);
+    }
+
+    bb37: {
+        _121 = move _119;
+        goto -> bb38;
+    }
+
+    bb38: {
+        _123 = &mut _121;
+        _122 = <std::slice::Iter<'_, Foo2> as Iterator>::next(_123) -> bb39;
+    }
+
+    bb39: {
+        _124 = discriminant(_122);
+        switchInt(move _124) -> [0: bb41, 1: bb40, otherwise: bb11];
+    }
+
+    bb40: {
+        _206 = deref_copy ((_122 as Some).0: &Foo2);
+        _125 = (*_206);
+        _127 = &_125;
+        _129 = Foo2 { bar: const 1_u8, baz: const 2_u64 };
+        _128 = &_129;
+        _126 = (move _127, move _128);
+        _130 = (_126.0: &Foo2);
+        _131 = (_126.1: &Foo2);
+        _133 = <Foo2 as PartialEq>::eq(_130, _131) -> bb42;
+    }
+
+    bb41: {
+        _138 = Foo4C { bar: const 1_u8, baz: const 2_u64 };
+        _137 = [move _138; 10];
+        _141 = align_of::<[Foo4C; 10]>() -> bb44;
+    }
+
+    bb42: {
+        _132 = Not(move _133);
+        switchInt(move _132) -> [0: bb38, otherwise: bb43];
+    }
+
+    bb43: {
+        _134 = core::panicking::AssertKind::Eq;
+        _136 = Option::<Arguments<'_>>::None;
+        _135 = core::panicking::assert_failed::<Foo2, Foo2>(move _134, _130, _131, move _136);
+    }
+
+    bb44: {
+        _140 = &_141;
+        _143 = const 4_usize;
+        _142 = &_143;
+        _139 = (move _140, move _142);
+        _144 = (_139.0: &usize);
+        _145 = (_139.1: &usize);
+        _148 = (*_144);
+        _149 = (*_145);
+        _147 = Eq(move _148, move _149);
+        _146 = Not(move _147);
+        switchInt(move _146) -> [0: bb46, otherwise: bb45];
+    }
+
+    bb45: {
+        _150 = core::panicking::AssertKind::Eq;
+        _152 = Option::<Arguments<'_>>::None;
+        _151 = core::panicking::assert_failed::<usize, usize>(move _150, _144, _145, move _152);
+    }
+
+    bb46: {
+        _155 = std::mem::size_of::<[Foo4C; 10]>() -> bb47;
+    }
+
+    bb47: {
+        _154 = &_155;
+        _157 = const 120_usize;
+        _156 = &_157;
+        _153 = (move _154, move _156);
+        _158 = (_153.0: &usize);
+        _159 = (_153.1: &usize);
+        _162 = (*_158);
+        _163 = (*_159);
+        _161 = Eq(move _162, move _163);
+        _160 = Not(move _161);
+        switchInt(move _160) -> [0: bb49, otherwise: bb48];
+    }
+
+    bb48: {
+        _164 = core::panicking::AssertKind::Eq;
+        _166 = Option::<Arguments<'_>>::None;
+        _165 = core::panicking::assert_failed::<usize, usize>(move _164, _158, _159, move _166);
+    }
+
+    bb49: {
+        _168 = std::ops::Range::<usize> { start: const 0_usize, end: const 10_usize };
+        _167 = <std::ops::Range<usize> as IntoIterator>::into_iter(move _168) -> bb50;
+    }
+
+    bb50: {
+        _169 = move _167;
+        goto -> bb51;
+    }
+
+    bb51: {
+        _171 = &mut _169;
+        _170 = <std::ops::Range<usize> as Iterator>::next(_171) -> bb52;
+    }
+
+    bb52: {
+        _172 = discriminant(_170);
+        switchInt(move _172) -> [0: bb54, 1: bb53, otherwise: bb11];
+    }
+
+    bb53: {
+        _173 = ((_170 as Some).0: usize);
+        _176 = const 10_usize;
+        _177 = Lt(_173, _176);
+        assert(move _177, "index out of bounds: the length is {} but the index is {}", move _176, _173) -> bb55;
+    }
+
+    bb54: {
+        _188 = &_137;
+        _187 = <&[Foo4C; 10] as IntoIterator>::into_iter(move _188) -> bb58;
+    }
+
+    bb55: {
+        _175 = &_137[_173];
+        _179 = Foo4C { bar: const 1_u8, baz: const 2_u64 };
+        _178 = &_179;
+        _174 = (move _175, move _178);
+        _180 = (_174.0: &Foo4C);
+        _181 = (_174.1: &Foo4C);
+        _183 = <Foo4C as PartialEq>::eq(_180, _181) -> bb56;
+    }
+
+    bb56: {
+        _182 = Not(move _183);
+        switchInt(move _182) -> [0: bb51, otherwise: bb57];
+    }
+
+    bb57: {
+        _184 = core::panicking::AssertKind::Eq;
+        _186 = Option::<Arguments<'_>>::None;
+        _185 = core::panicking::assert_failed::<Foo4C, Foo4C>(move _184, _180, _181, move _186);
+    }
+
+    bb58: {
+        _189 = move _187;
+        goto -> bb59;
+    }
+
+    bb59: {
+        _191 = &mut _189;
+        _190 = <std::slice::Iter<'_, Foo4C> as Iterator>::next(_191) -> bb60;
+    }
+
+    bb60: {
+        _192 = discriminant(_190);
+        switchInt(move _192) -> [0: bb62, 1: bb61, otherwise: bb11];
+    }
+
+    bb61: {
+        _207 = deref_copy ((_190 as Some).0: &Foo4C);
+        _193 = (*_207);
+        _195 = &_193;
+        _197 = Foo4C { bar: const 1_u8, baz: const 2_u64 };
+        _196 = &_197;
+        _194 = (move _195, move _196);
+        _198 = (_194.0: &Foo4C);
+        _199 = (_194.1: &Foo4C);
+        _201 = <Foo4C as PartialEq>::eq(_198, _199) -> bb63;
+    }
+
+    bb62: {
+        return;
+    }
+
+    bb63: {
+        _200 = Not(move _201);
+        switchInt(move _200) -> [0: bb59, otherwise: bb64];
+    }
+
+    bb64: {
+        _202 = core::panicking::AssertKind::Eq;
+        _204 = Option::<Arguments<'_>>::None;
+        _203 = core::panicking::assert_failed::<Foo4C, Foo4C>(move _202, _198, _199, move _204);
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#6}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#8}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}

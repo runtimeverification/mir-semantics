@@ -1,0 +1,89 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foopy() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+static f: extern "C" fn() = {
+    let mut _0: extern "C" fn();
+
+    bb0: {
+        _0 = foopy as extern "C" fn() (Pointer(ReifyFnPointer));
+        return;
+    }
+}
+
+static s: S = {
+    let mut _0: S;
+    let mut _1: extern "C" fn();
+
+    bb0: {
+        StorageLive(_1);
+        _1 = foopy as extern "C" fn() (Pointer(ReifyFnPointer));
+        _0 = S { f: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: extern "C" fn();
+    let mut _4: extern "C" fn();
+    let mut _5: &extern "C" fn();
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: extern "C" fn();
+    let mut _10: &extern "C" fn();
+    let mut _11: extern "C" fn();
+    let mut _12: &S;
+    let mut _13: !;
+
+    bb0: {
+        _3 = foopy as extern "C" fn() (Pointer(ReifyFnPointer));
+        _5 = const {alloc1: &extern "C" fn()};
+        _4 = (*_5);
+        _2 = Eq(move _3, move _4);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _6 = core::panicking::panic(const "assertion failed: foopy as extern \\\"C\\\" fn() == f");
+    }
+
+    bb2: {
+        _10 = const {alloc1: &extern "C" fn()};
+        _9 = (*_10);
+        _12 = const {alloc2: &S};
+        _11 = ((*_12).0: extern "C" fn());
+        _8 = Eq(move _9, move _11);
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::panic(const "assertion failed: f == s.f");
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+alloc2 (static: s, size: 8, align: 8) {
+    ╾───────alloc5────────╼                         │ ╾──────╼
+}
+
+alloc5 (fn: foopy)
+
+alloc1 (static: f, size: 8, align: 8) {
+    ╾───────alloc5────────╼                         │ ╾──────╼
+}

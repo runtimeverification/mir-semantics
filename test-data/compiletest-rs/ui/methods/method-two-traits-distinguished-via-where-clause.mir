@@ -1,0 +1,60 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/methods/method-two-traits-distinguished-via-where-clause.rs:15:1: 15:30>::foo(_1: *const T) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/methods/method-two-traits-distinguished-via-where-clause.rs:19:1: 19:25>::foo(_1: *const [T]) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [isize; 4];
+    let _3: &[isize];
+    let _4: &[isize];
+    let mut _5: &[isize; 4];
+    let _6: ();
+    scope 1 {
+        debug x => _1;
+        let _2: *const [isize];
+        scope 2 {
+            debug xptr => _2;
+        }
+    }
+
+    bb0: {
+        _1 = [const 1_isize, const 2_isize, const 3_isize, const 4_isize];
+        _5 = &_1;
+        _4 = <[isize; 4] as Index<RangeFull>>::index(move _5, const RangeFull) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = &raw const (*_3);
+        _6 = <*const [isize] as B>::foo(_2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}

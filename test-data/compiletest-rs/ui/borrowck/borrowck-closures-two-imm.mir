@@ -1,0 +1,384 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn a() -> i32 {
+    let mut _0: i32;
+    let mut _1: i32;
+    let mut _3: &i32;
+    let mut _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:12:14: 12:16];
+    let mut _9: i32;
+    let mut _10: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:13:14: 13:16];
+    let mut _11: i32;
+    scope 1 {
+        debug x => _1;
+        let _2: [closure@ui/borrowck/borrowck-closures-two-imm.rs:12:14: 12:16];
+        scope 2 {
+            debug c1 => _2;
+            let _4: [closure@ui/borrowck/borrowck-closures-two-imm.rs:13:14: 13:16];
+            scope 3 {
+                debug c2 => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3_i32;
+        _1 = Add(_1, const 1_i32);
+        _3 = &_1;
+        _2 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:12:14: 12:16] { x: move _3 };
+        _5 = &_1;
+        _4 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:13:14: 13:16] { x: move _5 };
+        _8 = &_2;
+        _7 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:12:14: 12:16] as Fn<()>>::call(move _8, const ()) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_4;
+        _9 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:13:14: 13:16] as Fn<()>>::call(move _10, const ()) -> bb2;
+    }
+
+    bb2: {
+        _6 = Mul(move _7, move _9);
+        _11 = _1;
+        _0 = Mul(move _6, move _11);
+        return;
+    }
+}
+
+fn a::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:12:14: 12:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: i32;
+    let mut _3: &i32;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &i32);
+        _2 = (*_3);
+        _0 = Mul(move _2, const 4_i32);
+        return;
+    }
+}
+
+fn a::{closure#1}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:13:14: 13:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: i32;
+    let mut _3: &i32;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &i32);
+        _2 = (*_3);
+        _0 = Mul(move _2, const 5_i32);
+        return;
+    }
+}
+
+fn get(_1: &i32) -> i32 {
+    debug x => _1;
+    let mut _0: i32;
+    let mut _2: i32;
+
+    bb0: {
+        _2 = (*_1);
+        _0 = Mul(move _2, const 4_i32);
+        return;
+    }
+}
+
+fn b() -> i32 {
+    let mut _0: i32;
+    let mut _1: i32;
+    let mut _3: &i32;
+    let mut _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:24:14: 24:16];
+    let mut _9: i32;
+    let mut _10: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:25:14: 25:16];
+    let mut _11: i32;
+    scope 1 {
+        debug x => _1;
+        let _2: [closure@ui/borrowck/borrowck-closures-two-imm.rs:24:14: 24:16];
+        scope 2 {
+            debug c1 => _2;
+            let _4: [closure@ui/borrowck/borrowck-closures-two-imm.rs:25:14: 25:16];
+            scope 3 {
+                debug c2 => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3_i32;
+        _1 = Add(_1, const 1_i32);
+        _3 = &_1;
+        _2 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:24:14: 24:16] { x: move _3 };
+        _5 = &_1;
+        _4 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:25:14: 25:16] { x: move _5 };
+        _8 = &_2;
+        _7 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:24:14: 24:16] as Fn<()>>::call(move _8, const ()) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_4;
+        _9 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:25:14: 25:16] as Fn<()>>::call(move _10, const ()) -> bb2;
+    }
+
+    bb2: {
+        _6 = Mul(move _7, move _9);
+        _11 = _1;
+        _0 = Mul(move _6, move _11);
+        return;
+    }
+}
+
+fn b::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:24:14: 24:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: &i32;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &i32);
+        _0 = get(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn b::{closure#1}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:25:14: 25:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: &i32;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &i32);
+        _0 = get(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn c() -> i32 {
+    let mut _0: i32;
+    let mut _1: i32;
+    let mut _3: &i32;
+    let mut _5: &i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:32:14: 32:16];
+    let mut _9: i32;
+    let mut _10: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:33:14: 33:16];
+    let mut _11: i32;
+    scope 1 {
+        debug x => _1;
+        let _2: [closure@ui/borrowck/borrowck-closures-two-imm.rs:32:14: 32:16];
+        scope 2 {
+            debug c1 => _2;
+            let _4: [closure@ui/borrowck/borrowck-closures-two-imm.rs:33:14: 33:16];
+            scope 3 {
+                debug c2 => _4;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 3_i32;
+        _1 = Add(_1, const 1_i32);
+        _3 = &_1;
+        _2 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:32:14: 32:16] { x: move _3 };
+        _5 = &_1;
+        _4 = [closure@ui/borrowck/borrowck-closures-two-imm.rs:33:14: 33:16] { x: move _5 };
+        _8 = &_2;
+        _7 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:32:14: 32:16] as Fn<()>>::call(move _8, const ()) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_4;
+        _9 = <[closure@ui/borrowck/borrowck-closures-two-imm.rs:33:14: 33:16] as Fn<()>>::call(move _10, const ()) -> bb2;
+    }
+
+    bb2: {
+        _6 = Mul(move _7, move _9);
+        _11 = _1;
+        _0 = Mul(move _6, move _11);
+        return;
+    }
+}
+
+fn c::{closure#0}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:32:14: 32:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: i32;
+    let mut _3: &i32;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &i32);
+        _2 = (*_3);
+        _0 = Mul(move _2, const 5_i32);
+        return;
+    }
+}
+
+fn c::{closure#1}(_1: &[closure@ui/borrowck/borrowck-closures-two-imm.rs:33:14: 33:16]) -> i32 {
+    debug x => (*((*_1).0: &i32));
+    let mut _0: i32;
+    let mut _2: &i32;
+
+    bb0: {
+        _2 = deref_copy ((*_1).0: &i32);
+        _0 = get(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i32, &i32);
+    let mut _2: &i32;
+    let _3: i32;
+    let mut _4: &i32;
+    let _5: i32;
+    let _6: &i32;
+    let _7: &i32;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: i32;
+    let mut _11: i32;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&i32, &i32);
+    let mut _16: &i32;
+    let _17: i32;
+    let mut _18: &i32;
+    let _19: i32;
+    let _20: &i32;
+    let _21: &i32;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: i32;
+    let mut _25: i32;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&i32, &i32);
+    let mut _30: &i32;
+    let _31: i32;
+    let mut _32: &i32;
+    let _33: i32;
+    let _34: &i32;
+    let _35: &i32;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: i32;
+    let mut _39: i32;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _34;
+        debug right_val => _35;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+
+    bb0: {
+        _3 = a() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const 1280_i32;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &i32);
+        _7 = (_1.1: &i32);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<i32, i32>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        _17 = b() -> bb4;
+    }
+
+    bb4: {
+        _16 = &_17;
+        _19 = const 1024_i32;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &i32);
+        _21 = (_15.1: &i32);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<i32, i32>(move _26, _20, _21, move _28);
+    }
+
+    bb6: {
+        _31 = c() -> bb7;
+    }
+
+    bb7: {
+        _30 = &_31;
+        _33 = const 1280_i32;
+        _32 = &_33;
+        _29 = (move _30, move _32);
+        _34 = (_29.0: &i32);
+        _35 = (_29.1: &i32);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<i32, i32>(move _40, _34, _35, move _42);
+    }
+
+    bb9: {
+        return;
+    }
+}

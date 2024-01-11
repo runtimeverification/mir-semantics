@@ -1,0 +1,610 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::vec::Vec<i32>;
+    let mut _6: std::ops::RangeInclusive<i32>;
+    let mut _7: std::ops::RangeInclusive<i32>;
+    let mut _8: i32;
+    let mut _9: i32;
+    let _11: ();
+    let mut _12: std::option::Option<i32>;
+    let mut _13: &mut std::ops::RangeInclusive<i32>;
+    let mut _14: isize;
+    let _16: ();
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &mut std::vec::Vec<i32>;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: &mut std::vec::Vec<i32>;
+    let mut _34: &mut std::vec::Vec<i32>;
+    let mut _35: i32;
+    let mut _37: (&i32, &i32);
+    let mut _38: &i32;
+    let mut _39: &i32;
+    let _40: i32;
+    let mut _43: bool;
+    let mut _44: bool;
+    let mut _45: i32;
+    let mut _46: i32;
+    let _48: !;
+    let mut _49: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _50: &mut std::vec::Vec<i32>;
+    let mut _52: (&i32, &i32);
+    let mut _53: &i32;
+    let mut _54: &i32;
+    let _55: i32;
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: i32;
+    let mut _61: i32;
+    let _63: !;
+    let mut _64: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _65: &mut std::vec::Vec<i32>;
+    let mut _66: (&std::vec::Vec<i32>, &[i32; 4]);
+    let mut _67: &std::vec::Vec<i32>;
+    let mut _68: &[i32; 4];
+    let _69: [i32; 4];
+    let mut _72: bool;
+    let mut _73: bool;
+    let _75: !;
+    let mut _76: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _77: (&std::vec::Vec<i32>, &[i32; 4]);
+    let mut _78: &std::vec::Vec<i32>;
+    let mut _79: &[i32; 4];
+    let _80: [i32; 4];
+    let mut _83: bool;
+    let mut _84: bool;
+    let _86: !;
+    let mut _87: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _88: (&std::vec::Vec<i32>, &[i32; 5]);
+    let mut _89: &std::vec::Vec<i32>;
+    let mut _90: &[i32; 5];
+    let _91: [i32; 5];
+    let mut _94: bool;
+    let mut _95: bool;
+    let _97: !;
+    let mut _98: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _99: (&std::vec::Vec<i32>, &[i32; 3]);
+    let mut _100: &std::vec::Vec<i32>;
+    let mut _101: &[i32; 3];
+    let _102: [i32; 3];
+    let mut _105: bool;
+    let mut _106: bool;
+    let _108: !;
+    let mut _109: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _110: (&std::vec::Vec<i32>, &[i32; 2]);
+    let mut _111: &std::vec::Vec<i32>;
+    let mut _112: &[i32; 2];
+    let _113: [i32; 2];
+    let mut _116: bool;
+    let mut _117: bool;
+    let _119: !;
+    let mut _120: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug if_lettable => _1;
+        let mut _2: std::vec::Vec<i32>;
+        scope 2 {
+            debug first_or => _2;
+            let mut _3: std::vec::Vec<i32>;
+            scope 3 {
+                debug or_two => _3;
+                let mut _4: std::vec::Vec<i32>;
+                scope 4 {
+                    debug range_from => _4;
+                    let mut _5: std::vec::Vec<i32>;
+                    scope 5 {
+                        debug bottom => _5;
+                        let mut _10: std::ops::RangeInclusive<i32>;
+                        let _70: &std::vec::Vec<i32>;
+                        let _71: &[i32; 4];
+                        let _81: &std::vec::Vec<i32>;
+                        let _82: &[i32; 4];
+                        let _92: &std::vec::Vec<i32>;
+                        let _93: &[i32; 5];
+                        let _103: &std::vec::Vec<i32>;
+                        let _104: &[i32; 3];
+                        let _114: &std::vec::Vec<i32>;
+                        let _115: &[i32; 2];
+                        scope 6 {
+                            debug iter => _10;
+                            let _15: i32;
+                            scope 7 {
+                                debug x => _15;
+                                let _33: i32;
+                                let _36: i32;
+                                let _51: i32;
+                                scope 8 {
+                                }
+                                scope 9 {
+                                    debug y => _33;
+                                }
+                                scope 10 {
+                                    debug y => _36;
+                                    let _41: &i32;
+                                    let _42: &i32;
+                                    scope 11 {
+                                        debug left_val => _41;
+                                        debug right_val => _42;
+                                        let _47: core::panicking::AssertKind;
+                                        scope 12 {
+                                            debug kind => _47;
+                                        }
+                                    }
+                                }
+                                scope 13 {
+                                    debug y => _15;
+                                }
+                                scope 14 {
+                                    debug y => _51;
+                                    let _56: &i32;
+                                    let _57: &i32;
+                                    scope 15 {
+                                        debug left_val => _56;
+                                        debug right_val => _57;
+                                        let _62: core::panicking::AssertKind;
+                                        scope 16 {
+                                            debug kind => _62;
+                                        }
+                                    }
+                                }
+                                scope 17 {
+                                    debug y => _15;
+                                }
+                            }
+                        }
+                        scope 18 {
+                            debug left_val => _70;
+                            debug right_val => _71;
+                            let _74: core::panicking::AssertKind;
+                            scope 19 {
+                                debug kind => _74;
+                            }
+                        }
+                        scope 20 {
+                            debug left_val => _81;
+                            debug right_val => _82;
+                            let _85: core::panicking::AssertKind;
+                            scope 21 {
+                                debug kind => _85;
+                            }
+                        }
+                        scope 22 {
+                            debug left_val => _92;
+                            debug right_val => _93;
+                            let _96: core::panicking::AssertKind;
+                            scope 23 {
+                                debug kind => _96;
+                            }
+                        }
+                        scope 24 {
+                            debug left_val => _103;
+                            debug right_val => _104;
+                            let _107: core::panicking::AssertKind;
+                            scope 25 {
+                                debug kind => _107;
+                            }
+                        }
+                        scope 26 {
+                            debug left_val => _114;
+                            debug right_val => _115;
+                            let _118: core::panicking::AssertKind;
+                            scope 27 {
+                                debug kind => _118;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Vec::<i32>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = Vec::<i32>::new() -> [return: bb2, unwind: bb64];
+    }
+
+    bb2: {
+        _3 = Vec::<i32>::new() -> [return: bb3, unwind: bb63];
+    }
+
+    bb3: {
+        _4 = Vec::<i32>::new() -> [return: bb4, unwind: bb62];
+    }
+
+    bb4: {
+        _5 = Vec::<i32>::new() -> [return: bb5, unwind: bb61];
+    }
+
+    bb5: {
+        _8 = Add(const -9_i32, const 1_i32);
+        _9 = Sub(const 9_i32, const 2_i32);
+        _7 = RangeInclusive::<i32>::new(move _8, move _9) -> [return: bb6, unwind: bb60];
+    }
+
+    bb6: {
+        _6 = <RangeInclusive<i32> as IntoIterator>::into_iter(move _7) -> [return: bb7, unwind: bb60];
+    }
+
+    bb7: {
+        _10 = move _6;
+        goto -> bb8;
+    }
+
+    bb8: {
+        _13 = &mut _10;
+        _12 = <RangeInclusive<i32> as Iterator>::next(_13) -> [return: bb9, unwind: bb60];
+    }
+
+    bb9: {
+        _14 = discriminant(_12);
+        switchInt(move _14) -> [0: bb12, 1: bb10, otherwise: bb11];
+    }
+
+    bb10: {
+        _15 = ((_12 as Some).0: i32);
+        _19 = Le(const -1_i32, _15);
+        switchInt(move _19) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb11: {
+        unreachable;
+    }
+
+    bb12: {
+        _67 = &_1;
+        _69 = [const -1_i32, const 0_i32, const 2_i32, const 4_i32];
+        _68 = &_69;
+        _66 = (move _67, move _68);
+        _70 = (_66.0: &std::vec::Vec<i32>);
+        _71 = (_66.1: &[i32; 4]);
+        _73 = <Vec<i32> as PartialEq<[i32; 4]>>::eq(_70, _71) -> [return: bb40, unwind: bb60];
+    }
+
+    bb13: {
+        _20 = Le(_15, const 0_i32);
+        switchInt(move _20) -> [0: bb14, otherwise: bb17];
+    }
+
+    bb14: {
+        _17 = Le(const 2_i32, _15);
+        switchInt(move _17) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _18 = Lt(_15, const 3_i32);
+        switchInt(move _18) -> [0: bb16, otherwise: bb17];
+    }
+
+    bb16: {
+        switchInt(_15) -> [4: bb17, otherwise: bb18];
+    }
+
+    bb17: {
+        _21 = &mut _1;
+        _16 = Vec::<i32>::push(move _21, _15) -> [return: bb66, unwind: bb60];
+    }
+
+    bb18: {
+        switchInt(_15) -> [1: bb31, otherwise: bb19];
+    }
+
+    bb19: {
+        _22 = Le(const -3_i32, _15);
+        switchInt(move _22) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _23 = Lt(_15, const 0_i32);
+        switchInt(move _23) -> [0: bb21, otherwise: bb31];
+    }
+
+    bb21: {
+        _30 = Le(const 0_i32, _15);
+        switchInt(move _30) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb22: {
+        _31 = Lt(_15, const 5_i32);
+        switchInt(move _31) -> [0: bb23, otherwise: bb33];
+    }
+
+    bb23: {
+        switchInt(_15) -> [6: bb34, otherwise: bb24];
+    }
+
+    bb24: {
+        _28 = Le(const 0_i32, _15);
+        switchInt(move _28) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _29 = Lt(_15, const 6_i32);
+        switchInt(move _29) -> [0: bb26, otherwise: bb35];
+    }
+
+    bb26: {
+        _26 = Le(const -5_i32, _15);
+        switchInt(move _26) -> [0: bb28, otherwise: bb27];
+    }
+
+    bb27: {
+        _27 = Le(_15, const i32::MAX);
+        switchInt(move _27) -> [0: bb28, otherwise: bb37];
+    }
+
+    bb28: {
+        _24 = Le(const i32::MIN, _15);
+        switchInt(move _24) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _25 = Lt(_15, const -7_i32);
+        switchInt(move _25) -> [0: bb30, otherwise: bb38];
+    }
+
+    bb30: {
+        _65 = &mut _5;
+        _11 = Vec::<i32>::push(move _65, _15) -> [return: bb67, unwind: bb60];
+    }
+
+    bb31: {
+        _32 = &mut _2;
+        _11 = Vec::<i32>::push(move _32, _15) -> [return: bb68, unwind: bb60];
+    }
+
+    bb32: {
+        _34 = &mut _3;
+        _35 = _33;
+        _11 = Vec::<i32>::push(move _34, move _35) -> [return: bb69, unwind: bb60];
+    }
+
+    bb33: {
+        _33 = _15;
+        goto -> bb32;
+    }
+
+    bb34: {
+        _33 = _15;
+        goto -> bb32;
+    }
+
+    bb35: {
+        _36 = _15;
+        _38 = &_36;
+        _40 = const 5_i32;
+        _39 = &_40;
+        _37 = (move _38, move _39);
+        _41 = (_37.0: &i32);
+        _42 = (_37.1: &i32);
+        _45 = (*_41);
+        _46 = (*_42);
+        _44 = Eq(move _45, move _46);
+        _43 = Not(move _44);
+        switchInt(move _43) -> [0: bb8, otherwise: bb36];
+    }
+
+    bb36: {
+        _47 = core::panicking::AssertKind::Eq;
+        _49 = Option::<Arguments<'_>>::None;
+        _48 = core::panicking::assert_failed::<i32, i32>(move _47, _41, _42, move _49) -> bb60;
+    }
+
+    bb37: {
+        _50 = &mut _4;
+        _11 = Vec::<i32>::push(move _50, _15) -> [return: bb70, unwind: bb60];
+    }
+
+    bb38: {
+        _51 = _15;
+        _53 = &_51;
+        _55 = const -8_i32;
+        _54 = &_55;
+        _52 = (move _53, move _54);
+        _56 = (_52.0: &i32);
+        _57 = (_52.1: &i32);
+        _60 = (*_56);
+        _61 = (*_57);
+        _59 = Eq(move _60, move _61);
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb8, otherwise: bb39];
+    }
+
+    bb39: {
+        _62 = core::panicking::AssertKind::Eq;
+        _64 = Option::<Arguments<'_>>::None;
+        _63 = core::panicking::assert_failed::<i32, i32>(move _62, _56, _57, move _64) -> bb60;
+    }
+
+    bb40: {
+        _72 = Not(move _73);
+        switchInt(move _72) -> [0: bb42, otherwise: bb41];
+    }
+
+    bb41: {
+        _74 = core::panicking::AssertKind::Eq;
+        _76 = Option::<Arguments<'_>>::None;
+        _75 = core::panicking::assert_failed::<Vec<i32>, [i32; 4]>(move _74, _70, _71, move _76) -> bb60;
+    }
+
+    bb42: {
+        _78 = &_2;
+        _80 = [const -3_i32, const -2_i32, const -1_i32, const 1_i32];
+        _79 = &_80;
+        _77 = (move _78, move _79);
+        _81 = (_77.0: &std::vec::Vec<i32>);
+        _82 = (_77.1: &[i32; 4]);
+        _84 = <Vec<i32> as PartialEq<[i32; 4]>>::eq(_81, _82) -> [return: bb43, unwind: bb60];
+    }
+
+    bb43: {
+        _83 = Not(move _84);
+        switchInt(move _83) -> [0: bb45, otherwise: bb44];
+    }
+
+    bb44: {
+        _85 = core::panicking::AssertKind::Eq;
+        _87 = Option::<Arguments<'_>>::None;
+        _86 = core::panicking::assert_failed::<Vec<i32>, [i32; 4]>(move _85, _81, _82, move _87) -> bb60;
+    }
+
+    bb45: {
+        _89 = &_3;
+        _91 = [const 0_i32, const 2_i32, const 3_i32, const 4_i32, const 6_i32];
+        _90 = &_91;
+        _88 = (move _89, move _90);
+        _92 = (_88.0: &std::vec::Vec<i32>);
+        _93 = (_88.1: &[i32; 5]);
+        _95 = <Vec<i32> as PartialEq<[i32; 5]>>::eq(_92, _93) -> [return: bb46, unwind: bb60];
+    }
+
+    bb46: {
+        _94 = Not(move _95);
+        switchInt(move _94) -> [0: bb48, otherwise: bb47];
+    }
+
+    bb47: {
+        _96 = core::panicking::AssertKind::Eq;
+        _98 = Option::<Arguments<'_>>::None;
+        _97 = core::panicking::assert_failed::<Vec<i32>, [i32; 5]>(move _96, _92, _93, move _98) -> bb60;
+    }
+
+    bb48: {
+        _100 = &_4;
+        _102 = [const -5_i32, const -4_i32, const 7_i32];
+        _101 = &_102;
+        _99 = (move _100, move _101);
+        _103 = (_99.0: &std::vec::Vec<i32>);
+        _104 = (_99.1: &[i32; 3]);
+        _106 = <Vec<i32> as PartialEq<[i32; 3]>>::eq(_103, _104) -> [return: bb49, unwind: bb60];
+    }
+
+    bb49: {
+        _105 = Not(move _106);
+        switchInt(move _105) -> [0: bb51, otherwise: bb50];
+    }
+
+    bb50: {
+        _107 = core::panicking::AssertKind::Eq;
+        _109 = Option::<Arguments<'_>>::None;
+        _108 = core::panicking::assert_failed::<Vec<i32>, [i32; 3]>(move _107, _103, _104, move _109) -> bb60;
+    }
+
+    bb51: {
+        _111 = &_5;
+        _113 = [const -7_i32, const -6_i32];
+        _112 = &_113;
+        _110 = (move _111, move _112);
+        _114 = (_110.0: &std::vec::Vec<i32>);
+        _115 = (_110.1: &[i32; 2]);
+        _117 = <Vec<i32> as PartialEq<[i32; 2]>>::eq(_114, _115) -> [return: bb52, unwind: bb60];
+    }
+
+    bb52: {
+        _116 = Not(move _117);
+        switchInt(move _116) -> [0: bb54, otherwise: bb53];
+    }
+
+    bb53: {
+        _118 = core::panicking::AssertKind::Eq;
+        _120 = Option::<Arguments<'_>>::None;
+        _119 = core::panicking::assert_failed::<Vec<i32>, [i32; 2]>(move _118, _114, _115, move _120) -> bb60;
+    }
+
+    bb54: {
+        drop(_5) -> [return: bb55, unwind: bb61];
+    }
+
+    bb55: {
+        drop(_4) -> [return: bb56, unwind: bb62];
+    }
+
+    bb56: {
+        drop(_3) -> [return: bb57, unwind: bb63];
+    }
+
+    bb57: {
+        drop(_2) -> [return: bb58, unwind: bb64];
+    }
+
+    bb58: {
+        drop(_1) -> bb59;
+    }
+
+    bb59: {
+        return;
+    }
+
+    bb60 (cleanup): {
+        drop(_5) -> [return: bb61, unwind terminate];
+    }
+
+    bb61 (cleanup): {
+        drop(_4) -> [return: bb62, unwind terminate];
+    }
+
+    bb62 (cleanup): {
+        drop(_3) -> [return: bb63, unwind terminate];
+    }
+
+    bb63 (cleanup): {
+        drop(_2) -> [return: bb64, unwind terminate];
+    }
+
+    bb64 (cleanup): {
+        drop(_1) -> [return: bb65, unwind terminate];
+    }
+
+    bb65 (cleanup): {
+        resume;
+    }
+
+    bb66: {
+        goto -> bb18;
+    }
+
+    bb67: {
+        goto -> bb8;
+    }
+
+    bb68: {
+        goto -> bb8;
+    }
+
+    bb69: {
+        goto -> bb8;
+    }
+
+    bb70: {
+        goto -> bb8;
+    }
+}
+
+main::{constant#0}: i32 = {
+    let mut _0: i32;
+    let mut _1: (i32, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const 5_i32, const 1_i32);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const 5_i32, const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: i32);
+        return;
+    }
+}

@@ -1,0 +1,175 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::iter::Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>;
+    let mut _2: std::ops::Range<i32>;
+    let _3: ();
+    let mut _4: std::result::Result<std::vec::Vec<u32>, ()>;
+    let mut _5: &mut JoinAll<std::iter::Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>>;
+    let mut _6: JoinAll<std::iter::Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>>;
+    let mut _7: std::iter::Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>;
+    scope 1 {
+        debug workers => _1;
+    }
+
+    bb0: {
+        _2 = std::ops::Range::<i32> { start: const 0_i32, end: const 0_i32 };
+        _1 = <std::ops::Range<i32> as Iterator>::map::<FutureResult<u32, ()>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>(move _2, const ZeroSized: [closure@ui/traits/issue-38033.rs:6:30: 6:33]) -> bb1;
+    }
+
+    bb1: {
+        _7 = move _1;
+        _6 = join_all::<Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>>(move _7) -> bb2;
+    }
+
+    bb2: {
+        _5 = &mut _6;
+        _4 = <JoinAll<Map<std::ops::Range<i32>, [closure@ui/traits/issue-38033.rs:6:30: 6:33]>> as Future>::poll(move _5) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _3 = std::mem::drop::<Result<Vec<u32>, ()>>(move _4) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_6) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_6) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/traits/issue-38033.rs:6:30: 6:33], _2: i32) -> FutureResult<u32, ()> {
+    let mut _0: FutureResult<u32, ()>;
+
+    bb0: {
+        _0 = result::<u32, ()>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-38033.rs:25:1: 25:33>::into_future(_1: F) -> F {
+    debug self => _1;
+    let mut _0: F;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn result() -> FutureResult<T, E> {
+    let mut _0: FutureResult<T, E>;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn <impl at ui/traits/issue-38033.rs:43:1: 43:41>::poll(_1: &mut FutureResult<T, E>) -> Result<T, E> {
+    debug self => _1;
+    let mut _0: std::result::Result<T, E>;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn join_all(_1: I) -> JoinAll<I> {
+    let mut _0: JoinAll<I>;
+    let mut _2: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+
+    bb0: {
+        _2 = Vec::<<<I as IntoIterator>::Item as IntoFuture>::Item>::new() -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = JoinAll::<I> { elems: move _2 };
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/traits/issue-38033.rs:66:1: 66:30>::poll(_1: &mut JoinAll<I>) -> Result<Vec<<<I as IntoIterator>::Item as IntoFuture>::Item>, <<I as IntoIterator>::Item as IntoFuture>::Error> {
+    debug self => _1;
+    let mut _0: std::result::Result<std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>, <<I as std::iter::IntoIterator>::Item as IntoFuture>::Error>;
+    let _2: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    let mut _3: &mut std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    let mut _4: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    let mut _5: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    let mut _6: std::iter::Map<std::vec::IntoIter<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>, [closure@ui/traits/issue-38033.rs:75:34: 75:37]>;
+    let mut _7: std::vec::IntoIter<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    let mut _8: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>;
+    scope 1 {
+        debug elems => _2;
+    }
+
+    bb0: {
+        _3 = &mut ((*_1).0: std::vec::Vec<<<I as std::iter::IntoIterator>::Item as IntoFuture>::Item>);
+        _4 = Vec::<<<I as IntoIterator>::Item as IntoFuture>::Item>::new() -> bb1;
+    }
+
+    bb1: {
+        _2 = std::mem::replace::<Vec<<<I as IntoIterator>::Item as IntoFuture>::Item>>(_3, move _4) -> bb2;
+    }
+
+    bb2: {
+        _8 = move _2;
+        _7 = <Vec<<<I as IntoIterator>::Item as IntoFuture>::Item> as IntoIterator>::into_iter(move _8) -> bb3;
+    }
+
+    bb3: {
+        _6 = <std::vec::IntoIter<<<I as IntoIterator>::Item as IntoFuture>::Item> as Iterator>::map::<<<I as IntoIterator>::Item as IntoFuture>::Item, [closure@ui/traits/issue-38033.rs:75:34: 75:37]>(move _7, const ZeroSized: [closure@ui/traits/issue-38033.rs:75:34: 75:37]) -> bb4;
+    }
+
+    bb4: {
+        _5 = <Map<std::vec::IntoIter<<<I as IntoIterator>::Item as IntoFuture>::Item>, [closure@ui/traits/issue-38033.rs:75:34: 75:37]> as Iterator>::collect::<Vec<<<I as IntoIterator>::Item as IntoFuture>::Item>>(move _6) -> bb5;
+    }
+
+    bb5: {
+        _0 = Result::<Vec<<<I as IntoIterator>::Item as IntoFuture>::Item>, <<I as IntoIterator>::Item as IntoFuture>::Error>::Ok(move _5);
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-38033.rs:66:1: 66:30>::poll::{closure#0}(_1: &mut [closure@ui/traits/issue-38033.rs:75:34: 75:37], _2: <<I as IntoIterator>::Item as IntoFuture>::Item) -> <<I as IntoIterator>::Item as IntoFuture>::Item {
+    debug e => _2;
+    let mut _0: <<I as std::iter::IntoIterator>::Item as IntoFuture>::Item;
+
+    bb0: {
+        _0 = move _2;
+        return;
+    }
+}

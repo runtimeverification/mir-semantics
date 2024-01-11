@@ -1,0 +1,163 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<Self>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn foo() -> [u8; size_of::<T>()] {
+    let mut _0: [u8; size_of::<T>()];
+
+    bb0: {
+        _0 = [const 0_u8; size_of::<T>()];
+        return;
+    }
+}
+
+foo::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+foo::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&[u8; size_of::<T>()], &[u8; 4]);
+    let mut _2: &[u8; size_of::<T>()];
+    let _3: [u8; size_of::<T>()];
+    let mut _4: &[u8; 4];
+    let _5: [u8; 4];
+    let _6: &[u8; size_of::<T>()];
+    let _7: &[u8; 4];
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: (&[u8; size_of::<T>()], &[u8; 8]);
+    let mut _14: &[u8; size_of::<T>()];
+    let _15: [u8; size_of::<T>()];
+    let mut _16: &[u8; 8];
+    let _17: [u8; 8];
+    let _18: &[u8; size_of::<T>()];
+    let _19: &[u8; 8];
+    let mut _20: bool;
+    let mut _21: bool;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _10: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _10;
+        }
+    }
+    scope 3 {
+        debug left_val => _18;
+        debug right_val => _19;
+        let _22: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _22;
+        }
+    }
+
+    bb0: {
+        _3 = foo::<u32>() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = [const 0_u8; 4];
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &[u8; size_of::<T>()]);
+        _7 = (_1.1: &[u8; 4]);
+        _9 = <[u8; size_of::<T>()] as PartialEq<[u8; 4]>>::eq(_6, _7) -> bb2;
+    }
+
+    bb2: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<[u8; size_of::<T>()], [u8; 4]>(move _10, _6, _7, move _12);
+    }
+
+    bb4: {
+        _15 = foo::<u64>() -> bb5;
+    }
+
+    bb5: {
+        _14 = &_15;
+        _17 = [const 0_u8; 8];
+        _16 = &_17;
+        _13 = (move _14, move _16);
+        _18 = (_13.0: &[u8; size_of::<T>()]);
+        _19 = (_13.1: &[u8; 8]);
+        _21 = <[u8; size_of::<T>()] as PartialEq<[u8; 8]>>::eq(_18, _19) -> bb6;
+    }
+
+    bb6: {
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<[u8; size_of::<T>()], [u8; 8]>(move _22, _18, _19, move _24);
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}

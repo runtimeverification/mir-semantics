@@ -1,0 +1,116 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/mir_drop_panics.rs:7:1: 7:24>::drop(_1: &mut Droppable) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: u32;
+    let _3: !;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &u32;
+
+    bb0: {
+        _2 = ((*_1).0: u32);
+        switchInt(move _2) -> [1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _3 = begin_panic::<&str>(const "panic 1");
+    }
+
+    bb2: {
+        _8 = [const "drop ", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &((*_1).0: u32);
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<u32>(_13) -> bb3;
+    }
+
+    bb3: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> bb4;
+    }
+
+    bb4: {
+        _4 = _eprint(move _5) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn mir() -> () {
+    let mut _0: ();
+    let _1: Droppable;
+    scope 1 {
+        debug x => _1;
+        let _2: Droppable;
+        scope 2 {
+            debug y => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Droppable(const 2_u32);
+        _2 = Droppable(const 1_u32);
+        drop(_2) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = mir() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn Droppable(_1: u32) -> Droppable {
+    let mut _0: Droppable;
+
+    bb0: {
+        _0 = Droppable(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Droppable(_1: u32) -> Droppable {
+    let mut _0: Droppable;
+
+    bb0: {
+        _0 = Droppable(move _1);
+        return;
+    }
+}

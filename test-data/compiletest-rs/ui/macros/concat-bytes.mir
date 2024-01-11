@@ -1,0 +1,151 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&[u8; 0], &&[u8; 0]);
+    let mut _2: &&[u8; 0];
+    let _3: &[u8; 0];
+    let mut _4: &&[u8; 0];
+    let _5: &[u8; 0];
+    let _6: [u8; 0];
+    let _7: &&[u8; 0];
+    let _8: &&[u8; 0];
+    let mut _9: bool;
+    let mut _10: bool;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _14: (&&[u8; 12], &&[u8; 12]);
+    let mut _15: &&[u8; 12];
+    let _16: &[u8; 12];
+    let mut _17: &&[u8; 12];
+    let _18: &[u8; 12];
+    let _19: &&[u8; 12];
+    let _20: &&[u8; 12];
+    let mut _21: bool;
+    let mut _22: bool;
+    let _24: !;
+    let mut _25: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _26: (&&[u8; 8], &&[u8; 8]);
+    let mut _27: &&[u8; 8];
+    let _28: &[u8; 8];
+    let mut _29: &&[u8; 8];
+    let _30: &[u8; 8];
+    let _31: &&[u8; 8];
+    let _32: &&[u8; 8];
+    let mut _33: bool;
+    let mut _34: bool;
+    let _36: !;
+    let mut _37: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _11: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _11;
+        }
+    }
+    scope 3 {
+        debug left_val => _19;
+        debug right_val => _20;
+        let _23: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _23;
+        }
+    }
+    scope 5 {
+        debug left_val => _31;
+        debug right_val => _32;
+        let _35: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _35;
+        }
+    }
+
+    bb0: {
+        _3 = const b"";
+        _2 = &_3;
+        _5 = &_6;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _7 = (_1.0: &&[u8; 0]);
+        _8 = (_1.1: &&[u8; 0]);
+        _10 = <&[u8; 0] as PartialEq>::eq(_7, _8) -> bb1;
+    }
+
+    bb1: {
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _11 = core::panicking::AssertKind::Eq;
+        _13 = Option::<Arguments<'_>>::None;
+        _12 = core::panicking::assert_failed::<&[u8; 0], &[u8; 0]>(move _11, _7, _8, move _13);
+    }
+
+    bb3: {
+        _16 = const b"ABCDEFGHHIII";
+        _15 = &_16;
+        _18 = const b"ABCDEFGHHIII";
+        _17 = &_18;
+        _14 = (move _15, move _17);
+        _19 = (_14.0: &&[u8; 12]);
+        _20 = (_14.1: &&[u8; 12]);
+        _22 = <&[u8; 12] as PartialEq>::eq(_19, _20) -> bb4;
+    }
+
+    bb4: {
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _23 = core::panicking::AssertKind::Eq;
+        _25 = Option::<Arguments<'_>>::None;
+        _24 = core::panicking::assert_failed::<&[u8; 12], &[u8; 12]>(move _23, _19, _20, move _25);
+    }
+
+    bb6: {
+        _28 = const b"ABCDEFGH";
+        _27 = &_28;
+        _30 = const b"ABCDEFGH";
+        _29 = &_30;
+        _26 = (move _27, move _29);
+        _31 = (_26.0: &&[u8; 8]);
+        _32 = (_26.1: &&[u8; 8]);
+        _34 = <&[u8; 8] as PartialEq>::eq(_31, _32) -> bb7;
+    }
+
+    bb7: {
+        _33 = Not(move _34);
+        switchInt(move _33) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _35 = core::panicking::AssertKind::Eq;
+        _37 = Option::<Arguments<'_>>::None;
+        _36 = core::panicking::assert_failed::<&[u8; 8], &[u8; 8]>(move _35, _31, _32, move _37);
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+alloc5 (size: 8, align: 1) {
+    41 42 43 44 45 46 47 48                         │ ABCDEFGH
+}
+
+alloc4 (size: 8, align: 1) {
+    41 42 43 44 45 46 47 48                         │ ABCDEFGH
+}
+
+alloc3 (size: 12, align: 1) {
+    41 42 43 44 45 46 47 48 48 49 49 49             │ ABCDEFGHHIII
+}
+
+alloc2 (size: 12, align: 1) {
+    41 42 43 44 45 46 47 48 48 49 49 49             │ ABCDEFGHHIII
+}
+
+alloc1 (size: 0, align: 1) {}

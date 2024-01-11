@@ -1,0 +1,341 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::ThinBox<dyn std::error::Error>;
+    let mut _2: (&usize, &usize);
+    let mut _3: &usize;
+    let _4: usize;
+    let mut _5: &usize;
+    let _6: usize;
+    let _7: &std::boxed::ThinBox<dyn std::error::Error>;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: usize;
+    let mut _13: usize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let _17: ();
+    let mut _18: std::fmt::Arguments<'_>;
+    let mut _19: &[&str];
+    let _20: &[&str; 2];
+    let _21: [&str; 2];
+    let mut _22: &[core::fmt::rt::Argument<'_>];
+    let _23: &[core::fmt::rt::Argument<'_>; 1];
+    let _24: [core::fmt::rt::Argument<'_>; 1];
+    let mut _25: core::fmt::rt::Argument<'_>;
+    let _26: &std::boxed::ThinBox<dyn std::error::Error>;
+    let mut _28: (&usize, &usize);
+    let mut _29: &usize;
+    let _30: usize;
+    let mut _31: &usize;
+    let _32: usize;
+    let _33: &std::boxed::ThinBox<i32>;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: usize;
+    let mut _39: usize;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let _43: ();
+    let mut _44: std::fmt::Arguments<'_>;
+    let mut _45: &[&str];
+    let _46: &[&str; 2];
+    let _47: [&str; 2];
+    let mut _48: &[core::fmt::rt::Argument<'_>];
+    let _49: &[core::fmt::rt::Argument<'_>; 1];
+    let _50: [core::fmt::rt::Argument<'_>; 1];
+    let mut _51: core::fmt::rt::Argument<'_>;
+    let _52: &std::boxed::ThinBox<i32>;
+    let mut _54: [i32; 4];
+    let mut _55: (&usize, &usize);
+    let mut _56: &usize;
+    let _57: usize;
+    let mut _58: &usize;
+    let _59: usize;
+    let _60: &std::boxed::ThinBox<[i32]>;
+    let mut _63: bool;
+    let mut _64: bool;
+    let mut _65: usize;
+    let mut _66: usize;
+    let _68: !;
+    let mut _69: std::option::Option<std::fmt::Arguments<'_>>;
+    let _70: ();
+    let mut _71: std::fmt::Arguments<'_>;
+    let mut _72: &[&str];
+    let _73: &[&str; 2];
+    let _74: [&str; 2];
+    let mut _75: &[core::fmt::rt::Argument<'_>];
+    let _76: &[core::fmt::rt::Argument<'_>; 1];
+    let _77: [core::fmt::rt::Argument<'_>; 1];
+    let mut _78: core::fmt::rt::Argument<'_>;
+    let _79: &std::boxed::ThinBox<[i32]>;
+    scope 1 {
+        debug thin_error => _1;
+        let _8: &usize;
+        let _9: &usize;
+        let _27: std::boxed::ThinBox<i32>;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug thin => _27;
+            let _34: &usize;
+            let _35: &usize;
+            let _53: std::boxed::ThinBox<[i32]>;
+            scope 5 {
+                debug left_val => _34;
+                debug right_val => _35;
+                let _40: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _40;
+                }
+            }
+            scope 7 {
+                debug thin_slice => _53;
+                let _61: &usize;
+                let _62: &usize;
+                scope 8 {
+                    debug left_val => _61;
+                    debug right_val => _62;
+                    let _67: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _67;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = ThinBox::<dyn std::error::Error>::new_unsize::<Foo>(const Foo) -> bb1;
+    }
+
+    bb1: {
+        _4 = std::mem::size_of::<*const i32>() -> [return: bb2, unwind: bb30];
+    }
+
+    bb2: {
+        _3 = &_4;
+        _7 = &_1;
+        _6 = std::mem::size_of_val::<ThinBox<dyn std::error::Error>>(_7) -> [return: bb3, unwind: bb30];
+    }
+
+    bb3: {
+        _5 = &_6;
+        _2 = (move _3, move _5);
+        _8 = (_2.0: &usize);
+        _9 = (_2.1: &usize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<usize, usize>(move _14, _8, _9, move _16) -> bb30;
+    }
+
+    bb5: {
+        _21 = [const "", const "\n"];
+        _20 = &_21;
+        _19 = _20 as &[&str] (Pointer(Unsize));
+        _26 = &_1;
+        _25 = core::fmt::rt::Argument::<'_>::new_debug::<ThinBox<dyn std::error::Error>>(_26) -> [return: bb6, unwind: bb30];
+    }
+
+    bb6: {
+        _24 = [move _25];
+        _23 = &_24;
+        _22 = _23 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _18 = Arguments::<'_>::new_v1(move _19, move _22) -> [return: bb7, unwind: bb30];
+    }
+
+    bb7: {
+        _17 = _print(move _18) -> [return: bb8, unwind: bb30];
+    }
+
+    bb8: {
+        _27 = ThinBox::<i32>::new(const 42_i32) -> [return: bb9, unwind: bb30];
+    }
+
+    bb9: {
+        _30 = std::mem::size_of::<*const i32>() -> [return: bb10, unwind: bb29];
+    }
+
+    bb10: {
+        _29 = &_30;
+        _33 = &_27;
+        _32 = std::mem::size_of_val::<ThinBox<i32>>(_33) -> [return: bb11, unwind: bb29];
+    }
+
+    bb11: {
+        _31 = &_32;
+        _28 = (move _29, move _31);
+        _34 = (_28.0: &usize);
+        _35 = (_28.1: &usize);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<usize, usize>(move _40, _34, _35, move _42) -> bb29;
+    }
+
+    bb13: {
+        _47 = [const "", const "\n"];
+        _46 = &_47;
+        _45 = _46 as &[&str] (Pointer(Unsize));
+        _52 = &_27;
+        _51 = core::fmt::rt::Argument::<'_>::new_debug::<ThinBox<i32>>(_52) -> [return: bb14, unwind: bb29];
+    }
+
+    bb14: {
+        _50 = [move _51];
+        _49 = &_50;
+        _48 = _49 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _44 = Arguments::<'_>::new_v1(move _45, move _48) -> [return: bb15, unwind: bb29];
+    }
+
+    bb15: {
+        _43 = _print(move _44) -> [return: bb16, unwind: bb29];
+    }
+
+    bb16: {
+        _54 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _53 = ThinBox::<[i32]>::new_unsize::<[i32; 4]>(move _54) -> [return: bb17, unwind: bb29];
+    }
+
+    bb17: {
+        _57 = std::mem::size_of::<*const i32>() -> [return: bb18, unwind: bb28];
+    }
+
+    bb18: {
+        _56 = &_57;
+        _60 = &_53;
+        _59 = std::mem::size_of_val::<ThinBox<[i32]>>(_60) -> [return: bb19, unwind: bb28];
+    }
+
+    bb19: {
+        _58 = &_59;
+        _55 = (move _56, move _58);
+        _61 = (_55.0: &usize);
+        _62 = (_55.1: &usize);
+        _65 = (*_61);
+        _66 = (*_62);
+        _64 = Eq(move _65, move _66);
+        _63 = Not(move _64);
+        switchInt(move _63) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _67 = core::panicking::AssertKind::Eq;
+        _69 = Option::<Arguments<'_>>::None;
+        _68 = core::panicking::assert_failed::<usize, usize>(move _67, _61, _62, move _69) -> bb28;
+    }
+
+    bb21: {
+        _74 = [const "", const "\n"];
+        _73 = &_74;
+        _72 = _73 as &[&str] (Pointer(Unsize));
+        _79 = &_53;
+        _78 = core::fmt::rt::Argument::<'_>::new_debug::<ThinBox<[i32]>>(_79) -> [return: bb22, unwind: bb28];
+    }
+
+    bb22: {
+        _77 = [move _78];
+        _76 = &_77;
+        _75 = _76 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _71 = Arguments::<'_>::new_v1(move _72, move _75) -> [return: bb23, unwind: bb28];
+    }
+
+    bb23: {
+        _70 = _print(move _71) -> [return: bb24, unwind: bb28];
+    }
+
+    bb24: {
+        drop(_53) -> [return: bb25, unwind: bb29];
+    }
+
+    bb25: {
+        drop(_27) -> [return: bb26, unwind: bb30];
+    }
+
+    bb26: {
+        drop(_1) -> bb27;
+    }
+
+    bb27: {
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_53) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_27) -> [return: bb30, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_1) -> [return: bb31, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/box/thin_new.rs:21:10: 21:15>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Foo";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/box/thin_new.rs:24:1: 24:26>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 1];
+    let _6: [&str; 1];
+
+    bb0: {
+        _6 = [const "boooo!"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_const(move _4) -> bb1;
+    }
+
+    bb1: {
+        _0 = Formatter::<'_>::write_fmt(_2, move _3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

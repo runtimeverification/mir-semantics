@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn Tr::_method_on_numbers(_1: Self) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = <i32 as Tr>::_method_on_numbers(const 42_i32) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

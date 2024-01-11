@@ -1,0 +1,107 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn solve(_1: F) -> Option<u64> {
+    debug validate => _1;
+    let mut _0: std::option::Option<u64>;
+    let mut _2: [i8; 1];
+    let mut _3: std::option::Option<i32>;
+    let mut _4: [closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:10:17: 10:20];
+    let mut _5: &F;
+    let mut _6: &mut [i8; 1];
+    scope 1 {
+        debug position => _2;
+    }
+
+    bb0: {
+        _2 = [const 1_i8];
+        _3 = Option::<i32>::Some(const 0_i32);
+        _5 = &_1;
+        _6 = &mut _2;
+        _4 = [closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:10:17: 10:20] { validate: move _5, position: move _6 };
+        _0 = Option::<i32>::map::<u64, [closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:10:17: 10:20]>(move _3, move _4) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+solve::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+solve::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn solve::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:10:17: 10:20], _2: i32) -> u64 {
+    debug validate => (*(_1.0: &F));
+    debug position => (*(_1.1: &mut [i8; 1]));
+    let mut _0: u64;
+    let _3: ();
+    let mut _4: (&mut [i8; 1],);
+    let _5: i8;
+    let mut _6: &F;
+    let mut _7: &mut [i8; 1];
+    let mut _8: &mut [i8; 1];
+    scope 1 {
+        debug _x => _5;
+    }
+
+    bb0: {
+        _6 = deref_copy (_1.0: &F);
+        _7 = deref_copy (_1.1: &mut [i8; 1]);
+        _4 = (_7,);
+        _3 = <F as Fn<(&mut [i8; 1],)>>::call(_6, move _4) -> bb1;
+    }
+
+    bb1: {
+        _8 = deref_copy (_1.1: &mut [i8; 1]);
+        _5 = (*_8)[0 of 1];
+        _0 = const 0_u64;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::option::Option<u64>;
+
+    bb0: {
+        _1 = solve::<[closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:18:11: 18:14]>(const ZeroSized: [closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:18:11: 18:14]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/run_pass/issue-88372.rs:18:11: 18:14], _2: &mut [i8; 1]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

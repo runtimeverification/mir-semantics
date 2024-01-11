@@ -1,0 +1,128 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Aes128CipherKey::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:7:10: 7:15>::fmt(_1: &Aes128CipherKey, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&[u8; Aes128Cipher::KEY_LEN];
+    let _6: &[u8; Aes128Cipher::KEY_LEN];
+
+    bb0: {
+        _3 = const "Aes128CipherKey";
+        _6 = &((*_1).0: [u8; Aes128Cipher::KEY_LEN]);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:7:17: 7:22>::clone(_1: &Aes128CipherKey) -> Aes128CipherKey {
+    debug self => _1;
+    let mut _0: Aes128CipherKey;
+    let mut _2: [u8; Aes128Cipher::KEY_LEN];
+    let _3: &[u8; Aes128Cipher::KEY_LEN];
+
+    bb0: {
+        _3 = &((*_1).0: [u8; Aes128Cipher::KEY_LEN]);
+        _2 = (*_3);
+        _0 = Aes128CipherKey(move _2);
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:10:1: 10:21>::new(_1: &[u8; Aes128Cipher::KEY_LEN]) -> Aes128CipherKey {
+    debug key => _1;
+    let mut _0: Aes128CipherKey;
+    let mut _2: [u8; Aes128Cipher::KEY_LEN];
+
+    bb0: {
+        _2 = (*_1);
+        _0 = Aes128CipherKey(move _2);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-102074.rs:10:1: 10:21>::new::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:16:10: 16:15>::fmt(_1: &Aes128Cipher, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+
+    bb0: {
+        _3 = const "Aes128Cipher";
+        _0 = Formatter::<'_>::write_str(_2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:16:17: 16:22>::clone(_1: &Aes128Cipher) -> Aes128Cipher {
+    debug self => _1;
+    let mut _0: Aes128Cipher;
+
+    bb0: {
+        return;
+    }
+}
+
+const <impl at ui/const-generics/generic_const_exprs/issue-102074.rs:19:1: 19:18>::KEY_LEN: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 16_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Aes128CipherKey(_1: [u8; 16]) -> Aes128CipherKey {
+    let mut _0: Aes128CipherKey;
+
+    bb0: {
+        _0 = Aes128CipherKey(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Aes128CipherKey(_1: [u8; 16]) -> Aes128CipherKey {
+    let mut _0: Aes128CipherKey;
+
+    bb0: {
+        _0 = Aes128CipherKey(move _1);
+        return;
+    }
+}

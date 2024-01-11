@@ -1,0 +1,772 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/pattern/bindings-after-at/or-patterns-slice-patterns.rs:6:10: 6:15>::fmt(_1: &MatchArm, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &usize;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&usize;
+    let _8: &str;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = const "Wild";
+        _0 = Formatter::<'_>::write_str(_2, _8) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as Arm).0: usize);
+        _5 = const "Arm";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/pattern/bindings-after-at/or-patterns-slice-patterns.rs:6:17: 6:26>::eq(_1: &MatchArm, _2: &MatchArm) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&MatchArm, &MatchArm);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: &MatchArm;
+    let mut _15: &MatchArm;
+    let mut _16: &MatchArm;
+    let mut _17: &MatchArm;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _10: &usize;
+            let _11: &usize;
+            scope 3 {
+                debug __self_0 => _10;
+                debug __arg1_0 => _11;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _14 = deref_copy (_7.0: &MatchArm);
+        _9 = discriminant((*_14));
+        switchInt(move _9) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _15 = deref_copy (_7.1: &MatchArm);
+        _8 = discriminant((*_15));
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = const true;
+        goto -> bb7;
+    }
+
+    bb6: {
+        _16 = deref_copy (_7.0: &MatchArm);
+        _10 = &(((*_16) as Arm).0: usize);
+        _17 = deref_copy (_7.1: &MatchArm);
+        _11 = &(((*_17) as Arm).0: usize);
+        _12 = (*_10);
+        _13 = (*_11);
+        _6 = Eq(move _12, move _13);
+        goto -> bb7;
+    }
+
+    bb7: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/pattern/bindings-after-at/or-patterns-slice-patterns.rs:12:10: 12:15>::fmt(_1: &Test, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: isize;
+    let _5: &str;
+    let _6: &str;
+    let _7: &str;
+    let _8: &str;
+
+    bb0: {
+        _4 = discriminant((*_1));
+        switchInt(move _4) -> [0: bb3, 1: bb4, 2: bb5, 3: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = const "Qux";
+        _3 = _8;
+        goto -> bb6;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _5 = const "Foo";
+        _3 = _5;
+        goto -> bb6;
+    }
+
+    bb4: {
+        _6 = const "Bar";
+        _3 = _6;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _7 = const "Baz";
+        _3 = _7;
+        goto -> bb6;
+    }
+
+    bb6: {
+        _0 = Formatter::<'_>::write_str(_2, move _3) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn <impl at ui/pattern/bindings-after-at/or-patterns-slice-patterns.rs:12:17: 12:26>::eq(_1: &Test, _2: &Test) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _0 = Eq(_3, _4);
+        return;
+    }
+}
+
+fn test(_1: &[Option<Test>]) -> MatchArm {
+    debug foo => _1;
+    let mut _0: MatchArm;
+    let mut _2: isize;
+    let mut _3: isize;
+    let mut _4: isize;
+    let mut _5: isize;
+    let mut _6: isize;
+    let mut _7: isize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let _11: &[std::option::Option<Test>];
+    let mut _12: (&&[std::option::Option<Test>], &&[std::option::Option<Test>]);
+    let mut _13: &&[std::option::Option<Test>];
+    let mut _14: &&[std::option::Option<Test>];
+    let mut _17: bool;
+    let mut _18: bool;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    let _22: &std::option::Option<Test>;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: &&std::option::Option<Test>;
+    let mut _27: &&std::option::Option<Test>;
+    let _28: &std::option::Option<Test>;
+    let _29: std::option::Option<Test>;
+    let mut _30: Test;
+    let mut _31: bool;
+    let mut _32: &&std::option::Option<Test>;
+    let mut _33: &&std::option::Option<Test>;
+    let _34: &std::option::Option<Test>;
+    let _35: std::option::Option<Test>;
+    let mut _36: Test;
+    let mut _37: !;
+    scope 1 {
+        debug bar => _11;
+        let _15: &&[std::option::Option<Test>];
+        let _16: &&[std::option::Option<Test>];
+        scope 2 {
+            debug left_val => _15;
+            debug right_val => _16;
+            let _19: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _19;
+            }
+        }
+    }
+    scope 4 {
+        debug bar => _22;
+    }
+
+    bb0: {
+        _8 = Len((*_1));
+        _9 = const 2_usize;
+        _10 = Ge(move _8, move _9);
+        switchInt(move _10) -> [0: bb6, otherwise: bb1];
+    }
+
+    bb1: {
+        _7 = discriminant((*_1)[0 of 2]);
+        switchInt(move _7) -> [1: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = discriminant((*_1)[-2 of 2]);
+        switchInt(move _6) -> [1: bb7, otherwise: bb6];
+    }
+
+    bb3: {
+        _4 = discriminant((*_1)[-1 of 2]);
+        switchInt(move _4) -> [1: bb4, otherwise: bb2];
+    }
+
+    bb4: {
+        _3 = discriminant((((*_1)[0 of 2] as Some).0: Test));
+        switchInt(move _3) -> [0: bb5, otherwise: bb2];
+    }
+
+    bb5: {
+        _2 = discriminant((((*_1)[-1 of 2] as Some).0: Test));
+        switchInt(move _2) -> [0: bb10, 3: bb9, otherwise: bb2];
+    }
+
+    bb6: {
+        _0 = MatchArm::Wild;
+        goto -> bb24;
+    }
+
+    bb7: {
+        _5 = discriminant((((*_1)[-2 of 2] as Some).0: Test));
+        switchInt(move _5) -> [1: bb15, 3: bb16, otherwise: bb6];
+    }
+
+    bb8: {
+        _13 = &_11;
+        _14 = &_1;
+        _12 = (move _13, move _14);
+        _15 = (_12.0: &&[std::option::Option<Test>]);
+        _16 = (_12.1: &&[std::option::Option<Test>]);
+        _18 = <&[Option<Test>] as PartialEq>::eq(_15, _16) -> bb11;
+    }
+
+    bb9: {
+        _11 = _1;
+        goto -> bb8;
+    }
+
+    bb10: {
+        _11 = _1;
+        goto -> bb8;
+    }
+
+    bb11: {
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<&[Option<Test>], &[Option<Test>]>(move _19, _15, _16, move _21);
+    }
+
+    bb13: {
+        _0 = MatchArm::Arm(const 0_usize);
+        goto -> bb24;
+    }
+
+    bb14: {
+        _26 = &_22;
+        _30 = Test::Bar;
+        _29 = Option::<Test>::Some(move _30);
+        _28 = &_29;
+        _27 = &_28;
+        _25 = <&Option<Test> as PartialEq>::eq(move _26, move _27) -> bb20;
+    }
+
+    bb15: {
+        _22 = &(*_1)[-2 of 2];
+        goto -> bb14;
+    }
+
+    bb16: {
+        _22 = &(*_1)[-2 of 2];
+        goto -> bb14;
+    }
+
+    bb17: {
+        _24 = const true;
+        goto -> bb19;
+    }
+
+    bb18: {
+        _32 = &_22;
+        _36 = Test::Qux;
+        _35 = Option::<Test>::Some(move _36);
+        _34 = &_35;
+        _33 = &_34;
+        _31 = <&Option<Test> as PartialEq>::eq(move _32, move _33) -> bb21;
+    }
+
+    bb19: {
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb23, otherwise: bb22];
+    }
+
+    bb20: {
+        switchInt(move _25) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb21: {
+        _24 = move _31;
+        goto -> bb19;
+    }
+
+    bb22: {
+        _37 = core::panicking::panic(const "assertion failed: bar == &Some(Test::Bar) || bar == &Some(Test::Qux)");
+    }
+
+    bb23: {
+        _0 = MatchArm::Arm(const 1_usize);
+        goto -> bb24;
+    }
+
+    bb24: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<std::option::Option<Test>>;
+    let mut _2: std::boxed::Box<[std::option::Option<Test>]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[std::option::Option<Test>; 4]>;
+    let mut _7: std::option::Option<Test>;
+    let mut _8: Test;
+    let mut _9: std::option::Option<Test>;
+    let mut _10: Test;
+    let mut _11: std::option::Option<Test>;
+    let mut _12: Test;
+    let mut _13: std::option::Option<Test>;
+    let mut _14: Test;
+    let mut _15: (&MatchArm, &MatchArm);
+    let mut _16: &MatchArm;
+    let _17: MatchArm;
+    let mut _18: &[std::option::Option<Test>];
+    let _19: &[std::option::Option<Test>];
+    let _20: &std::vec::Vec<std::option::Option<Test>>;
+    let mut _21: &MatchArm;
+    let _22: MatchArm;
+    let mut _25: bool;
+    let mut _26: bool;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _30: (&MatchArm, &MatchArm);
+    let mut _31: &MatchArm;
+    let _32: MatchArm;
+    let mut _33: &[std::option::Option<Test>];
+    let _34: &[std::option::Option<Test>; 3];
+    let _35: [std::option::Option<Test>; 3];
+    let mut _36: std::option::Option<Test>;
+    let mut _37: Test;
+    let mut _38: std::option::Option<Test>;
+    let mut _39: Test;
+    let mut _40: std::option::Option<Test>;
+    let mut _41: Test;
+    let mut _42: &MatchArm;
+    let _43: MatchArm;
+    let mut _46: bool;
+    let mut _47: bool;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: (&MatchArm, &MatchArm);
+    let mut _52: &MatchArm;
+    let _53: MatchArm;
+    let _54: &[std::option::Option<Test>];
+    let _55: &[std::option::Option<Test>];
+    let mut _56: &std::vec::Vec<std::option::Option<Test>>;
+    let mut _57: std::ops::RangeTo<usize>;
+    let mut _58: &MatchArm;
+    let _59: MatchArm;
+    let mut _62: bool;
+    let mut _63: bool;
+    let _65: !;
+    let mut _66: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _67: (&MatchArm, &MatchArm);
+    let mut _68: &MatchArm;
+    let _69: MatchArm;
+    let mut _70: &[std::option::Option<Test>];
+    let _71: &[std::option::Option<Test>; 3];
+    let _72: [std::option::Option<Test>; 3];
+    let mut _73: std::option::Option<Test>;
+    let mut _74: Test;
+    let mut _75: std::option::Option<Test>;
+    let mut _76: Test;
+    let mut _77: std::option::Option<Test>;
+    let mut _78: Test;
+    let mut _79: &MatchArm;
+    let _80: MatchArm;
+    let mut _83: bool;
+    let mut _84: bool;
+    let _86: !;
+    let mut _87: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _88: (&MatchArm, &MatchArm);
+    let mut _89: &MatchArm;
+    let _90: MatchArm;
+    let _91: &[std::option::Option<Test>];
+    let _92: &[std::option::Option<Test>];
+    let mut _93: &std::vec::Vec<std::option::Option<Test>>;
+    let mut _94: std::ops::Range<usize>;
+    let mut _95: &MatchArm;
+    let _96: MatchArm;
+    let mut _99: bool;
+    let mut _100: bool;
+    let _102: !;
+    let mut _103: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _104: *const [std::option::Option<Test>; 4];
+    let mut _105: *const ();
+    let mut _106: usize;
+    let mut _107: usize;
+    let mut _108: usize;
+    let mut _109: usize;
+    let mut _110: bool;
+    scope 1 {
+        debug foo => _1;
+        let _23: &MatchArm;
+        let _24: &MatchArm;
+        let _44: &MatchArm;
+        let _45: &MatchArm;
+        let _60: &MatchArm;
+        let _61: &MatchArm;
+        let _81: &MatchArm;
+        let _82: &MatchArm;
+        let _97: &MatchArm;
+        let _98: &MatchArm;
+        scope 3 {
+            debug left_val => _23;
+            debug right_val => _24;
+            let _27: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _27;
+            }
+        }
+        scope 5 {
+            debug left_val => _44;
+            debug right_val => _45;
+            let _48: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _48;
+            }
+        }
+        scope 7 {
+            debug left_val => _60;
+            debug right_val => _61;
+            let _64: core::panicking::AssertKind;
+            scope 8 {
+                debug kind => _64;
+            }
+        }
+        scope 9 {
+            debug left_val => _81;
+            debug right_val => _82;
+            let _85: core::panicking::AssertKind;
+            scope 10 {
+                debug kind => _85;
+            }
+        }
+        scope 11 {
+            debug left_val => _97;
+            debug right_val => _98;
+            let _101: core::panicking::AssertKind;
+            scope 12 {
+                debug kind => _101;
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([std::option::Option<Test>; 4]);
+        _4 = AlignOf([std::option::Option<Test>; 4]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [std::option::Option<Test>; 4]);
+        _8 = Test::Foo;
+        _7 = Option::<Test>::Some(move _8);
+        _10 = Test::Bar;
+        _9 = Option::<Test>::Some(move _10);
+        _12 = Test::Baz;
+        _11 = Option::<Test>::Some(move _12);
+        _14 = Test::Qux;
+        _13 = Option::<Test>::Some(move _14);
+        _104 = (((_6.0: std::ptr::Unique<[std::option::Option<Test>; 4]>).0: std::ptr::NonNull<[std::option::Option<Test>; 4]>).0: *const [std::option::Option<Test>; 4]);
+        _105 = _104 as *const () (PtrToPtr);
+        _106 = _105 as usize (Transmute);
+        _107 = AlignOf(std::option::Option<Test>);
+        _108 = Sub(_107, const 1_usize);
+        _109 = BitAnd(_106, _108);
+        _110 = Eq(_109, const 0_usize);
+        assert(_110, "misaligned pointer dereference: address must be a multiple of {} but is {}", _107, _106) -> [success: bb29, unwind unreachable];
+    }
+
+    bb2: {
+        _20 = &_1;
+        _19 = <Vec<Option<Test>> as Deref>::deref(_20) -> [return: bb3, unwind: bb27];
+    }
+
+    bb3: {
+        _18 = _19;
+        _17 = test(move _18) -> [return: bb4, unwind: bb27];
+    }
+
+    bb4: {
+        _16 = &_17;
+        _22 = MatchArm::Arm(const 0_usize);
+        _21 = &_22;
+        _15 = (move _16, move _21);
+        _23 = (_15.0: &MatchArm);
+        _24 = (_15.1: &MatchArm);
+        _26 = <MatchArm as PartialEq>::eq(_23, _24) -> [return: bb5, unwind: bb27];
+    }
+
+    bb5: {
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _27, _23, _24, move _29) -> bb27;
+    }
+
+    bb7: {
+        _37 = Test::Foo;
+        _36 = Option::<Test>::Some(move _37);
+        _39 = Test::Bar;
+        _38 = Option::<Test>::Some(move _39);
+        _41 = Test::Foo;
+        _40 = Option::<Test>::Some(move _41);
+        _35 = [move _36, move _38, move _40];
+        _34 = &_35;
+        _33 = _34 as &[std::option::Option<Test>] (Pointer(Unsize));
+        _32 = test(move _33) -> [return: bb8, unwind: bb27];
+    }
+
+    bb8: {
+        _31 = &_32;
+        _43 = MatchArm::Arm(const 0_usize);
+        _42 = &_43;
+        _30 = (move _31, move _42);
+        _44 = (_30.0: &MatchArm);
+        _45 = (_30.1: &MatchArm);
+        _47 = <MatchArm as PartialEq>::eq(_44, _45) -> [return: bb9, unwind: bb27];
+    }
+
+    bb9: {
+        _46 = Not(move _47);
+        switchInt(move _46) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _48, _44, _45, move _50) -> bb27;
+    }
+
+    bb11: {
+        _56 = &_1;
+        _57 = RangeTo::<usize> { end: const 3_usize };
+        _55 = <Vec<Option<Test>> as Index<RangeTo<usize>>>::index(move _56, move _57) -> [return: bb12, unwind: bb27];
+    }
+
+    bb12: {
+        _54 = _55;
+        _53 = test(_54) -> [return: bb13, unwind: bb27];
+    }
+
+    bb13: {
+        _52 = &_53;
+        _59 = MatchArm::Arm(const 1_usize);
+        _58 = &_59;
+        _51 = (move _52, move _58);
+        _60 = (_51.0: &MatchArm);
+        _61 = (_51.1: &MatchArm);
+        _63 = <MatchArm as PartialEq>::eq(_60, _61) -> [return: bb14, unwind: bb27];
+    }
+
+    bb14: {
+        _62 = Not(move _63);
+        switchInt(move _62) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _64 = core::panicking::AssertKind::Eq;
+        _66 = Option::<Arguments<'_>>::None;
+        _65 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _64, _60, _61, move _66) -> bb27;
+    }
+
+    bb16: {
+        _74 = Test::Bar;
+        _73 = Option::<Test>::Some(move _74);
+        _76 = Test::Qux;
+        _75 = Option::<Test>::Some(move _76);
+        _78 = Test::Baz;
+        _77 = Option::<Test>::Some(move _78);
+        _72 = [move _73, move _75, move _77];
+        _71 = &_72;
+        _70 = _71 as &[std::option::Option<Test>] (Pointer(Unsize));
+        _69 = test(move _70) -> [return: bb17, unwind: bb27];
+    }
+
+    bb17: {
+        _68 = &_69;
+        _80 = MatchArm::Arm(const 1_usize);
+        _79 = &_80;
+        _67 = (move _68, move _79);
+        _81 = (_67.0: &MatchArm);
+        _82 = (_67.1: &MatchArm);
+        _84 = <MatchArm as PartialEq>::eq(_81, _82) -> [return: bb18, unwind: bb27];
+    }
+
+    bb18: {
+        _83 = Not(move _84);
+        switchInt(move _83) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _85 = core::panicking::AssertKind::Eq;
+        _87 = Option::<Arguments<'_>>::None;
+        _86 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _85, _81, _82, move _87) -> bb27;
+    }
+
+    bb20: {
+        _93 = &_1;
+        _94 = std::ops::Range::<usize> { start: const 1_usize, end: const 2_usize };
+        _92 = <Vec<Option<Test>> as Index<std::ops::Range<usize>>>::index(move _93, move _94) -> [return: bb21, unwind: bb27];
+    }
+
+    bb21: {
+        _91 = _92;
+        _90 = test(_91) -> [return: bb22, unwind: bb27];
+    }
+
+    bb22: {
+        _89 = &_90;
+        _96 = MatchArm::Wild;
+        _95 = &_96;
+        _88 = (move _89, move _95);
+        _97 = (_88.0: &MatchArm);
+        _98 = (_88.1: &MatchArm);
+        _100 = <MatchArm as PartialEq>::eq(_97, _98) -> [return: bb23, unwind: bb27];
+    }
+
+    bb23: {
+        _99 = Not(move _100);
+        switchInt(move _99) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _101 = core::panicking::AssertKind::Eq;
+        _103 = Option::<Arguments<'_>>::None;
+        _102 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _101, _97, _98, move _103) -> bb27;
+    }
+
+    bb25: {
+        drop(_1) -> bb26;
+    }
+
+    bb26: {
+        return;
+    }
+
+    bb27 (cleanup): {
+        drop(_1) -> [return: bb28, unwind terminate];
+    }
+
+    bb28 (cleanup): {
+        resume;
+    }
+
+    bb29: {
+        (*_104) = [move _7, move _9, move _11, move _13];
+        _2 = move _6 as std::boxed::Box<[std::option::Option<Test>]> (Pointer(Unsize));
+        _1 = slice::<impl [Option<Test>]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}
+
+fn MatchArm::Arm(_1: usize) -> MatchArm {
+    let mut _0: MatchArm;
+
+    bb0: {
+        _0 = MatchArm::Arm(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MatchArm::Arm(_1: usize) -> MatchArm {
+    let mut _0: MatchArm;
+
+    bb0: {
+        _0 = MatchArm::Arm(move _1);
+        return;
+    }
+}

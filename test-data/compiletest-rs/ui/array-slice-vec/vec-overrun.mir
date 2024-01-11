@@ -1,0 +1,164 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<isize>;
+    let mut _2: std::boxed::Box<[isize]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[isize; 1]>;
+    let mut _8: (&isize, &isize);
+    let mut _9: &isize;
+    let _10: &isize;
+    let mut _11: &std::vec::Vec<isize>;
+    let mut _12: &isize;
+    let _13: isize;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: isize;
+    let mut _19: isize;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _23: (&isize, &isize);
+    let mut _24: &isize;
+    let _25: &isize;
+    let mut _26: &std::vec::Vec<isize>;
+    let mut _27: usize;
+    let mut _28: &isize;
+    let _29: isize;
+    let mut _32: bool;
+    let mut _33: bool;
+    let mut _34: isize;
+    let mut _35: isize;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: *const [isize; 1];
+    let mut _40: *const ();
+    let mut _41: usize;
+    let mut _42: usize;
+    let mut _43: usize;
+    let mut _44: usize;
+    let mut _45: bool;
+    scope 1 {
+        debug v => _1;
+        let _7: usize;
+        scope 3 {
+            debug x => _7;
+            let _14: &isize;
+            let _15: &isize;
+            let _30: &isize;
+            let _31: &isize;
+            scope 4 {
+                debug left_val => _14;
+                debug right_val => _15;
+                let _20: core::panicking::AssertKind;
+                scope 5 {
+                    debug kind => _20;
+                }
+            }
+            scope 6 {
+                debug left_val => _30;
+                debug right_val => _31;
+                let _36: core::panicking::AssertKind;
+                scope 7 {
+                    debug kind => _36;
+                }
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([isize; 1]);
+        _4 = AlignOf([isize; 1]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [isize; 1]);
+        _39 = (((_6.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _40 = _39 as *const () (PtrToPtr);
+        _41 = _40 as usize (Transmute);
+        _42 = AlignOf(isize);
+        _43 = Sub(_42, const 1_usize);
+        _44 = BitAnd(_41, _43);
+        _45 = Eq(_44, const 0_usize);
+        assert(_45, "misaligned pointer dereference: address must be a multiple of {} but is {}", _42, _41) -> [success: bb12, unwind unreachable];
+    }
+
+    bb2: {
+        _7 = const 0_usize;
+        _11 = &_1;
+        _10 = <Vec<isize> as Index<usize>>::index(move _11, _7) -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _9 = _10;
+        _13 = const 10_isize;
+        _12 = &_13;
+        _8 = (move _9, move _12);
+        _14 = (_8.0: &isize);
+        _15 = (_8.1: &isize);
+        _18 = (*_14);
+        _19 = (*_15);
+        _17 = Eq(move _18, move _19);
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<isize, isize>(move _20, _14, _15, move _22) -> bb10;
+    }
+
+    bb5: {
+        _26 = &_1;
+        _27 = Add(_7, const 2_usize);
+        _25 = <Vec<isize> as Index<usize>>::index(move _26, move _27) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        _24 = _25;
+        _29 = const 20_isize;
+        _28 = &_29;
+        _23 = (move _24, move _28);
+        _30 = (_23.0: &isize);
+        _31 = (_23.1: &isize);
+        _34 = (*_30);
+        _35 = (*_31);
+        _33 = Eq(move _34, move _35);
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<isize, isize>(move _36, _30, _31, move _38) -> bb10;
+    }
+
+    bb8: {
+        drop(_1) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12: {
+        (*_39) = [const 10_isize];
+        _2 = move _6 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _1 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}

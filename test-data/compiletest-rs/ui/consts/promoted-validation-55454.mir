@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/promoted-validation-55454.rs:4:10: 4:19>::eq(_1: &This<T>, _2: &This<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &T;
+    let mut _4: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _4 = &((*_2).0: T);
+        _0 = <T as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: bool;
+    let mut _2: &This<std::option::Option<&i32>>;
+    let _3: This<std::option::Option<&i32>>;
+    let mut _4: std::option::Option<&i32>;
+    let mut _5: &i32;
+    let _6: i32;
+    let mut _7: &This<std::option::Option<&i32>>;
+    let _8: This<std::option::Option<&i32>>;
+    let mut _9: std::option::Option<&i32>;
+    let _10: &i32;
+    let _11: i32;
+
+    bb0: {
+        _6 = const 1_i32;
+        _5 = &_6;
+        _4 = Option::<&i32>::Some(move _5);
+        _3 = This::<Option<&i32>>(move _4);
+        _2 = &_3;
+        _11 = const 1_i32;
+        _10 = &_11;
+        _9 = Option::<&i32>::Some(_10);
+        _8 = This::<Option<&i32>>(move _9);
+        _7 = &_8;
+        _1 = <This<Option<&i32>> as PartialEq>::eq(move _2, move _7) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn This(_1: T) -> This<T> {
+    let mut _0: This<T>;
+
+    bb0: {
+        _0 = This::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn This(_1: T) -> This<T> {
+    let mut _0: This<T>;
+
+    bb0: {
+        _0 = This::<T>(move _1);
+        return;
+    }
+}

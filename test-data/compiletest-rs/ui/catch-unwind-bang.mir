@@ -1,0 +1,31 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn worker() -> ! {
+    let mut _0: !;
+
+    bb0: {
+        _0 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::any::Any + std::marker::Send>;
+    let mut _2: std::result::Result<!, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+
+    bb0: {
+        _2 = catch_unwind::<fn() -> ! {worker}, !>(worker) -> bb1;
+    }
+
+    bb1: {
+        _1 = Result::<!, Box<dyn Any + Send>>::unwrap_err(move _2) -> bb2;
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

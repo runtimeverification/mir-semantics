@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Piece;
+    let mut _2: isize;
+    let _3: Piece;
+    scope 1 {
+        debug pt => _3;
+    }
+
+    bb0: {
+        _1 = Piece::A;
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb4, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _3 = move _1;
+        goto -> bb3;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _3 = move _1;
+        goto -> bb3;
+    }
+}

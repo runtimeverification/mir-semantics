@@ -1,0 +1,383 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/deriving/deriving-via-extension-enum.rs:3:10: 3:19>::eq(_1: &Foo, _2: &Foo) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&Foo, &Foo);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: isize;
+    let mut _15: bool;
+    let mut _16: isize;
+    let mut _17: isize;
+    let mut _18: bool;
+    let mut _19: isize;
+    let mut _20: isize;
+    let mut _25: bool;
+    let mut _26: f64;
+    let mut _27: f64;
+    let mut _28: bool;
+    let mut _29: f64;
+    let mut _30: f64;
+    let mut _31: &Foo;
+    let mut _32: &Foo;
+    let mut _33: &Foo;
+    let mut _34: &Foo;
+    let mut _35: &Foo;
+    let mut _36: &Foo;
+    let mut _37: &Foo;
+    let mut _38: &Foo;
+    let mut _39: &Foo;
+    let mut _40: &Foo;
+    let mut _41: &Foo;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _11: &isize;
+            let _12: &isize;
+            let _13: &isize;
+            let _14: &isize;
+            let _21: &f64;
+            let _22: &f64;
+            let _23: &f64;
+            let _24: &f64;
+            scope 3 {
+                debug __self_0 => _11;
+                debug __self_1 => _12;
+                debug __arg1_0 => _13;
+                debug __arg1_1 => _14;
+            }
+            scope 4 {
+                debug __self_0 => _21;
+                debug __self_1 => _22;
+                debug __arg1_0 => _23;
+                debug __arg1_1 => _24;
+            }
+            scope 5 {
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _31 = deref_copy (_7.0: &Foo);
+        _10 = discriminant((*_31));
+        switchInt(move _10) -> [0: bb4, 1: bb6, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _32 = deref_copy (_7.1: &Foo);
+        _8 = discriminant((*_32));
+        switchInt(move _8) -> [0: bb7, otherwise: bb5];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        _33 = deref_copy (_7.1: &Foo);
+        _9 = discriminant((*_33));
+        switchInt(move _9) -> [1: bb10, otherwise: bb5];
+    }
+
+    bb7: {
+        _34 = deref_copy (_7.0: &Foo);
+        _11 = &(((*_34) as Bar).0: isize);
+        _35 = deref_copy (_7.0: &Foo);
+        _12 = &(((*_35) as Bar).1: isize);
+        _36 = deref_copy (_7.1: &Foo);
+        _13 = &(((*_36) as Bar).0: isize);
+        _37 = deref_copy (_7.1: &Foo);
+        _14 = &(((*_37) as Bar).1: isize);
+        _16 = (*_11);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        switchInt(move _15) -> [0: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        _6 = const false;
+        goto -> bb13;
+    }
+
+    bb9: {
+        _19 = (*_12);
+        _20 = (*_14);
+        _18 = Eq(move _19, move _20);
+        _6 = move _18;
+        goto -> bb13;
+    }
+
+    bb10: {
+        _38 = deref_copy (_7.0: &Foo);
+        _21 = &(((*_38) as Baz).0: f64);
+        _39 = deref_copy (_7.0: &Foo);
+        _22 = &(((*_39) as Baz).1: f64);
+        _40 = deref_copy (_7.1: &Foo);
+        _23 = &(((*_40) as Baz).0: f64);
+        _41 = deref_copy (_7.1: &Foo);
+        _24 = &(((*_41) as Baz).1: f64);
+        _26 = (*_21);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        switchInt(move _25) -> [0: bb11, otherwise: bb12];
+    }
+
+    bb11: {
+        _6 = const false;
+        goto -> bb13;
+    }
+
+    bb12: {
+        _29 = (*_22);
+        _30 = (*_24);
+        _28 = Eq(move _29, move _30);
+        _6 = move _28;
+        goto -> bb13;
+    }
+
+    bb13: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/deriving/deriving-via-extension-enum.rs:3:21: 3:26>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &isize;
+    let _5: &isize;
+    let _6: &str;
+    let mut _7: &dyn std::fmt::Debug;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &&isize;
+    let _10: &f64;
+    let _11: &f64;
+    let _12: &str;
+    let mut _13: &dyn std::fmt::Debug;
+    let mut _14: &dyn std::fmt::Debug;
+    let _15: &&f64;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __self_1 => _5;
+    }
+    scope 2 {
+        debug __self_0 => _10;
+        debug __self_1 => _11;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _10 = &(((*_1) as Baz).0: f64);
+        _11 = &(((*_1) as Baz).1: f64);
+        _12 = const "Baz";
+        _13 = _10 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _15 = &_11;
+        _14 = _15 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field2_finish(_2, _12, move _13, move _14) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as Bar).0: isize);
+        _5 = &(((*_1) as Bar).1: isize);
+        _6 = const "Bar";
+        _7 = _4 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _9 = &_5;
+        _8 = _9 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field2_finish(_2, _6, move _7, move _8) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo;
+    let mut _3: (&Foo, &Foo);
+    let mut _4: &Foo;
+    let mut _5: &Foo;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _11: !;
+    let mut _12: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: &Foo;
+    let mut _17: &Foo;
+    let mut _18: !;
+    let mut _19: bool;
+    let mut _20: bool;
+    let mut _21: &Foo;
+    let _22: &Foo;
+    let mut _23: !;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: &Foo;
+    let _28: &Foo;
+    let mut _29: !;
+    scope 1 {
+        debug a => _1;
+        let _2: Foo;
+        scope 2 {
+            debug b => _2;
+            let _6: &Foo;
+            let _7: &Foo;
+            scope 3 {
+                debug left_val => _6;
+                debug right_val => _7;
+                let _10: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _10;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Foo::Bar(const 1_isize, const 2_isize);
+        _2 = Foo::Bar(const 1_isize, const 2_isize);
+        _4 = &_1;
+        _5 = &_2;
+        _3 = (move _4, move _5);
+        _6 = (_3.0: &Foo);
+        _7 = (_3.1: &Foo);
+        _9 = <Foo as PartialEq>::eq(_6, _7) -> bb1;
+    }
+
+    bb1: {
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = core::panicking::AssertKind::Eq;
+        _12 = Option::<Arguments<'_>>::None;
+        _11 = core::panicking::assert_failed::<Foo, Foo>(move _10, _6, _7, move _12);
+    }
+
+    bb3: {
+        _16 = &_1;
+        _17 = &_2;
+        _15 = <Foo as PartialEq>::ne(move _16, move _17) -> bb4;
+    }
+
+    bb4: {
+        _14 = Not(move _15);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _18 = core::panicking::panic(const "assertion failed: !(a != b)");
+    }
+
+    bb6: {
+        _21 = &_1;
+        _22 = &_2;
+        _20 = <Foo as PartialEq>::eq(move _21, _22) -> bb7;
+    }
+
+    bb7: {
+        _19 = Not(move _20);
+        switchInt(move _19) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _23 = core::panicking::panic(const "assertion failed: a.eq(&b)");
+    }
+
+    bb9: {
+        _27 = &_1;
+        _28 = &_2;
+        _26 = <Foo as PartialEq>::ne(move _27, _28) -> bb10;
+    }
+
+    bb10: {
+        _25 = Not(move _26);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _29 = core::panicking::panic(const "assertion failed: !a.ne(&b)");
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+fn Foo::Bar(_1: isize, _2: isize) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Bar(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo::Bar(_1: isize, _2: isize) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Bar(move _1, move _2);
+        return;
+    }
+}
+
+fn Foo::Baz(_1: f64, _2: f64) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Baz(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo::Baz(_1: f64, _2: f64) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Baz(move _1, move _2);
+        return;
+    }
+}

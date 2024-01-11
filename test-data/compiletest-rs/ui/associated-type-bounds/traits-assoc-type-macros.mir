@@ -1,0 +1,33 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-type-bounds/traits-assoc-type-macros.rs:19:9: 19:35>::deserialize(_1: D) -> <D as Deserializer>::Error {
+    let mut _0: <D as Deserializer>::Error;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn <impl at ui/associated-type-bounds/traits-assoc-type-macros.rs:19:9: 19:35>::deserialize(_1: D) -> <D as Deserializer>::Error {
+    let mut _0: <D as Deserializer>::Error;
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

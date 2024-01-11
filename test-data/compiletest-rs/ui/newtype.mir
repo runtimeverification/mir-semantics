@@ -1,0 +1,166 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/newtype.rs:4:16: 4:21>::clone(_1: &mytype) -> mytype {
+    debug self => _1;
+    let mut _0: mytype;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/newtype.rs:7:16: 7:21>::clone(_1: &Mytype) -> Mytype {
+    debug self => _1;
+    let mut _0: Mytype;
+    scope 1 {
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn compute(_1: mytype) -> isize {
+    debug i => _1;
+    let mut _0: isize;
+    let _2: Mytype;
+    let mut _3: isize;
+    scope 1 {
+        debug m => _2;
+    }
+
+    bb0: {
+        _2 = (_1.0: Mytype);
+        _3 = (_2.1: isize);
+        _0 = Add(move _3, const 20_isize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: mytype;
+    let mut _2: Mytype;
+    let mut _3: fn(mytype) -> isize;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &isize;
+    let _14: isize;
+    let mut _16: (&isize, &isize);
+    let mut _17: &isize;
+    let _18: isize;
+    let mut _19: fn(mytype) -> isize;
+    let mut _20: &isize;
+    let _21: isize;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: isize;
+    let mut _27: isize;
+    let _29: !;
+    let mut _30: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug myval => _1;
+        let _15: Mytype;
+        scope 2 {
+            debug m => _15;
+            let _22: &isize;
+            let _23: &isize;
+            scope 3 {
+                debug left_val => _22;
+                debug right_val => _23;
+                let _28: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _28;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = compute as fn(mytype) -> isize (Pointer(ReifyFnPointer));
+        _2 = Mytype { compute: move _3, val: const 30_isize };
+        _1 = mytype(move _2);
+        _8 = [const "", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _14 = compute(_1) -> bb1;
+    }
+
+    bb1: {
+        _13 = &_14;
+        _12 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_13) -> bb2;
+    }
+
+    bb2: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> bb3;
+    }
+
+    bb3: {
+        _4 = _print(move _5) -> bb4;
+    }
+
+    bb4: {
+        _15 = (_1.0: Mytype);
+        _19 = (_15.0: fn(mytype) -> isize);
+        _18 = move _19(_1) -> bb5;
+    }
+
+    bb5: {
+        _17 = &_18;
+        _21 = const 50_isize;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &isize);
+        _23 = (_16.1: &isize);
+        _26 = (*_22);
+        _27 = (*_23);
+        _25 = Eq(move _26, move _27);
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _28 = core::panicking::AssertKind::Eq;
+        _30 = Option::<Arguments<'_>>::None;
+        _29 = core::panicking::assert_failed::<isize, isize>(move _28, _22, _23, move _30);
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn mytype(_1: Mytype) -> mytype {
+    let mut _0: mytype;
+
+    bb0: {
+        _0 = mytype(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn mytype(_1: Mytype) -> mytype {
+    let mut _0: mytype;
+
+    bb0: {
+        _0 = mytype(move _1);
+        return;
+    }
+}

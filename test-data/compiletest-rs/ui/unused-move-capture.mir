@@ -1,0 +1,48 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<i32>;
+    let _3: ();
+    let mut _4: &[closure@ui/unused-move-capture.rs:6:20: 6:22];
+    scope 1 {
+        debug _x => _1;
+        let _2: [closure@ui/unused-move-capture.rs:6:20: 6:22];
+        scope 2 {
+            debug lam_move => const ZeroSized: [closure@ui/unused-move-capture.rs:6:20: 6:22];
+        }
+    }
+
+    bb0: {
+        _1 = Box::<i32>::new(const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_2;
+        _3 = <[closure@ui/unused-move-capture.rs:6:20: 6:22] as Fn<()>>::call(move _4, const ()) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_1) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/unused-move-capture.rs:6:20: 6:22]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

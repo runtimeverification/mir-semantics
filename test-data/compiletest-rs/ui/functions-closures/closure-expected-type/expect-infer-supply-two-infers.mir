@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn with_closure(_1: F) -> () {
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn expect_free_supply_free(_1: &u32) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: ();
+
+    bb0: {
+        _2 = with_closure::<u32, [closure@ui/functions-closures/closure-expected-type/expect-infer-supply-two-infers.rs:10:18: 10:36]>(const ZeroSized: [closure@ui/functions-closures/closure-expected-type/expect-infer-supply-two-infers.rs:10:18: 10:36]) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn expect_free_supply_free::{closure#0}(_1: [closure@ui/functions-closures/closure-expected-type/expect-infer-supply-two-infers.rs:10:18: 10:36], _2: Vec<u32>, _3: u32) -> () {
+    debug x => _2;
+    debug y => _3;
+    let mut _0: ();
+    let _4: ();
+    let mut _5: &mut std::vec::Vec<u32>;
+    let mut _6: u32;
+    scope 1 {
+    }
+
+    bb0: {
+        _5 = &mut _2;
+        _4 = Vec::<u32>::push(move _5, const 22_u32) -> [return: bb1, unwind: bb4];
+    }
+
+    bb1: {
+        _6 = core::num::<impl u32>::wrapping_add(_3, const 1_u32) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        drop(_2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,93 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn clear(_1: &mut Option<Box<Node<dyn Send>>>) -> () {
+    debug head => _1;
+    let mut _0: ();
+    let mut _2: std::option::Option<std::boxed::Box<Node<dyn std::marker::Send>>>;
+    let mut _3: isize;
+    let _4: std::boxed::Box<Node<dyn std::marker::Send>>;
+    let mut _5: std::option::Option<std::boxed::Box<Node<dyn std::marker::Send>>>;
+    let mut _6: &mut std::boxed::Box<Node<dyn std::marker::Send>>;
+    let mut _7: ();
+    let mut _8: &mut std::boxed::Box<Node<dyn std::marker::Send>>;
+    let mut _9: ();
+    let mut _10: &mut std::boxed::Box<Node<dyn std::marker::Send>>;
+    let mut _11: ();
+    let mut _12: *const Node<dyn std::marker::Send>;
+    let mut _13: *const Node<dyn std::marker::Send>;
+    let mut _14: *const Node<dyn std::marker::Send>;
+    scope 1 {
+        debug node => _4;
+    }
+
+    bb0: {
+        _2 = Option::<Box<Node<dyn Send>>>::take(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = discriminant(_2);
+        switchInt(move _3) -> [0: bb9, 1: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = move ((_2 as Some).0: std::boxed::Box<Node<dyn std::marker::Send>>);
+        _14 = (((_4.0: std::ptr::Unique<Node<dyn std::marker::Send>>).0: std::ptr::NonNull<Node<dyn std::marker::Send>>).0: *const Node<dyn std::marker::Send>);
+        _5 = move ((*_14).0: std::option::Option<std::boxed::Box<Node<dyn std::marker::Send>>>);
+        drop((*_1)) -> [return: bb4, unwind: bb5];
+    }
+
+    bb4: {
+        (*_1) = move _5;
+        _12 = deref_copy (((_4.0: std::ptr::Unique<Node<dyn std::marker::Send>>).0: std::ptr::NonNull<Node<dyn std::marker::Send>>).0: *const Node<dyn std::marker::Send>);
+        drop(((*_12).1: dyn std::marker::Send)) -> [return: bb8, unwind: bb7];
+    }
+
+    bb5 (cleanup): {
+        (*_1) = move _5;
+        _13 = deref_copy (((_4.0: std::ptr::Unique<Node<dyn std::marker::Send>>).0: std::ptr::NonNull<Node<dyn std::marker::Send>>).0: *const Node<dyn std::marker::Send>);
+        drop(((*_13).1: dyn std::marker::Send)) -> [return: bb10, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7 (cleanup): {
+        _8 = &mut _4;
+        _9 = <Box<Node<dyn Send>> as Drop>::drop(move _8) -> [return: bb11, unwind terminate];
+    }
+
+    bb8: {
+        _6 = &mut _4;
+        _7 = <Box<Node<dyn Send>> as Drop>::drop(move _6) -> bb9;
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        _10 = &mut _4;
+        _11 = <Box<Node<dyn Send>> as Drop>::drop(move _10) -> [return: bb12, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        goto -> bb6;
+    }
+
+    bb12 (cleanup): {
+        goto -> bb6;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,59 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test(_1: Option<usize>) -> bool {
+    debug x => _1;
+    let mut _0: bool;
+    let mut _2: isize;
+
+    bb0: {
+        _2 = discriminant(_1);
+        _0 = Eq(_2, const 1_isize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: std::option::Option<usize>;
+    let mut _4: !;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: std::option::Option<usize>;
+    let mut _9: !;
+
+    bb0: {
+        _3 = Option::<usize>::Some(const 42_usize);
+        _2 = test(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _4 = core::panicking::panic(const "assertion failed: test(Some(42))");
+    }
+
+    bb3: {
+        _8 = Option::<usize>::None;
+        _7 = test(move _8) -> bb4;
+    }
+
+    bb4: {
+        _6 = Not(move _7);
+        _5 = Not(move _6);
+        switchInt(move _5) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _9 = core::panicking::panic(const "assertion failed: !test(None)");
+    }
+
+    bb6: {
+        return;
+    }
+}

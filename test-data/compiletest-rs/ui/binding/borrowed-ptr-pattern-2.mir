@@ -1,0 +1,103 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &String) -> bool {
+    debug s => _1;
+    let mut _0: bool;
+    let mut _2: &str;
+    let _3: &str;
+    let mut _4: bool;
+
+    bb0: {
+        _3 = <String as Deref>::deref(_1) -> bb1;
+    }
+
+    bb1: {
+        _2 = _3;
+        _4 = <str as PartialEq>::eq(_2, const "kitty") -> bb2;
+    }
+
+    bb2: {
+        _0 = move _4;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let _3: &std::string::String;
+    let _4: std::string::String;
+    let _5: &str;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: bool;
+    let _10: &std::string::String;
+    let _11: std::string::String;
+    let _12: &str;
+    let mut _13: !;
+
+    bb0: {
+        _5 = const "kitty";
+        _4 = <str as ToString>::to_string(_5) -> bb1;
+    }
+
+    bb1: {
+        _3 = &_4;
+        _2 = foo(_3) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _1 = Not(move _2);
+        drop(_4) -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _1) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _6 = core::panicking::panic(const "assertion failed: foo(&\\\"kitty\\\".to_string())");
+    }
+
+    bb5: {
+        _12 = const "gata";
+        _11 = <str as ToString>::to_string(_12) -> bb6;
+    }
+
+    bb6: {
+        _10 = &_11;
+        _9 = foo(_10) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        _8 = Not(move _9);
+        _7 = Not(move _8);
+        drop(_11) -> bb8;
+    }
+
+    bb8: {
+        switchInt(move _7) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _13 = core::panicking::panic(const "assertion failed: !foo(&\\\"gata\\\".to_string())");
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_11) -> [return: bb13, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_4) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}

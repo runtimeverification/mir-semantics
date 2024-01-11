@@ -1,0 +1,318 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:7:10: 7:15>::fmt(_1: &PointType, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &u32;
+    let _5: &u32;
+    let _6: &str;
+    let _7: &str;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &str;
+    let mut _10: &dyn std::fmt::Debug;
+    let _11: &&u32;
+    let _12: &u32;
+    let _13: &u32;
+    let _14: &u32;
+    let _15: &str;
+    let _16: &str;
+    let mut _17: &dyn std::fmt::Debug;
+    let _18: &str;
+    let mut _19: &dyn std::fmt::Debug;
+    let _20: &str;
+    let mut _21: &dyn std::fmt::Debug;
+    let _22: &&u32;
+    scope 1 {
+        debug __self_0 => _4;
+        debug __self_1 => _5;
+    }
+    scope 2 {
+        debug __self_0 => _12;
+        debug __self_1 => _13;
+        debug __self_2 => _14;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _12 = &(((*_1) as ThreeD).0: u32);
+        _13 = &(((*_1) as ThreeD).1: u32);
+        _14 = &(((*_1) as ThreeD).2: u32);
+        _15 = const "ThreeD";
+        _16 = const "x";
+        _17 = _12 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _18 = const "y";
+        _19 = _13 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _20 = const "z";
+        _22 = &_14;
+        _21 = _22 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field3_finish(_2, _15, _16, move _17, _18, move _19, _20, move _21) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as TwoD).0: u32);
+        _5 = &(((*_1) as TwoD).1: u32);
+        _6 = const "TwoD";
+        _7 = const "x";
+        _8 = _4 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _9 = const "y";
+        _11 = &_5;
+        _10 = _11 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field2_finish(_2, _6, _7, move _8, _9, move _10) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:7:17: 7:22>::clone(_1: &PointType) -> PointType {
+    debug self => _1;
+    let mut _0: PointType;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:19:1: 19:12>::test1(_1: &mut Points) -> Vec<usize> {
+    debug self => _1;
+    let mut _0: std::vec::Vec<usize>;
+    let mut _2: std::iter::FilterMap<std::ops::Range<usize>, [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28]>;
+    let mut _3: std::ops::Range<usize>;
+    let mut _4: usize;
+    let mut _5: &std::vec::Vec<PointType>;
+    let mut _6: [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28];
+    let mut _7: &mut &mut Points;
+
+    bb0: {
+        _5 = &((*_1).0: std::vec::Vec<PointType>);
+        _4 = Vec::<PointType>::len(move _5) -> bb1;
+    }
+
+    bb1: {
+        _3 = std::ops::Range::<usize> { start: const 0_usize, end: move _4 };
+        _7 = &mut _1;
+        _6 = [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28] { self: move _7 };
+        _2 = <std::ops::Range<usize> as Iterator>::filter_map::<usize, [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28]>(move _3, move _6) -> bb2;
+    }
+
+    bb2: {
+        _0 = <FilterMap<std::ops::Range<usize>, [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28]> as Iterator>::collect::<Vec<usize>>(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:19:1: 19:12>::test1::{closure#0}(_1: &mut [closure@ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:22:25: 22:28], _2: usize) -> Option<usize> {
+    debug i => _2;
+    debug self => (*((*_1).0: &mut &mut Points));
+    let mut _0: std::option::Option<usize>;
+    let mut _3: PointType;
+    let mut _4: isize;
+    let mut _5: &mut &mut Points;
+    let mut _6: &mut Points;
+    scope 1 {
+        debug idx => _2;
+    }
+
+    bb0: {
+        _5 = deref_copy ((*_1).0: &mut &mut Points);
+        _6 = deref_copy (*_5);
+        _3 = Points::test2(_6, _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = discriminant(_3);
+        switchInt(move _4) -> [0: bb4, 1: bb2, otherwise: bb3];
+    }
+
+    bb2: {
+        _0 = Option::<usize>::None;
+        goto -> bb5;
+    }
+
+    bb3: {
+        unreachable;
+    }
+
+    bb4: {
+        _0 = Option::<usize>::Some(_2);
+        goto -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/run_pass/struct-pattern-matching-with-methods.rs:19:1: 19:12>::test2(_1: &mut Points, _2: usize) -> PointType {
+    debug self => _1;
+    debug i => _2;
+    let mut _0: PointType;
+    let mut _3: &PointType;
+    let mut _4: &std::vec::Vec<PointType>;
+
+    bb0: {
+        _4 = &((*_1).0: std::vec::Vec<PointType>);
+        _3 = <Vec<PointType> as Index<usize>>::index(move _4, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Points;
+    let mut _2: std::vec::Vec<PointType>;
+    let _3: ();
+    let mut _4: &mut std::vec::Vec<PointType>;
+    let mut _5: PointType;
+    let _6: ();
+    let mut _7: &mut std::vec::Vec<PointType>;
+    let mut _8: PointType;
+    let _9: ();
+    let mut _10: &mut std::vec::Vec<PointType>;
+    let mut _11: PointType;
+    let _12: ();
+    let mut _13: &mut std::vec::Vec<PointType>;
+    let mut _14: PointType;
+    let _15: ();
+    let mut _16: std::fmt::Arguments<'_>;
+    let mut _17: &[&str];
+    let _18: &[&str; 2];
+    let _19: [&str; 2];
+    let mut _20: &[core::fmt::rt::Argument<'_>];
+    let _21: &[core::fmt::rt::Argument<'_>; 1];
+    let _22: [core::fmt::rt::Argument<'_>; 1];
+    let mut _23: core::fmt::rt::Argument<'_>;
+    let _24: &std::vec::Vec<usize>;
+    let _25: std::vec::Vec<usize>;
+    let mut _26: &mut Points;
+    let _27: ();
+    let mut _28: std::fmt::Arguments<'_>;
+    let mut _29: &[&str];
+    let _30: &[&str; 2];
+    let _31: [&str; 2];
+    let mut _32: &[core::fmt::rt::Argument<'_>];
+    let _33: &[core::fmt::rt::Argument<'_>; 1];
+    let _34: [core::fmt::rt::Argument<'_>; 1];
+    let mut _35: core::fmt::rt::Argument<'_>;
+    let _36: &std::vec::Vec<PointType>;
+    scope 1 {
+        debug points => _1;
+    }
+
+    bb0: {
+        _2 = Vec::<PointType>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = Points { points: move _2 };
+        _4 = &mut (_1.0: std::vec::Vec<PointType>);
+        _5 = PointType::ThreeD { x: const 0_u32, y: const 0_u32, z: const 0_u32 };
+        _3 = Vec::<PointType>::push(move _4, move _5) -> [return: bb2, unwind: bb16];
+    }
+
+    bb2: {
+        _7 = &mut (_1.0: std::vec::Vec<PointType>);
+        _8 = PointType::TwoD { x: const 0_u32, y: const 0_u32 };
+        _6 = Vec::<PointType>::push(move _7, move _8) -> [return: bb3, unwind: bb16];
+    }
+
+    bb3: {
+        _10 = &mut (_1.0: std::vec::Vec<PointType>);
+        _11 = PointType::ThreeD { x: const 0_u32, y: const 0_u32, z: const 0_u32 };
+        _9 = Vec::<PointType>::push(move _10, move _11) -> [return: bb4, unwind: bb16];
+    }
+
+    bb4: {
+        _13 = &mut (_1.0: std::vec::Vec<PointType>);
+        _14 = PointType::TwoD { x: const 0_u32, y: const 0_u32 };
+        _12 = Vec::<PointType>::push(move _13, move _14) -> [return: bb5, unwind: bb16];
+    }
+
+    bb5: {
+        _19 = [const "", const "\n"];
+        _18 = &_19;
+        _17 = _18 as &[&str] (Pointer(Unsize));
+        _26 = &mut _1;
+        _25 = Points::test1(move _26) -> [return: bb6, unwind: bb16];
+    }
+
+    bb6: {
+        _24 = &_25;
+        _23 = core::fmt::rt::Argument::<'_>::new_debug::<Vec<usize>>(_24) -> [return: bb7, unwind: bb15];
+    }
+
+    bb7: {
+        _22 = [move _23];
+        _21 = &_22;
+        _20 = _21 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _16 = Arguments::<'_>::new_v1(move _17, move _20) -> [return: bb8, unwind: bb15];
+    }
+
+    bb8: {
+        _15 = _print(move _16) -> [return: bb9, unwind: bb15];
+    }
+
+    bb9: {
+        drop(_25) -> [return: bb10, unwind: bb16];
+    }
+
+    bb10: {
+        _31 = [const "", const "\n"];
+        _30 = &_31;
+        _29 = _30 as &[&str] (Pointer(Unsize));
+        _36 = &(_1.0: std::vec::Vec<PointType>);
+        _35 = core::fmt::rt::Argument::<'_>::new_debug::<Vec<PointType>>(_36) -> [return: bb11, unwind: bb16];
+    }
+
+    bb11: {
+        _34 = [move _35];
+        _33 = &_34;
+        _32 = _33 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _28 = Arguments::<'_>::new_v1(move _29, move _32) -> [return: bb12, unwind: bb16];
+    }
+
+    bb12: {
+        _27 = _print(move _28) -> [return: bb13, unwind: bb16];
+    }
+
+    bb13: {
+        drop(_1) -> bb14;
+    }
+
+    bb14: {
+        return;
+    }
+
+    bb15 (cleanup): {
+        drop(_25) -> [return: bb16, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        drop(_1) -> [return: bb17, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        resume;
+    }
+}

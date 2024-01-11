@@ -1,0 +1,183 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn id(_1: T) -> T {
+    debug t => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    let mut _3: std::boxed::Box<isize>;
+    let mut _4: &std::boxed::Box<isize>;
+    let _5: ();
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 2];
+    let _9: [&str; 2];
+    let mut _10: &[core::fmt::rt::Argument<'_>];
+    let _11: &[core::fmt::rt::Argument<'_>; 1];
+    let _12: [core::fmt::rt::Argument<'_>; 1];
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let _14: &isize;
+    let mut _15: (&isize, &isize);
+    let mut _16: &isize;
+    let mut _17: &isize;
+    let mut _20: bool;
+    let mut _21: bool;
+    let mut _22: isize;
+    let mut _23: isize;
+    let _25: !;
+    let mut _26: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _27: *const isize;
+    let mut _28: *const isize;
+    let mut _29: *const isize;
+    scope 1 {
+        debug expected => _1;
+        let _2: std::boxed::Box<isize>;
+        scope 2 {
+            debug actual => _2;
+            let _18: &isize;
+            let _19: &isize;
+            let mut _30: *const ();
+            let mut _31: usize;
+            let mut _32: usize;
+            let mut _33: usize;
+            let mut _34: usize;
+            let mut _35: bool;
+            let mut _36: *const ();
+            let mut _37: usize;
+            let mut _38: usize;
+            let mut _39: usize;
+            let mut _40: usize;
+            let mut _41: bool;
+            let mut _42: *const ();
+            let mut _43: usize;
+            let mut _44: usize;
+            let mut _45: usize;
+            let mut _46: usize;
+            let mut _47: bool;
+            scope 3 {
+                debug left_val => _18;
+                debug right_val => _19;
+                let _24: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _24;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Box::<isize>::new(const 100_isize) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_1;
+        _3 = <Box<isize> as Clone>::clone(move _4) -> [return: bb2, unwind: bb12];
+    }
+
+    bb2: {
+        _2 = id::<Box<isize>>(move _3) -> [return: bb3, unwind: bb12];
+    }
+
+    bb3: {
+        _9 = [const "", const "\n"];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _27 = (((_2.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _42 = _27 as *const () (PtrToPtr);
+        _43 = _42 as usize (Transmute);
+        _44 = AlignOf(isize);
+        _45 = Sub(_44, const 1_usize);
+        _46 = BitAnd(_43, _45);
+        _47 = Eq(_46, const 0_usize);
+        assert(_47, "misaligned pointer dereference: address must be a multiple of {} but is {}", _44, _43) -> [success: bb16, unwind unreachable];
+    }
+
+    bb4: {
+        _12 = [move _13];
+        _11 = &_12;
+        _10 = _11 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _6 = Arguments::<'_>::new_v1(move _7, move _10) -> [return: bb5, unwind: bb11];
+    }
+
+    bb5: {
+        _5 = _print(move _6) -> [return: bb6, unwind: bb11];
+    }
+
+    bb6: {
+        _28 = (((_1.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _36 = _28 as *const () (PtrToPtr);
+        _37 = _36 as usize (Transmute);
+        _38 = AlignOf(isize);
+        _39 = Sub(_38, const 1_usize);
+        _40 = BitAnd(_37, _39);
+        _41 = Eq(_40, const 0_usize);
+        assert(_41, "misaligned pointer dereference: address must be a multiple of {} but is {}", _38, _37) -> [success: bb15, unwind unreachable];
+    }
+
+    bb7: {
+        _24 = core::panicking::AssertKind::Eq;
+        _26 = Option::<Arguments<'_>>::None;
+        _25 = core::panicking::assert_failed::<isize, isize>(move _24, _18, _19, move _26) -> bb11;
+    }
+
+    bb8: {
+        drop(_2) -> [return: bb9, unwind: bb12];
+    }
+
+    bb9: {
+        drop(_1) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_1) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+
+    bb14: {
+        _17 = &(*_29);
+        _15 = (move _16, move _17);
+        _18 = (_15.0: &isize);
+        _19 = (_15.1: &isize);
+        _22 = (*_18);
+        _23 = (*_19);
+        _21 = Eq(move _22, move _23);
+        _20 = Not(move _21);
+        switchInt(move _20) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb15: {
+        _16 = &(*_28);
+        _29 = (((_2.0: std::ptr::Unique<isize>).0: std::ptr::NonNull<isize>).0: *const isize);
+        _30 = _29 as *const () (PtrToPtr);
+        _31 = _30 as usize (Transmute);
+        _32 = AlignOf(isize);
+        _33 = Sub(_32, const 1_usize);
+        _34 = BitAnd(_31, _33);
+        _35 = Eq(_34, const 0_usize);
+        assert(_35, "misaligned pointer dereference: address must be a multiple of {} but is {}", _32, _31) -> [success: bb14, unwind unreachable];
+    }
+
+    bb16: {
+        _14 = &(*_27);
+        _13 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_14) -> [return: bb4, unwind: bb11];
+    }
+}

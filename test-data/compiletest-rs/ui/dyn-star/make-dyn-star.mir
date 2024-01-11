@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn make_dyn_star(_1: usize) -> () {
+    debug i => _1;
+    let mut _0: ();
+    let _2: dyn* std::fmt::Debug;
+    scope 1 {
+        debug _dyn_i => _2;
+    }
+
+    bb0: {
+        _2 = _1 as dyn* std::fmt::Debug (DynStar);
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn make_dyn_star_explicit(_1: usize) -> () {
+    debug i => _1;
+    let mut _0: ();
+    let _2: dyn* std::fmt::Debug;
+    let mut _3: dyn* std::fmt::Debug;
+    scope 1 {
+        debug _dyn_i => _2;
+    }
+
+    bb0: {
+        _3 = _1 as dyn* std::fmt::Debug (DynStar);
+        _2 = move _3;
+        drop(_2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = make_dyn_star(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        _2 = make_dyn_star_explicit(const 42_usize) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

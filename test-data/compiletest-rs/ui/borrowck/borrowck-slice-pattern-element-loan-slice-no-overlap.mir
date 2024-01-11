@@ -1,0 +1,411 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn nop(_1: &[&i32]) -> () {
+    debug _s => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn nop_subslice(_1: &[i32]) -> () {
+    debug _s => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn const_index_ok(_1: &mut [i32]) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let _12: ();
+    let mut _13: &[&i32];
+    let _14: &[&i32; 4];
+    let _15: [&i32; 4];
+    let mut _16: &i32;
+    scope 1 {
+        debug first => _5;
+        debug second => _6;
+        debug fourth => _7;
+        let _5: &i32;
+        let _6: &i32;
+        let _7: &i32;
+        scope 2 {
+            debug third => _11;
+            let _11: &mut i32;
+        }
+    }
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 4_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = &(*_1)[0 of 4];
+        _6 = &(*_1)[1 of 4];
+        _7 = &(*_1)[3 of 4];
+        _8 = Len((*_1));
+        _9 = const 3_usize;
+        _10 = Ge(move _8, move _9);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _11 = &mut (*_1)[2 of 3];
+        _16 = &(*_11);
+        _15 = [_5, _6, move _16, _7];
+        _14 = &_15;
+        _13 = _14 as &[&i32] (Pointer(Unsize));
+        _12 = nop(move _13) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn const_index_from_end_ok(_1: &mut [i32]) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let _12: ();
+    let mut _13: &[&i32];
+    let _14: &[&i32; 4];
+    let _15: [&i32; 4];
+    let mut _16: &i32;
+    scope 1 {
+        debug fourth => _5;
+        debug third => _6;
+        debug first => _7;
+        let _5: &i32;
+        let _6: &i32;
+        let _7: &i32;
+        scope 2 {
+            debug second => _11;
+            let _11: &mut i32;
+        }
+    }
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 4_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _7 = &(*_1)[-1 of 4];
+        _6 = &(*_1)[-3 of 4];
+        _5 = &(*_1)[-4 of 4];
+        _8 = Len((*_1));
+        _9 = const 2_usize;
+        _10 = Ge(move _8, move _9);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _11 = &mut (*_1)[-2 of 2];
+        _16 = &(*_11);
+        _15 = [_7, move _16, _6, _5];
+        _14 = &_15;
+        _13 = _14 as &[&i32] (Pointer(Unsize));
+        _12 = nop(move _13) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn const_index_mixed(_1: &mut [i32]) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let _12: ();
+    let mut _13: &[&i32];
+    let _14: &[&i32; 4];
+    let _15: [&i32; 4];
+    let mut _16: &i32;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    let mut _23: usize;
+    let mut _24: usize;
+    let mut _25: bool;
+    let _27: ();
+    let mut _28: &[&i32];
+    let _29: &[&i32; 4];
+    let _30: [&i32; 4];
+    let mut _31: &i32;
+    scope 1 {
+        debug from_end4 => _5;
+        debug from_end3 => _6;
+        debug from_end1 => _7;
+        let _5: &i32;
+        let _6: &i32;
+        let _7: &i32;
+        scope 2 {
+            debug from_begin0 => _11;
+            let _11: &mut i32;
+        }
+    }
+    scope 3 {
+        debug from_begin0 => _20;
+        debug from_begin1 => _21;
+        debug from_begin3 => _22;
+        let _20: &i32;
+        let _21: &i32;
+        let _22: &i32;
+        scope 4 {
+            debug from_end1 => _26;
+            let _26: &mut i32;
+        }
+    }
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 5_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _7 = &(*_1)[-1 of 5];
+        _6 = &(*_1)[-3 of 5];
+        _5 = &(*_1)[-4 of 5];
+        _8 = Len((*_1));
+        _9 = const 1_usize;
+        _10 = Ge(move _8, move _9);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _11 = &mut (*_1)[0 of 1];
+        _16 = &(*_11);
+        _15 = [move _16, _7, _6, _5];
+        _14 = &_15;
+        _13 = _14 as &[&i32] (Pointer(Unsize));
+        _12 = nop(move _13) -> bb3;
+    }
+
+    bb3: {
+        _17 = Len((*_1));
+        _18 = const 5_usize;
+        _19 = Ge(move _17, move _18);
+        switchInt(move _19) -> [0: bb6, otherwise: bb4];
+    }
+
+    bb4: {
+        _20 = &(*_1)[0 of 5];
+        _21 = &(*_1)[1 of 5];
+        _22 = &(*_1)[3 of 5];
+        _23 = Len((*_1));
+        _24 = const 1_usize;
+        _25 = Ge(move _23, move _24);
+        switchInt(move _25) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = &mut (*_1)[-1 of 1];
+        _31 = &(*_26);
+        _30 = [_20, _21, _22, move _31];
+        _29 = &_30;
+        _28 = _29 as &[&i32] (Pointer(Unsize));
+        _27 = nop(move _28) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn const_index_and_subslice_ok(_1: &mut [i32]) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let _11: ();
+    let mut _12: &[&i32];
+    let _13: &[&i32; 2];
+    let _14: [&i32; 2];
+    let _15: ();
+    let mut _16: &[i32];
+    scope 1 {
+        debug first => _5;
+        debug second => _6;
+        let _5: &i32;
+        let _6: &i32;
+        scope 2 {
+            debug tail => _10;
+            let _10: &mut [i32];
+        }
+    }
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 2_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = &(*_1)[0 of 2];
+        _6 = &(*_1)[1 of 2];
+        _7 = Len((*_1));
+        _8 = const 2_usize;
+        _9 = Ge(move _7, move _8);
+        switchInt(move _9) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = &mut (*_1)[2:];
+        _14 = [_5, _6];
+        _13 = &_14;
+        _12 = _13 as &[&i32] (Pointer(Unsize));
+        _11 = nop(move _12) -> bb3;
+    }
+
+    bb3: {
+        _16 = &(*_10);
+        _15 = nop_subslice(move _16) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn const_index_and_subslice_from_end_ok(_1: &mut [i32]) -> () {
+    debug s => _1;
+    let mut _0: ();
+    let mut _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: bool;
+    let _11: ();
+    let mut _12: &[&i32];
+    let _13: &[&i32; 2];
+    let _14: [&i32; 2];
+    let _15: ();
+    let mut _16: &[i32];
+    scope 1 {
+        debug second => _5;
+        debug first => _6;
+        let _5: &i32;
+        let _6: &i32;
+        scope 2 {
+            debug tail => _10;
+            let _10: &mut [i32];
+        }
+    }
+
+    bb0: {
+        _2 = Len((*_1));
+        _3 = const 2_usize;
+        _4 = Ge(move _2, move _3);
+        switchInt(move _4) -> [0: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        _6 = &(*_1)[-1 of 2];
+        _5 = &(*_1)[-2 of 2];
+        _7 = Len((*_1));
+        _8 = const 2_usize;
+        _9 = Ge(move _7, move _8);
+        switchInt(move _9) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _10 = &mut (*_1)[:-2];
+        _14 = [_6, _5];
+        _13 = &_14;
+        _12 = _13 as &[&i32] (Pointer(Unsize));
+        _11 = nop(move _12) -> bb3;
+    }
+
+    bb3: {
+        _16 = &(*_10);
+        _15 = nop_subslice(move _16) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [i32; 4];
+    let _2: ();
+    let mut _3: &mut [i32];
+    let mut _4: &mut [i32; 4];
+    let _5: ();
+    let mut _6: &mut [i32];
+    let mut _7: &mut [i32; 4];
+    let _8: ();
+    let mut _9: &mut [i32];
+    let mut _10: &mut [i32; 4];
+    let _11: ();
+    let mut _12: &mut [i32];
+    let mut _13: &mut [i32; 4];
+    scope 1 {
+        debug v => _1;
+    }
+
+    bb0: {
+        _1 = [const 1_i32, const 2_i32, const 3_i32, const 4_i32];
+        _4 = &mut _1;
+        _3 = _4 as &mut [i32] (Pointer(Unsize));
+        _2 = const_index_ok(move _3) -> bb1;
+    }
+
+    bb1: {
+        _7 = &mut _1;
+        _6 = _7 as &mut [i32] (Pointer(Unsize));
+        _5 = const_index_from_end_ok(move _6) -> bb2;
+    }
+
+    bb2: {
+        _10 = &mut _1;
+        _9 = _10 as &mut [i32] (Pointer(Unsize));
+        _8 = const_index_and_subslice_ok(move _9) -> bb3;
+    }
+
+    bb3: {
+        _13 = &mut _1;
+        _12 = _13 as &mut [i32] (Pointer(Unsize));
+        _11 = const_index_and_subslice_from_end_ok(move _12) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}

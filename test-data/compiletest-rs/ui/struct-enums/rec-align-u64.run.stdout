@@ -1,0 +1,3 @@
+align inner = 8
+size outer = 16
+y = "Outer { c8: 22, t: Inner { c64: 44 } }"

@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generic-associated-types/pointer_family.rs:14:1: 14:33>::new(_1: T) -> Arc<T> {
+    debug value => _1;
+    let mut _0: std::sync::Arc<T>;
+
+    bb0: {
+        _0 = Arc::<T>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generic-associated-types/pointer_family.rs:23:1: 23:32>::new(_1: T) -> Rc<T> {
+    debug value => _1;
+    let mut _0: std::rc::Rc<T>;
+
+    bb0: {
+        _0 = Rc::<T>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

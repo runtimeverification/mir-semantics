@@ -1,0 +1,51 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static i: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 10_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &isize;
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _10 = const {alloc1: &isize};
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_10) -> bb1;
+    }
+
+    bb1: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb2;
+    }
+
+    bb2: {
+        _1 = _print(move _2) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+alloc1 (static: i, size: 8, align: 8) {
+    0a 00 00 00 00 00 00 00                         │ ........
+}

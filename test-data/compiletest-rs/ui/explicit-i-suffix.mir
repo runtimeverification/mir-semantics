@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: isize;
+    scope 1 {
+        debug x => _1;
+        let _2: isize;
+        scope 2 {
+            debug y => _2;
+            let _3: isize;
+            scope 3 {
+                debug q => _3;
+                let _4: isize;
+                scope 4 {
+                    debug r => _4;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 8_isize;
+        _2 = const 9_isize;
+        _3 = const -8_isize;
+        _4 = const -9_isize;
+        return;
+    }
+}

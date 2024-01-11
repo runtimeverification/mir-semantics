@@ -1,0 +1,34 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: E;
+    let mut _2: isize;
+    let mut _3: !;
+    let mut _4: !;
+    scope 1 {
+        debug e => _1;
+    }
+
+    bb0: {
+        _1 = E::Foo { f: const 0_isize };
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        switchInt(((_1 as Foo).0: isize)) -> [1: bb3, otherwise: bb4];
+    }
+
+    bb2: {
+        _4 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb3: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        return;
+    }
+}

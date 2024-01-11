@@ -1,0 +1,1334 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 0];
+    let _8: [core::fmt::rt::Argument<'_>; 0];
+    let _9: ();
+    let mut _10: std::fmt::Arguments<'_>;
+    let mut _11: &[&str];
+    let _12: &[&str; 1];
+    let _13: [&str; 1];
+    let mut _14: &[core::fmt::rt::Argument<'_>];
+    let _15: &[core::fmt::rt::Argument<'_>; 0];
+    let _16: [core::fmt::rt::Argument<'_>; 0];
+    let _17: ();
+    let mut _18: std::fmt::Arguments<'_>;
+    let mut _19: &[&str];
+    let _20: &[&str; 2];
+    let _21: [&str; 2];
+    let mut _22: &[core::fmt::rt::Argument<'_>];
+    let _23: &[core::fmt::rt::Argument<'_>; 2];
+    let _24: [core::fmt::rt::Argument<'_>; 2];
+    let mut _25: core::fmt::rt::Argument<'_>;
+    let _26: &&str;
+    let _27: &str;
+    let mut _28: core::fmt::rt::Argument<'_>;
+    let _29: &usize;
+    let _30: usize;
+    let mut _31: &[core::fmt::rt::Placeholder];
+    let _32: &[core::fmt::rt::Placeholder; 1];
+    let _33: [core::fmt::rt::Placeholder; 1];
+    let mut _34: core::fmt::rt::Placeholder;
+    let mut _35: core::fmt::rt::Alignment;
+    let mut _36: core::fmt::rt::Count;
+    let mut _37: core::fmt::rt::Count;
+    let mut _38: core::fmt::rt::UnsafeArg;
+    let _39: ();
+    let mut _40: std::fmt::Arguments<'_>;
+    let mut _41: &[&str];
+    let _42: &[&str; 2];
+    let _43: [&str; 2];
+    let mut _44: &[core::fmt::rt::Argument<'_>];
+    let _45: &[core::fmt::rt::Argument<'_>; 3];
+    let _46: [core::fmt::rt::Argument<'_>; 3];
+    let mut _47: (&f32, &usize, &usize);
+    let mut _48: &f32;
+    let _49: f32;
+    let mut _50: &usize;
+    let _51: usize;
+    let mut _52: &usize;
+    let _53: usize;
+    let mut _54: core::fmt::rt::Argument<'_>;
+    let mut _55: core::fmt::rt::Argument<'_>;
+    let mut _56: core::fmt::rt::Argument<'_>;
+    let mut _57: &[core::fmt::rt::Placeholder];
+    let _58: &[core::fmt::rt::Placeholder; 1];
+    let _59: [core::fmt::rt::Placeholder; 1];
+    let mut _60: core::fmt::rt::Placeholder;
+    let mut _61: core::fmt::rt::Alignment;
+    let mut _62: core::fmt::rt::Count;
+    let mut _63: core::fmt::rt::Count;
+    let mut _64: core::fmt::rt::UnsafeArg;
+    let _65: ();
+    let mut _66: std::fmt::Arguments<'_>;
+    let mut _67: &[&str];
+    let _68: &[&str; 2];
+    let _69: [&str; 2];
+    let mut _70: &[core::fmt::rt::Argument<'_>];
+    let _71: &[core::fmt::rt::Argument<'_>; 3];
+    let _72: [core::fmt::rt::Argument<'_>; 3];
+    let mut _73: (&f32, &usize, &usize);
+    let mut _74: &f32;
+    let _75: f32;
+    let mut _76: &usize;
+    let _77: usize;
+    let mut _78: &usize;
+    let _79: usize;
+    let mut _80: core::fmt::rt::Argument<'_>;
+    let mut _81: core::fmt::rt::Argument<'_>;
+    let mut _82: core::fmt::rt::Argument<'_>;
+    let mut _83: &[core::fmt::rt::Placeholder];
+    let _84: &[core::fmt::rt::Placeholder; 1];
+    let _85: [core::fmt::rt::Placeholder; 1];
+    let mut _86: core::fmt::rt::Placeholder;
+    let mut _87: core::fmt::rt::Alignment;
+    let mut _88: core::fmt::rt::Count;
+    let mut _89: core::fmt::rt::Count;
+    let mut _90: core::fmt::rt::UnsafeArg;
+    let _91: ();
+    let mut _92: std::fmt::Arguments<'_>;
+    let mut _93: &[&str];
+    let _94: &[&str; 4];
+    let _95: [&str; 4];
+    let mut _96: &[core::fmt::rt::Argument<'_>];
+    let _97: &[core::fmt::rt::Argument<'_>; 6];
+    let _98: [core::fmt::rt::Argument<'_>; 6];
+    let mut _99: (&f32, &usize, &usize, &f32, &usize, &usize);
+    let mut _100: &f32;
+    let _101: f32;
+    let mut _102: &usize;
+    let _103: usize;
+    let mut _104: &usize;
+    let _105: usize;
+    let mut _106: &f32;
+    let _107: f32;
+    let mut _108: &usize;
+    let _109: usize;
+    let mut _110: &usize;
+    let _111: usize;
+    let mut _112: core::fmt::rt::Argument<'_>;
+    let mut _113: core::fmt::rt::Argument<'_>;
+    let mut _114: core::fmt::rt::Argument<'_>;
+    let mut _115: core::fmt::rt::Argument<'_>;
+    let mut _116: core::fmt::rt::Argument<'_>;
+    let mut _117: core::fmt::rt::Argument<'_>;
+    let mut _118: &[core::fmt::rt::Placeholder];
+    let _119: &[core::fmt::rt::Placeholder; 3];
+    let _120: [core::fmt::rt::Placeholder; 3];
+    let mut _121: core::fmt::rt::Placeholder;
+    let mut _122: core::fmt::rt::Alignment;
+    let mut _123: core::fmt::rt::Count;
+    let mut _124: core::fmt::rt::Count;
+    let mut _125: core::fmt::rt::Placeholder;
+    let mut _126: core::fmt::rt::Alignment;
+    let mut _127: core::fmt::rt::Count;
+    let mut _128: core::fmt::rt::Count;
+    let mut _129: core::fmt::rt::Placeholder;
+    let mut _130: core::fmt::rt::Alignment;
+    let mut _131: core::fmt::rt::Count;
+    let mut _132: core::fmt::rt::Count;
+    let mut _133: core::fmt::rt::UnsafeArg;
+    let _134: ();
+    let mut _135: std::fmt::Arguments<'_>;
+    let mut _136: &[&str];
+    let _137: &[&str; 2];
+    let _138: [&str; 2];
+    let mut _139: &[core::fmt::rt::Argument<'_>];
+    let _140: &[core::fmt::rt::Argument<'_>; 1];
+    let _141: [core::fmt::rt::Argument<'_>; 1];
+    let mut _142: core::fmt::rt::Argument<'_>;
+    let _143: &f32;
+    let _144: f32;
+    let mut _145: &[core::fmt::rt::Placeholder];
+    let _146: &[core::fmt::rt::Placeholder; 1];
+    let _147: [core::fmt::rt::Placeholder; 1];
+    let mut _148: core::fmt::rt::Placeholder;
+    let mut _149: core::fmt::rt::Alignment;
+    let mut _150: core::fmt::rt::Count;
+    let mut _151: core::fmt::rt::Count;
+    let mut _152: core::fmt::rt::UnsafeArg;
+    let _153: ();
+    let mut _154: std::fmt::Arguments<'_>;
+    let mut _155: &[&str];
+    let _156: &[&str; 2];
+    let _157: [&str; 2];
+    let mut _158: &[core::fmt::rt::Argument<'_>];
+    let _159: &[core::fmt::rt::Argument<'_>; 1];
+    let _160: [core::fmt::rt::Argument<'_>; 1];
+    let mut _161: core::fmt::rt::Argument<'_>;
+    let _162: &f32;
+    let _163: f32;
+    let mut _164: &[core::fmt::rt::Placeholder];
+    let _165: &[core::fmt::rt::Placeholder; 1];
+    let _166: [core::fmt::rt::Placeholder; 1];
+    let mut _167: core::fmt::rt::Placeholder;
+    let mut _168: core::fmt::rt::Alignment;
+    let mut _169: core::fmt::rt::Count;
+    let mut _170: core::fmt::rt::Count;
+    let mut _171: core::fmt::rt::UnsafeArg;
+    let _172: ();
+    let mut _173: std::fmt::Arguments<'_>;
+    let mut _174: &[&str];
+    let _175: &[&str; 2];
+    let _176: [&str; 2];
+    let mut _177: &[core::fmt::rt::Argument<'_>];
+    let _178: &[core::fmt::rt::Argument<'_>; 3];
+    let _179: [core::fmt::rt::Argument<'_>; 3];
+    let mut _180: (&f32, &usize, &usize);
+    let mut _181: &f32;
+    let _182: f32;
+    let mut _183: &usize;
+    let _184: usize;
+    let mut _185: &usize;
+    let _186: usize;
+    let mut _187: core::fmt::rt::Argument<'_>;
+    let mut _188: core::fmt::rt::Argument<'_>;
+    let mut _189: core::fmt::rt::Argument<'_>;
+    let mut _190: &[core::fmt::rt::Placeholder];
+    let _191: &[core::fmt::rt::Placeholder; 1];
+    let _192: [core::fmt::rt::Placeholder; 1];
+    let mut _193: core::fmt::rt::Placeholder;
+    let mut _194: core::fmt::rt::Alignment;
+    let mut _195: core::fmt::rt::Count;
+    let mut _196: core::fmt::rt::Count;
+    let mut _197: core::fmt::rt::UnsafeArg;
+    let _198: usize;
+    let _200: ();
+    let mut _201: std::fmt::Arguments<'_>;
+    let mut _202: &[&str];
+    let _203: &[&str; 2];
+    let _204: [&str; 2];
+    let mut _205: &[core::fmt::rt::Argument<'_>];
+    let _206: &[core::fmt::rt::Argument<'_>; 3];
+    let _207: [core::fmt::rt::Argument<'_>; 3];
+    let mut _208: core::fmt::rt::Argument<'_>;
+    let _209: &f32;
+    let _210: f32;
+    let mut _211: core::fmt::rt::Argument<'_>;
+    let _212: &usize;
+    let mut _213: core::fmt::rt::Argument<'_>;
+    let _214: &usize;
+    let mut _215: &[core::fmt::rt::Placeholder];
+    let _216: &[core::fmt::rt::Placeholder; 1];
+    let _217: [core::fmt::rt::Placeholder; 1];
+    let mut _218: core::fmt::rt::Placeholder;
+    let mut _219: core::fmt::rt::Alignment;
+    let mut _220: core::fmt::rt::Count;
+    let mut _221: core::fmt::rt::Count;
+    let mut _222: core::fmt::rt::UnsafeArg;
+    let _224: ();
+    let mut _225: std::fmt::Arguments<'_>;
+    let mut _226: &[&str];
+    let _227: &[&str; 2];
+    let _228: [&str; 2];
+    let mut _229: &[core::fmt::rt::Argument<'_>];
+    let _230: &[core::fmt::rt::Argument<'_>; 2];
+    let _231: [core::fmt::rt::Argument<'_>; 2];
+    let mut _232: (&usize,);
+    let mut _233: &usize;
+    let mut _234: core::fmt::rt::Argument<'_>;
+    let mut _235: core::fmt::rt::Argument<'_>;
+    let mut _236: &[core::fmt::rt::Placeholder];
+    let _237: &[core::fmt::rt::Placeholder; 1];
+    let _238: [core::fmt::rt::Placeholder; 1];
+    let mut _239: core::fmt::rt::Placeholder;
+    let mut _240: core::fmt::rt::Alignment;
+    let mut _241: core::fmt::rt::Count;
+    let mut _242: core::fmt::rt::Count;
+    let mut _243: core::fmt::rt::UnsafeArg;
+    let _244: ();
+    let mut _245: std::fmt::Arguments<'_>;
+    let mut _246: &[&str];
+    let _247: &[&str; 2];
+    let _248: [&str; 2];
+    let mut _249: &[core::fmt::rt::Argument<'_>];
+    let _250: &[core::fmt::rt::Argument<'_>; 2];
+    let _251: [core::fmt::rt::Argument<'_>; 2];
+    let mut _252: (&usize,);
+    let mut _253: &usize;
+    let mut _254: core::fmt::rt::Argument<'_>;
+    let mut _255: core::fmt::rt::Argument<'_>;
+    let mut _256: &[core::fmt::rt::Placeholder];
+    let _257: &[core::fmt::rt::Placeholder; 1];
+    let _258: [core::fmt::rt::Placeholder; 1];
+    let mut _259: core::fmt::rt::Placeholder;
+    let mut _260: core::fmt::rt::Alignment;
+    let mut _261: core::fmt::rt::Count;
+    let mut _262: core::fmt::rt::Count;
+    let mut _263: core::fmt::rt::UnsafeArg;
+    let _264: ();
+    let mut _265: std::fmt::Arguments<'_>;
+    let mut _266: &[&str];
+    let _267: &[&str; 2];
+    let _268: [&str; 2];
+    let mut _269: &[core::fmt::rt::Argument<'_>];
+    let _270: &[core::fmt::rt::Argument<'_>; 2];
+    let _271: [core::fmt::rt::Argument<'_>; 2];
+    let mut _272: (&usize,);
+    let mut _273: &usize;
+    let mut _274: core::fmt::rt::Argument<'_>;
+    let mut _275: core::fmt::rt::Argument<'_>;
+    let mut _276: &[core::fmt::rt::Placeholder];
+    let _277: &[core::fmt::rt::Placeholder; 1];
+    let _278: [core::fmt::rt::Placeholder; 1];
+    let mut _279: core::fmt::rt::Placeholder;
+    let mut _280: core::fmt::rt::Alignment;
+    let mut _281: core::fmt::rt::Count;
+    let mut _282: core::fmt::rt::Count;
+    let mut _283: core::fmt::rt::UnsafeArg;
+    let _284: ();
+    let mut _285: std::fmt::Arguments<'_>;
+    let mut _286: &[&str];
+    let _287: &[&str; 2];
+    let _288: [&str; 2];
+    let mut _289: &[core::fmt::rt::Argument<'_>];
+    let _290: &[core::fmt::rt::Argument<'_>; 2];
+    let _291: [core::fmt::rt::Argument<'_>; 2];
+    let mut _292: (&usize,);
+    let mut _293: &usize;
+    let mut _294: core::fmt::rt::Argument<'_>;
+    let mut _295: core::fmt::rt::Argument<'_>;
+    let mut _296: &[core::fmt::rt::Placeholder];
+    let _297: &[core::fmt::rt::Placeholder; 1];
+    let _298: [core::fmt::rt::Placeholder; 1];
+    let mut _299: core::fmt::rt::Placeholder;
+    let mut _300: core::fmt::rt::Alignment;
+    let mut _301: core::fmt::rt::Count;
+    let mut _302: core::fmt::rt::Count;
+    let mut _303: core::fmt::rt::UnsafeArg;
+    let _304: ();
+    let mut _305: std::fmt::Arguments<'_>;
+    let mut _306: &[&str];
+    let _307: &[&str; 1];
+    let _308: [&str; 1];
+    let mut _309: &[core::fmt::rt::Argument<'_>];
+    let _310: &[core::fmt::rt::Argument<'_>; 0];
+    let _311: [core::fmt::rt::Argument<'_>; 0];
+    let _312: ();
+    let mut _313: std::fmt::Arguments<'_>;
+    let mut _314: &[&str];
+    let _315: &[&str; 2];
+    let _316: [&str; 2];
+    let mut _317: &[core::fmt::rt::Argument<'_>];
+    let _318: &[core::fmt::rt::Argument<'_>; 3];
+    let _319: [core::fmt::rt::Argument<'_>; 3];
+    let mut _320: (&f64, &usize, &usize);
+    let mut _321: &f64;
+    let _322: f64;
+    let mut _323: &usize;
+    let _324: usize;
+    let mut _325: &usize;
+    let _326: usize;
+    let mut _327: core::fmt::rt::Argument<'_>;
+    let mut _328: core::fmt::rt::Argument<'_>;
+    let mut _329: core::fmt::rt::Argument<'_>;
+    let mut _330: &[core::fmt::rt::Placeholder];
+    let _331: &[core::fmt::rt::Placeholder; 1];
+    let _332: [core::fmt::rt::Placeholder; 1];
+    let mut _333: core::fmt::rt::Placeholder;
+    let mut _334: core::fmt::rt::Alignment;
+    let mut _335: core::fmt::rt::Count;
+    let mut _336: core::fmt::rt::Count;
+    let mut _337: core::fmt::rt::UnsafeArg;
+    let _338: ();
+    let mut _339: std::fmt::Arguments<'_>;
+    let mut _340: &[&str];
+    let _341: &[&str; 2];
+    let _342: [&str; 2];
+    let mut _343: &[core::fmt::rt::Argument<'_>];
+    let _344: &[core::fmt::rt::Argument<'_>; 3];
+    let _345: [core::fmt::rt::Argument<'_>; 3];
+    let mut _346: (&f64, &usize, &usize);
+    let mut _347: &f64;
+    let _348: f64;
+    let mut _349: &usize;
+    let _350: usize;
+    let mut _351: &usize;
+    let _352: usize;
+    let mut _353: core::fmt::rt::Argument<'_>;
+    let mut _354: core::fmt::rt::Argument<'_>;
+    let mut _355: core::fmt::rt::Argument<'_>;
+    let mut _356: &[core::fmt::rt::Placeholder];
+    let _357: &[core::fmt::rt::Placeholder; 1];
+    let _358: [core::fmt::rt::Placeholder; 1];
+    let mut _359: core::fmt::rt::Placeholder;
+    let mut _360: core::fmt::rt::Alignment;
+    let mut _361: core::fmt::rt::Count;
+    let mut _362: core::fmt::rt::Count;
+    let mut _363: core::fmt::rt::UnsafeArg;
+    let _364: ();
+    let mut _365: std::fmt::Arguments<'_>;
+    let mut _366: &[&str];
+    let _367: &[&str; 2];
+    let _368: [&str; 2];
+    let mut _369: &[core::fmt::rt::Argument<'_>];
+    let _370: &[core::fmt::rt::Argument<'_>; 3];
+    let _371: [core::fmt::rt::Argument<'_>; 3];
+    let mut _372: (&f64, &usize, &usize);
+    let mut _373: &f64;
+    let _374: f64;
+    let mut _375: &usize;
+    let _376: usize;
+    let mut _377: &usize;
+    let _378: usize;
+    let mut _379: core::fmt::rt::Argument<'_>;
+    let mut _380: core::fmt::rt::Argument<'_>;
+    let mut _381: core::fmt::rt::Argument<'_>;
+    let mut _382: &[core::fmt::rt::Placeholder];
+    let _383: &[core::fmt::rt::Placeholder; 1];
+    let _384: [core::fmt::rt::Placeholder; 1];
+    let mut _385: core::fmt::rt::Placeholder;
+    let mut _386: core::fmt::rt::Alignment;
+    let mut _387: core::fmt::rt::Count;
+    let mut _388: core::fmt::rt::Count;
+    let mut _389: core::fmt::rt::UnsafeArg;
+    let mut _390: &f32;
+    let mut _391: &usize;
+    let mut _392: &usize;
+    let mut _393: &f32;
+    let mut _394: &usize;
+    let mut _395: &usize;
+    let mut _396: &f32;
+    let mut _397: &f32;
+    let mut _398: &usize;
+    let mut _399: &usize;
+    let mut _400: &usize;
+    let mut _401: &usize;
+    let mut _402: &f32;
+    let mut _403: &usize;
+    let mut _404: &usize;
+    let mut _405: &usize;
+    let mut _406: &usize;
+    let mut _407: &usize;
+    let mut _408: &usize;
+    let mut _409: &usize;
+    let mut _410: &usize;
+    let mut _411: &usize;
+    let mut _412: &usize;
+    let mut _413: &f64;
+    let mut _414: &usize;
+    let mut _415: &usize;
+    let mut _416: &f64;
+    let mut _417: &usize;
+    let mut _418: &usize;
+    let mut _419: &f64;
+    let mut _420: &usize;
+    let mut _421: &usize;
+    scope 1 {
+    }
+    scope 2 {
+        debug args => _47;
+    }
+    scope 3 {
+    }
+    scope 4 {
+        debug args => _73;
+    }
+    scope 5 {
+    }
+    scope 6 {
+        debug args => _99;
+    }
+    scope 7 {
+    }
+    scope 8 {
+    }
+    scope 9 {
+    }
+    scope 10 {
+        debug args => _180;
+    }
+    scope 11 {
+    }
+    scope 12 {
+        debug width => _198;
+        let _199: usize;
+        scope 13 {
+            debug precision => _199;
+            let _223: usize;
+            scope 14 {
+            }
+            scope 15 {
+                debug val => _223;
+                scope 16 {
+                    debug args => _232;
+                }
+                scope 17 {
+                }
+                scope 18 {
+                    debug args => _252;
+                }
+                scope 19 {
+                }
+                scope 20 {
+                    debug args => _272;
+                }
+                scope 21 {
+                }
+                scope 22 {
+                    debug args => _292;
+                }
+                scope 23 {
+                }
+                scope 24 {
+                    debug args => _320;
+                }
+                scope 25 {
+                }
+                scope 26 {
+                    debug args => _346;
+                }
+                scope 27 {
+                }
+                scope 28 {
+                    debug args => _372;
+                }
+                scope 29 {
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _5 = [const "2 1\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _8 = core::fmt::rt::Argument::<'_>::none() -> bb1;
+    }
+
+    bb1: {
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb2;
+    }
+
+    bb2: {
+        _1 = _print(move _2) -> bb3;
+    }
+
+    bb3: {
+        _13 = [const "0 1 2 3 4\n"];
+        _12 = &_13;
+        _11 = _12 as &[&str] (Pointer(Unsize));
+        _16 = core::fmt::rt::Argument::<'_>::none() -> bb4;
+    }
+
+    bb4: {
+        _15 = &_16;
+        _14 = _15 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _10 = Arguments::<'_>::new_v1(move _11, move _14) -> bb5;
+    }
+
+    bb5: {
+        _9 = _print(move _10) -> bb6;
+    }
+
+    bb6: {
+        _21 = [const "Hello ", const "!\n"];
+        _20 = &_21;
+        _19 = _20 as &[&str] (Pointer(Unsize));
+        _27 = const "x";
+        _26 = &_27;
+        _25 = core::fmt::rt::Argument::<'_>::new_display::<&str>(_26) -> bb7;
+    }
+
+    bb7: {
+        _30 = const 5_usize;
+        _29 = &_30;
+        _28 = core::fmt::rt::Argument::<'_>::from_usize(_29) -> bb8;
+    }
+
+    bb8: {
+        _24 = [move _25, move _28];
+        _23 = &_24;
+        _22 = _23 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _35 = core::fmt::rt::Alignment::Unknown;
+        _36 = core::fmt::rt::Count::Implied;
+        _37 = core::fmt::rt::Count::Param(const 1_usize) -> bb9;
+    }
+
+    bb9: {
+        _34 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _35, const 0_u32, move _36, move _37) -> bb10;
+    }
+
+    bb10: {
+        _33 = [move _34];
+        _32 = &_33;
+        _31 = _32 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _38 = core::fmt::rt::UnsafeArg::new() -> bb11;
+    }
+
+    bb11: {
+        _18 = Arguments::<'_>::new_v1_formatted(move _19, move _22, move _31, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb12;
+    }
+
+    bb12: {
+        _17 = _print(move _18) -> bb13;
+    }
+
+    bb13: {
+        _43 = [const "Hello ", const "!\n"];
+        _42 = &_43;
+        _41 = _42 as &[&str] (Pointer(Unsize));
+        _49 = const 0.0199999996f32;
+        _48 = &_49;
+        _51 = const 5_usize;
+        _50 = &_51;
+        _53 = const 2_usize;
+        _52 = &_53;
+        _47 = (move _48, move _50, move _52);
+        _390 = deref_copy (_47.0: &f32);
+        _54 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_390) -> bb14;
+    }
+
+    bb14: {
+        _391 = deref_copy (_47.2: &usize);
+        _55 = core::fmt::rt::Argument::<'_>::from_usize(_391) -> bb15;
+    }
+
+    bb15: {
+        _392 = deref_copy (_47.1: &usize);
+        _56 = core::fmt::rt::Argument::<'_>::from_usize(_392) -> bb16;
+    }
+
+    bb16: {
+        _46 = [move _54, move _55, move _56];
+        _45 = &_46;
+        _44 = _45 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _61 = core::fmt::rt::Alignment::Unknown;
+        _62 = core::fmt::rt::Count::Param(const 1_usize) -> bb17;
+    }
+
+    bb17: {
+        _63 = core::fmt::rt::Count::Param(const 2_usize) -> bb18;
+    }
+
+    bb18: {
+        _60 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _61, const 0_u32, move _62, move _63) -> bb19;
+    }
+
+    bb19: {
+        _59 = [move _60];
+        _58 = &_59;
+        _57 = _58 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _64 = core::fmt::rt::UnsafeArg::new() -> bb20;
+    }
+
+    bb20: {
+        _40 = Arguments::<'_>::new_v1_formatted(move _41, move _44, move _57, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb21;
+    }
+
+    bb21: {
+        _39 = _print(move _40) -> bb22;
+    }
+
+    bb22: {
+        _69 = [const "Hello ", const "!\n"];
+        _68 = &_69;
+        _67 = _68 as &[&str] (Pointer(Unsize));
+        _75 = const 0.0199999996f32;
+        _74 = &_75;
+        _77 = const 5_usize;
+        _76 = &_77;
+        _79 = const 2_usize;
+        _78 = &_79;
+        _73 = (move _74, move _76, move _78);
+        _393 = deref_copy (_73.0: &f32);
+        _80 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_393) -> bb23;
+    }
+
+    bb23: {
+        _394 = deref_copy (_73.2: &usize);
+        _81 = core::fmt::rt::Argument::<'_>::from_usize(_394) -> bb24;
+    }
+
+    bb24: {
+        _395 = deref_copy (_73.1: &usize);
+        _82 = core::fmt::rt::Argument::<'_>::from_usize(_395) -> bb25;
+    }
+
+    bb25: {
+        _72 = [move _80, move _81, move _82];
+        _71 = &_72;
+        _70 = _71 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _87 = core::fmt::rt::Alignment::Unknown;
+        _88 = core::fmt::rt::Count::Param(const 1_usize) -> bb26;
+    }
+
+    bb26: {
+        _89 = core::fmt::rt::Count::Param(const 2_usize) -> bb27;
+    }
+
+    bb27: {
+        _86 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _87, const 0_u32, move _88, move _89) -> bb28;
+    }
+
+    bb28: {
+        _85 = [move _86];
+        _84 = &_85;
+        _83 = _84 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _90 = core::fmt::rt::UnsafeArg::new() -> bb29;
+    }
+
+    bb29: {
+        _66 = Arguments::<'_>::new_v1_formatted(move _67, move _70, move _83, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb30;
+    }
+
+    bb30: {
+        _65 = _print(move _66) -> bb31;
+    }
+
+    bb31: {
+        _95 = [const "1, Hello ", const " ", const "! ", const "\n"];
+        _94 = &_95;
+        _93 = _94 as &[&str] (Pointer(Unsize));
+        _101 = const 0.0199999996f32;
+        _100 = &_101;
+        _103 = const 5_usize;
+        _102 = &_103;
+        _105 = const 2_usize;
+        _104 = &_105;
+        _107 = const 0.0199999996f32;
+        _106 = &_107;
+        _109 = const 5_usize;
+        _108 = &_109;
+        _111 = const 2_usize;
+        _110 = &_111;
+        _99 = (move _100, move _102, move _104, move _106, move _108, move _110);
+        _396 = deref_copy (_99.0: &f32);
+        _112 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_396) -> bb32;
+    }
+
+    bb32: {
+        _397 = deref_copy (_99.3: &f32);
+        _113 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_397) -> bb33;
+    }
+
+    bb33: {
+        _398 = deref_copy (_99.2: &usize);
+        _114 = core::fmt::rt::Argument::<'_>::from_usize(_398) -> bb34;
+    }
+
+    bb34: {
+        _399 = deref_copy (_99.1: &usize);
+        _115 = core::fmt::rt::Argument::<'_>::from_usize(_399) -> bb35;
+    }
+
+    bb35: {
+        _400 = deref_copy (_99.5: &usize);
+        _116 = core::fmt::rt::Argument::<'_>::from_usize(_400) -> bb36;
+    }
+
+    bb36: {
+        _401 = deref_copy (_99.4: &usize);
+        _117 = core::fmt::rt::Argument::<'_>::from_usize(_401) -> bb37;
+    }
+
+    bb37: {
+        _98 = [move _112, move _113, move _114, move _115, move _116, move _117];
+        _97 = &_98;
+        _96 = _97 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _122 = core::fmt::rt::Alignment::Unknown;
+        _123 = core::fmt::rt::Count::Param(const 2_usize) -> bb38;
+    }
+
+    bb38: {
+        _124 = core::fmt::rt::Count::Param(const 3_usize) -> bb39;
+    }
+
+    bb39: {
+        _121 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _122, const 0_u32, move _123, move _124) -> bb40;
+    }
+
+    bb40: {
+        _126 = core::fmt::rt::Alignment::Unknown;
+        _127 = core::fmt::rt::Count::Param(const 4_usize) -> bb41;
+    }
+
+    bb41: {
+        _128 = core::fmt::rt::Count::Param(const 5_usize) -> bb42;
+    }
+
+    bb42: {
+        _125 = core::fmt::rt::Placeholder::new(const 1_usize, const ' ', move _126, const 0_u32, move _127, move _128) -> bb43;
+    }
+
+    bb43: {
+        _130 = core::fmt::rt::Alignment::Unknown;
+        _131 = core::fmt::rt::Count::Implied;
+        _132 = core::fmt::rt::Count::Implied;
+        _129 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _130, const 0_u32, move _131, move _132) -> bb44;
+    }
+
+    bb44: {
+        _120 = [move _121, move _125, move _129];
+        _119 = &_120;
+        _118 = _119 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _133 = core::fmt::rt::UnsafeArg::new() -> bb45;
+    }
+
+    bb45: {
+        _92 = Arguments::<'_>::new_v1_formatted(move _93, move _96, move _118, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb46;
+    }
+
+    bb46: {
+        _91 = _print(move _92) -> bb47;
+    }
+
+    bb47: {
+        _138 = [const "Hello ", const "!\n"];
+        _137 = &_138;
+        _136 = _137 as &[&str] (Pointer(Unsize));
+        _144 = const 0.0199999996f32;
+        _143 = &_144;
+        _142 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_143) -> bb48;
+    }
+
+    bb48: {
+        _141 = [move _142];
+        _140 = &_141;
+        _139 = _140 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _149 = core::fmt::rt::Alignment::Unknown;
+        _150 = core::fmt::rt::Count::Is(const 1_usize) -> bb49;
+    }
+
+    bb49: {
+        _151 = core::fmt::rt::Count::Implied;
+        _148 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _149, const 8_u32, move _150, move _151) -> bb50;
+    }
+
+    bb50: {
+        _147 = [move _148];
+        _146 = &_147;
+        _145 = _146 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _152 = core::fmt::rt::UnsafeArg::new() -> bb51;
+    }
+
+    bb51: {
+        _135 = Arguments::<'_>::new_v1_formatted(move _136, move _139, move _145, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb52;
+    }
+
+    bb52: {
+        _134 = _print(move _135) -> bb53;
+    }
+
+    bb53: {
+        _157 = [const "Hello ", const "!\n"];
+        _156 = &_157;
+        _155 = _156 as &[&str] (Pointer(Unsize));
+        _163 = const 0.0199999996f32;
+        _162 = &_163;
+        _161 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_162) -> bb54;
+    }
+
+    bb54: {
+        _160 = [move _161];
+        _159 = &_160;
+        _158 = _159 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _168 = core::fmt::rt::Alignment::Unknown;
+        _169 = core::fmt::rt::Count::Is(const 1_usize) -> bb55;
+    }
+
+    bb55: {
+        _170 = core::fmt::rt::Count::Implied;
+        _167 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _168, const 8_u32, move _169, move _170) -> bb56;
+    }
+
+    bb56: {
+        _166 = [move _167];
+        _165 = &_166;
+        _164 = _165 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _171 = core::fmt::rt::UnsafeArg::new() -> bb57;
+    }
+
+    bb57: {
+        _154 = Arguments::<'_>::new_v1_formatted(move _155, move _158, move _164, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb58;
+    }
+
+    bb58: {
+        _153 = _print(move _154) -> bb59;
+    }
+
+    bb59: {
+        _176 = [const "Hello ", const "!\n"];
+        _175 = &_176;
+        _174 = _175 as &[&str] (Pointer(Unsize));
+        _182 = const 0.0199999996f32;
+        _181 = &_182;
+        _184 = const 5_usize;
+        _183 = &_184;
+        _186 = const 2_usize;
+        _185 = &_186;
+        _180 = (move _181, move _183, move _185);
+        _402 = deref_copy (_180.0: &f32);
+        _187 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_402) -> bb60;
+    }
+
+    bb60: {
+        _403 = deref_copy (_180.2: &usize);
+        _188 = core::fmt::rt::Argument::<'_>::from_usize(_403) -> bb61;
+    }
+
+    bb61: {
+        _404 = deref_copy (_180.1: &usize);
+        _189 = core::fmt::rt::Argument::<'_>::from_usize(_404) -> bb62;
+    }
+
+    bb62: {
+        _179 = [move _187, move _188, move _189];
+        _178 = &_179;
+        _177 = _178 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _194 = core::fmt::rt::Alignment::Unknown;
+        _195 = core::fmt::rt::Count::Param(const 1_usize) -> bb63;
+    }
+
+    bb63: {
+        _196 = core::fmt::rt::Count::Param(const 2_usize) -> bb64;
+    }
+
+    bb64: {
+        _193 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _194, const 0_u32, move _195, move _196) -> bb65;
+    }
+
+    bb65: {
+        _192 = [move _193];
+        _191 = &_192;
+        _190 = _191 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _197 = core::fmt::rt::UnsafeArg::new() -> bb66;
+    }
+
+    bb66: {
+        _173 = Arguments::<'_>::new_v1_formatted(move _174, move _177, move _190, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb67;
+    }
+
+    bb67: {
+        _172 = _print(move _173) -> bb68;
+    }
+
+    bb68: {
+        _198 = const 5_usize;
+        _199 = const 2_usize;
+        _204 = [const "Hello ", const "!\n"];
+        _203 = &_204;
+        _202 = _203 as &[&str] (Pointer(Unsize));
+        _210 = const 0.0199999996f32;
+        _209 = &_210;
+        _208 = core::fmt::rt::Argument::<'_>::new_display::<f32>(_209) -> bb69;
+    }
+
+    bb69: {
+        _212 = &_199;
+        _211 = core::fmt::rt::Argument::<'_>::from_usize(_212) -> bb70;
+    }
+
+    bb70: {
+        _214 = &_198;
+        _213 = core::fmt::rt::Argument::<'_>::from_usize(_214) -> bb71;
+    }
+
+    bb71: {
+        _207 = [move _208, move _211, move _213];
+        _206 = &_207;
+        _205 = _206 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _219 = core::fmt::rt::Alignment::Unknown;
+        _220 = core::fmt::rt::Count::Param(const 1_usize) -> bb72;
+    }
+
+    bb72: {
+        _221 = core::fmt::rt::Count::Param(const 2_usize) -> bb73;
+    }
+
+    bb73: {
+        _218 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _219, const 0_u32, move _220, move _221) -> bb74;
+    }
+
+    bb74: {
+        _217 = [move _218];
+        _216 = &_217;
+        _215 = _216 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _222 = core::fmt::rt::UnsafeArg::new() -> bb75;
+    }
+
+    bb75: {
+        _201 = Arguments::<'_>::new_v1_formatted(move _202, move _205, move _215, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb76;
+    }
+
+    bb76: {
+        _200 = _print(move _201) -> bb77;
+    }
+
+    bb77: {
+        _223 = const 5_usize;
+        _228 = [const "", const "\n"];
+        _227 = &_228;
+        _226 = _227 as &[&str] (Pointer(Unsize));
+        _233 = &_223;
+        _232 = (move _233,);
+        _405 = deref_copy (_232.0: &usize);
+        _234 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_405) -> bb78;
+    }
+
+    bb78: {
+        _406 = deref_copy (_232.0: &usize);
+        _235 = core::fmt::rt::Argument::<'_>::from_usize(_406) -> bb79;
+    }
+
+    bb79: {
+        _231 = [move _234, move _235];
+        _230 = &_231;
+        _229 = _230 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _240 = core::fmt::rt::Alignment::Unknown;
+        _241 = core::fmt::rt::Count::Implied;
+        _242 = core::fmt::rt::Count::Param(const 1_usize) -> bb80;
+    }
+
+    bb80: {
+        _239 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _240, const 0_u32, move _241, move _242) -> bb81;
+    }
+
+    bb81: {
+        _238 = [move _239];
+        _237 = &_238;
+        _236 = _237 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _243 = core::fmt::rt::UnsafeArg::new() -> bb82;
+    }
+
+    bb82: {
+        _225 = Arguments::<'_>::new_v1_formatted(move _226, move _229, move _236, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb83;
+    }
+
+    bb83: {
+        _224 = _print(move _225) -> bb84;
+    }
+
+    bb84: {
+        _248 = [const "", const "\n"];
+        _247 = &_248;
+        _246 = _247 as &[&str] (Pointer(Unsize));
+        _253 = &_223;
+        _252 = (move _253,);
+        _407 = deref_copy (_252.0: &usize);
+        _254 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_407) -> bb85;
+    }
+
+    bb85: {
+        _408 = deref_copy (_252.0: &usize);
+        _255 = core::fmt::rt::Argument::<'_>::from_usize(_408) -> bb86;
+    }
+
+    bb86: {
+        _251 = [move _254, move _255];
+        _250 = &_251;
+        _249 = _250 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _260 = core::fmt::rt::Alignment::Unknown;
+        _261 = core::fmt::rt::Count::Implied;
+        _262 = core::fmt::rt::Count::Param(const 1_usize) -> bb87;
+    }
+
+    bb87: {
+        _259 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _260, const 0_u32, move _261, move _262) -> bb88;
+    }
+
+    bb88: {
+        _258 = [move _259];
+        _257 = &_258;
+        _256 = _257 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _263 = core::fmt::rt::UnsafeArg::new() -> bb89;
+    }
+
+    bb89: {
+        _245 = Arguments::<'_>::new_v1_formatted(move _246, move _249, move _256, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb90;
+    }
+
+    bb90: {
+        _244 = _print(move _245) -> bb91;
+    }
+
+    bb91: {
+        _268 = [const "", const "\n"];
+        _267 = &_268;
+        _266 = _267 as &[&str] (Pointer(Unsize));
+        _273 = &_223;
+        _272 = (move _273,);
+        _409 = deref_copy (_272.0: &usize);
+        _274 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_409) -> bb92;
+    }
+
+    bb92: {
+        _410 = deref_copy (_272.0: &usize);
+        _275 = core::fmt::rt::Argument::<'_>::from_usize(_410) -> bb93;
+    }
+
+    bb93: {
+        _271 = [move _274, move _275];
+        _270 = &_271;
+        _269 = _270 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _280 = core::fmt::rt::Alignment::Unknown;
+        _281 = core::fmt::rt::Count::Param(const 1_usize) -> bb94;
+    }
+
+    bb94: {
+        _282 = core::fmt::rt::Count::Param(const 1_usize) -> bb95;
+    }
+
+    bb95: {
+        _279 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _280, const 0_u32, move _281, move _282) -> bb96;
+    }
+
+    bb96: {
+        _278 = [move _279];
+        _277 = &_278;
+        _276 = _277 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _283 = core::fmt::rt::UnsafeArg::new() -> bb97;
+    }
+
+    bb97: {
+        _265 = Arguments::<'_>::new_v1_formatted(move _266, move _269, move _276, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb98;
+    }
+
+    bb98: {
+        _264 = _print(move _265) -> bb99;
+    }
+
+    bb99: {
+        _288 = [const "", const "\n"];
+        _287 = &_288;
+        _286 = _287 as &[&str] (Pointer(Unsize));
+        _293 = &_223;
+        _292 = (move _293,);
+        _411 = deref_copy (_292.0: &usize);
+        _294 = core::fmt::rt::Argument::<'_>::new_display::<usize>(_411) -> bb100;
+    }
+
+    bb100: {
+        _412 = deref_copy (_292.0: &usize);
+        _295 = core::fmt::rt::Argument::<'_>::from_usize(_412) -> bb101;
+    }
+
+    bb101: {
+        _291 = [move _294, move _295];
+        _290 = &_291;
+        _289 = _290 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _300 = core::fmt::rt::Alignment::Unknown;
+        _301 = core::fmt::rt::Count::Param(const 1_usize) -> bb102;
+    }
+
+    bb102: {
+        _302 = core::fmt::rt::Count::Param(const 1_usize) -> bb103;
+    }
+
+    bb103: {
+        _299 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _300, const 0_u32, move _301, move _302) -> bb104;
+    }
+
+    bb104: {
+        _298 = [move _299];
+        _297 = &_298;
+        _296 = _297 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _303 = core::fmt::rt::UnsafeArg::new() -> bb105;
+    }
+
+    bb105: {
+        _285 = Arguments::<'_>::new_v1_formatted(move _286, move _289, move _296, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb106;
+    }
+
+    bb106: {
+        _284 = _print(move _285) -> bb107;
+    }
+
+    bb107: {
+        _308 = [const "1 1 1\n"];
+        _307 = &_308;
+        _306 = _307 as &[&str] (Pointer(Unsize));
+        _311 = core::fmt::rt::Argument::<'_>::none() -> bb108;
+    }
+
+    bb108: {
+        _310 = &_311;
+        _309 = _310 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _305 = Arguments::<'_>::new_v1(move _306, move _309) -> bb109;
+    }
+
+    bb109: {
+        _304 = _print(move _305) -> bb110;
+    }
+
+    bb110: {
+        _316 = [const "aaaaaaaaaaaaaaa", const "\n"];
+        _315 = &_316;
+        _314 = _315 as &[&str] (Pointer(Unsize));
+        _322 = const 1f64;
+        _321 = &_322;
+        _324 = const 1_usize;
+        _323 = &_324;
+        _326 = const 2_usize;
+        _325 = &_326;
+        _320 = (move _321, move _323, move _325);
+        _413 = deref_copy (_320.0: &f64);
+        _327 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_413) -> bb111;
+    }
+
+    bb111: {
+        _414 = deref_copy (_320.2: &usize);
+        _328 = core::fmt::rt::Argument::<'_>::from_usize(_414) -> bb112;
+    }
+
+    bb112: {
+        _415 = deref_copy (_320.1: &usize);
+        _329 = core::fmt::rt::Argument::<'_>::from_usize(_415) -> bb113;
+    }
+
+    bb113: {
+        _319 = [move _327, move _328, move _329];
+        _318 = &_319;
+        _317 = _318 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _334 = core::fmt::rt::Alignment::Unknown;
+        _335 = core::fmt::rt::Count::Param(const 1_usize) -> bb114;
+    }
+
+    bb114: {
+        _336 = core::fmt::rt::Count::Param(const 2_usize) -> bb115;
+    }
+
+    bb115: {
+        _333 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _334, const 0_u32, move _335, move _336) -> bb116;
+    }
+
+    bb116: {
+        _332 = [move _333];
+        _331 = &_332;
+        _330 = _331 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _337 = core::fmt::rt::UnsafeArg::new() -> bb117;
+    }
+
+    bb117: {
+        _313 = Arguments::<'_>::new_v1_formatted(move _314, move _317, move _330, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb118;
+    }
+
+    bb118: {
+        _312 = _print(move _313) -> bb119;
+    }
+
+    bb119: {
+        _342 = [const "aaaaaaaaaaaaaaa", const "\n"];
+        _341 = &_342;
+        _340 = _341 as &[&str] (Pointer(Unsize));
+        _348 = const 1f64;
+        _347 = &_348;
+        _350 = const 1_usize;
+        _349 = &_350;
+        _352 = const 2_usize;
+        _351 = &_352;
+        _346 = (move _347, move _349, move _351);
+        _416 = deref_copy (_346.0: &f64);
+        _353 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_416) -> bb120;
+    }
+
+    bb120: {
+        _417 = deref_copy (_346.2: &usize);
+        _354 = core::fmt::rt::Argument::<'_>::from_usize(_417) -> bb121;
+    }
+
+    bb121: {
+        _418 = deref_copy (_346.1: &usize);
+        _355 = core::fmt::rt::Argument::<'_>::from_usize(_418) -> bb122;
+    }
+
+    bb122: {
+        _345 = [move _353, move _354, move _355];
+        _344 = &_345;
+        _343 = _344 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _360 = core::fmt::rt::Alignment::Unknown;
+        _361 = core::fmt::rt::Count::Param(const 1_usize) -> bb123;
+    }
+
+    bb123: {
+        _362 = core::fmt::rt::Count::Param(const 2_usize) -> bb124;
+    }
+
+    bb124: {
+        _359 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _360, const 0_u32, move _361, move _362) -> bb125;
+    }
+
+    bb125: {
+        _358 = [move _359];
+        _357 = &_358;
+        _356 = _357 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _363 = core::fmt::rt::UnsafeArg::new() -> bb126;
+    }
+
+    bb126: {
+        _339 = Arguments::<'_>::new_v1_formatted(move _340, move _343, move _356, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb127;
+    }
+
+    bb127: {
+        _338 = _print(move _339) -> bb128;
+    }
+
+    bb128: {
+        _368 = [const "{", const "}\n"];
+        _367 = &_368;
+        _366 = _367 as &[&str] (Pointer(Unsize));
+        _374 = const 1f64;
+        _373 = &_374;
+        _376 = const 3_usize;
+        _375 = &_376;
+        _378 = const 2_usize;
+        _377 = &_378;
+        _372 = (move _373, move _375, move _377);
+        _419 = deref_copy (_372.0: &f64);
+        _379 = core::fmt::rt::Argument::<'_>::new_display::<f64>(_419) -> bb129;
+    }
+
+    bb129: {
+        _420 = deref_copy (_372.2: &usize);
+        _380 = core::fmt::rt::Argument::<'_>::from_usize(_420) -> bb130;
+    }
+
+    bb130: {
+        _421 = deref_copy (_372.1: &usize);
+        _381 = core::fmt::rt::Argument::<'_>::from_usize(_421) -> bb131;
+    }
+
+    bb131: {
+        _371 = [move _379, move _380, move _381];
+        _370 = &_371;
+        _369 = _370 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _386 = core::fmt::rt::Alignment::Unknown;
+        _387 = core::fmt::rt::Count::Param(const 1_usize) -> bb132;
+    }
+
+    bb132: {
+        _388 = core::fmt::rt::Count::Param(const 2_usize) -> bb133;
+    }
+
+    bb133: {
+        _385 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _386, const 0_u32, move _387, move _388) -> bb134;
+    }
+
+    bb134: {
+        _384 = [move _385];
+        _383 = &_384;
+        _382 = _383 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _389 = core::fmt::rt::UnsafeArg::new() -> bb135;
+    }
+
+    bb135: {
+        _365 = Arguments::<'_>::new_v1_formatted(move _366, move _369, move _382, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb136;
+    }
+
+    bb136: {
+        _364 = _print(move _365) -> bb137;
+    }
+
+    bb137: {
+        return;
+    }
+}

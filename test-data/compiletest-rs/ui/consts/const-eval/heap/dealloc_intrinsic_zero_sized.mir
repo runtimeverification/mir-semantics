@@ -1,0 +1,66 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+main::{constant#0}: () = {
+    let mut _0: ();
+    let _3: ();
+    let mut _4: *mut u8;
+    let _5: ();
+    let mut _6: *mut u8;
+    scope 1 {
+        let _1: *mut u8;
+        scope 2 {
+            debug ptr1 => _1;
+            let _2: *mut u8;
+            scope 3 {
+                debug ptr2 => _2;
+            }
+        }
+    }
+
+    bb0: {
+        StorageLive(_1);
+        ConstEvalCounter;
+        _1 = const_allocate(const 0_usize, const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        StorageLive(_2);
+        ConstEvalCounter;
+        _2 = const_allocate(const 0_usize, const 0_usize) -> bb2;
+    }
+
+    bb2: {
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = _1;
+        ConstEvalCounter;
+        _3 = const_deallocate(move _4, const 0_usize, const 0_usize) -> bb3;
+    }
+
+    bb3: {
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageLive(_5);
+        StorageLive(_6);
+        _6 = _2;
+        ConstEvalCounter;
+        _5 = const_deallocate(move _6, const 0_usize, const 0_usize) -> bb4;
+    }
+
+    bb4: {
+        StorageDead(_6);
+        StorageDead(_5);
+        _0 = const ();
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}

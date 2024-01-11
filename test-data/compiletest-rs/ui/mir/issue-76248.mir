@@ -1,0 +1,65 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const N: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+Elem::x::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn f() -> Elem<()> {
+    let mut _0: Elem<()>;
+
+    bb0: {
+        _0 = g::<()>(const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn g(_1: M) -> Elem<M> {
+    debug m => _1;
+    let mut _0: Elem<M>;
+    let mut _2: [usize; 1];
+
+    bb0: {
+        _2 = [const 0_usize; 1];
+        _0 = Elem::<M> { x: move _2, m: move _1 };
+        return;
+    }
+}
+
+g::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Elem<()>;
+
+    bb0: {
+        _1 = f() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

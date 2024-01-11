@@ -1,0 +1,566 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/pattern/bindings-after-at/box-patterns.rs:7:10: 7:15>::fmt(_1: &MatchArm, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: isize;
+    let _4: &usize;
+    let _5: &str;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &&usize;
+    let _8: &str;
+    scope 1 {
+        debug __self_0 => _4;
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb3, 1: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _8 = const "Wild";
+        _0 = Formatter::<'_>::write_str(_2, _8) -> bb4;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as Arm).0: usize);
+        _5 = const "Arm";
+        _7 = &_4;
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _5, move _6) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn <impl at ui/pattern/bindings-after-at/box-patterns.rs:7:17: 7:26>::eq(_1: &MatchArm, _2: &MatchArm) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&MatchArm, &MatchArm);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _12: usize;
+    let mut _13: usize;
+    let mut _14: &MatchArm;
+    let mut _15: &MatchArm;
+    let mut _16: &MatchArm;
+    let mut _17: &MatchArm;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _10: &usize;
+            let _11: &usize;
+            scope 3 {
+                debug __self_0 => _10;
+                debug __arg1_0 => _11;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _14 = deref_copy (_7.0: &MatchArm);
+        _9 = discriminant((*_14));
+        switchInt(move _9) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _15 = deref_copy (_7.1: &MatchArm);
+        _8 = discriminant((*_15));
+        switchInt(move _8) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = const true;
+        goto -> bb7;
+    }
+
+    bb6: {
+        _16 = deref_copy (_7.0: &MatchArm);
+        _10 = &(((*_16) as Arm).0: usize);
+        _17 = deref_copy (_7.1: &MatchArm);
+        _11 = &(((*_17) as Arm).0: usize);
+        _12 = (*_10);
+        _13 = (*_11);
+        _6 = Eq(move _12, move _13);
+        goto -> bb7;
+    }
+
+    bb7: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn test(_1: Option<Box<i32>>) -> MatchArm {
+    debug x => _1;
+    let mut _0: MatchArm;
+    let mut _2: isize;
+    let _3: &std::option::Option<std::boxed::Box<i32>>;
+    let _4: &&std::option::Option<std::boxed::Box<i32>>;
+    let _5: i32;
+    let _6: &i32;
+    let mut _7: bool;
+    let mut _8: i32;
+    let mut _9: (&&std::option::Option<std::boxed::Box<i32>>, &&std::option::Option<std::boxed::Box<i32>>);
+    let mut _10: &&std::option::Option<std::boxed::Box<i32>>;
+    let mut _11: &&std::option::Option<std::boxed::Box<i32>>;
+    let _12: &std::option::Option<std::boxed::Box<i32>>;
+    let mut _15: bool;
+    let mut _16: bool;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let _20: &std::boxed::Box<i32>;
+    let _21: &&std::boxed::Box<i32>;
+    let _22: i32;
+    let _23: &i32;
+    let mut _24: bool;
+    let mut _25: i32;
+    let mut _26: (&i32, &i32);
+    let mut _27: &i32;
+    let mut _28: &i32;
+    let mut _31: bool;
+    let mut _32: bool;
+    let mut _33: i32;
+    let mut _34: i32;
+    let _36: !;
+    let mut _37: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _38: std::boxed::Box<i32>;
+    let mut _39: std::boxed::Box<i32>;
+    let mut _40: std::boxed::Box<i32>;
+    let mut _41: std::boxed::Box<i32>;
+    let mut _42: std::boxed::Box<i32>;
+    let mut _43: *const i32;
+    let mut _44: *const i32;
+    let mut _45: *const i32;
+    let mut _46: *const i32;
+    let mut _47: *const i32;
+    let mut _54: *const ();
+    let mut _55: usize;
+    let mut _56: usize;
+    let mut _57: usize;
+    let mut _58: usize;
+    let mut _59: bool;
+    let mut _60: *const ();
+    let mut _61: usize;
+    let mut _62: usize;
+    let mut _63: usize;
+    let mut _64: usize;
+    let mut _65: bool;
+    let mut _66: *const ();
+    let mut _67: usize;
+    let mut _68: usize;
+    let mut _69: usize;
+    let mut _70: usize;
+    let mut _71: bool;
+    let mut _72: *const ();
+    let mut _73: usize;
+    let mut _74: usize;
+    let mut _75: usize;
+    let mut _76: usize;
+    let mut _77: bool;
+    scope 1 {
+        debug bar => _3;
+        debug bar => _4;
+        debug n => _5;
+        debug n => _6;
+        let _13: &&std::option::Option<std::boxed::Box<i32>>;
+        let _14: &&std::option::Option<std::boxed::Box<i32>>;
+        scope 2 {
+            debug left_val => _13;
+            debug right_val => _14;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+    }
+    scope 4 {
+        debug bar => _20;
+        debug bar => _21;
+        debug n => _22;
+        debug n => _23;
+        let _29: &i32;
+        let _30: &i32;
+        let mut _48: *const ();
+        let mut _49: usize;
+        let mut _50: usize;
+        let mut _51: usize;
+        let mut _52: usize;
+        let mut _53: bool;
+        scope 5 {
+            debug left_val => _29;
+            debug right_val => _30;
+            let _35: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _35;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = MatchArm::Wild;
+        goto -> bb11;
+    }
+
+    bb2: {
+        _3 = &_1;
+        _4 = &_3;
+        _38 = deref_copy ((_1 as Some).0: std::boxed::Box<i32>);
+        _43 = (((_38.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _72 = _43 as *const () (PtrToPtr);
+        _73 = _72 as usize (Transmute);
+        _74 = AlignOf(i32);
+        _75 = Sub(_74, const 1_usize);
+        _76 = BitAnd(_73, _75);
+        _77 = Eq(_76, const 0_usize);
+        assert(_77, "misaligned pointer dereference: address must be a multiple of {} but is {}", _74, _73) -> [success: bb19, unwind unreachable];
+    }
+
+    bb3: {
+        _39 = deref_copy ((_1 as Some).0: std::boxed::Box<i32>);
+        _44 = (((_39.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _66 = _44 as *const () (PtrToPtr);
+        _67 = _66 as usize (Transmute);
+        _68 = AlignOf(i32);
+        _69 = Sub(_68, const 1_usize);
+        _70 = BitAnd(_67, _69);
+        _71 = Eq(_70, const 0_usize);
+        assert(_71, "misaligned pointer dereference: address must be a multiple of {} but is {}", _68, _67) -> [success: bb18, unwind unreachable];
+    }
+
+    bb4: {
+        _40 = deref_copy ((_1 as Some).0: std::boxed::Box<i32>);
+        _45 = (((_40.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _60 = _45 as *const () (PtrToPtr);
+        _61 = _60 as usize (Transmute);
+        _62 = AlignOf(i32);
+        _63 = Sub(_62, const 1_usize);
+        _64 = BitAnd(_61, _63);
+        _65 = Eq(_64, const 0_usize);
+        assert(_65, "misaligned pointer dereference: address must be a multiple of {} but is {}", _62, _61) -> [success: bb17, unwind unreachable];
+    }
+
+    bb5: {
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<&Option<Box<i32>>, &Option<Box<i32>>>(move _17, _13, _14, move _19) -> bb13;
+    }
+
+    bb7: {
+        _0 = MatchArm::Arm(const 0_usize);
+        goto -> bb11;
+    }
+
+    bb8: {
+        _41 = deref_copy ((_1 as Some).0: std::boxed::Box<i32>);
+        _46 = (((_41.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _54 = _46 as *const () (PtrToPtr);
+        _55 = _54 as usize (Transmute);
+        _56 = AlignOf(i32);
+        _57 = Sub(_56, const 1_usize);
+        _58 = BitAnd(_55, _57);
+        _59 = Eq(_58, const 0_usize);
+        assert(_59, "misaligned pointer dereference: address must be a multiple of {} but is {}", _56, _55) -> [success: bb16, unwind unreachable];
+    }
+
+    bb9: {
+        _35 = core::panicking::AssertKind::Eq;
+        _37 = Option::<Arguments<'_>>::None;
+        _36 = core::panicking::assert_failed::<i32, i32>(move _35, _29, _30, move _37) -> bb13;
+    }
+
+    bb10: {
+        _0 = MatchArm::Arm(const 1_usize);
+        goto -> bb11;
+    }
+
+    bb11: {
+        drop(_1) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+
+    bb13 (cleanup): {
+        drop(_1) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+
+    bb15: {
+        _27 = &(*_47);
+        _28 = &_22;
+        _26 = (move _27, move _28);
+        _29 = (_26.0: &i32);
+        _30 = (_26.1: &i32);
+        _33 = (*_29);
+        _34 = (*_30);
+        _32 = Eq(move _33, move _34);
+        _31 = Not(move _32);
+        switchInt(move _31) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb16: {
+        _22 = (*_46);
+        _42 = deref_copy (*_20);
+        _47 = (((_42.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _48 = _47 as *const () (PtrToPtr);
+        _49 = _48 as usize (Transmute);
+        _50 = AlignOf(i32);
+        _51 = Sub(_50, const 1_usize);
+        _52 = BitAnd(_49, _51);
+        _53 = Eq(_52, const 0_usize);
+        assert(_53, "misaligned pointer dereference: address must be a multiple of {} but is {}", _50, _49) -> [success: bb15, unwind unreachable];
+    }
+
+    bb17: {
+        _23 = &(*_45);
+        _20 = &((_1 as Some).0: std::boxed::Box<i32>);
+        _21 = &_20;
+        _25 = (*_23);
+        _24 = Lt(move _25, const 0_i32);
+        switchInt(move _24) -> [0: bb1, otherwise: bb8];
+    }
+
+    bb18: {
+        _5 = (*_44);
+        _10 = &_3;
+        _12 = &_1;
+        _11 = &_12;
+        _9 = (move _10, move _11);
+        _13 = (_9.0: &&std::option::Option<std::boxed::Box<i32>>);
+        _14 = (_9.1: &&std::option::Option<std::boxed::Box<i32>>);
+        _16 = <&Option<Box<i32>> as PartialEq>::eq(_13, _14) -> [return: bb5, unwind: bb13];
+    }
+
+    bb19: {
+        _6 = &(*_43);
+        _8 = (*_6);
+        _7 = Gt(move _8, const 0_i32);
+        switchInt(move _7) -> [0: bb4, otherwise: bb3];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&MatchArm, &MatchArm);
+    let mut _2: &MatchArm;
+    let _3: MatchArm;
+    let mut _4: std::option::Option<std::boxed::Box<i32>>;
+    let mut _5: std::boxed::Box<i32>;
+    let mut _6: &MatchArm;
+    let _7: MatchArm;
+    let _8: &MatchArm;
+    let _9: &MatchArm;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&MatchArm, &MatchArm);
+    let mut _16: &MatchArm;
+    let _17: MatchArm;
+    let mut _18: std::option::Option<std::boxed::Box<i32>>;
+    let mut _19: std::boxed::Box<i32>;
+    let mut _20: &MatchArm;
+    let _21: MatchArm;
+    let _22: &MatchArm;
+    let _23: &MatchArm;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&MatchArm, &MatchArm);
+    let mut _30: &MatchArm;
+    let _31: MatchArm;
+    let mut _32: std::option::Option<std::boxed::Box<i32>>;
+    let mut _33: std::boxed::Box<i32>;
+    let mut _34: &MatchArm;
+    let _35: MatchArm;
+    let _36: &MatchArm;
+    let _37: &MatchArm;
+    let mut _38: bool;
+    let mut _39: bool;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _36;
+        debug right_val => _37;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+
+    bb0: {
+        _5 = Box::<i32>::new(const 2_i32) -> bb1;
+    }
+
+    bb1: {
+        _4 = Option::<Box<i32>>::Some(move _5);
+        _3 = test(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = &_3;
+        _7 = MatchArm::Arm(const 0_usize);
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &MatchArm);
+        _9 = (_1.1: &MatchArm);
+        _11 = <MatchArm as PartialEq>::eq(_8, _9) -> bb3;
+    }
+
+    bb3: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _12, _8, _9, move _14);
+    }
+
+    bb5: {
+        _19 = Box::<i32>::new(const -1_i32) -> bb6;
+    }
+
+    bb6: {
+        _18 = Option::<Box<i32>>::Some(move _19);
+        _17 = test(move _18) -> bb7;
+    }
+
+    bb7: {
+        _16 = &_17;
+        _21 = MatchArm::Arm(const 1_usize);
+        _20 = &_21;
+        _15 = (move _16, move _20);
+        _22 = (_15.0: &MatchArm);
+        _23 = (_15.1: &MatchArm);
+        _25 = <MatchArm as PartialEq>::eq(_22, _23) -> bb8;
+    }
+
+    bb8: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _26, _22, _23, move _28);
+    }
+
+    bb10: {
+        _33 = Box::<i32>::new(const 0_i32) -> bb11;
+    }
+
+    bb11: {
+        _32 = Option::<Box<i32>>::Some(move _33);
+        _31 = test(move _32) -> bb12;
+    }
+
+    bb12: {
+        _30 = &_31;
+        _35 = MatchArm::Wild;
+        _34 = &_35;
+        _29 = (move _30, move _34);
+        _36 = (_29.0: &MatchArm);
+        _37 = (_29.1: &MatchArm);
+        _39 = <MatchArm as PartialEq>::eq(_36, _37) -> bb13;
+    }
+
+    bb13: {
+        _38 = Not(move _39);
+        switchInt(move _38) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<MatchArm, MatchArm>(move _40, _36, _37, move _42);
+    }
+
+    bb15: {
+        return;
+    }
+}
+
+fn MatchArm::Arm(_1: usize) -> MatchArm {
+    let mut _0: MatchArm;
+
+    bb0: {
+        _0 = MatchArm::Arm(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn MatchArm::Arm(_1: usize) -> MatchArm {
+    let mut _0: MatchArm;
+
+    bb0: {
+        _0 = MatchArm::Arm(move _1);
+        return;
+    }
+}

@@ -1,0 +1,30 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/dont-eagerly-error-in-is-const-evaluatable.rs:14:1: 14:18>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::size_of::<T>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

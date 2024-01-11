@@ -1,0 +1,24 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generic-associated-types/issue-85921.rs:9:1: 9:18>::with_assoc(_1: impl FnOnce(Self::Assoc<'_>)) -> () {
+    debug f => _1;
+    let mut _0: ();
+    let mut _2: (i32,);
+
+    bb0: {
+        _2 = (const 5_i32,);
+        _0 = <impl FnOnce(Self::Assoc<'_>) as FnOnce<(i32,)>>::call_once(move _1, move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,2 @@
+thread 'main' panicked at 'called `Option::unwrap()` on a `None` value', ui/consts/issue-69191-ice-on-uninhabited-enum-field.rs:34:45
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

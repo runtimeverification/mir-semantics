@@ -1,0 +1,49 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &str;
+    let mut _2: bool;
+    let mut _3: (&str, i32, &str);
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: (&&str, &str);
+    let mut _7: &&str;
+    let _8: &str;
+    let mut _9: bool;
+    let mut _10: &&str;
+
+    bb0: {
+        _1 = const "foo";
+        _2 = <str as PartialEq>::eq(_1, const "foo") -> bb1;
+    }
+
+    bb1: {
+        _3 = (const "foo", const 0_i32, const "bar");
+        switchInt((_3.1: i32)) -> [0: bb5, otherwise: bb2];
+    }
+
+    bb2: {
+        _4 = <str as PartialEq>::eq((_3.0: &str), const "foo") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _4) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _5 = <str as PartialEq>::eq((_3.2: &str), const "bar") -> bb5;
+    }
+
+    bb5: {
+        _8 = const "foo";
+        _7 = &_8;
+        _6 = (move _7, const "bar");
+        _10 = deref_copy (_6.0: &&str);
+        _9 = <str as PartialEq>::eq((*_10), const "foo") -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}

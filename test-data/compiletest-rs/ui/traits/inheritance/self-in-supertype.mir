@@ -1,0 +1,381 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static FUZZY_EPSILON: f64 = {
+    let mut _0: f64;
+
+    bb0: {
+        _0 = const 0.10000000000000001f64;
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:15:1: 15:26>::fuzzy_eq(_1: &f32, _2: &f32) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: &f32;
+    let _4: f32;
+    let mut _5: f64;
+    let mut _6: &f64;
+
+    bb0: {
+        _6 = const {alloc1: &f64};
+        _5 = (*_6);
+        _4 = move _5 as f32 (FloatToFloat);
+        _3 = &_4;
+        _0 = <f32 as FuzzyEq<f32>>::fuzzy_eq_eps(_1, _2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: FUZZY_EPSILON, size: 8, align: 8) {
+    9a 99 99 99 99 99 b9 3f                         │ .......?
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:15:1: 15:26>::fuzzy_eq_eps(_1: &f32, _2: &f32, _3: &f32) -> bool {
+    debug self => _1;
+    debug other => _2;
+    debug epsilon => _3;
+    let mut _0: bool;
+    let mut _4: f32;
+    let mut _5: f32;
+    let mut _6: f32;
+    let mut _7: f32;
+    let mut _8: f32;
+
+    bb0: {
+        _6 = (*_1);
+        _7 = (*_2);
+        _5 = Sub(move _6, move _7);
+        _4 = f32::<impl f32>::abs(move _5) -> bb1;
+    }
+
+    bb1: {
+        _8 = (*_3);
+        _0 = Lt(move _4, move _8);
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:25:1: 25:19>::two_pi() -> f32 {
+    let mut _0: f32;
+
+    bb0: {
+        _0 = const 6.28318548f32;
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:29:1: 29:26>::fuzzy_eq(_1: &f64, _2: &f64) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: &f64;
+    let _4: f64;
+    let mut _5: &f64;
+
+    bb0: {
+        _5 = const {alloc1: &f64};
+        _4 = (*_5);
+        _3 = &_4;
+        _0 = <f64 as FuzzyEq<f64>>::fuzzy_eq_eps(_1, _2, _3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: FUZZY_EPSILON, size: 8, align: 8) {
+    9a 99 99 99 99 99 b9 3f                         │ .......?
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:29:1: 29:26>::fuzzy_eq_eps(_1: &f64, _2: &f64, _3: &f64) -> bool {
+    debug self => _1;
+    debug other => _2;
+    debug epsilon => _3;
+    let mut _0: bool;
+    let mut _4: f64;
+    let mut _5: f64;
+    let mut _6: f64;
+    let mut _7: f64;
+    let mut _8: f64;
+
+    bb0: {
+        _6 = (*_1);
+        _7 = (*_2);
+        _5 = Sub(move _6, move _7);
+        _4 = f64::<impl f64>::abs(move _5) -> bb1;
+    }
+
+    bb1: {
+        _8 = (*_3);
+        _0 = Lt(move _4, move _8);
+        return;
+    }
+}
+
+fn <impl at ui/traits/inheritance/self-in-supertype.rs:39:1: 39:19>::two_pi() -> f64 {
+    let mut _0: f64;
+
+    bb0: {
+        _0 = const 6.2831853071795862f64;
+        return;
+    }
+}
+
+fn compare(_1: F) -> bool {
+    debug f1 => _1;
+    let mut _0: bool;
+    let _2: F;
+    let mut _3: &F;
+    let _4: &F;
+    scope 1 {
+        debug f2 => _2;
+    }
+
+    bb0: {
+        _2 = <F as Float>::two_pi() -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _3 = &_1;
+        _4 = &_2;
+        _0 = <F as FuzzyEq<F>>::fuzzy_eq(move _3, _4) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        drop(_2) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        drop(_1) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: !;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: !;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: !;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: !;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: !;
+    let mut _17: bool;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: !;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: !;
+    let mut _24: bool;
+    let mut _25: bool;
+    let mut _26: !;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: !;
+    let mut _30: bool;
+    let mut _31: bool;
+    let mut _32: !;
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: bool;
+    let mut _36: !;
+    let mut _37: bool;
+    let mut _38: bool;
+    let mut _39: bool;
+    let mut _40: !;
+
+    bb0: {
+        _2 = compare::<f32>(const 6.28318548f32) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _3 = core::panicking::panic(const "assertion failed: compare::<f32>(6.28318530717958647692528676655900576)");
+    }
+
+    bb3: {
+        _5 = compare::<f32>(const 6.28999996f32) -> bb4;
+    }
+
+    bb4: {
+        _4 = Not(move _5);
+        switchInt(move _4) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _6 = core::panicking::panic(const "assertion failed: compare::<f32>(6.29)");
+    }
+
+    bb6: {
+        _8 = compare::<f32>(const 6.30000019f32) -> bb7;
+    }
+
+    bb7: {
+        _7 = Not(move _8);
+        switchInt(move _7) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _9 = core::panicking::panic(const "assertion failed: compare::<f32>(6.3)");
+    }
+
+    bb9: {
+        _11 = compare::<f32>(const 6.19000006f32) -> bb10;
+    }
+
+    bb10: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _12 = core::panicking::panic(const "assertion failed: compare::<f32>(6.19)");
+    }
+
+    bb12: {
+        _15 = compare::<f32>(const 7.28318548f32) -> bb13;
+    }
+
+    bb13: {
+        _14 = Not(move _15);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _16 = core::panicking::panic(const "assertion failed: !compare::<f32>(7.28318530717958647692528676655900576)");
+    }
+
+    bb15: {
+        _19 = compare::<f32>(const 6.17999983f32) -> bb16;
+    }
+
+    bb16: {
+        _18 = Not(move _19);
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _20 = core::panicking::panic(const "assertion failed: !compare::<f32>(6.18)");
+    }
+
+    bb18: {
+        _22 = compare::<f64>(const 6.2831853071795862f64) -> bb19;
+    }
+
+    bb19: {
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _23 = core::panicking::panic(const "assertion failed: compare::<f64>(6.28318530717958647692528676655900576)");
+    }
+
+    bb21: {
+        _25 = compare::<f64>(const 6.29f64) -> bb22;
+    }
+
+    bb22: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _26 = core::panicking::panic(const "assertion failed: compare::<f64>(6.29)");
+    }
+
+    bb24: {
+        _28 = compare::<f64>(const 6.2999999999999998f64) -> bb25;
+    }
+
+    bb25: {
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb27, otherwise: bb26];
+    }
+
+    bb26: {
+        _29 = core::panicking::panic(const "assertion failed: compare::<f64>(6.3)");
+    }
+
+    bb27: {
+        _31 = compare::<f64>(const 6.1900000000000004f64) -> bb28;
+    }
+
+    bb28: {
+        _30 = Not(move _31);
+        switchInt(move _30) -> [0: bb30, otherwise: bb29];
+    }
+
+    bb29: {
+        _32 = core::panicking::panic(const "assertion failed: compare::<f64>(6.19)");
+    }
+
+    bb30: {
+        _35 = compare::<f64>(const 7.2831853071795862f64) -> bb31;
+    }
+
+    bb31: {
+        _34 = Not(move _35);
+        _33 = Not(move _34);
+        switchInt(move _33) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _36 = core::panicking::panic(const "assertion failed: !compare::<f64>(7.28318530717958647692528676655900576)");
+    }
+
+    bb33: {
+        _39 = compare::<f64>(const 6.1799999999999997f64) -> bb34;
+    }
+
+    bb34: {
+        _38 = Not(move _39);
+        _37 = Not(move _38);
+        switchInt(move _37) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _40 = core::panicking::panic(const "assertion failed: !compare::<f64>(6.18)");
+    }
+
+    bb36: {
+        return;
+    }
+}

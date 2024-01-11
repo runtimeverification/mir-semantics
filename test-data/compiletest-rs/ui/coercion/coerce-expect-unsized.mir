@@ -1,0 +1,511 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::boxed::Box<[isize]>;
+    let mut _2: std::boxed::Box<[isize; 3]>;
+    let mut _3: [isize; 3];
+    let mut _4: std::boxed::Box<[isize]>;
+    let mut _5: std::boxed::Box<[isize; 3]>;
+    let mut _6: [isize; 3];
+    let mut _7: bool;
+    let mut _8: std::boxed::Box<[isize]>;
+    let mut _9: std::boxed::Box<[isize; 3]>;
+    let mut _10: [isize; 3];
+    let mut _11: bool;
+    let mut _12: std::boxed::Box<dyn std::ops::Fn(isize) -> u8>;
+    let mut _13: std::boxed::Box<[closure@ui/coercion/coerce-expect-unsized.rs:15:49: 15:52]>;
+    let mut _14: std::boxed::Box<dyn std::fmt::Debug>;
+    let mut _15: std::boxed::Box<bool>;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: std::boxed::Box<dyn std::fmt::Debug>;
+    let mut _19: std::boxed::Box<char>;
+    let mut _20: char;
+    let mut _21: bool;
+    let _22: &str;
+    let _23: &std::string::String;
+    let _24: std::string::String;
+    let _25: &str;
+    let _26: &std::string::String;
+    let _27: std::string::String;
+    let mut _28: bool;
+    let mut _29: &i32;
+    let _30: i32;
+    let _31: &str;
+    let _32: &std::string::String;
+    let _33: std::string::String;
+    let mut _34: bool;
+    let mut _36: std::fmt::Arguments<'_>;
+    let mut _37: &[&str];
+    let _38: &[&str; 1];
+    let _39: [&str; 1];
+    let mut _40: &[core::fmt::rt::Argument<'_>];
+    let _41: &[core::fmt::rt::Argument<'_>; 1];
+    let _42: [core::fmt::rt::Argument<'_>; 1];
+    let mut _43: core::fmt::rt::Argument<'_>;
+    let _44: &bool;
+    let _45: bool;
+    let mut _46: &[&str];
+    let mut _47: &[&str; 2];
+    let _48: [&str; 2];
+    let _49: &str;
+    let _50: &str;
+    let mut _51: std::boxed::Box<[isize]>;
+    let mut _52: std::boxed::Box<[isize; 3]>;
+    let mut _53: [isize; 3];
+    let mut _54: std::boxed::Box<dyn std::ops::Fn(isize) -> u8>;
+    let mut _55: std::boxed::Box<[closure@ui/coercion/coerce-expect-unsized.rs:34:47: 34:50]>;
+    let mut _56: std::rc::Rc<std::cell::RefCell<[isize]>>;
+    let mut _57: std::rc::Rc<std::cell::RefCell<[isize; 3]>>;
+    let mut _58: std::cell::RefCell<[isize; 3]>;
+    let mut _59: [isize; 3];
+    let mut _60: std::rc::Rc<std::cell::RefCell<dyn std::ops::FnMut(isize) -> u8>>;
+    let mut _61: std::rc::Rc<std::cell::RefCell<[closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73]>>;
+    let mut _62: std::cell::RefCell<[closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73]>;
+    let mut _63: std::vec::Vec<std::boxed::Box<dyn std::ops::Fn(isize) -> u8>>;
+    let mut _64: std::boxed::Box<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>]>;
+    let mut _65: std::boxed::Box<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]>;
+    let mut _66: usize;
+    let mut _67: usize;
+    let mut _68: *mut u8;
+    let mut _69: std::boxed::Box<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]>;
+    let mut _70: std::boxed::Box<dyn std::ops::Fn(isize) -> u8>;
+    let mut _71: std::boxed::Box<[closure@ui/coercion/coerce-expect-unsized.rs:40:18: 40:21]>;
+    let mut _72: std::boxed::Box<dyn std::ops::Fn(isize) -> u8>;
+    let mut _73: std::boxed::Box<[closure@ui/coercion/coerce-expect-unsized.rs:41:18: 41:21]>;
+    let mut _74: &mut std::boxed::Box<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]>;
+    let mut _75: ();
+    let mut _76: *const [std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2];
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                    scope 9 {
+                                        scope 10 {
+                                            scope 11 {
+                                                scope 12 {
+                                                    scope 13 {
+                                                        scope 14 {
+                                                            let _35: std::string::String;
+                                                            scope 15 {
+                                                                scope 17 {
+                                                                    scope 18 {
+                                                                        scope 19 {
+                                                                            scope 20 {
+                                                                                let mut _77: *const ();
+                                                                                let mut _78: usize;
+                                                                                let mut _79: usize;
+                                                                                let mut _80: usize;
+                                                                                let mut _81: usize;
+                                                                                let mut _82: bool;
+                                                                                scope 21 {
+                                                                                }
+                                                                                scope 22 {
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            scope 16 {
+                                                                debug res => _35;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 1_isize, const 2_isize, const 3_isize];
+        _2 = Box::<[isize; 3]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = move _2 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        _7 = const true;
+        switchInt(move _7) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _6 = [const 1_isize, const 2_isize, const 3_isize];
+        goto -> bb5;
+    }
+
+    bb4: {
+        _6 = [const 1_isize, const 3_isize, const 4_isize];
+        goto -> bb5;
+    }
+
+    bb5: {
+        _5 = Box::<[isize; 3]>::new(move _6) -> bb6;
+    }
+
+    bb6: {
+        _4 = move _5 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        drop(_4) -> bb7;
+    }
+
+    bb7: {
+        _11 = const true;
+        switchInt(_11) -> [0: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        _10 = [const 1_isize, const 3_isize, const 4_isize];
+        goto -> bb10;
+    }
+
+    bb9: {
+        _10 = [const 1_isize, const 2_isize, const 3_isize];
+        goto -> bb10;
+    }
+
+    bb10: {
+        _9 = Box::<[isize; 3]>::new(move _10) -> bb11;
+    }
+
+    bb11: {
+        _8 = move _9 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        drop(_8) -> bb12;
+    }
+
+    bb12: {
+        _13 = Box::<[closure@ui/coercion/coerce-expect-unsized.rs:15:49: 15:52]>::new(const ZeroSized: [closure@ui/coercion/coerce-expect-unsized.rs:15:49: 15:52]) -> bb13;
+    }
+
+    bb13: {
+        _12 = move _13 as std::boxed::Box<dyn std::ops::Fn(isize) -> u8> (Pointer(Unsize));
+        drop(_12) -> bb14;
+    }
+
+    bb14: {
+        _17 = const true;
+        _16 = Not(_17);
+        _15 = Box::<bool>::new(move _16) -> bb15;
+    }
+
+    bb15: {
+        _14 = move _15 as std::boxed::Box<dyn std::fmt::Debug> (Pointer(Unsize));
+        drop(_14) -> bb16;
+    }
+
+    bb16: {
+        _21 = const true;
+        switchInt(_21) -> [0: bb17, otherwise: bb18];
+    }
+
+    bb17: {
+        _20 = const 'b';
+        goto -> bb19;
+    }
+
+    bb18: {
+        _20 = const 'a';
+        goto -> bb19;
+    }
+
+    bb19: {
+        _19 = Box::<char>::new(move _20) -> bb20;
+    }
+
+    bb20: {
+        _18 = move _19 as std::boxed::Box<dyn std::fmt::Debug> (Pointer(Unsize));
+        drop(_18) -> bb21;
+    }
+
+    bb21: {
+        _24 = String::new() -> bb22;
+    }
+
+    bb22: {
+        _23 = &_24;
+        _22 = <String as Deref>::deref(_23) -> [return: bb23, unwind: bb56];
+    }
+
+    bb23: {
+        _28 = const true;
+        switchInt(move _28) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _27 = <String as From<&str>>::from(const "...") -> [return: bb60, unwind: bb56];
+    }
+
+    bb25: {
+        _30 = const 5_i32;
+        _29 = &_30;
+        _27 = <i32 as ToString>::to_string(move _29) -> [return: bb61, unwind: bb56];
+    }
+
+    bb26: {
+        _26 = &_27;
+        _25 = <String as Deref>::deref(_26) -> [return: bb27, unwind: bb55];
+    }
+
+    bb27: {
+        _34 = const true;
+        switchInt(_34) -> [0: bb28, otherwise: bb29];
+    }
+
+    bb28: {
+        _49 = const "y";
+        _48 = [const "x", _49];
+        _47 = &_48;
+        _46 = move _47 as &[&str] (Pointer(Unsize));
+        _50 = const "+";
+        _33 = slice::<impl [&str]>::join::<&str>(move _46, _50) -> [return: bb62, unwind: bb55];
+    }
+
+    bb29: {
+        _39 = [const ""];
+        _38 = &_39;
+        _37 = _38 as &[&str] (Pointer(Unsize));
+        _45 = const false;
+        _44 = &_45;
+        _43 = core::fmt::rt::Argument::<'_>::new_display::<bool>(_44) -> [return: bb30, unwind: bb55];
+    }
+
+    bb30: {
+        _42 = [move _43];
+        _41 = &_42;
+        _40 = _41 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _36 = Arguments::<'_>::new_v1(move _37, move _40) -> [return: bb31, unwind: bb55];
+    }
+
+    bb31: {
+        _35 = format(move _36) -> [return: bb32, unwind: bb55];
+    }
+
+    bb32: {
+        _33 = move _35;
+        goto -> bb33;
+    }
+
+    bb33: {
+        _32 = &_33;
+        _31 = <String as Deref>::deref(_32) -> [return: bb34, unwind: bb54];
+    }
+
+    bb34: {
+        _53 = [const 1_isize, const 2_isize, const 3_isize];
+        _52 = Box::<[isize; 3]>::new(move _53) -> [return: bb35, unwind: bb54];
+    }
+
+    bb35: {
+        _51 = move _52 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        drop(_51) -> [return: bb36, unwind: bb54];
+    }
+
+    bb36: {
+        _55 = Box::<[closure@ui/coercion/coerce-expect-unsized.rs:34:47: 34:50]>::new(const ZeroSized: [closure@ui/coercion/coerce-expect-unsized.rs:34:47: 34:50]) -> [return: bb37, unwind: bb54];
+    }
+
+    bb37: {
+        _54 = move _55 as std::boxed::Box<dyn std::ops::Fn(isize) -> u8> (Pointer(Unsize));
+        drop(_54) -> [return: bb38, unwind: bb54];
+    }
+
+    bb38: {
+        _59 = [const 1_isize, const 2_isize, const 3_isize];
+        _58 = RefCell::<[isize; 3]>::new(move _59) -> [return: bb39, unwind: bb54];
+    }
+
+    bb39: {
+        _57 = Rc::<RefCell<[isize; 3]>>::new(move _58) -> [return: bb40, unwind: bb54];
+    }
+
+    bb40: {
+        _56 = move _57 as std::rc::Rc<std::cell::RefCell<[isize]>> (Pointer(Unsize));
+        drop(_56) -> [return: bb41, unwind: bb54];
+    }
+
+    bb41: {
+        _62 = RefCell::<[closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73]>::new(const ZeroSized: [closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73]) -> [return: bb42, unwind: bb54];
+    }
+
+    bb42: {
+        _61 = Rc::<RefCell<[closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73]>>::new(move _62) -> [return: bb43, unwind: bb54];
+    }
+
+    bb43: {
+        _60 = move _61 as std::rc::Rc<std::cell::RefCell<dyn std::ops::FnMut(isize) -> u8>> (Pointer(Unsize));
+        drop(_60) -> [return: bb44, unwind: bb54];
+    }
+
+    bb44: {
+        _66 = SizeOf([std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]);
+        _67 = AlignOf([std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]);
+        _68 = alloc::alloc::exchange_malloc(move _66, move _67) -> [return: bb45, unwind: bb54];
+    }
+
+    bb45: {
+        _69 = ShallowInitBox(move _68, [std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]);
+        _71 = Box::<[closure@ui/coercion/coerce-expect-unsized.rs:40:18: 40:21]>::new(const ZeroSized: [closure@ui/coercion/coerce-expect-unsized.rs:40:18: 40:21]) -> [return: bb46, unwind: bb58];
+    }
+
+    bb46: {
+        _70 = move _71 as std::boxed::Box<dyn std::ops::Fn(isize) -> u8> (Pointer(Unsize));
+        _73 = Box::<[closure@ui/coercion/coerce-expect-unsized.rs:41:18: 41:21]>::new(const ZeroSized: [closure@ui/coercion/coerce-expect-unsized.rs:41:18: 41:21]) -> [return: bb47, unwind: bb53];
+    }
+
+    bb47: {
+        _72 = move _73 as std::boxed::Box<dyn std::ops::Fn(isize) -> u8> (Pointer(Unsize));
+        _76 = (((_69.0: std::ptr::Unique<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]>).0: std::ptr::NonNull<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]>).0: *const [std::boxed::Box<dyn std::ops::Fn(isize) -> u8>; 2]);
+        _77 = _76 as *const () (PtrToPtr);
+        _78 = _77 as usize (Transmute);
+        _79 = AlignOf(std::boxed::Box<dyn std::ops::Fn(isize) -> u8>);
+        _80 = Sub(_79, const 1_usize);
+        _81 = BitAnd(_78, _80);
+        _82 = Eq(_81, const 0_usize);
+        assert(_82, "misaligned pointer dereference: address must be a multiple of {} but is {}", _79, _78) -> [success: bb59, unwind unreachable];
+    }
+
+    bb48: {
+        drop(_63) -> [return: bb49, unwind: bb54];
+    }
+
+    bb49: {
+        drop(_33) -> [return: bb50, unwind: bb55];
+    }
+
+    bb50: {
+        drop(_27) -> [return: bb51, unwind: bb56];
+    }
+
+    bb51: {
+        drop(_24) -> bb52;
+    }
+
+    bb52: {
+        return;
+    }
+
+    bb53 (cleanup): {
+        drop(_70) -> [return: bb58, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_33) -> [return: bb55, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        drop(_27) -> [return: bb56, unwind terminate];
+    }
+
+    bb56 (cleanup): {
+        drop(_24) -> [return: bb57, unwind terminate];
+    }
+
+    bb57 (cleanup): {
+        resume;
+    }
+
+    bb58 (cleanup): {
+        _74 = &mut _69;
+        _75 = <Box<[Box<dyn Fn(isize) -> u8>; 2]> as Drop>::drop(move _74) -> [return: bb63, unwind terminate];
+    }
+
+    bb59: {
+        (*_76) = [move _70, move _72];
+        _65 = move _69;
+        _64 = move _65 as std::boxed::Box<[std::boxed::Box<dyn std::ops::Fn(isize) -> u8>]> (Pointer(Unsize));
+        _63 = slice::<impl [Box<dyn Fn(isize) -> u8>]>::into_vec::<std::alloc::Global>(move _64) -> [return: bb48, unwind: bb54];
+    }
+
+    bb60: {
+        goto -> bb26;
+    }
+
+    bb61: {
+        goto -> bb26;
+    }
+
+    bb62: {
+        goto -> bb33;
+    }
+
+    bb63 (cleanup): {
+        goto -> bb54;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:15:49: 15:52], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2 as u8 (IntToInt);
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:22:37: 22:40], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2 as u8 (IntToInt);
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:34:47: 34:50], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2 as u8 (IntToInt);
+        return;
+    }
+}
+
+fn main::{closure#3}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:37:70: 37:73], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2 as u8 (IntToInt);
+        return;
+    }
+}
+
+fn main::{closure#4}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:40:18: 40:21], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = _2 as u8 (IntToInt);
+        return;
+    }
+}
+
+fn main::{closure#5}(_1: &[closure@ui/coercion/coerce-expect-unsized.rs:41:18: 41:21], _2: isize) -> u8 {
+    debug x => _2;
+    let mut _0: u8;
+    let mut _3: i16;
+
+    bb0: {
+        _3 = _2 as i16 (IntToInt);
+        _0 = move _3 as u8 (IntToInt);
+        return;
+    }
+}

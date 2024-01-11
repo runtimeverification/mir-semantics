@@ -1,0 +1,90 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/packed_pattern.rs:3:10: 3:19>::eq(_1: &Foo, _2: &Foo) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &(i64, u32, u32, u32);
+    let _4: (i64, u32, u32, u32);
+    let mut _5: &(i64, u32, u32, u32);
+    let _6: (i64, u32, u32, u32);
+
+    bb0: {
+        _4 = ((*_1).0: (i64, u32, u32, u32));
+        _3 = &_4;
+        _6 = ((*_2).0: (i64, u32, u32, u32));
+        _5 = &_6;
+        _0 = <(i64, u32, u32, u32) as PartialEq>::eq(move _3, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern.rs:3:21: 3:23>::assert_receiver_is_total_eq(_1: &Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/packed_pattern.rs:3:31: 3:36>::clone(_1: &Foo) -> Foo {
+    debug self => _1;
+    let mut _0: Foo;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+const FOO: Foo = {
+    let mut _0: Foo;
+    let mut _1: (i64, u32, u32, u32);
+
+    bb0: {
+        StorageLive(_1);
+        _1 = (const 5_i64, const 6_u32, const 7_u32, const 8_u32);
+        _0 = Foo { field: move _1 };
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo;
+    let mut _2: !;
+
+    bb0: {
+        _1 = const _;
+        switchInt(((_1.0: (i64, u32, u32, u32)).0: i64)) -> [5: bb1, otherwise: bb4];
+    }
+
+    bb1: {
+        switchInt(((_1.0: (i64, u32, u32, u32)).1: u32)) -> [6: bb2, otherwise: bb4];
+    }
+
+    bb2: {
+        switchInt(((_1.0: (i64, u32, u32, u32)).2: u32)) -> [7: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        switchInt(((_1.0: (i64, u32, u32, u32)).3: u32)) -> [8: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _2 = core::panicking::panic(const "internal error: entered unreachable code");
+    }
+
+    bb5: {
+        return;
+    }
+}

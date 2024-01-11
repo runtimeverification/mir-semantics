@@ -1,0 +1,267 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn pairs(_1: F) -> () {
+    debug it => _1;
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _4: bool;
+    let mut _5: isize;
+    let _6: ();
+    let mut _7: &mut F;
+    let mut _8: ((isize, isize),);
+    let mut _9: (isize, isize);
+    let mut _10: isize;
+    let mut _11: isize;
+    let mut _12: isize;
+    scope 1 {
+        debug i => _2;
+        let mut _3: isize;
+        scope 2 {
+            debug j => _3;
+        }
+    }
+
+    bb0: {
+        _2 = const 0_isize;
+        _3 = const 0_isize;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _5 = _2;
+        _4 = Lt(move _5, const 10_isize);
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _7 = &mut _1;
+        _10 = _2;
+        _11 = _3;
+        _9 = (move _10, move _11);
+        _8 = (move _9,);
+        _6 = <F as FnMut<((isize, isize),)>>::call_mut(move _7, move _8) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _2 = Add(_2, const 1_isize);
+        _12 = _2;
+        _3 = Add(_3, move _12);
+        goto -> bb1;
+    }
+
+    bb4: {
+        drop(_1) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let _3: ();
+    let mut _4: [closure@ui/for-loop-while/foreach-put-structured.rs:13:11: 13:14];
+    let mut _5: &mut isize;
+    let mut _6: &mut isize;
+    let mut _7: (&isize, &isize);
+    let mut _8: &isize;
+    let mut _9: &isize;
+    let _10: isize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: isize;
+    let mut _16: isize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug i => _1;
+        let mut _2: isize;
+        scope 2 {
+            debug j => _2;
+            let _11: &isize;
+            let _12: &isize;
+            scope 3 {
+                debug left_val => _11;
+                debug right_val => _12;
+                let _17: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _17;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 10_isize;
+        _2 = const 0_isize;
+        _5 = &mut _1;
+        _6 = &mut _2;
+        _4 = [closure@ui/for-loop-while/foreach-put-structured.rs:13:11: 13:14] { i: move _5, j: move _6 };
+        _3 = pairs::<[closure@ui/for-loop-while/foreach-put-structured.rs:13:11: 13:14]>(move _4) -> bb1;
+    }
+
+    bb1: {
+        _8 = &_2;
+        _10 = const 45_isize;
+        _9 = &_10;
+        _7 = (move _8, move _9);
+        _11 = (_7.0: &isize);
+        _12 = (_7.1: &isize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<isize, isize>(move _17, _11, _12, move _19);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/for-loop-while/foreach-put-structured.rs:13:11: 13:14], _2: (isize, isize)) -> () {
+    debug p => _2;
+    debug i => (*((*_1).0: &mut isize));
+    debug j => (*((*_1).1: &mut isize));
+    let mut _0: ();
+    let _3: isize;
+    let _4: isize;
+    let _5: ();
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 2];
+    let _9: [&str; 2];
+    let mut _10: &[core::fmt::rt::Argument<'_>];
+    let _11: &[core::fmt::rt::Argument<'_>; 1];
+    let _12: [core::fmt::rt::Argument<'_>; 1];
+    let mut _13: core::fmt::rt::Argument<'_>;
+    let _14: &isize;
+    let _15: ();
+    let mut _16: std::fmt::Arguments<'_>;
+    let mut _17: &[&str];
+    let _18: &[&str; 2];
+    let _19: [&str; 2];
+    let mut _20: &[core::fmt::rt::Argument<'_>];
+    let _21: &[core::fmt::rt::Argument<'_>; 1];
+    let _22: [core::fmt::rt::Argument<'_>; 1];
+    let mut _23: core::fmt::rt::Argument<'_>;
+    let _24: &isize;
+    let mut _25: (&isize, &isize);
+    let mut _26: &isize;
+    let _27: isize;
+    let mut _28: isize;
+    let mut _29: &isize;
+    let mut _32: bool;
+    let mut _33: bool;
+    let mut _34: isize;
+    let mut _35: isize;
+    let _37: !;
+    let mut _38: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _39: isize;
+    let mut _40: &mut isize;
+    let mut _41: &mut isize;
+    let mut _42: &mut isize;
+    let mut _43: &mut isize;
+    scope 1 {
+        debug _0 => _3;
+        debug _1 => _4;
+        let _30: &isize;
+        let _31: &isize;
+        scope 2 {
+            debug left_val => _30;
+            debug right_val => _31;
+            let _36: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _36;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = (_2.0: isize);
+        _4 = (_2.1: isize);
+        _9 = [const "", const "\n"];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _14 = &_3;
+        _13 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_14) -> bb1;
+    }
+
+    bb1: {
+        _12 = [move _13];
+        _11 = &_12;
+        _10 = _11 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _6 = Arguments::<'_>::new_v1(move _7, move _10) -> bb2;
+    }
+
+    bb2: {
+        _5 = _print(move _6) -> bb3;
+    }
+
+    bb3: {
+        _19 = [const "", const "\n"];
+        _18 = &_19;
+        _17 = _18 as &[&str] (Pointer(Unsize));
+        _24 = &_4;
+        _23 = core::fmt::rt::Argument::<'_>::new_display::<isize>(_24) -> bb4;
+    }
+
+    bb4: {
+        _22 = [move _23];
+        _21 = &_22;
+        _20 = _21 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _16 = Arguments::<'_>::new_v1(move _17, move _20) -> bb5;
+    }
+
+    bb5: {
+        _15 = _print(move _16) -> bb6;
+    }
+
+    bb6: {
+        _28 = _3;
+        _27 = Add(move _28, const 10_isize);
+        _26 = &_27;
+        _40 = deref_copy ((*_1).0: &mut isize);
+        _29 = &(*_40);
+        _25 = (move _26, move _29);
+        _30 = (_25.0: &isize);
+        _31 = (_25.1: &isize);
+        _34 = (*_30);
+        _35 = (*_31);
+        _33 = Eq(move _34, move _35);
+        _32 = Not(move _33);
+        switchInt(move _32) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _36 = core::panicking::AssertKind::Eq;
+        _38 = Option::<Arguments<'_>>::None;
+        _37 = core::panicking::assert_failed::<isize, isize>(move _36, _30, _31, move _38);
+    }
+
+    bb8: {
+        _41 = deref_copy ((*_1).0: &mut isize);
+        _42 = deref_copy ((*_1).0: &mut isize);
+        (*_41) = Add((*_42), const 1_isize);
+        _39 = _4;
+        _43 = deref_copy ((*_1).1: &mut isize);
+        (*_43) = move _39;
+        return;
+    }
+}

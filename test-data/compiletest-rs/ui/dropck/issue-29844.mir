@@ -1,0 +1,42 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: DescriptorSet<'_>;
+    let mut _2: std::vec::Vec<AttachInfo<'_, Resources>>;
+    scope 1 {
+        debug _x => _1;
+    }
+
+    bb0: {
+        _2 = Vec::<AttachInfo<'_, Resources>>::new() -> bb1;
+    }
+
+    bb1: {
+        _1 = DescriptorSet::<'_> { slots: move _2 };
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn AttachInfo::NextDescriptorSet(_1: Arc<<R as ResourcesTrait<'_>>::DescriptorSet>) -> AttachInfo<'_, R> {
+    let mut _0: AttachInfo<'_, R>;
+
+    bb0: {
+        _0 = AttachInfo::<'_, R>::NextDescriptorSet(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn AttachInfo::NextDescriptorSet(_1: Arc<<R as ResourcesTrait<'_>>::DescriptorSet>) -> AttachInfo<'_, R> {
+    let mut _0: AttachInfo<'_, R>;
+
+    bb0: {
+        _0 = AttachInfo::<'_, R>::NextDescriptorSet(move _1);
+        return;
+    }
+}

@@ -1,0 +1,220 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const <impl at ui/consts/trait_specialization.rs:17:1: 17:32>::CONST_BOOL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+const <impl at ui/consts/trait_specialization.rs:17:1: 17:32>::CONST_STR: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "in default impl";
+        return;
+    }
+}
+
+fn <impl at ui/consts/trait_specialization.rs:17:1: 17:32>::method() -> &str {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "in default impl";
+        return;
+    }
+}
+
+const <impl at ui/consts/trait_specialization.rs:25:1: 25:40>::CONST_BOOL: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+const <impl at ui/consts/trait_specialization.rs:25:1: 25:40>::CONST_STR: &str = {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "in specialized impl";
+        return;
+    }
+}
+
+fn <impl at ui/consts/trait_specialization.rs:25:1: 25:40>::method() -> &str {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "in specialized impl";
+        return;
+    }
+}
+
+fn const_bool() -> &str {
+    let mut _0: &str;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = const _;
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = const "in specialized impl";
+        goto -> bb3;
+    }
+
+    bb2: {
+        _0 = const "in default impl";
+        goto -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn const_str() -> &str {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn run_method() -> &str {
+    let mut _0: &str;
+
+    bb0: {
+        _0 = <T as SpecializedTrait>::method() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn exit_if_not_eq(_1: &str, _2: &str) -> () {
+    debug left => _1;
+    debug right => _2;
+    let mut _0: ();
+    let mut _3: bool;
+    let mut _4: &&str;
+    let mut _5: &&str;
+    let _6: !;
+
+    bb0: {
+        _4 = &_1;
+        _5 = &_2;
+        _3 = <&str as PartialEq>::ne(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _6 = exit(const 1_i32);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: &str;
+    let mut _3: &str;
+    let _4: &str;
+    let _5: ();
+    let _6: &str;
+    let mut _7: &str;
+    let _8: &str;
+    let _9: ();
+    let _10: &str;
+    let mut _11: &str;
+    let _12: &str;
+    let _13: ();
+    let _14: &str;
+    let mut _15: &str;
+    let _16: &str;
+    let _17: ();
+    let _18: &str;
+    let mut _19: &str;
+    let _20: &str;
+    let _21: ();
+    let _22: &str;
+    let mut _23: &str;
+    let _24: &str;
+
+    bb0: {
+        _2 = const "in specialized impl";
+        _4 = const_bool::<TypeA>() -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _1 = exit_if_not_eq(_2, move _3) -> bb2;
+    }
+
+    bb2: {
+        _6 = const "in default impl";
+        _8 = const_bool::<TypeB>() -> bb3;
+    }
+
+    bb3: {
+        _7 = _8;
+        _5 = exit_if_not_eq(_6, move _7) -> bb4;
+    }
+
+    bb4: {
+        _10 = const "in specialized impl";
+        _12 = const_str::<TypeA>() -> bb5;
+    }
+
+    bb5: {
+        _11 = _12;
+        _9 = exit_if_not_eq(_10, move _11) -> bb6;
+    }
+
+    bb6: {
+        _14 = const "in default impl";
+        _16 = const_str::<TypeB>() -> bb7;
+    }
+
+    bb7: {
+        _15 = _16;
+        _13 = exit_if_not_eq(_14, move _15) -> bb8;
+    }
+
+    bb8: {
+        _18 = const "in specialized impl";
+        _20 = run_method::<TypeA>() -> bb9;
+    }
+
+    bb9: {
+        _19 = _20;
+        _17 = exit_if_not_eq(_18, move _19) -> bb10;
+    }
+
+    bb10: {
+        _22 = const "in default impl";
+        _24 = run_method::<TypeB>() -> bb11;
+    }
+
+    bb11: {
+        _23 = _24;
+        _21 = exit_if_not_eq(_22, move _23) -> bb12;
+    }
+
+    bb12: {
+        return;
+    }
+}

@@ -1,0 +1,68 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+S::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/broken-mir-2.rs:7:10: 7:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/broken-mir-2.rs:7:10: 7:15>::fmt(_1: &S<T, N>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&[T; N];
+    let _6: &[T; N];
+
+    bb0: {
+        _3 = const "S";
+        _6 = &((*_1).0: [T; N]);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn S(_1: [T; N]) -> S<T, N> {
+    let mut _0: S<T, N>;
+
+    bb0: {
+        _0 = S::<T, N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn S(_1: [T; N]) -> S<T, N> {
+    let mut _0: S<T, N>;
+
+    bb0: {
+        _0 = S::<T, N>(move _1);
+        return;
+    }
+}

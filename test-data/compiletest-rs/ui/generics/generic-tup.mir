@@ -1,0 +1,168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn get_third(_1: (T, T, T)) -> T {
+    debug t => _1;
+    let mut _0: T;
+    scope 1 {
+        debug x => _0;
+    }
+
+    bb0: {
+        _0 = move (_1.2: T);
+        drop((_1.0: T)) -> [return: bb4, unwind: bb2];
+    }
+
+    bb1 (cleanup): {
+        resume;
+    }
+
+    bb2 (cleanup): {
+        drop((_1.1: T)) -> [return: bb1, unwind terminate];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        drop((_1.1: T)) -> bb3;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 2];
+    let _5: [&str; 2];
+    let mut _6: &[core::fmt::rt::Argument<'_>];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &i32;
+    let _11: i32;
+    let mut _12: (i32, i32, i32);
+    let mut _13: (&i32, &i32);
+    let mut _14: &i32;
+    let _15: i32;
+    let mut _16: (i32, i32, i32);
+    let mut _17: &i32;
+    let _18: i32;
+    let _19: &i32;
+    let _20: &i32;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: i32;
+    let mut _24: i32;
+    let _26: !;
+    let mut _27: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _28: (&u8, &u8);
+    let mut _29: &u8;
+    let _30: u8;
+    let mut _31: (u8, u8, u8);
+    let mut _32: &u8;
+    let _33: u8;
+    let _34: &u8;
+    let _35: &u8;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: u8;
+    let mut _39: u8;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _19;
+        debug right_val => _20;
+        let _25: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _25;
+        }
+    }
+    scope 3 {
+        debug left_val => _34;
+        debug right_val => _35;
+        let _40: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _40;
+        }
+    }
+
+    bb0: {
+        _5 = [const "", const "\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _12 = (const 1_i32, const 2_i32, const 3_i32);
+        _11 = get_third::<i32>(move _12) -> bb1;
+    }
+
+    bb1: {
+        _10 = &_11;
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_10) -> bb2;
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _6 = _7 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_v1(move _3, move _6) -> bb3;
+    }
+
+    bb3: {
+        _1 = _print(move _2) -> bb4;
+    }
+
+    bb4: {
+        _16 = (const 1_i32, const 2_i32, const 3_i32);
+        _15 = get_third::<i32>(move _16) -> bb5;
+    }
+
+    bb5: {
+        _14 = &_15;
+        _18 = const 3_i32;
+        _17 = &_18;
+        _13 = (move _14, move _17);
+        _19 = (_13.0: &i32);
+        _20 = (_13.1: &i32);
+        _23 = (*_19);
+        _24 = (*_20);
+        _22 = Eq(move _23, move _24);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _25 = core::panicking::AssertKind::Eq;
+        _27 = Option::<Arguments<'_>>::None;
+        _26 = core::panicking::assert_failed::<i32, i32>(move _25, _19, _20, move _27);
+    }
+
+    bb7: {
+        _31 = (const 5_u8, const 6_u8, const 7_u8);
+        _30 = get_third::<u8>(move _31) -> bb8;
+    }
+
+    bb8: {
+        _29 = &_30;
+        _33 = const 7_u8;
+        _32 = &_33;
+        _28 = (move _29, move _32);
+        _34 = (_28.0: &u8);
+        _35 = (_28.1: &u8);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<u8, u8>(move _40, _34, _35, move _42);
+    }
+
+    bb10: {
+        return;
+    }
+}

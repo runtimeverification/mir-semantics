@@ -1,0 +1,129 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/self-in-mut-slot-immediate-value.rs:6:16: 6:21>::clone(_1: &Value) -> Value {
+    debug self => _1;
+    let mut _0: Value;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/self/self-in-mut-slot-immediate-value.rs:11:1: 11:11>::squared(_1: Value) -> Value {
+    debug self => _1;
+    let mut _0: Value;
+    let mut _2: isize;
+
+    bb0: {
+        _2 = (_1.0: isize);
+        (_1.0: isize) = Mul((_1.0: isize), move _2);
+        _0 = _1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Value;
+    let mut _3: Value;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&isize, &isize);
+    let mut _18: &isize;
+    let mut _19: &isize;
+    let _20: isize;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: isize;
+    let mut _26: isize;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _2: Value;
+        scope 2 {
+            debug y => _2;
+            let _8: &isize;
+            let _9: &isize;
+            let _21: &isize;
+            let _22: &isize;
+            scope 3 {
+                debug left_val => _8;
+                debug right_val => _9;
+                let _14: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _14;
+                }
+            }
+            scope 5 {
+                debug left_val => _21;
+                debug right_val => _22;
+                let _27: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _27;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Value { n: const 3_isize };
+        _3 = _1;
+        _2 = Value::squared(move _3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &(_1.0: isize);
+        _7 = const 3_isize;
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &isize);
+        _9 = (_4.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _18 = &(_2.0: isize);
+        _20 = const 9_isize;
+        _19 = &_20;
+        _17 = (move _18, move _19);
+        _21 = (_17.0: &isize);
+        _22 = (_17.1: &isize);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<isize, isize>(move _27, _21, _22, move _29);
+    }
+
+    bb5: {
+        return;
+    }
+}

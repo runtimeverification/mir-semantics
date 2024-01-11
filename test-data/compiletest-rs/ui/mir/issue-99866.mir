@@ -1,0 +1,19 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/mir/issue-99866.rs:16:1: 16:19>::iter(_1: HalSetLayouts) -> DSL {
+    debug self => _1;
+    let mut _0: DSL;
+
+    bb0: {
+        _0 = move (_1.0: DSL);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

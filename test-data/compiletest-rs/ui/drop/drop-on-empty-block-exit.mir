@@ -1,0 +1,47 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: t;
+    let mut _2: std::boxed::Box<isize>;
+    scope 1 {
+        debug tt => _1;
+        let _3: std::boxed::Box<isize>;
+        scope 2 {
+            debug _z => _3;
+        }
+    }
+
+    bb0: {
+        _2 = Box::<isize>::new(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        _1 = t::foo(move _2);
+        _3 = move ((_1 as foo).0: std::boxed::Box<isize>);
+        drop(_3) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn t::foo(_1: Box<isize>) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn t::foo(_1: Box<isize>) -> t {
+    let mut _0: t;
+
+    bb0: {
+        _0 = t::foo(move _1);
+        return;
+    }
+}

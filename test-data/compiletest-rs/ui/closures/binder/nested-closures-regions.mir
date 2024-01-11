@@ -1,0 +1,25 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/binder/nested-closures-regions.rs:8:5: 8:21]) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main::{closure#0}::{closure#0}(_1: &[closure@ui/closures/binder/nested-closures-regions.rs:8:24: 8:49], _2: &()) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

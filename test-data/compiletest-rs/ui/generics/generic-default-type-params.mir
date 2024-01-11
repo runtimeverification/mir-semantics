@@ -1,0 +1,548 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generics/generic-default-type-params.rs:6:1: 6:16>::bar_int(_1: &Foo<isize>) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = ((*_1).0: isize);
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:12:1: 12:15>::bar_char(_1: &Foo<char>) -> char {
+    debug self => _1;
+    let mut _0: char;
+
+    bb0: {
+        _0 = ((*_1).0: char);
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:18:1: 18:9>::bar(_1: &Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: isize;
+    let _3: char;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _7: &Foo<isize>;
+    let _8: Foo<isize>;
+    let mut _9: isize;
+    let mut _10: &isize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: isize;
+    let mut _16: isize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: (&char, &char);
+    let mut _21: &char;
+    let _22: char;
+    let mut _23: &Foo<char>;
+    let _24: Foo<char>;
+    let mut _25: char;
+    let mut _26: &char;
+    let mut _29: bool;
+    let mut _30: bool;
+    let mut _31: char;
+    let mut _32: char;
+    let _34: !;
+    let mut _35: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug i => _2;
+        debug c => _3;
+        let _11: &isize;
+        let _12: &isize;
+        let _27: &char;
+        let _28: &char;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+        scope 4 {
+            debug left_val => _27;
+            debug right_val => _28;
+            let _33: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _33;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = (((*_1).0: (isize, char)).0: isize);
+        _3 = (((*_1).0: (isize, char)).1: char);
+        _9 = _2;
+        _8 = Foo::<isize> { a: move _9 };
+        _7 = &_8;
+        _6 = Foo::<isize>::bar_int(move _7) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _10 = &_2;
+        _4 = (move _5, move _10);
+        _11 = (_4.0: &isize);
+        _12 = (_4.1: &isize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<isize, isize>(move _17, _11, _12, move _19);
+    }
+
+    bb3: {
+        _25 = _3;
+        _24 = Foo::<char> { a: move _25 };
+        _23 = &_24;
+        _22 = Foo::<char>::bar_char(move _23) -> bb4;
+    }
+
+    bb4: {
+        _21 = &_22;
+        _26 = &_3;
+        _20 = (move _21, move _26);
+        _27 = (_20.0: &char);
+        _28 = (_20.1: &char);
+        _31 = (*_27);
+        _32 = (*_28);
+        _30 = Eq(move _31, move _32);
+        _29 = Not(move _30);
+        switchInt(move _29) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _33 = core::panicking::AssertKind::Eq;
+        _35 = Option::<Arguments<'_>>::None;
+        _34 = core::panicking::assert_failed::<char, char>(move _33, _27, _28, move _35);
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:26:1: 26:22>::baz(_1: &Foo<A>) -> A {
+    debug self => _1;
+    let mut _0: A;
+    let mut _2: &A;
+
+    bb0: {
+        _2 = &((*_1).0: A);
+        _0 = <A as Clone>::clone(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn default_foo(_1: Foo) -> () {
+    debug x => _1;
+    let mut _0: ();
+    let _2: isize;
+    let _3: char;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&char, &char);
+    let mut _18: &char;
+    let mut _19: &char;
+    let _20: char;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: char;
+    let mut _26: char;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    let _30: ();
+    let mut _31: &Foo;
+    let mut _32: (&(isize, char), &(isize, char));
+    let mut _33: &(isize, char);
+    let _34: (isize, char);
+    let mut _35: &Foo;
+    let mut _36: &(isize, char);
+    let _37: (isize, char);
+    let mut _40: bool;
+    let mut _41: bool;
+    let _43: !;
+    let mut _44: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug i => _2;
+        debug c => _3;
+        let _8: &isize;
+        let _9: &isize;
+        let _21: &char;
+        let _22: &char;
+        let _38: &(isize, char);
+        let _39: &(isize, char);
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug left_val => _21;
+            debug right_val => _22;
+            let _27: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _27;
+            }
+        }
+        scope 6 {
+            debug left_val => _38;
+            debug right_val => _39;
+            let _42: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _42;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = ((_1.0: (isize, char)).0: isize);
+        _3 = ((_1.0: (isize, char)).1: char);
+        _5 = &_2;
+        _7 = const 1_isize;
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &isize);
+        _9 = (_4.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        _18 = &_3;
+        _20 = const 'a';
+        _19 = &_20;
+        _17 = (move _18, move _19);
+        _21 = (_17.0: &char);
+        _22 = (_17.1: &char);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<char, char>(move _27, _21, _22, move _29);
+    }
+
+    bb4: {
+        _31 = &_1;
+        _30 = Foo::bar(move _31) -> bb5;
+    }
+
+    bb5: {
+        _35 = &_1;
+        _34 = Foo::baz(move _35) -> bb6;
+    }
+
+    bb6: {
+        _33 = &_34;
+        _37 = (const 1_isize, const 'a');
+        _36 = &_37;
+        _32 = (move _33, move _36);
+        _38 = (_32.0: &(isize, char));
+        _39 = (_32.1: &(isize, char));
+        _41 = <(isize, char) as PartialEq>::eq(_38, _39) -> bb7;
+    }
+
+    bb7: {
+        _40 = Not(move _41);
+        switchInt(move _40) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _42 = core::panicking::AssertKind::Eq;
+        _44 = Option::<Arguments<'_>>::None;
+        _43 = core::panicking::assert_failed::<(isize, char), (isize, char)>(move _42, _38, _39, move _44);
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:41:10: 41:19>::eq(_1: &BazHelper<T>, _2: &BazHelper<T>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &T;
+    let mut _4: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _4 = &((*_2).0: T);
+        _0 = <T as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:41:21: 41:26>::fmt(_1: &BazHelper<T>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&T;
+    let _6: &T;
+
+    bb0: {
+        _3 = const "BazHelper";
+        _6 = &((*_1).0: T);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:44:10: 44:19>::eq(_1: &Baz<T, U, V>, _2: &Baz<T, U, V>) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: &T;
+    let mut _6: &T;
+    let mut _7: bool;
+    let mut _8: &U;
+    let mut _9: &U;
+    let mut _10: bool;
+    let mut _11: &V;
+    let mut _12: &V;
+
+    bb0: {
+        _5 = &((*_1).0: T);
+        _6 = &((*_2).0: T);
+        _4 = <T as PartialEq>::eq(move _5, move _6) -> bb7;
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _11 = &((*_1).2: V);
+        _12 = &((*_2).2: V);
+        _10 = <V as PartialEq>::eq(move _11, move _12) -> bb9;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _3 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _8 = &((*_1).1: U);
+        _9 = &((*_2).1: U);
+        _7 = <U as PartialEq>::eq(move _8, move _9) -> bb8;
+    }
+
+    bb6: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb7: {
+        switchInt(move _4) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb8: {
+        _3 = move _7;
+        goto -> bb6;
+    }
+
+    bb9: {
+        _0 = move _10;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/generics/generic-default-type-params.rs:44:21: 44:26>::fmt(_1: &Baz<T, U, V>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &T;
+    let mut _6: &dyn std::fmt::Debug;
+    let _7: &U;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &&V;
+    let _10: &V;
+
+    bb0: {
+        _3 = const "Baz";
+        _5 = &((*_1).0: T);
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _7 = &((*_1).1: U);
+        _6 = _7 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _10 = &((*_1).2: V);
+        _9 = &_10;
+        _8 = _9 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field3_finish(_2, _3, move _4, move _6, move _8) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: Foo;
+    let mut _3: (isize, char);
+    let _4: Baz<bool>;
+    let mut _5: BazHelper<bool>;
+    let mut _6: std::option::Option<BazHelper<bool>>;
+    let mut _7: BazHelper<bool>;
+    let mut _8: (&Baz<bool>, &Baz<bool>);
+    let mut _9: &Baz<bool>;
+    let mut _10: &Baz<bool>;
+    let _11: Baz<bool>;
+    let mut _12: BazHelper<bool>;
+    let mut _13: std::option::Option<BazHelper<bool>>;
+    let mut _14: BazHelper<bool>;
+    let mut _17: bool;
+    let mut _18: bool;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _4;
+        let _15: &Baz<bool>;
+        let _16: &Baz<bool>;
+        scope 2 {
+            debug left_val => _15;
+            debug right_val => _16;
+            let _19: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _19;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = (const 1_isize, const 'a');
+        _2 = Foo { a: move _3 };
+        _1 = default_foo(move _2) -> bb1;
+    }
+
+    bb1: {
+        _5 = BazHelper::<bool>(const false);
+        _7 = BazHelper::<bool>(const true);
+        _6 = Option::<BazHelper<bool>>::Some(move _7);
+        _4 = Baz::<bool>(const true, move _5, move _6);
+        _9 = &_4;
+        _12 = BazHelper::<bool>(const false);
+        _14 = BazHelper::<bool>(const true);
+        _13 = Option::<BazHelper<bool>>::Some(move _14);
+        _11 = Baz::<bool>(const true, move _12, move _13);
+        _10 = &_11;
+        _8 = (move _9, move _10);
+        _15 = (_8.0: &Baz<bool>);
+        _16 = (_8.1: &Baz<bool>);
+        _18 = <Baz<bool> as PartialEq>::eq(_15, _16) -> bb2;
+    }
+
+    bb2: {
+        _17 = Not(move _18);
+        switchInt(move _17) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<Baz<bool>, Baz<bool>>(move _19, _15, _16, move _21);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn BazHelper(_1: T) -> BazHelper<T> {
+    let mut _0: BazHelper<T>;
+
+    bb0: {
+        _0 = BazHelper::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn BazHelper(_1: T) -> BazHelper<T> {
+    let mut _0: BazHelper<T>;
+
+    bb0: {
+        _0 = BazHelper::<T>(move _1);
+        return;
+    }
+}
+
+fn Baz(_1: T, _2: U, _3: V) -> Baz<T, U, V> {
+    let mut _0: Baz<T, U, V>;
+
+    bb0: {
+        _0 = Baz::<T, U, V>(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Baz(_1: T, _2: U, _3: V) -> Baz<T, U, V> {
+    let mut _0: Baz<T, U, V>;
+
+    bb0: {
+        _0 = Baz::<T, U, V>(move _1, move _2, move _3);
+        return;
+    }
+}

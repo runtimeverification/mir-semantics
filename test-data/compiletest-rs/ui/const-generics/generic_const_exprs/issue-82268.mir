@@ -1,0 +1,222 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/const-generics/generic_const_exprs/issue-82268.rs:13:1: 13:28>::collate(_1: ()) -> ((), ()) {
+    debug self => const ();
+    let mut _0: ((), ());
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-82268.rs:28:1: 28:44>::collate_step(_1: X, _2: (P, F)) -> ((X, P), F) {
+    debug x => _1;
+    let mut _0: ((X, P), F);
+    let _3: P;
+    let _4: F;
+    let mut _5: (X, P);
+    scope 1 {
+        debug p => _3;
+        debug f => _4;
+    }
+
+    bb0: {
+        _3 = move (_2.0: P);
+        _4 = move (_2.1: F);
+        _5 = (move _1, move _3);
+        _0 = (move _5, move _4);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-82268.rs:43:1: 43:60>::{constant#0}: u32 = {
+    let mut _0: u32;
+    let mut _1: u32;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const 1_i32 as u32 (IntToInt);
+        _2 = Lt(move _1, const 32_u32);
+        assert(move _2, "attempt to shift right by `{}`, which would overflow", const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shr(const MASK, const 1_i32);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-82268.rs:43:1: 43:60>::{constant#1}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const MASK;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-82268.rs:43:1: 43:60>::NextOp::{constant#0}: u32 = {
+    let mut _0: u32;
+    let mut _1: u32;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const 1_i32 as u32 (IntToInt);
+        _2 = Lt(move _1, const 32_u32);
+        assert(move _2, "attempt to shift right by `{}`, which would overflow", const 1_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shr(const MASK, const 1_i32);
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-82268.rs:51:1: 51:53>::collate(_1: (H, T)) -> (<<Op as CollateOpStep>::Apply as CollateStep<H, (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail)>>::Pass, <<Op as CollateOpStep>::Apply as CollateStep<H, (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail)>>::Fail) {
+    debug self => _1;
+    let mut _0: (<<Op as CollateOpStep>::Apply as CollateStep<H, (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail)>>::Pass, <<Op as CollateOpStep>::Apply as CollateStep<H, (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail)>>::Fail);
+    let mut _2: H;
+    let mut _3: (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail);
+    let mut _4: T;
+    let mut _5: bool;
+
+    bb0: {
+        _5 = const false;
+        _5 = const true;
+        _2 = move (_1.0: H);
+        _4 = move (_1.1: T);
+        _3 = <T as Collate<<Op as CollateOpStep>::NextOp>>::collate(move _4) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _5 = const false;
+        _0 = <<Op as CollateOpStep>::Apply as CollateStep<H, (<T as Collate<<Op as CollateOpStep>::NextOp>>::Pass, <T as Collate<<Op as CollateOpStep>::NextOp>>::Fail)>>::collate_step(move _2, move _3) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _5 = const false;
+        return;
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        switchInt(_5) -> [0: bb3, otherwise: bb4];
+    }
+}
+
+fn collate(_1: X) -> (<X as Collate<CollateOpImpl<MASK>>>::Pass, <X as Collate<CollateOpImpl<MASK>>>::Fail) {
+    debug x => _1;
+    let mut _0: (<X as Collate<CollateOpImpl<MASK>>>::Pass, <X as Collate<CollateOpImpl<MASK>>>::Fail);
+
+    bb0: {
+        _0 = <X as Collate<CollateOpImpl<MASK>>>::collate(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+collate::{constant#0}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const MASK;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: ((&str, (i32, (char, ()))), ());
+    let mut _2: (&str, (i32, (char, ())));
+    let mut _3: (i32, (char, ()));
+    let mut _4: (char, ());
+    let _5: ((&str, (i32, (char, ()))), ());
+    let _6: ();
+    let mut _7: std::fmt::Arguments<'_>;
+    let mut _8: &[&str];
+    let _9: &[&str; 2];
+    let _10: [&str; 2];
+    let mut _11: &[core::fmt::rt::Argument<'_>];
+    let _12: &[core::fmt::rt::Argument<'_>; 1];
+    let _13: [core::fmt::rt::Argument<'_>; 1];
+    let mut _14: core::fmt::rt::Argument<'_>;
+    let _15: &&((&str, (i32, (char, ()))), ());
+    let _16: &((&str, (i32, (char, ()))), ());
+    let mut _17: &[core::fmt::rt::Placeholder];
+    let _18: &[core::fmt::rt::Placeholder; 1];
+    let _19: [core::fmt::rt::Placeholder; 1];
+    let mut _20: core::fmt::rt::Placeholder;
+    let mut _21: core::fmt::rt::Alignment;
+    let mut _22: core::fmt::rt::Count;
+    let mut _23: core::fmt::rt::Count;
+    let mut _24: core::fmt::rt::UnsafeArg;
+    scope 1 {
+        debug tmp => _5;
+        scope 2 {
+        }
+    }
+
+    bb0: {
+        _4 = (const '!', const ());
+        _3 = (const 42_i32, move _4);
+        _2 = (const "Hello", move _3);
+        _1 = collate::<(&str, (i32, (char, ()))), 5>(move _2) -> bb1;
+    }
+
+    bb1: {
+        _5 = _1;
+        _10 = [const "[ui/const-generics/generic_const_exprs/issue-82268.rs:72] collate::<_, 5>((\"Hello\", (42, ('!', ())))) = ", const "\n"];
+        _9 = &_10;
+        _8 = _9 as &[&str] (Pointer(Unsize));
+        _16 = &_5;
+        _15 = &_16;
+        _14 = core::fmt::rt::Argument::<'_>::new_debug::<&((&str, (i32, (char, ()))), ())>(_15) -> bb2;
+    }
+
+    bb2: {
+        _13 = [move _14];
+        _12 = &_13;
+        _11 = _12 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _21 = core::fmt::rt::Alignment::Unknown;
+        _22 = core::fmt::rt::Count::Implied;
+        _23 = core::fmt::rt::Count::Implied;
+        _20 = core::fmt::rt::Placeholder::new(const 0_usize, const ' ', move _21, const 4_u32, move _22, move _23) -> bb3;
+    }
+
+    bb3: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Placeholder] (Pointer(Unsize));
+        _24 = core::fmt::rt::UnsafeArg::new() -> bb4;
+    }
+
+    bb4: {
+        _7 = Arguments::<'_>::new_v1_formatted(move _8, move _11, move _17, const core::fmt::rt::UnsafeArg {{ _private: () }}) -> bb5;
+    }
+
+    bb5: {
+        _6 = _eprint(move _7) -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+main::{constant#0}: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 5_u32;
+        return;
+    }
+}

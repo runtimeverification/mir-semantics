@@ -1,0 +1,140 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn a() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn b() -> () {
+    let mut _0: ();
+    let mut _1: !;
+
+    bb0: {
+        _1 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<i32>;
+    let mut _2: std::boxed::Box<[i32]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[i32; 1]>;
+    let _7: ();
+    let mut _9: std::boxed::Box<[i32]>;
+    let mut _10: usize;
+    let mut _11: usize;
+    let mut _12: *mut u8;
+    let mut _13: std::boxed::Box<[i32; 1]>;
+    let _14: ();
+    let mut _15: *const [i32; 1];
+    let mut _16: *const [i32; 1];
+    let mut _23: *const ();
+    let mut _24: usize;
+    let mut _25: usize;
+    let mut _26: usize;
+    let mut _27: usize;
+    let mut _28: bool;
+    scope 1 {
+        debug _x => _1;
+        let _8: std::vec::Vec<i32>;
+        let mut _17: *const ();
+        let mut _18: usize;
+        let mut _19: usize;
+        let mut _20: usize;
+        let mut _21: usize;
+        let mut _22: bool;
+        scope 3 {
+            debug _y => _8;
+        }
+        scope 4 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([i32; 1]);
+        _4 = AlignOf([i32; 1]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [i32; 1]);
+        _15 = (((_6.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _23 = _15 as *const () (PtrToPtr);
+        _24 = _23 as usize (Transmute);
+        _25 = AlignOf(i32);
+        _26 = Sub(_25, const 1_usize);
+        _27 = BitAnd(_24, _26);
+        _28 = Eq(_27, const 0_usize);
+        assert(_28, "misaligned pointer dereference: address must be a multiple of {} but is {}", _25, _24) -> [success: bb13, unwind unreachable];
+    }
+
+    bb2: {
+        _7 = a() -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _10 = SizeOf([i32; 1]);
+        _11 = AlignOf([i32; 1]);
+        _12 = alloc::alloc::exchange_malloc(move _10, move _11) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _13 = ShallowInitBox(move _12, [i32; 1]);
+        _16 = (((_13.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _17 = _16 as *const () (PtrToPtr);
+        _18 = _17 as usize (Transmute);
+        _19 = AlignOf(i32);
+        _20 = Sub(_19, const 1_usize);
+        _21 = BitAnd(_18, _20);
+        _22 = Eq(_21, const 0_usize);
+        assert(_22, "misaligned pointer dereference: address must be a multiple of {} but is {}", _19, _18) -> [success: bb12, unwind unreachable];
+    }
+
+    bb5: {
+        _14 = b() -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_8) -> [return: bb7, unwind: bb10];
+    }
+
+    bb7: {
+        drop(_1) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_8) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+
+    bb12: {
+        (*_16) = [const 0_i32];
+        _9 = move _13 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _8 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _9) -> [return: bb5, unwind: bb10];
+    }
+
+    bb13: {
+        (*_15) = [const 0_i32];
+        _2 = move _6 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _1 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}

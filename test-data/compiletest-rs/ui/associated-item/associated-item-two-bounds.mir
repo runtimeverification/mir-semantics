@@ -1,0 +1,64 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn generic(_1: <F as Foo>::T, _2: A, _3: B) -> bool {
+    debug t => _1;
+    debug a => const A;
+    debug b => const B;
+    let mut _0: bool;
+    let mut _4: bool;
+    let mut _5: &<F as Foo>::T;
+    let mut _6: &A;
+    let mut _7: bool;
+    let mut _8: &<F as Foo>::T;
+    let mut _9: &B;
+
+    bb0: {
+        _5 = &_1;
+        _6 = &_2;
+        _4 = <<F as Foo>::T as PartialEq<A>>::eq(move _5, move _6) -> [return: bb4, unwind: bb7];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _8 = &_1;
+        _9 = &_3;
+        _7 = <<F as Foo>::T as PartialEq<B>>::eq(move _8, move _9) -> [return: bb5, unwind: bb7];
+    }
+
+    bb3: {
+        drop(_1) -> bb6;
+    }
+
+    bb4: {
+        switchInt(move _4) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb5: {
+        _0 = move _7;
+        goto -> bb3;
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_1) -> [return: bb8, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

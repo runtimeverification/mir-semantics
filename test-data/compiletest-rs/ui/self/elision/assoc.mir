@@ -1,0 +1,80 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/self/elision/assoc.rs:17:1: 17:12>::assoc(_1: Struct, _2: &u32) -> &u32 {
+    debug self => const Struct {{  }};
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/assoc.rs:17:1: 17:12>::box_AssocType(_1: Box<Struct>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/assoc.rs:17:1: 17:12>::rc_AssocType(_1: Rc<Struct>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/assoc.rs:17:1: 17:12>::box_box_AssocType(_1: Box<Box<Struct>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/self/elision/assoc.rs:17:1: 17:12>::box_rc_AssocType(_1: Box<Rc<Struct>>, _2: &u32) -> &u32 {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: &u32;
+
+    bb0: {
+        _0 = _2;
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

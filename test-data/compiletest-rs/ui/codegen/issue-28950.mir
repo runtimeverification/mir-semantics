@@ -1,0 +1,240 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const LEN: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const 15_i32 as u32 (IntToInt);
+        _2 = Lt(move _1, const 64_u32);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const 15_i32) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const 15_i32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let _4: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _5: std::thread::JoinHandle<()>;
+    let mut _6: std::result::Result<std::thread::JoinHandle<()>, std::io::Error>;
+    let mut _7: std::thread::Builder;
+    let mut _8: std::thread::Builder;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _11: !;
+    let mut _12: bool;
+
+    bb0: {
+        _12 = const false;
+        _12 = const true;
+        _8 = Builder::new() -> bb1;
+    }
+
+    bb1: {
+        _10 = Eq(const 2_usize, const 0_usize);
+        assert(!move _10, "attempt to divide `{}` by zero", const _) -> [success: bb2, unwind: bb14];
+    }
+
+    bb2: {
+        _9 = Div(const _, const 2_usize);
+        _12 = const false;
+        _7 = Builder::stack_size(move _8, move _9) -> [return: bb3, unwind: bb14];
+    }
+
+    bb3: {
+        _12 = const false;
+        _6 = Builder::spawn::<[closure@ui/codegen/issue-28950.rs:16:54: 16:56], ()>(move _7, const ZeroSized: [closure@ui/codegen/issue-28950.rs:16:54: 16:56]) -> bb4;
+    }
+
+    bb4: {
+        _5 = Result::<JoinHandle<()>, std::io::Error>::unwrap(move _6) -> bb5;
+    }
+
+    bb5: {
+        _4 = JoinHandle::<()>::join(move _5) -> bb6;
+    }
+
+    bb6: {
+        _3 = &_4;
+        _2 = Result::<(), Box<dyn Any + Send>>::is_ok(move _3) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        _1 = Not(move _2);
+        drop(_4) -> bb8;
+    }
+
+    bb8: {
+        switchInt(move _1) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _11 = core::panicking::panic(const "assertion failed: Builder::new().stack_size(LEN /\\n                        2).spawn(||\\n                    {\\n                        let vec =\\n                            vec![unsafe { std :: mem :: zeroed :: < [u8 ; LEN] > () }];\\n                        assert_eq!(vec.len(), 1);\\n                    }).unwrap().join().is_ok()");
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_4) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+
+    bb13 (cleanup): {
+        drop(_8) -> [return: bb12, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        switchInt(_12) -> [0: bb12, otherwise: bb13];
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/codegen/issue-28950.rs:16:54: 16:56]) -> () {
+    let mut _0: ();
+    let _2: std::vec::Vec<[u8; 32768]>;
+    let mut _3: std::boxed::Box<[[u8; 32768]]>;
+    let mut _4: std::boxed::Box<[[u8; 32768]; 1]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[[u8; 32768]; 1]>;
+    let mut _9: [u8; 32768];
+    let mut _10: (&usize, &usize);
+    let mut _11: &usize;
+    let _12: usize;
+    let mut _13: &std::vec::Vec<[u8; 32768]>;
+    let mut _14: &usize;
+    let _15: usize;
+    let mut _18: bool;
+    let mut _19: bool;
+    let mut _20: usize;
+    let mut _21: usize;
+    let _23: !;
+    let mut _24: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _25: &mut std::boxed::Box<[[u8; 32768]; 1]>;
+    let mut _26: ();
+    let mut _27: *const [[u8; 32768]; 1];
+    let mut _28: *const ();
+    let mut _29: usize;
+    let mut _30: usize;
+    let mut _31: usize;
+    let mut _32: usize;
+    let mut _33: bool;
+    scope 1 {
+        debug vec => _2;
+        let _16: &usize;
+        let _17: &usize;
+        scope 4 {
+            debug left_val => _16;
+            debug right_val => _17;
+            let _22: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _22;
+            }
+        }
+    }
+    scope 2 {
+    }
+    scope 3 {
+    }
+
+    bb0: {
+        _5 = SizeOf([[u8; 32768]; 1]);
+        _6 = AlignOf([[u8; 32768]; 1]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [[u8; 32768]; 1]);
+        _9 = zeroed::<[u8; 32768]>() -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _27 = (((_8.0: std::ptr::Unique<[[u8; 32768]; 1]>).0: std::ptr::NonNull<[[u8; 32768]; 1]>).0: *const [[u8; 32768]; 1]);
+        _28 = _27 as *const () (PtrToPtr);
+        _29 = _28 as usize (Transmute);
+        _30 = AlignOf([u8; 32768]);
+        _31 = Sub(_30, const 1_usize);
+        _32 = BitAnd(_29, _31);
+        _33 = Eq(_32, const 0_usize);
+        assert(_33, "misaligned pointer dereference: address must be a multiple of {} but is {}", _30, _29) -> [success: bb11, unwind unreachable];
+    }
+
+    bb3: {
+        _13 = &_2;
+        _12 = Vec::<[u8; 32768]>::len(move _13) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        _11 = &_12;
+        _15 = const 1_usize;
+        _14 = &_15;
+        _10 = (move _11, move _14);
+        _16 = (_10.0: &usize);
+        _17 = (_10.1: &usize);
+        _20 = (*_16);
+        _21 = (*_17);
+        _19 = Eq(move _20, move _21);
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _22 = core::panicking::AssertKind::Eq;
+        _24 = Option::<Arguments<'_>>::None;
+        _23 = core::panicking::assert_failed::<usize, usize>(move _22, _16, _17, move _24) -> bb8;
+    }
+
+    bb6: {
+        drop(_2) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+
+    bb10 (cleanup): {
+        _25 = &mut _8;
+        _26 = <Box<[[u8; 32768]; 1]> as Drop>::drop(move _25) -> [return: bb12, unwind terminate];
+    }
+
+    bb11: {
+        (*_27) = [move _9];
+        _4 = move _8;
+        _3 = move _4 as std::boxed::Box<[[u8; 32768]]> (Pointer(Unsize));
+        _2 = slice::<impl [[u8; 32768]]>::into_vec::<std::alloc::Global>(move _3) -> bb3;
+    }
+
+    bb12 (cleanup): {
+        goto -> bb9;
+    }
+}
+
+main::{closure#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}

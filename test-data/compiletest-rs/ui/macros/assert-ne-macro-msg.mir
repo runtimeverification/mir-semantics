@@ -1,0 +1,60 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i32, &i32);
+    let mut _2: &i32;
+    let _3: i32;
+    let mut _4: &i32;
+    let _5: i32;
+    let _6: &i32;
+    let _7: &i32;
+    let mut _8: bool;
+    let mut _9: i32;
+    let mut _10: i32;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _14: std::fmt::Arguments<'_>;
+    let mut _15: &[&str];
+    let _16: &[&str; 1];
+    let _17: [&str; 1];
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _11: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _11;
+        }
+    }
+
+    bb0: {
+        _3 = Add(const 1_i32, const 1_i32);
+        _2 = &_3;
+        _5 = const 2_i32;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &i32);
+        _7 = (_1.1: &i32);
+        _9 = (*_6);
+        _10 = (*_7);
+        _8 = Eq(move _9, move _10);
+        switchInt(move _8) -> [0: bb3, otherwise: bb1];
+    }
+
+    bb1: {
+        _11 = core::panicking::AssertKind::Ne;
+        _17 = [const "1 + 1 definitely should not be 2"];
+        _16 = &_17;
+        _15 = _16 as &[&str] (Pointer(Unsize));
+        _14 = Arguments::<'_>::new_const(move _15) -> bb2;
+    }
+
+    bb2: {
+        _13 = Option::<Arguments<'_>>::Some(move _14);
+        _12 = core::panicking::assert_failed::<i32, i32>(move _11, _6, _7, move _13);
+    }
+
+    bb3: {
+        return;
+    }
+}

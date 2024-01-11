@@ -1,0 +1,43 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+SymmetricGroup::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89320.rs:10:10: 10:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-89320.rs:10:10: 10:15>::clone(_1: &SymmetricGroup<S>) -> SymmetricGroup<S> {
+    debug self => _1;
+    let mut _0: SymmetricGroup<S>;
+    let mut _2: std::marker::PhantomData<S>;
+    let _3: &std::marker::PhantomData<S>;
+
+    bb0: {
+        _3 = &((*_1).0: std::marker::PhantomData<S>);
+        _2 = <PhantomData<S> as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/ice-48279.rs:7:10: 7:19>::eq(_1: &NonZeroU32, _2: &NonZeroU32) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: u32;
+    let mut _4: u32;
+
+    bb0: {
+        _3 = ((*_1).0: u32);
+        _4 = ((*_2).0: u32);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/consts/ice-48279.rs:7:21: 7:23>::assert_receiver_is_total_eq(_1: &NonZeroU32) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/consts/ice-48279.rs:12:1: 12:16>::new_unchecked(_1: u32) -> NonZeroU32 {
+    debug value => _1;
+    let mut _0: NonZeroU32;
+
+    bb0: {
+        _0 = NonZeroU32 { value: _1 };
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/consts/ice-48279.rs:12:1: 12:16>::new_unchecked(_1: u32) -> NonZeroU32 {
+    debug value => _1;
+    let mut _0: NonZeroU32;
+    let mut _2: u32;
+
+    bb0: {
+        StorageLive(_2);
+        _2 = _1;
+        _0 = NonZeroU32 { value: move _2 };
+        StorageDead(_2);
+        return;
+    }
+}
+
+const FOO_ATOM: NonZeroU32 = {
+    let mut _0: NonZeroU32;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = NonZeroU32 { value: const 7_u32 };
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

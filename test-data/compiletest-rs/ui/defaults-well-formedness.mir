@@ -1,0 +1,180 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Foo(_1: U, _2: V) -> Foo<U, V> {
+    let mut _0: Foo<U, V>;
+
+    bb0: {
+        _0 = Foo::<U, V>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: U, _2: V) -> Foo<U, V> {
+    let mut _0: Foo<U, V>;
+
+    bb0: {
+        _0 = Foo::<U, V>(move _1, move _2);
+        return;
+    }
+}
+
+fn TwoParams(_1: T, _2: U) -> TwoParams<T, U> {
+    let mut _0: TwoParams<T, U>;
+
+    bb0: {
+        _0 = TwoParams::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn TwoParams(_1: T, _2: U) -> TwoParams<T, U> {
+    let mut _0: TwoParams<T, U>;
+
+    bb0: {
+        _0 = TwoParams::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+fn IndividuallyBogus(_1: TwoParams<T, U>) -> IndividuallyBogus<T, U> {
+    let mut _0: IndividuallyBogus<T, U>;
+
+    bb0: {
+        _0 = IndividuallyBogus::<T, U>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn IndividuallyBogus(_1: TwoParams<T, U>) -> IndividuallyBogus<T, U> {
+    let mut _0: IndividuallyBogus<T, U>;
+
+    bb0: {
+        _0 = IndividuallyBogus::<T, U>(move _1);
+        return;
+    }
+}
+
+fn BogusTogether(_1: T, _2: U) -> BogusTogether<T, U> {
+    let mut _0: BogusTogether<T, U>;
+
+    bb0: {
+        _0 = BogusTogether::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn BogusTogether(_1: T, _2: U) -> BogusTogether<T, U> {
+    let mut _0: BogusTogether<T, U>;
+
+    bb0: {
+        _0 = BogusTogether::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+fn NonDefaultedInClause(_1: TwoParams<T, U>) -> NonDefaultedInClause<T, U> {
+    let mut _0: NonDefaultedInClause<T, U>;
+
+    bb0: {
+        _0 = NonDefaultedInClause::<T, U>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn NonDefaultedInClause(_1: TwoParams<T, U>) -> NonDefaultedInClause<T, U> {
+    let mut _0: NonDefaultedInClause<T, U>;
+
+    bb0: {
+        _0 = NonDefaultedInClause::<T, U>(move _1);
+        return;
+    }
+}
+
+fn DefaultedLhs(_1: U, _2: V) -> DefaultedLhs<U, V> {
+    let mut _0: DefaultedLhs<U, V>;
+
+    bb0: {
+        _0 = DefaultedLhs::<U, V>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn DefaultedLhs(_1: U, _2: V) -> DefaultedLhs<U, V> {
+    let mut _0: DefaultedLhs<U, V>;
+
+    bb0: {
+        _0 = DefaultedLhs::<U, V>(move _1, move _2);
+        return;
+    }
+}
+
+fn Dependent(_1: T, _2: U) -> Dependent<T, U> {
+    let mut _0: Dependent<T, U>;
+
+    bb0: {
+        _0 = Dependent::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Dependent(_1: T, _2: U) -> Dependent<T, U> {
+    let mut _0: Dependent<T, U>;
+
+    bb0: {
+        _0 = Dependent::<T, U>(move _1, move _2);
+        return;
+    }
+}
+
+fn WellFormedProjection(_1: A, _2: T) -> WellFormedProjection<A, T> {
+    let mut _0: WellFormedProjection<A, T>;
+
+    bb0: {
+        _0 = WellFormedProjection::<A, T>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn WellFormedProjection(_1: A, _2: T) -> WellFormedProjection<A, T> {
+    let mut _0: WellFormedProjection<A, T>;
+
+    bb0: {
+        _0 = WellFormedProjection::<A, T>(move _1, move _2);
+        return;
+    }
+}
+
+fn Request(_1: S, _2: &()) -> Request<'_, S> {
+    let mut _0: Request<'_, S>;
+
+    bb0: {
+        _0 = Request::<'_, S>(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Request(_1: S, _2: &()) -> Request<'_, S> {
+    let mut _0: Request<'_, S>;
+
+    bb0: {
+        _0 = Request::<'_, S>(move _1, move _2);
+        return;
+    }
+}

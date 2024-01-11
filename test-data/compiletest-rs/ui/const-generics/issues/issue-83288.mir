@@ -1,0 +1,223 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-83288.rs:18:1: 18:40>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-83288.rs:18:1: 18:40>::RANK: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 0_usize;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-83288.rs:18:1: 18:40>::NUM_ELEMS: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:23:1: 23:65>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:23:1: 23:65>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-83288.rs:23:1: 23:65>::RANK: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const _, const 1_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const _, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+const <impl at ui/const-generics/issues/issue-83288.rs:23:1: 23:65>::NUM_ELEMS: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedMul(const _, const N);
+        assert(!move (_1.1: bool), "attempt to compute `{} * {}`, which would overflow", const _, const N) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+Tensor::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+Tensor::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+Tensor::data::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#4}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#2}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#6}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::Output::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::mul(_1: Tensor<I, N>, _2: Tensor<J, N>) -> Tensor<<I as Concat<J>>::Output, N> {
+    debug self => _1;
+    debug _rhs => _2;
+    let mut _0: Tensor<<I as Concat<J>>::Output, N>;
+    let mut _3: [u8; <I as Concat<J>>::Output::NUM_ELEMS];
+
+    bb0: {
+        _3 = [const 0_u8; <I as Concat<J>>::Output::NUM_ELEMS];
+        _0 = Tensor::<<I as Concat<J>>::Output, N> { data: move _3, _phantom: const ZeroSized: PhantomData<<I as Concat<J>>::Output> };
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::mul::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-83288.rs:51:1: 51:86>::mul::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

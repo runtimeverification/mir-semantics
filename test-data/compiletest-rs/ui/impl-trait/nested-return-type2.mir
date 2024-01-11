@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> impl Trait<Assoc = impl Send> {
+    let mut _0: impl Trait<Assoc = impl std::marker::Send>;
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo::{closure#0}(_1: &[closure@ui/impl-trait/nested-return-type2.rs:29:5: 29:7]) -> i32 {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 42_i32;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

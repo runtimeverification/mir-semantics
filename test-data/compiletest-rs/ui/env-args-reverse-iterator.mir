@@ -1,0 +1,496 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn assert_reverse_iterator_for_program_arguments(_1: &str) -> () {
+    debug program_name => _1;
+    let mut _0: ();
+    let _2: std::vec::Vec<std::string::String>;
+    let mut _3: std::iter::Rev<std::env::Args>;
+    let mut _4: std::env::Args;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: usize;
+    let mut _8: &std::vec::Vec<std::string::String>;
+    let mut _9: !;
+    let mut _10: (&std::string::String, &&str);
+    let mut _11: &std::string::String;
+    let _12: &std::string::String;
+    let mut _13: &std::vec::Vec<std::string::String>;
+    let mut _14: &&str;
+    let _15: &str;
+    let mut _18: bool;
+    let mut _19: bool;
+    let _21: !;
+    let mut _22: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _23: (&std::string::String, &&str);
+    let mut _24: &std::string::String;
+    let _25: &std::string::String;
+    let mut _26: &std::vec::Vec<std::string::String>;
+    let mut _27: &&str;
+    let _28: &str;
+    let mut _31: bool;
+    let mut _32: bool;
+    let _34: !;
+    let mut _35: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _36: (&std::string::String, &&str);
+    let mut _37: &std::string::String;
+    let _38: &std::string::String;
+    let mut _39: &std::vec::Vec<std::string::String>;
+    let mut _40: &&str;
+    let _41: &str;
+    let mut _44: bool;
+    let mut _45: bool;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: (&std::string::String, &&str);
+    let mut _50: &std::string::String;
+    let _51: &std::string::String;
+    let mut _52: &std::vec::Vec<std::string::String>;
+    let mut _53: &&str;
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let _61: ();
+    let mut _62: std::fmt::Arguments<'_>;
+    let mut _63: &[&str];
+    let _64: &[&str; 1];
+    let _65: [&str; 1];
+    scope 1 {
+        debug args => _2;
+        let _16: &std::string::String;
+        let _17: &&str;
+        let _29: &std::string::String;
+        let _30: &&str;
+        let _42: &std::string::String;
+        let _43: &&str;
+        let _54: &std::string::String;
+        let _55: &&str;
+        scope 2 {
+            debug left_val => _16;
+            debug right_val => _17;
+            let _20: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _20;
+            }
+        }
+        scope 4 {
+            debug left_val => _29;
+            debug right_val => _30;
+            let _33: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _33;
+            }
+        }
+        scope 6 {
+            debug left_val => _42;
+            debug right_val => _43;
+            let _46: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _46;
+            }
+        }
+        scope 8 {
+            debug left_val => _54;
+            debug right_val => _55;
+            let _58: core::panicking::AssertKind;
+            scope 9 {
+                debug kind => _58;
+            }
+        }
+    }
+
+    bb0: {
+        _4 = args() -> bb1;
+    }
+
+    bb1: {
+        _3 = <Args as Iterator>::rev(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = <Rev<Args> as Iterator>::collect::<Vec<String>>(move _3) -> bb3;
+    }
+
+    bb3: {
+        _8 = &_2;
+        _7 = Vec::<String>::len(move _8) -> [return: bb4, unwind: bb26];
+    }
+
+    bb4: {
+        _6 = Eq(move _7, const 4_usize);
+        _5 = Not(move _6);
+        switchInt(move _5) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _9 = core::panicking::panic(const "assertion failed: args.len() == 4") -> bb26;
+    }
+
+    bb6: {
+        _13 = &_2;
+        _12 = <Vec<String> as Index<usize>>::index(move _13, const 0_usize) -> [return: bb7, unwind: bb26];
+    }
+
+    bb7: {
+        _11 = _12;
+        _15 = const "c";
+        _14 = &_15;
+        _10 = (move _11, move _14);
+        _16 = (_10.0: &std::string::String);
+        _17 = (_10.1: &&str);
+        _19 = <String as PartialEq<&str>>::eq(_16, _17) -> [return: bb8, unwind: bb26];
+    }
+
+    bb8: {
+        _18 = Not(move _19);
+        switchInt(move _18) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _20 = core::panicking::AssertKind::Eq;
+        _22 = Option::<Arguments<'_>>::None;
+        _21 = core::panicking::assert_failed::<String, &str>(move _20, _16, _17, move _22) -> bb26;
+    }
+
+    bb10: {
+        _26 = &_2;
+        _25 = <Vec<String> as Index<usize>>::index(move _26, const 1_usize) -> [return: bb11, unwind: bb26];
+    }
+
+    bb11: {
+        _24 = _25;
+        _28 = const "b";
+        _27 = &_28;
+        _23 = (move _24, move _27);
+        _29 = (_23.0: &std::string::String);
+        _30 = (_23.1: &&str);
+        _32 = <String as PartialEq<&str>>::eq(_29, _30) -> [return: bb12, unwind: bb26];
+    }
+
+    bb12: {
+        _31 = Not(move _32);
+        switchInt(move _31) -> [0: bb14, otherwise: bb13];
+    }
+
+    bb13: {
+        _33 = core::panicking::AssertKind::Eq;
+        _35 = Option::<Arguments<'_>>::None;
+        _34 = core::panicking::assert_failed::<String, &str>(move _33, _29, _30, move _35) -> bb26;
+    }
+
+    bb14: {
+        _39 = &_2;
+        _38 = <Vec<String> as Index<usize>>::index(move _39, const 2_usize) -> [return: bb15, unwind: bb26];
+    }
+
+    bb15: {
+        _37 = _38;
+        _41 = const "a";
+        _40 = &_41;
+        _36 = (move _37, move _40);
+        _42 = (_36.0: &std::string::String);
+        _43 = (_36.1: &&str);
+        _45 = <String as PartialEq<&str>>::eq(_42, _43) -> [return: bb16, unwind: bb26];
+    }
+
+    bb16: {
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<String, &str>(move _46, _42, _43, move _48) -> bb26;
+    }
+
+    bb18: {
+        _52 = &_2;
+        _51 = <Vec<String> as Index<usize>>::index(move _52, const 3_usize) -> [return: bb19, unwind: bb26];
+    }
+
+    bb19: {
+        _50 = _51;
+        _53 = &_1;
+        _49 = (move _50, move _53);
+        _54 = (_49.0: &std::string::String);
+        _55 = (_49.1: &&str);
+        _57 = <String as PartialEq<&str>>::eq(_54, _55) -> [return: bb20, unwind: bb26];
+    }
+
+    bb20: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<String, &str>(move _58, _54, _55, move _60) -> bb26;
+    }
+
+    bb22: {
+        _65 = [const "passed\n"];
+        _64 = &_65;
+        _63 = _64 as &[&str] (Pointer(Unsize));
+        _62 = Arguments::<'_>::new_const(move _63) -> [return: bb23, unwind: bb26];
+    }
+
+    bb23: {
+        _61 = _print(move _62) -> [return: bb24, unwind: bb26];
+    }
+
+    bb24: {
+        drop(_2) -> bb25;
+    }
+
+    bb25: {
+        return;
+    }
+
+    bb26 (cleanup): {
+        drop(_2) -> [return: bb27, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::env::Args;
+    let mut _3: std::option::Option<std::string::String>;
+    let mut _4: &mut std::env::Args;
+    let mut _5: std::option::Option<std::string::String>;
+    let mut _6: &mut std::env::Args;
+    let mut _7: isize;
+    let _8: ();
+    let mut _9: &str;
+    let _10: &str;
+    let _11: &std::string::String;
+    let mut _13: std::result::Result<std::process::Output, std::io::Error>;
+    let mut _14: &mut std::process::Command;
+    let mut _15: &mut std::process::Command;
+    let mut _16: &mut std::process::Command;
+    let mut _17: &mut std::process::Command;
+    let mut _18: &mut std::process::Command;
+    let mut _19: &mut std::process::Command;
+    let mut _20: &mut std::process::Command;
+    let mut _21: std::process::Command;
+    let mut _22: &std::string::String;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: &std::process::ExitStatus;
+    let mut _26: !;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: &std::vec::Vec<u8>;
+    let mut _30: !;
+    let mut _31: (&std::vec::Vec<u8>, &&[u8; 7]);
+    let mut _32: &std::vec::Vec<u8>;
+    let mut _33: &&[u8; 7];
+    let _34: &[u8; 7];
+    let mut _37: bool;
+    let mut _38: bool;
+    let _40: !;
+    let mut _41: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug args => _1;
+        let _2: std::string::String;
+        scope 2 {
+            debug me => _2;
+            let _12: std::process::Output;
+            scope 3 {
+            }
+            scope 4 {
+                debug output => _12;
+                let _35: &std::vec::Vec<u8>;
+                let _36: &&[u8; 7];
+                scope 5 {
+                    debug left_val => _35;
+                    debug right_val => _36;
+                    let _39: core::panicking::AssertKind;
+                    scope 6 {
+                        debug kind => _39;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = args() -> bb1;
+    }
+
+    bb1: {
+        _4 = &mut _1;
+        _3 = <Args as Iterator>::next(move _4) -> [return: bb2, unwind: bb35];
+    }
+
+    bb2: {
+        _2 = Option::<String>::unwrap(move _3) -> [return: bb3, unwind: bb35];
+    }
+
+    bb3: {
+        _6 = &mut _1;
+        _5 = <Args as Iterator>::next(move _6) -> [return: bb4, unwind: bb34];
+    }
+
+    bb4: {
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [1: bb5, otherwise: bb8];
+    }
+
+    bb5: {
+        _11 = &_2;
+        _10 = <String as Deref>::deref(_11) -> [return: bb6, unwind: bb33];
+    }
+
+    bb6: {
+        _9 = _10;
+        _8 = assert_reverse_iterator_for_program_arguments(move _9) -> [return: bb7, unwind: bb33];
+    }
+
+    bb7: {
+        drop(_5) -> [return: bb28, unwind: bb34];
+    }
+
+    bb8: {
+        drop(_5) -> [return: bb9, unwind: bb34];
+    }
+
+    bb9: {
+        _22 = &_2;
+        _21 = Command::new::<&String>(move _22) -> [return: bb10, unwind: bb34];
+    }
+
+    bb10: {
+        _20 = &mut _21;
+        _19 = Command::arg::<&str>(move _20, const "a") -> [return: bb11, unwind: bb32];
+    }
+
+    bb11: {
+        _18 = _19;
+        _17 = Command::arg::<&str>(move _18, const "b") -> [return: bb12, unwind: bb32];
+    }
+
+    bb12: {
+        _16 = _17;
+        _15 = Command::arg::<&str>(move _16, const "c") -> [return: bb13, unwind: bb32];
+    }
+
+    bb13: {
+        _14 = _15;
+        _13 = Command::output(move _14) -> [return: bb14, unwind: bb32];
+    }
+
+    bb14: {
+        _12 = Result::<Output, std::io::Error>::unwrap(move _13) -> [return: bb15, unwind: bb32];
+    }
+
+    bb15: {
+        drop(_21) -> [return: bb16, unwind: bb31];
+    }
+
+    bb16: {
+        _25 = &(_12.0: std::process::ExitStatus);
+        _24 = ExitStatus::success(move _25) -> [return: bb17, unwind: bb31];
+    }
+
+    bb17: {
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _26 = core::panicking::panic(const "assertion failed: output.status.success()") -> bb31;
+    }
+
+    bb19: {
+        _29 = &(_12.2: std::vec::Vec<u8>);
+        _28 = Vec::<u8>::is_empty(move _29) -> [return: bb20, unwind: bb31];
+    }
+
+    bb20: {
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb22, otherwise: bb21];
+    }
+
+    bb21: {
+        _30 = core::panicking::panic(const "assertion failed: output.stderr.is_empty()") -> bb31;
+    }
+
+    bb22: {
+        _32 = &(_12.1: std::vec::Vec<u8>);
+        _34 = const b"passed\n";
+        _33 = &_34;
+        _31 = (move _32, move _33);
+        _35 = (_31.0: &std::vec::Vec<u8>);
+        _36 = (_31.1: &&[u8; 7]);
+        _38 = <Vec<u8> as PartialEq<&[u8; 7]>>::eq(_35, _36) -> [return: bb23, unwind: bb31];
+    }
+
+    bb23: {
+        _37 = Not(move _38);
+        switchInt(move _37) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _39 = core::panicking::AssertKind::Eq;
+        _41 = Option::<Arguments<'_>>::None;
+        _40 = core::panicking::assert_failed::<Vec<u8>, &[u8; 7]>(move _39, _35, _36, move _41) -> bb31;
+    }
+
+    bb25: {
+        drop(_12) -> [return: bb26, unwind: bb34];
+    }
+
+    bb26: {
+        drop(_2) -> [return: bb27, unwind: bb35];
+    }
+
+    bb27: {
+        drop(_1) -> bb30;
+    }
+
+    bb28: {
+        drop(_2) -> [return: bb29, unwind: bb35];
+    }
+
+    bb29: {
+        drop(_1) -> bb30;
+    }
+
+    bb30: {
+        return;
+    }
+
+    bb31 (cleanup): {
+        drop(_12) -> [return: bb34, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_21) -> [return: bb34, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_5) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_2) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_1) -> [return: bb36, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        resume;
+    }
+}
+
+alloc1 (size: 7, align: 1) {
+    70 61 73 73 65 64 0a                            │ passed.
+}

@@ -1,0 +1,224 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _0 = _1;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let _2: usize;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        StorageLive(_2);
+        _2 = _1;
+        _0 = _2;
+        StorageDead(_2);
+        return;
+    }
+}
+
+static FOO: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = foo(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn bar(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let _2: &usize;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _1 = Add(_1, const 8_usize);
+        _2 = &_1;
+        _0 = (*_2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn bar(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let _2: &usize;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _1 = Add(_1, const 8_usize);
+        StorageLive(_2);
+        _2 = &_1;
+        _0 = (*_2);
+        StorageDead(_2);
+        return;
+    }
+}
+
+static BAR: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = bar(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn boo(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let mut _2: usize;
+    let mut _3: usize;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _2 = _1;
+        _2 = Add(_2, const 10_usize);
+        _3 = _2;
+        _1 = move _3;
+        _0 = _1;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn boo(_1: usize) -> usize {
+    debug i => _1;
+    let mut _0: usize;
+    let _2: ();
+    let mut _3: usize;
+    let mut _4: usize;
+    scope 1 {
+        debug x => _3;
+    }
+
+    bb0: {
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = _1;
+        _3 = Add(_3, const 10_usize);
+        StorageLive(_4);
+        _4 = _3;
+        _1 = move _4;
+        StorageDead(_4);
+        _2 = const ();
+        StorageDead(_3);
+        StorageDead(_2);
+        _0 = _1;
+        return;
+    }
+}
+
+static BOO: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = boo(const 42_usize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: usize;
+    let mut _4: &usize;
+    let mut _5: !;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: usize;
+    let mut _9: &usize;
+    let mut _10: !;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: &usize;
+    let mut _15: !;
+
+    bb0: {
+        _4 = const {alloc1: &usize};
+        _3 = (*_4);
+        _2 = Eq(move _3, const 42_usize);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _5 = core::panicking::panic(const "assertion failed: FOO == 42");
+    }
+
+    bb2: {
+        _9 = const {alloc2: &usize};
+        _8 = (*_9);
+        _7 = Eq(move _8, const 50_usize);
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _10 = core::panicking::panic(const "assertion failed: BAR == 50");
+    }
+
+    bb4: {
+        _14 = const {alloc3: &usize};
+        _13 = (*_14);
+        _12 = Eq(move _13, const 52_usize);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _15 = core::panicking::panic(const "assertion failed: BOO == 52");
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+alloc3 (static: BOO, size: 8, align: 8) {
+    34 00 00 00 00 00 00 00                         │ 4.......
+}
+
+alloc2 (static: BAR, size: 8, align: 8) {
+    32 00 00 00 00 00 00 00                         │ 2.......
+}
+
+alloc1 (static: FOO, size: 8, align: 8) {
+    2a 00 00 00 00 00 00 00                         │ *.......
+}

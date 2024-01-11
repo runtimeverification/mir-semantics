@@ -1,0 +1,730 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/monad.rs:11:1: 11:32>::bind(_1: &Vec<A>, _2: F) -> Vec<B> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::vec::Vec<B>;
+    let mut _3: std::vec::Vec<B>;
+    let mut _4: std::slice::Iter<'_, A>;
+    let mut _6: std::option::Option<&A>;
+    let mut _7: &mut std::slice::Iter<'_, A>;
+    let mut _8: isize;
+    let _10: ();
+    let mut _11: &mut std::vec::Vec<B>;
+    let mut _12: std::vec::Vec<B>;
+    let mut _13: &mut F;
+    let mut _14: (&A,);
+    scope 1 {
+        debug r => _3;
+        let mut _5: std::slice::Iter<'_, A>;
+        scope 2 {
+            debug iter => _5;
+            let _9: &A;
+            scope 3 {
+                debug elt => _9;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Vec::<B>::new() -> [return: bb1, unwind: bb11];
+    }
+
+    bb1: {
+        _4 = <&Vec<A> as IntoIterator>::into_iter(_1) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _5 = move _4;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::slice::Iter<'_, A> as Iterator>::next(_7) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = ((_6 as Some).0: &A);
+        _11 = &mut _3;
+        _13 = &mut _2;
+        _14 = (_9,);
+        _12 = <F as FnMut<(&A,)>>::call_mut(move _13, move _14) -> [return: bb8, unwind: bb10];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _0 = move _3;
+        drop(_2) -> bb9;
+    }
+
+    bb8: {
+        _10 = <Vec<B> as Extend<B>>::extend::<Vec<B>>(move _11, move _12) -> [return: bb13, unwind: bb10];
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+
+    bb13: {
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/traits/monad.rs:25:1: 25:38>::bind(_1: &Option<A>, _2: F) -> Option<B> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::option::Option<B>;
+    let mut _3: isize;
+    let _4: &A;
+    let mut _5: F;
+    let mut _6: (&A,);
+    let mut _7: bool;
+    scope 1 {
+        debug a => _4;
+    }
+
+    bb0: {
+        _7 = const false;
+        _7 = const true;
+        _3 = discriminant((*_1));
+        switchInt(move _3) -> [0: bb1, 1: bb3, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = Option::<B>::None;
+        goto -> bb6;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = &(((*_1) as Some).0: A);
+        _7 = const false;
+        _5 = move _2;
+        _6 = (_4,);
+        _0 = <F as FnOnce<(&A,)>>::call_once(move _5, move _6) -> bb6;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5: {
+        drop(_2) -> bb4;
+    }
+
+    bb6: {
+        switchInt(_7) -> [0: bb4, otherwise: bb5];
+    }
+}
+
+fn transform(_1: Option<isize>) -> Option<String> {
+    debug x => _1;
+    let mut _0: std::option::Option<std::string::String>;
+    let mut _2: &std::option::Option<isize>;
+    let _3: std::option::Option<isize>;
+    let mut _4: &std::option::Option<isize>;
+
+    bb0: {
+        _4 = &_1;
+        _3 = <Option<isize> as option_monad<isize>>::bind::<isize, [closure@ui/traits/monad.rs:35:12: 35:15]>(move _4, const ZeroSized: [closure@ui/traits/monad.rs:35:12: 35:15]) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _0 = <Option<isize> as option_monad<isize>>::bind::<String, [closure@ui/traits/monad.rs:35:36: 35:39]>(move _2, const ZeroSized: [closure@ui/traits/monad.rs:35:36: 35:39]) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn transform::{closure#0}(_1: [closure@ui/traits/monad.rs:35:12: 35:15], _2: &isize) -> Option<isize> {
+    debug n => _2;
+    let mut _0: std::option::Option<isize>;
+    let mut _3: isize;
+    let mut _4: isize;
+
+    bb0: {
+        _4 = (*_2);
+        _3 = Add(move _4, const 1_isize);
+        _0 = Option::<isize>::Some(move _3);
+        return;
+    }
+}
+
+fn transform::{closure#1}(_1: [closure@ui/traits/monad.rs:35:36: 35:39], _2: &isize) -> Option<String> {
+    debug n => _2;
+    let mut _0: std::option::Option<std::string::String>;
+    let mut _3: std::string::String;
+
+    bb0: {
+        _3 = <isize as ToString>::to_string(_2) -> bb1;
+    }
+
+    bb1: {
+        _0 = Option::<String>::Some(move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::option::Option<std::string::String>, &std::option::Option<std::string::String>);
+    let mut _2: &std::option::Option<std::string::String>;
+    let _3: std::option::Option<std::string::String>;
+    let mut _4: std::option::Option<isize>;
+    let mut _5: &std::option::Option<std::string::String>;
+    let _6: std::option::Option<std::string::String>;
+    let mut _7: std::string::String;
+    let _8: &str;
+    let _9: &std::option::Option<std::string::String>;
+    let _10: &std::option::Option<std::string::String>;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _16: (&std::option::Option<std::string::String>, &std::option::Option<std::string::String>);
+    let mut _17: &std::option::Option<std::string::String>;
+    let _18: std::option::Option<std::string::String>;
+    let mut _19: std::option::Option<isize>;
+    let mut _20: &std::option::Option<std::string::String>;
+    let _21: std::option::Option<std::string::String>;
+    let _22: &std::option::Option<std::string::String>;
+    let _23: &std::option::Option<std::string::String>;
+    let mut _24: bool;
+    let mut _25: bool;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&std::vec::Vec<std::string::String>, &[std::string::String; 4]);
+    let mut _30: &std::vec::Vec<std::string::String>;
+    let _31: std::vec::Vec<std::string::String>;
+    let mut _32: &std::vec::Vec<std::string::String>;
+    let _33: std::vec::Vec<std::string::String>;
+    let mut _34: &std::vec::Vec<std::string::String>;
+    let _35: std::vec::Vec<std::string::String>;
+    let mut _36: std::boxed::Box<[std::string::String]>;
+    let mut _37: std::boxed::Box<[std::string::String; 1]>;
+    let mut _38: usize;
+    let mut _39: usize;
+    let mut _40: *mut u8;
+    let mut _41: std::boxed::Box<[std::string::String; 1]>;
+    let mut _42: std::string::String;
+    let _43: &str;
+    let mut _44: &[std::string::String; 4];
+    let _45: [std::string::String; 4];
+    let mut _46: std::string::String;
+    let _47: &str;
+    let mut _48: std::string::String;
+    let _49: &str;
+    let mut _50: std::string::String;
+    let _51: &str;
+    let mut _52: std::string::String;
+    let _53: &str;
+    let _54: &std::vec::Vec<std::string::String>;
+    let _55: &[std::string::String; 4];
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _61: &mut std::boxed::Box<[std::string::String; 1]>;
+    let mut _62: ();
+    let mut _63: *const [std::string::String; 1];
+    let mut _64: *const ();
+    let mut _65: usize;
+    let mut _66: usize;
+    let mut _67: usize;
+    let mut _68: usize;
+    let mut _69: bool;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+        debug left_val => _22;
+        debug right_val => _23;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+    }
+    scope 6 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _58: core::panicking::AssertKind;
+        scope 7 {
+            debug kind => _58;
+        }
+    }
+
+    bb0: {
+        _4 = Option::<isize>::Some(const 10_isize);
+        _3 = transform(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _8 = const "11";
+        _7 = <str as ToString>::to_string(_8) -> [return: bb2, unwind: bb40];
+    }
+
+    bb2: {
+        _6 = Option::<String>::Some(move _7);
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _9 = (_1.0: &std::option::Option<std::string::String>);
+        _10 = (_1.1: &std::option::Option<std::string::String>);
+        _12 = <Option<String> as PartialEq>::eq(_9, _10) -> [return: bb3, unwind: bb39];
+    }
+
+    bb3: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<Option<String>, Option<String>>(move _13, _9, _10, move _15) -> bb39;
+    }
+
+    bb5: {
+        drop(_6) -> [return: bb6, unwind: bb40];
+    }
+
+    bb6: {
+        drop(_3) -> bb7;
+    }
+
+    bb7: {
+        _19 = Option::<isize>::None;
+        _18 = transform(move _19) -> bb8;
+    }
+
+    bb8: {
+        _17 = &_18;
+        _21 = Option::<String>::None;
+        _20 = &_21;
+        _16 = (move _17, move _20);
+        _22 = (_16.0: &std::option::Option<std::string::String>);
+        _23 = (_16.1: &std::option::Option<std::string::String>);
+        _25 = <Option<String> as PartialEq>::eq(_22, _23) -> [return: bb9, unwind: bb37];
+    }
+
+    bb9: {
+        _24 = Not(move _25);
+        switchInt(move _24) -> [0: bb11, otherwise: bb10];
+    }
+
+    bb10: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<Option<String>, Option<String>>(move _26, _22, _23, move _28) -> bb37;
+    }
+
+    bb11: {
+        drop(_21) -> [return: bb12, unwind: bb38];
+    }
+
+    bb12: {
+        drop(_18) -> bb13;
+    }
+
+    bb13: {
+        _38 = SizeOf([std::string::String; 1]);
+        _39 = AlignOf([std::string::String; 1]);
+        _40 = alloc::alloc::exchange_malloc(move _38, move _39) -> bb14;
+    }
+
+    bb14: {
+        _41 = ShallowInitBox(move _40, [std::string::String; 1]);
+        _43 = const "hi";
+        _42 = <str as ToString>::to_string(_43) -> [return: bb15, unwind: bb42];
+    }
+
+    bb15: {
+        _63 = (((_41.0: std::ptr::Unique<[std::string::String; 1]>).0: std::ptr::NonNull<[std::string::String; 1]>).0: *const [std::string::String; 1]);
+        _64 = _63 as *const () (PtrToPtr);
+        _65 = _64 as usize (Transmute);
+        _66 = AlignOf(std::string::String);
+        _67 = Sub(_66, const 1_usize);
+        _68 = BitAnd(_65, _67);
+        _69 = Eq(_68, const 0_usize);
+        assert(_69, "misaligned pointer dereference: address must be a multiple of {} but is {}", _66, _65) -> [success: bb43, unwind unreachable];
+    }
+
+    bb16: {
+        _34 = &_35;
+        _33 = <Vec<String> as vec_monad<String>>::bind::<String, [closure@ui/traits/monad.rs:42:15: 42:18]>(move _34, const ZeroSized: [closure@ui/traits/monad.rs:42:15: 42:18]) -> [return: bb17, unwind: bb36];
+    }
+
+    bb17: {
+        _32 = &_33;
+        _31 = <Vec<String> as vec_monad<String>>::bind::<String, [closure@ui/traits/monad.rs:43:15: 43:18]>(move _32, const ZeroSized: [closure@ui/traits/monad.rs:43:15: 43:18]) -> [return: bb18, unwind: bb35];
+    }
+
+    bb18: {
+        _30 = &_31;
+        _47 = const "hi";
+        _46 = <str as ToString>::to_string(_47) -> [return: bb19, unwind: bb34];
+    }
+
+    bb19: {
+        _49 = const "hi?";
+        _48 = <str as ToString>::to_string(_49) -> [return: bb20, unwind: bb33];
+    }
+
+    bb20: {
+        _51 = const "hi!";
+        _50 = <str as ToString>::to_string(_51) -> [return: bb21, unwind: bb32];
+    }
+
+    bb21: {
+        _53 = const "hi!?";
+        _52 = <str as ToString>::to_string(_53) -> [return: bb22, unwind: bb31];
+    }
+
+    bb22: {
+        _45 = [move _46, move _48, move _50, move _52];
+        _44 = &_45;
+        _29 = (move _30, move _44);
+        _54 = (_29.0: &std::vec::Vec<std::string::String>);
+        _55 = (_29.1: &[std::string::String; 4]);
+        _57 = <Vec<String> as PartialEq<[String; 4]>>::eq(_54, _55) -> [return: bb23, unwind: bb30];
+    }
+
+    bb23: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb25, otherwise: bb24];
+    }
+
+    bb24: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<Vec<String>, [String; 4]>(move _58, _54, _55, move _60) -> bb30;
+    }
+
+    bb25: {
+        drop(_45) -> [return: bb26, unwind: bb34];
+    }
+
+    bb26: {
+        drop(_31) -> [return: bb27, unwind: bb35];
+    }
+
+    bb27: {
+        drop(_33) -> [return: bb28, unwind: bb36];
+    }
+
+    bb28: {
+        drop(_35) -> bb29;
+    }
+
+    bb29: {
+        return;
+    }
+
+    bb30 (cleanup): {
+        drop(_45) -> [return: bb34, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_50) -> [return: bb32, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_48) -> [return: bb33, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_46) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        drop(_31) -> [return: bb35, unwind terminate];
+    }
+
+    bb35 (cleanup): {
+        drop(_33) -> [return: bb36, unwind terminate];
+    }
+
+    bb36 (cleanup): {
+        drop(_35) -> [return: bb41, unwind terminate];
+    }
+
+    bb37 (cleanup): {
+        drop(_21) -> [return: bb38, unwind terminate];
+    }
+
+    bb38 (cleanup): {
+        drop(_18) -> [return: bb41, unwind terminate];
+    }
+
+    bb39 (cleanup): {
+        drop(_6) -> [return: bb40, unwind terminate];
+    }
+
+    bb40 (cleanup): {
+        drop(_3) -> [return: bb41, unwind terminate];
+    }
+
+    bb41 (cleanup): {
+        resume;
+    }
+
+    bb42 (cleanup): {
+        _61 = &mut _41;
+        _62 = <Box<[String; 1]> as Drop>::drop(move _61) -> [return: bb44, unwind terminate];
+    }
+
+    bb43: {
+        (*_63) = [move _42];
+        _37 = move _41;
+        _36 = move _37 as std::boxed::Box<[std::string::String]> (Pointer(Unsize));
+        _35 = slice::<impl [String]>::into_vec::<std::alloc::Global>(move _36) -> bb16;
+    }
+
+    bb44 (cleanup): {
+        goto -> bb41;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/traits/monad.rs:42:15: 42:18], _2: &String) -> Vec<String> {
+    debug x => _2;
+    let mut _0: std::vec::Vec<std::string::String>;
+    let mut _3: std::boxed::Box<[std::string::String]>;
+    let mut _4: std::boxed::Box<[std::string::String; 2]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[std::string::String; 2]>;
+    let mut _9: std::string::String;
+    let mut _10: &std::string::String;
+    let mut _11: std::string::String;
+    let _12: std::string::String;
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 2];
+    let _16: [&str; 2];
+    let mut _17: &[core::fmt::rt::Argument<'_>];
+    let _18: &[core::fmt::rt::Argument<'_>; 1];
+    let _19: [core::fmt::rt::Argument<'_>; 1];
+    let mut _20: core::fmt::rt::Argument<'_>;
+    let _21: &&std::string::String;
+    let mut _22: &mut std::boxed::Box<[std::string::String; 2]>;
+    let mut _23: ();
+    let mut _24: *const [std::string::String; 2];
+    let mut _25: *const ();
+    let mut _26: usize;
+    let mut _27: usize;
+    let mut _28: usize;
+    let mut _29: usize;
+    let mut _30: bool;
+    scope 1 {
+    }
+    scope 2 {
+        debug res => _12;
+    }
+
+    bb0: {
+        _5 = SizeOf([std::string::String; 2]);
+        _6 = AlignOf([std::string::String; 2]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [std::string::String; 2]);
+        _10 = _2;
+        _9 = <String as Clone>::clone(move _10) -> [return: bb2, unwind: bb9];
+    }
+
+    bb2: {
+        _16 = [const "", const "!"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _21 = &_2;
+        _20 = core::fmt::rt::Argument::<'_>::new_display::<&String>(_21) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_v1(move _14, move _17) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        _12 = format(move _13) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        _11 = move _12;
+        _24 = (((_8.0: std::ptr::Unique<[std::string::String; 2]>).0: std::ptr::NonNull<[std::string::String; 2]>).0: *const [std::string::String; 2]);
+        _25 = _24 as *const () (PtrToPtr);
+        _26 = _25 as usize (Transmute);
+        _27 = AlignOf(std::string::String);
+        _28 = Sub(_27, const 1_usize);
+        _29 = BitAnd(_26, _28);
+        _30 = Eq(_29, const 0_usize);
+        assert(_30, "misaligned pointer dereference: address must be a multiple of {} but is {}", _27, _26) -> [success: bb10, unwind unreachable];
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_9) -> [return: bb9, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9 (cleanup): {
+        _22 = &mut _8;
+        _23 = <Box<[String; 2]> as Drop>::drop(move _22) -> [return: bb8, unwind terminate];
+    }
+
+    bb10: {
+        (*_24) = [move _9, move _11];
+        _4 = move _8;
+        _3 = move _4 as std::boxed::Box<[std::string::String]> (Pointer(Unsize));
+        _0 = slice::<impl [String]>::into_vec::<std::alloc::Global>(move _3) -> bb6;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/traits/monad.rs:43:15: 43:18], _2: &String) -> Vec<String> {
+    debug x => _2;
+    let mut _0: std::vec::Vec<std::string::String>;
+    let mut _3: std::boxed::Box<[std::string::String]>;
+    let mut _4: std::boxed::Box<[std::string::String; 2]>;
+    let mut _5: usize;
+    let mut _6: usize;
+    let mut _7: *mut u8;
+    let mut _8: std::boxed::Box<[std::string::String; 2]>;
+    let mut _9: std::string::String;
+    let mut _10: &std::string::String;
+    let mut _11: std::string::String;
+    let _12: std::string::String;
+    let mut _13: std::fmt::Arguments<'_>;
+    let mut _14: &[&str];
+    let _15: &[&str; 2];
+    let _16: [&str; 2];
+    let mut _17: &[core::fmt::rt::Argument<'_>];
+    let _18: &[core::fmt::rt::Argument<'_>; 1];
+    let _19: [core::fmt::rt::Argument<'_>; 1];
+    let mut _20: core::fmt::rt::Argument<'_>;
+    let _21: &&std::string::String;
+    let mut _22: &mut std::boxed::Box<[std::string::String; 2]>;
+    let mut _23: ();
+    let mut _24: *const [std::string::String; 2];
+    let mut _25: *const ();
+    let mut _26: usize;
+    let mut _27: usize;
+    let mut _28: usize;
+    let mut _29: usize;
+    let mut _30: bool;
+    scope 1 {
+    }
+    scope 2 {
+        debug res => _12;
+    }
+
+    bb0: {
+        _5 = SizeOf([std::string::String; 2]);
+        _6 = AlignOf([std::string::String; 2]);
+        _7 = alloc::alloc::exchange_malloc(move _5, move _6) -> bb1;
+    }
+
+    bb1: {
+        _8 = ShallowInitBox(move _7, [std::string::String; 2]);
+        _10 = _2;
+        _9 = <String as Clone>::clone(move _10) -> [return: bb2, unwind: bb9];
+    }
+
+    bb2: {
+        _16 = [const "", const "?"];
+        _15 = &_16;
+        _14 = _15 as &[&str] (Pointer(Unsize));
+        _21 = &_2;
+        _20 = core::fmt::rt::Argument::<'_>::new_display::<&String>(_21) -> [return: bb3, unwind: bb7];
+    }
+
+    bb3: {
+        _19 = [move _20];
+        _18 = &_19;
+        _17 = _18 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _13 = Arguments::<'_>::new_v1(move _14, move _17) -> [return: bb4, unwind: bb7];
+    }
+
+    bb4: {
+        _12 = format(move _13) -> [return: bb5, unwind: bb7];
+    }
+
+    bb5: {
+        _11 = move _12;
+        _24 = (((_8.0: std::ptr::Unique<[std::string::String; 2]>).0: std::ptr::NonNull<[std::string::String; 2]>).0: *const [std::string::String; 2]);
+        _25 = _24 as *const () (PtrToPtr);
+        _26 = _25 as usize (Transmute);
+        _27 = AlignOf(std::string::String);
+        _28 = Sub(_27, const 1_usize);
+        _29 = BitAnd(_26, _28);
+        _30 = Eq(_29, const 0_usize);
+        assert(_30, "misaligned pointer dereference: address must be a multiple of {} but is {}", _27, _26) -> [success: bb10, unwind unreachable];
+    }
+
+    bb6: {
+        return;
+    }
+
+    bb7 (cleanup): {
+        drop(_9) -> [return: bb9, unwind terminate];
+    }
+
+    bb8 (cleanup): {
+        resume;
+    }
+
+    bb9 (cleanup): {
+        _22 = &mut _8;
+        _23 = <Box<[String; 2]> as Drop>::drop(move _22) -> [return: bb8, unwind terminate];
+    }
+
+    bb10: {
+        (*_24) = [move _9, move _11];
+        _4 = move _8;
+        _3 = move _4 as std::boxed::Box<[std::string::String]> (Pointer(Unsize));
+        _0 = slice::<impl [String]>::into_vec::<std::alloc::Global>(move _3) -> bb6;
+    }
+}

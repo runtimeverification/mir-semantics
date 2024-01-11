@@ -1,0 +1,63 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: u32 = {
+    let mut _0: u32;
+    let mut _1: Foo;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Foo::Prob;
+        _0 = const 42_u32;
+        StorageDead(_1);
+        return;
+    }
+}
+
+const BAR: u32 = {
+    let mut _0: u32;
+    let mut _1: Foo;
+    let _2: Foo;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Foo::Prob;
+        StorageLive(_2);
+        _2 = move _1;
+        _0 = const 42_u32;
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn <impl at ui/consts/control-flow/single_variant_match_ice.rs:15:1: 15:9>::as_val(_1: &Foo) -> u8 {
+    debug self => _1;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const 1_u8;
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn <impl at ui/consts/control-flow/single_variant_match_ice.rs:15:1: 15:9>::as_val(_1: &Foo) -> u8 {
+    debug self => _1;
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const 1_u8;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,400 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn ret_int_i() -> isize {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 10_isize;
+        return;
+    }
+}
+
+fn ret_ext_i() -> Box<isize> {
+    let mut _0: std::boxed::Box<isize>;
+
+    bb0: {
+        _0 = Box::<isize>::new(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn ret_int_rec() -> A {
+    let mut _0: A;
+
+    bb0: {
+        _0 = A { a: const 10_isize, b: const 10_isize };
+        return;
+    }
+}
+
+fn ret_ext_rec() -> Box<A> {
+    let mut _0: std::boxed::Box<A>;
+    let mut _1: A;
+
+    bb0: {
+        _1 = A { a: const 10_isize, b: const 10_isize };
+        _0 = Box::<A>::new(move _1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn ret_ext_mem() -> Abox {
+    let mut _0: Abox;
+    let mut _1: std::boxed::Box<isize>;
+    let mut _2: std::boxed::Box<isize>;
+
+    bb0: {
+        _1 = Box::<isize>::new(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        _2 = Box::<isize>::new(const 10_isize) -> [return: bb2, unwind: bb3];
+    }
+
+    bb2: {
+        _0 = Abox { a: move _1, b: move _2 };
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn ret_ext_ext_mem() -> Box<Abox> {
+    let mut _0: std::boxed::Box<Abox>;
+    let mut _1: Abox;
+    let mut _2: std::boxed::Box<isize>;
+    let mut _3: std::boxed::Box<isize>;
+
+    bb0: {
+        _2 = Box::<isize>::new(const 10_isize) -> bb1;
+    }
+
+    bb1: {
+        _3 = Box::<isize>::new(const 10_isize) -> [return: bb2, unwind: bb4];
+    }
+
+    bb2: {
+        _1 = Abox { a: move _2, b: move _3 };
+        _0 = Box::<Abox>::new(move _1) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb5, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: isize;
+    let mut _7: isize;
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _10: std::boxed::Box<isize>;
+    let mut _11: std::boxed::Box<isize>;
+    let mut _12: std::boxed::Box<isize>;
+    let mut _13: A;
+    let mut _14: A;
+    let mut _15: A;
+    let mut _16: std::boxed::Box<A>;
+    let mut _17: std::boxed::Box<A>;
+    let mut _18: std::boxed::Box<A>;
+    let mut _19: Abox;
+    let mut _20: Abox;
+    let mut _21: Abox;
+    let mut _22: std::boxed::Box<Abox>;
+    let mut _23: std::boxed::Box<Abox>;
+    let mut _24: std::boxed::Box<Abox>;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: bool;
+    scope 1 {
+        debug int_i => _1;
+        let mut _2: std::boxed::Box<isize>;
+        scope 2 {
+            debug ext_i => _2;
+            let mut _3: A;
+            scope 3 {
+                debug int_rec => _3;
+                let mut _4: std::boxed::Box<A>;
+                scope 4 {
+                    debug ext_rec => _4;
+                    let mut _5: Abox;
+                    scope 5 {
+                        debug ext_mem => _5;
+                        let mut _6: std::boxed::Box<Abox>;
+                        scope 6 {
+                            debug ext_ext_mem => _6;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _28 = const false;
+        _27 = const false;
+        _26 = const false;
+        _25 = const false;
+        _7 = ret_int_i() -> [return: bb1, unwind: bb42];
+    }
+
+    bb1: {
+        _1 = move _7;
+        _8 = ret_int_i() -> [return: bb2, unwind: bb42];
+    }
+
+    bb2: {
+        _1 = move _8;
+        _9 = ret_int_i() -> [return: bb3, unwind: bb42];
+    }
+
+    bb3: {
+        _1 = move _9;
+        _10 = ret_ext_i() -> [return: bb4, unwind: bb42];
+    }
+
+    bb4: {
+        _28 = const true;
+        _2 = move _10;
+        _11 = ret_ext_i() -> [return: bb5, unwind: bb42];
+    }
+
+    bb5: {
+        drop(_2) -> [return: bb6, unwind: bb7];
+    }
+
+    bb6: {
+        _28 = const true;
+        _2 = move _11;
+        _12 = ret_ext_i() -> [return: bb8, unwind: bb42];
+    }
+
+    bb7 (cleanup): {
+        _28 = const true;
+        _2 = move _11;
+        goto -> bb42;
+    }
+
+    bb8: {
+        drop(_2) -> [return: bb9, unwind: bb10];
+    }
+
+    bb9: {
+        _28 = const true;
+        _2 = move _12;
+        _13 = ret_int_rec() -> [return: bb11, unwind: bb42];
+    }
+
+    bb10 (cleanup): {
+        _28 = const true;
+        _2 = move _12;
+        goto -> bb42;
+    }
+
+    bb11: {
+        _3 = move _13;
+        _14 = ret_int_rec() -> [return: bb12, unwind: bb42];
+    }
+
+    bb12: {
+        _3 = move _14;
+        _15 = ret_int_rec() -> [return: bb13, unwind: bb42];
+    }
+
+    bb13: {
+        _3 = move _15;
+        _16 = ret_ext_rec() -> [return: bb14, unwind: bb42];
+    }
+
+    bb14: {
+        _27 = const true;
+        _4 = move _16;
+        _17 = ret_ext_rec() -> [return: bb15, unwind: bb42];
+    }
+
+    bb15: {
+        drop(_4) -> [return: bb16, unwind: bb17];
+    }
+
+    bb16: {
+        _27 = const true;
+        _4 = move _17;
+        _18 = ret_ext_rec() -> [return: bb18, unwind: bb42];
+    }
+
+    bb17 (cleanup): {
+        _27 = const true;
+        _4 = move _17;
+        goto -> bb42;
+    }
+
+    bb18: {
+        drop(_4) -> [return: bb19, unwind: bb20];
+    }
+
+    bb19: {
+        _27 = const true;
+        _4 = move _18;
+        _19 = ret_ext_mem() -> [return: bb21, unwind: bb42];
+    }
+
+    bb20 (cleanup): {
+        _27 = const true;
+        _4 = move _18;
+        goto -> bb42;
+    }
+
+    bb21: {
+        _26 = const true;
+        _5 = move _19;
+        _20 = ret_ext_mem() -> [return: bb22, unwind: bb42];
+    }
+
+    bb22: {
+        drop(_5) -> [return: bb23, unwind: bb24];
+    }
+
+    bb23: {
+        _26 = const true;
+        _5 = move _20;
+        _21 = ret_ext_mem() -> [return: bb25, unwind: bb42];
+    }
+
+    bb24 (cleanup): {
+        _26 = const true;
+        _5 = move _20;
+        goto -> bb42;
+    }
+
+    bb25: {
+        drop(_5) -> [return: bb26, unwind: bb27];
+    }
+
+    bb26: {
+        _26 = const true;
+        _5 = move _21;
+        _22 = ret_ext_ext_mem() -> [return: bb28, unwind: bb42];
+    }
+
+    bb27 (cleanup): {
+        _26 = const true;
+        _5 = move _21;
+        goto -> bb42;
+    }
+
+    bb28: {
+        _25 = const true;
+        _6 = move _22;
+        _23 = ret_ext_ext_mem() -> [return: bb29, unwind: bb42];
+    }
+
+    bb29: {
+        drop(_6) -> [return: bb30, unwind: bb31];
+    }
+
+    bb30: {
+        _25 = const true;
+        _6 = move _23;
+        _24 = ret_ext_ext_mem() -> [return: bb32, unwind: bb42];
+    }
+
+    bb31 (cleanup): {
+        _25 = const true;
+        _6 = move _23;
+        goto -> bb42;
+    }
+
+    bb32: {
+        drop(_6) -> [return: bb33, unwind: bb34];
+    }
+
+    bb33: {
+        _25 = const true;
+        _6 = move _24;
+        drop(_6) -> [return: bb35, unwind: bb39];
+    }
+
+    bb34 (cleanup): {
+        _25 = const true;
+        _6 = move _24;
+        goto -> bb42;
+    }
+
+    bb35: {
+        _25 = const false;
+        drop(_5) -> [return: bb36, unwind: bb45];
+    }
+
+    bb36: {
+        _26 = const false;
+        drop(_4) -> [return: bb37, unwind: bb47];
+    }
+
+    bb37: {
+        _27 = const false;
+        drop(_2) -> bb38;
+    }
+
+    bb38: {
+        _28 = const false;
+        return;
+    }
+
+    bb39 (cleanup): {
+        switchInt(_26) -> [0: bb45, otherwise: bb43];
+    }
+
+    bb40 (cleanup): {
+        resume;
+    }
+
+    bb41 (cleanup): {
+        drop(_6) -> [return: bb39, unwind terminate];
+    }
+
+    bb42 (cleanup): {
+        switchInt(_25) -> [0: bb39, otherwise: bb41];
+    }
+
+    bb43 (cleanup): {
+        drop(_5) -> [return: bb45, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_4) -> [return: bb47, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        switchInt(_27) -> [0: bb47, otherwise: bb44];
+    }
+
+    bb46 (cleanup): {
+        drop(_2) -> [return: bb40, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        switchInt(_28) -> [0: bb40, otherwise: bb46];
+    }
+}

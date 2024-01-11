@@ -1,0 +1,213 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/logging-only-prints-once.rs:11:1: 11:24>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug _fmt => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &std::cell::Cell<isize>;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _7: &isize;
+    let _8: isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let _18: ();
+    scope 1 {
+        debug f => _3;
+        let _9: &isize;
+        let _10: &isize;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = &((*_1).0: std::cell::Cell<isize>);
+        _6 = Cell::<isize>::get(_3) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _8 = const 0_isize;
+        _7 = &_8;
+        _4 = (move _5, move _7);
+        _9 = (_4.0: &isize);
+        _10 = (_4.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _18 = Cell::<isize>::set(_3, const 1_isize) -> bb4;
+    }
+
+    bb4: {
+        _0 = Result::<(), std::fmt::Error>::Ok(const ());
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::option::Option<()>;
+    let mut _3: std::result::Result<(), std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _4: std::thread::JoinHandle<()>;
+
+    bb0: {
+        _4 = spawn::<[closure@ui/logging-only-prints-once.rs:21:19: 21:26], ()>(const ZeroSized: [closure@ui/logging-only-prints-once.rs:21:19: 21:26]) -> bb1;
+    }
+
+    bb1: {
+        _3 = JoinHandle::<()>::join(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = Result::<(), Box<dyn Any + Send>>::ok(move _3) -> bb3;
+    }
+
+    bb3: {
+        _1 = Option::<()>::unwrap(move _2) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/logging-only-prints-once.rs:21:19: 21:26]) -> () {
+    let mut _0: ();
+    let mut _2: Foo;
+    let mut _3: std::cell::Cell<isize>;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let mut _6: &[&str];
+    let _7: &[&str; 2];
+    let _8: [&str; 2];
+    let mut _9: &[core::fmt::rt::Argument<'_>];
+    let _10: &[core::fmt::rt::Argument<'_>; 1];
+    let _11: [core::fmt::rt::Argument<'_>; 1];
+    let mut _12: core::fmt::rt::Argument<'_>;
+    let _13: &Foo;
+    let mut _15: (&isize, &isize);
+    let mut _16: &isize;
+    let _17: isize;
+    let mut _18: &std::cell::Cell<isize>;
+    let mut _19: &isize;
+    let _20: isize;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: isize;
+    let mut _26: isize;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug f => _2;
+        let _14: &mut std::cell::Cell<isize>;
+        scope 2 {
+            debug f => _14;
+            let _21: &isize;
+            let _22: &isize;
+            scope 3 {
+                debug left_val => _21;
+                debug right_val => _22;
+                let _27: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _27;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Cell::<isize>::new(const 0_isize) -> bb1;
+    }
+
+    bb1: {
+        _2 = Foo(move _3);
+        _8 = [const "", const "\n"];
+        _7 = &_8;
+        _6 = _7 as &[&str] (Pointer(Unsize));
+        _13 = &_2;
+        _12 = core::fmt::rt::Argument::<'_>::new_debug::<Foo>(_13) -> bb2;
+    }
+
+    bb2: {
+        _11 = [move _12];
+        _10 = &_11;
+        _9 = _10 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _5 = Arguments::<'_>::new_v1(move _6, move _9) -> bb3;
+    }
+
+    bb3: {
+        _4 = _print(move _5) -> bb4;
+    }
+
+    bb4: {
+        _14 = &mut (_2.0: std::cell::Cell<isize>);
+        _18 = &(*_14);
+        _17 = Cell::<isize>::get(move _18) -> bb5;
+    }
+
+    bb5: {
+        _16 = &_17;
+        _20 = const 1_isize;
+        _19 = &_20;
+        _15 = (move _16, move _19);
+        _21 = (_15.0: &isize);
+        _22 = (_15.1: &isize);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<isize, isize>(move _27, _21, _22, move _29);
+    }
+
+    bb7: {
+        return;
+    }
+}
+
+fn Foo(_1: Cell<isize>) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: Cell<isize>) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

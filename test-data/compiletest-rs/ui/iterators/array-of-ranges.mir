@@ -1,0 +1,389 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _2: [std::ops::Range<i32>; 1];
+    let mut _3: std::ops::Range<i32>;
+    let mut _4: std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _5: std::option::Option<std::ops::Range<i32>>;
+    let mut _6: &mut std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _7: isize;
+    let mut _8: std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+    let mut _9: [std::ops::RangeInclusive<i32>; 1];
+    let mut _10: std::ops::RangeInclusive<i32>;
+    let mut _11: std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+    let mut _12: std::option::Option<std::ops::RangeInclusive<i32>>;
+    let mut _13: &mut std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+    let mut _14: isize;
+    let mut _15: std::array::IntoIter<std::ops::RangeFrom<i32>, 1>;
+    let mut _16: [std::ops::RangeFrom<i32>; 1];
+    let mut _17: std::ops::RangeFrom<i32>;
+    let mut _18: std::array::IntoIter<std::ops::RangeFrom<i32>, 1>;
+    let mut _19: std::option::Option<std::ops::RangeFrom<i32>>;
+    let mut _20: &mut std::array::IntoIter<std::ops::RangeFrom<i32>, 1>;
+    let mut _21: isize;
+    let mut _22: std::array::IntoIter<std::ops::RangeTo<i32>, 1>;
+    let mut _23: [std::ops::RangeTo<i32>; 1];
+    let mut _24: std::ops::RangeTo<i32>;
+    let mut _25: std::array::IntoIter<std::ops::RangeTo<i32>, 1>;
+    let mut _26: std::option::Option<std::ops::RangeTo<i32>>;
+    let mut _27: &mut std::array::IntoIter<std::ops::RangeTo<i32>, 1>;
+    let mut _28: isize;
+    let mut _29: std::array::IntoIter<std::ops::RangeToInclusive<i32>, 1>;
+    let mut _30: [std::ops::RangeToInclusive<i32>; 1];
+    let mut _31: std::ops::RangeToInclusive<i32>;
+    let mut _32: std::array::IntoIter<std::ops::RangeToInclusive<i32>, 1>;
+    let mut _33: std::option::Option<std::ops::RangeToInclusive<i32>>;
+    let mut _34: &mut std::array::IntoIter<std::ops::RangeToInclusive<i32>, 1>;
+    let mut _35: isize;
+    let _36: i32;
+    let mut _38: std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _39: [std::ops::Range<i32>; 1];
+    let mut _40: std::ops::Range<i32>;
+    let mut _42: std::option::Option<std::ops::Range<i32>>;
+    let mut _43: &mut std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _44: isize;
+    let mut _46: std::ops::Range<i32>;
+    let mut _47: std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _49: std::option::Option<std::ops::Range<i32>>;
+    let mut _50: &mut std::array::IntoIter<std::ops::Range<i32>, 1>;
+    let mut _51: isize;
+    let mut _52: std::array::IntoIter<std::ops::Range<i32>, 2>;
+    let mut _53: [std::ops::Range<i32>; 2];
+    let mut _54: std::ops::Range<i32>;
+    let mut _55: std::ops::Range<i32>;
+    let mut _57: std::option::Option<std::ops::Range<i32>>;
+    let mut _58: &mut std::array::IntoIter<std::ops::Range<i32>, 2>;
+    let mut _59: isize;
+    let mut _60: std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+    let mut _61: [std::ops::RangeInclusive<i32>; 1];
+    let mut _62: std::ops::RangeInclusive<i32>;
+    let mut _64: std::option::Option<std::ops::RangeInclusive<i32>>;
+    let mut _65: &mut std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+    let mut _66: isize;
+    scope 1 {
+        debug iter => _4;
+    }
+    scope 2 {
+        debug iter => _11;
+    }
+    scope 3 {
+        debug iter => _18;
+    }
+    scope 4 {
+        debug iter => _25;
+    }
+    scope 5 {
+        debug iter => _32;
+    }
+    scope 6 {
+        debug start => _36;
+        let _37: i32;
+        scope 7 {
+            debug end => _37;
+            let mut _41: std::array::IntoIter<std::ops::Range<i32>, 1>;
+            let _45: [std::ops::Range<i32>; 1];
+            scope 8 {
+                debug iter => _41;
+            }
+            scope 9 {
+                debug array_of_range => _45;
+                let mut _48: std::array::IntoIter<std::ops::Range<i32>, 1>;
+                let mut _56: std::array::IntoIter<std::ops::Range<i32>, 2>;
+                let mut _63: std::array::IntoIter<std::ops::RangeInclusive<i32>, 1>;
+                scope 10 {
+                    debug iter => _48;
+                }
+                scope 11 {
+                    debug iter => _56;
+                }
+                scope 12 {
+                    debug iter => _63;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _2 = [move _3];
+        _1 = <[std::ops::Range<i32>; 1] as IntoIterator>::into_iter(move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = move _1;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _6 = &mut _4;
+        _5 = <std::array::IntoIter<std::ops::Range<i32>, 1> as Iterator>::next(_6) -> [return: bb3, unwind: bb57];
+    }
+
+    bb3: {
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [0: bb5, 1: bb2, otherwise: bb4];
+    }
+
+    bb4: {
+        unreachable;
+    }
+
+    bb5: {
+        drop(_4) -> bb6;
+    }
+
+    bb6: {
+        _10 = RangeInclusive::<i32>::new(const 0_i32, const 1_i32) -> bb7;
+    }
+
+    bb7: {
+        _9 = [move _10];
+        _8 = <[RangeInclusive<i32>; 1] as IntoIterator>::into_iter(move _9) -> bb8;
+    }
+
+    bb8: {
+        _11 = move _8;
+        goto -> bb9;
+    }
+
+    bb9: {
+        _13 = &mut _11;
+        _12 = <std::array::IntoIter<RangeInclusive<i32>, 1> as Iterator>::next(_13) -> [return: bb10, unwind: bb56];
+    }
+
+    bb10: {
+        _14 = discriminant(_12);
+        switchInt(move _14) -> [0: bb11, 1: bb9, otherwise: bb4];
+    }
+
+    bb11: {
+        drop(_11) -> bb12;
+    }
+
+    bb12: {
+        _17 = RangeFrom::<i32> { start: const 0_i32 };
+        _16 = [move _17];
+        _15 = <[RangeFrom<i32>; 1] as IntoIterator>::into_iter(move _16) -> bb13;
+    }
+
+    bb13: {
+        _18 = move _15;
+        goto -> bb14;
+    }
+
+    bb14: {
+        _20 = &mut _18;
+        _19 = <std::array::IntoIter<RangeFrom<i32>, 1> as Iterator>::next(_20) -> [return: bb15, unwind: bb55];
+    }
+
+    bb15: {
+        _21 = discriminant(_19);
+        switchInt(move _21) -> [0: bb16, 1: bb14, otherwise: bb4];
+    }
+
+    bb16: {
+        drop(_18) -> bb17;
+    }
+
+    bb17: {
+        _24 = RangeTo::<i32> { end: const 1_i32 };
+        _23 = [move _24];
+        _22 = <[RangeTo<i32>; 1] as IntoIterator>::into_iter(move _23) -> bb18;
+    }
+
+    bb18: {
+        _25 = move _22;
+        goto -> bb19;
+    }
+
+    bb19: {
+        _27 = &mut _25;
+        _26 = <std::array::IntoIter<RangeTo<i32>, 1> as Iterator>::next(_27) -> [return: bb20, unwind: bb54];
+    }
+
+    bb20: {
+        _28 = discriminant(_26);
+        switchInt(move _28) -> [0: bb21, 1: bb19, otherwise: bb4];
+    }
+
+    bb21: {
+        drop(_25) -> bb22;
+    }
+
+    bb22: {
+        _31 = RangeToInclusive::<i32> { end: const 1_i32 };
+        _30 = [move _31];
+        _29 = <[RangeToInclusive<i32>; 1] as IntoIterator>::into_iter(move _30) -> bb23;
+    }
+
+    bb23: {
+        _32 = move _29;
+        goto -> bb24;
+    }
+
+    bb24: {
+        _34 = &mut _32;
+        _33 = <std::array::IntoIter<RangeToInclusive<i32>, 1> as Iterator>::next(_34) -> [return: bb25, unwind: bb53];
+    }
+
+    bb25: {
+        _35 = discriminant(_33);
+        switchInt(move _35) -> [0: bb26, 1: bb24, otherwise: bb4];
+    }
+
+    bb26: {
+        drop(_32) -> bb27;
+    }
+
+    bb27: {
+        _36 = const 0_i32;
+        _37 = const 0_i32;
+        _40 = std::ops::Range::<i32> { start: _36, end: _37 };
+        _39 = [move _40];
+        _38 = <[std::ops::Range<i32>; 1] as IntoIterator>::into_iter(move _39) -> bb28;
+    }
+
+    bb28: {
+        _41 = move _38;
+        goto -> bb29;
+    }
+
+    bb29: {
+        _43 = &mut _41;
+        _42 = <std::array::IntoIter<std::ops::Range<i32>, 1> as Iterator>::next(_43) -> [return: bb30, unwind: bb52];
+    }
+
+    bb30: {
+        _44 = discriminant(_42);
+        switchInt(move _44) -> [0: bb31, 1: bb29, otherwise: bb4];
+    }
+
+    bb31: {
+        drop(_41) -> bb32;
+    }
+
+    bb32: {
+        _46 = std::ops::Range::<i32> { start: _36, end: _37 };
+        _45 = [move _46];
+        _47 = <[std::ops::Range<i32>; 1] as IntoIterator>::into_iter(move _45) -> bb33;
+    }
+
+    bb33: {
+        _48 = move _47;
+        goto -> bb34;
+    }
+
+    bb34: {
+        _50 = &mut _48;
+        _49 = <std::array::IntoIter<std::ops::Range<i32>, 1> as Iterator>::next(_50) -> [return: bb35, unwind: bb51];
+    }
+
+    bb35: {
+        _51 = discriminant(_49);
+        switchInt(move _51) -> [0: bb36, 1: bb34, otherwise: bb4];
+    }
+
+    bb36: {
+        drop(_48) -> bb37;
+    }
+
+    bb37: {
+        _54 = std::ops::Range::<i32> { start: const 0_i32, end: const 1_i32 };
+        _55 = std::ops::Range::<i32> { start: const 2_i32, end: const 3_i32 };
+        _53 = [move _54, move _55];
+        _52 = <[std::ops::Range<i32>; 2] as IntoIterator>::into_iter(move _53) -> bb38;
+    }
+
+    bb38: {
+        _56 = move _52;
+        goto -> bb39;
+    }
+
+    bb39: {
+        _58 = &mut _56;
+        _57 = <std::array::IntoIter<std::ops::Range<i32>, 2> as Iterator>::next(_58) -> [return: bb40, unwind: bb50];
+    }
+
+    bb40: {
+        _59 = discriminant(_57);
+        switchInt(move _59) -> [0: bb41, 1: bb39, otherwise: bb4];
+    }
+
+    bb41: {
+        drop(_56) -> bb42;
+    }
+
+    bb42: {
+        _62 = RangeInclusive::<i32>::new(const 0_i32, const 1_i32) -> bb43;
+    }
+
+    bb43: {
+        _61 = [move _62];
+        _60 = <[RangeInclusive<i32>; 1] as IntoIterator>::into_iter(move _61) -> bb44;
+    }
+
+    bb44: {
+        _63 = move _60;
+        goto -> bb45;
+    }
+
+    bb45: {
+        _65 = &mut _63;
+        _64 = <std::array::IntoIter<RangeInclusive<i32>, 1> as Iterator>::next(_65) -> [return: bb46, unwind: bb49];
+    }
+
+    bb46: {
+        _66 = discriminant(_64);
+        switchInt(move _66) -> [0: bb47, 1: bb45, otherwise: bb4];
+    }
+
+    bb47: {
+        drop(_63) -> bb48;
+    }
+
+    bb48: {
+        return;
+    }
+
+    bb49 (cleanup): {
+        drop(_63) -> [return: bb58, unwind terminate];
+    }
+
+    bb50 (cleanup): {
+        drop(_56) -> [return: bb58, unwind terminate];
+    }
+
+    bb51 (cleanup): {
+        drop(_48) -> [return: bb58, unwind terminate];
+    }
+
+    bb52 (cleanup): {
+        drop(_41) -> [return: bb58, unwind terminate];
+    }
+
+    bb53 (cleanup): {
+        drop(_32) -> [return: bb58, unwind terminate];
+    }
+
+    bb54 (cleanup): {
+        drop(_25) -> [return: bb58, unwind terminate];
+    }
+
+    bb55 (cleanup): {
+        drop(_18) -> [return: bb58, unwind terminate];
+    }
+
+    bb56 (cleanup): {
+        drop(_11) -> [return: bb58, unwind terminate];
+    }
+
+    bb57 (cleanup): {
+        drop(_4) -> [return: bb58, unwind terminate];
+    }
+
+    bb58 (cleanup): {
+        resume;
+    }
+}

@@ -1,0 +1,104 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Wrapper;
+    let mut _2: Point;
+    let mut _4: &Wrapper;
+    let _6: ();
+    let mut _7: &[closure@ui/closures/2229_closure_analysis/run_pass/multilevel-path-3.rs:20:13: 20:15];
+    let _8: ();
+    let mut _9: std::fmt::Arguments<'_>;
+    let mut _10: &[&str];
+    let _11: &[&str; 2];
+    let _12: [&str; 2];
+    let mut _13: &[core::fmt::rt::Argument<'_>];
+    let _14: &[core::fmt::rt::Argument<'_>; 1];
+    let _15: [core::fmt::rt::Argument<'_>; 1];
+    let mut _16: core::fmt::rt::Argument<'_>;
+    let _17: &&i32;
+    scope 1 {
+        debug w => _1;
+        let _3: [closure@ui/closures/2229_closure_analysis/run_pass/multilevel-path-3.rs:20:13: 20:15];
+        scope 2 {
+            debug c => _3;
+            let _5: &i32;
+            scope 3 {
+                debug px => _5;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = Point { x: const 10_i32, y: const 10_i32 };
+        _1 = Wrapper { p: move _2 };
+        _4 = &_1;
+        _3 = [closure@ui/closures/2229_closure_analysis/run_pass/multilevel-path-3.rs:20:13: 20:15] { w: move _4 };
+        _5 = &((_1.0: Point).0: i32);
+        _7 = &_3;
+        _6 = <[closure@ui/closures/2229_closure_analysis/run_pass/multilevel-path-3.rs:20:13: 20:15] as Fn<()>>::call(move _7, const ()) -> bb1;
+    }
+
+    bb1: {
+        _12 = [const "", const "\n"];
+        _11 = &_12;
+        _10 = _11 as &[&str] (Pointer(Unsize));
+        _17 = &_5;
+        _16 = core::fmt::rt::Argument::<'_>::new_display::<&i32>(_17) -> bb2;
+    }
+
+    bb2: {
+        _15 = [move _16];
+        _14 = &_15;
+        _13 = _14 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _9 = Arguments::<'_>::new_v1(move _10, move _13) -> bb3;
+    }
+
+    bb3: {
+        _8 = _print(move _9) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/run_pass/multilevel-path-3.rs:20:13: 20:15]) -> () {
+    debug w => (*((*_1).0: &Wrapper));
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+    let mut _12: &Wrapper;
+
+    bb0: {
+        _6 = [const "", const "\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _12 = deref_copy ((*_1).0: &Wrapper);
+        _11 = &(((*_12).0: Point).0: i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_display::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}

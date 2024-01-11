@@ -1,0 +1,359 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const-enum-vec-index.rs:2:16: 2:21>::clone(_1: &E) -> E {
+    debug self => _1;
+    let mut _0: E;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+const C: &[E] = {
+    let mut _0: &[E];
+    let mut _1: &[E; 2];
+    let _2: &[E; 2];
+    let _3: [E; 2];
+    let mut _4: E;
+    let mut _5: E;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        _4 = E::V0;
+        StorageLive(_5);
+        _5 = E::V1(const 233495534_isize);
+        _3 = [move _4, move _5];
+        StorageDead(_5);
+        StorageDead(_4);
+        _2 = &_3;
+        _1 = &(*_2);
+        _0 = move _1 as &[E] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static C0: E = {
+    let mut _0: E;
+    let mut _1: &[E];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        StorageLive(_2);
+        _2 = const 0_usize;
+        _3 = Len((*_1));
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_1)[_2];
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static C1: E = {
+    let mut _0: E;
+    let mut _1: &[E];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        StorageLive(_2);
+        _2 = const 1_usize;
+        _3 = Len((*_1));
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_1)[_2];
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+const D: &[E; 2] = {
+    let mut _0: &[E; 2];
+    let _1: &[E; 2];
+    let _2: [E; 2];
+    let mut _3: E;
+    let mut _4: E;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = E::V0;
+        StorageLive(_4);
+        _4 = E::V1(const 233503726_isize);
+        _2 = [move _3, move _4];
+        StorageDead(_4);
+        StorageDead(_3);
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+D::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+static D0: E = {
+    let mut _0: E;
+    let mut _1: &[E; 2];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        StorageLive(_2);
+        _2 = const 0_usize;
+        _3 = Len((*_1));
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_1)[_2];
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static D1: E = {
+    let mut _0: E;
+    let mut _1: &[E; 2];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = const _;
+        StorageLive(_2);
+        _2 = const 1_usize;
+        _3 = Len((*_1));
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = (*_1)[_2];
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &E;
+    let mut _2: isize;
+    let mut _3: !;
+    let mut _4: &E;
+    let mut _5: isize;
+    let _6: isize;
+    let mut _7: (&isize, &isize);
+    let mut _8: &isize;
+    let mut _9: &isize;
+    let _10: isize;
+    let mut _13: bool;
+    let mut _14: bool;
+    let mut _15: isize;
+    let mut _16: isize;
+    let _18: !;
+    let mut _19: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: !;
+    let mut _21: &E;
+    let mut _22: isize;
+    let mut _23: !;
+    let mut _24: &E;
+    let mut _25: isize;
+    let _26: isize;
+    let mut _27: (&isize, &isize);
+    let mut _28: &isize;
+    let mut _29: &isize;
+    let _30: isize;
+    let mut _33: bool;
+    let mut _34: bool;
+    let mut _35: isize;
+    let mut _36: isize;
+    let _38: !;
+    let mut _39: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _40: !;
+    scope 1 {
+        debug n => _6;
+        let _11: &isize;
+        let _12: &isize;
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _17: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _17;
+            }
+        }
+    }
+    scope 4 {
+        debug n => _26;
+        let _31: &isize;
+        let _32: &isize;
+        scope 5 {
+            debug left_val => _31;
+            debug right_val => _32;
+            let _37: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _37;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const {alloc1: &E};
+        _2 = discriminant((*_1));
+        switchInt(move _2) -> [1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb2: {
+        _4 = const {alloc2: &E};
+        _5 = discriminant((*_4));
+        switchInt(move _5) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _20 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb4: {
+        _6 = (((*_4) as V1).0: isize);
+        _8 = &_6;
+        _10 = const 233495534_isize;
+        _9 = &_10;
+        _7 = (move _8, move _9);
+        _11 = (_7.0: &isize);
+        _12 = (_7.1: &isize);
+        _15 = (*_11);
+        _16 = (*_12);
+        _14 = Eq(move _15, move _16);
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _17 = core::panicking::AssertKind::Eq;
+        _19 = Option::<Arguments<'_>>::None;
+        _18 = core::panicking::assert_failed::<isize, isize>(move _17, _11, _12, move _19);
+    }
+
+    bb6: {
+        _21 = const {alloc3: &E};
+        _22 = discriminant((*_21));
+        switchInt(move _22) -> [1: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _23 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb8: {
+        _24 = const {alloc4: &E};
+        _25 = discriminant((*_24));
+        switchInt(move _25) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _40 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb10: {
+        _26 = (((*_24) as V1).0: isize);
+        _28 = &_26;
+        _30 = const 233503726_isize;
+        _29 = &_30;
+        _27 = (move _28, move _29);
+        _31 = (_27.0: &isize);
+        _32 = (_27.1: &isize);
+        _35 = (*_31);
+        _36 = (*_32);
+        _34 = Eq(move _35, move _36);
+        _33 = Not(move _34);
+        switchInt(move _33) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _37 = core::panicking::AssertKind::Eq;
+        _39 = Option::<Arguments<'_>>::None;
+        _38 = core::panicking::assert_failed::<isize, isize>(move _37, _31, _32, move _39);
+    }
+
+    bb12: {
+        return;
+    }
+}
+
+alloc4 (static: D1, size: 16, align: 8) {
+    00 00 00 00 00 00 00 00 ee fb ea 0d 00 00 00 00 │ ................
+}
+
+alloc3 (static: D0, size: 16, align: 8) {
+    01 00 00 00 00 00 00 00 __ __ __ __ __ __ __ __ │ ........░░░░░░░░
+}
+
+alloc2 (static: C1, size: 16, align: 8) {
+    00 00 00 00 00 00 00 00 ee db ea 0d 00 00 00 00 │ ................
+}
+
+alloc1 (static: C0, size: 16, align: 8) {
+    01 00 00 00 00 00 00 00 __ __ __ __ __ __ __ __ │ ........░░░░░░░░
+}
+
+fn E::V1(_1: isize) -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::V1(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn E::V1(_1: isize) -> E {
+    let mut _0: E;
+
+    bb0: {
+        _0 = E::V1(move _1);
+        return;
+    }
+}

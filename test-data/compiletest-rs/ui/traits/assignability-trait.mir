@@ -1,0 +1,447 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/assignability-trait.rs:12:1: 12:35>::iterate(_1: &&[A], _2: F) -> bool {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: bool;
+    let mut _3: &mut std::slice::Iter<'_, A>;
+    let mut _4: std::slice::Iter<'_, A>;
+    let mut _5: F;
+    let mut _6: &[A];
+    let mut _7: bool;
+
+    bb0: {
+        _7 = const false;
+        _7 = const true;
+        _6 = deref_copy (*_1);
+        _4 = core::slice::<impl [A]>::iter(_6) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _3 = &mut _4;
+        _7 = const false;
+        _5 = move _2;
+        _0 = <std::slice::Iter<'_, A> as Iterator>::all::<F>(move _3, move _5) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        resume;
+    }
+
+    bb4 (cleanup): {
+        drop(_2) -> [return: bb3, unwind terminate];
+    }
+
+    bb5 (cleanup): {
+        switchInt(_7) -> [0: bb3, otherwise: bb4];
+    }
+}
+
+fn <impl at ui/traits/assignability-trait.rs:18:1: 18:31>::iterate(_1: &Vec<A>, _2: F) -> bool {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: bool;
+    let mut _3: &mut std::slice::Iter<'_, A>;
+    let mut _4: std::slice::Iter<'_, A>;
+    let mut _5: &[A];
+    let _6: &[A];
+    let mut _7: F;
+    let mut _8: bool;
+
+    bb0: {
+        _8 = const false;
+        _8 = const true;
+        _6 = <Vec<A> as Deref>::deref(_1) -> [return: bb1, unwind: bb6];
+    }
+
+    bb1: {
+        _5 = _6;
+        _4 = core::slice::<impl [A]>::iter(move _5) -> [return: bb2, unwind: bb6];
+    }
+
+    bb2: {
+        _3 = &mut _4;
+        _8 = const false;
+        _7 = move _2;
+        _0 = <std::slice::Iter<'_, A> as Iterator>::all::<F>(move _3, move _7) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb4, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        switchInt(_8) -> [0: bb4, otherwise: bb5];
+    }
+}
+
+fn length(_1: T) -> usize {
+    debug x => _1;
+    let mut _0: usize;
+    let mut _2: usize;
+    let _3: bool;
+    let mut _4: &T;
+    let mut _5: [closure@ui/traits/assignability-trait.rs:26:15: 26:19];
+    let mut _6: &mut usize;
+    scope 1 {
+        debug len => _2;
+    }
+
+    bb0: {
+        _2 = const 0_usize;
+        _4 = &_1;
+        _6 = &mut _2;
+        _5 = [closure@ui/traits/assignability-trait.rs:26:15: 26:19] { len: move _6 };
+        _3 = <T as iterable<A>>::iterate::<[closure@ui/traits/assignability-trait.rs:26:15: 26:19]>(move _4, move _5) -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        _0 = _2;
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+fn length::{closure#0}(_1: &mut [closure@ui/traits/assignability-trait.rs:26:15: 26:19], _2: &A) -> bool {
+    debug _y => _2;
+    debug len => (*((*_1).0: &mut usize));
+    let mut _0: bool;
+    let mut _3: &mut usize;
+    let mut _4: &mut usize;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut usize);
+        _4 = deref_copy ((*_1).0: &mut usize);
+        (*_3) = Add((*_4), const 1_usize);
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::vec::Vec<isize>;
+    let mut _2: std::boxed::Box<[isize]>;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: *mut u8;
+    let mut _6: std::boxed::Box<[isize; 4]>;
+    let _7: bool;
+    let mut _8: &std::vec::Vec<isize>;
+    let mut _9: [closure@ui/traits/assignability-trait.rs:36:15: 36:18];
+    let mut _10: &std::vec::Vec<isize>;
+    let mut _11: (&usize, &usize);
+    let mut _12: &usize;
+    let _13: usize;
+    let mut _14: std::vec::Vec<isize>;
+    let mut _15: &std::vec::Vec<isize>;
+    let mut _16: &usize;
+    let _17: usize;
+    let mut _18: &std::vec::Vec<isize>;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: usize;
+    let mut _24: usize;
+    let _26: !;
+    let mut _27: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _28: (&usize, &usize);
+    let mut _29: &usize;
+    let _30: usize;
+    let _31: &[isize];
+    let _32: &[isize];
+    let mut _33: &std::vec::Vec<isize>;
+    let mut _34: &usize;
+    let _35: usize;
+    let mut _36: &std::vec::Vec<isize>;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: usize;
+    let mut _42: usize;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _47: (&usize, &usize);
+    let mut _48: &usize;
+    let _49: usize;
+    let mut _50: &[isize];
+    let _51: &[isize; 4];
+    let mut _52: &usize;
+    let _53: usize;
+    let mut _54: &[isize];
+    let mut _55: &[isize; 4];
+    let mut _58: bool;
+    let mut _59: bool;
+    let mut _60: usize;
+    let mut _61: usize;
+    let _63: !;
+    let mut _64: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _65: *const [isize; 4];
+    let mut _66: *const ();
+    let mut _67: usize;
+    let mut _68: usize;
+    let mut _69: usize;
+    let mut _70: usize;
+    let mut _71: bool;
+    scope 1 {
+        debug x => _1;
+        let _19: &usize;
+        let _20: &usize;
+        let _37: &usize;
+        let _38: &usize;
+        let _46: [isize; 4];
+        scope 3 {
+            debug left_val => _19;
+            debug right_val => _20;
+            let _25: core::panicking::AssertKind;
+            scope 4 {
+                debug kind => _25;
+            }
+        }
+        scope 5 {
+            debug left_val => _37;
+            debug right_val => _38;
+            let _43: core::panicking::AssertKind;
+            scope 6 {
+                debug kind => _43;
+            }
+        }
+        scope 7 {
+            debug z => _46;
+            let _56: &usize;
+            let _57: &usize;
+            scope 8 {
+                debug left_val => _56;
+                debug right_val => _57;
+                let _62: core::panicking::AssertKind;
+                scope 9 {
+                    debug kind => _62;
+                }
+            }
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = SizeOf([isize; 4]);
+        _4 = AlignOf([isize; 4]);
+        _5 = alloc::alloc::exchange_malloc(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = ShallowInitBox(move _5, [isize; 4]);
+        _65 = (((_6.0: std::ptr::Unique<[isize; 4]>).0: std::ptr::NonNull<[isize; 4]>).0: *const [isize; 4]);
+        _66 = _65 as *const () (PtrToPtr);
+        _67 = _66 as usize (Transmute);
+        _68 = AlignOf(isize);
+        _69 = Sub(_68, const 1_usize);
+        _70 = BitAnd(_67, _69);
+        _71 = Eq(_70, const 0_usize);
+        assert(_71, "misaligned pointer dereference: address must be a multiple of {} but is {}", _68, _67) -> [success: bb20, unwind unreachable];
+    }
+
+    bb2: {
+        _8 = &_1;
+        _10 = &_1;
+        _9 = [closure@ui/traits/assignability-trait.rs:36:15: 36:18] { x: move _10 };
+        _7 = <Vec<isize> as iterable<isize>>::iterate::<[closure@ui/traits/assignability-trait.rs:36:15: 36:18]>(move _8, move _9) -> [return: bb3, unwind: bb18];
+    }
+
+    bb3: {
+        _15 = &_1;
+        _14 = <Vec<isize> as Clone>::clone(move _15) -> [return: bb4, unwind: bb18];
+    }
+
+    bb4: {
+        _13 = length::<isize, Vec<isize>>(move _14) -> [return: bb5, unwind: bb18];
+    }
+
+    bb5: {
+        _12 = &_13;
+        _18 = &_1;
+        _17 = Vec::<isize>::len(move _18) -> [return: bb6, unwind: bb18];
+    }
+
+    bb6: {
+        _16 = &_17;
+        _11 = (move _12, move _16);
+        _19 = (_11.0: &usize);
+        _20 = (_11.1: &usize);
+        _23 = (*_19);
+        _24 = (*_20);
+        _22 = Eq(move _23, move _24);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _25 = core::panicking::AssertKind::Eq;
+        _27 = Option::<Arguments<'_>>::None;
+        _26 = core::panicking::assert_failed::<usize, usize>(move _25, _19, _20, move _27) -> bb18;
+    }
+
+    bb8: {
+        _33 = &_1;
+        _32 = <Vec<isize> as Deref>::deref(move _33) -> [return: bb9, unwind: bb18];
+    }
+
+    bb9: {
+        _31 = _32;
+        _30 = length::<isize, &[isize]>(_31) -> [return: bb10, unwind: bb18];
+    }
+
+    bb10: {
+        _29 = &_30;
+        _36 = &_1;
+        _35 = Vec::<isize>::len(move _36) -> [return: bb11, unwind: bb18];
+    }
+
+    bb11: {
+        _34 = &_35;
+        _28 = (move _29, move _34);
+        _37 = (_28.0: &usize);
+        _38 = (_28.1: &usize);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb13, otherwise: bb12];
+    }
+
+    bb12: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<usize, usize>(move _43, _37, _38, move _45) -> bb18;
+    }
+
+    bb13: {
+        _46 = [const 0_isize, const 1_isize, const 2_isize, const 3_isize];
+        _51 = &_46;
+        _50 = _51 as &[isize] (Pointer(Unsize));
+        _49 = length::<isize, &[isize]>(move _50) -> [return: bb14, unwind: bb18];
+    }
+
+    bb14: {
+        _48 = &_49;
+        _55 = &_46;
+        _54 = move _55 as &[isize] (Pointer(Unsize));
+        _53 = Len((*_54));
+        _52 = &_53;
+        _47 = (move _48, move _52);
+        _56 = (_47.0: &usize);
+        _57 = (_47.1: &usize);
+        _60 = (*_56);
+        _61 = (*_57);
+        _59 = Eq(move _60, move _61);
+        _58 = Not(move _59);
+        switchInt(move _58) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _62 = core::panicking::AssertKind::Eq;
+        _64 = Option::<Arguments<'_>>::None;
+        _63 = core::panicking::assert_failed::<usize, usize>(move _62, _56, _57, move _64) -> bb18;
+    }
+
+    bb16: {
+        drop(_1) -> bb17;
+    }
+
+    bb17: {
+        return;
+    }
+
+    bb18 (cleanup): {
+        drop(_1) -> [return: bb19, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        resume;
+    }
+
+    bb20: {
+        (*_65) = [const 0_isize, const 1_isize, const 2_isize, const 3_isize];
+        _2 = move _6 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _1 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _2) -> bb2;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/traits/assignability-trait.rs:36:15: 36:18], _2: &isize) -> bool {
+    debug y => _2;
+    debug x => (*((*_1).0: &std::vec::Vec<isize>));
+    let mut _0: bool;
+    let mut _3: (&isize, &isize);
+    let mut _4: &isize;
+    let _5: &isize;
+    let mut _6: usize;
+    let mut _7: isize;
+    let _8: &isize;
+    let _9: &isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: &std::vec::Vec<isize>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+
+    bb0: {
+        _17 = deref_copy ((*_1).0: &std::vec::Vec<isize>);
+        _7 = (*_2);
+        _6 = move _7 as usize (IntToInt);
+        _5 = <Vec<isize> as Index<usize>>::index(_17, move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = _5;
+        _3 = (move _4, _2);
+        _8 = (_3.0: &isize);
+        _9 = (_3.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _0 = const true;
+        return;
+    }
+}

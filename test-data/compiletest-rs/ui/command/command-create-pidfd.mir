@@ -1,0 +1,304 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn has_clone3() -> bool {
+    let mut _0: bool;
+    let _1: i64;
+    let mut _3: std::option::Option<std::io::Error>;
+    let mut _4: bool;
+    let mut _5: i64;
+    let _6: &str;
+    let mut _7: bool;
+    let mut _8: &std::option::Option<i32>;
+    let _9: std::option::Option<i32>;
+    let mut _10: &std::io::Error;
+    let mut _11: &std::option::Option<i32>;
+    let _12: std::option::Option<i32>;
+    let mut _13: bool;
+    let mut _14: &std::option::Option<i32>;
+    let _15: std::option::Option<i32>;
+    let mut _16: &std::io::Error;
+    let mut _17: &std::option::Option<i32>;
+    let _18: std::option::Option<i32>;
+    scope 1 {
+        debug res => _1;
+        let _2: std::io::Error;
+        scope 3 {
+            debug err => _2;
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _1 = syscall(const _, const 0_i32, const 0_i32) -> bb1;
+    }
+
+    bb1: {
+        _5 = _1;
+        _4 = Eq(move _5, const -1_i64);
+        _3 = core::bool::<impl bool>::then::<std::io::Error, [closure@ui/command/command-create-pidfd.rs:16:15: 16:17]>(move _4, const ZeroSized: [closure@ui/command/command-create-pidfd.rs:16:15: 16:17]) -> bb2;
+    }
+
+    bb2: {
+        _6 = const "probe syscall should not succeed";
+        _2 = Option::<std::io::Error>::expect(move _3, _6) -> bb3;
+    }
+
+    bb3: {
+        _10 = &_2;
+        _9 = std::io::Error::raw_os_error(move _10) -> [return: bb7, unwind: bb12];
+    }
+
+    bb4: {
+        _0 = const false;
+        goto -> bb6;
+    }
+
+    bb5: {
+        _16 = &_2;
+        _15 = std::io::Error::raw_os_error(move _16) -> [return: bb9, unwind: bb12];
+    }
+
+    bb6: {
+        drop(_2) -> bb11;
+    }
+
+    bb7: {
+        _8 = &_9;
+        _12 = Option::<i32>::Some(const _);
+        _11 = &_12;
+        _7 = <Option<i32> as PartialEq>::ne(move _8, move _11) -> [return: bb8, unwind: bb12];
+    }
+
+    bb8: {
+        switchInt(move _7) -> [0: bb4, otherwise: bb5];
+    }
+
+    bb9: {
+        _14 = &_15;
+        _18 = Option::<i32>::Some(const _);
+        _17 = &_18;
+        _13 = <Option<i32> as PartialEq>::ne(move _14, move _17) -> [return: bb10, unwind: bb12];
+    }
+
+    bb10: {
+        _0 = move _13;
+        goto -> bb6;
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12 (cleanup): {
+        drop(_2) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
+
+fn has_clone3::{closure#0}(_1: [closure@ui/command/command-create-pidfd.rs:16:15: 16:17]) -> std::io::Error {
+    let mut _0: std::io::Error;
+
+    bb0: {
+        _0 = std::io::Error::last_os_error() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &std::os::linux::process::PidFd;
+    let mut _4: std::result::Result<&std::os::linux::process::PidFd, std::io::Error>;
+    let mut _5: &std::process::Child;
+    let _6: std::process::Child;
+    let mut _7: std::result::Result<std::process::Child, std::io::Error>;
+    let mut _8: &mut std::process::Command;
+    let mut _9: &mut std::process::Command;
+    let mut _10: &mut std::process::Command;
+    let mut _11: std::process::Command;
+    let _12: &str;
+    let mut _13: std::io::Error;
+    let mut _14: std::result::Result<&std::os::linux::process::PidFd, std::io::Error>;
+    let mut _15: &std::process::Child;
+    let _16: std::process::Child;
+    let mut _17: std::result::Result<std::process::Child, std::io::Error>;
+    let mut _18: &mut std::process::Command;
+    let mut _19: &mut std::process::Command;
+    let mut _20: &mut std::process::Command;
+    let mut _21: std::process::Command;
+    let _22: &str;
+    let mut _23: std::io::Error;
+    let mut _24: std::result::Result<&std::os::linux::process::PidFd, std::io::Error>;
+    let mut _25: &std::process::Child;
+    let _26: std::process::Child;
+    let mut _27: std::result::Result<std::process::Child, std::io::Error>;
+    let mut _28: &mut std::process::Command;
+    let mut _29: std::process::Command;
+    let _30: &str;
+    scope 1 {
+        scope 2 {
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _2 = has_clone3() -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb2, otherwise: bb27];
+    }
+
+    bb2: {
+        _11 = Command::new::<&str>(const "echo") -> bb3;
+    }
+
+    bb3: {
+        _10 = &mut _11;
+        _9 = <Command as std::os::linux::process::CommandExt>::create_pidfd(move _10, const true) -> [return: bb4, unwind: bb33];
+    }
+
+    bb4: {
+        _8 = _9;
+        _7 = Command::spawn(move _8) -> [return: bb5, unwind: bb33];
+    }
+
+    bb5: {
+        _6 = Result::<Child, std::io::Error>::unwrap(move _7) -> [return: bb6, unwind: bb33];
+    }
+
+    bb6: {
+        _5 = &_6;
+        _4 = <Child as ChildExt>::pidfd(move _5) -> [return: bb7, unwind: bb32];
+    }
+
+    bb7: {
+        _12 = const "failed to obtain pidfd";
+        _3 = Result::<&PidFd, std::io::Error>::expect(move _4, _12) -> [return: bb8, unwind: bb32];
+    }
+
+    bb8: {
+        drop(_6) -> [return: bb9, unwind: bb33];
+    }
+
+    bb9: {
+        drop(_11) -> bb10;
+    }
+
+    bb10: {
+        _21 = Command::new::<&str>(const "echo") -> bb11;
+    }
+
+    bb11: {
+        _20 = &mut _21;
+        _19 = <Command as std::os::linux::process::CommandExt>::create_pidfd(move _20, const false) -> [return: bb12, unwind: bb31];
+    }
+
+    bb12: {
+        _18 = _19;
+        _17 = Command::spawn(move _18) -> [return: bb13, unwind: bb31];
+    }
+
+    bb13: {
+        _16 = Result::<Child, std::io::Error>::unwrap(move _17) -> [return: bb14, unwind: bb31];
+    }
+
+    bb14: {
+        _15 = &_16;
+        _14 = <Child as ChildExt>::pidfd(move _15) -> [return: bb15, unwind: bb30];
+    }
+
+    bb15: {
+        _22 = const "pidfd should not have been created when create_pid(false) is set";
+        _13 = Result::<&PidFd, std::io::Error>::expect_err(move _14, _22) -> [return: bb16, unwind: bb30];
+    }
+
+    bb16: {
+        drop(_13) -> [return: bb17, unwind: bb30];
+    }
+
+    bb17: {
+        drop(_16) -> [return: bb18, unwind: bb31];
+    }
+
+    bb18: {
+        drop(_21) -> bb19;
+    }
+
+    bb19: {
+        _29 = Command::new::<&str>(const "echo") -> bb20;
+    }
+
+    bb20: {
+        _28 = &mut _29;
+        _27 = Command::spawn(move _28) -> [return: bb21, unwind: bb29];
+    }
+
+    bb21: {
+        _26 = Result::<Child, std::io::Error>::unwrap(move _27) -> [return: bb22, unwind: bb29];
+    }
+
+    bb22: {
+        _25 = &_26;
+        _24 = <Child as ChildExt>::pidfd(move _25) -> [return: bb23, unwind: bb28];
+    }
+
+    bb23: {
+        _30 = const "pidfd should not have been created";
+        _23 = Result::<&PidFd, std::io::Error>::expect_err(move _24, _30) -> [return: bb24, unwind: bb28];
+    }
+
+    bb24: {
+        drop(_23) -> [return: bb25, unwind: bb28];
+    }
+
+    bb25: {
+        drop(_26) -> [return: bb26, unwind: bb29];
+    }
+
+    bb26: {
+        drop(_29) -> bb27;
+    }
+
+    bb27: {
+        return;
+    }
+
+    bb28 (cleanup): {
+        drop(_26) -> [return: bb29, unwind terminate];
+    }
+
+    bb29 (cleanup): {
+        drop(_29) -> [return: bb34, unwind terminate];
+    }
+
+    bb30 (cleanup): {
+        drop(_16) -> [return: bb31, unwind terminate];
+    }
+
+    bb31 (cleanup): {
+        drop(_21) -> [return: bb34, unwind terminate];
+    }
+
+    bb32 (cleanup): {
+        drop(_6) -> [return: bb33, unwind terminate];
+    }
+
+    bb33 (cleanup): {
+        drop(_11) -> [return: bb34, unwind terminate];
+    }
+
+    bb34 (cleanup): {
+        resume;
+    }
+}

@@ -1,0 +1,40 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: i32;
+    let _2: &i32;
+    let _3: !;
+    let _4: &str;
+    let mut _5: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _6: std::fmt::Arguments<'_>;
+    let mut _7: &[&str];
+    let _8: &[&str; 1];
+    let _9: [&str; 1];
+    scope 1 {
+        debug left_val => _2;
+    }
+
+    bb0: {
+        _1 = Add(const 1_i32, const 1_i32);
+        switchInt(_1) -> [3: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _2 = &_1;
+        _4 = const "3";
+        _9 = [const "1 + 1 definitely should be 3"];
+        _8 = &_9;
+        _7 = _8 as &[&str] (Pointer(Unsize));
+        _6 = Arguments::<'_>::new_const(move _7) -> bb3;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3: {
+        _5 = Option::<Arguments<'_>>::Some(move _6);
+        _3 = core::panicking::assert_matches_failed::<i32>(_2, _4, move _5);
+    }
+}

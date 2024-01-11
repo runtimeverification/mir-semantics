@@ -1,0 +1,89 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &String) -> i32 {
+    debug s => _1;
+    let mut _0: i32;
+    let mut _2: &str;
+    let mut _3: bool;
+
+    bb0: {
+        _2 = <String as Deref>::deref(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = <str as PartialEq>::eq(_2, const "a") -> bb2;
+    }
+
+    bb2: {
+        switchInt(move _3) -> [0: bb3, otherwise: bb4];
+    }
+
+    bb3: {
+        _0 = const -1_i32;
+        goto -> bb5;
+    }
+
+    bb4: {
+        _0 = const 42_i32;
+        goto -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn bar(_1: Option<&&&&String>) -> i32 {
+    debug s => _1;
+    let mut _0: i32;
+    let mut _2: &str;
+    let mut _3: bool;
+    let mut _4: isize;
+    let mut _5: &&&&std::string::String;
+    let mut _6: &&&std::string::String;
+    let mut _7: &&std::string::String;
+    let mut _8: &std::string::String;
+
+    bb0: {
+        _4 = discriminant(_1);
+        switchInt(move _4) -> [1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = const -1_i32;
+        goto -> bb6;
+    }
+
+    bb2: {
+        _5 = deref_copy ((_1 as Some).0: &&&&std::string::String);
+        _6 = deref_copy (*_5);
+        _7 = deref_copy (*_6);
+        _8 = deref_copy (*_7);
+        _2 = <String as Deref>::deref(_8) -> bb3;
+    }
+
+    bb3: {
+        _3 = <str as PartialEq>::eq(_2, const "&&&&") -> bb4;
+    }
+
+    bb4: {
+        switchInt(move _3) -> [0: bb1, otherwise: bb5];
+    }
+
+    bb5: {
+        _0 = const 1_i32;
+        goto -> bb6;
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

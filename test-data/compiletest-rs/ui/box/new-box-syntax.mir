@@ -1,0 +1,79 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<isize>;
+    let mut _3: isize;
+    let mut _5: i32;
+    let mut _7: Structure;
+    scope 1 {
+        debug y => _1;
+        let _2: std::boxed::Box<isize>;
+        scope 2 {
+            debug b => _2;
+            let _4: std::boxed::Box<i32>;
+            scope 3 {
+                debug c => _4;
+                let _6: std::boxed::Box<Structure>;
+                scope 4 {
+                    debug s => _6;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = Box::<isize>::new(const 2_isize) -> bb1;
+    }
+
+    bb1: {
+        _3 = Add(const 1_isize, const 2_isize);
+        _2 = Box::<isize>::new(move _3) -> [return: bb2, unwind: bb11];
+    }
+
+    bb2: {
+        _5 = Add(const 3_i32, const 4_i32);
+        _4 = Box::<i32>::new(move _5) -> [return: bb3, unwind: bb10];
+    }
+
+    bb3: {
+        _7 = Structure { x: const 3_isize, y: const 4_isize };
+        _6 = Box::<Structure>::new(move _7) -> [return: bb4, unwind: bb9];
+    }
+
+    bb4: {
+        drop(_6) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        drop(_4) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        drop(_2) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        drop(_1) -> bb8;
+    }
+
+    bb8: {
+        return;
+    }
+
+    bb9 (cleanup): {
+        drop(_4) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_2) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_1) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+}

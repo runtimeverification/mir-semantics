@@ -1,0 +1,105 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/issues/issue-89304.rs:8:1: 8:71>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const T;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89304.rs:8:1: 8:71>::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const T, const 1_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const T, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-89304.rs:8:1: 8:71>::from(_1: GenericStruct<T>) -> GenericStruct<{T + 1}> {
+    debug other => _1;
+    let mut _0: GenericStruct<{T + 1}>;
+    let mut _2: i64;
+
+    bb0: {
+        _2 = (_1.0: i64);
+        _0 = GenericStruct::<{T + 1}> { val: move _2 };
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89304.rs:8:1: 8:71>::from::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const T;
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89304.rs:14:1: 14:71>::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const T, const 1_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const T, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89304.rs:14:1: 14:71>::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const T;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/issues/issue-89304.rs:14:1: 14:71>::from(_1: GenericStruct<{T + 1}>) -> GenericStruct<T> {
+    debug other => _1;
+    let mut _0: GenericStruct<T>;
+    let mut _2: i64;
+
+    bb0: {
+        _2 = (_1.0: i64);
+        _0 = GenericStruct::<T> { val: move _2 };
+        return;
+    }
+}
+
+<impl at ui/const-generics/issues/issue-89304.rs:14:1: 14:71>::from::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: (usize, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const T, const 1_usize);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const T, const 1_usize) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: usize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

@@ -1,0 +1,13 @@
+[ui/const-generics/generic_const_exprs/issue-82268.rs:72] collate::<_, 5>(("Hello", (42, ('!', ())))) = (
+    (
+        "Hello",
+        (
+            42,
+            (
+                '!',
+                (),
+            ),
+        ),
+    ),
+    (),
+)

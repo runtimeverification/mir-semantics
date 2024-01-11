@@ -1,0 +1,40 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/impl-trait/issues/issue-42479.rs:9:1: 9:9>::inside(_1: &Foo) -> impl Iterator<Item = &i32> {
+    debug self => _1;
+    let mut _0: impl std::iter::Iterator<Item = &i32>;
+    let mut _2: &i32;
+
+    bb0: {
+        _2 = &((*_1).0: i32);
+        _0 = once::<&i32>(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+
+    bb0: {
+        _5 = [const "hi\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _print(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

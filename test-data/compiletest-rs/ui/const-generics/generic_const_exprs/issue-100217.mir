@@ -1,0 +1,156 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+TraitOne::do_one_stuff::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-100217.rs:17:1: 17:33>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-100217.rs:17:1: 17:33>::do_two_stuff() -> () {
+    let mut _0: ();
+    let mut _1: std::result::Result<(), <O as TraitOne>::MyErr>;
+    let mut _2: [u8; Self::MY_NUM];
+
+    bb0: {
+        _2 = [const 5_u8; Self::MY_NUM];
+        _1 = <O as TraitOne>::do_one_stuff(move _2) -> bb1;
+    }
+
+    bb1: {
+        _0 = Result::<(), <O as TraitOne>::MyErr>::unwrap(move _1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-100217.rs:17:1: 17:33>::do_two_stuff::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+ErrTy::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-100217.rs:28:10: 28:15>::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-100217.rs:28:10: 28:15>::fmt(_1: &ErrTy<N>, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&[(); N];
+    let _6: &[(); N];
+
+    bb0: {
+        _3 = const "ErrTy";
+        _6 = &((*_1).0: [(); N]);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const <impl at ui/const-generics/generic_const_exprs/issue-100217.rs:31:1: 31:29>::MY_NUM: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 3_usize;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-100217.rs:31:1: 31:29>::MyErr::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/issue-100217.rs:31:1: 31:29>::do_one_stuff(_1: [u8; Self::MY_NUM]) -> Result<(), ErrTy<{ Self::MY_NUM }>> {
+    debug _arr => _1;
+    let mut _0: std::result::Result<(), ErrTy<{ Self::MY_NUM }>>;
+
+    bb0: {
+        _0 = Result::<(), ErrTy<{ Self::MY_NUM }>>::Ok(const ());
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/issue-100217.rs:31:1: 31:29>::do_one_stuff::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = <Blargotron as TraitTwo>::do_two_stuff() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn ErrTy(_1: [(); N]) -> ErrTy<N> {
+    let mut _0: ErrTy<N>;
+
+    bb0: {
+        _0 = ErrTy::<N>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ErrTy(_1: [(); N]) -> ErrTy<N> {
+    let mut _0: ErrTy<N>;
+
+    bb0: {
+        _0 = ErrTy::<N>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,343 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/conditional-dispatch.rs:12:1: 12:20>::copy(_1: &u16) -> u16 {
+    debug self => _1;
+    let mut _0: u16;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/conditional-dispatch.rs:13:1: 13:20>::copy(_1: &u32) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/conditional-dispatch.rs:14:1: 14:20>::copy(_1: &i32) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/conditional-dispatch.rs:15:1: 15:34>::copy(_1: &Option<T>) -> Option<T> {
+    debug self => _1;
+    let mut _0: std::option::Option<T>;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/traits/conditional-dispatch.rs:17:1: 17:25>::get(_1: &T) -> T {
+    debug self => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <T as MyCopy>::copy(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/traits/conditional-dispatch.rs:21:1: 21:22>::get(_1: &Box<i32>) -> Box<i32> {
+    debug self => _1;
+    let mut _0: std::boxed::Box<i32>;
+    let mut _2: i32;
+    let _3: &i32;
+    let mut _4: std::boxed::Box<i32>;
+    let mut _5: *const i32;
+    let mut _6: *const ();
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: usize;
+    let mut _11: bool;
+
+    bb0: {
+        _4 = deref_copy (*_1);
+        _5 = (((_4.0: std::ptr::Unique<i32>).0: std::ptr::NonNull<i32>).0: *const i32);
+        _6 = _5 as *const () (PtrToPtr);
+        _7 = _6 as usize (Transmute);
+        _8 = AlignOf(i32);
+        _9 = Sub(_8, const 1_usize);
+        _10 = BitAnd(_7, _9);
+        _11 = Eq(_10, const 0_usize);
+        assert(_11, "misaligned pointer dereference: address must be a multiple of {} but is {}", _8, _7) -> [success: bb3, unwind unreachable];
+    }
+
+    bb1: {
+        _0 = Box::<i32>::new(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3: {
+        _3 = &(*_5);
+        _2 = get_it::<i32>(_3) -> bb1;
+    }
+}
+
+fn get_it(_1: &T) -> T {
+    debug t => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <T as Get>::get(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u32, &u32);
+    let mut _2: &u32;
+    let _3: u32;
+    let _4: &u32;
+    let _5: u32;
+    let mut _6: &u32;
+    let _7: u32;
+    let _8: &u32;
+    let _9: &u32;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: u32;
+    let mut _13: u32;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&u16, &u16);
+    let mut _18: &u16;
+    let _19: u16;
+    let _20: &u16;
+    let _21: u16;
+    let mut _22: &u16;
+    let _23: u16;
+    let _24: &u16;
+    let _25: &u16;
+    let mut _26: bool;
+    let mut _27: bool;
+    let mut _28: u16;
+    let mut _29: u16;
+    let _31: !;
+    let mut _32: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _33: (&std::option::Option<u16>, &std::option::Option<u16>);
+    let mut _34: &std::option::Option<u16>;
+    let _35: std::option::Option<u16>;
+    let _36: &std::option::Option<u16>;
+    let _37: std::option::Option<u16>;
+    let mut _38: &std::option::Option<u16>;
+    let _39: std::option::Option<u16>;
+    let _40: &std::option::Option<u16>;
+    let _41: &std::option::Option<u16>;
+    let mut _42: bool;
+    let mut _43: bool;
+    let _45: !;
+    let mut _46: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _47: (&std::boxed::Box<i32>, &std::boxed::Box<i32>);
+    let mut _48: &std::boxed::Box<i32>;
+    let _49: std::boxed::Box<i32>;
+    let _50: &std::boxed::Box<i32>;
+    let _51: std::boxed::Box<i32>;
+    let mut _52: &std::boxed::Box<i32>;
+    let _53: std::boxed::Box<i32>;
+    let _54: &std::boxed::Box<i32>;
+    let _55: &std::boxed::Box<i32>;
+    let mut _56: bool;
+    let mut _57: bool;
+    let _59: !;
+    let mut _60: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+    scope 3 {
+        debug left_val => _24;
+        debug right_val => _25;
+        let _30: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _30;
+        }
+    }
+    scope 5 {
+        debug left_val => _40;
+        debug right_val => _41;
+        let _44: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _44;
+        }
+    }
+    scope 7 {
+        debug left_val => _54;
+        debug right_val => _55;
+        let _58: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _58;
+        }
+    }
+
+    bb0: {
+        _5 = const 1_u32;
+        _4 = &_5;
+        _3 = get_it::<u32>(_4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const 1_u32;
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &u32);
+        _9 = (_1.1: &u32);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<u32, u32>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _21 = const 1_u16;
+        _20 = &_21;
+        _19 = get_it::<u16>(_20) -> bb4;
+    }
+
+    bb4: {
+        _18 = &_19;
+        _23 = const 1_u16;
+        _22 = &_23;
+        _17 = (move _18, move _22);
+        _24 = (_17.0: &u16);
+        _25 = (_17.1: &u16);
+        _28 = (*_24);
+        _29 = (*_25);
+        _27 = Eq(move _28, move _29);
+        _26 = Not(move _27);
+        switchInt(move _26) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _30 = core::panicking::AssertKind::Eq;
+        _32 = Option::<Arguments<'_>>::None;
+        _31 = core::panicking::assert_failed::<u16, u16>(move _30, _24, _25, move _32);
+    }
+
+    bb6: {
+        _37 = Option::<u16>::Some(const 1_u16);
+        _36 = &_37;
+        _35 = get_it::<Option<u16>>(_36) -> bb7;
+    }
+
+    bb7: {
+        _34 = &_35;
+        _39 = Option::<u16>::Some(const 1_u16);
+        _38 = &_39;
+        _33 = (move _34, move _38);
+        _40 = (_33.0: &std::option::Option<u16>);
+        _41 = (_33.1: &std::option::Option<u16>);
+        _43 = <Option<u16> as PartialEq>::eq(_40, _41) -> bb8;
+    }
+
+    bb8: {
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb10, otherwise: bb9];
+    }
+
+    bb9: {
+        _44 = core::panicking::AssertKind::Eq;
+        _46 = Option::<Arguments<'_>>::None;
+        _45 = core::panicking::assert_failed::<Option<u16>, Option<u16>>(move _44, _40, _41, move _46);
+    }
+
+    bb10: {
+        _51 = Box::<i32>::new(const 1_i32) -> bb11;
+    }
+
+    bb11: {
+        _50 = &_51;
+        _49 = get_it::<Box<i32>>(_50) -> [return: bb12, unwind: bb22];
+    }
+
+    bb12: {
+        _48 = &_49;
+        _53 = Box::<i32>::new(const 1_i32) -> [return: bb13, unwind: bb21];
+    }
+
+    bb13: {
+        _52 = &_53;
+        _47 = (move _48, move _52);
+        _54 = (_47.0: &std::boxed::Box<i32>);
+        _55 = (_47.1: &std::boxed::Box<i32>);
+        _57 = <Box<i32> as PartialEq>::eq(_54, _55) -> [return: bb14, unwind: bb20];
+    }
+
+    bb14: {
+        _56 = Not(move _57);
+        switchInt(move _56) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _58 = core::panicking::AssertKind::Eq;
+        _60 = Option::<Arguments<'_>>::None;
+        _59 = core::panicking::assert_failed::<Box<i32>, Box<i32>>(move _58, _54, _55, move _60) -> bb20;
+    }
+
+    bb16: {
+        drop(_53) -> [return: bb17, unwind: bb21];
+    }
+
+    bb17: {
+        drop(_49) -> [return: bb18, unwind: bb22];
+    }
+
+    bb18: {
+        drop(_51) -> bb19;
+    }
+
+    bb19: {
+        return;
+    }
+
+    bb20 (cleanup): {
+        drop(_53) -> [return: bb21, unwind terminate];
+    }
+
+    bb21 (cleanup): {
+        drop(_49) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_51) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        resume;
+    }
+}

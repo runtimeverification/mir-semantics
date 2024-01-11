@@ -1,0 +1,38 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/inner-attrs-on-impl.rs:11:1: 11:9>::method(_1: &Foo) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const true;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: &Foo;
+    let _4: Foo;
+    let mut _5: !;
+
+    bb0: {
+        _3 = &_4;
+        _2 = Foo::method(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = core::panicking::panic(const "assertion failed: Foo.method()");
+    }
+
+    bb3: {
+        return;
+    }
+}

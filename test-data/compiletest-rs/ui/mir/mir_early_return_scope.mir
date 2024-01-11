@@ -1,0 +1,166 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static mut DROP: bool = {
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_early_return_scope.rs:6:1: 6:36>::deref(_1: &ConnWrap) -> &Conn {
+    debug self => _1;
+    let mut _0: &Conn;
+
+    bb0: {
+        _0 = &((*_1).0: Conn);
+        return;
+    }
+}
+
+fn <impl at ui/mir/mir_early_return_scope.rs:12:1: 12:20>::drop(_1: &mut Conn) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut bool;
+    scope 1 {
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut bool};
+        (*_2) = const true;
+        return;
+    }
+}
+
+alloc1 (static: DROP, size: 1, align: 1) {
+    00                                              │ .
+}
+
+fn inner() -> () {
+    let mut _0: ();
+    let _1: &Conn;
+    let _2: &Conn;
+    let mut _3: &ConnWrap;
+    let _4: ConnWrap;
+    let mut _5: std::option::Option<ConnWrap>;
+    let mut _6: isize;
+    scope 1 {
+        debug conn => _1;
+    }
+    scope 2 {
+        debug val => const ConnWrap(Conn);
+    }
+
+    bb0: {
+        _5 = Option::<ConnWrap>::Some(const ConnWrap(Conn));
+        _6 = discriminant(_5);
+        switchInt(move _6) -> [0: bb4, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _2 = <ConnWrap as Deref>::deref(move _3) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        _1 = _2;
+        drop(_4) -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        drop(_4) -> [return: bb6, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: (&bool, &bool);
+    let mut _3: &bool;
+    let _4: *mut bool;
+    let mut _5: &bool;
+    let _6: bool;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        let _7: &bool;
+        let _8: &bool;
+        scope 2 {
+            debug left_val => _7;
+            debug right_val => _8;
+            let _13: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _13;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = inner() -> bb1;
+    }
+
+    bb1: {
+        _4 = const {alloc1: *mut bool};
+        _3 = &(*_4);
+        _6 = const true;
+        _5 = &_6;
+        _2 = (move _3, move _5);
+        _7 = (_2.0: &bool);
+        _8 = (_2.1: &bool);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<bool, bool>(move _13, _7, _8, move _15);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+alloc1 (static: DROP, size: 1, align: 1) {
+    00                                              │ .
+}
+
+fn ConnWrap(_1: Conn) -> ConnWrap {
+    let mut _0: ConnWrap;
+
+    bb0: {
+        _0 = ConnWrap(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn ConnWrap(_1: Conn) -> ConnWrap {
+    let mut _0: ConnWrap;
+
+    bb0: {
+        _0 = ConnWrap(move _1);
+        return;
+    }
+}

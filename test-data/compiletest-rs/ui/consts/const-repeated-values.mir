@@ -1,0 +1,106 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const FOO: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 42_isize;
+        return;
+    }
+}
+
+Bar::Boo::{constant#0}: isize = {
+    let mut _0: isize;
+    let mut _1: [&isize; 4];
+    let mut _2: &isize;
+    let _3: isize;
+    let _4: usize;
+    let mut _5: usize;
+    let mut _6: bool;
+    let mut _7: &isize;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = const _;
+        _2 = &_3;
+        _1 = [move _2; 4];
+        StorageDead(_2);
+        StorageLive(_4);
+        _4 = const 3_usize;
+        _5 = Len(_1);
+        _6 = Lt(_4, _5);
+        assert(move _6, "index out of bounds: the length is {} but the index is {}", move _5, _4) -> bb1;
+    }
+
+    bb1: {
+        _7 = deref_copy _1[_4];
+        _0 = (*_7);
+        StorageDead(_4);
+        StorageDead(_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+Bar::Boo::{constant#0}::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&isize, &isize);
+    let mut _2: &isize;
+    let _3: isize;
+    let mut _4: isize;
+    let mut _5: &isize;
+    let _6: isize;
+    let _7: &isize;
+    let _8: &isize;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: isize;
+    let mut _12: isize;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _7;
+        debug right_val => _8;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+
+    bb0: {
+        _4 = Add(const _, const 0_isize);
+        _3 = move _4;
+        _2 = &_3;
+        _6 = const 42_isize;
+        _5 = &_6;
+        _1 = (move _2, move _5);
+        _7 = (_1.0: &isize);
+        _8 = (_1.1: &isize);
+        _11 = (*_7);
+        _12 = (*_8);
+        _10 = Eq(move _11, move _12);
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<isize, isize>(move _13, _7, _8, move _15);
+    }
+
+    bb2: {
+        return;
+    }
+}

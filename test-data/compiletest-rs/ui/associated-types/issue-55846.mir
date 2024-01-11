@@ -1,0 +1,51 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/issue-55846.rs:25:1: 25:31>::barify() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: std::fmt::Arguments<'_>;
+    let mut _3: &[&str];
+    let _4: &[&str; 1];
+    let _5: [&str; 1];
+
+    bb0: {
+        _5 = [const "All correct!\n"];
+        _4 = &_5;
+        _3 = _4 as &[&str] (Pointer(Unsize));
+        _2 = Arguments::<'_>::new_const(move _3) -> bb1;
+    }
+
+    bb1: {
+        _1 = _print(move _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/issue-55846.rs:31:1: 31:35>::this_shouldnt_crash() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = <Bar<Foo> as Barifier<Foo>>::barify() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = Bar::<<Foo as Fooifier>::Assoc>::this_shouldnt_crash() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

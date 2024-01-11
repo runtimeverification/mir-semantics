@@ -1,0 +1,59 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: u32;
+    let mut _2: &();
+    let _3: ();
+    let mut _4: i32;
+    let mut _5: &();
+    let _6: ();
+    let mut _7: i32;
+    let mut _8: &();
+    let _9: ();
+    scope 1 {
+        scope 2 {
+            scope 3 {
+            }
+        }
+    }
+
+    bb0: {
+        _2 = &_3;
+        _1 = <() as T>::f(move _2) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _4 = <() as T>::f(move _5) -> bb2;
+    }
+
+    bb2: {
+        _8 = &_9;
+        _7 = <() as T>::f(move _8) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn T::f(_1: &Self) -> u32 {
+    debug self => _1;
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 0_u32;
+        return;
+    }
+}
+
+fn T::f(_1: &Self) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 0_i32;
+        return;
+    }
+}

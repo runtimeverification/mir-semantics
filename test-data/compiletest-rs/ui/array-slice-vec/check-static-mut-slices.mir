@@ -1,0 +1,214 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static mut TEST: &mut [isize] = {
+    let mut _0: &mut [isize];
+    let mut _1: &mut [isize; 1];
+    let mut _2: &mut [isize; 1];
+    let mut _3: [isize; 1];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = [const 1_isize];
+        _2 = &mut _3;
+        _1 = &mut (*_2);
+        _0 = move _1 as &mut [isize] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static mut EMPTY: &mut [isize] = {
+    let mut _0: &mut [isize];
+    let mut _1: &mut [isize; 0];
+    let mut _2: &mut [isize; 0];
+    let mut _3: [isize; 0];
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        _3 = [];
+        _2 = &mut _3;
+        _1 = &mut (*_2);
+        _0 = move _1 as &mut [isize] (Pointer(Unsize));
+        StorageDead(_2);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: *mut &mut [isize];
+    let _2: usize;
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _5: (&isize, &isize);
+    let mut _6: &isize;
+    let _7: *mut &mut [isize];
+    let _8: usize;
+    let mut _9: usize;
+    let mut _10: bool;
+    let mut _11: &isize;
+    let _12: isize;
+    let mut _15: bool;
+    let mut _16: bool;
+    let mut _17: isize;
+    let mut _18: isize;
+    let _20: !;
+    let mut _21: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _22: &mut [isize];
+    let mut _23: &mut [isize];
+    let mut _24: &mut [isize];
+    let mut _25: &mut [isize];
+    let mut _26: &mut [isize];
+    scope 1 {
+        let _13: &isize;
+        let _14: &isize;
+        let mut _27: *const ();
+        let mut _28: usize;
+        let mut _29: usize;
+        let mut _30: usize;
+        let mut _31: usize;
+        let mut _32: bool;
+        let mut _33: *const ();
+        let mut _34: usize;
+        let mut _35: usize;
+        let mut _36: usize;
+        let mut _37: usize;
+        let mut _38: bool;
+        let mut _39: *const ();
+        let mut _40: usize;
+        let mut _41: usize;
+        let mut _42: usize;
+        let mut _43: usize;
+        let mut _44: bool;
+        let mut _45: *const ();
+        let mut _46: usize;
+        let mut _47: usize;
+        let mut _48: usize;
+        let mut _49: usize;
+        let mut _50: bool;
+        let mut _51: *const ();
+        let mut _52: usize;
+        let mut _53: usize;
+        let mut _54: usize;
+        let mut _55: usize;
+        let mut _56: bool;
+        scope 2 {
+            debug left_val => _13;
+            debug right_val => _14;
+            let _19: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _19;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const {alloc1: *mut &mut [isize]};
+        _2 = const 0_usize;
+        _51 = _1 as *const () (PtrToPtr);
+        _52 = _51 as usize (Transmute);
+        _53 = AlignOf(&mut [isize]);
+        _54 = Sub(_53, const 1_usize);
+        _55 = BitAnd(_52, _54);
+        _56 = Eq(_55, const 0_usize);
+        assert(_56, "misaligned pointer dereference: address must be a multiple of {} but is {}", _53, _52) -> [success: bb9, unwind unreachable];
+    }
+
+    bb1: {
+        _45 = _1 as *const () (PtrToPtr);
+        _46 = _45 as usize (Transmute);
+        _47 = AlignOf(&mut [isize]);
+        _48 = Sub(_47, const 1_usize);
+        _49 = BitAnd(_46, _48);
+        _50 = Eq(_49, const 0_usize);
+        assert(_50, "misaligned pointer dereference: address must be a multiple of {} but is {}", _47, _46) -> [success: bb8, unwind unreachable];
+    }
+
+    bb2: {
+        _27 = _7 as *const () (PtrToPtr);
+        _28 = _27 as usize (Transmute);
+        _29 = AlignOf(&mut [isize]);
+        _30 = Sub(_29, const 1_usize);
+        _31 = BitAnd(_28, _30);
+        _32 = Eq(_31, const 0_usize);
+        assert(_32, "misaligned pointer dereference: address must be a multiple of {} but is {}", _29, _28) -> [success: bb5, unwind unreachable];
+    }
+
+    bb3: {
+        _19 = core::panicking::AssertKind::Eq;
+        _21 = Option::<Arguments<'_>>::None;
+        _20 = core::panicking::assert_failed::<isize, isize>(move _19, _13, _14, move _21);
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5: {
+        _26 = deref_copy (*_7);
+        _6 = &(*_26)[_8];
+        _12 = const 2_isize;
+        _11 = &_12;
+        _5 = (move _6, move _11);
+        _13 = (_5.0: &isize);
+        _14 = (_5.1: &isize);
+        _17 = (*_13);
+        _18 = (*_14);
+        _16 = Eq(move _17, move _18);
+        _15 = Not(move _16);
+        switchInt(move _15) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb6: {
+        _25 = deref_copy (*_7);
+        _9 = Len((*_25));
+        _10 = Lt(_8, _9);
+        assert(move _10, "index out of bounds: the length is {} but the index is {}", move _9, _8) -> bb2;
+    }
+
+    bb7: {
+        _24 = deref_copy (*_1);
+        (*_23)[_2] = Add((*_24)[_2], const 1_isize);
+        _7 = const {alloc1: *mut &mut [isize]};
+        _8 = const 0_usize;
+        _33 = _7 as *const () (PtrToPtr);
+        _34 = _33 as usize (Transmute);
+        _35 = AlignOf(&mut [isize]);
+        _36 = Sub(_35, const 1_usize);
+        _37 = BitAnd(_34, _36);
+        _38 = Eq(_37, const 0_usize);
+        assert(_38, "misaligned pointer dereference: address must be a multiple of {} but is {}", _35, _34) -> [success: bb6, unwind unreachable];
+    }
+
+    bb8: {
+        _23 = deref_copy (*_1);
+        _39 = _1 as *const () (PtrToPtr);
+        _40 = _39 as usize (Transmute);
+        _41 = AlignOf(&mut [isize]);
+        _42 = Sub(_41, const 1_usize);
+        _43 = BitAnd(_40, _42);
+        _44 = Eq(_43, const 0_usize);
+        assert(_44, "misaligned pointer dereference: address must be a multiple of {} but is {}", _41, _40) -> [success: bb7, unwind unreachable];
+    }
+
+    bb9: {
+        _22 = deref_copy (*_1);
+        _3 = Len((*_22));
+        _4 = Lt(_2, _3);
+        assert(move _4, "index out of bounds: the length is {} but the index is {}", move _3, _2) -> bb1;
+    }
+}
+
+alloc1 (static: TEST, size: 16, align: 8) {
+    ╾───────alloc4────────╼ 01 00 00 00 00 00 00 00 │ ╾──────╼........
+}
+
+alloc4 (size: 8, align: 8) {
+    01 00 00 00 00 00 00 00                         │ ........
+}

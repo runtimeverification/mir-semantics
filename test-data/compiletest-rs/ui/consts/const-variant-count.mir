@@ -1,0 +1,502 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const TEST_VOID: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<Void>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const TEST_FOO: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<Foo>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const TEST_BAR: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<Bar>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const NO_ICE_STRUCT: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<Baz>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const NO_ICE_BOOL: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<bool>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const NO_ICE_PRIM: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        ConstEvalCounter;
+        _0 = std::mem::variant_count::<*const u8>() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&usize, &usize);
+    let mut _2: &usize;
+    let _3: usize;
+    let mut _4: &usize;
+    let _5: usize;
+    let _6: &usize;
+    let _7: &usize;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: usize;
+    let mut _11: usize;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&usize, &usize);
+    let mut _16: &usize;
+    let _17: usize;
+    let mut _18: &usize;
+    let _19: usize;
+    let _20: &usize;
+    let _21: &usize;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: usize;
+    let mut _25: usize;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&usize, &usize);
+    let mut _30: &usize;
+    let _31: usize;
+    let mut _32: &usize;
+    let _33: usize;
+    let _34: &usize;
+    let _35: &usize;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: usize;
+    let mut _39: usize;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&usize, &usize);
+    let mut _44: &usize;
+    let _45: usize;
+    let mut _46: &usize;
+    let _47: usize;
+    let _48: &usize;
+    let _49: &usize;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: usize;
+    let mut _53: usize;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&usize, &usize);
+    let mut _58: &usize;
+    let _59: usize;
+    let mut _60: &usize;
+    let _61: usize;
+    let _62: &usize;
+    let _63: &usize;
+    let mut _64: bool;
+    let mut _65: bool;
+    let mut _66: usize;
+    let mut _67: usize;
+    let _69: !;
+    let mut _70: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _71: (&usize, &usize);
+    let mut _72: &usize;
+    let _73: usize;
+    let mut _74: &usize;
+    let _75: usize;
+    let _76: &usize;
+    let _77: &usize;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: usize;
+    let mut _81: usize;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _85: (&usize, &usize);
+    let mut _86: &usize;
+    let _87: usize;
+    let mut _88: &usize;
+    let _89: usize;
+    let _90: &usize;
+    let _91: &usize;
+    let mut _92: bool;
+    let mut _93: bool;
+    let mut _94: usize;
+    let mut _95: usize;
+    let _97: !;
+    let mut _98: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _99: (&usize, &usize);
+    let mut _100: &usize;
+    let _101: usize;
+    let mut _102: &usize;
+    let _103: usize;
+    let _104: &usize;
+    let _105: &usize;
+    let mut _106: bool;
+    let mut _107: bool;
+    let mut _108: usize;
+    let mut _109: usize;
+    let _111: !;
+    let mut _112: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _113: (&usize, &usize);
+    let mut _114: &usize;
+    let _115: usize;
+    let mut _116: &usize;
+    let _117: usize;
+    let _118: &usize;
+    let _119: &usize;
+    let mut _120: bool;
+    let mut _121: bool;
+    let mut _122: usize;
+    let mut _123: usize;
+    let _125: !;
+    let mut _126: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _34;
+        debug right_val => _35;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+        debug left_val => _48;
+        debug right_val => _49;
+        let _54: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _54;
+        }
+    }
+    scope 9 {
+        debug left_val => _62;
+        debug right_val => _63;
+        let _68: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _68;
+        }
+    }
+    scope 11 {
+        debug left_val => _76;
+        debug right_val => _77;
+        let _82: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _82;
+        }
+    }
+    scope 13 {
+        debug left_val => _90;
+        debug right_val => _91;
+        let _96: core::panicking::AssertKind;
+        scope 14 {
+            debug kind => _96;
+        }
+    }
+    scope 15 {
+        debug left_val => _104;
+        debug right_val => _105;
+        let _110: core::panicking::AssertKind;
+        scope 16 {
+            debug kind => _110;
+        }
+    }
+    scope 17 {
+        debug left_val => _118;
+        debug right_val => _119;
+        let _124: core::panicking::AssertKind;
+        scope 18 {
+            debug kind => _124;
+        }
+    }
+
+    bb0: {
+        _3 = const _;
+        _2 = &_3;
+        _5 = const 0_usize;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &usize);
+        _7 = (_1.1: &usize);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<usize, usize>(move _12, _6, _7, move _14);
+    }
+
+    bb2: {
+        _17 = const _;
+        _16 = &_17;
+        _19 = const 3_usize;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &usize);
+        _21 = (_15.1: &usize);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<usize, usize>(move _26, _20, _21, move _28);
+    }
+
+    bb4: {
+        _31 = const _;
+        _30 = &_31;
+        _33 = const 5_usize;
+        _32 = &_33;
+        _29 = (move _30, move _32);
+        _34 = (_29.0: &usize);
+        _35 = (_29.1: &usize);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<usize, usize>(move _40, _34, _35, move _42);
+    }
+
+    bb6: {
+        _45 = std::mem::variant_count::<Void>() -> bb7;
+    }
+
+    bb7: {
+        _44 = &_45;
+        _47 = const 0_usize;
+        _46 = &_47;
+        _43 = (move _44, move _46);
+        _48 = (_43.0: &usize);
+        _49 = (_43.1: &usize);
+        _52 = (*_48);
+        _53 = (*_49);
+        _51 = Eq(move _52, move _53);
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<usize, usize>(move _54, _48, _49, move _56);
+    }
+
+    bb9: {
+        _59 = std::mem::variant_count::<Foo>() -> bb10;
+    }
+
+    bb10: {
+        _58 = &_59;
+        _61 = const 3_usize;
+        _60 = &_61;
+        _57 = (move _58, move _60);
+        _62 = (_57.0: &usize);
+        _63 = (_57.1: &usize);
+        _66 = (*_62);
+        _67 = (*_63);
+        _65 = Eq(move _66, move _67);
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _68 = core::panicking::AssertKind::Eq;
+        _70 = Option::<Arguments<'_>>::None;
+        _69 = core::panicking::assert_failed::<usize, usize>(move _68, _62, _63, move _70);
+    }
+
+    bb12: {
+        _73 = std::mem::variant_count::<Bar>() -> bb13;
+    }
+
+    bb13: {
+        _72 = &_73;
+        _75 = const 5_usize;
+        _74 = &_75;
+        _71 = (move _72, move _74);
+        _76 = (_71.0: &usize);
+        _77 = (_71.1: &usize);
+        _80 = (*_76);
+        _81 = (*_77);
+        _79 = Eq(move _80, move _81);
+        _78 = Not(move _79);
+        switchInt(move _78) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<usize, usize>(move _82, _76, _77, move _84);
+    }
+
+    bb15: {
+        _87 = std::mem::variant_count::<Option<char>>() -> bb16;
+    }
+
+    bb16: {
+        _86 = &_87;
+        _89 = const 2_usize;
+        _88 = &_89;
+        _85 = (move _86, move _88);
+        _90 = (_85.0: &usize);
+        _91 = (_85.1: &usize);
+        _94 = (*_90);
+        _95 = (*_91);
+        _93 = Eq(move _94, move _95);
+        _92 = Not(move _93);
+        switchInt(move _92) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _96 = core::panicking::AssertKind::Eq;
+        _98 = Option::<Arguments<'_>>::None;
+        _97 = core::panicking::assert_failed::<usize, usize>(move _96, _90, _91, move _98);
+    }
+
+    bb18: {
+        _101 = std::mem::variant_count::<Option<!>>() -> bb19;
+    }
+
+    bb19: {
+        _100 = &_101;
+        _103 = const 2_usize;
+        _102 = &_103;
+        _99 = (move _100, move _102);
+        _104 = (_99.0: &usize);
+        _105 = (_99.1: &usize);
+        _108 = (*_104);
+        _109 = (*_105);
+        _107 = Eq(move _108, move _109);
+        _106 = Not(move _107);
+        switchInt(move _106) -> [0: bb21, otherwise: bb20];
+    }
+
+    bb20: {
+        _110 = core::panicking::AssertKind::Eq;
+        _112 = Option::<Arguments<'_>>::None;
+        _111 = core::panicking::assert_failed::<usize, usize>(move _110, _104, _105, move _112);
+    }
+
+    bb21: {
+        _115 = std::mem::variant_count::<Result<!, !>>() -> bb22;
+    }
+
+    bb22: {
+        _114 = &_115;
+        _117 = const 2_usize;
+        _116 = &_117;
+        _113 = (move _114, move _116);
+        _118 = (_113.0: &usize);
+        _119 = (_113.1: &usize);
+        _122 = (*_118);
+        _123 = (*_119);
+        _121 = Eq(move _122, move _123);
+        _120 = Not(move _121);
+        switchInt(move _120) -> [0: bb24, otherwise: bb23];
+    }
+
+    bb23: {
+        _124 = core::panicking::AssertKind::Eq;
+        _126 = Option::<Arguments<'_>>::None;
+        _125 = core::panicking::assert_failed::<usize, usize>(move _124, _118, _119, move _126);
+    }
+
+    bb24: {
+        return;
+    }
+}
+
+fn Bar::D(_1: usize) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar::D(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Bar::D(_1: usize) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar::D(move _1);
+        return;
+    }
+}

@@ -4,8 +4,7 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir.kmir import KMIR
-from kmir.parse import parse
+from kmir import KMIR, parse
 
 from .utils import (
     COMPILETEST_PARSE_FAIL,
@@ -32,7 +31,7 @@ def test_handwritten_syntax(
     try:
         parse(kmir, input_path, temp_file=temp_file)
         # assert not parse_result.returncode
-    except ValueError:
+    except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
@@ -59,7 +58,7 @@ def test_compiletest(
     try:
         parse(kmir, input_path, temp_file=temp_file)
         # assert not parse_result.returncode
-    except ValueError:
+    except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:

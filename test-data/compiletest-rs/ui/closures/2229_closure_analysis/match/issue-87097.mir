@@ -1,0 +1,98 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn discriminant_is_a_ref() -> () {
+    let mut _0: ();
+    let _1: A;
+    let mut _2: Variant;
+    scope 1 {
+        debug here => _1;
+        let _3: &Variant;
+        scope 2 {
+            debug out_ref => _3;
+        }
+    }
+
+    bb0: {
+        _2 = Variant::A;
+        _1 = A { field: move _2 };
+        _3 = &(_1.0: Variant);
+        return;
+    }
+}
+
+fn discriminant_is_a_ref::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/match/issue-87097.rs:17:5: 17:7]) -> () {
+    debug out_ref => (*((*_1).0: &&Variant));
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: &&Variant;
+    let mut _4: &Variant;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &&Variant);
+        _4 = deref_copy (*_3);
+        _2 = discriminant((*_4));
+        switchInt(move _2) -> [0: bb2, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn discriminant_is_a_field() -> () {
+    let mut _0: ();
+    let _1: A;
+    let mut _2: Variant;
+    scope 1 {
+        debug here => _1;
+    }
+
+    bb0: {
+        _2 = Variant::A;
+        _1 = A { field: move _2 };
+        return;
+    }
+}
+
+fn discriminant_is_a_field::{closure#0}(_1: &[closure@ui/closures/2229_closure_analysis/match/issue-87097.rs:26:5: 26:7]) -> () {
+    debug here => (*((*_1).0: &A));
+    let mut _0: ();
+    let mut _2: isize;
+    let mut _3: &A;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &A);
+        _2 = discriminant(((*_3).0: Variant));
+        switchInt(move _2) -> [0: bb2, 1: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: ();
+
+    bb0: {
+        _1 = discriminant_is_a_ref() -> bb1;
+    }
+
+    bb1: {
+        _2 = discriminant_is_a_field() -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

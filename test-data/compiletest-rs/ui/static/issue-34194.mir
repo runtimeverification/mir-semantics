@@ -1,0 +1,64 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static B: &A = {
+    let mut _0: &A;
+    let _1: &A;
+    let _2: A;
+    let mut _3: &();
+    let _4: &();
+    let _5: ();
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        StorageLive(_3);
+        StorageLive(_4);
+        StorageLive(_5);
+        _5 = ();
+        _4 = &_5;
+        _3 = &(*_4);
+        _2 = A { a: move _3 };
+        StorageDead(_3);
+        _1 = &_2;
+        _0 = &(*_1);
+        StorageDead(_4);
+        StorageDead(_1);
+        return;
+    }
+}
+
+static C: &A = {
+    let mut _0: &A;
+    let _1: &&A;
+    let _2: &&A;
+    let mut _3: &A;
+
+    bb0: {
+        StorageLive(_1);
+        StorageLive(_2);
+        _2 = const {alloc1: &&A};
+        _1 = &(*_2);
+        _3 = deref_copy (*_1);
+        _0 = &(*_3);
+        StorageDead(_1);
+        return;
+    }
+}
+
+alloc1 (static: B, size: 8, align: 8) {
+    ╾───────alloc5────────╼                         │ ╾──────╼
+}
+
+alloc5 (size: 8, align: 8) {
+    ╾───────alloc4────────╼                         │ ╾──────╼
+}
+
+alloc4 (size: 0, align: 1) {}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

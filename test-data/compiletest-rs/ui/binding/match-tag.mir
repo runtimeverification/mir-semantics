@@ -1,0 +1,270 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn process(_1: color) -> isize {
+    debug c => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let mut _3: isize;
+    scope 1 {
+        debug x => _2;
+        let _4: isize;
+        let _5: isize;
+        let _6: isize;
+        scope 2 {
+            debug r => _4;
+        }
+        scope 3 {
+            debug a => _5;
+        }
+        scope 4 {
+            debug s => _6;
+        }
+    }
+
+    bb0: {
+        _3 = discriminant(_1);
+        switchInt(move _3) -> [0: bb3, 1: bb4, 2: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _6 = ((_1 as hsl).1: isize);
+        _2 = _6;
+        goto -> bb5;
+    }
+
+    bb2: {
+        unreachable;
+    }
+
+    bb3: {
+        _4 = ((_1 as rgb).0: isize);
+        _2 = _4;
+        goto -> bb5;
+    }
+
+    bb4: {
+        _5 = ((_1 as rgba).3: isize);
+        _2 = _5;
+        goto -> bb5;
+    }
+
+    bb5: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: color;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let _6: isize;
+    let mut _7: &isize;
+    let _8: isize;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: isize;
+    let mut _14: isize;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&isize, &isize);
+    let mut _19: &isize;
+    let _20: isize;
+    let mut _21: &isize;
+    let _22: isize;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: isize;
+    let mut _28: isize;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: (&isize, &isize);
+    let mut _33: &isize;
+    let _34: isize;
+    let mut _35: &isize;
+    let _36: isize;
+    let mut _39: bool;
+    let mut _40: bool;
+    let mut _41: isize;
+    let mut _42: isize;
+    let _44: !;
+    let mut _45: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug gray => _1;
+        let _2: color;
+        scope 2 {
+            debug clear => _2;
+            let _3: color;
+            scope 3 {
+                debug red => _3;
+                let _9: &isize;
+                let _10: &isize;
+                let _23: &isize;
+                let _24: &isize;
+                let _37: &isize;
+                let _38: &isize;
+                scope 4 {
+                    debug left_val => _9;
+                    debug right_val => _10;
+                    let _15: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _15;
+                    }
+                }
+                scope 6 {
+                    debug left_val => _23;
+                    debug right_val => _24;
+                    let _29: core::panicking::AssertKind;
+                    scope 7 {
+                        debug kind => _29;
+                    }
+                }
+                scope 8 {
+                    debug left_val => _37;
+                    debug right_val => _38;
+                    let _43: core::panicking::AssertKind;
+                    scope 9 {
+                        debug kind => _43;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = color::rgb(const 127_isize, const 127_isize, const 127_isize);
+        _2 = color::rgba(const 50_isize, const 150_isize, const 250_isize, const 0_isize);
+        _3 = color::hsl(const 0_isize, const 255_isize, const 255_isize);
+        _6 = process(move _1) -> bb1;
+    }
+
+    bb1: {
+        _5 = &_6;
+        _8 = const 127_isize;
+        _7 = &_8;
+        _4 = (move _5, move _7);
+        _9 = (_4.0: &isize);
+        _10 = (_4.1: &isize);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<isize, isize>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _20 = process(move _2) -> bb4;
+    }
+
+    bb4: {
+        _19 = &_20;
+        _22 = const 0_isize;
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _23 = (_18.0: &isize);
+        _24 = (_18.1: &isize);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<isize, isize>(move _29, _23, _24, move _31);
+    }
+
+    bb6: {
+        _34 = process(move _3) -> bb7;
+    }
+
+    bb7: {
+        _33 = &_34;
+        _36 = const 255_isize;
+        _35 = &_36;
+        _32 = (move _33, move _35);
+        _37 = (_32.0: &isize);
+        _38 = (_32.1: &isize);
+        _41 = (*_37);
+        _42 = (*_38);
+        _40 = Eq(move _41, move _42);
+        _39 = Not(move _40);
+        switchInt(move _39) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _43 = core::panicking::AssertKind::Eq;
+        _45 = Option::<Arguments<'_>>::None;
+        _44 = core::panicking::assert_failed::<isize, isize>(move _43, _37, _38, move _45);
+    }
+
+    bb9: {
+        return;
+    }
+}
+
+fn color::rgb(_1: isize, _2: isize, _3: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::rgb(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn color::rgb(_1: isize, _2: isize, _3: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::rgb(move _1, move _2, move _3);
+        return;
+    }
+}
+
+fn color::rgba(_1: isize, _2: isize, _3: isize, _4: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::rgba(move _1, move _2, move _3, move _4);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn color::rgba(_1: isize, _2: isize, _3: isize, _4: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::rgba(move _1, move _2, move _3, move _4);
+        return;
+    }
+}
+
+fn color::hsl(_1: isize, _2: isize, _3: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::hsl(move _1, move _2, move _3);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn color::hsl(_1: isize, _2: isize, _3: isize) -> color {
+    let mut _0: color;
+
+    bb0: {
+        _0 = color::hsl(move _1, move _2, move _3);
+        return;
+    }
+}

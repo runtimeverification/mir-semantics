@@ -1,0 +1,369 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const RHS: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const 8_u8;
+        return;
+    }
+}
+
+const IRHS: i8 = {
+    let mut _0: i8;
+
+    bb0: {
+        _0 = const 8_i8;
+        return;
+    }
+}
+
+const RHS16: u16 = {
+    let mut _0: u16;
+
+    bb0: {
+        _0 = const 8_u16;
+        return;
+    }
+}
+
+const IRHS16: i16 = {
+    let mut _0: i16;
+
+    bb0: {
+        _0 = const 8_i16;
+        return;
+    }
+}
+
+const RHS32: u32 = {
+    let mut _0: u32;
+
+    bb0: {
+        _0 = const 8_u32;
+        return;
+    }
+}
+
+const IRHS32: i32 = {
+    let mut _0: i32;
+
+    bb0: {
+        _0 = const 8_i32;
+        return;
+    }
+}
+
+const RHS64: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const 8_u64;
+        return;
+    }
+}
+
+const IRHS64: i64 = {
+    let mut _0: i64;
+
+    bb0: {
+        _0 = const 8_i64;
+        return;
+    }
+}
+
+const RHSUS: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 8_usize;
+        return;
+    }
+}
+
+const IRHSIS: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 8_isize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    scope 1 {
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                        scope 6 {
+                            scope 7 {
+                                scope 8 {
+                                    scope 9 {
+                                        scope 10 {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Lt(const _, const 64_u8);
+        assert(move _1, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#3}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#2}: usize = {
+    let mut _0: usize;
+    let mut _1: u8;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const _ as u8 (IntToInt);
+        _2 = Lt(move _1, const 64_u8);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#5}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#4}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Lt(const _, const 64_u16);
+        assert(move _1, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#7}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#6}: usize = {
+    let mut _0: usize;
+    let mut _1: u16;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const _ as u16 (IntToInt);
+        _2 = Lt(move _1, const 64_u16);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#9}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#8}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Lt(const _, const 64_u32);
+        assert(move _1, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#11}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#10}: usize = {
+    let mut _0: usize;
+    let mut _1: u32;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const _ as u32 (IntToInt);
+        _2 = Lt(move _1, const 64_u32);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#13}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#12}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Lt(const _, const 64_u64);
+        assert(move _1, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#15}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#14}: usize = {
+    let mut _0: usize;
+    let mut _1: u64;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const _ as u64 (IntToInt);
+        _2 = Lt(move _1, const 64_u64);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#17}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#16}: usize = {
+    let mut _0: usize;
+    let mut _1: bool;
+
+    bb0: {
+        _1 = Lt(const _, const 64_usize);
+        assert(move _1, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}
+
+main::{constant#19}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+main::{constant#18}: usize = {
+    let mut _0: usize;
+    let mut _1: usize;
+    let mut _2: bool;
+
+    bb0: {
+        _1 = const _ as usize (IntToInt);
+        _2 = Lt(move _1, const 64_usize);
+        assert(move _2, "attempt to shift left by `{}`, which would overflow", const _) -> bb1;
+    }
+
+    bb1: {
+        _0 = Shl(const 1_usize, const _);
+        return;
+    }
+}

@@ -1,0 +1,93 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn impure(_1: &[isize]) -> () {
+    debug _v => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: F;
+    let mut _2: std::vec::Vec<isize>;
+    let mut _3: std::boxed::Box<[isize]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[isize; 1]>;
+    let _9: ();
+    let mut _10: &[isize];
+    let _11: &[isize];
+    let mut _12: &std::vec::Vec<isize>;
+    let mut _13: *const [isize; 1];
+    let mut _14: *const ();
+    let mut _15: usize;
+    let mut _16: usize;
+    let mut _17: usize;
+    let mut _18: usize;
+    let mut _19: bool;
+    scope 1 {
+        debug x => _1;
+        let _8: &mut std::vec::Vec<isize>;
+        scope 3 {
+            debug v => _8;
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _4 = SizeOf([isize; 1]);
+        _5 = AlignOf([isize; 1]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [isize; 1]);
+        _13 = (((_7.0: std::ptr::Unique<[isize; 1]>).0: std::ptr::NonNull<[isize; 1]>).0: *const [isize; 1]);
+        _14 = _13 as *const () (PtrToPtr);
+        _15 = _14 as usize (Transmute);
+        _16 = AlignOf(isize);
+        _17 = Sub(_16, const 1_usize);
+        _18 = BitAnd(_15, _17);
+        _19 = Eq(_18, const 0_usize);
+        assert(_19, "misaligned pointer dereference: address must be a multiple of {} but is {}", _16, _15) -> [success: bb8, unwind unreachable];
+    }
+
+    bb2: {
+        _1 = F { f: move _2 };
+        _8 = &mut (_1.0: std::vec::Vec<isize>);
+        _12 = &(*_8);
+        _11 = <Vec<isize> as Deref>::deref(move _12) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _10 = _11;
+        _9 = impure(move _10) -> [return: bb4, unwind: bb6];
+    }
+
+    bb4: {
+        drop(_1) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_1) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+
+    bb8: {
+        (*_13) = [const 3_isize];
+        _3 = move _7 as std::boxed::Box<[isize]> (Pointer(Unsize));
+        _2 = slice::<impl [isize]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}

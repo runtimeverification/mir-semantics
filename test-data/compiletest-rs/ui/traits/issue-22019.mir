@@ -1,0 +1,35 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-22019.rs:22:1: 22:41>::nodes(_1: &u32) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn <impl at ui/traits/issue-22019.rs:28:1: 28:41>::nodes(_1: &u64) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        goto -> bb1;
+    }
+
+    bb1: {
+        goto -> bb1;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

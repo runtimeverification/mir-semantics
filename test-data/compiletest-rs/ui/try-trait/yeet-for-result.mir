@@ -1,0 +1,92 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn always_yeet() -> Result<i32, String> {
+    let mut _0: std::result::Result<i32, std::string::String>;
+
+    bb0: {
+        _0 = ops::try_trait::from_yeet::<Result<i32, String>, &str>(const "hello") -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&std::result::Result<i32, std::string::String>, &std::result::Result<i32, std::string::String>);
+    let mut _2: &std::result::Result<i32, std::string::String>;
+    let _3: std::result::Result<i32, std::string::String>;
+    let mut _4: &std::result::Result<i32, std::string::String>;
+    let _5: std::result::Result<i32, std::string::String>;
+    let mut _6: std::string::String;
+    let _7: &str;
+    let _8: &std::result::Result<i32, std::string::String>;
+    let _9: &std::result::Result<i32, std::string::String>;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _3 = always_yeet() -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const "hello";
+        _6 = <str as ToString>::to_string(_7) -> [return: bb2, unwind: bb9];
+    }
+
+    bb2: {
+        _5 = Result::<i32, String>::Err(move _6);
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _8 = (_1.0: &std::result::Result<i32, std::string::String>);
+        _9 = (_1.1: &std::result::Result<i32, std::string::String>);
+        _11 = <Result<i32, String> as PartialEq>::eq(_8, _9) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<Result<i32, String>, Result<i32, String>>(move _12, _8, _9, move _14) -> bb8;
+    }
+
+    bb5: {
+        drop(_5) -> [return: bb6, unwind: bb9];
+    }
+
+    bb6: {
+        drop(_3) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_5) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        drop(_3) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        resume;
+    }
+}

@@ -1,0 +1,179 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+E::A::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 0_isize;
+        return;
+    }
+}
+
+E::B::{constant#0}: isize = {
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 1_isize;
+        return;
+    }
+}
+
+fn <impl at ui/union/union-nonzero.rs:32:10: 32:15>::clone(_1: &E) -> E {
+    debug self => _1;
+    let mut _0: E;
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: !;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: !;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: !;
+    let mut _16: bool;
+    let mut _17: bool;
+    let mut _18: usize;
+    let mut _19: usize;
+    let mut _20: !;
+    let mut _21: bool;
+    let mut _22: bool;
+    let mut _23: usize;
+    let mut _24: usize;
+    let mut _25: !;
+    let _26: U2<&u8, ()>;
+    let mut _27: *const u8;
+    let mut _28: std::option::Option<U2<&u8, ()>>;
+    let mut _29: isize;
+    let mut _30: !;
+    scope 1 {
+        debug zeroed => _26;
+        scope 3 {
+        }
+    }
+    scope 2 {
+    }
+
+    bb0: {
+        _3 = std::mem::size_of::<Option<U2<&u8, u8>>>() -> bb1;
+    }
+
+    bb1: {
+        _4 = std::mem::size_of::<U2<&u8, u8>>() -> bb2;
+    }
+
+    bb2: {
+        _2 = Gt(move _3, move _4);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _5 = core::panicking::panic(const "assertion failed: size_of::<Option<U2<&u8, u8>>>() > size_of::<U2<&u8, u8>>()");
+    }
+
+    bb4: {
+        _8 = std::mem::size_of::<Option<U2<&u8, ()>>>() -> bb5;
+    }
+
+    bb5: {
+        _9 = std::mem::size_of::<U2<&u8, ()>>() -> bb6;
+    }
+
+    bb6: {
+        _7 = Gt(move _8, move _9);
+        _6 = Not(move _7);
+        switchInt(move _6) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _10 = core::panicking::panic(const "assertion failed: size_of::<Option<U2<&u8, ()>>>() > size_of::<U2<&u8, ()>>()");
+    }
+
+    bb8: {
+        _13 = std::mem::size_of::<Option<U2<u8, E>>>() -> bb9;
+    }
+
+    bb9: {
+        _14 = std::mem::size_of::<U2<u8, E>>() -> bb10;
+    }
+
+    bb10: {
+        _12 = Gt(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _15 = core::panicking::panic(const "assertion failed: size_of::<Option<U2<u8, E>>>() > size_of::<U2<u8, E>>()");
+    }
+
+    bb12: {
+        _18 = std::mem::size_of::<Option<U1<&u8>>>() -> bb13;
+    }
+
+    bb13: {
+        _19 = std::mem::size_of::<U1<&u8>>() -> bb14;
+    }
+
+    bb14: {
+        _17 = Gt(move _18, move _19);
+        _16 = Not(move _17);
+        switchInt(move _16) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _20 = core::panicking::panic(const "assertion failed: size_of::<Option<U1<&u8>>>() > size_of::<U1<&u8>>()");
+    }
+
+    bb16: {
+        _23 = std::mem::size_of::<Option<U2<&u8, &u8>>>() -> bb17;
+    }
+
+    bb17: {
+        _24 = std::mem::size_of::<U2<&u8, &u8>>() -> bb18;
+    }
+
+    bb18: {
+        _22 = Gt(move _23, move _24);
+        _21 = Not(move _22);
+        switchInt(move _21) -> [0: bb20, otherwise: bb19];
+    }
+
+    bb19: {
+        _25 = core::panicking::panic(const "assertion failed: size_of::<Option<U2<&u8, &u8>>>() > size_of::<U2<&u8, &u8>>()");
+    }
+
+    bb20: {
+        _27 = null::<u8>() -> bb21;
+    }
+
+    bb21: {
+        _26 = move _27 as U2<&u8, ()> (Transmute);
+        _28 = Option::<U2<&u8, ()>>::Some(move _26);
+        _29 = discriminant(_28);
+        switchInt(move _29) -> [0: bb22, otherwise: bb23];
+    }
+
+    bb22: {
+        _30 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb23: {
+        return;
+    }
+}

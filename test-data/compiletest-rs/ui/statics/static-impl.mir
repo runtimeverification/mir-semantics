@@ -1,0 +1,837 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn a::<impl at ui/statics/static-impl.rs:13:5: 13:24>::plus(_1: &usize) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+    let mut _2: isize;
+    let mut _3: usize;
+
+    bb0: {
+        _3 = (*_1);
+        _2 = move _3 as isize (IntToInt);
+        _0 = Add(move _2, const 20_isize);
+        return;
+    }
+}
+
+fn b::<impl at ui/statics/static-impl.rs:18:5: 18:25>::plus(_1: &String) -> isize {
+    debug self => _1;
+    let mut _0: isize;
+
+    bb0: {
+        _0 = const 200_isize;
+        return;
+    }
+}
+
+fn <impl at ui/statics/static-impl.rs:26:1: 26:26>::str(_1: &usize) -> String {
+    debug self => _1;
+    let mut _0: std::string::String;
+
+    bb0: {
+        _0 = <usize as ToString>::to_string(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/statics/static-impl.rs:26:1: 26:26>::multi(_1: &usize, _2: F) -> () {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: ();
+    let mut _3: usize;
+    let mut _4: bool;
+    let mut _5: usize;
+    let mut _6: usize;
+    let _7: ();
+    let mut _8: &mut F;
+    let mut _9: (usize,);
+    let mut _10: usize;
+    scope 1 {
+        debug c => _3;
+    }
+
+    bb0: {
+        _3 = const 0_usize;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _5 = _3;
+        _6 = (*_1);
+        _4 = Lt(move _5, move _6);
+        switchInt(move _4) -> [0: bb4, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = &mut _2;
+        _10 = _3;
+        _9 = (move _10,);
+        _7 = <F as FnMut<(usize,)>>::call_mut(move _8, move _9) -> [return: bb3, unwind: bb6];
+    }
+
+    bb3: {
+        _3 = Add(_3, const 1_usize);
+        goto -> bb1;
+    }
+
+    bb4: {
+        drop(_2) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+
+    bb6 (cleanup): {
+        drop(_2) -> [return: bb7, unwind terminate];
+    }
+
+    bb7 (cleanup): {
+        resume;
+    }
+}
+
+fn <impl at ui/statics/static-impl.rs:42:1: 42:32>::length_(_1: &Vec<T>) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = Vec::<T>::len(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/statics/static-impl.rs:42:1: 42:32>::iter_(_1: &Vec<T>, _2: F) -> () {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: ();
+    let mut _3: std::slice::Iter<'_, T>;
+    let mut _4: std::slice::Iter<'_, T>;
+    let mut _5: std::option::Option<&T>;
+    let mut _6: &mut std::slice::Iter<'_, T>;
+    let mut _7: isize;
+    let _9: ();
+    let mut _10: &mut F;
+    let mut _11: (&T,);
+    scope 1 {
+        debug iter => _4;
+        let _8: &T;
+        scope 2 {
+            debug x => _8;
+        }
+    }
+
+    bb0: {
+        _3 = <&Vec<T> as IntoIterator>::into_iter(_1) -> [return: bb1, unwind: bb8];
+    }
+
+    bb1: {
+        _4 = move _3;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _6 = &mut _4;
+        _5 = <std::slice::Iter<'_, T> as Iterator>::next(_6) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _7 = discriminant(_5);
+        switchInt(move _7) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _8 = ((_5 as Some).0: &T);
+        _10 = &mut _2;
+        _11 = (_8,);
+        _9 = <F as FnMut<(&T,)>>::call_mut(move _10, move _11) -> [return: bb10, unwind: bb8];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        drop(_2) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+
+    bb10: {
+        goto -> bb2;
+    }
+}
+
+fn <impl at ui/statics/static-impl.rs:42:1: 42:32>::map_(_1: &Vec<T>, _2: F) -> Vec<U> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::vec::Vec<U>;
+    let mut _3: std::vec::Vec<U>;
+    let mut _4: std::slice::Iter<'_, T>;
+    let mut _6: std::option::Option<&T>;
+    let mut _7: &mut std::slice::Iter<'_, T>;
+    let mut _8: isize;
+    let _10: ();
+    let mut _11: &mut std::vec::Vec<U>;
+    let mut _12: U;
+    let mut _13: &mut F;
+    let mut _14: (&T,);
+    scope 1 {
+        debug r => _3;
+        let mut _5: std::slice::Iter<'_, T>;
+        scope 2 {
+            debug iter => _5;
+            let _9: &T;
+            scope 3 {
+                debug elt => _9;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = Vec::<U>::new() -> [return: bb1, unwind: bb11];
+    }
+
+    bb1: {
+        _4 = <&Vec<T> as IntoIterator>::into_iter(_1) -> [return: bb2, unwind: bb10];
+    }
+
+    bb2: {
+        _5 = move _4;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <std::slice::Iter<'_, T> as Iterator>::next(_7) -> [return: bb4, unwind: bb10];
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = ((_6 as Some).0: &T);
+        _11 = &mut _3;
+        _13 = &mut _2;
+        _14 = (_9,);
+        _12 = <F as FnMut<(&T,)>>::call_mut(move _13, move _14) -> [return: bb8, unwind: bb10];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        _0 = move _3;
+        drop(_2) -> bb9;
+    }
+
+    bb8: {
+        _10 = Vec::<U>::push(move _11, move _12) -> [return: bb13, unwind: bb10];
+    }
+
+    bb9: {
+        return;
+    }
+
+    bb10 (cleanup): {
+        drop(_3) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        drop(_2) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        resume;
+    }
+
+    bb13: {
+        goto -> bb3;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&isize, &isize);
+    let mut _2: &isize;
+    let _3: isize;
+    let mut _4: &usize;
+    let _5: usize;
+    let mut _6: &isize;
+    let _7: isize;
+    let _8: &isize;
+    let _9: &isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&isize, &isize);
+    let mut _18: &isize;
+    let _19: isize;
+    let mut _20: &std::string::String;
+    let _21: std::string::String;
+    let _22: &str;
+    let mut _23: &isize;
+    let _24: isize;
+    let _25: &isize;
+    let _26: &isize;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: isize;
+    let mut _30: isize;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _34: (&std::string::String, &std::string::String);
+    let mut _35: &std::string::String;
+    let _36: std::string::String;
+    let mut _37: &usize;
+    let _38: usize;
+    let mut _39: &std::vec::Vec<i32>;
+    let _40: std::vec::Vec<i32>;
+    let mut _41: std::boxed::Box<[i32]>;
+    let mut _42: usize;
+    let mut _43: usize;
+    let mut _44: *mut u8;
+    let mut _45: std::boxed::Box<[i32; 1]>;
+    let mut _46: &std::string::String;
+    let _47: std::string::String;
+    let _48: &str;
+    let _49: &std::string::String;
+    let _50: &std::string::String;
+    let mut _51: bool;
+    let mut _52: bool;
+    let _54: !;
+    let mut _55: std::option::Option<std::fmt::Arguments<'_>>;
+    let _56: std::vec::Vec<i32>;
+    let mut _57: &std::vec::Vec<i32>;
+    let _58: std::vec::Vec<i32>;
+    let mut _59: std::boxed::Box<[i32]>;
+    let mut _60: usize;
+    let mut _61: usize;
+    let mut _62: *mut u8;
+    let mut _63: std::boxed::Box<[i32; 2]>;
+    let mut _64: (&i32, &i32);
+    let mut _65: &i32;
+    let _66: &i32;
+    let mut _67: &std::vec::Vec<i32>;
+    let mut _68: &i32;
+    let _69: i32;
+    let mut _72: bool;
+    let mut _73: bool;
+    let mut _74: i32;
+    let mut _75: i32;
+    let _77: !;
+    let mut _78: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _80: &std::vec::Vec<i32>;
+    let _81: std::vec::Vec<i32>;
+    let mut _82: std::boxed::Box<[i32]>;
+    let mut _83: usize;
+    let mut _84: usize;
+    let mut _85: *mut u8;
+    let mut _86: std::boxed::Box<[i32; 2]>;
+    let mut _87: (&usize, &usize);
+    let mut _88: &usize;
+    let _89: &usize;
+    let mut _90: &std::vec::Vec<usize>;
+    let mut _91: &usize;
+    let _92: usize;
+    let mut _95: bool;
+    let mut _96: bool;
+    let mut _97: usize;
+    let mut _98: usize;
+    let _100: !;
+    let mut _101: std::option::Option<std::fmt::Arguments<'_>>;
+    let _103: ();
+    let mut _104: &usize;
+    let _105: usize;
+    let mut _106: [closure@ui/statics/static-impl.rs:64:20: 64:24];
+    let mut _107: &mut usize;
+    let mut _108: (&usize, &usize);
+    let mut _109: &usize;
+    let mut _110: &usize;
+    let _111: usize;
+    let mut _114: bool;
+    let mut _115: bool;
+    let mut _116: usize;
+    let mut _117: usize;
+    let _119: !;
+    let mut _120: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _121: *const [i32; 1];
+    let mut _122: *const [i32; 2];
+    let mut _123: *const [i32; 2];
+    let mut _130: *const ();
+    let mut _131: usize;
+    let mut _132: usize;
+    let mut _133: usize;
+    let mut _134: usize;
+    let mut _135: bool;
+    let mut _136: *const ();
+    let mut _137: usize;
+    let mut _138: usize;
+    let mut _139: usize;
+    let mut _140: usize;
+    let mut _141: bool;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _14: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _14;
+        }
+    }
+    scope 3 {
+        debug left_val => _25;
+        debug right_val => _26;
+        let _31: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _31;
+        }
+    }
+    scope 5 {
+    }
+    scope 6 {
+        debug left_val => _49;
+        debug right_val => _50;
+        let _53: core::panicking::AssertKind;
+        scope 7 {
+            debug kind => _53;
+        }
+    }
+    scope 8 {
+        debug vect => _56;
+        let _70: &i32;
+        let _71: &i32;
+        let _79: std::vec::Vec<usize>;
+        let mut _124: *const ();
+        let mut _125: usize;
+        let mut _126: usize;
+        let mut _127: usize;
+        let mut _128: usize;
+        let mut _129: bool;
+        scope 10 {
+            debug left_val => _70;
+            debug right_val => _71;
+            let _76: core::panicking::AssertKind;
+            scope 11 {
+                debug kind => _76;
+            }
+        }
+        scope 12 {
+            debug vect => _79;
+            let _93: &usize;
+            let _94: &usize;
+            let mut _102: usize;
+            scope 14 {
+                debug left_val => _93;
+                debug right_val => _94;
+                let _99: core::panicking::AssertKind;
+                scope 15 {
+                    debug kind => _99;
+                }
+            }
+            scope 16 {
+                debug x => _102;
+                let _112: &usize;
+                let _113: &usize;
+                scope 17 {
+                    debug left_val => _112;
+                    debug right_val => _113;
+                    let _118: core::panicking::AssertKind;
+                    scope 18 {
+                        debug kind => _118;
+                    }
+                }
+            }
+        }
+        scope 13 {
+        }
+    }
+    scope 9 {
+    }
+
+    bb0: {
+        _5 = const 10_usize;
+        _4 = &_5;
+        _3 = <usize as plus>::plus(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _7 = const 30_isize;
+        _6 = &_7;
+        _1 = (move _2, move _6);
+        _8 = (_1.0: &isize);
+        _9 = (_1.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb3: {
+        _22 = const "hi";
+        _21 = <str as ToString>::to_string(_22) -> bb4;
+    }
+
+    bb4: {
+        _20 = &_21;
+        _19 = <String as plus>::plus(move _20) -> [return: bb5, unwind: bb46];
+    }
+
+    bb5: {
+        _18 = &_19;
+        _24 = const 200_isize;
+        _23 = &_24;
+        _17 = (move _18, move _23);
+        _25 = (_17.0: &isize);
+        _26 = (_17.1: &isize);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<isize, isize>(move _31, _25, _26, move _33) -> bb46;
+    }
+
+    bb7: {
+        drop(_21) -> bb8;
+    }
+
+    bb8: {
+        _42 = SizeOf([i32; 1]);
+        _43 = AlignOf([i32; 1]);
+        _44 = alloc::alloc::exchange_malloc(move _42, move _43) -> bb9;
+    }
+
+    bb9: {
+        _45 = ShallowInitBox(move _44, [i32; 1]);
+        _121 = (((_45.0: std::ptr::Unique<[i32; 1]>).0: std::ptr::NonNull<[i32; 1]>).0: *const [i32; 1]);
+        _136 = _121 as *const () (PtrToPtr);
+        _137 = _136 as usize (Transmute);
+        _138 = AlignOf(i32);
+        _139 = Sub(_138, const 1_usize);
+        _140 = BitAnd(_137, _139);
+        _141 = Eq(_140, const 0_usize);
+        assert(_141, "misaligned pointer dereference: address must be a multiple of {} but is {}", _138, _137) -> [success: bb50, unwind unreachable];
+    }
+
+    bb10: {
+        _39 = &_40;
+        _38 = <Vec<i32> as vec_utils<i32>>::length_(move _39) -> [return: bb11, unwind: bb45];
+    }
+
+    bb11: {
+        _37 = &_38;
+        _36 = <usize as uint_utils>::str(move _37) -> [return: bb12, unwind: bb45];
+    }
+
+    bb12: {
+        _35 = &_36;
+        _48 = const "1";
+        _47 = <str as ToString>::to_string(_48) -> [return: bb13, unwind: bb44];
+    }
+
+    bb13: {
+        _46 = &_47;
+        _34 = (move _35, move _46);
+        _49 = (_34.0: &std::string::String);
+        _50 = (_34.1: &std::string::String);
+        _52 = <String as PartialEq>::eq(_49, _50) -> [return: bb14, unwind: bb43];
+    }
+
+    bb14: {
+        _51 = Not(move _52);
+        switchInt(move _51) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _53 = core::panicking::AssertKind::Eq;
+        _55 = Option::<Arguments<'_>>::None;
+        _54 = core::panicking::assert_failed::<String, String>(move _53, _49, _50, move _55) -> bb43;
+    }
+
+    bb16: {
+        drop(_47) -> [return: bb17, unwind: bb44];
+    }
+
+    bb17: {
+        drop(_36) -> [return: bb18, unwind: bb45];
+    }
+
+    bb18: {
+        drop(_40) -> bb19;
+    }
+
+    bb19: {
+        _60 = SizeOf([i32; 2]);
+        _61 = AlignOf([i32; 2]);
+        _62 = alloc::alloc::exchange_malloc(move _60, move _61) -> bb20;
+    }
+
+    bb20: {
+        _63 = ShallowInitBox(move _62, [i32; 2]);
+        _122 = (((_63.0: std::ptr::Unique<[i32; 2]>).0: std::ptr::NonNull<[i32; 2]>).0: *const [i32; 2]);
+        _130 = _122 as *const () (PtrToPtr);
+        _131 = _130 as usize (Transmute);
+        _132 = AlignOf(i32);
+        _133 = Sub(_132, const 1_usize);
+        _134 = BitAnd(_131, _133);
+        _135 = Eq(_134, const 0_usize);
+        assert(_135, "misaligned pointer dereference: address must be a multiple of {} but is {}", _132, _131) -> [success: bb49, unwind unreachable];
+    }
+
+    bb21: {
+        _57 = &_58;
+        _56 = <Vec<i32> as vec_utils<i32>>::map_::<i32, [closure@ui/statics/static-impl.rs:59:32: 59:35]>(move _57, const ZeroSized: [closure@ui/statics/static-impl.rs:59:32: 59:35]) -> [return: bb22, unwind: bb42];
+    }
+
+    bb22: {
+        drop(_58) -> [return: bb23, unwind: bb41];
+    }
+
+    bb23: {
+        _67 = &_56;
+        _66 = <Vec<i32> as Index<usize>>::index(move _67, const 0_usize) -> [return: bb24, unwind: bb41];
+    }
+
+    bb24: {
+        _65 = _66;
+        _69 = const 7_i32;
+        _68 = &_69;
+        _64 = (move _65, move _68);
+        _70 = (_64.0: &i32);
+        _71 = (_64.1: &i32);
+        _74 = (*_70);
+        _75 = (*_71);
+        _73 = Eq(move _74, move _75);
+        _72 = Not(move _73);
+        switchInt(move _72) -> [0: bb26, otherwise: bb25];
+    }
+
+    bb25: {
+        _76 = core::panicking::AssertKind::Eq;
+        _78 = Option::<Arguments<'_>>::None;
+        _77 = core::panicking::assert_failed::<i32, i32>(move _76, _70, _71, move _78) -> bb41;
+    }
+
+    bb26: {
+        _83 = SizeOf([i32; 2]);
+        _84 = AlignOf([i32; 2]);
+        _85 = alloc::alloc::exchange_malloc(move _83, move _84) -> [return: bb27, unwind: bb41];
+    }
+
+    bb27: {
+        _86 = ShallowInitBox(move _85, [i32; 2]);
+        _123 = (((_86.0: std::ptr::Unique<[i32; 2]>).0: std::ptr::NonNull<[i32; 2]>).0: *const [i32; 2]);
+        _124 = _123 as *const () (PtrToPtr);
+        _125 = _124 as usize (Transmute);
+        _126 = AlignOf(i32);
+        _127 = Sub(_126, const 1_usize);
+        _128 = BitAnd(_125, _127);
+        _129 = Eq(_128, const 0_usize);
+        assert(_129, "misaligned pointer dereference: address must be a multiple of {} but is {}", _126, _125) -> [success: bb48, unwind unreachable];
+    }
+
+    bb28: {
+        _80 = &_81;
+        _79 = <Vec<i32> as vec_utils<i32>>::map_::<usize, [closure@ui/statics/static-impl.rs:61:46: 61:49]>(move _80, const ZeroSized: [closure@ui/statics/static-impl.rs:61:46: 61:49]) -> [return: bb29, unwind: bb40];
+    }
+
+    bb29: {
+        drop(_81) -> [return: bb30, unwind: bb39];
+    }
+
+    bb30: {
+        _90 = &_79;
+        _89 = <Vec<usize> as Index<usize>>::index(move _90, const 0_usize) -> [return: bb31, unwind: bb39];
+    }
+
+    bb31: {
+        _88 = _89;
+        _92 = const 7_usize;
+        _91 = &_92;
+        _87 = (move _88, move _91);
+        _93 = (_87.0: &usize);
+        _94 = (_87.1: &usize);
+        _97 = (*_93);
+        _98 = (*_94);
+        _96 = Eq(move _97, move _98);
+        _95 = Not(move _96);
+        switchInt(move _95) -> [0: bb33, otherwise: bb32];
+    }
+
+    bb32: {
+        _99 = core::panicking::AssertKind::Eq;
+        _101 = Option::<Arguments<'_>>::None;
+        _100 = core::panicking::assert_failed::<usize, usize>(move _99, _93, _94, move _101) -> bb39;
+    }
+
+    bb33: {
+        _102 = const 0_usize;
+        _105 = const 10_usize;
+        _104 = &_105;
+        _107 = &mut _102;
+        _106 = [closure@ui/statics/static-impl.rs:64:20: 64:24] { x: move _107 };
+        _103 = <usize as uint_utils>::multi::<[closure@ui/statics/static-impl.rs:64:20: 64:24]>(move _104, move _106) -> [return: bb34, unwind: bb39];
+    }
+
+    bb34: {
+        _109 = &_102;
+        _111 = const 20_usize;
+        _110 = &_111;
+        _108 = (move _109, move _110);
+        _112 = (_108.0: &usize);
+        _113 = (_108.1: &usize);
+        _116 = (*_112);
+        _117 = (*_113);
+        _115 = Eq(move _116, move _117);
+        _114 = Not(move _115);
+        switchInt(move _114) -> [0: bb36, otherwise: bb35];
+    }
+
+    bb35: {
+        _118 = core::panicking::AssertKind::Eq;
+        _120 = Option::<Arguments<'_>>::None;
+        _119 = core::panicking::assert_failed::<usize, usize>(move _118, _112, _113, move _120) -> bb39;
+    }
+
+    bb36: {
+        drop(_79) -> [return: bb37, unwind: bb41];
+    }
+
+    bb37: {
+        drop(_56) -> bb38;
+    }
+
+    bb38: {
+        return;
+    }
+
+    bb39 (cleanup): {
+        drop(_79) -> [return: bb41, unwind terminate];
+    }
+
+    bb40 (cleanup): {
+        drop(_81) -> [return: bb41, unwind terminate];
+    }
+
+    bb41 (cleanup): {
+        drop(_56) -> [return: bb47, unwind terminate];
+    }
+
+    bb42 (cleanup): {
+        drop(_58) -> [return: bb47, unwind terminate];
+    }
+
+    bb43 (cleanup): {
+        drop(_47) -> [return: bb44, unwind terminate];
+    }
+
+    bb44 (cleanup): {
+        drop(_36) -> [return: bb45, unwind terminate];
+    }
+
+    bb45 (cleanup): {
+        drop(_40) -> [return: bb47, unwind terminate];
+    }
+
+    bb46 (cleanup): {
+        drop(_21) -> [return: bb47, unwind terminate];
+    }
+
+    bb47 (cleanup): {
+        resume;
+    }
+
+    bb48: {
+        (*_123) = [const 3_i32, const 4_i32];
+        _82 = move _86 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _81 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _82) -> [return: bb28, unwind: bb41];
+    }
+
+    bb49: {
+        (*_122) = [const 3_i32, const 4_i32];
+        _59 = move _63 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _58 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _59) -> bb21;
+    }
+
+    bb50: {
+        (*_121) = [const 1_i32];
+        _41 = move _45 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _40 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _41) -> bb10;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/statics/static-impl.rs:59:32: 59:35], _2: &i32) -> i32 {
+    debug a => _2;
+    let mut _0: i32;
+    let mut _3: i32;
+
+    bb0: {
+        _3 = (*_2);
+        _0 = Add(move _3, const 4_i32);
+        return;
+    }
+}
+
+fn main::{closure#1}(_1: &mut [closure@ui/statics/static-impl.rs:61:46: 61:49], _2: &i32) -> usize {
+    debug a => _2;
+    let mut _0: usize;
+    let mut _3: usize;
+    let mut _4: i32;
+
+    bb0: {
+        _4 = (*_2);
+        _3 = move _4 as usize (IntToInt);
+        _0 = Add(move _3, const 4_usize);
+        return;
+    }
+}
+
+fn main::{closure#2}(_1: &mut [closure@ui/statics/static-impl.rs:64:20: 64:24], _2: usize) -> () {
+    debug _n => _2;
+    debug x => (*((*_1).0: &mut usize));
+    let mut _0: ();
+    let mut _3: &mut usize;
+    let mut _4: &mut usize;
+
+    bb0: {
+        _3 = deref_copy ((*_1).0: &mut usize);
+        _4 = deref_copy ((*_1).0: &mut usize);
+        (*_3) = Add((*_4), const 2_usize);
+        return;
+    }
+}

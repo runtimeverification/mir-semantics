@@ -1,0 +1,65 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: bool;
+    let mut _2: bool;
+    let mut _3: std::option::Option<std::option::Option<usize>>;
+    let mut _4: std::option::Option<usize>;
+    let mut _5: isize;
+    let mut _6: isize;
+    let mut _8: !;
+    let mut _9: !;
+    scope 1 {
+        scope 2 {
+            let _7: usize;
+            scope 3 {
+                debug y => _7;
+            }
+        }
+    }
+
+    bb0: {
+        _4 = Option::<usize>::Some(const 8_usize);
+        _3 = f(move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = discriminant(_3);
+        switchInt(move _6) -> [1: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _8 = begin_panic::<&str>(const "explicit panic");
+    }
+
+    bb3: {
+        _5 = discriminant(((_3 as Some).0: std::option::Option<usize>));
+        switchInt(move _5) -> [1: bb4, otherwise: bb2];
+    }
+
+    bb4: {
+        _7 = ((((_3 as Some).0: std::option::Option<usize>) as Some).0: usize);
+        _2 = Eq(_7, const 8_usize);
+        _1 = Not(move _2);
+        switchInt(move _1) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _9 = core::panicking::panic(const "assertion failed: overly_complicated!(f, x, Option < usize >, { return Some(x) ; }, Some(8),\\n        Some(y), y) == 8");
+    }
+
+    bb6: {
+        return;
+    }
+}
+
+fn f(_1: Option<usize>) -> Option<Option<usize>> {
+    debug x => _1;
+    let mut _0: std::option::Option<std::option::Option<usize>>;
+
+    bb0: {
+        _0 = Option::<Option<usize>>::Some(_1);
+        return;
+    }
+}

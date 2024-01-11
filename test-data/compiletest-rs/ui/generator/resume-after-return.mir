@@ -1,0 +1,175 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+    let mut _2: std::ops::GeneratorState<(), ()>;
+    let mut _3: std::pin::Pin<&mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]>;
+    let mut _4: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+    let mut _5: isize;
+    let _7: !;
+    let mut _8: std::fmt::Arguments<'_>;
+    let mut _9: &[&str];
+    let _10: &[&str; 1];
+    let _11: [&str; 1];
+    let mut _12: &[core::fmt::rt::Argument<'_>];
+    let _13: &[core::fmt::rt::Argument<'_>; 1];
+    let _14: [core::fmt::rt::Argument<'_>; 1];
+    let mut _15: core::fmt::rt::Argument<'_>;
+    let _16: &std::ops::GeneratorState<(), ()>;
+    let mut _17: std::result::Result<std::ops::GeneratorState<(), ()>, std::boxed::Box<dyn std::any::Any + std::marker::Send>>;
+    let mut _18: [closure@ui/generator/resume-after-return.rs:24:31: 24:38];
+    let mut _19: isize;
+    let _20: !;
+    scope 1 {
+        debug foo => _1;
+        let _6: std::ops::GeneratorState<(), ()>;
+        scope 2 {
+            debug s => _6;
+        }
+    }
+
+    bb0: {
+        _1 = [generator@ui/generator/resume-after-return.rs:12:19: 12:21 (#0)];
+        _4 = &mut _1;
+        _3 = Pin::<&mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]>::new(move _4) -> bb1;
+    }
+
+    bb1: {
+        _2 = <[generator@ui/generator/resume-after-return.rs:12:19: 12:21] as Generator>::resume(move _3, const ()) -> bb2;
+    }
+
+    bb2: {
+        _5 = discriminant(_2);
+        switchInt(move _5) -> [1: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _6 = _2;
+        _11 = [const "bad state: "];
+        _10 = &_11;
+        _9 = _10 as &[&str] (Pointer(Unsize));
+        _16 = &_6;
+        _15 = core::fmt::rt::Argument::<'_>::new_debug::<GeneratorState<(), ()>>(_16) -> bb5;
+    }
+
+    bb4: {
+        _18 = [closure@ui/generator/resume-after-return.rs:24:31: 24:38] { foo: move _1 };
+        _17 = catch_unwind::<[closure@ui/generator/resume-after-return.rs:24:31: 24:38], GeneratorState<(), ()>>(move _18) -> bb7;
+    }
+
+    bb5: {
+        _14 = [move _15];
+        _13 = &_14;
+        _12 = _13 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _8 = Arguments::<'_>::new_v1(move _9, move _12) -> bb6;
+    }
+
+    bb6: {
+        _7 = panic_fmt(move _8);
+    }
+
+    bb7: {
+        _19 = discriminant(_17);
+        switchInt(move _19) -> [0: bb10, 1: bb8, otherwise: bb9];
+    }
+
+    bb8: {
+        drop(_17) -> bb11;
+    }
+
+    bb9: {
+        unreachable;
+    }
+
+    bb10: {
+        _20 = begin_panic::<&str>(const "generator successfully resumed") -> bb12;
+    }
+
+    bb11: {
+        return;
+    }
+
+    bb12 (cleanup): {
+        drop(_17) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        resume;
+    }
+}
+
+fn main::{closure#0}(_1: Pin<&mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]>, _2: ()) -> GeneratorState<(), ()> {
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _3: bool;
+    let mut _4: ();
+    let mut _5: ();
+    let mut _6: u32;
+    let mut _7: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+    let mut _8: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+    let mut _9: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+
+    bb0: {
+        _7 = deref_copy (_1.0: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]);
+        _6 = discriminant((*_7));
+        switchInt(move _6) -> [0: bb1, 1: bb6, 3: bb5, otherwise: bb7];
+    }
+
+    bb1: {
+        _3 = const true;
+        switchInt(move _3) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = const ();
+        goto -> bb4;
+    }
+
+    bb3: {
+        _4 = ();
+        _0 = GeneratorState::<(), ()>::Yielded(move _4);
+        _8 = deref_copy (_1.0: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]);
+        discriminant((*_8)) = 3;
+        return;
+    }
+
+    bb4: {
+        _0 = GeneratorState::<(), ()>::Complete(move _5);
+        _9 = deref_copy (_1.0: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]);
+        discriminant((*_9)) = 1;
+        return;
+    }
+
+    bb5: {
+        _5 = const ();
+        goto -> bb4;
+    }
+
+    bb6: {
+        assert(const false, "generator resumed after completion") -> bb6;
+    }
+
+    bb7: {
+        unreachable;
+    }
+}
+
+fn main::{closure#1}(_1: [closure@ui/generator/resume-after-return.rs:24:31: 24:38]) -> GeneratorState<(), ()> {
+    debug foo => (_1.0: [generator@ui/generator/resume-after-return.rs:12:19: 12:21]);
+    let mut _0: std::ops::GeneratorState<(), ()>;
+    let mut _2: std::pin::Pin<&mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]>;
+    let mut _3: &mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21];
+
+    bb0: {
+        _3 = &mut (_1.0: [generator@ui/generator/resume-after-return.rs:12:19: 12:21]);
+        _2 = Pin::<&mut [generator@ui/generator/resume-after-return.rs:12:19: 12:21]>::new(move _3) -> bb1;
+    }
+
+    bb1: {
+        _0 = <[generator@ui/generator/resume-after-return.rs:12:19: 12:21] as Generator>::resume(move _2, const ()) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

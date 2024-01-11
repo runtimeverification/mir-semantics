@@ -1,0 +1,170 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:6:10: 6:15>::fmt(_1: &Foo, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let mut _4: &dyn std::fmt::Debug;
+    let _5: &&i32;
+    let _6: &i32;
+
+    bb0: {
+        _3 = const "Foo";
+        _6 = &((*_1).0: i32);
+        _5 = &_6;
+        _4 = _5 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_tuple_field1_finish(_2, _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:8:1: 8:18>::drop(_1: &mut Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let mut _4: &[&str];
+    let _5: &[&str; 2];
+    let _6: [&str; 2];
+    let mut _7: &[core::fmt::rt::Argument<'_>];
+    let _8: &[core::fmt::rt::Argument<'_>; 1];
+    let _9: [core::fmt::rt::Argument<'_>; 1];
+    let mut _10: core::fmt::rt::Argument<'_>;
+    let _11: &i32;
+
+    bb0: {
+        _6 = [const "", const " dropped\n"];
+        _5 = &_6;
+        _4 = _5 as &[&str] (Pointer(Unsize));
+        _11 = &((*_1).0: i32);
+        _10 = core::fmt::rt::Argument::<'_>::new_debug::<i32>(_11) -> bb1;
+    }
+
+    bb1: {
+        _9 = [move _10];
+        _8 = &_9;
+        _7 = _8 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _3 = Arguments::<'_>::new_v1(move _4, move _7) -> bb2;
+    }
+
+    bb2: {
+        _2 = _print(move _3) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: (Foo, Foo);
+    let mut _2: Foo;
+    let mut _3: Foo;
+    let _5: ();
+    scope 1 {
+        debug a => _1;
+        let _4: [closure@ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:16:17: 16:19];
+        scope 2 {
+            debug f => _4;
+        }
+    }
+
+    bb0: {
+        _2 = Foo(const 0_i32);
+        _3 = Foo(const 1_i32);
+        _1 = (move _2, move _3);
+        _4 = [closure@ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:16:17: 16:19] { a: move _1 };
+        _5 = <[closure@ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:16:17: 16:19] as FnOnce<()>>::call_once(move _4, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: [closure@ui/closures/2229_closure_analysis/migrations/closure-body-macro-fragment.rs:16:17: 16:19]) -> () {
+    debug a => (_1.0: (Foo, Foo));
+    let mut _0: ();
+    let _2: Foo;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let mut _5: &[&str];
+    let _6: &[&str; 2];
+    let _7: [&str; 2];
+    let mut _8: &[core::fmt::rt::Argument<'_>];
+    let _9: &[core::fmt::rt::Argument<'_>; 1];
+    let _10: [core::fmt::rt::Argument<'_>; 1];
+    let mut _11: core::fmt::rt::Argument<'_>;
+    let _12: &Foo;
+    scope 1 {
+        debug x => _2;
+    }
+
+    bb0: {
+        _2 = move ((_1.0: (Foo, Foo)).0: Foo);
+        _7 = [const "", const "\n"];
+        _6 = &_7;
+        _5 = _6 as &[&str] (Pointer(Unsize));
+        _12 = &_2;
+        _11 = core::fmt::rt::Argument::<'_>::new_debug::<Foo>(_12) -> [return: bb1, unwind: bb5];
+    }
+
+    bb1: {
+        _10 = [move _11];
+        _9 = &_10;
+        _8 = _9 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _4 = Arguments::<'_>::new_v1(move _5, move _8) -> [return: bb2, unwind: bb5];
+    }
+
+    bb2: {
+        _3 = _print(move _4) -> [return: bb3, unwind: bb5];
+    }
+
+    bb3: {
+        drop(_2) -> [return: bb4, unwind: bb8];
+    }
+
+    bb4: {
+        drop(((_1.0: (Foo, Foo)).1: Foo)) -> bb7;
+    }
+
+    bb5 (cleanup): {
+        drop(_2) -> [return: bb8, unwind terminate];
+    }
+
+    bb6 (cleanup): {
+        resume;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(((_1.0: (Foo, Foo)).1: Foo)) -> [return: bb6, unwind terminate];
+    }
+}
+
+fn Foo(_1: i32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: i32) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo(move _1);
+        return;
+    }
+}

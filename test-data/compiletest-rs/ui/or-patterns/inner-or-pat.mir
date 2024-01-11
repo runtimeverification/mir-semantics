@@ -1,0 +1,329 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: bool;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: bool;
+    scope 1 {
+        debug x => _1;
+        let _15: &str;
+        scope 2 {
+            debug x => _15;
+        }
+    }
+
+    bb0: {
+        _1 = const "foo";
+        _2 = <str as PartialEq>::eq(_1, const "h") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _2) -> [0: bb2, otherwise: bb26];
+    }
+
+    bb2: {
+        _3 = <str as PartialEq>::eq(_1, const "ho") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb27];
+    }
+
+    bb4: {
+        _4 = <str as PartialEq>::eq(_1, const "yo") -> bb5;
+    }
+
+    bb5: {
+        switchInt(move _4) -> [0: bb6, otherwise: bb28];
+    }
+
+    bb6: {
+        _5 = <str as PartialEq>::eq(_1, const "dude") -> bb7;
+    }
+
+    bb7: {
+        switchInt(move _5) -> [0: bb8, otherwise: bb29];
+    }
+
+    bb8: {
+        _6 = <str as PartialEq>::eq(_1, const "w") -> bb9;
+    }
+
+    bb9: {
+        switchInt(move _6) -> [0: bb10, otherwise: bb30];
+    }
+
+    bb10: {
+        _7 = <str as PartialEq>::eq(_1, const "no") -> bb11;
+    }
+
+    bb11: {
+        switchInt(move _7) -> [0: bb12, otherwise: bb31];
+    }
+
+    bb12: {
+        _8 = <str as PartialEq>::eq(_1, const "nop") -> bb13;
+    }
+
+    bb13: {
+        switchInt(move _8) -> [0: bb14, otherwise: bb32];
+    }
+
+    bb14: {
+        _9 = <str as PartialEq>::eq(_1, const "hey") -> bb15;
+    }
+
+    bb15: {
+        switchInt(move _9) -> [0: bb16, otherwise: bb33];
+    }
+
+    bb16: {
+        _10 = <str as PartialEq>::eq(_1, const "gg") -> bb17;
+    }
+
+    bb17: {
+        switchInt(move _10) -> [0: bb18, otherwise: bb34];
+    }
+
+    bb18: {
+        _11 = <str as PartialEq>::eq(_1, const "black") -> bb19;
+    }
+
+    bb19: {
+        switchInt(move _11) -> [0: bb20, otherwise: bb35];
+    }
+
+    bb20: {
+        _12 = <str as PartialEq>::eq(_1, const "pink") -> bb21;
+    }
+
+    bb21: {
+        switchInt(move _12) -> [0: bb22, otherwise: bb36];
+    }
+
+    bb22: {
+        _13 = <str as PartialEq>::eq(_1, const "red") -> bb23;
+    }
+
+    bb23: {
+        switchInt(move _13) -> [0: bb24, otherwise: bb37];
+    }
+
+    bb24: {
+        _14 = <str as PartialEq>::eq(_1, const "blue") -> bb25;
+    }
+
+    bb25: {
+        switchInt(move _14) -> [0: bb39, otherwise: bb38];
+    }
+
+    bb26: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb27: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb28: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb29: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb30: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb31: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb32: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb33: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb34: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb35: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb36: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb37: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb38: {
+        _15 = _1;
+        goto -> bb39;
+    }
+
+    bb39: {
+        return;
+    }
+}
+
+fn bar() -> () {
+    let mut _0: ();
+    let _1: &str;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: bool;
+    let mut _5: bool;
+    let mut _6: bool;
+    scope 1 {
+        debug x => _1;
+        let _7: &str;
+        scope 2 {
+            debug x => _7;
+        }
+    }
+
+    bb0: {
+        _1 = const "foo";
+        _2 = <str as PartialEq>::eq(_1, const "foo") -> bb1;
+    }
+
+    bb1: {
+        switchInt(move _2) -> [0: bb2, otherwise: bb10];
+    }
+
+    bb2: {
+        _3 = <str as PartialEq>::eq(_1, const "bar") -> bb3;
+    }
+
+    bb3: {
+        switchInt(move _3) -> [0: bb4, otherwise: bb11];
+    }
+
+    bb4: {
+        _4 = <str as PartialEq>::eq(_1, const "red") -> bb5;
+    }
+
+    bb5: {
+        switchInt(move _4) -> [0: bb6, otherwise: bb12];
+    }
+
+    bb6: {
+        _5 = <str as PartialEq>::eq(_1, const "blue") -> bb7;
+    }
+
+    bb7: {
+        switchInt(move _5) -> [0: bb8, otherwise: bb13];
+    }
+
+    bb8: {
+        _6 = <str as PartialEq>::eq(_1, const "red") -> bb9;
+    }
+
+    bb9: {
+        switchInt(move _6) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb10: {
+        _7 = _1;
+        goto -> bb15;
+    }
+
+    bb11: {
+        _7 = _1;
+        goto -> bb15;
+    }
+
+    bb12: {
+        _7 = _1;
+        goto -> bb15;
+    }
+
+    bb13: {
+        _7 = _1;
+        goto -> bb15;
+    }
+
+    bb14: {
+        _7 = _1;
+        goto -> bb15;
+    }
+
+    bb15: {
+        return;
+    }
+}
+
+fn don() -> () {
+    let mut _0: ();
+    let mut _1: don::Foo;
+    let mut _2: isize;
+    let _3: don::Foo;
+    scope 1 {
+        debug _foo => _3;
+    }
+
+    bb0: {
+        _1 = Foo::A;
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb2, 1: bb3, 2: bb4, otherwise: bb1];
+    }
+
+    bb1: {
+        unreachable;
+    }
+
+    bb2: {
+        _3 = move _1;
+        goto -> bb4;
+    }
+
+    bb3: {
+        _3 = move _1;
+        goto -> bb4;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

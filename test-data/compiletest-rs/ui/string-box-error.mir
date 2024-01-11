@@ -1,0 +1,87 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<dyn std::error::Error + std::marker::Send + std::marker::Sync>;
+    let mut _2: std::string::String;
+    let _3: &str;
+    let mut _5: std::string::String;
+    let _6: &str;
+    scope 1 {
+        debug _err1 => _1;
+        let _4: std::boxed::Box<dyn std::error::Error>;
+        scope 2 {
+            debug _err2 => _4;
+            let _7: std::boxed::Box<dyn std::error::Error + std::marker::Send + std::marker::Sync>;
+            scope 3 {
+                debug _err3 => _7;
+                let _8: std::boxed::Box<dyn std::error::Error>;
+                scope 4 {
+                    debug _err4 => _8;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _3 = const "test";
+        _2 = <str as ToString>::to_string(_3) -> bb1;
+    }
+
+    bb1: {
+        _1 = <Box<dyn std::error::Error + Send + Sync> as From<String>>::from(move _2) -> bb2;
+    }
+
+    bb2: {
+        _6 = const "test";
+        _5 = <str as ToString>::to_string(_6) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _4 = <Box<dyn std::error::Error> as From<String>>::from(move _5) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _7 = <Box<dyn std::error::Error + Send + Sync> as From<&str>>::from(const "test") -> [return: bb5, unwind: bb12];
+    }
+
+    bb5: {
+        _8 = <Box<dyn std::error::Error> as From<&str>>::from(const "test") -> [return: bb6, unwind: bb11];
+    }
+
+    bb6: {
+        drop(_8) -> [return: bb7, unwind: bb11];
+    }
+
+    bb7: {
+        drop(_7) -> [return: bb8, unwind: bb12];
+    }
+
+    bb8: {
+        drop(_4) -> [return: bb9, unwind: bb13];
+    }
+
+    bb9: {
+        drop(_1) -> bb10;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        drop(_7) -> [return: bb12, unwind terminate];
+    }
+
+    bb12 (cleanup): {
+        drop(_4) -> [return: bb13, unwind terminate];
+    }
+
+    bb13 (cleanup): {
+        drop(_1) -> [return: bb14, unwind terminate];
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+}

@@ -1,0 +1,88 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Data::0::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/binding/match-larger-const.rs:2:10: 2:12>::assert_receiver_is_total_eq(_1: &Data) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+<impl at ui/binding/match-larger-const.rs:2:10: 2:12>::assert_receiver_is_total_eq::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/binding/match-larger-const.rs:2:14: 2:23>::eq(_1: &Data, _2: &Data) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: &[u8; 4];
+    let mut _4: &[u8; 4];
+
+    bb0: {
+        _3 = &((*_1).0: [u8; 4]);
+        _4 = &((*_2).0: [u8; 4]);
+        _0 = <[u8; 4] as PartialEq>::eq(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+const DATA: Data = {
+    let mut _0: Data;
+    let mut _1: [u8; 4];
+
+    bb0: {
+        StorageLive(_1);
+        _1 = [const 1_u8, const 2_u8, const 3_u8, const 4_u8];
+        _0 = Data(move _1);
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Data(_1: [u8; 4]) -> Data {
+    let mut _0: Data;
+
+    bb0: {
+        _0 = Data(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Data(_1: [u8; 4]) -> Data {
+    let mut _0: Data;
+
+    bb0: {
+        _0 = Data(move _1);
+        return;
+    }
+}

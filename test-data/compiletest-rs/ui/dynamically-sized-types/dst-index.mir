@@ -1,0 +1,104 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/dynamically-sized-types/dst-index.rs:11:1: 11:24>::index(_1: &S, _2: usize) -> &str {
+    debug self => _1;
+    let mut _0: &str;
+
+    bb0: {
+        _0 = const "hello";
+        return;
+    }
+}
+
+fn <impl at ui/dynamically-sized-types/dst-index.rs:21:1: 21:24>::index(_1: &T, _2: usize) -> &dyn Debug {
+    debug self => _1;
+    debug idx => _2;
+    let mut _0: &dyn std::fmt::Debug;
+    let _3: &usize;
+
+    bb0: {
+        _3 = const {alloc1: &usize};
+        _0 = _3 as &dyn std::fmt::Debug (Pointer(Unsize));
+        return;
+    }
+}
+
+alloc1 (static: X, size: 8, align: 8) {
+    2a 00 00 00 00 00 00 00                         │ *.......
+}
+
+static X: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 42_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&&str, &&str);
+    let mut _2: &&str;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &S;
+    let _6: S;
+    let mut _7: &&str;
+    let _8: &str;
+    let _9: &&str;
+    let _10: &&str;
+    let mut _11: bool;
+    let mut _12: bool;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    let _16: &dyn std::fmt::Debug;
+    let mut _17: &T;
+    let _18: T;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _13: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _13;
+        }
+    }
+    scope 3 {
+    }
+
+    bb0: {
+        _5 = &_6;
+        _4 = <S as Index<usize>>::index(move _5, const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        _3 = _4;
+        _2 = &_3;
+        _8 = const "hello";
+        _7 = &_8;
+        _1 = (move _2, move _7);
+        _9 = (_1.0: &&str);
+        _10 = (_1.1: &&str);
+        _12 = <&str as PartialEq>::eq(_9, _10) -> bb2;
+    }
+
+    bb2: {
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<&str, &str>(move _13, _9, _10, move _15);
+    }
+
+    bb4: {
+        _17 = &_18;
+        _16 = <T as Index<usize>>::index(move _17, const 0_usize) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}

@@ -1,0 +1,192 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:9:1: 9:30>::{constant#0}: u64 = {
+    let mut _0: u64;
+    let mut _1: (u64, bool);
+
+    bb0: {
+        _1 = CheckedSub(const K, const 1_u64);
+        assert(!move (_1.1: bool), "attempt to compute `{} - {}`, which would overflow", const K, const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: u64);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:9:1: 9:30>::{constant#1}: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const K;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:9:1: 9:30>::foo(_1: Generic<K>) -> u64 {
+    debug self => const ZeroSized: Generic<K>;
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const K;
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::{constant#0}: u64 = {
+    let mut _0: u64;
+    let mut _1: (u64, bool);
+
+    bb0: {
+        _1 = CheckedSub(const K, const 1_u64);
+        assert(!move (_1.1: bool), "attempt to compute `{} - {}`, which would overflow", const K, const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: u64);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::{constant#1}: u64 = {
+    let mut _0: u64;
+    let mut _1: (u64, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const K, const 1_u64);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const K, const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: u64);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::{constant#2}: u64 = {
+    let mut _0: u64;
+    let mut _1: u64;
+    let mut _2: (u64, bool);
+    let mut _3: (u64, bool);
+
+    bb0: {
+        StorageLive(_1);
+        _2 = CheckedAdd(const K, const 1_u64);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", const K, const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        _1 = move (_2.0: u64);
+        _3 = CheckedSub(_1, const 1_u64);
+        assert(!move (_3.1: bool), "attempt to compute `{} - {}`, which would overflow", move _1, const 1_u64) -> bb2;
+    }
+
+    bb2: {
+        _0 = move (_3.0: u64);
+        StorageDead(_1);
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::{constant#3}: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const K;
+        return;
+    }
+}
+
+fn <impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::bar(_1: Generic<K>) -> u64 {
+    debug self => const ZeroSized: Generic<K>;
+    let mut _0: u64;
+    scope 1 {
+        debug x => const ZeroSized: Generic<{ K + 1 }>;
+    }
+
+    bb0: {
+        _0 = Generic::<{ K + 1 }>::foo(const ZeroSized: Generic<{ K + 1 }>) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+<impl at ui/const-generics/generic_const_exprs/nested-abstract-consts-2.rs:18:1: 18:30>::bar::{constant#0}: u64 = {
+    let mut _0: u64;
+    let mut _1: (u64, bool);
+
+    bb0: {
+        _1 = CheckedAdd(const K, const 1_u64);
+        assert(!move (_1.1: bool), "attempt to compute `{} + {}`, which would overflow", const K, const 1_u64) -> bb1;
+    }
+
+    bb1: {
+        _0 = move (_1.0: u64);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&u64, &u64);
+    let mut _2: &u64;
+    let _3: u64;
+    let mut _4: &u64;
+    let _5: u64;
+    let _6: &u64;
+    let _7: &u64;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: u64;
+    let mut _11: u64;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _3 = Generic::<10>::bar(const Generic::<10>) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const 11_u64;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &u64);
+        _7 = (_1.1: &u64);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<u64, u64>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+main::{constant#0}: u64 = {
+    let mut _0: u64;
+
+    bb0: {
+        _0 = const 10_u64;
+        return;
+    }
+}

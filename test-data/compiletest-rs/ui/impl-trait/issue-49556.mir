@@ -1,0 +1,52 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn iter(_1: &[usize]) -> impl Iterator<Item = usize> + '_ {
+    debug data => _1;
+    let mut _0: impl std::iter::Iterator<Item = usize> + '_;
+    let mut _2: std::iter::Map<std::slice::Iter<'_, usize>, [closure@ui/impl-trait/issue-49556.rs:5:13: 5:16]>;
+    let mut _3: std::slice::Iter<'_, usize>;
+
+    bb0: {
+        _3 = core::slice::<impl [usize]>::iter(_1) -> bb1;
+    }
+
+    bb1: {
+        _2 = <std::slice::Iter<'_, usize> as Iterator>::map::<&usize, [closure@ui/impl-trait/issue-49556.rs:5:13: 5:16]>(move _3, const ZeroSized: [closure@ui/impl-trait/issue-49556.rs:5:13: 5:16]) -> bb2;
+    }
+
+    bb2: {
+        _0 = <Map<std::slice::Iter<'_, usize>, [closure@ui/impl-trait/issue-49556.rs:5:13: 5:16]> as Iterator>::map::<usize, [closure@ui/impl-trait/issue-49556.rs:8:13: 8:16]>(move _2, const ZeroSized: [closure@ui/impl-trait/issue-49556.rs:8:13: 8:16]) -> bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn iter::{closure#0}(_1: &mut [closure@ui/impl-trait/issue-49556.rs:5:13: 5:16], _2: &usize) -> &usize {
+    debug x => _2;
+    let mut _0: &usize;
+
+    bb0: {
+        _0 = _2;
+        return;
+    }
+}
+
+fn iter::{closure#1}(_1: &mut [closure@ui/impl-trait/issue-49556.rs:8:13: 8:16], _2: &usize) -> usize {
+    debug x => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = (*_2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

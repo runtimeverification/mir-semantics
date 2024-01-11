@@ -1,0 +1,110 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn into_inner() -> [u64; 1024] {
+    let mut _0: [u64; 1024];
+    let mut _1: u64;
+    scope 1 {
+        debug x => _1;
+    }
+
+    bb0: {
+        _1 = Add(const 10_u64, const 20_u64);
+        _0 = [_1; 1024];
+        return;
+    }
+}
+
+into_inner::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1024_usize;
+        return;
+    }
+}
+
+into_inner::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1024_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &[u64];
+    let _2: &[u64; 1024];
+    let _3: [u64; 1024];
+    let mut _4: (&&[u64], &&[u64]);
+    let mut _5: &&[u64];
+    let _6: &[u64];
+    let _7: &[u64];
+    let mut _8: &[u64; 1024];
+    let _9: [u64; 1024];
+    let mut _10: &&[u64];
+    let mut _13: bool;
+    let mut _14: bool;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _1;
+        let _11: &&[u64];
+        let _12: &&[u64];
+        scope 2 {
+            debug left_val => _11;
+            debug right_val => _12;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = [const 30_u64; 1024];
+        _2 = &_3;
+        _1 = _2 as &[u64] (Pointer(Unsize));
+        _9 = into_inner() -> bb1;
+    }
+
+    bb1: {
+        _8 = &_9;
+        _7 = <[u64; 1024] as Index<RangeFull>>::index(move _8, const RangeFull) -> bb2;
+    }
+
+    bb2: {
+        _6 = _7;
+        _5 = &_6;
+        _10 = &_1;
+        _4 = (move _5, move _10);
+        _11 = (_4.0: &&[u64]);
+        _12 = (_4.1: &&[u64]);
+        _14 = <&[u64] as PartialEq>::eq(_11, _12) -> bb3;
+    }
+
+    bb3: {
+        _13 = Not(move _14);
+        switchInt(move _13) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<&[u64], &[u64]>(move _15, _11, _12, move _17);
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1024_usize;
+        return;
+    }
+}

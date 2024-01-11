@@ -1,0 +1,55 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: Zst) -> Zst {
+    debug val => const Zst {{  }};
+    let mut _0: Zst;
+
+    bb0: {
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn foo(_1: Zst) -> Zst {
+    debug val => _1;
+    let mut _0: Zst;
+
+    bb0: {
+        _0 = move _1;
+        return;
+    }
+}
+
+const FOO: Zst = {
+    let mut _0: Zst;
+    let mut _1: Zst;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Zst;
+        ConstEvalCounter;
+        _0 = foo(move _1) -> bb1;
+    }
+
+    bb1: {
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+const _: Zst = {
+    let mut _0: Zst;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}

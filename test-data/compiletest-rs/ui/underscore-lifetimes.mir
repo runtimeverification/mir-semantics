@@ -1,0 +1,124 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo(_1: &u8) -> Foo<'_> {
+    debug x => _1;
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(_1);
+        return;
+    }
+}
+
+fn foo2(_1: &u8) -> Foo<'_> {
+    debug x => _1;
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(_1);
+        return;
+    }
+}
+
+fn foo3(_1: &u8) -> Foo<'_> {
+    debug x => _1;
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(_1);
+        return;
+    }
+}
+
+fn foo4(_1: Foo<'_>) -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo5(_1: Foo2<'_, '_>) -> &u8 {
+    debug foo => _1;
+    let mut _0: &u8;
+
+    bb0: {
+        _0 = (_1.1: &u8);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: &u8;
+    let _2: u8;
+    let mut _3: Foo<'_>;
+    let mut _4: Foo<'_>;
+    let mut _5: Foo<'_>;
+    let _6: ();
+    let mut _7: Foo<'_>;
+    let mut _8: &u8;
+    let mut _9: Foo2<'_, '_>;
+    let _10: &u8;
+    let _11: u8;
+    scope 1 {
+        debug x => _1;
+        scope 2 {
+            scope 3 {
+                scope 4 {
+                    scope 5 {
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _2 = const 5_u8;
+        _1 = &_2;
+        _3 = foo(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = foo2(_1) -> bb2;
+    }
+
+    bb2: {
+        _5 = foo3(_1) -> bb3;
+    }
+
+    bb3: {
+        _7 = Foo::<'_>(_1);
+        _6 = foo4(move _7) -> bb4;
+    }
+
+    bb4: {
+        _11 = const 6_u8;
+        _10 = &_11;
+        _9 = Foo2::<'_, '_> { a: _1, b: _10 };
+        _8 = foo5(move _9) -> bb5;
+    }
+
+    bb5: {
+        return;
+    }
+}
+
+fn Foo(_1: &u8) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo(_1: &u8) -> Foo<'_> {
+    let mut _0: Foo<'_>;
+
+    bb0: {
+        _0 = Foo::<'_>(move _1);
+        return;
+    }
+}

@@ -1,0 +1,131 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static X: Bar = {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar(const 1_isize, const 2_isize);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: &Bar;
+    let _2: isize;
+    let _3: isize;
+    let mut _4: (&isize, &isize);
+    let mut _5: &isize;
+    let mut _6: &isize;
+    let _7: isize;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: isize;
+    let mut _13: isize;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: (&isize, &isize);
+    let mut _18: &isize;
+    let mut _19: &isize;
+    let _20: isize;
+    let mut _23: bool;
+    let mut _24: bool;
+    let mut _25: isize;
+    let mut _26: isize;
+    let _28: !;
+    let mut _29: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug x => _2;
+        debug y => _3;
+        let _8: &isize;
+        let _9: &isize;
+        let _21: &isize;
+        let _22: &isize;
+        scope 2 {
+            debug left_val => _8;
+            debug right_val => _9;
+            let _14: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _14;
+            }
+        }
+        scope 4 {
+            debug left_val => _21;
+            debug right_val => _22;
+            let _27: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _27;
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const {alloc1: &Bar};
+        _2 = ((*_1).0: isize);
+        _3 = ((*_1).1: isize);
+        _5 = &_2;
+        _7 = const 1_isize;
+        _6 = &_7;
+        _4 = (move _5, move _6);
+        _8 = (_4.0: &isize);
+        _9 = (_4.1: &isize);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<isize, isize>(move _14, _8, _9, move _16);
+    }
+
+    bb2: {
+        _18 = &_3;
+        _20 = const 2_isize;
+        _19 = &_20;
+        _17 = (move _18, move _19);
+        _21 = (_17.0: &isize);
+        _22 = (_17.1: &isize);
+        _25 = (*_21);
+        _26 = (*_22);
+        _24 = Eq(move _25, move _26);
+        _23 = Not(move _24);
+        switchInt(move _23) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _27 = core::panicking::AssertKind::Eq;
+        _29 = Option::<Arguments<'_>>::None;
+        _28 = core::panicking::assert_failed::<isize, isize>(move _27, _21, _22, move _29);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+alloc1 (static: X, size: 16, align: 8) {
+    01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 │ ................
+}
+
+fn Bar(_1: isize, _2: isize) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar(move _1, move _2);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Bar(_1: isize, _2: isize) -> Bar {
+    let mut _0: Bar;
+
+    bb0: {
+        _0 = Bar(move _1, move _2);
+        return;
+    }
+}

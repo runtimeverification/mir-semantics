@@ -1,0 +1,57 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+Array::arr::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+Array::arr::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn <impl at ui/deriving/deriving-clone-array.rs:5:16: 5:21>::clone(_1: &Array) -> Array {
+    debug self => _1;
+    let mut _0: Array;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+<impl at ui/deriving/deriving-clone-array.rs:5:16: 5:21>::clone::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 256_usize;
+        return;
+    }
+}
+
+<impl at ui/deriving/deriving-clone-array.rs:5:16: 5:21>::clone::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 4_usize;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

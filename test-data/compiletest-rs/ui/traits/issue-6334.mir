@@ -1,0 +1,126 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/traits/issue-6334.rs:20:1: 20:15>::a(_1: &Foo) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 1_usize;
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-6334.rs:24:1: 24:15>::b(_1: &Foo) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 2_usize;
+        return;
+    }
+}
+
+fn <impl at ui/traits/issue-6334.rs:30:1: 30:15>::combine(_1: &Bar, _2: &T) -> usize {
+    debug self => _1;
+    debug t => _2;
+    let mut _0: usize;
+    let mut _3: usize;
+    let mut _4: usize;
+    let mut _5: usize;
+
+    bb0: {
+        _4 = <T as A>::a(_2) -> bb1;
+    }
+
+    bb1: {
+        _3 = Mul(move _4, const 100_usize);
+        _5 = <T as B>::b(_2) -> bb2;
+    }
+
+    bb2: {
+        _0 = Add(move _3, move _5);
+        return;
+    }
+}
+
+fn use_c(_1: &S, _2: &T) -> usize {
+    debug s => _1;
+    debug t => _2;
+    let mut _0: usize;
+
+    bb0: {
+        _0 = <S as C>::combine::<T>(_1, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Foo;
+    let _4: &Bar;
+    let _5: &Foo;
+    let mut _6: (&usize, &usize);
+    let mut _7: &usize;
+    let mut _8: &usize;
+    let _9: usize;
+    let mut _12: bool;
+    let mut _13: bool;
+    let mut _14: usize;
+    let mut _15: usize;
+    let _17: !;
+    let mut _18: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug foo => const Foo;
+        let _2: Bar;
+        scope 2 {
+            debug bar => const Bar;
+            let _3: usize;
+            scope 3 {
+                debug r => _3;
+                let _10: &usize;
+                let _11: &usize;
+                scope 4 {
+                    debug left_val => _10;
+                    debug right_val => _11;
+                    let _16: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _16;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _4 = &_2;
+        _5 = &_1;
+        _3 = use_c::<Bar, Foo>(_4, _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = &_3;
+        _9 = const 102_usize;
+        _8 = &_9;
+        _6 = (move _7, move _8);
+        _10 = (_6.0: &usize);
+        _11 = (_6.1: &usize);
+        _14 = (*_10);
+        _15 = (*_11);
+        _13 = Eq(move _14, move _15);
+        _12 = Not(move _13);
+        switchInt(move _12) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _16 = core::panicking::AssertKind::Eq;
+        _18 = Option::<Arguments<'_>>::None;
+        _17 = core::panicking::assert_failed::<usize, usize>(move _16, _10, _11, move _18);
+    }
+
+    bb3: {
+        return;
+    }
+}

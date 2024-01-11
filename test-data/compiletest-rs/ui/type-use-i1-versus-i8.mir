@@ -1,0 +1,25 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _2: ();
+    let mut _3: *mut bool;
+    let mut _4: &mut bool;
+    scope 1 {
+        let mut _1: bool;
+        scope 2 {
+            debug x => _1;
+        }
+    }
+
+    bb0: {
+        _1 = const false;
+        _4 = &mut _1;
+        _3 = &raw mut (*_4);
+        _2 = std::ptr::write::<bool>(move _3, const false) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

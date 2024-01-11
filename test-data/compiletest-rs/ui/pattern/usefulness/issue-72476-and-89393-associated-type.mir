@@ -1,0 +1,81 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo1(_1: Next<A>) -> () {
+    debug item => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo2(_1: bool) -> () {
+    debug x => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo3(_1: Next<B>) -> () {
+    debug x => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo4(_1: (u32, u32)) -> () {
+    debug x => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+fn foo5(_1: <T as Trait>::Projection) -> () {
+    debug x => _1;
+    let mut _0: ();
+
+    bb0: {
+        drop(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Next(_1: <T as Trait>::Projection) -> Next<T> {
+    let mut _0: Next<T>;
+
+    bb0: {
+        _0 = Next::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Next(_1: <T as Trait>::Projection) -> Next<T> {
+    let mut _0: Next<T>;
+
+    bb0: {
+        _0 = Next::<T>(move _1);
+        return;
+    }
+}

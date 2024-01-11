@@ -1,0 +1,92 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn square_sum(_1: &[i64]) -> i64 {
+    debug v => _1;
+    let mut _0: i64;
+    let _2: i64;
+    let mut _3: std::iter::Cloned<std::slice::Iter<'_, i64>>;
+    let mut _4: std::slice::Iter<'_, i64>;
+    let mut _5: i64;
+    let mut _6: i64;
+    scope 1 {
+        debug sum => _2;
+    }
+
+    bb0: {
+        _4 = core::slice::<impl [i64]>::iter(_1) -> bb1;
+    }
+
+    bb1: {
+        _3 = <std::slice::Iter<'_, i64> as Iterator>::cloned::<'_, i64>(move _4) -> bb2;
+    }
+
+    bb2: {
+        _2 = <Cloned<std::slice::Iter<'_, i64>> as Iterator>::sum::<i64>(move _3) -> bb3;
+    }
+
+    bb3: {
+        _5 = _2;
+        _6 = _2;
+        _0 = Mul(move _5, move _6);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i64, &i64);
+    let mut _2: &i64;
+    let _3: i64;
+    let mut _4: &i64;
+    let _5: i64;
+    let mut _6: &[i64];
+    let _7: &[i64; 3];
+    let _8: [i64; 3];
+    let _9: &i64;
+    let _10: &i64;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: i64;
+    let mut _14: i64;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _9;
+        debug right_val => _10;
+        let _15: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _15;
+        }
+    }
+
+    bb0: {
+        _3 = const 36_i64;
+        _2 = &_3;
+        _8 = [const 1_i64, const 2_i64, const 3_i64];
+        _7 = &_8;
+        _6 = _7 as &[i64] (Pointer(Unsize));
+        _5 = square_sum(move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _9 = (_1.0: &i64);
+        _10 = (_1.1: &i64);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<i64, i64>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        return;
+    }
+}

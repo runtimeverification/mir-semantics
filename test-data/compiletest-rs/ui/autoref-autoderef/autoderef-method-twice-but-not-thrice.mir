@@ -1,0 +1,394 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/autoref-autoderef/autoderef-method-twice-but-not-thrice.rs:8:1: 8:27>::double(_1: Box<Box<usize>>) -> usize {
+    debug self => _1;
+    let mut _0: usize;
+    let mut _2: usize;
+    let mut _3: std::boxed::Box<usize>;
+    let mut _4: *const std::boxed::Box<usize>;
+    let mut _5: *const usize;
+    let mut _6: *const ();
+    let mut _7: usize;
+    let mut _8: usize;
+    let mut _9: usize;
+    let mut _10: usize;
+    let mut _11: bool;
+    let mut _12: *const ();
+    let mut _13: usize;
+    let mut _14: usize;
+    let mut _15: usize;
+    let mut _16: usize;
+    let mut _17: bool;
+
+    bb0: {
+        _4 = (((_1.0: std::ptr::Unique<std::boxed::Box<usize>>).0: std::ptr::NonNull<std::boxed::Box<usize>>).0: *const std::boxed::Box<usize>);
+        _12 = _4 as *const () (PtrToPtr);
+        _13 = _12 as usize (Transmute);
+        _14 = AlignOf(std::boxed::Box<usize>);
+        _15 = Sub(_14, const 1_usize);
+        _16 = BitAnd(_13, _15);
+        _17 = Eq(_16, const 0_usize);
+        assert(_17, "misaligned pointer dereference: address must be a multiple of {} but is {}", _14, _13) -> [success: bb3, unwind unreachable];
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        _2 = (*_5);
+        _0 = Mul(move _2, const 2_usize);
+        drop(_1) -> bb1;
+    }
+
+    bb3: {
+        _3 = deref_copy (*_4);
+        _5 = (((_3.0: std::ptr::Unique<usize>).0: std::ptr::NonNull<usize>).0: *const usize);
+        _6 = _5 as *const () (PtrToPtr);
+        _7 = _6 as usize (Transmute);
+        _8 = AlignOf(usize);
+        _9 = Sub(_8, const 1_usize);
+        _10 = BitAnd(_7, _9);
+        _11 = Eq(_10, const 0_usize);
+        assert(_11, "misaligned pointer dereference: address must be a multiple of {} but is {}", _8, _7) -> [success: bb2, unwind unreachable];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>;
+    let mut _2: std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _3: std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _4: std::boxed::Box<std::boxed::Box<usize>>;
+    let mut _5: std::boxed::Box<usize>;
+    let mut _6: (&usize, &usize);
+    let mut _7: &usize;
+    let _8: usize;
+    let mut _9: std::boxed::Box<std::boxed::Box<usize>>;
+    let mut _10: &usize;
+    let _11: usize;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: usize;
+    let mut _17: usize;
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _21: std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _22: std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _23: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>;
+    let mut _24: ();
+    let mut _25: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>;
+    let mut _26: ();
+    let mut _27: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _28: ();
+    let mut _29: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _30: ();
+    let mut _31: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _32: ();
+    let mut _33: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>;
+    let mut _34: ();
+    let mut _35: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _36: ();
+    let mut _37: &mut std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _38: ();
+    let mut _39: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _40: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _41: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _42: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _43: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _44: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _45: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _46: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>;
+    let mut _47: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>;
+    let mut _48: *const std::boxed::Box<std::boxed::Box<usize>>;
+    let mut _49: *const ();
+    let mut _50: usize;
+    let mut _51: usize;
+    let mut _52: usize;
+    let mut _53: usize;
+    let mut _54: bool;
+    let mut _55: *const ();
+    let mut _56: usize;
+    let mut _57: usize;
+    let mut _58: usize;
+    let mut _59: usize;
+    let mut _60: bool;
+    let mut _61: *const ();
+    let mut _62: usize;
+    let mut _63: usize;
+    let mut _64: usize;
+    let mut _65: usize;
+    let mut _66: bool;
+    let mut _67: *const ();
+    let mut _68: usize;
+    let mut _69: usize;
+    let mut _70: usize;
+    let mut _71: usize;
+    let mut _72: bool;
+    let mut _73: *const ();
+    let mut _74: usize;
+    let mut _75: usize;
+    let mut _76: usize;
+    let mut _77: usize;
+    let mut _78: bool;
+    let mut _79: *const ();
+    let mut _80: usize;
+    let mut _81: usize;
+    let mut _82: usize;
+    let mut _83: usize;
+    let mut _84: bool;
+    let mut _85: *const ();
+    let mut _86: usize;
+    let mut _87: usize;
+    let mut _88: usize;
+    let mut _89: usize;
+    let mut _90: bool;
+    scope 1 {
+        debug x => _1;
+        let _12: &usize;
+        let _13: &usize;
+        let mut _91: *const ();
+        let mut _92: usize;
+        let mut _93: usize;
+        let mut _94: usize;
+        let mut _95: usize;
+        let mut _96: bool;
+        let mut _97: *const ();
+        let mut _98: usize;
+        let mut _99: usize;
+        let mut _100: usize;
+        let mut _101: usize;
+        let mut _102: bool;
+        let mut _103: *const ();
+        let mut _104: usize;
+        let mut _105: usize;
+        let mut _106: usize;
+        let mut _107: usize;
+        let mut _108: bool;
+        scope 2 {
+            debug left_val => _12;
+            debug right_val => _13;
+            let _18: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _18;
+            }
+        }
+    }
+
+    bb0: {
+        _5 = Box::<usize>::new(const 3_usize) -> bb1;
+    }
+
+    bb1: {
+        _4 = Box::<Box<usize>>::new(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = Box::<Box<Box<usize>>>::new(move _4) -> bb3;
+    }
+
+    bb3: {
+        _2 = Box::<Box<Box<Box<usize>>>>::new(move _3) -> bb4;
+    }
+
+    bb4: {
+        _1 = Box::<Box<Box<Box<Box<usize>>>>>::new(move _2) -> bb5;
+    }
+
+    bb5: {
+        _46 = (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _103 = _46 as *const () (PtrToPtr);
+        _104 = _103 as usize (Transmute);
+        _105 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _106 = Sub(_105, const 1_usize);
+        _107 = BitAnd(_104, _106);
+        _108 = Eq(_107, const 0_usize);
+        assert(_108, "misaligned pointer dereference: address must be a multiple of {} but is {}", _105, _104) -> [success: bb27, unwind unreachable];
+    }
+
+    bb6: {
+        _7 = &_8;
+        _11 = const 6_usize;
+        _10 = &_11;
+        _6 = (move _7, move _10);
+        _12 = (_6.0: &usize);
+        _13 = (_6.1: &usize);
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<usize, usize>(move _18, _12, _13, move _20) -> bb17;
+    }
+
+    bb8: {
+        _41 = deref_copy (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _85 = _41 as *const () (PtrToPtr);
+        _86 = _85 as usize (Transmute);
+        _87 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _88 = Sub(_87, const 1_usize);
+        _89 = BitAnd(_86, _88);
+        _90 = Eq(_89, const 0_usize);
+        assert(_90, "misaligned pointer dereference: address must be a multiple of {} but is {}", _87, _86) -> [success: bb24, unwind unreachable];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+
+    bb10: {
+        return;
+    }
+
+    bb11 (cleanup): {
+        _25 = &mut _1;
+        _26 = <Box<Box<Box<Box<Box<usize>>>>> as Drop>::drop(move _25) -> [return: bb28, unwind terminate];
+    }
+
+    bb12: {
+        _23 = &mut _1;
+        _24 = <Box<Box<Box<Box<Box<usize>>>>> as Drop>::drop(move _23) -> bb10;
+    }
+
+    bb13 (cleanup): {
+        _40 = deref_copy (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _73 = _40 as *const () (PtrToPtr);
+        _74 = _73 as usize (Transmute);
+        _75 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _76 = Sub(_75, const 1_usize);
+        _77 = BitAnd(_74, _76);
+        _78 = Eq(_77, const 0_usize);
+        assert(_78, "misaligned pointer dereference: address must be a multiple of {} but is {}", _75, _74) -> [success: bb22, unwind unreachable];
+    }
+
+    bb14: {
+        _39 = deref_copy (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _67 = _39 as *const () (PtrToPtr);
+        _68 = _67 as usize (Transmute);
+        _69 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _70 = Sub(_69, const 1_usize);
+        _71 = BitAnd(_68, _70);
+        _72 = Eq(_71, const 0_usize);
+        assert(_72, "misaligned pointer dereference: address must be a multiple of {} but is {}", _69, _68) -> [success: bb21, unwind unreachable];
+    }
+
+    bb15 (cleanup): {
+        _33 = &mut _1;
+        _34 = <Box<Box<Box<Box<Box<usize>>>>> as Drop>::drop(move _33) -> [return: bb29, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        _43 = deref_copy (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _61 = _43 as *const () (PtrToPtr);
+        _62 = _61 as usize (Transmute);
+        _63 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _64 = Sub(_63, const 1_usize);
+        _65 = BitAnd(_62, _64);
+        _66 = Eq(_65, const 0_usize);
+        assert(_66, "misaligned pointer dereference: address must be a multiple of {} but is {}", _63, _62) -> [success: bb20, unwind unreachable];
+    }
+
+    bb17 (cleanup): {
+        _44 = deref_copy (((_1.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _55 = _44 as *const () (PtrToPtr);
+        _56 = _55 as usize (Transmute);
+        _57 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>);
+        _58 = Sub(_57, const 1_usize);
+        _59 = BitAnd(_56, _58);
+        _60 = Eq(_59, const 0_usize);
+        assert(_60, "misaligned pointer dereference: address must be a multiple of {} but is {}", _57, _56) -> [success: bb19, unwind unreachable];
+    }
+
+    bb18 (cleanup): {
+        _37 = &mut (*_45);
+        _38 = <Box<Box<Box<usize>>> as Drop>::drop(move _37) -> [return: bb16, unwind terminate];
+    }
+
+    bb19 (cleanup): {
+        _45 = deref_copy ((((*_44).0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _49 = _45 as *const () (PtrToPtr);
+        _50 = _49 as usize (Transmute);
+        _51 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _52 = Sub(_51, const 1_usize);
+        _53 = BitAnd(_50, _52);
+        _54 = Eq(_53, const 0_usize);
+        assert(_54, "misaligned pointer dereference: address must be a multiple of {} but is {}", _51, _50) -> [success: bb18, unwind unreachable];
+    }
+
+    bb20 (cleanup): {
+        _35 = &mut (*_43);
+        _36 = <Box<Box<Box<Box<usize>>>> as Drop>::drop(move _35) -> [return: bb15, unwind terminate];
+    }
+
+    bb21: {
+        _27 = &mut (*_39);
+        _28 = <Box<Box<Box<Box<usize>>>> as Drop>::drop(move _27) -> [return: bb12, unwind: bb11];
+    }
+
+    bb22 (cleanup): {
+        _29 = &mut (*_40);
+        _30 = <Box<Box<Box<Box<usize>>>> as Drop>::drop(move _29) -> [return: bb30, unwind terminate];
+    }
+
+    bb23: {
+        _31 = &mut (*_42);
+        _32 = <Box<Box<Box<usize>>> as Drop>::drop(move _31) -> [return: bb14, unwind: bb13];
+    }
+
+    bb24: {
+        _42 = deref_copy ((((*_41).0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _79 = _42 as *const () (PtrToPtr);
+        _80 = _79 as usize (Transmute);
+        _81 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _82 = Sub(_81, const 1_usize);
+        _83 = BitAnd(_80, _82);
+        _84 = Eq(_83, const 0_usize);
+        assert(_84, "misaligned pointer dereference: address must be a multiple of {} but is {}", _81, _80) -> [success: bb23, unwind unreachable];
+    }
+
+    bb25: {
+        _9 = move (*_48);
+        _8 = <Box<usize> as double>::double(move _9) -> [return: bb6, unwind: bb17];
+    }
+
+    bb26: {
+        _22 = deref_copy (*_47);
+        _48 = (((_22.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<usize>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<usize>>>).0: *const std::boxed::Box<std::boxed::Box<usize>>);
+        _91 = _48 as *const () (PtrToPtr);
+        _92 = _91 as usize (Transmute);
+        _93 = AlignOf(std::boxed::Box<std::boxed::Box<usize>>);
+        _94 = Sub(_93, const 1_usize);
+        _95 = BitAnd(_92, _94);
+        _96 = Eq(_95, const 0_usize);
+        assert(_96, "misaligned pointer dereference: address must be a multiple of {} but is {}", _93, _92) -> [success: bb25, unwind unreachable];
+    }
+
+    bb27: {
+        _21 = deref_copy (*_46);
+        _47 = (((_21.0: std::ptr::Unique<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: std::ptr::NonNull<std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>>).0: *const std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _97 = _47 as *const () (PtrToPtr);
+        _98 = _97 as usize (Transmute);
+        _99 = AlignOf(std::boxed::Box<std::boxed::Box<std::boxed::Box<usize>>>);
+        _100 = Sub(_99, const 1_usize);
+        _101 = BitAnd(_98, _100);
+        _102 = Eq(_101, const 0_usize);
+        assert(_102, "misaligned pointer dereference: address must be a multiple of {} but is {}", _99, _98) -> [success: bb26, unwind unreachable];
+    }
+
+    bb28 (cleanup): {
+        goto -> bb9;
+    }
+
+    bb29 (cleanup): {
+        goto -> bb9;
+    }
+
+    bb30 (cleanup): {
+        goto -> bb11;
+    }
+}

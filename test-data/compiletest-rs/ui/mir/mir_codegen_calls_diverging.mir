@@ -1,0 +1,32 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn diverging_fn() -> ! {
+    let mut _0: !;
+    let _1: !;
+
+    bb0: {
+        _1 = begin_panic::<&str>(const "diverging_fn called");
+    }
+}
+
+fn mir() -> () {
+    let mut _0: ();
+    let _1: !;
+
+    bb0: {
+        _1 = diverging_fn();
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = mir() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

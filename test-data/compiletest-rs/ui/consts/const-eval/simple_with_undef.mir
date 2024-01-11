@@ -1,0 +1,27 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+const PARSE_BOOL: Option<&str> = {
+    let mut _0: std::option::Option<&str>;
+
+    bb0: {
+        _0 = Option::<&str>::None;
+        return;
+    }
+}
+
+static FOO: (Option<&str>, u32) = {
+    let mut _0: (std::option::Option<&str>, u32);
+
+    bb0: {
+        _0 = (const _, const 42_u32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

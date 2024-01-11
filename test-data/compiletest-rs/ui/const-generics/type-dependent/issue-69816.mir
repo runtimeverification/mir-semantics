@@ -1,0 +1,128 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn IterExt::default_for_size(_1: Self) -> [<Self as Iterator>::Item; N] {
+    debug self => _1;
+    let mut _0: [<Self as std::iter::Iterator>::Item; N];
+
+    bb0: {
+        _0 = <[<Self as Iterator>::Item; N] as Default>::default() -> [return: bb1, unwind: bb3];
+    }
+
+    bb1: {
+        drop(_1) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        drop(_1) -> [return: bb4, unwind terminate];
+    }
+
+    bb4 (cleanup): {
+        resume;
+    }
+}
+
+IterExt::default_for_size::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+IterExt::default_for_size::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const N;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [u32; 10];
+    let mut _2: std::ops::Range<u32>;
+    let mut _3: (&[u32; 10], &[u32; 10]);
+    let mut _4: &[u32; 10];
+    let mut _5: &[u32; 10];
+    let _6: [u32; 10];
+    let mut _9: bool;
+    let mut _10: bool;
+    let _12: !;
+    let mut _13: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug arr => _1;
+        let _7: &[u32; 10];
+        let _8: &[u32; 10];
+        scope 2 {
+            debug left_val => _7;
+            debug right_val => _8;
+            let _11: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _11;
+            }
+        }
+    }
+
+    bb0: {
+        _2 = std::ops::Range::<u32> { start: const 0_u32, end: const 10_u32 };
+        _1 = <std::ops::Range<u32> as IterExt>::default_for_size::<10>(move _2) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_1;
+        _6 = [const 0_u32; 10];
+        _5 = &_6;
+        _3 = (move _4, move _5);
+        _7 = (_3.0: &[u32; 10]);
+        _8 = (_3.1: &[u32; 10]);
+        _10 = <[u32; 10] as PartialEq>::eq(_7, _8) -> bb2;
+    }
+
+    bb2: {
+        _9 = Not(move _10);
+        switchInt(move _9) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _11 = core::panicking::AssertKind::Eq;
+        _13 = Option::<Arguments<'_>>::None;
+        _12 = core::panicking::assert_failed::<[u32; 10], [u32; 10]>(move _11, _7, _8, move _13);
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+const N: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}
+
+main::{constant#1}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const _;
+        return;
+    }
+}
+
+main::{constant#0}: usize = {
+    let mut _0: usize;
+
+    bb0: {
+        _0 = const 10_usize;
+        return;
+    }
+}

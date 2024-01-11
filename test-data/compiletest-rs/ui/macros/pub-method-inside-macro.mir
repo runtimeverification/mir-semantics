@@ -1,0 +1,26 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn bleh::<impl at ui/macros/pub-method-inside-macro.rs:15:5: 15:11>::bar(_1: &S) -> () {
+    debug self => _1;
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let mut _2: &bleh::S;
+    let _3: bleh::S;
+
+    bb0: {
+        _2 = &_3;
+        _1 = S::bar(move _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}

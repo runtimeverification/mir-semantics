@@ -1,0 +1,227 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: std::ops::RangeFrom<u8>;
+    let mut _2: (&u8, &u8);
+    let mut _3: &u8;
+    let _4: u8;
+    let mut _5: std::option::Option<u8>;
+    let mut _6: &mut std::ops::RangeFrom<u8>;
+    let mut _7: &u8;
+    let _8: u8;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: u8;
+    let mut _14: u8;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _18: (&u8, &u8);
+    let mut _19: &u8;
+    let _20: u8;
+    let mut _21: std::option::Option<u8>;
+    let mut _22: &mut std::ops::RangeFrom<u8>;
+    let mut _23: &u8;
+    let _24: u8;
+    let mut _27: bool;
+    let mut _28: bool;
+    let mut _29: u8;
+    let mut _30: u8;
+    let _32: !;
+    let mut _33: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _35: (&i8, &i8);
+    let mut _36: &i8;
+    let _37: i8;
+    let mut _38: std::option::Option<i8>;
+    let mut _39: &mut std::ops::RangeFrom<i8>;
+    let mut _40: &i8;
+    let _41: i8;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: i8;
+    let mut _47: i8;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _51: (&i8, &i8);
+    let mut _52: &i8;
+    let _53: i8;
+    let mut _54: std::option::Option<i8>;
+    let mut _55: &mut std::ops::RangeFrom<i8>;
+    let mut _56: &i8;
+    let _57: i8;
+    let mut _60: bool;
+    let mut _61: bool;
+    let mut _62: i8;
+    let mut _63: i8;
+    let _65: !;
+    let mut _66: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug it => _1;
+        let _9: &u8;
+        let _10: &u8;
+        let _25: &u8;
+        let _26: &u8;
+        let mut _34: std::ops::RangeFrom<i8>;
+        scope 2 {
+            debug left_val => _9;
+            debug right_val => _10;
+            let _15: core::panicking::AssertKind;
+            scope 3 {
+                debug kind => _15;
+            }
+        }
+        scope 4 {
+            debug left_val => _25;
+            debug right_val => _26;
+            let _31: core::panicking::AssertKind;
+            scope 5 {
+                debug kind => _31;
+            }
+        }
+        scope 6 {
+            debug it => _34;
+            let _42: &i8;
+            let _43: &i8;
+            let _58: &i8;
+            let _59: &i8;
+            scope 7 {
+                debug left_val => _42;
+                debug right_val => _43;
+                let _48: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _48;
+                }
+            }
+            scope 9 {
+                debug left_val => _58;
+                debug right_val => _59;
+                let _64: core::panicking::AssertKind;
+                scope 10 {
+                    debug kind => _64;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = RangeFrom::<u8> { start: const _ };
+        _6 = &mut _1;
+        _5 = <RangeFrom<u8> as Iterator>::next(move _6) -> bb1;
+    }
+
+    bb1: {
+        _4 = Option::<u8>::unwrap(move _5) -> bb2;
+    }
+
+    bb2: {
+        _3 = &_4;
+        _8 = const u8::MAX;
+        _7 = &_8;
+        _2 = (move _3, move _7);
+        _9 = (_2.0: &u8);
+        _10 = (_2.1: &u8);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<u8, u8>(move _15, _9, _10, move _17);
+    }
+
+    bb4: {
+        _22 = &mut _1;
+        _21 = <RangeFrom<u8> as Iterator>::next(move _22) -> bb5;
+    }
+
+    bb5: {
+        _20 = Option::<u8>::unwrap(move _21) -> bb6;
+    }
+
+    bb6: {
+        _19 = &_20;
+        _24 = const _;
+        _23 = &_24;
+        _18 = (move _19, move _23);
+        _25 = (_18.0: &u8);
+        _26 = (_18.1: &u8);
+        _29 = (*_25);
+        _30 = (*_26);
+        _28 = Eq(move _29, move _30);
+        _27 = Not(move _28);
+        switchInt(move _27) -> [0: bb8, otherwise: bb7];
+    }
+
+    bb7: {
+        _31 = core::panicking::AssertKind::Eq;
+        _33 = Option::<Arguments<'_>>::None;
+        _32 = core::panicking::assert_failed::<u8, u8>(move _31, _25, _26, move _33);
+    }
+
+    bb8: {
+        _34 = RangeFrom::<i8> { start: const _ };
+        _39 = &mut _34;
+        _38 = <RangeFrom<i8> as Iterator>::next(move _39) -> bb9;
+    }
+
+    bb9: {
+        _37 = Option::<i8>::unwrap(move _38) -> bb10;
+    }
+
+    bb10: {
+        _36 = &_37;
+        _41 = const i8::MAX;
+        _40 = &_41;
+        _35 = (move _36, move _40);
+        _42 = (_35.0: &i8);
+        _43 = (_35.1: &i8);
+        _46 = (*_42);
+        _47 = (*_43);
+        _45 = Eq(move _46, move _47);
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<i8, i8>(move _48, _42, _43, move _50);
+    }
+
+    bb12: {
+        _55 = &mut _34;
+        _54 = <RangeFrom<i8> as Iterator>::next(move _55) -> bb13;
+    }
+
+    bb13: {
+        _53 = Option::<i8>::unwrap(move _54) -> bb14;
+    }
+
+    bb14: {
+        _52 = &_53;
+        _57 = const _;
+        _56 = &_57;
+        _51 = (move _52, move _56);
+        _58 = (_51.0: &i8);
+        _59 = (_51.1: &i8);
+        _62 = (*_58);
+        _63 = (*_59);
+        _61 = Eq(move _62, move _63);
+        _60 = Not(move _61);
+        switchInt(move _60) -> [0: bb16, otherwise: bb15];
+    }
+
+    bb15: {
+        _64 = core::panicking::AssertKind::Eq;
+        _66 = Option::<Arguments<'_>>::None;
+        _65 = core::panicking::assert_failed::<i8, i8>(move _64, _58, _59, move _66);
+    }
+
+    bb16: {
+        return;
+    }
+}

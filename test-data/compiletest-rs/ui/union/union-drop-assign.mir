@@ -1,0 +1,246 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/union/union-drop-assign.rs:14:1: 14:16>::drop(_1: &mut S) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut u8;
+    scope 1 {
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut u8};
+        (*_2) = Add((*_2), const 10_u8);
+        return;
+    }
+}
+
+alloc1 (static: CHECK, size: 1, align: 1) {
+    00                                              │ .
+}
+
+fn <impl at ui/union/union-drop-assign.rs:20:1: 20:16>::drop(_1: &mut U) -> () {
+    debug self => _1;
+    let mut _0: ();
+    let mut _2: *mut u8;
+    scope 1 {
+    }
+
+    bb0: {
+        _2 = const {alloc1: *mut u8};
+        (*_2) = Add((*_2), const 1_u8);
+        return;
+    }
+}
+
+alloc1 (static: CHECK, size: 1, align: 1) {
+    00                                              │ .
+}
+
+static mut CHECK: u8 = {
+    let mut _0: u8;
+
+    bb0: {
+        _0 = const 0_u8;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _2: std::mem::ManuallyDrop<S>;
+    let mut _3: (&u8, &u8);
+    let mut _4: &u8;
+    let _5: *mut u8;
+    let mut _6: &u8;
+    let _7: u8;
+    let mut _10: bool;
+    let mut _11: bool;
+    let mut _12: u8;
+    let mut _13: u8;
+    let _15: !;
+    let mut _16: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _17: std::mem::ManuallyDrop<S>;
+    let mut _18: (&u8, &u8);
+    let mut _19: &u8;
+    let _20: *mut u8;
+    let mut _21: &u8;
+    let _22: u8;
+    let mut _25: bool;
+    let mut _26: bool;
+    let mut _27: u8;
+    let mut _28: u8;
+    let _30: !;
+    let mut _31: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _32: S;
+    let mut _33: &mut S;
+    let mut _34: &mut std::mem::ManuallyDrop<S>;
+    let mut _35: (&u8, &u8);
+    let mut _36: &u8;
+    let _37: *mut u8;
+    let mut _38: &u8;
+    let _39: u8;
+    let mut _42: bool;
+    let mut _43: bool;
+    let mut _44: u8;
+    let mut _45: u8;
+    let _47: !;
+    let mut _48: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _49: bool;
+    scope 1 {
+        let mut _1: U;
+        scope 2 {
+            debug u => const U {{ a: ManuallyDrop::<S> {{ value: S }} }};
+            let _8: &u8;
+            let _9: &u8;
+            let _23: &u8;
+            let _24: &u8;
+            let _40: &u8;
+            let _41: &u8;
+            scope 3 {
+                debug left_val => _8;
+                debug right_val => _9;
+                let _14: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _14;
+                }
+            }
+            scope 5 {
+                debug left_val => _23;
+                debug right_val => _24;
+                let _29: core::panicking::AssertKind;
+                scope 6 {
+                    debug kind => _29;
+                }
+            }
+            scope 7 {
+                debug left_val => _40;
+                debug right_val => _41;
+                let _46: core::panicking::AssertKind;
+                scope 8 {
+                    debug kind => _46;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _49 = const false;
+        _2 = ManuallyDrop::<S>::new(const S) -> bb1;
+    }
+
+    bb1: {
+        _5 = const {alloc1: *mut u8};
+        _4 = &(*_5);
+        _7 = const 0_u8;
+        _6 = &_7;
+        _3 = (move _4, move _6);
+        _8 = (_3.0: &u8);
+        _9 = (_3.1: &u8);
+        _12 = (*_8);
+        _13 = (*_9);
+        _11 = Eq(move _12, move _13);
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _14 = core::panicking::AssertKind::Eq;
+        _16 = Option::<Arguments<'_>>::None;
+        _15 = core::panicking::assert_failed::<u8, u8>(move _14, _8, _9, move _16) -> bb14;
+    }
+
+    bb3: {
+        _17 = ManuallyDrop::<S>::new(const S) -> [return: bb4, unwind: bb14];
+    }
+
+    bb4: {
+        drop(_1) -> [return: bb5, unwind: bb14];
+    }
+
+    bb5: {
+        _20 = const {alloc1: *mut u8};
+        _19 = &(*_20);
+        _22 = const 1_u8;
+        _21 = &_22;
+        _18 = (move _19, move _21);
+        _23 = (_18.0: &u8);
+        _24 = (_18.1: &u8);
+        _27 = (*_23);
+        _28 = (*_24);
+        _26 = Eq(move _27, move _28);
+        _25 = Not(move _26);
+        switchInt(move _25) -> [0: bb7, otherwise: bb6];
+    }
+
+    bb6: {
+        _29 = core::panicking::AssertKind::Eq;
+        _31 = Option::<Arguments<'_>>::None;
+        _30 = core::panicking::assert_failed::<u8, u8>(move _29, _23, _24, move _31) -> bb14;
+    }
+
+    bb7: {
+        _49 = const true;
+        _34 = &mut (_1.0: std::mem::ManuallyDrop<S>);
+        _33 = <ManuallyDrop<S> as DerefMut>::deref_mut(move _34) -> [return: bb8, unwind: bb17];
+    }
+
+    bb8: {
+        drop((*_33)) -> [return: bb9, unwind: bb10];
+    }
+
+    bb9: {
+        _49 = const false;
+        _49 = const false;
+        _37 = const {alloc1: *mut u8};
+        _36 = &(*_37);
+        _39 = const 11_u8;
+        _38 = &_39;
+        _35 = (move _36, move _38);
+        _40 = (_35.0: &u8);
+        _41 = (_35.1: &u8);
+        _44 = (*_40);
+        _45 = (*_41);
+        _43 = Eq(move _44, move _45);
+        _42 = Not(move _43);
+        switchInt(move _42) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb10 (cleanup): {
+        _49 = const false;
+        goto -> bb17;
+    }
+
+    bb11: {
+        _46 = core::panicking::AssertKind::Eq;
+        _48 = Option::<Arguments<'_>>::None;
+        _47 = core::panicking::assert_failed::<u8, u8>(move _46, _40, _41, move _48) -> bb14;
+    }
+
+    bb12: {
+        drop(_1) -> bb13;
+    }
+
+    bb13: {
+        return;
+    }
+
+    bb14 (cleanup): {
+        drop(_1) -> [return: bb15, unwind terminate];
+    }
+
+    bb15 (cleanup): {
+        resume;
+    }
+
+    bb16 (cleanup): {
+        drop(_32) -> [return: bb14, unwind terminate];
+    }
+
+    bb17 (cleanup): {
+        switchInt(_49) -> [0: bb14, otherwise: bb16];
+    }
+}
+
+alloc1 (static: CHECK, size: 1, align: 1) {
+    00                                              │ .
+}

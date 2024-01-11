@@ -1,0 +1,168 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/consts/const_in_pattern/custom-eq-branch-warn.rs:6:1: 6:28>::eq(_1: &CustomEq, _2: &CustomEq) -> bool {
+    debug self => _1;
+    let mut _0: bool;
+
+    bb0: {
+        _0 = const false;
+        return;
+    }
+}
+
+fn <impl at ui/consts/const_in_pattern/custom-eq-branch-warn.rs:12:10: 12:19>::eq(_1: &Foo, _2: &Foo) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let _3: isize;
+    let mut _5: bool;
+    let mut _6: bool;
+    let mut _7: (&Foo, &Foo);
+    let mut _8: isize;
+    let mut _9: isize;
+    let mut _12: &Foo;
+    let mut _13: &Foo;
+    let mut _14: &Foo;
+    let mut _15: &Foo;
+    scope 1 {
+        debug __self_tag => _3;
+        let _4: isize;
+        scope 2 {
+            debug __arg1_tag => _4;
+            let _10: &CustomEq;
+            let _11: &CustomEq;
+            scope 3 {
+                debug __self_0 => _10;
+                debug __arg1_0 => _11;
+            }
+        }
+    }
+
+    bb0: {
+        _3 = discriminant((*_1));
+        _4 = discriminant((*_2));
+        _5 = Eq(_3, _4);
+        switchInt(move _5) -> [0: bb1, otherwise: bb2];
+    }
+
+    bb1: {
+        _0 = const false;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _7 = (_1, _2);
+        _12 = deref_copy (_7.0: &Foo);
+        _9 = discriminant((*_12));
+        switchInt(move _9) -> [2: bb5, otherwise: bb4];
+    }
+
+    bb3: {
+        return;
+    }
+
+    bb4: {
+        _6 = const true;
+        goto -> bb7;
+    }
+
+    bb5: {
+        _13 = deref_copy (_7.1: &Foo);
+        _8 = discriminant((*_13));
+        switchInt(move _8) -> [2: bb6, otherwise: bb4];
+    }
+
+    bb6: {
+        _14 = deref_copy (_7.0: &Foo);
+        _10 = &(((*_14) as Qux).0: CustomEq);
+        _15 = deref_copy (_7.1: &Foo);
+        _11 = &(((*_15) as Qux).0: CustomEq);
+        _6 = <CustomEq as PartialEq>::eq(_10, _11) -> bb7;
+    }
+
+    bb7: {
+        _0 = move _6;
+        goto -> bb3;
+    }
+}
+
+fn <impl at ui/consts/const_in_pattern/custom-eq-branch-warn.rs:12:21: 12:23>::assert_receiver_is_total_eq(_1: &Foo) -> () {
+    debug self => _1;
+    let mut _0: ();
+    scope 1 {
+    }
+
+    bb0: {
+        return;
+    }
+}
+
+const BAR_BAZ: Foo = {
+    let mut _0: Foo;
+    let mut _1: bool;
+    let mut _2: CustomEq;
+
+    bb0: {
+        StorageLive(_1);
+        _1 = Eq(const 42_i32, const 42_i32);
+        switchInt(move _1) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _0 = Foo::Bar;
+        goto -> bb3;
+    }
+
+    bb2: {
+        StorageLive(_2);
+        _2 = CustomEq;
+        _0 = Foo::Qux(move _2);
+        StorageDead(_2);
+        goto -> bb3;
+    }
+
+    bb3: {
+        StorageDead(_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: Foo;
+    let mut _2: isize;
+    let mut _3: !;
+
+    bb0: {
+        _1 = Foo::Qux(const CustomEq);
+        _2 = discriminant(_1);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        _3 = begin_panic::<&str>(const "explicit panic");
+    }
+}
+
+fn Foo::Qux(_1: CustomEq) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Qux(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Foo::Qux(_1: CustomEq) -> Foo {
+    let mut _0: Foo;
+
+    bb0: {
+        _0 = Foo::Qux(move _1);
+        return;
+    }
+}

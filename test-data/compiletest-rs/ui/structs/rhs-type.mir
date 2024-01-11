@@ -1,0 +1,18 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: std::string::String;
+    let _2: !;
+    scope 1 {
+        debug pth => _1;
+        let _3: T;
+        scope 2 {
+            debug _rs => _3;
+        }
+    }
+
+    bb0: {
+        _2 = begin_panic::<&str>(const "bye");
+    }
+}

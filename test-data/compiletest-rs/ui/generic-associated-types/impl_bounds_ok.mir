@@ -1,0 +1,54 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/generic-associated-types/impl_bounds_ok.rs:11:10: 11:15>::clone(_1: &Fooy) -> Fooy {
+    debug self => _1;
+    let mut _0: Fooy;
+
+    bb0: {
+        return;
+    }
+}
+
+fn <impl at ui/generic-associated-types/impl_bounds_ok.rs:20:10: 20:15>::clone(_1: &Fooer<T>) -> Fooer<T> {
+    debug self => _1;
+    let mut _0: Fooer<T>;
+    let mut _2: T;
+    let _3: &T;
+
+    bb0: {
+        _3 = &((*_1).0: T);
+        _2 = <T as Clone>::clone(_3) -> bb1;
+    }
+
+    bb1: {
+        _0 = Fooer::<T>(move _2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn Fooer(_1: T) -> Fooer<T> {
+    let mut _0: Fooer<T>;
+
+    bb0: {
+        _0 = Fooer::<T>(move _1);
+        return;
+    }
+}
+
+// MIR FOR CTFE
+fn Fooer(_1: T) -> Fooer<T> {
+    let mut _0: Fooer<T>;
+
+    bb0: {
+        _0 = Fooer::<T>(move _1);
+        return;
+    }
+}

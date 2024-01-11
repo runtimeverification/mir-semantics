@@ -1,0 +1,279 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: (&i8, &i8);
+    let mut _2: &i8;
+    let _3: i8;
+    let mut _4: &i8;
+    let _5: i8;
+    let _6: &i8;
+    let _7: &i8;
+    let mut _8: bool;
+    let mut _9: bool;
+    let mut _10: i8;
+    let mut _11: i8;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _15: (&u8, &u8);
+    let mut _16: &u8;
+    let _17: u8;
+    let mut _18: &u8;
+    let _19: u8;
+    let _20: &u8;
+    let _21: &u8;
+    let mut _22: bool;
+    let mut _23: bool;
+    let mut _24: u8;
+    let mut _25: u8;
+    let _27: !;
+    let mut _28: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _29: (&u8, &u8);
+    let mut _30: &u8;
+    let _31: u8;
+    let mut _32: &u8;
+    let _33: u8;
+    let _34: &u8;
+    let _35: &u8;
+    let mut _36: bool;
+    let mut _37: bool;
+    let mut _38: u8;
+    let mut _39: u8;
+    let _41: !;
+    let mut _42: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _43: (&u8, &u8);
+    let mut _44: &u8;
+    let _45: u8;
+    let mut _46: &u8;
+    let _47: u8;
+    let _48: &u8;
+    let _49: &u8;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: u8;
+    let mut _53: u8;
+    let _55: !;
+    let mut _56: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _57: (&u8, &u8);
+    let mut _58: &u8;
+    let _59: u8;
+    let mut _60: &u8;
+    let _61: u8;
+    let _62: &u8;
+    let _63: &u8;
+    let mut _64: bool;
+    let mut _65: bool;
+    let mut _66: u8;
+    let mut _67: u8;
+    let _69: !;
+    let mut _70: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _71: (&u8, &u8);
+    let mut _72: &u8;
+    let _73: u8;
+    let mut _74: &u8;
+    let _75: u8;
+    let _76: &u8;
+    let _77: &u8;
+    let mut _78: bool;
+    let mut _79: bool;
+    let mut _80: u8;
+    let mut _81: u8;
+    let _83: !;
+    let mut _84: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _6;
+        debug right_val => _7;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+    scope 3 {
+        debug left_val => _20;
+        debug right_val => _21;
+        let _26: core::panicking::AssertKind;
+        scope 4 {
+            debug kind => _26;
+        }
+    }
+    scope 5 {
+        debug left_val => _34;
+        debug right_val => _35;
+        let _40: core::panicking::AssertKind;
+        scope 6 {
+            debug kind => _40;
+        }
+    }
+    scope 7 {
+        debug left_val => _48;
+        debug right_val => _49;
+        let _54: core::panicking::AssertKind;
+        scope 8 {
+            debug kind => _54;
+        }
+    }
+    scope 9 {
+        debug left_val => _62;
+        debug right_val => _63;
+        let _68: core::panicking::AssertKind;
+        scope 10 {
+            debug kind => _68;
+        }
+    }
+    scope 11 {
+        debug left_val => _76;
+        debug right_val => _77;
+        let _82: core::panicking::AssertKind;
+        scope 12 {
+            debug kind => _82;
+        }
+    }
+
+    bb0: {
+        _3 = <i8 as std::ops::Neg>::neg(const i8::MIN) -> bb1;
+    }
+
+    bb1: {
+        _2 = &_3;
+        _5 = const i8::MIN;
+        _4 = &_5;
+        _1 = (move _2, move _4);
+        _6 = (_1.0: &i8);
+        _7 = (_1.1: &i8);
+        _10 = (*_6);
+        _11 = (*_7);
+        _9 = Eq(move _10, move _11);
+        _8 = Not(move _9);
+        switchInt(move _8) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<i8, i8>(move _12, _6, _7, move _14);
+    }
+
+    bb3: {
+        _17 = <u8 as std::ops::Add>::add(const u8::MAX, const 1_u8) -> bb4;
+    }
+
+    bb4: {
+        _16 = &_17;
+        _19 = const 0_u8;
+        _18 = &_19;
+        _15 = (move _16, move _18);
+        _20 = (_15.0: &u8);
+        _21 = (_15.1: &u8);
+        _24 = (*_20);
+        _25 = (*_21);
+        _23 = Eq(move _24, move _25);
+        _22 = Not(move _23);
+        switchInt(move _22) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _26 = core::panicking::AssertKind::Eq;
+        _28 = Option::<Arguments<'_>>::None;
+        _27 = core::panicking::assert_failed::<u8, u8>(move _26, _20, _21, move _28);
+    }
+
+    bb6: {
+        _31 = <u8 as std::ops::Sub>::sub(const 0_u8, const 1_u8) -> bb7;
+    }
+
+    bb7: {
+        _30 = &_31;
+        _33 = const u8::MAX;
+        _32 = &_33;
+        _29 = (move _30, move _32);
+        _34 = (_29.0: &u8);
+        _35 = (_29.1: &u8);
+        _38 = (*_34);
+        _39 = (*_35);
+        _37 = Eq(move _38, move _39);
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _40 = core::panicking::AssertKind::Eq;
+        _42 = Option::<Arguments<'_>>::None;
+        _41 = core::panicking::assert_failed::<u8, u8>(move _40, _34, _35, move _42);
+    }
+
+    bb9: {
+        _45 = <u8 as std::ops::Mul>::mul(const u8::MAX, const 2_u8) -> bb10;
+    }
+
+    bb10: {
+        _44 = &_45;
+        _47 = const 254_u8;
+        _46 = &_47;
+        _43 = (move _44, move _46);
+        _48 = (_43.0: &u8);
+        _49 = (_43.1: &u8);
+        _52 = (*_48);
+        _53 = (*_49);
+        _51 = Eq(move _52, move _53);
+        _50 = Not(move _51);
+        switchInt(move _50) -> [0: bb12, otherwise: bb11];
+    }
+
+    bb11: {
+        _54 = core::panicking::AssertKind::Eq;
+        _56 = Option::<Arguments<'_>>::None;
+        _55 = core::panicking::assert_failed::<u8, u8>(move _54, _48, _49, move _56);
+    }
+
+    bb12: {
+        _59 = <u8 as std::ops::Shl<i32>>::shl(const 1_u8, const 9_i32) -> bb13;
+    }
+
+    bb13: {
+        _58 = &_59;
+        _61 = const 2_u8;
+        _60 = &_61;
+        _57 = (move _58, move _60);
+        _62 = (_57.0: &u8);
+        _63 = (_57.1: &u8);
+        _66 = (*_62);
+        _67 = (*_63);
+        _65 = Eq(move _66, move _67);
+        _64 = Not(move _65);
+        switchInt(move _64) -> [0: bb15, otherwise: bb14];
+    }
+
+    bb14: {
+        _68 = core::panicking::AssertKind::Eq;
+        _70 = Option::<Arguments<'_>>::None;
+        _69 = core::panicking::assert_failed::<u8, u8>(move _68, _62, _63, move _70);
+    }
+
+    bb15: {
+        _73 = <u8 as std::ops::Shr<i32>>::shr(const 2_u8, const 9_i32) -> bb16;
+    }
+
+    bb16: {
+        _72 = &_73;
+        _75 = const 1_u8;
+        _74 = &_75;
+        _71 = (move _72, move _74);
+        _76 = (_71.0: &u8);
+        _77 = (_71.1: &u8);
+        _80 = (*_76);
+        _81 = (*_77);
+        _79 = Eq(move _80, move _81);
+        _78 = Not(move _79);
+        switchInt(move _78) -> [0: bb18, otherwise: bb17];
+    }
+
+    bb17: {
+        _82 = core::panicking::AssertKind::Eq;
+        _84 = Option::<Arguments<'_>>::None;
+        _83 = core::panicking::assert_failed::<u8, u8>(move _82, _76, _77, move _84);
+    }
+
+    bb18: {
+        return;
+    }
+}

@@ -1,0 +1,480 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn check_display_eq(_1: impl IntoIterator<Item = impl Display>) -> () {
+    debug iter => _1;
+    let mut _0: ();
+    let mut _2: std::string::String;
+    let mut _3: <impl IntoIterator<Item = impl Display> as std::iter::IntoIterator>::IntoIter;
+    let mut _4: impl IntoIterator<Item = impl Display>;
+    let mut _6: std::option::Option<impl Display>;
+    let mut _7: &mut <impl IntoIterator<Item = impl Display> as std::iter::IntoIterator>::IntoIter;
+    let mut _8: isize;
+    let mut _12: std::fmt::Arguments<'_>;
+    let mut _13: &[&str];
+    let _14: &[&str; 2];
+    let _15: [&str; 2];
+    let mut _16: &[core::fmt::rt::Argument<'_>];
+    let _17: &[core::fmt::rt::Argument<'_>; 1];
+    let _18: [core::fmt::rt::Argument<'_>; 1];
+    let mut _19: core::fmt::rt::Argument<'_>;
+    let _20: &impl Display;
+    let _21: ();
+    let mut _22: &mut std::string::String;
+    let mut _23: &str;
+    let _24: &str;
+    let _25: &std::string::String;
+    let mut _26: (&&str, &&str);
+    let mut _27: &&str;
+    let _28: &str;
+    let mut _29: &&str;
+    let _30: &str;
+    let mut _31: &str;
+    let _32: &str;
+    let mut _33: &std::string::String;
+    let mut _36: bool;
+    let mut _37: bool;
+    let _39: !;
+    let mut _40: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _41: bool;
+    scope 1 {
+        debug collected => _2;
+        let mut _5: <impl IntoIterator<Item = impl Display> as std::iter::IntoIterator>::IntoIter;
+        let _34: &&str;
+        let _35: &&str;
+        scope 2 {
+            debug iter => _5;
+            let _9: impl Display;
+            scope 3 {
+                debug it => _9;
+                let _10: std::string::String;
+                let _11: std::string::String;
+                scope 4 {
+                    debug disp => _10;
+                }
+                scope 5 {
+                    debug res => _11;
+                }
+            }
+        }
+        scope 6 {
+            debug left_val => _34;
+            debug right_val => _35;
+            let _38: core::panicking::AssertKind;
+            scope 7 {
+                debug kind => _38;
+            }
+        }
+    }
+
+    bb0: {
+        _41 = const false;
+        _41 = const true;
+        _2 = String::new() -> [return: bb1, unwind: bb27];
+    }
+
+    bb1: {
+        _41 = const false;
+        _4 = move _1;
+        _3 = <impl IntoIterator<Item = impl Display> as IntoIterator>::into_iter(move _4) -> [return: bb2, unwind: bb24];
+    }
+
+    bb2: {
+        _5 = move _3;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _7 = &mut _5;
+        _6 = <<impl IntoIterator<Item = impl Display> as IntoIterator>::IntoIter as Iterator>::next(_7) -> [return: bb4, unwind: bb23];
+    }
+
+    bb4: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb7, 1: bb5, otherwise: bb6];
+    }
+
+    bb5: {
+        _9 = move ((_6 as Some).0: impl Display);
+        _15 = [const "", const " "];
+        _14 = &_15;
+        _13 = _14 as &[&str] (Pointer(Unsize));
+        _20 = &_9;
+        _19 = core::fmt::rt::Argument::<'_>::new_display::<impl Display>(_20) -> [return: bb8, unwind: bb22];
+    }
+
+    bb6: {
+        unreachable;
+    }
+
+    bb7: {
+        drop(_5) -> [return: bb14, unwind: bb24];
+    }
+
+    bb8: {
+        _18 = [move _19];
+        _17 = &_18;
+        _16 = _17 as &[core::fmt::rt::Argument<'_>] (Pointer(Unsize));
+        _12 = Arguments::<'_>::new_v1(move _13, move _16) -> [return: bb9, unwind: bb22];
+    }
+
+    bb9: {
+        _11 = format(move _12) -> [return: bb10, unwind: bb22];
+    }
+
+    bb10: {
+        _10 = move _11;
+        _22 = &mut _2;
+        _25 = &_10;
+        _24 = <String as Deref>::deref(_25) -> [return: bb11, unwind: bb21];
+    }
+
+    bb11: {
+        _23 = _24;
+        _21 = String::push_str(move _22, move _23) -> [return: bb12, unwind: bb21];
+    }
+
+    bb12: {
+        drop(_10) -> [return: bb13, unwind: bb22];
+    }
+
+    bb13: {
+        drop(_9) -> [return: bb3, unwind: bb23];
+    }
+
+    bb14: {
+        _28 = const "0 3 27 823 4891 1 0";
+        _27 = &_28;
+        _33 = &_2;
+        _32 = <String as Deref>::deref(move _33) -> [return: bb15, unwind: bb24];
+    }
+
+    bb15: {
+        _31 = _32;
+        _30 = core::str::<impl str>::trim(move _31) -> [return: bb16, unwind: bb24];
+    }
+
+    bb16: {
+        _29 = &_30;
+        _26 = (move _27, move _29);
+        _34 = (_26.0: &&str);
+        _35 = (_26.1: &&str);
+        _37 = <&str as PartialEq>::eq(_34, _35) -> [return: bb17, unwind: bb24];
+    }
+
+    bb17: {
+        _36 = Not(move _37);
+        switchInt(move _36) -> [0: bb19, otherwise: bb18];
+    }
+
+    bb18: {
+        _38 = core::panicking::AssertKind::Eq;
+        _40 = Option::<Arguments<'_>>::None;
+        _39 = core::panicking::assert_failed::<&str, &str>(move _38, _34, _35, move _40) -> bb24;
+    }
+
+    bb19: {
+        drop(_2) -> [return: bb20, unwind: bb27];
+    }
+
+    bb20: {
+        return;
+    }
+
+    bb21 (cleanup): {
+        drop(_10) -> [return: bb22, unwind terminate];
+    }
+
+    bb22 (cleanup): {
+        drop(_9) -> [return: bb23, unwind terminate];
+    }
+
+    bb23 (cleanup): {
+        drop(_5) -> [return: bb24, unwind terminate];
+    }
+
+    bb24 (cleanup): {
+        drop(_2) -> [return: bb27, unwind terminate];
+    }
+
+    bb25 (cleanup): {
+        resume;
+    }
+
+    bb26 (cleanup): {
+        drop(_1) -> [return: bb25, unwind terminate];
+    }
+
+    bb27 (cleanup): {
+        switchInt(_41) -> [0: bb25, otherwise: bb26];
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: [i32; 7];
+    let mut _3: std::boxed::Box<[i32]>;
+    let mut _4: usize;
+    let mut _5: usize;
+    let mut _6: *mut u8;
+    let mut _7: std::boxed::Box<[i32; 7]>;
+    let mut _10: std::boxed::Box<[u32]>;
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: *mut u8;
+    let mut _14: std::boxed::Box<[u32; 7]>;
+    let _17: &str;
+    let _18: &str;
+    let _19: &str;
+    let _20: &str;
+    let _21: &str;
+    let _22: &str;
+    let mut _24: std::boxed::Box<[&str]>;
+    let mut _25: usize;
+    let mut _26: usize;
+    let mut _27: *mut u8;
+    let mut _28: std::boxed::Box<[&str; 7]>;
+    let _29: &str;
+    let _30: &str;
+    let _31: &str;
+    let _32: &str;
+    let _33: &str;
+    let _34: &str;
+    let _35: ();
+    let mut _36: &[i32; 7];
+    let _37: ();
+    let mut _38: std::vec::Vec<i32>;
+    let _39: ();
+    let mut _40: &[u32; 7];
+    let _41: ();
+    let mut _42: std::vec::Vec<u32>;
+    let _43: ();
+    let mut _44: &[u16; 7];
+    let _45: ();
+    let mut _46: &[&str; 7];
+    let _47: ();
+    let mut _48: std::vec::Vec<&str>;
+    let mut _49: bool;
+    let mut _50: bool;
+    let mut _51: bool;
+    let mut _52: *const [i32; 7];
+    let mut _53: *const [u32; 7];
+    let mut _54: *const [&str; 7];
+    scope 1 {
+        debug i32_list => _1;
+        let _2: std::vec::Vec<i32>;
+        let mut _67: *const ();
+        let mut _68: usize;
+        let mut _69: usize;
+        let mut _70: usize;
+        let mut _71: usize;
+        let mut _72: bool;
+        scope 2 {
+            debug i32_list_vec => _2;
+            let _8: [u32; 7];
+            scope 4 {
+                debug u32_list => _8;
+                let _9: std::vec::Vec<u32>;
+                let mut _61: *const ();
+                let mut _62: usize;
+                let mut _63: usize;
+                let mut _64: usize;
+                let mut _65: usize;
+                let mut _66: bool;
+                scope 5 {
+                    debug u32_list_vec => _9;
+                    let _15: [u16; 7];
+                    scope 7 {
+                        debug u16_list => _15;
+                        let _16: [&str; 7];
+                        scope 8 {
+                            debug str_list => _16;
+                            let _23: std::vec::Vec<&str>;
+                            let mut _55: *const ();
+                            let mut _56: usize;
+                            let mut _57: usize;
+                            let mut _58: usize;
+                            let mut _59: usize;
+                            let mut _60: bool;
+                            scope 9 {
+                                debug str_list_vec => _23;
+                            }
+                            scope 10 {
+                            }
+                        }
+                    }
+                }
+                scope 6 {
+                }
+            }
+        }
+        scope 3 {
+        }
+    }
+
+    bb0: {
+        _51 = const false;
+        _50 = const false;
+        _49 = const false;
+        _1 = [const 0_i32, const 3_i32, const 27_i32, const 823_i32, const 4891_i32, const 1_i32, const 0_i32];
+        _4 = SizeOf([i32; 7]);
+        _5 = AlignOf([i32; 7]);
+        _6 = alloc::alloc::exchange_malloc(move _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        _7 = ShallowInitBox(move _6, [i32; 7]);
+        _52 = (((_7.0: std::ptr::Unique<[i32; 7]>).0: std::ptr::NonNull<[i32; 7]>).0: *const [i32; 7]);
+        _67 = _52 as *const () (PtrToPtr);
+        _68 = _67 as usize (Transmute);
+        _69 = AlignOf(i32);
+        _70 = Sub(_69, const 1_usize);
+        _71 = BitAnd(_68, _70);
+        _72 = Eq(_71, const 0_usize);
+        assert(_72, "misaligned pointer dereference: address must be a multiple of {} but is {}", _69, _68) -> [success: bb23, unwind unreachable];
+    }
+
+    bb2: {
+        _51 = const true;
+        _8 = [const 0_u32, const 3_u32, const 27_u32, const 823_u32, const 4891_u32, const 1_u32, const 0_u32];
+        _11 = SizeOf([u32; 7]);
+        _12 = AlignOf([u32; 7]);
+        _13 = alloc::alloc::exchange_malloc(move _11, move _12) -> [return: bb3, unwind: bb20];
+    }
+
+    bb3: {
+        _14 = ShallowInitBox(move _13, [u32; 7]);
+        _53 = (((_14.0: std::ptr::Unique<[u32; 7]>).0: std::ptr::NonNull<[u32; 7]>).0: *const [u32; 7]);
+        _61 = _53 as *const () (PtrToPtr);
+        _62 = _61 as usize (Transmute);
+        _63 = AlignOf(u32);
+        _64 = Sub(_63, const 1_usize);
+        _65 = BitAnd(_62, _64);
+        _66 = Eq(_65, const 0_usize);
+        assert(_66, "misaligned pointer dereference: address must be a multiple of {} but is {}", _63, _62) -> [success: bb22, unwind unreachable];
+    }
+
+    bb4: {
+        _50 = const true;
+        _15 = [const 0_u16, const 3_u16, const 27_u16, const 823_u16, const 4891_u16, const 1_u16, const 0_u16];
+        _17 = const "3";
+        _18 = const "27";
+        _19 = const "823";
+        _20 = const "4891";
+        _21 = const "1";
+        _22 = const "0";
+        _16 = [const "0", _17, _18, _19, _20, _21, _22];
+        _25 = SizeOf([&str; 7]);
+        _26 = AlignOf([&str; 7]);
+        _27 = alloc::alloc::exchange_malloc(move _25, move _26) -> [return: bb5, unwind: bb18];
+    }
+
+    bb5: {
+        _28 = ShallowInitBox(move _27, [&str; 7]);
+        _29 = const "3";
+        _30 = const "27";
+        _31 = const "823";
+        _32 = const "4891";
+        _33 = const "1";
+        _34 = const "0";
+        _54 = (((_28.0: std::ptr::Unique<[&str; 7]>).0: std::ptr::NonNull<[&str; 7]>).0: *const [&str; 7]);
+        _55 = _54 as *const () (PtrToPtr);
+        _56 = _55 as usize (Transmute);
+        _57 = AlignOf(&str);
+        _58 = Sub(_57, const 1_usize);
+        _59 = BitAnd(_56, _58);
+        _60 = Eq(_59, const 0_usize);
+        assert(_60, "misaligned pointer dereference: address must be a multiple of {} but is {}", _57, _56) -> [success: bb21, unwind unreachable];
+    }
+
+    bb6: {
+        _49 = const true;
+        _36 = &_1;
+        _35 = check_display_eq::<&i32, &[i32; 7]>(move _36) -> [return: bb7, unwind: bb16];
+    }
+
+    bb7: {
+        _51 = const false;
+        _38 = move _2;
+        _37 = check_display_eq::<i32, Vec<i32>>(move _38) -> [return: bb8, unwind: bb16];
+    }
+
+    bb8: {
+        _40 = &_8;
+        _39 = check_display_eq::<&u32, &[u32; 7]>(move _40) -> [return: bb9, unwind: bb16];
+    }
+
+    bb9: {
+        _50 = const false;
+        _42 = move _9;
+        _41 = check_display_eq::<u32, Vec<u32>>(move _42) -> [return: bb10, unwind: bb16];
+    }
+
+    bb10: {
+        _44 = &_15;
+        _43 = check_display_eq::<&u16, &[u16; 7]>(move _44) -> [return: bb11, unwind: bb16];
+    }
+
+    bb11: {
+        _46 = &_16;
+        _45 = check_display_eq::<&&str, &[&str; 7]>(move _46) -> [return: bb12, unwind: bb16];
+    }
+
+    bb12: {
+        _49 = const false;
+        _48 = move _23;
+        _47 = check_display_eq::<&str, Vec<&str>>(move _48) -> [return: bb13, unwind: bb16];
+    }
+
+    bb13: {
+        _49 = const false;
+        _50 = const false;
+        _51 = const false;
+        return;
+    }
+
+    bb14 (cleanup): {
+        resume;
+    }
+
+    bb15 (cleanup): {
+        drop(_23) -> [return: bb18, unwind terminate];
+    }
+
+    bb16 (cleanup): {
+        switchInt(_49) -> [0: bb18, otherwise: bb15];
+    }
+
+    bb17 (cleanup): {
+        drop(_9) -> [return: bb20, unwind terminate];
+    }
+
+    bb18 (cleanup): {
+        switchInt(_50) -> [0: bb20, otherwise: bb17];
+    }
+
+    bb19 (cleanup): {
+        drop(_2) -> [return: bb14, unwind terminate];
+    }
+
+    bb20 (cleanup): {
+        switchInt(_51) -> [0: bb14, otherwise: bb19];
+    }
+
+    bb21: {
+        (*_54) = [const "0", _29, _30, _31, _32, _33, _34];
+        _24 = move _28 as std::boxed::Box<[&str]> (Pointer(Unsize));
+        _23 = slice::<impl [&str]>::into_vec::<std::alloc::Global>(move _24) -> [return: bb6, unwind: bb18];
+    }
+
+    bb22: {
+        (*_53) = [const 0_u32, const 3_u32, const 27_u32, const 823_u32, const 4891_u32, const 1_u32, const 0_u32];
+        _10 = move _14 as std::boxed::Box<[u32]> (Pointer(Unsize));
+        _9 = slice::<impl [u32]>::into_vec::<std::alloc::Global>(move _10) -> [return: bb4, unwind: bb20];
+    }
+
+    bb23: {
+        (*_52) = [const 0_i32, const 3_i32, const 27_i32, const 823_i32, const 4891_i32, const 1_i32, const 0_i32];
+        _3 = move _7 as std::boxed::Box<[i32]> (Pointer(Unsize));
+        _2 = slice::<impl [i32]>::into_vec::<std::alloc::Global>(move _3) -> bb2;
+    }
+}

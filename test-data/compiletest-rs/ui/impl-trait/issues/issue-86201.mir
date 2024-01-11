@@ -1,0 +1,37 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+static STATIC_FN: FunType = {
+    let mut _0: FunType;
+
+    bb0: {
+        _0 = some_fn;
+        return;
+    }
+}
+
+fn some_fn() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: <FunType as std::ops::FnOnce<()>>::Output;
+    let _2: &FunType;
+    scope 1 {
+    }
+
+    bb0: {
+        _2 = const {alloc1: &FunType};
+        _1 = <FunType as Fn<()>>::call(_2, const ()) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc1 (static: STATIC_FN, size: 0, align: 1) {}

@@ -1,0 +1,160 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn each(_1: &[T], _2: F) -> () {
+    debug x => _1;
+    debug f => _2;
+    let mut _0: ();
+    let mut _3: std::slice::Iter<'_, T>;
+    let mut _4: std::slice::Iter<'_, T>;
+    let _5: ();
+    let mut _6: std::option::Option<&T>;
+    let mut _7: &mut std::slice::Iter<'_, T>;
+    let mut _8: isize;
+    let mut _10: &mut F;
+    let mut _11: (&T,);
+    scope 1 {
+        debug iter => _4;
+        let _9: &T;
+        scope 2 {
+            debug val => _9;
+        }
+    }
+
+    bb0: {
+        _3 = <&[T] as IntoIterator>::into_iter(_1) -> [return: bb1, unwind: bb8];
+    }
+
+    bb1: {
+        _4 = move _3;
+        goto -> bb2;
+    }
+
+    bb2: {
+        _7 = &mut _4;
+        _6 = <std::slice::Iter<'_, T> as Iterator>::next(_7) -> [return: bb3, unwind: bb8];
+    }
+
+    bb3: {
+        _8 = discriminant(_6);
+        switchInt(move _8) -> [0: bb6, 1: bb4, otherwise: bb5];
+    }
+
+    bb4: {
+        _9 = ((_6 as Some).0: &T);
+        _10 = &mut _2;
+        _11 = (_9,);
+        _5 = <F as FnMut<(&T,)>>::call_mut(move _10, move _11) -> [return: bb10, unwind: bb8];
+    }
+
+    bb5: {
+        unreachable;
+    }
+
+    bb6: {
+        drop(_2) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_2) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        resume;
+    }
+
+    bb10: {
+        goto -> bb2;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: usize;
+    let _3: ();
+    let mut _4: &[usize];
+    let _5: &[usize; 5];
+    let mut _6: [closure@ui/functions-closures/capture-clauses-unboxed-closures.rs:11:18: 11:31];
+    let mut _7: &mut usize;
+    let mut _8: (&usize, &usize);
+    let mut _9: &usize;
+    let mut _10: &usize;
+    let _11: usize;
+    let mut _14: bool;
+    let mut _15: bool;
+    let mut _16: usize;
+    let mut _17: usize;
+    let _19: !;
+    let mut _20: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug sum => _1;
+        let _2: [usize; 5];
+        scope 2 {
+            debug elems => _2;
+            let _12: &usize;
+            let _13: &usize;
+            scope 3 {
+                debug left_val => _12;
+                debug right_val => _13;
+                let _18: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _18;
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 0_usize;
+        _2 = [const 1_usize, const 2_usize, const 3_usize, const 4_usize, const 5_usize];
+        _5 = &_2;
+        _4 = _5 as &[usize] (Pointer(Unsize));
+        _7 = &mut _1;
+        _6 = [closure@ui/functions-closures/capture-clauses-unboxed-closures.rs:11:18: 11:31] { sum: move _7 };
+        _3 = each::<'_, usize, [closure@ui/functions-closures/capture-clauses-unboxed-closures.rs:11:18: 11:31]>(move _4, move _6) -> bb1;
+    }
+
+    bb1: {
+        _9 = &_1;
+        _11 = const 15_usize;
+        _10 = &_11;
+        _8 = (move _9, move _10);
+        _12 = (_8.0: &usize);
+        _13 = (_8.1: &usize);
+        _16 = (*_12);
+        _17 = (*_13);
+        _15 = Eq(move _16, move _17);
+        _14 = Not(move _15);
+        switchInt(move _14) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _18 = core::panicking::AssertKind::Eq;
+        _20 = Option::<Arguments<'_>>::None;
+        _19 = core::panicking::assert_failed::<usize, usize>(move _18, _12, _13, move _20);
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn main::{closure#0}(_1: &mut [closure@ui/functions-closures/capture-clauses-unboxed-closures.rs:11:18: 11:31], _2: &usize) -> () {
+    debug val => _2;
+    debug sum => (*((*_1).0: &mut usize));
+    let mut _0: ();
+    let mut _3: usize;
+    let mut _4: &mut usize;
+    let mut _5: &mut usize;
+
+    bb0: {
+        _3 = (*_2);
+        _4 = deref_copy ((*_1).0: &mut usize);
+        _5 = deref_copy ((*_1).0: &mut usize);
+        (*_4) = Add((*_5), move _3);
+        return;
+    }
+}

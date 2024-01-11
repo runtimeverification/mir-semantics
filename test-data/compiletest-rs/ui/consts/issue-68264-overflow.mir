@@ -1,0 +1,28 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn RunQueryDsl::first(_1: Self, _2: &Conn) -> U {
+    debug self => _1;
+    debug _conn => _2;
+    let mut _0: U;
+    let mut _3: !;
+
+    bb0: {
+        _3 = core::panicking::panic(const "not implemented") -> bb1;
+    }
+
+    bb1 (cleanup): {
+        drop(_1) -> [return: bb2, unwind terminate];
+    }
+
+    bb2 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}

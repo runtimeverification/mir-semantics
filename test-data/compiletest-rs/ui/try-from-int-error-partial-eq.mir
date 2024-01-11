@@ -1,0 +1,33 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn main() -> () {
+    let mut _0: ();
+    let _1: u32;
+    let _3: bool;
+    let mut _4: &std::result::Result<u8, std::num::TryFromIntError>;
+    let mut _5: &std::result::Result<u8, std::num::TryFromIntError>;
+    let _6: std::result::Result<u8, std::num::TryFromIntError>;
+    scope 1 {
+        debug x => _1;
+        let _2: std::result::Result<u8, std::num::TryFromIntError>;
+        scope 2 {
+            debug y => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 125_u32;
+        _2 = <u8 as TryFrom<u32>>::try_from(_1) -> bb1;
+    }
+
+    bb1: {
+        _4 = &_2;
+        _6 = Result::<u8, TryFromIntError>::Ok(const 125_u8);
+        _5 = &_6;
+        _3 = <Result<u8, TryFromIntError> as PartialEq>::eq(move _4, move _5) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

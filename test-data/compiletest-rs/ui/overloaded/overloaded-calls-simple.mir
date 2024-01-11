@@ -1,0 +1,294 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:12:1: 12:26>::call_mut(_1: &mut S1, _2: (i32,)) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+    let _3: i32;
+    let mut _4: i32;
+    let mut _5: i32;
+    let mut _6: i32;
+    scope 1 {
+        debug z => _3;
+    }
+
+    bb0: {
+        _3 = (_2.0: i32);
+        _5 = ((*_1).0: i32);
+        _6 = ((*_1).1: i32);
+        _4 = Mul(move _5, move _6);
+        _0 = Mul(move _4, _3);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:18:1: 18:27>::call_once(_1: S1, _2: (i32,)) -> i32 {
+    debug self => _1;
+    debug args => _2;
+    let mut _0: i32;
+    let mut _3: &mut S1;
+
+    bb0: {
+        _3 = &mut _1;
+        _0 = <S1 as FnMut<(i32,)>>::call_mut(move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:30:1: 30:23>::call(_1: &S2, _2: (i32,)) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+    let _3: i32;
+    let mut _4: i32;
+    let mut _5: i32;
+    let mut _6: i32;
+    scope 1 {
+        debug z => _3;
+    }
+
+    bb0: {
+        _3 = (_2.0: i32);
+        _5 = ((*_1).0: i32);
+        _6 = ((*_1).1: i32);
+        _4 = Mul(move _5, move _6);
+        _0 = Mul(move _4, _3);
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:36:1: 36:26>::call_mut(_1: &mut S2, _2: (i32,)) -> i32 {
+    debug self => _1;
+    debug args => _2;
+    let mut _0: i32;
+    let mut _3: &S2;
+
+    bb0: {
+        _3 = &(*_1);
+        _0 = <S2 as Fn<(i32,)>>::call(move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:40:1: 40:27>::call_once(_1: S2, _2: (i32,)) -> i32 {
+    debug self => _1;
+    debug args => _2;
+    let mut _0: i32;
+    let mut _3: &S2;
+
+    bb0: {
+        _3 = &_1;
+        _0 = <S2 as Fn<(i32,)>>::call(move _3, _2) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/overloaded/overloaded-calls-simple.rs:50:1: 50:30>::call_once(_1: S3, _2: (i32, i32)) -> i32 {
+    debug self => _1;
+    let mut _0: i32;
+    let _3: i32;
+    let _4: i32;
+    let mut _5: i32;
+    let mut _6: i32;
+    let mut _7: i32;
+    let mut _8: i32;
+    scope 1 {
+        debug z => _3;
+        debug zz => _4;
+    }
+
+    bb0: {
+        _3 = (_2.0: i32);
+        _4 = (_2.1: i32);
+        _7 = (_1.0: i32);
+        _8 = (_1.1: i32);
+        _6 = Mul(move _7, move _8);
+        _5 = Mul(move _6, _3);
+        _0 = Mul(move _5, _4);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let mut _1: S1;
+    let mut _3: &mut S1;
+    let mut _4: (i32,);
+    let mut _5: (&i32, &i32);
+    let mut _6: &i32;
+    let mut _7: &i32;
+    let _8: i32;
+    let mut _11: bool;
+    let mut _12: bool;
+    let mut _13: i32;
+    let mut _14: i32;
+    let _16: !;
+    let mut _17: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _20: &S2;
+    let mut _21: (i32,);
+    let mut _22: (&i32, &i32);
+    let mut _23: &i32;
+    let mut _24: &i32;
+    let _25: i32;
+    let mut _28: bool;
+    let mut _29: bool;
+    let mut _30: i32;
+    let mut _31: i32;
+    let _33: !;
+    let mut _34: std::option::Option<std::fmt::Arguments<'_>>;
+    let mut _37: (i32, i32);
+    let mut _38: (&i32, &i32);
+    let mut _39: &i32;
+    let mut _40: &i32;
+    let _41: i32;
+    let mut _44: bool;
+    let mut _45: bool;
+    let mut _46: i32;
+    let mut _47: i32;
+    let _49: !;
+    let mut _50: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug s => _1;
+        let _2: i32;
+        scope 2 {
+            debug ans => _2;
+            let _9: &i32;
+            let _10: &i32;
+            let _18: S2;
+            scope 3 {
+                debug left_val => _9;
+                debug right_val => _10;
+                let _15: core::panicking::AssertKind;
+                scope 4 {
+                    debug kind => _15;
+                }
+            }
+            scope 5 {
+                debug s => _18;
+                let _19: i32;
+                scope 6 {
+                    debug ans => _19;
+                    let _26: &i32;
+                    let _27: &i32;
+                    let _35: S3;
+                    scope 7 {
+                        debug left_val => _26;
+                        debug right_val => _27;
+                        let _32: core::panicking::AssertKind;
+                        scope 8 {
+                            debug kind => _32;
+                        }
+                    }
+                    scope 9 {
+                        debug s => _35;
+                        let _36: i32;
+                        scope 10 {
+                            debug ans => _36;
+                            let _42: &i32;
+                            let _43: &i32;
+                            scope 11 {
+                                debug left_val => _42;
+                                debug right_val => _43;
+                                let _48: core::panicking::AssertKind;
+                                scope 12 {
+                                    debug kind => _48;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = S1 { x: const 3_i32, y: const 3_i32 };
+        _3 = &mut _1;
+        _4 = (const 3_i32,);
+        _2 = <S1 as FnMut<(i32,)>>::call_mut(move _3, move _4) -> bb1;
+    }
+
+    bb1: {
+        _6 = &_2;
+        _8 = const 27_i32;
+        _7 = &_8;
+        _5 = (move _6, move _7);
+        _9 = (_5.0: &i32);
+        _10 = (_5.1: &i32);
+        _13 = (*_9);
+        _14 = (*_10);
+        _12 = Eq(move _13, move _14);
+        _11 = Not(move _12);
+        switchInt(move _11) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _15 = core::panicking::AssertKind::Eq;
+        _17 = Option::<Arguments<'_>>::None;
+        _16 = core::panicking::assert_failed::<i32, i32>(move _15, _9, _10, move _17);
+    }
+
+    bb3: {
+        _18 = S2 { x: const 3_i32, y: const 3_i32 };
+        _20 = &_18;
+        _21 = (const 3_i32,);
+        _19 = <S2 as Fn<(i32,)>>::call(move _20, move _21) -> bb4;
+    }
+
+    bb4: {
+        _23 = &_19;
+        _25 = const 27_i32;
+        _24 = &_25;
+        _22 = (move _23, move _24);
+        _26 = (_22.0: &i32);
+        _27 = (_22.1: &i32);
+        _30 = (*_26);
+        _31 = (*_27);
+        _29 = Eq(move _30, move _31);
+        _28 = Not(move _29);
+        switchInt(move _28) -> [0: bb6, otherwise: bb5];
+    }
+
+    bb5: {
+        _32 = core::panicking::AssertKind::Eq;
+        _34 = Option::<Arguments<'_>>::None;
+        _33 = core::panicking::assert_failed::<i32, i32>(move _32, _26, _27, move _34);
+    }
+
+    bb6: {
+        _35 = S3 { x: const 3_i32, y: const 3_i32 };
+        _37 = (const 3_i32, const 1_i32);
+        _36 = <S3 as FnOnce<(i32, i32)>>::call_once(move _35, move _37) -> bb7;
+    }
+
+    bb7: {
+        _39 = &_36;
+        _41 = const 27_i32;
+        _40 = &_41;
+        _38 = (move _39, move _40);
+        _42 = (_38.0: &i32);
+        _43 = (_38.1: &i32);
+        _46 = (*_42);
+        _47 = (*_43);
+        _45 = Eq(move _46, move _47);
+        _44 = Not(move _45);
+        switchInt(move _44) -> [0: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        _48 = core::panicking::AssertKind::Eq;
+        _50 = Option::<Arguments<'_>>::None;
+        _49 = core::panicking::assert_failed::<i32, i32>(move _48, _42, _43, move _50);
+    }
+
+    bb9: {
+        return;
+    }
+}

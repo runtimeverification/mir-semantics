@@ -1,0 +1,185 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/coherence/coherence-where-clause.rs:10:1: 10:22>::get(_1: &T) -> T {
+    debug self => _1;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <T as Default>::default() -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/coherence/coherence-where-clause.rs:18:10: 18:15>::clone(_1: &MyType) -> MyType {
+    debug self => _1;
+    let mut _0: MyType;
+    scope 1 {
+    }
+
+    bb0: {
+        _0 = (*_1);
+        return;
+    }
+}
+
+fn <impl at ui/coherence/coherence-where-clause.rs:18:23: 18:28>::fmt(_1: &MyType, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let _3: &str;
+    let _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &&usize;
+    let _7: &usize;
+
+    bb0: {
+        _3 = const "MyType";
+        _4 = const "dummy";
+        _7 = &((*_1).0: usize);
+        _6 = &_7;
+        _5 = _6 as &dyn std::fmt::Debug (Pointer(Unsize));
+        _0 = Formatter::<'_>::debug_struct_field1_finish(_2, _3, _4, move _5) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn <impl at ui/coherence/coherence-where-clause.rs:18:30: 18:39>::eq(_1: &MyType, _2: &MyType) -> bool {
+    debug self => _1;
+    debug other => _2;
+    let mut _0: bool;
+    let mut _3: usize;
+    let mut _4: usize;
+
+    bb0: {
+        _3 = ((*_1).0: usize);
+        _4 = ((*_2).0: usize);
+        _0 = Eq(move _3, move _4);
+        return;
+    }
+}
+
+fn <impl at ui/coherence/coherence-where-clause.rs:23:1: 23:24>::get(_1: &MyType) -> MyType {
+    debug self => _1;
+    let mut _0: MyType;
+
+    bb0: {
+        _0 = <MyType as Clone>::clone(_1) -> bb1;
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn test_eq(_1: M, _2: M) -> () {
+    debug m => _1;
+    debug n => _2;
+    let mut _0: ();
+    let mut _3: (&M, &M);
+    let mut _4: &M;
+    let _5: M;
+    let mut _6: &M;
+    let mut _7: &M;
+    let _8: &M;
+    let _9: &M;
+    let mut _10: bool;
+    let mut _11: bool;
+    let _13: !;
+    let mut _14: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug left_val => _8;
+        debug right_val => _9;
+        let _12: core::panicking::AssertKind;
+        scope 2 {
+            debug kind => _12;
+        }
+    }
+
+    bb0: {
+        _6 = &_1;
+        _5 = <M as MyTrait>::get(move _6) -> [return: bb1, unwind: bb9];
+    }
+
+    bb1: {
+        _4 = &_5;
+        _7 = &_2;
+        _3 = (move _4, move _7);
+        _8 = (_3.0: &M);
+        _9 = (_3.1: &M);
+        _11 = <M as PartialEq>::eq(_8, _9) -> [return: bb2, unwind: bb8];
+    }
+
+    bb2: {
+        _10 = Not(move _11);
+        switchInt(move _10) -> [0: bb4, otherwise: bb3];
+    }
+
+    bb3: {
+        _12 = core::panicking::AssertKind::Eq;
+        _14 = Option::<Arguments<'_>>::None;
+        _13 = core::panicking::assert_failed::<M, M>(move _12, _8, _9, move _14) -> bb8;
+    }
+
+    bb4: {
+        drop(_5) -> [return: bb5, unwind: bb9];
+    }
+
+    bb5: {
+        drop(_2) -> [return: bb6, unwind: bb10];
+    }
+
+    bb6: {
+        drop(_1) -> bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8 (cleanup): {
+        drop(_5) -> [return: bb9, unwind terminate];
+    }
+
+    bb9 (cleanup): {
+        drop(_2) -> [return: bb10, unwind terminate];
+    }
+
+    bb10 (cleanup): {
+        drop(_1) -> [return: bb11, unwind terminate];
+    }
+
+    bb11 (cleanup): {
+        resume;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+    let _2: MyType;
+    let mut _3: usize;
+    let _4: ();
+    scope 1 {
+        debug value => _2;
+    }
+
+    bb0: {
+        _1 = test_eq::<usize>(const 0_usize, const 0_usize) -> bb1;
+    }
+
+    bb1: {
+        _3 = Add(const 256_usize, const 22_usize);
+        _2 = MyType { dummy: move _3 };
+        _4 = test_eq::<MyType>(_2, _2) -> bb2;
+    }
+
+    bb2: {
+        return;
+    }
+}

@@ -1,0 +1,29 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at ui/associated-types/issue-41868.rs:15:1: 15:22>::read(_1: &mut Foo) -> Option<u8> {
+    debug rdr => _1;
+    let mut _0: std::option::Option<u8>;
+
+    bb0: {
+        _0 = Option::<u8>::Some(const 42_u8);
+        return;
+    }
+}
+
+fn <impl at ui/associated-types/issue-41868.rs:19:1: 19:23>::read(_1: &mut Foo) -> Option<u16> {
+    debug rdr => _1;
+    let mut _0: std::option::Option<u16>;
+
+    bb0: {
+        _0 = Option::<u16>::Some(const 17_u16);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+
+    bb0: {
+        return;
+    }
+}
