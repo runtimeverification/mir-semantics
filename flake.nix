@@ -65,10 +65,10 @@
             # with parser_Mir_MIR-SYNTAX from gen_glr_parser 
             # before nix directory becomes read only
             buildPhase = ''
-              export KBUILD_DIR=".kbuild"
-              patchShebangs .
               cp -r ../semantic semantic/
               sed -i 's!../semantic!semantic"!' kbuild.toml
+              export KBUILD_DIR=".kbuild"
+              patchShebangs .
               make build-backends VERSION="${k_release}" POETRY_RUN=
             '';
 
