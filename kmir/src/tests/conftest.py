@@ -7,7 +7,7 @@ from pyk.cli.utils import dir_path, file_path
 from pyk.kbuild import KBuild, Project
 from pytest import Config, Parser, TempPathFactory
 
-from kmir.kmir import KMIR
+from kmir import KMIR
 
 from .utils import KMIR_DIR
 
