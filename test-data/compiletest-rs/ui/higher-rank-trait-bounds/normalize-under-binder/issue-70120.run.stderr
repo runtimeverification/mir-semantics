@@ -1,2 +1,0 @@
-thread 'main' panicked at 'not implemented', ui/higher-rank-trait-bounds/normalize-under-binder/issue-70120.rs:13:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

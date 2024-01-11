@@ -1,2 +1,0 @@
-Output { status: ExitStatus(unix_wait_status(0)), stdout: "passed\n", stderr: "" }
-Output { status: ExitStatus(unix_wait_status(0)), stdout: "passed\n", stderr: "" }

@@ -1,4 +1,0 @@
-thread 'main' panicked at 'assertion failed: `(left == right)`
-  left: `2`,
- right: `1`', ui/macros/macro-with-attrs1.rs:12:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

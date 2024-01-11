@@ -1,9 +1,0 @@
-Output {
-    status: ExitStatus(
-        unix_wait_status(
-            134,
-        ),
-    ),
-    stdout: "",
-    stderr: "thread 'main' panicked at 'Box<dyn Any>', ui/runtime/rt-explody-panic-payloads.rs:21:17\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nthread 'main' panicked at 'Box<dyn Any>', ui/runtime/rt-explody-panic-payloads.rs:13:9\nfatal runtime error: drop of the panic payload panicked\n",
-}

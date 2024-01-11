@@ -1,2 +1,0 @@
-thread 'main' panicked at 'called `Option::unwrap()` on a `None` value', ui/codegen/issue-99551.rs:14:41
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

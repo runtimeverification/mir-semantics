@@ -1,3 +1,0 @@
-[ui/consts/const_in_pattern/warn_corner_cases.rs:26] INDEX = None
-[ui/consts/const_in_pattern/warn_corner_cases.rs:32] CALL = None
-[ui/consts/const_in_pattern/warn_corner_cases.rs:38] METHOD_CALL = None

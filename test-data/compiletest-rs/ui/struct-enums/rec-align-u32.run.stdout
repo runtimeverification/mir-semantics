@@ -1,3 +1,0 @@
-align inner = 4
-size outer = 8
-y = "Outer { c8: 22, t: Inner { c64: 44 } }"

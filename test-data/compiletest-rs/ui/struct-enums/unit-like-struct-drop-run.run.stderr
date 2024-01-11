@@ -1,2 +1,0 @@
-thread '<unnamed>' panicked at 'This panic should happen.', ui/struct-enums/unit-like-struct-drop-run.rs:13:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

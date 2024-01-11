@@ -1,2 +1,0 @@
-thread 'main' panicked at 'Box<dyn Any>', ui/mir/mir_let_chains_drop_order.rs:89:13
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

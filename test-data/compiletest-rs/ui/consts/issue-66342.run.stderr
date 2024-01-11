@@ -1,5 +1,0 @@
-
-thread 'main' has overflowed its stack
-fatal runtime error: stack overflow
-timeout: the monitored command dumped core
-Aborted

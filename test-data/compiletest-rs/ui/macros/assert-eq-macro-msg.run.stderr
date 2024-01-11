@@ -1,4 +1,0 @@
-thread 'main' panicked at 'assertion failed: `(left == right)`
-  left: `2`,
- right: `3`: 1 + 1 definitely should be 3', ui/macros/assert-eq-macro-msg.rs:8:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

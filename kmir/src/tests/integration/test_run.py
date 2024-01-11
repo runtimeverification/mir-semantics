@@ -14,6 +14,7 @@ from .utils import (
     TEST_DATA_DIR,
 )
 
+
 @pytest.mark.parametrize(
     ('test_id', 'input_path'),
     HANDWRITTEN_RUN_TEST_DATA,

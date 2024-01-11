@@ -1,2 +1,0 @@
-thread '<unnamed>' panicked at 'explicit panic', ui/array-slice-vec/slice-panic-2.rs:20:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

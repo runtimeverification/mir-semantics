@@ -1,2 +1,0 @@
-thread 'main' panicked at 'Resume after completed.', ui/higher-rank-trait-bounds/normalize-under-binder/issue-62529-6.rs:30:18
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

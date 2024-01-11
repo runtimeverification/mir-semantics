@@ -1,4 +1,0 @@
-thread 'main' panicked at 'assertion failed: `(left != right)`
-  left: `14`,
- right: `14`', ui/macros/assert-ne-macro-panic.rs:8:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

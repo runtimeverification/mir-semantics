@@ -1,2 +1,0 @@
-thread '<unnamed>' panicked at 'range end index 4 out of range for slice of length 2', ui/array-slice-vec/slice-panic-1.rs:21:14
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

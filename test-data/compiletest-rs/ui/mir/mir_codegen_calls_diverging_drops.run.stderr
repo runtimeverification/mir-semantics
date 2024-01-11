@@ -1,3 +1,0 @@
-thread 'main' panicked at 'diverging_fn called', ui/mir/mir_codegen_calls_diverging_drops.rs:14:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-0 dropped

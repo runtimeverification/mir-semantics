@@ -1,2 +1,0 @@
-Ok("")
-Ok("thread '<unnamed>' panicked at 'assertion failed: Command::new(\\\"test\\\").spawn().is_err()', ui/runtime/running-with-no-runtime.rs:23:24\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nfatal runtime error: failed to initiate panic, error 5\n")

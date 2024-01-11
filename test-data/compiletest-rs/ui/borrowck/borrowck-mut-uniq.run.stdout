@@ -1,3 +1,0 @@
-isize = 22
-isize = 44
-ints=Ints { sum: 66, values: [22, 44] }
