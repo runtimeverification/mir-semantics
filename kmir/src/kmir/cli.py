@@ -153,13 +153,13 @@ def create_argument_parser() -> ArgumentParser:
 
     kmir_cli_args = KMIRCLIArgs()
 
-    # KCFG show
+    # Proof show
     show_subparser = command_parser.add_parser(
-        'show-kcfg',
-        help='Display tree show of CFG',
+        'show-proof',
+        help='Display tree view of a proof in KCFG',
         parents=[
             logging_args,
-            kmir_cli_args.kcfg_show_args,
+            kmir_cli_args.kcfg_show_proof,
         ],
     )
     show_subparser.add_argument('claim_label', type=str, help='Provide the claim label for showing the proof')
@@ -183,8 +183,8 @@ def create_argument_parser() -> ArgumentParser:
 
     # KCFG view
     view_subparser = command_parser.add_parser(
-        'view-kcfg',
-        help='Display tree view of CFG',
+        'view-proof',
+        help='Display the interative proof tree',
         parents=[logging_args],
     )
     view_subparser.add_argument('claim_label', type=str, help='Provide the claim label for showing the proof')
@@ -211,7 +211,7 @@ def create_argument_parser() -> ArgumentParser:
 
 class KMIRCLIArgs(KCLIArgs):
     @cached_property
-    def kcfg_show_args(self) -> ArgumentParser:
+    def kcfg_show_proof(self) -> ArgumentParser:
         args = ArgumentParser(add_help=False)
         args.add_argument(
             '--nodes',

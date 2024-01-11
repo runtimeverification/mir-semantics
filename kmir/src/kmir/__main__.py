@@ -7,10 +7,9 @@ from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
-from .kcfg import show_kcfg, view_kcfg
 from .kmir import KMIR
 from .parse import parse
-from .prove import prove
+from .prove import prove, show_proof, view_proof
 from .run import run
 from .utils import NodeIdLike
 
@@ -141,7 +140,7 @@ def exec_prove(
     )
 
 
-def exec_show_kcfg(
+def exec_show_proof(
     claim_label: str,
     proof_dir: Optional[Path] = None,
     definition_dir: Optional[Path] = None,
@@ -173,7 +172,7 @@ def exec_show_kcfg(
 
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
-    show_kcfg(
+    show_proof(
         kmir,
         claim_label,
         proof_dir,
@@ -187,19 +186,14 @@ def exec_show_kcfg(
     )
 
 
-def exec_view_kcfg(
+def exec_view_proof(
     claim_label: str,
     proof_dir: Optional[Path] = None,
     definition_dir: Optional[Path] = None,
     haskell_dir: Optional[Path] = None,
-    # exclude_claim_labels: Iterable[str] = (),
-    # spec_module: str | None = None,
-    # md_selector: str | None = None,
     **kwargs: Any,
 ) -> None:
     # TODO: include dirs
-
-    # check_file_path(spec_file)
 
     if proof_dir is None:
         raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
@@ -216,7 +210,7 @@ def exec_view_kcfg(
 
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
-    view_kcfg(
+    view_proof(
         kmir,
         claim_label,
         proof_dir,
