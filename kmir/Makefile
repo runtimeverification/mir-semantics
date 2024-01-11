@@ -74,9 +74,7 @@ check-k-version:
 .PHONY: kbuild-*
 
 # Tests
-# test: test-unit test-integration
-
-test: test-integration
+test: test-unit test-integration
 
 test-unit: poetry-install
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)

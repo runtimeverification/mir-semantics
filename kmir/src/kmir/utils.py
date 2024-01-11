@@ -57,34 +57,6 @@ def is_functional(claim: KClaim) -> bool:
     return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
 
 
-def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:
-    k_cell = cterm.cell('K_CELL')
-    if type(k_cell) is not KSequence:
-        _LOGGER.info('Introducing artificial KSequence on <k> cell.')
-        return CTerm.from_kast(set_cell(cterm.kast, 'K_CELL', KSequence([k_cell])))
-    return cterm
-
-
-def process_exception(err: Exception, curr_output: list[str], err_msg: str) -> None:
-    curr_output.append(err_msg)
-    print(err, flush=True, file=sys.stderr)
-    print(traceback.format_exc(), flush=True, file=sys.stderr)
-
-
-def print_model(node: KCFG.Node, kcfg_explore: KCFGExplore) -> list[str]:
-    res_lines: list[str] = []
-    result_subst = kcfg_explore.cterm_get_model(node.cterm)
-    if type(result_subst) is Subst:
-        res_lines.append('  Model:')
-        for var, term in result_subst.to_dict().items():
-            term_kast = KInner.from_dict(term)
-            res_lines.append(f'    {var} = {kcfg_explore.kprint.pretty_print(term_kast)}')
-    else:
-        res_lines.append('  Failed to generate a model.')
-
-    return res_lines
-
-
 def node_id_like(s: str) -> NodeIdLike:
     try:
         return int(s)

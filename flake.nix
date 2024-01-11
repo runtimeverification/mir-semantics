@@ -67,6 +67,8 @@
             buildPhase = ''
               export KBUILD_DIR=".kbuild"
               patchShebangs .
+              cp -r ../semantic semantic/
+              sed -i 's!../semantic!semantic"!' kbuild.toml
               make build-backends VERSION="${k_release}" POETRY_RUN=
             '';
 
