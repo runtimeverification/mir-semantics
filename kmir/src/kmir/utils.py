@@ -1,17 +1,15 @@
 import logging
+import re
 import sys
 import traceback
-from collections.abc import Callable
 from pathlib import Path
-from typing import Final, TypeVar
+from typing import Callable, Final, TypeVar
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KInner, Subst
 from pyk.kast.manip import set_cell
 from pyk.kast.outer import KApply, KClaim, KRewrite, KSequence
 from pyk.kcfg import KCFG, KCFGExplore
-
-from .preprocessor import preprocess
 
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
@@ -20,8 +18,35 @@ NodeIdLike = int | str
 
 _LOGGER: Final = logging.getLogger(__name__)
 
+ALLOC_REFERENCE = r'#\(-*alloc[0-9]+(?:\+0x[0-9a-fA-F]+)?-*\)#'
+BYTE_VALUE = '[0-9a-fA-F][0-9a-fA-F]'
+UNINITIALIZED_BYTE = '__'
+ALLOC_ITEM = '|'.join([ALLOC_REFERENCE, BYTE_VALUE, UNINITIALIZED_BYTE])
+ALLOC_VALUE = r'(\s*(?: (' + ALLOC_ITEM + '))+)'
+ALLOC_SUFFIX = r'\s+│.*$'
+
+HEX_CLEANUP_SUFFIX = re.compile(r'^' + ALLOC_VALUE + ALLOC_SUFFIX)
+HEX_CLEANUP_SEPARATOR = re.compile(r'^(\s+0x[0-9a-fA-F]+\s+)│' + ALLOC_VALUE + ALLOC_SUFFIX)
+
 
 def preprocess_mir_file(program_file: Path, temp_file: Path) -> None:
+    def cleanup_hex_dump(line: str) -> str:
+        line = line.replace('╾', '#(').replace('─', '-').replace('╼', ')#')
+        m = HEX_CLEANUP_SUFFIX.match(line)
+        if not m:
+            m = HEX_CLEANUP_SEPARATOR.match(line)
+            if not m:
+                return line
+            return '%s|%s' % (m.group(1), m.group(2))
+        return m.group(1)
+
+    def process_line(line: str) -> str:
+        line = cleanup_hex_dump(line)
+        return line
+
+    def preprocess(program_text: str) -> str:
+        return '\n'.join(process_line(line) for line in program_text.splitlines())
+
     temp_file.write_text(preprocess(program_file.read_text()))
 
 
