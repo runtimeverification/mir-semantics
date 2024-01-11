@@ -52,6 +52,7 @@ def prove(
             if passed == 'failed':
                 failed += 1
             results.append(res)
+    print(results)
 
     if failed:  # TODO: fail immediately or fail when all claims tried.
         sys.exit(failed)

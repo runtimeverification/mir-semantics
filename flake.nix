@@ -97,10 +97,10 @@
 
             buildPhase = ''
               mkdir -p tests/
-              cp -v test-data/run-rs/functions/sum-to-n.* tests/
+              cp -v kmir/src/tests/integration/test-data/run-rs/functions/sum-to-n.* tests/
               cp -v kmir/src/tests/nix/sum-to-n.* tests/
-              cp -v test-data/prove-rs/verify.k tests/
-              cp -v test-data/prove-rs/simple-spec.k tests/
+              cp -v kmir/src/tests/integration/test-data/prove-rs/verify.k tests/
+              cp -v kmir/src/tests/integration/test-data/prove-rs/simple-spec.k tests/
               cp -v kmir/src/tests/nix/nix-tests.sh tests/
               cd tests/
               sed -i 's!requires "../../../../../k-src/mir.md"!requires "../kmir/k-src/mir.md"!' verify.k
