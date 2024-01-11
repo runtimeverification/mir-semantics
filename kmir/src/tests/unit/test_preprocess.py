@@ -1,12 +1,11 @@
 import pytest
 
-from kmir.utils import arg_pair_of, node_id_like
-
 CLEANUP_HEX_DUMP_TEST_DATA = (
     ('Hello World', 'Hello World'),
     ('  00 00 00 00 00 00 00 00                         │ ........', '  00 00 00 00 00 00 00 00'),
     ('  0x00 │ 00 00 00 00 00 00 00 00                         │ ........', '  0x00 | 00 00 00 00 00 00 00 00'),
 )
+
 
 @pytest.mark.parametrize(
     ('text', 'expected'),

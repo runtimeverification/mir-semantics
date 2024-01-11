@@ -1,15 +1,11 @@
 import logging
 import re
-import sys
-import traceback
 from pathlib import Path
 from typing import Callable, Final, TypeVar
 
 from pyk.cterm import CTerm
-from pyk.kast.inner import KInner, Subst
 from pyk.kast.manip import set_cell
 from pyk.kast.outer import KApply, KClaim, KRewrite, KSequence
-from pyk.kcfg import KCFG, KCFGExplore
 
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
@@ -55,6 +51,14 @@ def is_functional(claim: KClaim) -> bool:
     if type(claim_lhs) is KRewrite:
         claim_lhs = claim_lhs.lhs
     return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
+
+
+def ensure_ksequence_on_k_cell(cterm: CTerm) -> CTerm:
+    k_cell = cterm.cell('K_CELL')
+    if type(k_cell) is not KSequence:
+        _LOGGER.info('Introducing artificial KSequence on <k> cell.')
+        return CTerm.from_kast(set_cell(cterm.kast, 'K_CELL', KSequence([k_cell])))
+    return cterm
 
 
 def node_id_like(s: str) -> NodeIdLike:
