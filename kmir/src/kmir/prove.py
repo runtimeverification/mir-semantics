@@ -108,8 +108,8 @@ def show_proof(
             with prover.rpc_session(prover.set_kore_server(), claim_label) as kcfg_explore:
                 failures = APRFailureInfo.from_proof(proof, kcfg_explore, counterexample_info)
                 res_lines += failures.print()
-        else:  # TODO: implement the other proof types
-            raise ValueError('Proof type not supported yet.')
+    else:  # TODO: implement the other proof types
+        raise ValueError('Proof type not supported yet.')
 
     print('\n'.join(res_lines))
 
