@@ -5,10 +5,12 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir.kmir import KMIR
-from kmir.prove import prove
+from kmir import KMIR, prove
 
 from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
+
+# from kmir.prove import prove
+
 
 # from pytest import LogCaptureFixture
 
@@ -48,7 +50,7 @@ def test_handwritten(
             smt_timeout=300,
             smt_retry_limit=10,
         )
-    except ValueError:
+    except Exception:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:

@@ -41,7 +41,6 @@ def exec_parse(
     definition_dir: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
-    # mir_file = Path(input_file)
     check_file_path(mir_file)
 
     if definition_dir is None:

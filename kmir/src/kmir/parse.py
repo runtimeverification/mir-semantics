@@ -19,11 +19,11 @@ def parse(
     temp_file: Optional[Path] = None,
 ) -> None:
     # input_format = KAstInput[input.upper()]
+    _LOGGER.info(f'Parsing {mir_file} from format {input} to format {output}')
+
     if temp_file is None:
         with NamedTemporaryFile(mode='w') as f:
             temp_file = Path(f.name)
-    else:
-        temp_file = temp_file
 
     preprocess_mir_file(mir_file, temp_file)
 

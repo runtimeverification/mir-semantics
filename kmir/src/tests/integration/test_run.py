@@ -4,8 +4,7 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir.kmir import KMIR
-from kmir.run import run
+from kmir import KMIR, run
 
 from .utils import (
     COMPILETEST_RUN_FAIL,
@@ -38,7 +37,7 @@ def test_handwritten(
     # Then
     try:
         run(kmir, input_path, depth=None, output='none', temp_file=temp_file)
-    except ValueError:
+    except RuntimeError:
         if report_file:
             with FileLock(f'{report_file.name}.lock', timeout=1):
                 with report_file.open('a') as f:
@@ -68,7 +67,7 @@ def test_compiletest(
     # Then
     try:
         run(kmir, input_path, temp_file=temp_file)
-    except ValueError:
+    except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
