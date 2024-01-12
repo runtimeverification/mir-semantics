@@ -11,6 +11,7 @@ from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
 
 sys.setrecursionlimit(10**8)
 
+
 @pytest.mark.parametrize(
     ('test_id', 'spec_file'),
     PROVE_TEST_DATA,
