@@ -6,10 +6,18 @@ module VERIFY
     imports MIR-SYMBOLIC
 
     // LocalTokens will have parsing error if they are not enumerated here 
+    syntax LocalToken ::= "_0" [token]
     syntax LocalToken ::= "_1" [token]
     syntax LocalToken ::= "_2" [token]
     syntax LocalToken ::= "_3" [token]
     syntax LocalToken ::= "_4" [token]
 
     syntax BBId ::= "bb0" [token]
+    syntax BBId ::= "bb1" [token]
+    syntax BBId ::= "bb2" [token]
+    syntax BBId ::= "bb3" [token]
+    syntax BBId ::= "bb4" [token]
+
+    syntax Identifier ::= "num" [token]
+    // syntax Identifier ::= "temp" [token]
 endmodule
