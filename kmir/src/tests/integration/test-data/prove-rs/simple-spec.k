@@ -85,4 +85,353 @@ module SIMPLE-SPEC
               </localDecl>
               ...
           </function>
+
+    claim [terminator.1]: <k> #executeTerminator(return) => .K ...</k>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <function>
+    <fnKey> FN_KEY </fnKey>
+      <localDecl>
+      <index> _0 </index>
+        <value> _RETURN_VALUE </value>
+        ...
+      </localDecl>
+      ...
+    </function>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [terminator.2]: <k> #executeTerminator(return) => #halt ...</k>
+    <returncode> _ => 0 </returncode>
+    <phase> Execution => Finalization </phase>
+    <callStack> ListItem(Fn(main)) .List => .List </callStack>
+    <function>
+    <fnKey> Fn(main) </fnKey>
+      <localDecl>
+      <index> _0 </index>
+        <value> Unit </value>
+        ...
+      </localDecl>
+      ...
+    </function>
+
+    claim [basicBlock.1]: <k> #executeBasicBlock(Fn(main), INDEX) => #halt ...</k>
+    <returncode> _ => 0 </returncode>
+    <phase> Execution => Finalization </phase>
+    <callStack> ListItem(Fn(main)) .List => .List </callStack>
+    <currentBasicBlock> _ => INDEX </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> Fn(main) </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> Unit </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> INDEX </bbName>
+            <bbBody> { .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+
+    claim [basicBlock.2]: <k> #executeBasicBlock(FN_KEY, INDEX) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => INDEX </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> _RETURN_CODE </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> INDEX </bbName>
+            <bbBody> { .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [basicBlock.3]: <k> #executeBasicBlock(FN_KEY, INDEX) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => INDEX </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> _RETURN_CODE </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> _1 </index>
+            <value> _ => 8 </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> INDEX </bbName>
+            <bbBody> { _1 = Add(const 3_usize, const 5_usize); .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [basicBlock.4]: <k> #executeTerminator(assert(const true, _KIND) -> ((bb2:BBName _):BB)) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> _RETURN_CODE </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> _2 </index>
+            <value> _ => 8 </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { _2 = Add(const 3_usize, const 5_usize); .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [basicBlock.5]: <k> #executeTerminator(assert(_1:Local, _KIND) -> ((bb2:BBName _):BB)) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> _RETURN_CODE </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> _1 </index>
+            <value> true </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> _2 </index>
+            <value> _ => 8 </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { _2 = Add(const 3_usize, const 5_usize); .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [basicBlock.6]: <k> #executeTerminator(assert(PLACE1, _KIND) -> ((bb2:BBName _):BB)) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index>
+            <value> _RETURN_CODE </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> PLACE1 </index>
+            <value> true </value>
+            ...
+          </localDecl>
+          <localDecl>
+          <index> PLACE2 </index>
+            <value> _ => 8 </value>
+            ...
+          </localDecl>
+          ...
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { PLACE2 = Add(const 3_usize, const 5_usize); .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+      andBool PLACE1 =/=K PLACE2
+
+    claim [basicBlock.7]: <k> #executeTerminator(goto -> ((bb2:BBName _):BB)) => .K ...</k>
+    <phase> Execution </phase>
+    <callStack> ListItem(FN_KEY) REST => REST </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <functions>
+      <function>
+      <fnKey> FN_KEY </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+          ...
+          </localDecl>
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+        ...
+      </function>
+      ...
+    </functions>
+    requires FN_KEY =/=K Fn(main)
+
+    claim [terminator.3]: <k> #executeTerminator(_1 = FN_NAME:PathInExpression ( .OperandList ) -> ((bb2:BBName _):BB)) => #halt ...</k>
+    <phase> Execution => Finalization </phase>
+    <callStack> ListItem(Fn(main)) .List => .List </callStack>
+    <currentBasicBlock> _ => 2 </currentBasicBlock>
+    <returncode> _ => 0 </returncode>
+    <functions>
+      <function>
+      <fnKey> Fn(main) </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+          <value> Unit </value>
+          ...
+          </localDecl>
+          <localDecl>
+          <index> _1 </index>
+          <value> _ => 42 </value>
+          ...
+          </localDecl>
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 2 </bbName>
+            <bbBody> { .Statements return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+        ...
+      </function>
+      <function>
+      <fnKey> Fn(toFunctionPath(FN_NAME)) </fnKey>
+        <localDecls>
+          <localDecl>
+          <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+          <value> _ => 42 </value>
+          ...
+          </localDecl>
+        </localDecls>
+        <basicBlocks>
+          <basicBlock>
+          <bbName> 0 </bbName>
+            <bbBody> { _0 = const 42_usize; return;} </bbBody>
+          </basicBlock>
+          ...
+        </basicBlocks>
+        ...
+      </function>
+      ...
+    </functions>
+
+    // claim [terminator.fail]: <k> #executeTerminator(_1 = FN_NAME:PathInExpression ( .OperandList ) -> ((bb2:BBName _):BB)) => .K ...</k>
+    // <phase> Execution </phase>
+    // <callStack> ListItem(Fn(KEY)) REST => REST </callStack>
+    // <currentBasicBlock> _ => 2 </currentBasicBlock>
+    // <functions>
+    //   <function>
+    //   <fnKey> Fn(main) </fnKey>
+    //   ...
+    //   </function>
+    //   <function>
+    //   <fnKey> Fn(KEY) </fnKey>
+    //     <localDecls>
+    //       <localDecl>
+    //       <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+    //       <value> Unit </value>
+    //       ...
+    //       </localDecl>
+    //       <localDecl>
+    //       <index> _1 </index>
+    //       <value> _ => 42 </value>
+    //       ...
+    //       </localDecl>
+    //     </localDecls>
+    //     <basicBlocks>
+    //       <basicBlock>
+    //       <bbName> 2 </bbName>
+    //         <bbBody> { .Statements return;} </bbBody>
+    //       </basicBlock>
+    //       ...
+    //     </basicBlocks>
+    //     ...
+    //   </function>
+    //   <function>
+    //   <fnKey> Fn(toFunctionPath(FN_NAME)) </fnKey>
+    //     <localDecls>
+    //       <localDecl>
+    //       <index> _0 </index> // This is necessary but we don't really want to have to list it I think...
+    //       <value> _ => 42 </value>
+    //       ...
+    //       </localDecl>
+    //     </localDecls>
+    //     <basicBlocks>
+    //       <basicBlock>
+    //       <bbName> 0 </bbName>
+    //         <bbBody> { _0 = const 42_usize; return;} </bbBody>
+    //       </basicBlock>
+    //       ...
+    //     </basicBlocks>
+    //     ...
+    //   </function>
+    //   ...
+    // </functions>
 endmodule
