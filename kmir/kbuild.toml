@@ -9,6 +9,7 @@ main-file = "mir.md"
 main-module = "MIR"
 syntax-module = "MIR-SYNTAX"
 gen-glr-bison-parser = "true"
+type-inference-mode = "simplesub"
 
 [targets.llvmc]
 backend = "llvm"
@@ -16,9 +17,11 @@ main-file = "mir.md"
 main-module = "MIR"
 syntax-module = "MIR-SYNTAX"
 llvm-kompile-type = "c"
+type-inference-mode = "simplesub"
 
 [targets.haskell]
 backend = "haskell"
 main-file = "mir.md"
 main-module = "MIR-SYMBOLIC"
 syntax-module = "MIR-SYNTAX"
+type-inference-mode = "simplesub"
