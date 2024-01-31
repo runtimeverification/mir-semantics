@@ -1,34 +1,17 @@
 import logging
-import sys
 from argparse import Namespace
-from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Iterable, Optional
 
-from pyk.cterm import CTerm
-from pyk.kast.outer import KApply, KClaim, KRewrite
-from pyk.kcfg import KCFG
-from pyk.ktool.kprint import KAstInput, KAstOutput
-from pyk.ktool.kprove import KProve
-from pyk.ktool.krun import KRunOutput
-from pyk.proof import APRProof
-from pyk.proof.equality import EqualityProof
-from pyk.proof.proof import Proof
-from pyk.proof.show import APRProofShow
-from pyk.proof.tui import APRProofViewer
-from pyk.utils import BugReport
+from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
-from .kmir import KMIR, KMIRSemantics
-from .utils import (
-    NodeIdLike,
-    ensure_ksequence_on_k_cell,
-    get_apr_proof_for_spec,
-    kmir_prove,
-    legacy_explore,
-    print_failure_info,
-)
+from .kmir import KMIR
+from .parse import parse
+from .prove import prove, show_proof, view_proof
+from .run import run
+from .utils import NodeIdLike
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
@@ -52,292 +35,185 @@ def exec_version(**kwargs: Any) -> None:
 
 
 def exec_parse(
-    input_file: str,
+    mir_file: Path,
     input: str,
     output: str,
-    definition_dir: str | None = None,
+    definition_dir: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
-    kast_input = KAstInput[input.upper()]
-    kast_output = KAstOutput[output.upper()]
+    check_file_path(mir_file)
 
-    kmir = KMIR(definition_dir, None)
-    proc_res = kmir.parse_program_raw(input_file, input=kast_input, output=kast_output)
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+    else:
+        # llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
 
-    if output != KAstOutput.NONE:
-        print(proc_res.stdout)
+    kmir = KMIR(definition_dir)
+    # _LOGGER.log( 'Call parser at {definition_dir}')
+    parse(kmir, mir_file, output=output)
+    # print(proc_res.stdout) if output != 'none' else None
 
 
 def exec_run(
-    input_file: str,
+    mir_file: Path,
     output: str,
-    definition_dir: str | None = None,
-    depth: int | None = None,
+    definition_dir: Optional[Path] = None,
+    depth: Optional[int] = None,
     bug_report: bool = False,
-    ignore_return_code: bool = False,
+    # ignore_return_code: bool = False,
     **kwargs: Any,
 ) -> None:
-    krun_output = KRunOutput[output.upper()]
-    br = BugReport(Path(input_file).with_suffix('.bug_report.tar')) if bug_report else None
-    kmir = KMIR(definition_dir, None, bug_report=br)
+    # mir_file = Path(input_file)
+    check_file_path(mir_file)
 
-    try:
-        proc_res = kmir.run_program(input_file, output=krun_output, depth=depth)
-        if output != KAstOutput.NONE:
-            print(proc_res.stdout)
-    except RuntimeError as err:
-        if ignore_return_code:
-            msg, stdout, stderr = err.args
-            print(stdout)
-            print(stderr)
-            print(msg)
-        else:
-            msg, stdout, stderr = err.args
-            print(stdout)
-            print(stderr)
-            print(msg)
-            exit(1)
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+    else:
+        # llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
+
+    if depth is not None:
+        assert depth < 0, ValueError(f'Argument "depth" must be non-negative, got: {depth}')
+
+    if bug_report:
+        br = BugReport(mir_file.with_suffix('.bug_report.tar'))
+        kmir = KMIR(definition_dir, bug_report=br)
+    else:
+        kmir = KMIR(definition_dir)
+
+    run(kmir, mir_file, depth=depth, output=output)
 
 
 def exec_prove(
-    definition_dir: str,
-    haskell_dir: str,
-    spec_file: str,
-    *,
-    use_booster: bool = False,
+    spec_file: Path,
+    smt_timeout: int,
+    smt_retry_limit: int,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
+    use_booster: bool = True,
     bug_report: bool = False,
-    save_directory: Path | None = None,
+    save_directory: Optional[Path] = None,
     reinit: bool = False,
-    depth: int | None = None,
-    smt_timeout: int | None = None,
-    smt_retry_limit: int | None = None,
+    depth: Optional[int] = None,
     trace_rewrites: bool = False,
-    kore_rpc_command: str | Iterable[str] | None = None,
     **kwargs: Any,
 ) -> None:
-    if spec_file is None:
-        raise ValueError('A spec file must be provided')
-
     # TODO: workers
     # TODO: md_selector doesn't work
-    spec_file_path = Path(spec_file)
 
-    br = BugReport(spec_file_path.with_suffix('.bug_report.tar')) if bug_report else None
-    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory, bug_report=br)
+    check_file_path(spec_file)
 
-    kprove: KProve
-    if kmir.kprove is None:
-        raise ValueError('Cannot use KProve object when it is None')
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        kprove = kmir.kprove
+        # llvm_dir = Path(definition_dir)
+        check_dir_path(definition_dir)
 
-    _LOGGER.info('Extracting claims from file')
-    claims = kprove.get_claims(Path(spec_file))
-    if not claims:
-        raise ValueError(f'No claims found in file {spec_file}')
+    if haskell_dir is None:
+        raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
+    else:
+        # haskell_dir = Path(haskell_dir)
+        check_dir_path(haskell_dir)
 
-    if kore_rpc_command is None:
-        kore_rpc_command = ('kore-rpc-booster',) if use_booster else ('kore-rpc',)
-    elif isinstance(kore_rpc_command, str):
-        kore_rpc_command = kore_rpc_command.split()
+    # if the save_directory is not provided, the proofs are saved to the same directory of spec_file
+    if save_directory is None:
+        save_directory = spec_file.parent
+    else:
+        check_dir_path(save_directory)
 
-    llvm_library_dir = kmir.llvm_dir / '..' / 'llvmc'
+    br = BugReport(spec_file.with_suffix('.bug_report.tar')) if bug_report else None
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir, use_booster=use_booster, bug_report=br)
+    # We provide configuration of which backend to use in a KMIR object.
+    # `use_booster` is by default True, where Booster Backend is always used unless turned off
 
-    def is_functional(claim: KClaim) -> bool:
-        claim_lhs = claim.body
-        if type(claim_lhs) is KRewrite:
-            claim_lhs = claim_lhs.lhs
-        return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
-
-    def _init_and_run_proof(claim: KClaim) -> tuple[bool, list[str] | None]:
-        with legacy_explore(
-            kprove,
-            kcfg_semantics=KMIRSemantics(),
-            id=claim.label,
-            llvm_definition_dir=llvm_library_dir if use_booster else None,
-            bug_report=br,
-            kore_rpc_command=kore_rpc_command,
-            smt_timeout=smt_timeout,
-            smt_retry_limit=smt_retry_limit,
-            trace_rewrites=trace_rewrites,
-        ) as kcfg_explore:
-            proof_problem: Proof
-            if is_functional(claim):
-                if (
-                    save_directory is not None
-                    and not reinit
-                    and EqualityProof.proof_exists(claim.label, save_directory)
-                ):
-                    proof_problem = EqualityProof.read_proof_data(save_directory, claim.label)
-                else:
-                    proof_problem = EqualityProof.from_claim(claim, kprove.definition, proof_dir=save_directory)
-            else:
-                if save_directory is not None and not reinit and APRProof.proof_exists(claim.label, save_directory):
-                    proof_problem = APRProof.read_proof_data(save_directory, claim.label)
-
-                else:
-                    _LOGGER.info(f'Converting claim to KCFG: {claim.label}')
-                    kcfg, init_node_id, target_node_id = KCFG.from_claim(kprove.definition, claim)
-
-                    new_init = ensure_ksequence_on_k_cell(kcfg.node(init_node_id).cterm)
-                    new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
-
-                    _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
-                    new_init = kcfg_explore.cterm_assume_defined(new_init)
-
-                    _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
-                    new_init, _ = kcfg_explore.cterm_simplify(new_init)
-                    new_target, _ = kcfg_explore.cterm_simplify(new_target)
-                    if CTerm._is_bottom(new_init.kast):
-                        raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
-                    if CTerm._is_top(new_target.kast):
-                        raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
-
-                    kcfg.replace_node(init_node_id, new_init)
-                    kcfg.replace_node(target_node_id, new_target)
-
-                    # Unsure if terminal should be empty
-                    proof_problem = APRProof(
-                        claim.label, kcfg, [], init_node_id, target_node_id, {}, proof_dir=save_directory
-                    )
-
-            passed = kmir_prove(
-                kprove,
-                proof_problem,
-                kcfg_explore,
-                max_depth=depth,
-                terminal_rules=KMIRSemantics.terminal_rules(),
-            )
-            failure_log = None
-            if not passed:
-                failure_log = print_failure_info(proof_problem, kcfg_explore)
-
-            return passed, failure_log
-
-    results: list[tuple[bool, list[str] | None]] = []
-    for claim in claims:
-        results.append(_init_and_run_proof(claim))
-
-    failed = 0
-    for claim, r in zip(claims, results, strict=True):
-        passed, failure_log = r
-        if passed:
-            print(f'PROOF PASSED: {claim.label}')
-        else:
-            failed += 1
-            print(f'PROOF FAILED: {claim.label}')
-            if failure_log is not None:
-                for line in failure_log:
-                    print(line)
-
-    if failed:
-        sys.exit(failed)
+    prove(
+        kmir,
+        spec_file,
+        save_directory=save_directory,
+        reinit=reinit,
+        depth=depth,
+        smt_timeout=smt_timeout,
+        smt_retry_limit=smt_retry_limit,
+        trace_rewrites=trace_rewrites,
+    )
 
 
-def exec_show_kcfg(
-    definition_dir: str,
-    haskell_dir: str,
-    spec_file: Path,
-    save_directory: Path | None = None,
-    claim_labels: Iterable[str] | None = None,
-    exclude_claim_labels: Iterable[str] = (),
-    spec_module: str | None = None,
-    md_selector: str | None = None,
+def exec_show_proof(
+    claim_label: str,
+    proof_dir: Optional[Path] = None,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
     nodes: Iterable[NodeIdLike] = (),
     node_deltas: Iterable[tuple[NodeIdLike, NodeIdLike]] = (),
-    to_module: bool = False,
-    minimize: bool = True,
     failure_info: bool = False,
-    sort_collections: bool = False,
+    to_module: bool = False,
+    # minimize: bool = True,
     pending: bool = False,
     failing: bool = False,
+    counterexample_info: bool = False,
+    **kwargs: Any,
+) -> None:
+    if proof_dir is None:
+        raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
+    else:
+        check_dir_path(proof_dir)
+
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
+    else:
+        check_dir_path(definition_dir)
+
+    if haskell_dir is None:
+        raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
+    else:
+        check_dir_path(haskell_dir)
+
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
+
+    show_proof(
+        kmir,
+        claim_label,
+        proof_dir,
+        nodes,
+        node_deltas,
+        to_module,
+        failure_info,
+        pending,
+        failing,
+        counterexample_info,
+    )
+
+
+def exec_view_proof(
+    claim_label: str,
+    proof_dir: Optional[Path] = None,
+    definition_dir: Optional[Path] = None,
+    haskell_dir: Optional[Path] = None,
     **kwargs: Any,
 ) -> None:
     # TODO: include dirs
 
-    if spec_file is None:
-        raise ValueError('A spec file must be provided')
-
-    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
-
-    kprove: KProve
-    if kmir.kprove is None:
-        raise ValueError('Cannot use KProve object when it is None')
+    if proof_dir is None:
+        raise RuntimeError('Proof directory is not specified, please provide the directory to all the proofs')
     else:
-        kprove = kmir.kprove
-
-    proof = get_apr_proof_for_spec(
-        kprove,
-        spec_file,
-        save_directory=save_directory,
-        spec_module_name=spec_module,
-        # include_dirs=include_dirs,
-        md_selector=md_selector,
-        claim_labels=claim_labels,
-        exclude_claim_labels=exclude_claim_labels,
-    )
-
-    if pending:
-        nodes = list(nodes) + [node.id for node in proof.pending]
-    if failing:
-        nodes = list(nodes) + [node.id for node in proof.failing]
-
-    # TODO: Create NodePrinter ???
-    proof_show = APRProofShow(kprove)
-
-    res_lines = proof_show.show(
-        proof,
-        nodes=nodes,
-        node_deltas=node_deltas,
-        to_module=to_module,
-        minimize=minimize,
-        sort_collections=sort_collections,
-    )
-
-    if failure_info:
-        with legacy_explore(kprove, id=proof.id) as kcfg_explore:
-            res_lines += print_failure_info(proof, kcfg_explore)
-
-    print('\n'.join(res_lines))
-
-
-def exec_view_kcfg(
-    definition_dir: str,
-    haskell_dir: str,
-    spec_file: Path,
-    save_directory: Path | None = None,
-    claim_labels: Iterable[str] | None = None,
-    exclude_claim_labels: Iterable[str] = (),
-    spec_module: str | None = None,
-    md_selector: str | None = None,
-    **kwargs: Any,
-) -> None:
-    # TODO: include dirs
-
-    if spec_file is None:
-        raise ValueError('A spec file must be provided')
-    kmir = KMIR(definition_dir, haskell_dir, use_directory=save_directory)
-
-    kprove: KProve
-    if kmir.kprove is None:
-        raise ValueError('Cannot use KProve object when it is None')
+        check_dir_path(proof_dir)
+    if definition_dir is None:
+        raise RuntimeError('Cannot find KMIR LLVM definition, please specify --definition-dir, or KMIR_LLVM_DIR')
     else:
-        kprove = kmir.kprove
+        check_dir_path(definition_dir)
+    if haskell_dir is None:
+        raise RuntimeError('Cannot find KMIR Haskell definition, please specify --haskell-dir, or KMIR_HASKELL_DIR')
+    else:
+        check_dir_path(haskell_dir)
 
-    proof = get_apr_proof_for_spec(
-        kprove,
-        spec_file,
-        save_directory=save_directory,
-        spec_module_name=spec_module,
-        md_selector=md_selector,
-        claim_labels=claim_labels,
-        exclude_claim_labels=exclude_claim_labels,
+    kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
+
+    view_proof(
+        kmir,
+        claim_label,
+        proof_dir,
     )
-
-    # TODO: NodePrinter ???
-    proof_view = APRProofViewer(proof, kprove)
-
-    proof_view.run()
 
 
 def _loglevel(args: Namespace) -> int:

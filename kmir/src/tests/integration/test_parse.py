@@ -3,9 +3,8 @@ from typing import Optional
 
 import pytest
 from filelock import FileLock
-from pyk.ktool.kprint import KAstInput, KAstOutput
 
-from kmir import KMIR
+from kmir import KMIR, parse
 
 from .utils import (
     COMPILETEST_PARSE_FAIL,
@@ -30,11 +29,9 @@ def test_handwritten_syntax(
 
     # Then
     try:
-        parse_result = kmir.parse_program_raw(
-            input_path, temp_file=temp_file, input=KAstInput.PROGRAM, output=KAstOutput.KORE
-        )
-        assert not parse_result.returncode
-    except ValueError:
+        parse(kmir, input_path, temp_file=temp_file)
+        # assert not parse_result.returncode
+    except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
@@ -59,11 +56,9 @@ def test_compiletest(
 
     # Then
     try:
-        parse_result = kmir.parse_program_raw(
-            input_path, temp_file=temp_file, input=KAstInput.PROGRAM, output=KAstOutput.KORE
-        )
-        assert not parse_result.returncode
-    except ValueError:
+        parse(kmir, input_path, temp_file=temp_file)
+        # assert not parse_result.returncode
+    except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:

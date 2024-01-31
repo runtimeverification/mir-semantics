@@ -3,9 +3,8 @@ from typing import Optional
 
 import pytest
 from filelock import FileLock
-from pyk.ktool.krun import KRunOutput
 
-from kmir import KMIR
+from kmir import KMIR, run
 
 from .utils import (
     COMPILETEST_RUN_FAIL,
@@ -36,12 +35,14 @@ def test_handwritten(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
-    if report_file and run_result.returncode:
-        with FileLock(f'{report_file.name}.lock', timeout=1):
-            with report_file.open('a') as f:
-                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
-    assert not run_result.returncode
+    try:
+        run(kmir, input_path, depth=None, output='none', temp_file=temp_file)
+    except RuntimeError:
+        if report_file:
+            with FileLock(f'{report_file.name}.lock', timeout=1):
+                with report_file.open('a') as f:
+                    f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{1}\n')
+        raise
 
 
 @pytest.mark.parametrize(
@@ -64,10 +65,13 @@ def test_compiletest(
     temp_file = tmp_path / 'preprocessed.mir'
 
     # Then
-    run_result = kmir.run_program(input_path, output=KRunOutput.NONE, check=False, temp_file=temp_file)
-    if report_file and run_result.returncode:
-        lock = FileLock(f'{report_file.name}.lock')
-        with lock:
-            with report_file.open('a') as f:
-                f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{run_result.returncode}\n')
-    assert not run_result.returncode
+    try:
+        run(kmir, input_path, temp_file=temp_file)
+    except RuntimeError:
+        if report_file:
+            lock = FileLock(f'{report_file.name}.lock')
+            with lock:
+                with report_file.open('a') as f:
+                    f.write(f'{input_path.relative_to(TEST_DATA_DIR)}\t{1}\n')
+        raise
+    # assert not run_result.returncode

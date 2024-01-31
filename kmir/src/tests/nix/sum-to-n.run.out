@@ -1,399 +1,398 @@
-<generatedTop>
-  <k>
-    #halt ~> .
-  </k>
-  <returncode>
+<generatedTop>[0m
+  <k>[0m
+    #halt[0m ~> .
+  </k>[0m
+  <returncode>[0m
     0
-  </returncode>
-  <mir>
-    <simulator>
-      <callStack>
-        .List
-      </callStack>
-      <currentBasicBlock>
+  </returncode>[0m
+  <mir>[0m
+    <simulator>[0m
+      <callStack>[0m
+        .List[0m
+      </callStack>[0m
+      <currentBasicBlock>[0m
         1
-      </currentBasicBlock>
-      <phase>
-        Finalization
-      </phase>
-    </simulator>
-    <data>
-      <functions>
-        <function>
-          <fnKey>
-            Fn ( main :: .FunctionPath )
-          </fnKey>
-          <localDecls>
-            <localDecl>
-              <index>
+      </currentBasicBlock>[0m
+      <phase>[0m
+        Finalization[0m
+      </phase>[0m
+    </simulator>[0m
+    <data>[0m
+      <functions>[0m
+        <function>[0m
+          <fnKey>[0m
+            Fn[0m ([0m main ::[0m .FunctionPath[0m )[0m
+          </fnKey>[0m
+          <localDecls>[0m
+            <localDecl>[0m
+              <index>[0m
                 _0
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                ( )
-              </ty>
-              <value>
-                Unit
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </internal>[0m
+              <ty>[0m
+                ([0m )[0m
+              </ty>[0m
+              <value>[0m
+                Unit[0m
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _1
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                ( )
-              </ty>
-              <value>
-                Unit
-              </value>
-            </localDecl>
-          </localDecls>
-          <basicBlocks>
-            <basicBlock>
-              <bbName>
+              </internal>[0m
+              <ty>[0m
+                ([0m )[0m
+              </ty>[0m
+              <value>[0m
+                Unit[0m
+              </value>[0m
+            </localDecl>[0m
+          </localDecls>[0m
+          <basicBlocks>[0m
+            <basicBlock>[0m
+              <bbName>[0m
                 0
-              </bbName>
-              <bbBody>
-                { .Statements _1 = test_sum_to_n :: .ExpressionPathList ( .OperandList ) -> bb1  ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m .Statements[0m _1 =[0m test_sum_to_n ::[0m .ExpressionPathList[0m ([0m .OperandList[0m )[0m ->[0m bb1 [0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 1
-              </bbName>
-              <bbBody>
-                { .Statements return ; }
-              </bbBody>
-            </basicBlock>
-          </basicBlocks>
-        </function> <function>
-          <fnKey>
-            Fn ( sum_to_n :: .FunctionPath )
-          </fnKey>
-          <localDecls>
-            <localDecl>
-              <index>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m .Statements[0m return[0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m
+          </basicBlocks>[0m
+        </function>[0m <function>[0m
+          <fnKey>[0m
+            Fn[0m ([0m sum_to_n ::[0m .FunctionPath[0m )[0m
+          </fnKey>[0m
+          <localDecls>[0m
+            <localDecl>[0m
+              <index>[0m
                 _0
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 55
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _1
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 10
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _2
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 55
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _3
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 0
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _4
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                bool 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                bool[0m [0m
+              </ty>[0m
+              <value>[0m
                 false
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _5
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 0
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _6
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 1
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _7
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 1
-              </value>
-            </localDecl>
-          </localDecls>
-          <basicBlocks>
-            <basicBlock>
-              <bbName>
+              </value>[0m
+            </localDecl>[0m
+          </localDecls>[0m
+          <basicBlocks>[0m
+            <basicBlock>[0m
+              <bbName>[0m
                 0
-              </bbName>
-              <bbBody>
-                { _2 = const 0_usize ;  _3 = _1 ;  .Statements goto -> bb1  ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _2 =[0m const[0m 0_usize ;[0m [0m _3 =[0m _1 ;[0m [0m .Statements[0m goto[0m ->[0m bb1 [0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 1
-              </bbName>
-              <bbBody>
-                { _5 = _3 ;  _4 = Gt ( move _5 , const 0_usize ) ;  .Statements switchInt ( move _4 ) -> [ 0 : bb3  , .SwitchTargets , otherwise : bb2  ] ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _5 =[0m _3 ;[0m [0m _4 =[0m Gt ([0m move[0m _5 ,[0m const[0m 0_usize )[0m ;[0m [0m .Statements[0m switchInt[0m ([0m move[0m _4 )[0m ->[0m [[0m 0 :[0m bb3 [0m ,[0m .SwitchTargets[0m ,[0m otherwise[0m :[0m bb2 [0m ][0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 2
-              </bbName>
-              <bbBody>
-                { _6 = _3 ;  _2 = Add ( _2 , move _6 ) ;  _7 = _3 ;  _3 = Sub ( move _7 , const 1_usize ) ;  .Statements goto -> bb1  ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _6 =[0m _3 ;[0m [0m _2 =[0m Add ([0m _2 ,[0m move[0m _6 )[0m ;[0m [0m _7 =[0m _3 ;[0m [0m _3 =[0m Sub ([0m move[0m _7 ,[0m const[0m 1_usize )[0m ;[0m [0m .Statements[0m goto[0m ->[0m bb1 [0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 3
-              </bbName>
-              <bbBody>
-                { _0 = _2 ;  .Statements return ; }
-              </bbBody>
-            </basicBlock>
-          </basicBlocks>
-        </function> <function>
-          <fnKey>
-            Fn ( test_sum_to_n :: .FunctionPath )
-          </fnKey>
-          <localDecls>
-            <localDecl>
-              <index>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _0 =[0m _2 ;[0m [0m .Statements[0m return[0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m
+          </basicBlocks>[0m
+        </function>[0m <function>[0m
+          <fnKey>[0m
+            Fn[0m ([0m test_sum_to_n ::[0m .FunctionPath[0m )[0m
+          </fnKey>[0m
+          <localDecls>[0m
+            <localDecl>[0m
+              <index>[0m
                 _0
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                ( )
-              </ty>
-              <value>
-                Unit
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </internal>[0m
+              <ty>[0m
+                ([0m )[0m
+              </ty>[0m
+              <value>[0m
+                Unit[0m
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _1
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 10
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _2
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 55
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _3
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                bool 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                bool[0m [0m
+              </ty>[0m
+              <value>[0m
                 true
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _4
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                usize 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                usize[0m [0m
+              </ty>[0m
+              <value>[0m
                 55
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _5
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                bool 
-              </ty>
-              <value>
+              </internal>[0m
+              <ty>[0m
+                bool[0m [0m
+              </ty>[0m
+              <value>[0m
                 false
-              </value>
-            </localDecl> <localDecl>
-              <index>
+              </value>[0m
+            </localDecl>[0m <localDecl>[0m
+              <index>[0m
                 _6
-              </index>
-              <mutability>
-                Not
-              </mutability>
-              <internal>
+              </index>[0m
+              <mutability>[0m
+                Not[0m
+              </mutability>[0m
+              <internal>[0m
                 false
-              </internal>
-              <ty>
-                !
-              </ty>
-              <value>
-                Never
-              </value>
-            </localDecl>
-          </localDecls>
-          <basicBlocks>
-            <basicBlock>
-              <bbName>
+              </internal>[0m
+              <ty>[0m
+                ![0m
+              </ty>[0m
+              <value>[0m
+                Never[0m
+              </value>[0m
+            </localDecl>[0m
+          </localDecls>[0m
+          <basicBlocks>[0m
+            <basicBlock>[0m
+              <bbName>[0m
                 0
-              </bbName>
-              <bbBody>
-                { _1 = const 10_usize ;  _2 = const 55_usize ;  .Statements _4 = sum_to_n :: .ExpressionPathList ( _1 , .OperandList ) -> bb1  ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _1 =[0m const[0m 10_usize ;[0m [0m _2 =[0m const[0m 55_usize ;[0m [0m .Statements[0m _4 =[0m sum_to_n ::[0m .ExpressionPathList[0m ([0m _1 ,[0m .OperandList[0m )[0m ->[0m bb1 [0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 1
-              </bbName>
-              <bbBody>
-                { _3 = Eq ( move _4 , _2 ) ;  _5 = Not ( _3 ) ;  .Statements switchInt ( move _5 ) -> [ 0 : bb3  , .SwitchTargets , otherwise : bb2  ] ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m _3 =[0m Eq ([0m move[0m _4 ,[0m _2 )[0m ;[0m [0m _5 =[0m Not ([0m _3 )[0m ;[0m [0m .Statements[0m switchInt[0m ([0m move[0m _5 )[0m ->[0m [[0m 0 :[0m bb3 [0m ,[0m .SwitchTargets[0m ,[0m otherwise[0m :[0m bb2 [0m ][0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 2
-              </bbName>
-              <bbBody>
-                { .Statements _6 = core :: panicking :: panic :: .ExpressionPathList ( const "assertion failed: sucess" , .OperandList ) ; }
-              </bbBody>
-            </basicBlock> <basicBlock>
-              <bbName>
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m .Statements[0m _6 =[0m core ::[0m panicking ::[0m panic ::[0m .ExpressionPathList[0m ([0m const[0m "assertion failed: sucess" ,[0m .OperandList[0m )[0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m <basicBlock>[0m
+              <bbName>[0m
                 3
-              </bbName>
-              <bbBody>
-                { .Statements return ; }
-              </bbBody>
-            </basicBlock>
-          </basicBlocks>
-        </function>
-      </functions>
-    </data>
-  </mir>
-</generatedTop>
-
+              </bbName>[0m
+              <bbBody>[0m
+                {[0m .Statements[0m return[0m ;[0m }[0m
+              </bbBody>[0m
+            </basicBlock>[0m
+          </basicBlocks>[0m
+        </function>[0m
+      </functions>[0m
+    </data>[0m
+  </mir>[0m
+</generatedTop>[0m
