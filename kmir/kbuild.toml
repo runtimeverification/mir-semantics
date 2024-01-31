@@ -11,6 +11,7 @@ syntax-module = "MIR-SYNTAX"
 gen-glr-bison-parser = "true"
 type-inference-mode = "simplesub"
 
+
 [targets.llvmc]
 backend = "llvm"
 main-file = "mir.md"
