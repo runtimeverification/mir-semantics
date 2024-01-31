@@ -14,7 +14,7 @@ from pyk.kast.outer import KClaim
 from pyk.kcfg import KCFG, KCFGExplore
 from pyk.kore.parser import KoreParser
 from pyk.kore.prelude import SORT_K_ITEM, inj, top_cell_initializer
-from pyk.kore.rpc import KoreClient, KoreServer
+from pyk.kore.rpc import KoreClient, KoreServer, KoreServerArgs
 from pyk.kore.syntax import Pattern, SortApp
 from pyk.kore.tools import PrintOutput, kore_print
 from pyk.ktool.kprove import KProve
@@ -84,16 +84,18 @@ class KMIRProve:
         smt_timeout: int | None = None,
         smt_retry_limit: int | None = None,
     ) -> KoreServer:
-        # Old way of handling KCFGExplore, to be removed
-        return KoreServer(
-            self.haskell_dir,
-            self.mir_prove.main_module,
-            port=port,
-            command=self.backend_cmd,
-            bug_report=self.bug_report,
-            smt_timeout=smt_timeout,
-            smt_retry_limit=smt_retry_limit,
-        )
+        # Old way of handling KCFGExplore, to be removed. Is this still true?
+        kore_server_args: KoreServerArgs = {
+            'kompiled_dir': self.haskell_dir,
+            'module_name': self.mir_prove.main_module,
+            'port': port,
+            'command': self.backend_cmd,
+            'smt_timeout': smt_timeout,
+            'smt_retry_limit': smt_retry_limit,
+            'bug_report': self.bug_report,
+        }
+
+        return KoreServer(kore_server_args)
 
     @contextmanager
     def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
@@ -236,7 +238,14 @@ class KMIR:
                 pass
             case PrintOutput.KORE:
                 print(kore_text)
-            case PrintOutput.JSON | PrintOutput.PRETTY | PrintOutput.PROGRAM | PrintOutput.KAST | PrintOutput.LATEX | PrintOutput.BINARY:
+            case (
+                PrintOutput.JSON
+                | PrintOutput.PRETTY
+                | PrintOutput.PROGRAM
+                | PrintOutput.KAST
+                | PrintOutput.LATEX
+                | PrintOutput.BINARY
+            ):
                 kore_pattern = KoreParser(kore_text).pattern()
                 # args = ['kore-print', '/dev/stdin', str(self.llvm_dir), output, '/dev/stdout']
                 try:
