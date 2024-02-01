@@ -19,11 +19,11 @@ module ADD
               <fnKey> Fn(main) </fnKey>
               <localDecls>
                 <localDecl>
-                  <index> 0 </index>
+                  <index> _0 </index>
                   ...
                 </localDecl>
                 <localDecl>
-                  <index> 1 </index>
+                  <index> _1 </index>
                   <value> 42 </value>
                   ...
                 </localDecl>
