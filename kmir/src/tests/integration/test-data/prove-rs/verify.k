@@ -20,7 +20,7 @@ module VERIFY
 
     syntax IdentifierToken ::= "num" [token]
     // syntax IdentifierToken ::= "temp" [token]
-
+    
     syntax IdentifierToken ::= "core" [token]
     syntax IdentifierToken ::= "panicking" [token]
     syntax IdentifierToken ::= "panic" [token]
