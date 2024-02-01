@@ -18,6 +18,6 @@ module VERIFY
     syntax BBId ::= "bb3" [token]
     syntax BBId ::= "bb4" [token]
 
-    syntax Identifier ::= "num" [token]
-    // syntax Identifier ::= "temp" [token]
+    syntax IdentifierToken ::= "num" [token]
+    // syntax IdentifierToken ::= "temp" [token]
 endmodule
