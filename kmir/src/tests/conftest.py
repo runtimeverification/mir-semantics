@@ -5,7 +5,7 @@ import pytest
 from _pytest.config import Notset
 from pyk.cli.utils import dir_path, file_path
 from pyk.kbuild import KBuild, Project
-from pytest import Config, Parser, TempPathFactory
+from pytest import FixtureRequest, Config, Parser, TempPathFactory
 
 from kmir.kmir import KMIR
 
@@ -25,6 +25,12 @@ def pytest_addoption(parser: Parser) -> None:
         dest='report_file',
         type=file_path,
         help='File to report test failures.',
+    )
+    parser.addoption(
+        '--update-expected-output',
+        action='store_true',
+        default=False,
+        help='Write expected output files for proof tests',
     )
 
 
@@ -55,6 +61,9 @@ def report_file(pytestconfig: Config) -> Optional[Path]:
     report_file_path.touch()
     return report_file_path
 
+@pytest.fixture
+def update_expected_output(request: FixtureRequest) -> bool:
+    return request.config.getoption('--update-expected-output')
 
 @pytest.fixture(scope='session')
 def kbuild(kbuild_dir: Path) -> KBuild:

@@ -24,6 +24,7 @@ def test_handwritten(
     tmp_path: Path,
     allow_skip: bool,
     report_file: Optional[Path],
+    update_expected_output: bool,
     #  caplog: LogCaptureFixture,
 ) -> None:
     # caplog.set_level(logging.INFO)
@@ -45,46 +46,46 @@ def test_handwritten(
             smt_timeout=300,
             smt_retry_limit=10,
         )
+
+        # Check if passed proofs are in show
+        if len(passed) != 0:
+            for proof in passed:
+                if proof.id in SHOW_TESTS:
+                    show_res = show_proof(
+                        kmir,
+                        proof.id,
+                        use_directory,
+                    )
+                    assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output)
+
+        # Check if failed proofs are in show
+        if len(failed) != 0:
+            fail = False
+            if report_file:
+                lock = FileLock(f'{report_file.name}.lock')
+                with lock:
+                    with report_file.open('a') as f:
+                        for proof in failed:
+                            if proof.id in SHOW_TESTS:
+                                # Show test might be expected to fail
+                                show_res = show_proof(
+                                    kmir,
+                                    proof.id,
+                                    use_directory,
+                                )
+                                assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output)
+                            else:
+                                fail = True
+    
+            assert(not fail) 
     except Exception:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
                 with report_file.open('a') as f:
-                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{2}\n')
+                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
                     # TODO: 1 to be replaced with actual prove result or return code
         raise
-
-    if len(passed) != 0:
-        for proof in passed:
-            if proof.id in SHOW_TESTS:
-                show_res = show_proof(
-                    kmir,
-                    proof.id,
-                    use_directory,
-                )
-                assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=False)
-
-    if len(failed) != 0:
-        fail = False
-        if report_file:
-            lock = FileLock(f'{report_file.name}.lock')
-            with lock:
-                with report_file.open('a') as f:
-                    for proof in failed:
-                        if proof.id in SHOW_TESTS:
-                            show_res = show_proof(
-                                kmir,
-                                proof.id,
-                                use_directory,
-                            )
-                            assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=False)
-                        else:
-                            fail = True
-                            # f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}::{proof.id}\t{1}\n') # Our pytest set up isn't this granular currently
-                            f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
-                            # TODO: 1 to be replaced with actual prove result or return code
-        if fail:
-            raise
 
 def assert_or_update_show_output(show_res: str, expected_file: Path, *, update: bool) -> None:
     assert expected_file.is_file()
