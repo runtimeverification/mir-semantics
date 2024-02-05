@@ -57,8 +57,12 @@ def test_handwritten(
     if len(passed) != 0:
         for proof in passed:
             if proof.id in SHOW_TESTS:
-                # assert_or_update_show_output
-                pass
+                show_res = show_proof(
+                    kmir,
+                    proof.id,
+                    use_directory,
+                )
+                assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=False)
 
     if len(failed) != 0:
         fail = False
@@ -73,7 +77,7 @@ def test_handwritten(
                                 proof.id,
                                 use_directory,
                             )
-                            assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=True)
+                            assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=False)
                         else:
                             fail = True
                             # f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}::{proof.id}\t{1}\n') # Our pytest set up isn't this granular currently
