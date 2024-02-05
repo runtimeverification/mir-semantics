@@ -63,23 +63,19 @@ def test_handwritten(
         # Check if failed proofs are in show
         if len(failed) != 0:
             fail = False
-            if report_file:
-                lock = FileLock(f'{report_file.name}.lock')
-                with lock:
-                    with report_file.open('a') as f:
-                        for proof in failed:
-                            if proof.id in SHOW_TESTS:
-                                # Show test might be expected to fail
-                                show_res = show_proof(
-                                    kmir,
-                                    proof.id,
-                                    use_directory,
-                                )
-                                assert_or_update_show_output(
-                                    show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
-                                )
-                            else:
-                                fail = True
+            for proof in failed:
+                if proof.id in SHOW_TESTS:
+                    # Show test might be expected to fail
+                    show_res = show_proof(
+                        kmir,
+                        proof.id,
+                        use_directory,
+                    )
+                    assert_or_update_show_output(
+                        show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
+                    )
+                else:
+                    fail = True
 
             assert not fail
     except Exception:

@@ -162,6 +162,7 @@ Use `make` to run common tasks (see the [Makefile](Makefile) for a complete list
 * `make format`: Format code
 * `make test-unit`: Run unit tests
 * `make test-integration`: Run integration tests
+* `make test-intgeration TEST_ARGS="--update-expected-output"`: Run integration tests, updating expected results for `show-proof` tests 
 
 ## Working on the K files
 The K source code of the semantics resides in [`k-src`](k-src).
