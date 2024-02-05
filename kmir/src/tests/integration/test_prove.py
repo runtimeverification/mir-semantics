@@ -7,7 +7,7 @@ from filelock import FileLock
 
 from kmir import KMIR, prove, show_proof
 
-from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR, SHOW_TESTS
+from .utils import PROVE_FAIL, PROVE_TEST_DATA, SHOW_TESTS, TEST_DATA_DIR
 
 sys.setrecursionlimit(10**8)
 
@@ -56,7 +56,9 @@ def test_handwritten(
                         proof.id,
                         use_directory,
                     )
-                    assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output)
+                    assert_or_update_show_output(
+                        show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
+                    )
 
         # Check if failed proofs are in show
         if len(failed) != 0:
@@ -73,11 +75,13 @@ def test_handwritten(
                                     proof.id,
                                     use_directory,
                                 )
-                                assert_or_update_show_output(show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output)
+                                assert_or_update_show_output(
+                                    show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
+                                )
                             else:
                                 fail = True
-    
-            assert(not fail) 
+
+            assert not fail
     except Exception:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')
@@ -86,6 +90,7 @@ def test_handwritten(
                     f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
                     # TODO: 1 to be replaced with actual prove result or return code
         raise
+
 
 def assert_or_update_show_output(show_res: str, expected_file: Path, *, update: bool) -> None:
     assert expected_file.is_file()

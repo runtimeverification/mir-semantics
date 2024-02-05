@@ -69,7 +69,7 @@ def show_proof(
     failing: bool = False,
     counterexample_info: bool = False,
     **kwargs: Any,
-) -> None:
+) -> str:
     prover = kmir.prover
 
     if prover is None:
@@ -109,7 +109,6 @@ def show_proof(
         raise ValueError('Proof type not supported yet.')
 
     return '\n'.join(res_lines)
-
 
 
 def view_proof(
