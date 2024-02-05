@@ -4,7 +4,7 @@ from argparse import Namespace
 from pathlib import Path
 from typing import Any, Final, Iterable, Optional
 
-from pyk.proof import APRProof  # , APRProver, EqualityProof, EqualityProver
+from pyk.proof import APRProof
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
