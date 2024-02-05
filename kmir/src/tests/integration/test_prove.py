@@ -7,7 +7,7 @@ from filelock import FileLock
 
 from kmir import KMIR, prove
 
-from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR
+from .utils import PROVE_FAIL, PROVE_TEST_DATA, TEST_DATA_DIR, SHOW_TESTS
 
 sys.setrecursionlimit(10**8)
 
@@ -37,8 +37,8 @@ def test_handwritten(
     use_directory.mkdir()
 
     # When
-    try:
-        prove(
+    try: 
+        (passed, failed) = prove(
             kmir,
             spec_file=spec_file,
             save_directory=use_directory,
@@ -50,6 +50,17 @@ def test_handwritten(
             lock = FileLock(f'{report_file.name}.lock')
             with lock:
                 with report_file.open('a') as f:
-                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
+                    f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{2}\n')
                     # TODO: 1 to be replaced with actual prove result or return code
         raise
+
+    if len(failed) != 0:
+        if report_file:
+            lock = FileLock(f'{report_file.name}.lock')
+            with lock:
+                with report_file.open('a') as f:
+                    for proof in failed:
+                        f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}::{proof.id}\t{1}\n')
+                        # TODO: 1 to be replaced with actual prove result or return code
+        raise
+
