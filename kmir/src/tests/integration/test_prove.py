@@ -60,6 +60,7 @@ def test_handwritten(
             with lock:
                 with report_file.open('a') as f:
                     for proof in failed:
-                        f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}::{proof.id}\t{1}\n')
+                        # f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}::{proof.id}\t{1}\n') # Our pytest set up isn't this granular currently
+                        f.write(f'{spec_file.relative_to(TEST_DATA_DIR)}\t{1}\n')
                         # TODO: 1 to be replaced with actual prove result or return code
         raise
