@@ -26,7 +26,7 @@ def prove(
     smt_retry_limit: int | None = None,
     trace_rewrites: bool = False,
     # kore_rpc_command: str | Iterable[str] | None = None,
-) -> tuple[list[APRProof], list[APRProof]]:
+) -> tuple[list[Proof], list[Proof]]:
     _LOGGER.info('Extracting claims from file')
 
     if kmir.prover:
@@ -37,8 +37,8 @@ def prove(
     claims = kmir_prover.get_all_claims(spec_file)
     assert claims, ValueError(f'No claims found in file {spec_file}')
 
-    passing: list[APRProof] = []
-    failing: list[APRProof] = []
+    passing: list[Proof] = []
+    failing: list[Proof] = []
     for claim in claims:
         # start an rpc session with KoreServer
         server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
@@ -49,7 +49,7 @@ def prove(
 
             _, passed = res
             if passed == 'failed':
-                 failing.append(proof)
+                failing.append(proof)
             else:
                 passing.append(proof)
     return (passing, failing)

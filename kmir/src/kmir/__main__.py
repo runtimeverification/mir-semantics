@@ -4,6 +4,7 @@ from argparse import Namespace
 from pathlib import Path
 from typing import Any, Final, Iterable, Optional
 
+from pyk.proof import APRProof  # , APRProver, EqualityProof, EqualityProver
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
@@ -139,14 +140,15 @@ def exec_prove(
         trace_rewrites=trace_rewrites,
     )
 
-    for proof in passed: 
+    for proof in passed:
         print(f'PROOF PASSED: {proof.id}')
 
     for proof in failed:
-        failure_info = '\n'.join(proof.failure_info.print())
         print(f'PROOF FAILED: {proof.id}')
-        print(f'{failure_info}')
-    
+        if isinstance(proof, APRProof) and proof.failure_info is not None:
+            failure_info = '\n'.join(proof.failure_info.print())
+            print(f'{failure_info}')
+
     total_claims = len(passed) + len(failed)
     plural = '' if total_claims == 1 else 's'
     print(f'Prover run on {total_claims} claim{plural}: {len(passed)} passed, {len(failed)} failed')
