@@ -108,7 +108,8 @@ def show_proof(
     else:  # TODO: implement the other proof types
         raise ValueError('Proof type not supported yet.')
 
-    print('\n'.join(res_lines))
+    return '\n'.join(res_lines)
+
 
 
 def view_proof(

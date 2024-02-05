@@ -189,7 +189,7 @@ def exec_show_proof(
 
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
-    show_proof(
+    show_output = show_proof(
         kmir,
         claim_label,
         proof_dir,
@@ -201,6 +201,8 @@ def exec_show_proof(
         failing,
         counterexample_info,
     )
+
+    print(show_output)
 
 
 def exec_view_proof(
