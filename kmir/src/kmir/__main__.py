@@ -1,8 +1,10 @@
 import logging
+import sys
 from argparse import Namespace
 from pathlib import Path
 from typing import Any, Final, Iterable, Optional
 
+from pyk.proof import APRProof
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
@@ -127,7 +129,7 @@ def exec_prove(
     # We provide configuration of which backend to use in a KMIR object.
     # `use_booster` is by default True, where Booster Backend is always used unless turned off
 
-    prove(
+    (passed, failed) = prove(
         kmir,
         spec_file,
         save_directory=save_directory,
@@ -137,6 +139,22 @@ def exec_prove(
         smt_retry_limit=smt_retry_limit,
         trace_rewrites=trace_rewrites,
     )
+
+    for proof in passed:
+        print(f'PROOF PASSED: {proof.id}')
+
+    for proof in failed:
+        print(f'PROOF FAILED: {proof.id}')
+        if isinstance(proof, APRProof) and proof.failure_info is not None:
+            failure_info = '\n'.join(proof.failure_info.print())
+            print(f'{failure_info}')
+
+    total_claims = len(passed) + len(failed)
+    plural = '' if total_claims == 1 else 's'
+    print(f'Prover run on {total_claims} claim{plural}: {len(passed)} passed, {len(failed)} failed')
+
+    if len(failed) != 0:
+        sys.exit(1)
 
 
 def exec_show_proof(
@@ -171,7 +189,7 @@ def exec_show_proof(
 
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir)
 
-    show_proof(
+    show_output = show_proof(
         kmir,
         claim_label,
         proof_dir,
@@ -183,6 +201,8 @@ def exec_show_proof(
         failing,
         counterexample_info,
     )
+
+    print(show_output)
 
 
 def exec_view_proof(

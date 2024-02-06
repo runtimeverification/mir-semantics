@@ -1,5 +1,4 @@
 import logging
-import sys
 from pathlib import Path
 from typing import Any, Final, Iterable
 
@@ -27,7 +26,7 @@ def prove(
     smt_retry_limit: int | None = None,
     trace_rewrites: bool = False,
     # kore_rpc_command: str | Iterable[str] | None = None,
-) -> None:
+) -> tuple[list[Proof], list[Proof]]:
     _LOGGER.info('Extracting claims from file')
 
     if kmir.prover:
@@ -38,8 +37,8 @@ def prove(
     claims = kmir_prover.get_all_claims(spec_file)
     assert claims, ValueError(f'No claims found in file {spec_file}')
 
-    results: list[tuple[str, str]] = []
-    failed = 0
+    passing: list[Proof] = []
+    failing: list[Proof] = []
     for claim in claims:
         # start an rpc session with KoreServer
         server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
@@ -50,12 +49,10 @@ def prove(
 
             _, passed = res
             if passed == 'failed':
-                failed += 1
-            results.append(res)
-    print(results)
-
-    if failed:  # TODO: fail immediately or fail when all claims tried.
-        sys.exit(failed)
+                failing.append(proof)
+            else:
+                passing.append(proof)
+    return (passing, failing)
 
 
 def show_proof(
@@ -72,7 +69,7 @@ def show_proof(
     failing: bool = False,
     counterexample_info: bool = False,
     **kwargs: Any,
-) -> None:
+) -> str:
     prover = kmir.prover
 
     if prover is None:
@@ -111,7 +108,7 @@ def show_proof(
     else:  # TODO: implement the other proof types
         raise ValueError('Proof type not supported yet.')
 
-    print('\n'.join(res_lines))
+    return '\n'.join(res_lines)
 
 
 def view_proof(
