@@ -1,0 +1,12 @@
+
+┌─ 1 (root)
+│
+│  (29 steps)
+├─ 3
+│
+┊  constraint: true
+┊  subst: OMITTED SUBST
+└─ 2 (leaf)
+
+
+

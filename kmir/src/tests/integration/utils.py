@@ -100,3 +100,9 @@ PROVE_TEST_DATA = tuple(((str(input_path.relative_to(TEST_DATA_DIR)), input_path
 PROVE_FAIL_FILE = TEST_DATA_DIR / 'handwritten-prove-fail.tsv'
 PROVE_EXCLUDE = ['verify.k']
 PROVE_FAIL = {test.split('\t')[0] for test in PROVE_FAIL_FILE.read_text().splitlines() + PROVE_EXCLUDE}
+
+##--------------------
+# show-proof test data
+##--------------------
+SHOW_FILE = TEST_DATA_DIR / 'show-proof'
+SHOW_TESTS = set(SHOW_FILE.read_text().splitlines())
