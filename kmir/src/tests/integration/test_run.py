@@ -4,7 +4,8 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir import KMIR, run
+from kmir import KMIR
+from kmir.run import run
 
 from .utils import (
     COMPILETEST_RUN_FAIL,

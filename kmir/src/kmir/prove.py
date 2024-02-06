@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Any, Final, Iterable
 
-from pyk.proof import APRProof  # , EqualityProof, APRBMCProof
+from pyk.proof import APRProof
 from pyk.proof.proof import Proof
 from pyk.proof.reachability import APRFailureInfo
 from pyk.proof.show import APRProofShow
