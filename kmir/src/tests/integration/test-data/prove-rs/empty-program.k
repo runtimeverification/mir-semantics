@@ -3,7 +3,7 @@ requires "verify.k"
 module EMPTY-PROGRAM
     imports VERIFY
 
-    claim 
+    claim [empty]:
       <k>
         fn main :: .FunctionPath ( .ParameterList ) -> ( ) { .DebugList let mut _0 : ( ) ;  .BindingList .ScopeList bb0  : { .Statements return ; }  .BasicBlockList }  .Mir ~> .
         =>
