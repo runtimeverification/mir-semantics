@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
-from typing import Any, Final, Iterable
+from typing import Any, Final, Iterable, Optional
 
-from pyk.proof import APRProof  # , EqualityProof, APRBMCProof
+from pyk.proof import APRProof
 from pyk.proof.proof import Proof
 from pyk.proof.reachability import APRFailureInfo
 from pyk.proof.show import APRProofShow
@@ -19,13 +19,13 @@ def prove(
     kmir: KMIR,
     spec_file: Path,
     *,
-    save_directory: Path | None = None,
+    claim_label: Optional[str] = None,
+    save_directory: Optional[Path] = None,
     reinit: bool = False,
-    depth: int | None = None,
-    smt_timeout: int | None = None,
-    smt_retry_limit: int | None = None,
+    depth: Optional[int] = None,
+    smt_timeout: Optional[int] = None,
+    smt_retry_limit: Optional[int] = None,
     trace_rewrites: bool = False,
-    # kore_rpc_command: str | Iterable[str] | None = None,
 ) -> tuple[list[Proof], list[Proof]]:
     _LOGGER.info('Extracting claims from file')
 
@@ -34,7 +34,7 @@ def prove(
     else:
         raise ValueError('The prover object in kmir is not initialised.')
 
-    claims = kmir_prover.get_all_claims(spec_file)
+    claims = kmir_prover.get_all_claims(spec_file, claim_label)
     assert claims, ValueError(f'No claims found in file {spec_file}')
 
     passing: list[Proof] = []

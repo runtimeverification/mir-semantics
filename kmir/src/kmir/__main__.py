@@ -91,6 +91,7 @@ def exec_prove(
     spec_file: Path,
     smt_timeout: int,
     smt_retry_limit: int,
+    claim: Optional[str] = None,
     definition_dir: Optional[Path] = None,
     haskell_dir: Optional[Path] = None,
     use_booster: bool = True,
@@ -132,6 +133,7 @@ def exec_prove(
     (passed, failed) = prove(
         kmir,
         spec_file,
+        claim_label=claim,
         save_directory=save_directory,
         reinit=reinit,
         depth=depth,
