@@ -112,7 +112,9 @@ class KMIRProve:
     # A wrapper on KProve's get_claims
     def get_all_claims(self, spec_file: Path, claim_label: Optional[str]) -> list[KClaim]:
         if claim_label:
-            return self.mir_prove.get_claims(spec_file, claim_labels=claim_label.__iter__())
+            claim_list = []
+            claim_list.append(claim_label)
+            return self.mir_prove.get_claims(spec_file, claim_labels=claim_list)
         else:
             return self.mir_prove.get_claims(spec_file)
 
