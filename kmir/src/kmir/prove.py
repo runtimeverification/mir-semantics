@@ -15,6 +15,21 @@ _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
+def get_claim_labels(kmir: KMIR, spec_file: Path) -> list[str]:
+    _LOGGER.info(f'Extracting claim labels from spec file {spec_file}')
+
+    if kmir.prover:
+        kmir_prover = kmir.prover
+    else:
+        raise ValueError('The prover object in kmir is not initialised.')
+
+    flat_module_list = kmir_prover.mir_prove.get_claim_modules(spec_file=spec_file)
+
+    all_claims = {c.label: c for m in flat_module_list.modules for c in m.claims}
+
+    return list(all_claims.keys())
+
+
 def prove(
     kmir: KMIR,
     spec_file: Path,

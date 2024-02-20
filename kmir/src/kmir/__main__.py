@@ -11,7 +11,7 @@ from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR
 from .parse import parse
-from .prove import prove, show_proof, view_proof
+from .prove import get_claim_labels, prove, show_proof, view_proof
 from .run import run
 from .utils import NodeIdLike
 
@@ -91,6 +91,7 @@ def exec_prove(
     spec_file: Path,
     smt_timeout: int,
     smt_retry_limit: int,
+    claim_list: bool = False,
     claim: Optional[str] = None,
     definition_dir: Optional[Path] = None,
     haskell_dir: Optional[Path] = None,
@@ -129,6 +130,11 @@ def exec_prove(
     kmir = KMIR(definition_dir, haskell_dir=haskell_dir, use_booster=use_booster, bug_report=br)
     # We provide configuration of which backend to use in a KMIR object.
     # `use_booster` is by default True, where Booster Backend is always used unless turned off
+
+    if claim_list:
+        claim_labels = get_claim_labels(kmir, spec_file)
+        print(*claim_labels, sep='\n')
+        sys.exit(0)
 
     (passed, failed) = prove(
         kmir,
