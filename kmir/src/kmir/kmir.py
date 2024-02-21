@@ -18,7 +18,7 @@ from pyk.kore.rpc import KoreClient, KoreServer, KoreServerArgs
 from pyk.kore.syntax import Pattern, SortApp
 from pyk.kore.tools import PrintOutput, kore_print
 from pyk.ktool.kprove import KProve
-from pyk.proof import APRProof, APRProver, EqualityProof, EqualityProver
+from pyk.proof import APRProof, APRProver, EqualityProof, ImpliesProver
 from pyk.proof.proof import Proof, Prover  # not exported explicitly
 from pyk.utils import BugReport, check_file_path, run_process
 
@@ -282,7 +282,7 @@ class KMIR:
             passed = proof.status
         elif isinstance(proof, EqualityProof):
             # case EqualityProof:
-            prover = EqualityProver(proof, rpc_session)
+            prover = ImpliesProver(proof, rpc_session)
             prover.advance_proof()
             passed = proof.status
         else:
