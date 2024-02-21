@@ -272,12 +272,15 @@ class KMIR:
         prover: Prover
         # case APRProof:
         if isinstance(proof, APRProof):
-            prover = APRProver(proof, rpc_session)
-            prover.advance_proof(
-                max_iterations=max_iterations,
+            prover = APRProver(
+                proof,
+                kcfg_explore=rpc_session,
                 execute_depth=max_depth,
                 terminal_rules=terminal_rules,
                 cut_point_rules=cut_point_rules,
+            )
+            prover.advance_proof(
+                max_iterations=max_iterations,
             )
             passed = proof.status
         elif isinstance(proof, EqualityProof):
