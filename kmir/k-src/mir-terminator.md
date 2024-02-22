@@ -1,7 +1,7 @@
 ```k
-require "mir-types.md"
-require "mir-rvalue.md"
-require "mir-assert.md"
+requires "mir-types.md"
+requires "mir-rvalue.md"
+requires "mir-assert.md"
 ```
 
 
@@ -9,9 +9,9 @@ require "mir-assert.md"
 
 ```k
 module MIR-TERMINATOR-SYNTAX
-  import MIR-TYPE-SYNTAX
-  import MIR-RVALUE-SYNTAX
-  import MIR-ASSERT-SYNTAX
+  imports MIR-TYPE-SYNTAX
+  imports MIR-RVALUE-SYNTAX
+  imports MIR-ASSERT-SYNTAX
 
   syntax Terminator ::= Goto
                       | SwitchInt
