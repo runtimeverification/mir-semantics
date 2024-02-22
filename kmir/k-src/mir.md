@@ -1,6 +1,6 @@
 ```k
-require "mir-configuration.md"
-require "panics.md"
+requires "mir-configuration.md"
+requires "panics.md"
 ```
 
 MIR executable operational semantics

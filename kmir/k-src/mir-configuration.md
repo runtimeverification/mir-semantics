@@ -1,5 +1,5 @@
 ```k
-require "mir-syntax.md"
+requires "mir-syntax.md"
 ```
 
 MIR interpreter configuration

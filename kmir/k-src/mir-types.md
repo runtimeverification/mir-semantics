@@ -1,5 +1,5 @@
 ```k
-require "mir-lexer-syntax.md"
+requires "mir-lexer-syntax.md"
 ```
 
 Syntax of MIR types

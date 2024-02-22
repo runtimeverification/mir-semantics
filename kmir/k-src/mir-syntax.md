@@ -1,8 +1,8 @@
 ```k
-require "mir-types.md"
-require "mir-place.md"
-require "mir-rvalue.md"
-require "mir-basicblock.md"
+requires "mir-types.md"
+requires "mir-place.md"
+requires "mir-rvalue.md"
+requires "mir-basicblock.md"
 ```
 
 MIR syntax
