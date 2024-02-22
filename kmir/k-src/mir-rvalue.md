@@ -1,7 +1,7 @@
 ```k
-require "mir-syntax.md"
-require "mir-configuration.md"
-require "mir-operand.md"
+requires "mir-syntax.md"
+requires "mir-configuration.md"
+requires "mir-operand.md"
 ```
 
 Syntax of rvalues
