@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from typing import Callable, Final, Iterable, Iterator, Optional, final
 
-from pyk.cterm import CTerm
+from pyk.cterm import CTerm, CTermSymbolic
 from pyk.kast.inner import KInner
 from pyk.kast.outer import KClaim
 from pyk.kcfg import KCFG, KCFGExplore
@@ -101,13 +101,10 @@ class KMIRProve:
     def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
         with server as server:
             with KoreClient('localhost', server.port, bug_report=self.bug_report) as client:
-                yield KCFGExplore(
-                    kprint=self.mir_prove,
-                    kore_client=client,
-                    kcfg_semantics=KMIRSemantics(),
-                    id=claim_id,
-                    trace_rewrites=trace_rewrites,
+                cterm_symbolic = CTermSymbolic(
+                    client, self.mir_prove.definition, self.mir_prove.kompiled_kore, trace_rewrites=trace_rewrites
                 )
+                yield KCFGExplore(self.mir_prove, cterm_symbolic, kcfg_semantics=KMIRSemantics(), id=claim_id)
 
     # A wrapper on KProve's get_claims
     def get_all_claims(self, spec_file: Path, claim_label: Optional[str]) -> list[KClaim]:
@@ -147,11 +144,11 @@ class KMIRProve:
                 new_target = ensure_ksequence_on_k_cell(kcfg.node(target_node_id).cterm)
 
                 _LOGGER.info(f'Computing definedness constraint for initial node: {claim.label}')
-                new_init = kcfg_explore.cterm_assume_defined(new_init)
+                new_init = kcfg_explore.cterm_symbolic.assume_defined(new_init)
 
                 _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
-                new_init, _ = kcfg_explore.cterm_simplify(new_init)
-                new_target, _ = kcfg_explore.cterm_simplify(new_target)
+                new_init, _ = kcfg_explore.cterm_symbolic.simplify(new_init)
+                new_target, _ = kcfg_explore.cterm_symbolic.simplify(new_target)
                 if CTerm._is_bottom(new_init.kast):
                     raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
                 if CTerm._is_top(new_target.kast):
