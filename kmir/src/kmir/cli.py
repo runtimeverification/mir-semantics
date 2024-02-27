@@ -83,7 +83,9 @@ def create_argument_parser() -> ArgumentParser:
 
     # Prove
     prove_subparser = command_parser.add_parser(
-        'prove', parents=[logging_args], help='Prove a MIR specification WARN: EXPERIMENTAL AND WORK IN PROGRESS'
+        'prove',
+        parents=[logging_args],
+        help='Prove a MIR specification, by default, it proves all the claims. Use `--claim` option to prove a selected claim.',
     )
     prove_subparser.add_argument(
         'spec_file',
@@ -101,6 +103,18 @@ def create_argument_parser() -> ArgumentParser:
         default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
+    )
+    prove_subparser.add_argument(
+        '--claim-list',
+        default=False,
+        action='store_true',
+        help='Print a list of claims in the specificatoin file',
+    )
+    prove_subparser.add_argument(
+        '--claim',
+        default=None,
+        type=str,
+        help='Provide the claim label for proving a single claim',
     )
     prove_subparser.add_argument(
         '--bug-report',
