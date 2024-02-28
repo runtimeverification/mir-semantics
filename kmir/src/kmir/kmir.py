@@ -104,7 +104,7 @@ class KMIRProve:
                 cterm_symbolic = CTermSymbolic(
                     client, self.mir_prove.definition, self.mir_prove.kompiled_kore, trace_rewrites=trace_rewrites
                 )
-                yield KCFGExplore(self.mir_prove, cterm_symbolic, kcfg_semantics=KMIRSemantics(), id=claim_id)
+                yield KCFGExplore(cterm_symbolic, kcfg_semantics=KMIRSemantics(), id=claim_id)
 
     # A wrapper on KProve's get_claims
     def get_all_claims(self, spec_file: Path, claim_label: Optional[str]) -> list[KClaim]:
