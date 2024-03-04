@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Final, Iterable, Optional
 
 from pyk.proof import APRProof
+from pyk.proof.reachability import APRFailureInfo
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
@@ -153,7 +154,7 @@ def exec_prove(
 
     for proof in failed:
         print(f'PROOF FAILED: {proof.id}')
-        if isinstance(proof, APRProof) and proof.failure_info is not None:
+        if isinstance(proof, APRProof) and isinstance(proof.failure_info, APRFailureInfo):
             failure_info = '\n'.join(proof.failure_info.print())
             print(f'{failure_info}')
 
