@@ -152,6 +152,7 @@ class RunCommand(Command, LoggingOptions):
         )
         parser.add_argument(
             '--bug-report',
+            default=None,
             action='store_true',
             help='Generate a haskell-backend bug report for the execution',
         )
@@ -242,6 +243,7 @@ class ProveCommand(Command, LoggingOptions):
         )
         parser.add_argument(
             '--claim-list',
+            default=None,
             action='store_true',
             help='Print a list of claims in the specificatoin file',
         )
@@ -252,6 +254,7 @@ class ProveCommand(Command, LoggingOptions):
         )
         parser.add_argument(
             '--bug-report',
+            default=None,
             action='store_true',
             help='Generate a haskell-backend bug report for the execution',
         )
@@ -272,6 +275,7 @@ class ProveCommand(Command, LoggingOptions):
         )
         parser.add_argument(
             '--trace-rewrites',
+            default=None,
             action='store_true',
             help='Log traces of all simplification and rewrite rule applications.',
         )
@@ -282,11 +286,13 @@ class ProveCommand(Command, LoggingOptions):
         )
         parser.add_argument(
             '--reinit',
+            default=None,
             action='store_true',
             help='Reinitialise a proof.',
         )
         parser.add_argument(
             '--use-booster',
+            default=None,
             action='store_true',
             help='Use the booster backend instead of the haskell backend',
         )

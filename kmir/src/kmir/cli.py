@@ -56,15 +56,17 @@ class KCFGShowProofOptions(Options):
         parser.add_argument(
             '--failure-information',
             dest='failure_info',
+            default=None,
             action='store_true',
             help='Falg to show failure summary for cfg, by default, false.',
         )
-        parser.add_argument('--to-module', action='store_true', help='Output edges as a K module.')
-        parser.add_argument('--pending', action='store_true', help='Also display pending nodes')
-        parser.add_argument('--failing', action='store_true', help='Also display failing nodes')
+        parser.add_argument('--to-module', default=None, action='store_true', help='Output edges as a K module.')
+        parser.add_argument('--pending', default=None, action='store_true', help='Also display pending nodes')
+        parser.add_argument('--failing', default=None, action='store_true', help='Also display failing nodes')
         parser.add_argument(
             '--counterexample-information',
             dest='counterexample_info',
+            default=None,
             action='store_true',
             help="Show models for failing nodes. Should be called with the '--failure-information' flag",
         )
