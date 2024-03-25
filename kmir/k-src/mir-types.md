@@ -502,9 +502,7 @@ Internal sort casts
 
 ```k
 module MIR-SORT-CASTS
-  imports MIR-TYPE-SYNTAX
-  imports MIR-RVALUE
-
+  imports MIR-VALUE
 
   syntax Int ::= castMIRValueToInt(MIRValue) [function]
   //---------------------------------------------------
@@ -526,7 +524,7 @@ Hooked functions
 ```k
 module MIR-HOOKS
   imports STRING
-  imports MIR-SYNTAX
+  imports MIR-TYPE-SYNTAX
 ```
 
 We use several hooks which convert between token and string representations:
@@ -552,9 +550,10 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ### Locals
 
 ```k
+  syntax Local ::= LocalToken // this extra declaration is needed here to avoid a parsing ambiguity
   syntax Local ::= Int2Local(Int) [function, total]
   //-----------------------------------------------
-  rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
+  rule Int2Local( I:Int ) => String2LocalToken( "_" +String Int2String(I) )
 
   syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------

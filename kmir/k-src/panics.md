@@ -1,5 +1,4 @@
 ```k
-requires "mir-syntax.md"
 requires "mir-configuration.md"
 
 module PANICS
