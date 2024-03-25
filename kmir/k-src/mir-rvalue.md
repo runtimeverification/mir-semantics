@@ -98,7 +98,7 @@ Evaluate a syntactic `RValue` into a semantics `RValueResult`. Inspired by [eval
   //-------------------------------------------------------------
   rule evalConstantValue(VALUE:UnsignedLiteral) => UnsignedLiteral2Int(VALUE)
   rule evalConstantValue(VALUE:SignedLiteral)   => SignedLiteral2Int(VALUE)
-  rule evalConstantValue(VALUE:StringLiteral)   => StringLitertal2String(VALUE)
+  rule evalConstantValue(VALUE:StringLiteral)   => StringLiteral2String(VALUE)
   rule evalConstantValue(( ))                   => Unit
   rule evalConstantValue(VALUE:Bool)            => VALUE
   rule evalConstantValue(VALUE:ConstEnumConstructor)  => evalPrimitiveBound(VALUE)
