@@ -1,10 +1,10 @@
 ```k
-require "mir-operand.md"
+requires "mir-operand.md"
 ```
 
 ```k
 module MIR-ASSERT-SYNTAX 
-  import MIR-OPERAND-SYNTAX
+  imports MIR-OPERAND-SYNTAX
 
   syntax AssertKind ::= BoundsCheck
                       | Overflow

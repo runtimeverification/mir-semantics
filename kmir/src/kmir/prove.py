@@ -1,9 +1,8 @@
 import logging
-import sys
 from pathlib import Path
-from typing import Any, Final, Iterable
+from typing import Any, Final, Iterable, Optional
 
-from pyk.proof import APRProof  # , EqualityProof, APRBMCProof
+from pyk.proof import APRProof
 from pyk.proof.proof import Proof
 from pyk.proof.reachability import APRFailureInfo
 from pyk.proof.show import APRProofShow
@@ -16,18 +15,33 @@ _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
+def get_claim_labels(kmir: KMIR, spec_file: Path) -> list[str]:
+    _LOGGER.info(f'Extracting claim labels from spec file {spec_file}')
+
+    if kmir.prover:
+        kmir_prover = kmir.prover
+    else:
+        raise ValueError('The prover object in kmir is not initialised.')
+
+    flat_module_list = kmir_prover.mir_prove.get_claim_modules(spec_file=spec_file)
+
+    all_claims = {c.label: c for m in flat_module_list.modules for c in m.claims}
+
+    return list(all_claims.keys())
+
+
 def prove(
     kmir: KMIR,
     spec_file: Path,
     *,
-    save_directory: Path | None = None,
+    claim_label: Optional[str] = None,
+    save_directory: Optional[Path] = None,
     reinit: bool = False,
-    depth: int | None = None,
-    smt_timeout: int | None = None,
-    smt_retry_limit: int | None = None,
+    depth: Optional[int] = None,
+    smt_timeout: Optional[int] = None,
+    smt_retry_limit: Optional[int] = None,
     trace_rewrites: bool = False,
-    # kore_rpc_command: str | Iterable[str] | None = None,
-) -> None:
+) -> tuple[list[Proof], list[Proof]]:
     _LOGGER.info('Extracting claims from file')
 
     if kmir.prover:
@@ -35,11 +49,11 @@ def prove(
     else:
         raise ValueError('The prover object in kmir is not initialised.')
 
-    claims = kmir_prover.get_all_claims(spec_file)
+    claims = kmir_prover.get_all_claims(spec_file, claim_label)
     assert claims, ValueError(f'No claims found in file {spec_file}')
 
-    results: list[tuple[str, str]] = []
-    failed = 0
+    passing: list[Proof] = []
+    failing: list[Proof] = []
     for claim in claims:
         # start an rpc session with KoreServer
         server = kmir_prover.set_kore_server(smt_timeout=smt_timeout, smt_retry_limit=smt_retry_limit)
@@ -50,12 +64,10 @@ def prove(
 
             _, passed = res
             if passed == 'failed':
-                failed += 1
-            results.append(res)
-    print(results)
-
-    if failed:  # TODO: fail immediately or fail when all claims tried.
-        sys.exit(failed)
+                failing.append(proof)
+            else:
+                passing.append(proof)
+    return (passing, failing)
 
 
 def show_proof(
@@ -72,7 +84,7 @@ def show_proof(
     failing: bool = False,
     counterexample_info: bool = False,
     **kwargs: Any,
-) -> None:
+) -> str:
     prover = kmir.prover
 
     if prover is None:
@@ -111,7 +123,7 @@ def show_proof(
     else:  # TODO: implement the other proof types
         raise ValueError('Proof type not supported yet.')
 
-    print('\n'.join(res_lines))
+    return '\n'.join(res_lines)
 
 
 def view_proof(

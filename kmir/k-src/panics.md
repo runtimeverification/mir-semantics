@@ -1,6 +1,6 @@
 ```k
-require "mir-syntax.md"
-require "mir-configuration.md"
+requires "mir-syntax.md"
+requires "mir-configuration.md"
 
 module PANICS
   imports MIR-SYNTAX

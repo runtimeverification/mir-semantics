@@ -1,5 +1,5 @@
 ```k
-require "mir-types.md"
+requires "mir-types.md"
 ```
 
 ```k
