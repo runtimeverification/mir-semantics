@@ -20,10 +20,13 @@ module ADD
               <localDecls>
                 <localDecl>
                   <index> _0 </index>
+                  <ty> ( ) </ty>
+                  <value> Unit </value>
                   ...
                 </localDecl>
                 <localDecl>
                   <index> _1 </index>
+                  <ty> i32 </ty>
                   <value> 42 </value>
                   ...
                 </localDecl>

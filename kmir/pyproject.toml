@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.2.43"
+version = "0.2.44"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",

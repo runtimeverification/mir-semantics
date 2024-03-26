@@ -4,7 +4,8 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir import KMIR, parse
+from kmir import KMIR
+from kmir.parse import parse
 
 from .utils import (
     COMPILETEST_PARSE_FAIL,
