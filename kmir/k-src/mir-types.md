@@ -502,9 +502,7 @@ Internal sort casts
 
 ```k
 module MIR-SORT-CASTS
-  imports MIR-TYPE-SYNTAX
-  imports MIR-RVALUE
-
+  imports MIR-VALUE
 
   syntax Int ::= castMIRValueToInt(MIRValue) [function]
   //---------------------------------------------------
@@ -526,14 +524,13 @@ Hooked functions
 ```k
 module MIR-HOOKS
   imports STRING
-  imports MIR-SYNTAX
+  imports MIR-TYPE-SYNTAX
 ```
 
 We use several hooks which convert between token and string representations:
 
 ```k
-  syntax String ::= StringLiteral2Sring(StringLiteral) [function, total, hook(STRING.token2string)]
-  syntax StringLiteral ::= String2SringLiteral(String) [function, total, hook(STRING.string2token)]
+  syntax String ::= StringLiteral2String(StringLiteral) [function, total, hook(STRING.token2string)]
 
   syntax String ::= LocalToken2String(LocalToken) [function, total, hook(STRING.token2string)]
   syntax LocalToken ::= String2LocalToken(String) [function, total, hook(STRING.string2token)]
@@ -542,9 +539,8 @@ We use several hooks which convert between token and string representations:
 
   syntax IdentifierToken ::= String2IdentifierToken(String) [function, total, hook(STRING.string2token)]
 
-  syntax String ::= SignedLitertal2String(SignedLiteral) [function, total, hook(STRING.token2string)]
-  syntax String ::= UnsignedLitertal2String(UnsignedLiteral) [function, total, hook(STRING.token2string)]
-  syntax String ::= StringLitertal2String(StringLiteral) [function, total, hook(STRING.token2string)]
+  syntax String ::= SignedLiteral2String(SignedLiteral) [function, total, hook(STRING.token2string)]
+  syntax String ::= UnsignedLiteral2String(UnsignedLiteral) [function, total, hook(STRING.token2string)]
 ```
 
 Additionally, we need functions that convert between syntactic and semantics representations of several types:
@@ -552,9 +548,10 @@ Additionally, we need functions that convert between syntactic and semantics rep
 ### Locals
 
 ```k
+  syntax Local ::= LocalToken // this extra declaration is needed here to avoid a parsing ambiguity
   syntax Local ::= Int2Local(Int) [function, total]
   //-----------------------------------------------
-  rule Int2Local(I) => String2LocalToken("_" +String Int2String(I))
+  rule Int2Local( I:Int ) => String2LocalToken( "_" +String Int2String(I) )
 
   syntax Int ::= BBName2Int(BBName) [function, total]
   //-------------------------------------------------
@@ -569,7 +566,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
   syntax Int ::= UnsignedLiteral2Int(UnsignedLiteral) [function]
   //------------------------------------------------------------
   rule UnsignedLiteral2Int(LITERAL) =>
-    #let     STR = UnsignedLitertal2String(LITERAL)
+    #let     STR = UnsignedLiteral2String(LITERAL)
     #in #let UNDERSCORE_POSITION = findChar(STR, "_", 0)
     #in String2Int(substrString(STR, 0, UNDERSCORE_POSITION))
 ```
@@ -580,7 +577,7 @@ Additionally, we need functions that convert between syntactic and semantics rep
   syntax Int ::= SignedLiteral2Int(SignedLiteral) [function]
   //--------------------------------------------------------
   rule SignedLiteral2Int(LITERAL) =>
-    #let     STR = SignedLitertal2String(LITERAL)
+    #let     STR = SignedLiteral2String(LITERAL)
     #in #let UNDERSCORE_POSITION = findChar(STR, "_", 0)
     #in String2Int(substrString(STR, 0, UNDERSCORE_POSITION))
 ```

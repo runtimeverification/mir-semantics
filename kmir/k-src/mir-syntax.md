@@ -1,7 +1,4 @@
 ```k
-requires "mir-types.md"
-requires "mir-place.md"
-requires "mir-rvalue.md"
 requires "mir-basicblock.md"
 ```
 

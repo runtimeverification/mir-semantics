@@ -1,6 +1,5 @@
 ```k
-requires "mir-types.md"
-requires "mir-rvalue.md"
+requires "mir-rvalue-syntax.md"
 requires "mir-assert.md"
 ```
 

@@ -1,5 +1,5 @@
 ```k
-requires "mir-configuration.md"
+requires "mir-rvalue.md"
 requires "panics.md"
 ```
 
