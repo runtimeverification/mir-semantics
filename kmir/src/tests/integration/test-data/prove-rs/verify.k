@@ -18,11 +18,15 @@ module VERIFY
     syntax BBId ::= "bb3" [token]
     syntax BBId ::= "bb4" [token]
 
+    syntax IdentifierToken ::= "a" [token]
+    syntax IdentifierToken ::= "b" [token]
     syntax IdentifierToken ::= "num" [token]
-    // syntax IdentifierToken ::= "temp" [token]
+    syntax IdentifierToken ::= "ans" [token]
+    syntax IdentifierToken ::= "add" [token]
 
     syntax IdentifierToken ::= "core" [token]
     syntax IdentifierToken ::= "panicking" [token]
     syntax IdentifierToken ::= "panic" [token]
     syntax IdentifierToken ::= "\"assertion failed: num == 42\"" [token]
+    syntax IdentifierToken ::= "\"assertion failed: 42 == ans\"" [token]
 endmodule

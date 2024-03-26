@@ -1,0 +1,43 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn add(_1: i32, _2: i32) -> i32 {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: i32;
+
+    bb0: {
+        _0 = Add(_1, _2);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _2: bool;
+    let mut _3: bool;
+    let mut _4: i32;
+    let mut _5: !;
+    scope 1 {
+        debug ans => _1;
+    }
+
+    bb0: {
+        _1 = add(const 20_i32, const 22_i32) -> bb1;
+    }
+
+    bb1: {
+        _4 = _1;
+        _3 = Eq(const 42_i32, move _4);
+        _2 = Not(move _3);
+        switchInt(move _2) -> [0: bb3, otherwise: bb2];
+    }
+
+    bb2: {
+        _5 = core::panicking::panic(const "assertion failed: 42 == ans");
+    }
+
+    bb3: {
+        return;
+    }
+}

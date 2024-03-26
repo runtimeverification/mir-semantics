@@ -5,7 +5,8 @@ from typing import Optional
 import pytest
 from filelock import FileLock
 
-from kmir import KMIR, prove, show_proof
+from kmir import KMIR
+from kmir.prove import prove, show_proof
 
 from .utils import PROVE_FAIL, PROVE_TEST_DATA, SHOW_TESTS, TEST_DATA_DIR
 
