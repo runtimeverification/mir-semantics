@@ -1,6 +1,6 @@
 ```k
-require "mir-rvalue.md"
-require "mir-place.md"
+requires "mir-rvalue.md"
+requires "mir-place.md"
 ```
 ### [Statements](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.StatementKind.html) and [Terminators](https://doc.rust-lang.org/beta/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html)
 

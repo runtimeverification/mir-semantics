@@ -5,13 +5,14 @@ from pathlib import Path
 from typing import Any, Final, Iterable, Optional
 
 from pyk.proof import APRProof
+from pyk.proof.reachability import APRFailureInfo
 from pyk.utils import BugReport, check_dir_path, check_file_path
 
 from . import VERSION
 from .cli import create_argument_parser
 from .kmir import KMIR
 from .parse import parse
-from .prove import prove, show_proof, view_proof
+from .prove import get_claim_labels, prove, show_proof, view_proof
 from .run import run
 from .utils import NodeIdLike
 
@@ -91,6 +92,8 @@ def exec_prove(
     spec_file: Path,
     smt_timeout: int,
     smt_retry_limit: int,
+    claim_list: bool = False,
+    claim: Optional[str] = None,
     definition_dir: Optional[Path] = None,
     haskell_dir: Optional[Path] = None,
     use_booster: bool = True,
@@ -129,9 +132,15 @@ def exec_prove(
     # We provide configuration of which backend to use in a KMIR object.
     # `use_booster` is by default True, where Booster Backend is always used unless turned off
 
+    if claim_list:
+        claim_labels = get_claim_labels(kmir, spec_file)
+        print(*claim_labels, sep='\n')
+        sys.exit(0)
+
     (passed, failed) = prove(
         kmir,
         spec_file,
+        claim_label=claim,
         save_directory=save_directory,
         reinit=reinit,
         depth=depth,
@@ -145,7 +154,7 @@ def exec_prove(
 
     for proof in failed:
         print(f'PROOF FAILED: {proof.id}')
-        if isinstance(proof, APRProof) and proof.failure_info is not None:
+        if isinstance(proof, APRProof) and isinstance(proof.failure_info, APRFailureInfo):
             failure_info = '\n'.join(proof.failure_info.print())
             print(f'{failure_info}')
 
