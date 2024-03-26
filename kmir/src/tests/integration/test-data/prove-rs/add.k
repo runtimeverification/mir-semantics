@@ -3,7 +3,7 @@ requires "verify.k"
 module ADD
     imports VERIFY
 
-    claim 
+    claim
           <k>
             fn main :: .FunctionPath ( .ParameterList ) -> ( ) { .DebugList let mut _0 : ( ) ;  let  _1 : i32  ;  .BindingList scope 1 { debug num => _1 ;  .DebugList .BindingList .ScopeList }  .ScopeList bb0  : { _1 = Add ( const 20_i32 , const 22_i32 ) ;  .Statements return ; }  .BasicBlockList }  .Mir
             =>
@@ -19,11 +19,11 @@ module ADD
               <fnKey> Fn(main) </fnKey>
               <localDecls>
                 <localDecl>
-                  <index> 0 </index>
+                  <index> _0 </index>
                   ...
                 </localDecl>
                 <localDecl>
-                  <index> 1 </index>
+                  <index> _1 </index>
                   <value> 42 </value>
                   ...
                 </localDecl>
