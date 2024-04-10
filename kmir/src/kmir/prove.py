@@ -61,7 +61,7 @@ class ProveOptions(LoggingOptions):
             'trace_rewrites': False,
             'save_directory': None,
             'reinit': False,
-            'use_booster': False,
+            'use_booster': False,  # TODO: debug the booster backend, when it is as fast as legacy, change this to be True
         }
 
 
