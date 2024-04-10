@@ -23,7 +23,7 @@ class RunOptions(LoggingOptions):
     @staticmethod
     def default() -> dict[str, Any]:
         llvm_dir_str = os.getenv('KMIR_LLVM_DIR')
-        llvm_dir = Path(llvm_dir_str) if llvm_dir_str is not None  else None
+        llvm_dir = Path(llvm_dir_str) if llvm_dir_str is not None else None
 
         return {
             'definition_dir': llvm_dir,
