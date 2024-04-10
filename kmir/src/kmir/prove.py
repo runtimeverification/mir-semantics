@@ -138,10 +138,11 @@ def show_proof(
 
     if isinstance(proof, APRProof):
         kmir_show = APRProofShow(kprove)
+        nodes = list(options.nodes)
         if options.pending:
-            nodes = list(options.nodes) + [node.id for node in proof.pending]
+            nodes += [node.id for node in proof.pending]
         if options.failing:
-            nodes = list(options.nodes) + [node.id for node in proof.failing]
+            nodes += [node.id for node in proof.failing]
 
         res_lines += kmir_show.show(
             proof,

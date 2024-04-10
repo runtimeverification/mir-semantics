@@ -61,7 +61,7 @@ def test_handwritten(
                         ShowProofOptions(
                             {
                                 'claim_label': proof.id,
-                                'definition_dir': use_directory,
+                                'proof_dir': use_directory,
                             }
                         ),
                     )
@@ -80,7 +80,7 @@ def test_handwritten(
                         ShowProofOptions(
                             {
                                 'claim_label': proof.id,
-                                'definition_dir': use_directory,
+                                'proof_dir': use_directory,
                             }
                         ),
                     )
