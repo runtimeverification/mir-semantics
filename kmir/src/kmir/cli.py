@@ -1,11 +1,12 @@
 import os
 from argparse import ArgumentParser
 from functools import cached_property
+from typing import Any
 
-from pyk.cli.args import KCLIArgs
+from pyk.cli.args import KCLIArgs, Options
 from pyk.cli.utils import dir_path, file_path
 
-from .utils import arg_pair_of, node_id_like
+from .utils import NodeIdLike, arg_pair_of, node_id_like
 
 
 def create_argument_parser() -> ArgumentParser:
@@ -221,6 +222,28 @@ def create_argument_parser() -> ArgumentParser:
     )
 
     return parser
+
+
+class KCFGShowProofOptions(Options):
+    nodes: list[NodeIdLike]
+    node_deltas: list[tuple[NodeIdLike, NodeIdLike]]
+    failure_info: bool
+    to_module: bool
+    pending: bool
+    failing: bool
+    counterexample_info: bool
+
+    @staticmethod
+    def default() -> dict[str, Any]:
+        return {
+            'nodes': [],
+            'node_deltas': [],
+            'failure_info': False,
+            'to_module': False,
+            'pending': False,
+            'failing': False,
+            'counterexample_info': False,
+        }
 
 
 class KMIRCLIArgs(KCLIArgs):

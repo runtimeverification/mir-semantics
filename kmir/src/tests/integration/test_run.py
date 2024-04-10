@@ -5,7 +5,7 @@ import pytest
 from filelock import FileLock
 
 from kmir import KMIR
-from kmir.run import run
+from kmir.run import RunOptions, run
 
 from .utils import (
     COMPILETEST_RUN_FAIL,
@@ -37,7 +37,7 @@ def test_handwritten(
 
     # Then
     try:
-        run(kmir, input_path, depth=None, output='none', temp_file=temp_file)
+        run(kmir, RunOptions({'input_path': input_path, 'depth': None, 'output': 'none'}), temp_file=temp_file)
     except RuntimeError:
         if report_file:
             with FileLock(f'{report_file.name}.lock', timeout=1):
@@ -67,7 +67,7 @@ def test_compiletest(
 
     # Then
     try:
-        run(kmir, input_path, temp_file=temp_file)
+        run(kmir, RunOptions({'input_path': input_path}), temp_file=temp_file)
     except RuntimeError:
         if report_file:
             lock = FileLock(f'{report_file.name}.lock')

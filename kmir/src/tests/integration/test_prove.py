@@ -6,7 +6,7 @@ import pytest
 from filelock import FileLock
 
 from kmir import KMIR
-from kmir.prove import prove, show_proof
+from kmir.prove import ProveOptions, ShowProofOptions, prove, show_proof
 
 from .utils import PROVE_FAIL, PROVE_TEST_DATA, SHOW_TESTS, TEST_DATA_DIR
 
@@ -42,10 +42,14 @@ def test_handwritten(
     try:
         (passed, failed) = prove(
             kmir,
-            spec_file=spec_file,
-            save_directory=use_directory,
-            smt_timeout=300,
-            smt_retry_limit=10,
+            ProveOptions(
+                {
+                    'spec_file': spec_file,
+                    'save_directory': use_directory,
+                    'smt_timeout': 300,
+                    'smt_retry_limit': 10,
+                }
+            ),
         )
 
         # Check if passed proofs are in show
@@ -54,8 +58,12 @@ def test_handwritten(
                 if proof.id in SHOW_TESTS:
                     show_res = show_proof(
                         kmir,
-                        proof.id,
-                        use_directory,
+                        ShowProofOptions(
+                            {
+                                'claim_label': proof.id,
+                                'definition_dir': use_directory,
+                            }
+                        ),
                     )
                     assert_or_update_show_output(
                         show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
@@ -69,8 +77,12 @@ def test_handwritten(
                     # Show test might be expected to fail
                     show_res = show_proof(
                         kmir,
-                        proof.id,
-                        use_directory,
+                        ShowProofOptions(
+                            {
+                                'claim_label': proof.id,
+                                'definition_dir': use_directory,
+                            }
+                        ),
                     )
                     assert_or_update_show_output(
                         show_res, TEST_DATA_DIR / f'show/{proof.id}.expected', update=update_expected_output
