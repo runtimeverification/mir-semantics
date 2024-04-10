@@ -30,7 +30,7 @@ def test_handwritten_syntax(
 
     # Then
     try:
-        parse(kmir, ParseOptions({'mir_file': input_path}), temp_file=temp_file)
+        parse(kmir, ParseOptions({'mir_file': input_path, 'output': 'none'}), temp_file=temp_file)
         # assert not parse_result.returncode
     except RuntimeError:
         if report_file:
