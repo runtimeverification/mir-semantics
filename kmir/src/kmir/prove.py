@@ -49,9 +49,14 @@ class ProveOptions(LoggingOptions):
 
     @staticmethod
     def default() -> dict[str, Any]:
+        llvm_dir_str = os.getenv('KMIR_LLVM_DIR')
+        llvm_dir = Path(llvm_dir_str) if llvm_dir_str is not None  else None
+        haskell_dir_str = os.getenv('KMIR_HASKELL_DIR')
+        haskell_dir = Path(haskell_dir_str) if haskell_dir_str is not None  else None
+
         return {
-            'definition_dir': os.getenv('KMIR_LLVM_DIR'),
-            'haskell_dir': os.getenv('KMIR_HASKELL_DIR'),
+            'definition_dir': llvm_dir,
+            'haskell_dir': haskell_dir,
             'claim_list': False,
             'claim': None,
             'bug_report': False,
@@ -107,10 +112,15 @@ class ShowProofOptions(LoggingOptions, KCFGShowProofOptions):
 
     @staticmethod
     def default() -> dict[str, Any]:
+        llvm_dir_str = os.getenv('KMIR_LLVM_DIR')
+        llvm_dir = Path(llvm_dir_str) if llvm_dir_str is not None  else None
+        haskell_dir_str = os.getenv('KMIR_HASKELL_DIR')
+        haskell_dir = Path(haskell_dir_str) if haskell_dir_str is not None  else None
+
         return {
             'proof_dir': None,
-            'definition_dir': os.getenv('KMIR_LLVM_DIR'),
-            'haskell_dir': os.getenv('KMIR_HASKELL_DIR'),
+            'definition_dir': llvm_dir,
+            'haskell_dir': haskell_dir,
         }
 
 
@@ -171,10 +181,15 @@ class ViewProofOptions(LoggingOptions):
 
     @staticmethod
     def default() -> dict[str, Any]:
+        llvm_dir_str = os.getenv('KMIR_LLVM_DIR')
+        llvm_dir = Path(llvm_dir_str) if llvm_dir_str is not None  else None
+        haskell_dir_str = os.getenv('KMIR_HASKELL_DIR')
+        haskell_dir = Path(haskell_dir_str) if haskell_dir_str is not None  else None
+
         return {
             'proof_dir': None,
-            'definition_dir': os.getenv('KMIR_LLVM_DIR'),
-            'haskell_dir': os.getenv('KMIR_HASKELL_DIR'),
+            'definition_dir': llvm_dir,
+            'haskell_dir': haskell_dir,
         }
 
 
