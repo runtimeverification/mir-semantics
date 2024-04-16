@@ -2,7 +2,7 @@
   description = " A flake for KMIR Semantics";
 
   inputs = {
-    k-framework.url = "github:runtimeverification/k/v6.3.64";
+    k-framework.url = "github:runtimeverification/k/v7.0.5";
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.follows = "k-framework/rv-utils";
