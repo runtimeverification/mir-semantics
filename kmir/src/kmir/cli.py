@@ -1,17 +1,17 @@
-import os
 from argparse import ArgumentParser
 from functools import cached_property
+from typing import Any
 
-from pyk.cli.args import KCLIArgs
+from pyk.cli.args import KCLIArgs, Options
 from pyk.cli.utils import dir_path, file_path
 
-from .utils import arg_pair_of, node_id_like
+from .utils import NodeIdLike, arg_pair_of, node_id_like
 
 
 def create_argument_parser() -> ArgumentParser:
     logging_args = ArgumentParser(add_help=False)
-    logging_args.add_argument('--verbose', '-v', default=False, action='store_true', help='Verbose output.')
-    logging_args.add_argument('--debug', default=False, action='store_true', help='Debug output.')
+    logging_args.add_argument('--verbose', '-v', default=None, action='store_true', help='Verbose output.')
+    logging_args.add_argument('--debug', default=None, action='store_true', help='Debug output.')
 
     parser = ArgumentParser(prog='kmir', description='KMIR command line tool')
 
@@ -29,21 +29,18 @@ def create_argument_parser() -> ArgumentParser:
     )
     parse_subparser.add_argument(
         '--definition-dir',
-        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     parse_subparser.add_argument(
         '--input',
         type=str,
-        default='program',
         help='Input mode',
         choices=['program', 'binary', 'json', 'kast', 'kore'],
     )
     parse_subparser.add_argument(
         '--output',
         type=str,
-        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'kast', 'binary', 'latex', 'none'],
     )
@@ -57,26 +54,23 @@ def create_argument_parser() -> ArgumentParser:
     )
     run_subparser.add_argument(
         '--definition-dir',
-        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     run_subparser.add_argument(
         '--output',
         type=str,
-        default='pretty',
         help='Output mode',
         choices=['pretty', 'program', 'json', 'kore', 'latex', 'kast', 'binary', 'none'],
     )
     run_subparser.add_argument(
         '--bug-report',
         action='store_true',
-        default=False,
+        default=None,
         help='Generate a haskell-backend bug report for the execution',
     )
     run_subparser.add_argument(
         '--depth',
-        default=None,
         type=int,
         help='Stop execution after `depth` rewrite steps',
     )
@@ -94,74 +88,67 @@ def create_argument_parser() -> ArgumentParser:
     )
     prove_subparser.add_argument(
         '--definition-dir',
-        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     prove_subparser.add_argument(
         '--haskell-dir',
-        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
     prove_subparser.add_argument(
         '--claim-list',
-        default=False,
+        default=None,
         action='store_true',
         help='Print a list of claims in the specificatoin file',
     )
     prove_subparser.add_argument(
         '--claim',
-        default=None,
         type=str,
         help='Provide the claim label for proving a single claim',
     )
     prove_subparser.add_argument(
         '--bug-report',
         action='store_true',
-        default=False,
+        default=None,
         help='Generate a haskell-backend bug report for the execution',
     )
     prove_subparser.add_argument(
         '--depth',
-        default=None,
         type=int,
         help='Stop execution after `depth` rewrite steps',
     )
     prove_subparser.add_argument(
         '--smt-timeout',
         type=int,
-        default=200,
         help='Timeout in ms to use for SMT queries',
     )
     prove_subparser.add_argument(
         '--smt-retry-limit',
         type=int,
-        default=4,
         help='Number of times to retry SMT queries with scaling timeouts.',
     )
     prove_subparser.add_argument(
         '--trace-rewrites',
-        default=False,
+        default=None,
         action='store_true',
         help='Log traces of all simplification and rewrite rule applications.',
     )
     prove_subparser.add_argument(
         '--save-directory',
         type=dir_path,
-        default=None,
         help='Path to KCFG proofs directory, directory must already exist.',
     )
     prove_subparser.add_argument(
         '--reinit',
         action='store_true',
-        default=False,
+        default=None,
         help='Reinitialise a proof.',
     )
     prove_subparser.add_argument(
         '--use-booster',
         action='store_true',
-        default=False,  # TODO: debug the booster backend, when it is as fast as legacy, change this to be True
+        default=None,
         help='Use the booster backend instead of the haskell backend',
     )
 
@@ -184,13 +171,11 @@ def create_argument_parser() -> ArgumentParser:
     )
     show_subparser.add_argument(
         '--definition-dir',
-        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     show_subparser.add_argument(
         '--haskell-dir',
-        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
@@ -209,18 +194,38 @@ def create_argument_parser() -> ArgumentParser:
     )
     view_subparser.add_argument(
         '--definition-dir',
-        default=os.getenv('KMIR_LLVM_DIR'),
         type=dir_path,
         help='Path to LLVM definition to use.',
     )
     view_subparser.add_argument(
         '--haskell-dir',
-        default=os.getenv('KMIR_HASKELL_DIR'),
         type=dir_path,
         help='Path to Haskell definition to use.',
     )
 
     return parser
+
+
+class KCFGShowProofOptions(Options):
+    nodes: list[NodeIdLike]
+    node_deltas: list[tuple[NodeIdLike, NodeIdLike]]
+    failure_info: bool
+    to_module: bool
+    pending: bool
+    failing: bool
+    counterexample_info: bool
+
+    @staticmethod
+    def default() -> dict[str, Any]:
+        return {
+            'nodes': [],
+            'node_deltas': [],
+            'failure_info': False,
+            'to_module': False,
+            'pending': False,
+            'failing': False,
+            'counterexample_info': False,
+        }
 
 
 class KMIRCLIArgs(KCLIArgs):
@@ -246,17 +251,17 @@ class KMIRCLIArgs(KCLIArgs):
         args.add_argument(
             '--failure-information',
             dest='failure_info',
-            default=False,
+            default=None,
             action='store_true',
             help='Falg to show failure summary for cfg, by default, false.',
         )
-        args.add_argument('--to-module', default=False, action='store_true', help='Output edges as a K module.')
-        args.add_argument('--pending', default=False, action='store_true', help='Also display pending nodes')
-        args.add_argument('--failing', default=False, action='store_true', help='Also display failing nodes')
+        args.add_argument('--to-module', default=None, action='store_true', help='Output edges as a K module.')
+        args.add_argument('--pending', default=None, action='store_true', help='Also display pending nodes')
+        args.add_argument('--failing', default=None, action='store_true', help='Also display failing nodes')
         args.add_argument(
             '--counterexample-information',
             dest='counterexample_info',
-            default=False,
+            default=None,
             action='store_true',
             help="Show models for failing nodes. Should be called with the '--failure-information' flag",
         )

@@ -5,7 +5,7 @@ import pytest
 from filelock import FileLock
 
 from kmir import KMIR
-from kmir.parse import parse
+from kmir.parse import ParseOptions, parse
 
 from .utils import (
     COMPILETEST_PARSE_FAIL,
@@ -30,7 +30,7 @@ def test_handwritten_syntax(
 
     # Then
     try:
-        parse(kmir, input_path, temp_file=temp_file)
+        parse(kmir, ParseOptions({'mir_file': input_path, 'output': 'none'}), temp_file=temp_file)
         # assert not parse_result.returncode
     except RuntimeError:
         if report_file:
@@ -57,7 +57,7 @@ def test_compiletest(
 
     # Then
     try:
-        parse(kmir, input_path, temp_file=temp_file)
+        parse(kmir, ParseOptions({'mir_file': input_path, 'output': 'none'}), temp_file=temp_file)
         # assert not parse_result.returncode
     except RuntimeError:
         if report_file:
