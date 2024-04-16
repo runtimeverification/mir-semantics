@@ -26,15 +26,15 @@ jobs:
         run: |
           K_VERSION=$(cat ./deps/k_release)
           cd kmir
-          sed -i 's!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "[v0-9\.]*", subdirectory = "pyk" }!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "'${K_VERSION}'", subdirectory = "pyk" }!' pyproject.toml
+          sed -i 's!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "[v0-9\.]*", subdirectory = "pyk" }!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "v'${K_VERSION}'", subdirectory = "pyk" }!' pyproject.toml
           poetry update
           git add pyproject.toml poetry.lock
           git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
       - name: 'Update Nix flake inputs'
         run: |
           K_VERSION=$(cat deps/k_release)
-          sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/'"${K_VERSION}"'"!' flake.nix
-          sed -i 's!    pyk.url = "github:runtimeverification/k/[v0-9\.]*?dir=pyk"!    pyk.url = "github:runtimeverification/k/'"${K_VERSION}"'?dir=pyk"!' flake.nix
+          sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/v'"${K_VERSION}"'"!' flake.nix
+          sed -i 's!    pyk.url = "github:runtimeverification/k/[v0-9\.]*?dir=pyk"!    pyk.url = "github:runtimeverification/k/v'"${K_VERSION}"'?dir=pyk"!' flake.nix
           nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
           git add flake.nix flake.lock
           git commit -m 'flake.{nix,lock}: update Nix derivations' || true
