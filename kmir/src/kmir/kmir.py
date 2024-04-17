@@ -154,8 +154,8 @@ class KMIRProve:
                 if CTerm._is_top(new_target.kast):
                     raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
-                kcfg.replace_node(init_node_id, new_init)
-                kcfg.replace_node(target_node_id, new_target)
+                kcfg.let_node(init_node_id, cterm=new_init)
+                kcfg.let_node(target_node_id, cterm=new_target)
 
                 # Unsure if terminal should be empty
                 proof_problem = APRProof(
@@ -275,20 +275,20 @@ class KMIR:
         # case APRProof:
         if isinstance(proof, APRProof):
             prover = APRProver(
-                proof,
                 kcfg_explore=rpc_session,
                 execute_depth=max_depth,
                 terminal_rules=terminal_rules,
                 cut_point_rules=cut_point_rules,
             )
             prover.advance_proof(
+                proof,
                 max_iterations=max_iterations,
             )
             passed = proof.status
         elif isinstance(proof, EqualityProof):
             # case EqualityProof:
             prover = ImpliesProver(proof, rpc_session)
-            prover.advance_proof()
+            prover.advance_proof(proof)
             passed = proof.status
         else:
             # case _:  # APRBMCProof not supported for now
