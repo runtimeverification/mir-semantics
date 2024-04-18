@@ -2,4 +2,4 @@ from typing import Final
 
 from .kmir import KMIR
 
-VERSION: Final = '0.2.50'
+VERSION: Final = '0.2.51'
