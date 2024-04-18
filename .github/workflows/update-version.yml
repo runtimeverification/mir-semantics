@@ -27,7 +27,7 @@ jobs:
           K_VERSION=$(cat ./deps/k_release)
           cd kmir
           sed -i 's!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "[v0-9\.]*", subdirectory = "pyk" }!pyk = { git = "https://github.com/runtimeverification/k.git", tag = "v'${K_VERSION}'", subdirectory = "pyk" }!' pyproject.toml
-          poetry update
+          poetry update -vvv
           git add pyproject.toml poetry.lock
           git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
       - name: 'Update Nix flake inputs'
