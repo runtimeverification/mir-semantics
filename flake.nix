@@ -6,7 +6,7 @@
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.follows = "k-framework/rv-utils";
-    pyk.url = "github:runtimeverification/pyk/v0.1.746";
+    pyk.url = "github:runtimeverification/k/v7.0.10?dir=pyk";
     nixpkgs-pyk.follows = "pyk/nixpkgs";
     poetry2nix.follows = "pyk/poetry2nix";
   };
@@ -26,6 +26,11 @@
           kmir-pyk = poetry2nix.mkPoetryApplication {
             python = nixpkgs-pyk.python310;
             projectDir = ./kmir;
+            src = rv-utils.lib.mkPykAppSrc {
+              pkgs = import nixpkgs { system = prev.system; };
+              src = ./kmir;
+              cleaner = poetry2nix.cleanPythonSources;
+            };
             overrides = poetry2nix.overrides.withDefaults
               (finalPython: prevPython: {
                 pyk = nixpkgs-pyk.pyk-python310.overridePythonAttrs (old: {
