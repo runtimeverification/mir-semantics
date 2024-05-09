@@ -34,7 +34,7 @@ Primitive types (in literal format) used in MIR.
 //TODO： locate the code defines the primitive types in MIR.
 //Do we need to redefine regular expression? Maybe move to Type File
   syntax UnsignedLiteral ::= r"[0-9]+_(usize|u8|u16|u32|u64|u128)" [token]
-  syntax SignedLiteral ::= r"[-]?[0-9]+_(isize|i8|i16|i32|i64|i128)" [token]
+  syntax SignedLiteral ::= r"-?[0-9]+_(isize|i8|i16|i32|i64|i128)" [token]
   syntax FloatLiteral ::= r"-?[0-9]+(.[0-9]+)?((E|e)(\\+|-)?[0-9]+)?(f32|f64)" [token]
   syntax HexLiteral ::= r"0x[0-9a-fA-F]+"  [token]
   syntax StringLiteral ::= r"[\\\"]([^\\\"\\\\\\n]|\\\\[\\\"'nrt0\\\\]|\\\\x[0-7][0-9a-fA-F]|\\\\u\\{[0-9a-fA-F]+\\}|\\\\u[0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F]([0-9a-fA-F][0-9a-fA-F]?)?)?)?)?|\\\\\\n)*[\\\"]"  [token, prec(-1)]
@@ -63,7 +63,7 @@ Types such as structs, tuples and unions, which has fields (indexed by `VariantI
 ```
 
 ```k
-  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(?:\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
+  syntax AllocReferenceToken ::= r"#\\(-*alloc[0-9]+(\\+0x[0-9a-fA-F]+)?-*\\)#"  [token]
   syntax DoubleHexDigitNoIntLetter ::= r"[a-fA-F][0-9a-fA-F]" [token]
   syntax DoubleHexDigitNoIntDigit ::= r"[0-9][a-fA-F]" [token]
 ```
