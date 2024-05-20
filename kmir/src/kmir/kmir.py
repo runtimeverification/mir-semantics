@@ -18,6 +18,7 @@ from pyk.kore.rpc import KoreClient, KoreServer, KoreServerArgs
 from pyk.kore.syntax import Pattern, SortApp
 from pyk.kore.tools import PrintOutput, kore_print
 from pyk.ktool.kprove import KProve
+from pyk.prelude.ml import is_bottom, is_top
 from pyk.proof import APRProof, APRProver, EqualityProof, ImpliesProver
 from pyk.proof.proof import Proof, Prover  # not exported explicitly
 from pyk.utils import BugReport, check_file_path, run_process
@@ -149,9 +150,9 @@ class KMIRProve:
                 _LOGGER.info(f'Simplifying initial and target node: {claim.label}')
                 new_init, _ = kcfg_explore.cterm_symbolic.simplify(new_init)
                 new_target, _ = kcfg_explore.cterm_symbolic.simplify(new_target)
-                if CTerm._is_bottom(new_init.kast):
+                if is_bottom(new_init.kast, weak=True):
                     raise ValueError('Simplifying initial node led to #Bottom, are you sure your LHS is defined?')
-                if CTerm._is_top(new_target.kast):
+                if is_top(new_target.kast, weak=True):
                     raise ValueError('Simplifying target node led to #Bottom, are you sure your RHS is defined?')
 
                 kcfg.let_node(init_node_id, cterm=new_init)
