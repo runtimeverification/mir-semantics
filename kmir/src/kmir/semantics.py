@@ -5,6 +5,7 @@ from pyk.cterm import CTerm
 from pyk.kast.inner import KApply, KInner, KSequence, KVariable
 
 # from pyk.kcfg import KCFGExplore  # kcfg.__init__, import Semantics
+from pyk.kcfg.kcfg import KCFGExtendResult
 from pyk.kcfg.semantics import KCFGSemantics
 from pyk.prelude.k import K
 
@@ -45,6 +46,9 @@ class KMIRSemantics(KCFGSemantics):
 
     def same_loop(self, cterm1: CTerm, cterm2: CTerm) -> bool:
         return False
+
+    def custom_step(self, c: CTerm) -> KCFGExtendResult | None:
+        return None
 
     def abstract_node(self, cterm: CTerm) -> CTerm:
         return cterm
