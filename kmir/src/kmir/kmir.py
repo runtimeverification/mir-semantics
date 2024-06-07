@@ -102,9 +102,7 @@ class KMIRProve:
     def rpc_session(self, server: KoreServer, claim_id: str, trace_rewrites: bool = False) -> Iterator[KCFGExplore]:
         with server as server:
             with KoreClient('localhost', server.port, bug_report=self.bug_report) as client:
-                cterm_symbolic = CTermSymbolic(
-                    client, self.mir_prove.definition, self.mir_prove.kompiled_kore, trace_rewrites=trace_rewrites
-                )
+                cterm_symbolic = CTermSymbolic(client, self.mir_prove.definition, trace_rewrites=trace_rewrites)
                 yield KCFGExplore(cterm_symbolic, kcfg_semantics=KMIRSemantics(), id=claim_id)
 
     # A wrapper on KProve's get_claims
