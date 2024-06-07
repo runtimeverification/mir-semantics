@@ -14,7 +14,6 @@ authors = [
 python = "^3.10"
 filelock = "3.9.0"
 pyk = { git = "https://github.com/runtimeverification/k.git", tag = "v7.0.120", subdirectory = "pyk" }
-pytest-timeout = "2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
@@ -28,6 +27,7 @@ mypy = "*"
 pep8-naming = "*"
 pytest = "*"
 pytest-mock = "*"
+pytest-timeout = "*"
 pytest-xdist = "*"
 
 [tool.poetry.scripts]
