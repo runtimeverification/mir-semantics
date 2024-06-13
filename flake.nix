@@ -33,21 +33,26 @@
             };
             overrides = poetry2nix.overrides.withDefaults
               (finalPython: prevPython: {
-                pyk = nixpkgs-pyk.pyk-python310.overridePythonAttrs (old: {
-                  # both kmir and pyk depend on the filelock package, however the two packages are likely 
-                  # to use different versions, based on whatever version was locked in their respecitve poetry.lock
-                  # files. However, because all python package deps are propagated py poetry2nix into any
-                  # subsequent packages that depend on them, we get a clash when two versions of the same package occur. 
-                  # Below, we manually filter out the filelock package locked by pyk's poetry.lock file
-                  # and substitute in the version from mir's poetry.lock.
-                  # This is not ideal and may not be feasible if there are more/more complex clashes.
-                  # We could just let poetry2nix download pyk without importing it as a flake,
-                  # but then we would lose the ability to do kup install kmir --override pyk <version>
-                  # and we would instead have to modify pyproject.toml to point to the version of pyk we want, then
-                  # call kup install kmir --version . to use the modified local checkout.
-                  propagatedBuildInputs = prev.lib.filter
-                    (x: !(prev.lib.strings.hasInfix "filelock" x.name))
-                    old.propagatedBuildInputs ++ [ finalPython.filelock ];
+                kframework = nixpkgs-pyk.pyk-python310.overridePythonAttrs
+                  (old: {
+                    # both kmir and pyk depend on the filelock package, however the two packages are likely 
+                    # to use different versions, based on whatever version was locked in their respecitve poetry.lock
+                    # files. However, because all python package deps are propagated py poetry2nix into any
+                    # subsequent packages that depend on them, we get a clash when two versions of the same package occur. 
+                    # Below, we manually filter out the filelock package locked by pyk's poetry.lock file
+                    # and substitute in the version from mir's poetry.lock.
+                    # This is not ideal and may not be feasible if there are more/more complex clashes.
+                    # We could just let poetry2nix download pyk without importing it as a flake,
+                    # but then we would lose the ability to do kup install kmir --override pyk <version>
+                    # and we would instead have to modify pyproject.toml to point to the version of pyk we want, then
+                    # call kup install kmir --version . to use the modified local checkout.
+                    propagatedBuildInputs = prev.lib.filter
+                      (x: !(prev.lib.strings.hasInfix "filelock" x.name))
+                      old.propagatedBuildInputs ++ [ finalPython.filelock ];
+                  });
+                pygments = prevPython.pygments.overridePythonAttrs (old: {
+                  buildInputs = (old.buildInputs or [ ])
+                    ++ [ prevPython.hatchling ];
                 });
               });
             groups = [ ];
