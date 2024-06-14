@@ -32,7 +32,8 @@ version_bump() {
 version_sub() {
     local version
     version="$(cat $version_file)"
-    sed --in-place 's/^version = ".*"$/version = "'${version}'"/' kmir/pyproject.toml
+    sed --in-place 's/^version = ".*"$/version = "'${version}'"/' pyproject.toml
+    sed --in-place "s/^VERSION: Final = '.*'$/VERSION: Final = '${version}'/" src/kmir/__init__.py
 }
 
 version_command="$1" ; shift

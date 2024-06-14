@@ -1,4 +1,4 @@
-from mir_semantics.hello import hello
+from kmir.hello import hello
 
 
 def test_hello() -> None:

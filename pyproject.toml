@@ -3,8 +3,8 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "mir-semantics"
-version = "0.1.0"
+name = "kmir"
+version = "0.3.0"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
