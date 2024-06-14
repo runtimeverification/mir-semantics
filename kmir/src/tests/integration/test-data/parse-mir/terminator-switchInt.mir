@@ -1,5 +1,0 @@
-fn main(_1: usize) -> () {
-  bb0: {
-    switchInt(move _6) -> [1: bb1, 2: bb1, otherwise: bb3];
-  }
-}

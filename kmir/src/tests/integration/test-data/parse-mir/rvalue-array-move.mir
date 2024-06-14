@@ -1,8 +1,0 @@
-fn main(_1: usize) -> () {
-  let mut _2: usize;
-  let _3: usize;
-  bb0: {
-    _2 = [move _1, move _3];
-    return;
-  }
-}

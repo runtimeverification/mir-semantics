@@ -1,3 +1,0 @@
-fn main() -> () {
-  let _1: path::Stuff() -> a::b;
-}

@@ -1,8 +1,0 @@
-fn main() -> () {
-  let _1: impl for <Stuff> Type;
-  let _1: impl for <Stuff:> Type;
-  let _1: impl for <Stuff:'static> Type;
-  let _1: impl for <Stuff=Type> Type;
-  let _1: impl for <Stuff:=Type> Type;
-  let _1: impl for <Stuff:'static=Type> Type;
-}

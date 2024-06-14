@@ -1,6 +1,0 @@
-fn main(_1: usize) -> () {
-  bb0: {
-    StorageDead(_1);
-    return;
-  }
-}

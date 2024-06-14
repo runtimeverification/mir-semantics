@@ -1,7 +1,0 @@
-fn main(_1: usize) -> () {
-  let mut _2: usize;
-  bb0: {
-    copy_nonoverlapping(dst = _1, src = _2, count = (_1.1: usize));
-    return;
-  }
-}

@@ -1,5 +1,0 @@
-fn main() -> () {
-  let _1: <usize>::usize;
-  let _1: <usize as Stuff>::usize;
-  let _2: <usize as Path::Stuff>::usize;
-}
