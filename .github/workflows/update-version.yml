@@ -1,0 +1,42 @@
+name: 'Update Version'
+on:
+  push:
+    branches:
+      - '_update-deps/runtimeverification/k'
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  update-versions:
+    name: 'Update pyk version'
+    runs-on: [self-hosted, linux, flyweight]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+      - name: 'Install Poetry'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 - --version 1.3.2
+          echo ${HOME}/.local/bin >> $GITHUB_PATH
+      - name: 'Update pyk release tag'
+        run: |
+          K_VERSION=$(cat ./deps/k_release)
+          cd kmir
+          sed -i 's!kframework = { git = "https://github.com/runtimeverification/k.git", tag = "[v0-9\.]*", subdirectory = "pyk" }!kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v'${K_VERSION}'", subdirectory = "pyk" }!' pyproject.toml
+          poetry update -vvv
+          git add pyproject.toml poetry.lock
+          git commit -m 'kmir/{pyproject.toml,poetry.lock}: sync Poetry files' || true
+      - name: 'Update Nix flake inputs'
+        run: |
+          K_VERSION=$(cat deps/k_release)
+          sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/v'"${K_VERSION}"'"!' flake.nix
+          sed -i 's!    pyk.url = "github:runtimeverification/k/[v0-9\.]*?dir=pyk"!    pyk.url = "github:runtimeverification/k/v'"${K_VERSION}"'?dir=pyk"!' flake.nix
+          nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
+          git add flake.nix flake.lock
+          git commit -m 'flake.{nix,lock}: update Nix derivations' || true
+      - name: 'Push updates'
+        run: git push
