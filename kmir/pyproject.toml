@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.2.61"
+version = "0.2.62"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
@@ -13,7 +13,7 @@ authors = [
 [tool.poetry.dependencies]
 python = "^3.10"
 filelock = "3.9.0"
-kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.3", subdirectory = "pyk" }
+kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.4", subdirectory = "pyk" }
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
