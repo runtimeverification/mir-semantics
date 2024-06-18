@@ -1,7 +1,0 @@
-fn main(_1: usize) -> () {
-  let _2: usize;
-  bb0: {
-    _2 = AlignOf([usize; 1]);
-    return;
-  }
-}

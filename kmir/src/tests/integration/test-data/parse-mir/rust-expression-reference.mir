@@ -1,7 +1,0 @@
-fn main() -> () {
-  let _1: [usize; *a];
-  let _2: [usize; &a];
-  let _3: [usize; &&a];
-  let _4: [usize; & mut a];
-  let _5: [usize; && mut a];
-}

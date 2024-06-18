@@ -1,4 +1,0 @@
-fn main() -> () {
-  debug my_var_name => ((*_1).0: usize);
-  let _1: usize;
-}

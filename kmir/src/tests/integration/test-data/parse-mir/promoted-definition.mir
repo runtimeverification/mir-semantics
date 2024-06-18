@@ -1,5 +1,0 @@
-promoted[0] in main: usize = {
-  bb0: {
-    return;
-  }
-}

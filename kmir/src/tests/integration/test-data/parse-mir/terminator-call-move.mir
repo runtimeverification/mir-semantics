@@ -1,8 +1,0 @@
-fn main(_1: usize) -> () {
-  bb0: {
-    _2 = move _1() -> bb1;
-  }
-  bb1: {
-    return;
-  }
-}

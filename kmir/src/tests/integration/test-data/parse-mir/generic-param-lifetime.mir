@@ -1,6 +1,0 @@
-fn main() -> () {
-  let _1: impl for <'stuff> Type;
-  let _2: impl for <'stuff:> Type;
-  let _2: impl for <'stuff:'static> Type;
-  let _3: impl for <'stuff:'static + '_> Type;
-}

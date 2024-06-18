@@ -1,3 +1,0 @@
-alloc1 (static: RAND_SOURCE, size: 8, align: 8) {
-  00 00 00 00 00 __ __ __
-}

@@ -1,3 +1,0 @@
-fn main() -> () {
-  let _1: [usize; 1 as usize];
-}

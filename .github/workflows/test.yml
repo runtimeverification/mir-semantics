@@ -12,8 +12,7 @@ jobs:
     name: 'Version Bump'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: ${{ secrets.JENKINS_GITHUB_PAT }}
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           fetch-depth: 0
@@ -28,7 +27,6 @@ jobs:
           ./package/version.sh bump ${og_version}
           ./package/version.sh sub
           new_version=$(cat package/version)
-          sed --in-place "s/^VERSION: Final = '.*'$/VERSION: Final = '${new_version}'/" kmir/src/kmir/__init__.py
           git add --update && git commit --message "Set Version: $(cat package/version)" || true
       - name: 'Push updates'
         run: git push origin HEAD:${GITHUB_HEAD_REF}
@@ -76,21 +74,3 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
-
-  nix:
-    name: 'Nix'
-    needs: code-quality-checks
-    strategy:
-      matrix:
-        include:
-          - runner: [self-hosted, linux, normal]
-          - runner: [self-hosted, macOS, ARM64]
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 60
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v4
-      - name: 'Nix Build KMIR'
-        run: GC_DONT_GC=1 nix build . --extra-experimental-features 'nix-command flakes' --print-build-logs
-      - name: 'Nix Test KMIR'
-        run: GC_DONT_GC=1 nix build --extra-experimental-features 'nix-command flakes' --print-build-logs .#kmir-test

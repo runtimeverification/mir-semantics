@@ -1,3 +1,0 @@
-fn main() -> () {
-  let _1: [closure@/path/to/file.rs:10:20: 10:25];
-}

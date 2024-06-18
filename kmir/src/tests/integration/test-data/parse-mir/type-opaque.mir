@@ -1,3 +1,0 @@
-fn main() -> () {
-  let _1: stuff::{opaque#0};
-}

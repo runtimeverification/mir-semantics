@@ -1,9 +1,0 @@
-fn main() -> () {
-  let _1: usize;
-  scope 1 {
-  }
-
-  bb0: {
-    return;
-  }
-}
