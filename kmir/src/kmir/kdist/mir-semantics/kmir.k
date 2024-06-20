@@ -143,6 +143,17 @@ module KMIR
        <memory> ... CallerAddr |-> FnVal( CallerBody, _, _ ) ... </memory>
     requires Target =/=K noBasicBlockIdx
 
+  syntax KItem ::= panicked()
+
+  rule <k> basicBlock( .Statements, terminator( terminatorKindUnreachable, _SPAN )) ~> _:K
+        => panicked()
+       </k>
+       <callStack> _Stack => .List </callStack>
+       <locals> _Locals => .Values </locals>
+       <body> _Body => .BasicBlocks </body>
+       <funcAddr> _Addr => FnAddr(-1) </funcAddr>
+
+
   // Helpers
 
   syntax Values ::= #makeLocals( Int, Int, Values )           [function]
