@@ -18,41 +18,41 @@ def _unimplemented() -> NoReturn:
     raise NotImplementedError()
 
 
-def from_json_maybe_byte(js: int | None) -> KApply:
+def maybe_byte_from_dict(js: int | None) -> KApply:
     if js is None:
         return KApply('noByte_BODY_MaybeByte', ())
 
     return KApply('someByte(_)_TYPES_MaybeByte_Int', (KToken(str(js), KSort('Int'))))
 
 
-def from_json_bytes(js: Sequence[int]) -> KApply:
+def bytes_from_dict(js: Sequence[int]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___TYPES_Bytes_MaybeByte_Bytes"}_Bytes', ())
 
-    return KApply('___TYPES_Bytes_MaybeByte_Bytes', (from_json_maybe_byte(js[0]), from_json_bytes(js[1:])))
+    return KApply('___TYPES_Bytes_MaybeByte_Bytes', (maybe_byte_from_dict(js[0]), bytes_from_dict(js[1:])))
 
 
-def from_json_provenance_map(js: Mapping[str, Any]) -> KApply:
+def provenance_map_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply('DraftProvenanceMap', ())
 
 
-def from_json_align(n: int) -> KApply:
+def align_from_dict(n: int) -> KApply:
     return KApply('align(_)_TYPES_Align_Int', (KToken(str(n), KSort('Int'))))
 
 
-def from_json_allocation(js: Mapping[str, Any]) -> KApply:
+def allocation_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply(
         'allocation(_,_,_,_)_TYPES_Allocation_Bytes_ProvenanceMap_Align_Mutability',
         (
-            from_json_bytes(js['bytes']),
-            from_json_provenance_map(js['provenance']),
-            from_json_align(js['align']),
-            from_json_mutability(js['mutability']),
+            bytes_from_dict(js['bytes']),
+            provenance_map_from_dict(js['provenance']),
+            align_from_dict(js['align']),
+            mutability_from_dict(js['mutability']),
         ),
     )
 
 
-def from_json_constant_kind(js: str | Mapping[str, Any]) -> KApply:
+def constant_kind_from_dict(js: str | Mapping[str, Any]) -> KApply:
     if isinstance(js, str):
         if js == 'ZeroSized':
             return KApply('constantKindZeroSized_TYPES_ConstantKind', ())
@@ -69,90 +69,90 @@ def from_json_constant_kind(js: str | Mapping[str, Any]) -> KApply:
         _raise_conversion_error('')
 
 
-def from_json_constid(n: int) -> KApply:
+def constid_from_dict(n: int) -> KApply:
     return KApply('constId(_)_TYPES_ConstId_Int', (KToken(str(n), KSort('Int'))))
 
 
-def from_json_const(js: Mapping[str, Any]) -> KApply:
+def const_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply(
         'const(_,_,_)_TYPES_Const_ConstantKind_Ty_ConstId',
-        (from_json_constant_kind(js['kind']), from_json_ty(js['ty']), from_json_constid(js['id'])),
+        (constant_kind_from_dict(js['kind']), ty_from_dict(js['ty']), constid_from_dict(js['id'])),
     )
 
 
-def from_json_maybe_user_type_annotation_index(js: Mapping[str, object] | None) -> KApply:
+def maybe_user_type_annotation_index_from_dict(js: Mapping[str, object] | None) -> KApply:
     if js is None:
         return KApply('noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex', ())
 
     _unimplemented()
 
 
-def from_json_constant(js: Mapping[str, Any]) -> KApply:
+def constant_from_dict(js: Mapping[str, Any]) -> KApply:
     match js:
         case {'span': int(span), 'user_ty': dict() | None as user_ty, 'literal': dict(literal)}:
             return KApply(
                 'constant(_,_,_)_BODY_Constant_Span_MaybeUserTypeAnnotationIndex_Const',
                 (
-                    from_json_span(span),
-                    from_json_maybe_user_type_annotation_index(user_ty),
-                    from_json_const(literal),
+                    span_from_dict(span),
+                    maybe_user_type_annotation_index_from_dict(user_ty),
+                    const_from_dict(literal),
                 ),
             )
 
     _raise_conversion_error('')
 
 
-def from_json_operand(js: Mapping[str, Any]) -> KApply:
+def operand_from_dict(js: Mapping[str, Any]) -> KApply:
     if len(js) != 1:
         _raise_conversion_error('')
 
     match js:
         case {'Constant': constant}:
-            return KApply('operandConstant(_)_BODY_Operand_Constant', (from_json_constant(constant)))
+            return KApply('operandConstant(_)_BODY_Operand_Constant', (constant_from_dict(constant)))
         case _:
             _unimplemented()
 
 
-def from_json_operands(js: Sequence[Mapping[str, Any]]) -> KApply:
+def operands_from_dict(js: Sequence[Mapping[str, Any]]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_Operands_Operand_Operands"}_Operands', ())
 
-    return KApply('___BODY_Operands_Operand_Operands', (from_json_operand(js[0]), from_json_operands(js[1:])))
+    return KApply('___BODY_Operands_Operand_Operands', (operand_from_dict(js[0]), operands_from_dict(js[1:])))
 
 
-def from_json_local(n: int) -> KApply:
+def local_from_dict(n: int) -> KApply:
     return KApply('ilocal(_)_BODY_Local_Int', (KToken(str(n), KSort('Int'))))
 
 
-def from_json_projection_elems(js: Sequence[Any]) -> KApply:
+def projection_elems_from_dict(js: Sequence[Any]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_ProjectionElems_ProjectionElem_ProjectionElems"}_ProjectionElems', ())
 
-    _unimplemented()  # TODO: define from_json_projection_elem and apply as to other list sorts
+    _unimplemented()  # TODO: define projection_elem and apply as to other list sorts_from_dict
 
 
-def from_json_place(js: Mapping[str, Any]) -> KApply:
+def place_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply(
         'iplace(_,_)_BODY_Place_Local_ProjectionElems',
-        (from_json_local(js['local']), from_json_projection_elems(js['projection'])),
+        (local_from_dict(js['local']), projection_elems_from_dict(js['projection'])),
     )
 
 
-def from_json_maybe_basicblock_idx(js: int | None) -> KApply:
+def maybe_basicblock_idx_from_dict(js: int | None) -> KApply:
     if js is None:
         return KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
 
     _unimplemented()
 
 
-def from_json_unwind_action(js: str) -> KApply:
+def unwind_action_from_dict(js: str) -> KApply:
     if js == 'Continue':
         return KApply('unwindActionContinue_BODY_UnwindAction', ())
 
     _unimplemented()
 
 
-def from_json_terminator_kind(js: Mapping[str, Any]) -> KApply:
+def terminator_kind_from_dict(js: Mapping[str, Any]) -> KApply:
     if len(js) != 1:
         _raise_conversion_error('')
 
@@ -161,11 +161,11 @@ def from_json_terminator_kind(js: Mapping[str, Any]) -> KApply:
             return KApply(
                 'terminatorKindCall(_,_,_,_,_)_BODY_TerminatorKindCall_Operand_Operands_Place_MaybeBasicBlockIdx_UnwindAction',
                 (
-                    from_json_operand(call['func']),
-                    from_json_operands(call['args']),
-                    from_json_place(call['destination']),
-                    from_json_maybe_basicblock_idx(call['target']),
-                    from_json_unwind_action(call['unwind']),
+                    operand_from_dict(call['func']),
+                    operands_from_dict(call['args']),
+                    place_from_dict(call['destination']),
+                    maybe_basicblock_idx_from_dict(call['target']),
+                    unwind_action_from_dict(call['unwind']),
                 ),
             )
 
@@ -173,81 +173,81 @@ def from_json_terminator_kind(js: Mapping[str, Any]) -> KApply:
             _unimplemented()
 
 
-def from_json_terminator(js: Mapping[str, Any]) -> KApply:
+def terminator_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply(
         'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
-        (from_json_terminator_kind(js['kind']), from_json_span(js['span'])),
+        (terminator_kind_from_dict(js['kind']), span_from_dict(js['span'])),
     )
 
 
-def from_json_statement(js: Mapping[str, Any]) -> KApply:
+def statement_from_dict(js: Mapping[str, Any]) -> KApply:
     _unimplemented()
 
 
-def from_json_statements(js: Sequence[Mapping[str, Any]]) -> KApply:
+def statements_from_dict(js: Sequence[Mapping[str, Any]]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_Statements_Statement_Statements"}_Statements', ())
 
-    return KApply('___BODY_Statements_Statement_Statements', (from_json_statement(js[0]), from_json_statements(js[1:])))
+    return KApply('___BODY_Statements_Statement_Statements', (statement_from_dict(js[0]), statements_from_dict(js[1:])))
 
 
-def from_json_basicblock(js: Mapping[str, Any]) -> KApply:
+def basicblock_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply(
         'basicBlock(_,_)_BODY_BasicBlock_Statements_Terminator',
-        (from_json_statements(js['statements']), from_json_terminator(js['terminator'])),
+        (statements_from_dict(js['statements']), terminator_from_dict(js['terminator'])),
     )
 
 
-def from_json_basicblocks(js: Sequence[Mapping[str, Any]]) -> KApply:
+def basicblocks_from_dict(js: Sequence[Mapping[str, Any]]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_BasicBlocks_BasicBlock_BasicBlocks"}_BasicBlocks', ())
 
     return KApply(
-        '___BODY_BasicBlocks_BasicBlock_BasicBlocks', (from_json_basicblock(js[0]), from_json_basicblocks(js[1:]))
+        '___BODY_BasicBlocks_BasicBlock_BasicBlocks', (basicblock_from_dict(js[0]), basicblocks_from_dict(js[1:]))
     )
 
 
-def from_json_ty(js: Mapping[str, Any]) -> KApply:
+def ty_from_dict(js: Mapping[str, Any]) -> KApply:
     return KApply('ty(_)_TYPES_Ty_Int', (KToken(str(js['id']), KSort('Int'))))
 
 
-def from_json_mutability(s: str) -> KApply:
+def mutability_from_dict(s: str) -> KApply:
     return KApply(f'mutability{s.capitalize()}_BODY_Mutability', ())
 
 
-def from_json_localdecl(js: Mapping[str, Any]) -> KInner:
+def localdecl_from_dict(js: Mapping[str, Any]) -> KInner:
     return KApply(
         'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
-        (from_json_ty(js['ty']), from_json_span(js['span']), from_json_mutability(js['mutability'])),
+        (ty_from_dict(js['ty']), span_from_dict(js['span']), mutability_from_dict(js['mutability'])),
     )
 
 
-def from_json_localdecls(js: Sequence[Mapping[str, Any]]) -> KApply:
+def localdecls_from_dict(js: Sequence[Mapping[str, Any]]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_LocalDecls_LocalDecl_LocalDecls"}_LocalDecls', ())
 
-    return KApply('___BODY_LocalDecls_LocalDecl_LocalDecls', (from_json_localdecl(js[0]), from_json_localdecls(js[1:])))
+    return KApply('___BODY_LocalDecls_LocalDecl_LocalDecls', (localdecl_from_dict(js[0]), localdecls_from_dict(js[1:])))
 
 
-def from_json_arg_count(n: int) -> KToken:
+def arg_count_from_dict(n: int) -> KToken:
     return KToken(str(n), KSort('Int'))
 
 
-def from_json_var_debug_info(js: Mapping[str, Any]) -> KInner:
+def var_debug_info_from_dict(js: Mapping[str, Any]) -> KInner:
     _unimplemented()
 
 
-def from_json_var_debug_infos(js: Sequence[Mapping[str, Any]]) -> KApply:
+def var_debug_infos_from_dict(js: Sequence[Mapping[str, Any]]) -> KApply:
     if len(js) == 0:
         return KApply('.List{"___BODY_VarDebugInfos_VarDebugInfo_VarDebugInfos"}_VarDebugInfos', ())
 
     return KApply(
         '___BODY_VarDebugInfos_VarDebugInfo_VarDebugInfos',
-        (from_json_var_debug_info(js[0]), from_json_var_debug_infos(js[1:])),
+        (var_debug_info_from_dict(js[0]), var_debug_infos_from_dict(js[1:])),
     )
 
 
-def from_json_maybe_local(js: int | Mapping[str, Any] | None) -> KApply:
+def maybe_local_from_dict(js: int | Mapping[str, Any] | None) -> KApply:
     match js:
         case None:
             return KApply('noLocal_BODY_MaybeLocal', ())
@@ -255,22 +255,22 @@ def from_json_maybe_local(js: int | Mapping[str, Any] | None) -> KApply:
             _unimplemented()
 
 
-def from_json_span(n: int) -> KApply:
+def span_from_dict(n: int) -> KApply:
     return KApply('span(_)_TYPES_Span_Int', (KToken(str(n), KSort('Int'))))
 
 
-def from_json(js: Mapping[str, Any]) -> KInner:
+def from_dict(js: Mapping[str, Any]) -> KInner:
     match js:
         case {'body': v}:
             assert len(v) == 2
             assert v[1] == None
             body = v[0]
-            blocks = from_json_basicblocks(body['blocks'])
-            locals = from_json_localdecls(body['locals'])
-            arg_count = from_json_arg_count(body['arg_count'])
-            var_debug_infos = from_json_var_debug_infos(body['var_debug_info'])
-            spread_arg = from_json_maybe_local(body['spread_arg'])
-            span = from_json_span(body['span'])
+            blocks = basicblocks_from_dict(body['blocks'])
+            locals = localdecls_from_dict(body['locals'])
+            arg_count = arg_count_from_dict(body['arg_count'])
+            var_debug_infos = var_debug_infos_from_dict(body['var_debug_info'])
+            spread_arg = maybe_local_from_dict(body['spread_arg'])
+            span = span_from_dict(body['span'])
             return KApply(
                 'body(_,_,_,_,_,_)_BODY_Body_BasicBlocks_LocalDecls_Int_VarDebugInfos_MaybeLocal_Span',
                 (blocks, locals, arg_count, var_debug_infos, spread_arg, span),

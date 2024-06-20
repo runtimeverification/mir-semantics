@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 
-from .convert import from_json
+from .convert import from_dict
 
 
 def main() -> None:
@@ -11,4 +11,4 @@ def main() -> None:
         exit(1)
     f = open(sys.argv[1])
     data = json.load(f)
-    print(from_json(data))
+    print(from_dict(data))
