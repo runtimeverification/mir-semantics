@@ -206,11 +206,11 @@ syntax Align ::= align(Int) [symbol(align)]
 syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
-syntax MaybeByte ::= someByte(Int) [symbol(someByte)]
+syntax AllocByte ::= someByte(Int) [symbol(someByte)]
                    | "noByte"      [symbol(noByte)]
-syntax MaybeBytes ::= List {MaybeByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
+syntax AllocBytes ::= List {AllocByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
 syntax Allocation ::= allocation(
-                        bytes: MaybeBytes,
+                        bytes: AllocBytes,
                         provenance: ProvenanceMap,
                         align: Align,
                         mutability: Mutability) [symbol(allocation)]
