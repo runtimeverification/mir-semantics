@@ -206,10 +206,10 @@ syntax Align ::= align(Int)
 syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId)
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries)
-syntax MaybeByte ::= someByte(Int)
+syntax AllocByte ::= someByte(Int)
                    | "noByte"
-syntax Bytes ::= List {MaybeByte, ""}
-syntax Allocation ::= allocation(bytes: Bytes, provenance: ProvenanceMap, align: Align, mutability: Mutability)
+syntax AllocBytes ::= List {AllocByte, ""}
+syntax Allocation ::= allocation(bytes: AllocBytes, provenance: ProvenanceMap, align: Align, mutability: Mutability)
 
 syntax ConstantKind ::= constantKindAllocated(Allocation)
                       | constantKindUnevaluated(UnevaluatedConst)
