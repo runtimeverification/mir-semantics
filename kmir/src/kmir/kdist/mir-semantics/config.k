@@ -1,64 +1,159 @@
 requires "kmir-ast.k"
 
-module KMIR-CONFIGURATION
+module CONFIG
   imports KMIR-AST
   imports LIST
   imports MAP
+  imports STRING
+  imports BOOL
+  imports BYTES
+  imports K-EQUAL
 
-  syntax K ::= #call( Operand, Operands, Place, Target, Unwind )
-             | #call( FunctionGlobal, Operands, Place, Target, Unwind )
-             | #goto( Int )
+  syntax CallStackItem  ::= CallRecord( FuncAddress, MaybeBasicBlockIdx, Place, UnwindAction, Values)
+  syntax FuncAddress    ::= FnAddr( Int )
+  syntax Values         ::= List{ Value, "" }
+  syntax Value          ::= // MIR Value Types
+                            Scalar( Int )
+                          | Ref( Int )
+                          | Ptr( Int, Value )
+                          | Array( Bytes )
+                          | Tuple( Values )
+                          | Closure( Int, Values )
+                          | Adt( Int, Int, Values )
+                            // Semantics Specific Types
+                          | Uninit()
+                          | FnVal( BasicBlocks, Int, Int )
 
-  rule <k> #call( operandConstant(constant(_SPAN, _, const( constantKindZeroSized, ty( _ID, tyKindRigidTy(rigidTyFnDef( FNDEF, _ ))), _ID ))),
-                  Args,
-                  Dest,
-                  Target,
-                  Unwind )
-        => #call( Mem [ FNDEF ], Args, Dest, Target, Unwind )
+  configuration <kmir>
+                  <k> #init($PGM:Int) </k>
+                  <callStack> .List </callStack>
+                  <funcAddr> FnAddr( -1 ) </funcAddr>
+                  <body> .BasicBlocks </body>
+                  <locals> Uninit() .Values </locals>
+                  <memory> $ENV:Map </memory>
+                </kmir>
+
+  // Initialization
+
+  syntax KItem ::= #init( Int )
+
+  rule <k> #init( Addr )
+        => #evaluated( Ptr( Addr, Uninit() )  )
+        ~> #prepareCall( place( local( 0 ), .ProjectionElems ),
+                         someBasicBlockIdx(basicBlockIdx( -1 )),
+                         unwindActionTerminate
+                       )
+       </k>
+
+  // Evaluation
+
+  syntax KItem ::= #evaluating( Operands, Values )
+                 | #evaluated( Values )
+
+  rule <k> #evaluating( Opr Oprs,  Vals )         => #evaluate( Opr ) ~> #evaluating( Oprs, Vals ) ... </k>
+  rule <k> Val:Value ~> #evaluating( Oprs, Vals ) => #evaluating( Oprs, Val Vals )                 ...  </k>
+  rule <k> #evaluating( .Operands, Vals )         => #evaluated( #concatValues(Vals, .Values) )    ... </k>
+
+  syntax Value ::= #evaluate( Operand )
+
+  rule <k> #evaluate( operandConstant(constant(_SPAN, _UTY, const( CK, ty( _TID, TY ), _CID ))) )
+        => #evalConst( CK, TY )
            ...
        </k>
-       <memory> Mem </memory>
-    requires funcName in_keys( Mem )
-     andBool Function( _, _ ) :=K Mem [ funcName ]
 
-  rule <k> #call( Function( CalleeBody, ArgCount, LocalCount ), Args, Dest, Target, Unwind )
-        => basicBlock( .List, terminator( terminatorKindGoto( basicBlockIdx( 0 ) ), span( 0 )))
-           ...
+  syntax Value ::= #evalConst( ConstantKind, TyKind )
+
+  rule <k> #evalConst( constantKindZeroSized, tyKindRigidTy( rigidTyFnDef( FNDEF, _ )))
+        => Ptr( FNDEF, Uninit() )
        </k>
-       <callStack> Stack => ListItem(CallRecord( FnAddr( CallerAddr ), Target, Dest, Unwind, CallerLocals )) </callStack>
-       <body> CallerBody => CalleeBody </body>
-       <locals> CallerLocals => (ListItem(operandUninit()) Args) makeList( LocalCount - ArgCount, operandUnint() ) </locals>
-       <funcAddr> CallerAddr </funcAddr>
+
+  // Update
+
+  syntax Value ::= #setPlace( Value, ProjectionElems, Value ) [function]
+
+  rule #setPlace( _Val, .ProjectionElems, Val' ) => Val'
+  // TODO: finish add update cases
 
   // Terminators
 
-  syntax K ::= #goto ( 
+  syntax KItem ::= #goto( Int )
+                 | #goto( MaybeBasicBlockIdx )
 
-  rule <k> basicBlock( .List, terminator( terminatorKindGoto( basicBlockIdx( N ) ), _SPAN ))
+  rule <k> basicBlock( .Statements, terminator( terminatorKindGoto( basicBlockIdx( N ) ), _SPAN ))
         => #goto( N )
+           ...
        </k>
 
-  rule <k> basicBlock( .List, terminator( terminatorKindCall( FuncOp, Args, Dest, Target, Unwind ), _SPAN ))
-        => #call( FuncOp, Args, Dest, Target, Unwind )
-       </k>
+  rule <k> #goto( someBasicBlockIdx(basicBlockIdx( N ))) => #goto( N ) ... </k>
 
-  rule <k> #goto( N ) => Blocks [ N ] </k>
+  rule <k> #goto( N ) => #getBlock(N, Blocks) ... </k>
        <body> Blocks </body>
-    requires N < size(Blocks)
+    requires N <Int #numBlocks(Blocks)
 
-  syntax Operand        ::= operandUnint()
-  syntax Global         ::= FunctionGlobal
-  syntax FunctionGlobal ::= Function( funcBody: BasicBlocks, argCount: Int, localCount: Int )
-  syntax CallStackItem  ::= CallRecord( FuncAddress, MaybeBasicBlockIdx, Place, UnwindAction, List)
-  syntax FuncAddress    ::= FnAddr( Int )
+  syntax KItem ::= #prepareCall( Place, MaybeBasicBlockIdx, UnwindAction )
+                 | #call( Int, Value, Values, Place, MaybeBasicBlockIdx, UnwindAction )
 
-  configuration <kmir>
-                  <k> #call($PGM:String, 0) </k>
-                  <callStack> .List <callStack>
-                  <funcAddr> FnAddr( "" ) </funcAddr>
-                  <body> .List </body>
-                  <locals> ListItem(0) </locals>
-                  <terminator> termiantorUnreachable </terminator>
-                  <memory> $ENV:Map </memory>
-                </kmir>
+  rule <k> basicBlock( .Statements, terminator( terminatorKindCall( Callee, Args, Dest, Target, Unwind ), _SPAN ))
+        => #evaluating( Callee Args, .Values )
+        ~> #prepareCall( Dest, Target, Unwind )
+           ...
+       </k>
+
+  rule <k> #evaluated( Ptr( Addr, Uninit() ) Args )
+        ~> #prepareCall( Dest, Target, Unwind )
+        => #call( Addr, { Mem [ Addr ] }:>Value, Args, Dest, Target, Unwind )
+           ...
+       </k>
+       <memory> Mem:Map </memory>
+    requires Addr in_keys( Mem )
+     andBool FnVal( _, _, _ ) :=K Mem [ Addr ]
+
+  rule <k> #call( CalleeAddr, FnVal( CalleeBody, ArgCount, LocalCount ), Args, Dest, Target, Unwind )
+        => #goto( 0 )
+           ...
+       </k>
+       <callStack> Stack => ListItem(CallRecord( FnAddr( CallerAddr ), Target, Dest, Unwind, CallerLocals )) Stack </callStack>
+       <body> _CallerBody => CalleeBody </body>
+       <locals> CallerLocals => #makeLocals( LocalCount, ArgCount, Args ) </locals>
+       <funcAddr> FnAddr( CallerAddr => CalleeAddr ) </funcAddr>
+
+  rule <k> basicBlock( .Statements, terminator( terminatorKindReturn, _SPAN ))
+        => #goto( Target:MaybeBasicBlockIdx )
+           ...
+       </k>
+       <callStack> ListItem(CallRecord( FnAddr( CallerAddr ), Target, Dest, _Unwind, CallerLocals )) Stack => Stack </callStack>
+       <locals> (RetValue _Locals:Values) => #setValue( CallerLocals, Dest, RetValue ) </locals>
+       <body> _CalleeBody => CallerBody </body>
+       <memory> ... CallerAddr |-> FnVal( CallerBody, _, _ ) ... </memory>
+    requires Target =/=K noBasicBlockIdx
+
+  // Helpers
+
+  syntax Values ::= #makeLocals( Int, Int, Values )           [function]
+                  | #setValue( Values, Place, Value )         [function]
+                  | #setValue( Values, Values, Place, Value ) [function]
+                  | #concatValues( Values, Values )           [function]
+                  | #makeValues( Int, Value )                 [function]
+
+  rule #makeLocals( LocalCount, ArgCount, Args )
+    => #concatValues( #concatValues( Args, Uninit() ), #makeValues( LocalCount -Int ArgCount, Uninit() ) )
+
+  rule #setValue( Vals, I, Val' ) => #setValue( Vals, .Values, I, Val' )
+
+  rule #setValue( Val RestVals, Vals, place(local(I:Int), Projs), Val' ) => #setValue( RestVals, Val Vals, place(local(I -Int 1), Projs), Val' ) requires I >Int 0
+  rule #setValue( Val RestVals, Vals, place(local(0),     Projs), Val' ) => #concatValues( Vals, #setPlace(Val, Projs, Val') RestVals )
+
+  rule #concatValues( Val Vals, Vals2 ) => #concatValues( Vals, Val Vals2 )
+  rule #concatValues( .Values,  Vals2 ) => Vals2
+
+  rule #makeValues( N,  Val ) => Val #makeValues( N -Int 1, Val ) requires N >Int  0
+  rule #makeValues( N, _Val ) => .Values                          requires N <=Int 0
+
+  syntax Int ::= #numBlocks( BasicBlocks ) [function]
+  rule #numBlocks( _ BS ) => 1 +Int #numBlocks( BS )
+  rule #numBlocks( .BasicBlocks ) => 0
+
+  syntax BasicBlock ::= #getBlock( Int, BasicBlocks ) [function]
+  rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
+  rule #getBlock( 0,  Block _Blocks ) => Block
 endmodule

@@ -52,14 +52,14 @@ __TARGETS__: Final = {
     'source': SourceTarget(),
     'llvm': KompileTarget(
         lambda src_dir: {
-            'main_file': src_dir / 'mir-semantics/kmir-ast.k',
+            'main_file': src_dir / 'mir-semantics/config.k',
             'backend': PykBackend.LLVM,
             **_default_args(src_dir),
         },
     ),
     'llvm-library': KompileTarget(
         lambda src_dir: {
-            'main_file': src_dir / 'mir-semantics/kmir-ast.k',
+            'main_file': src_dir / 'mir-semantics/config.k',
             'backend': PykBackend.LLVM,
             'llvm_kompile_type': LLVMKompileType.C,
             **_default_args(src_dir),
@@ -67,7 +67,7 @@ __TARGETS__: Final = {
     ),
     'haskell': KompileTarget(
         lambda src_dir: {
-            'main_file': src_dir / 'mir-semantics/kmir-ast.k',
+            'main_file': src_dir / 'mir-semantics/config.k',
             'backend': PykBackend.HASKELL,
             **_default_args(src_dir),
         },
