@@ -1,4 +1,0 @@
-fn main() -> () {
-  let _1: usize;
-  let mut _2: usize;
-}

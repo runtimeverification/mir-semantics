@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.2.63"
+version = "0.3.0"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
@@ -12,7 +12,6 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-filelock = "3.9.0"
 kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.5", subdirectory = "pyk" }
 
 [tool.poetry.group.dev.dependencies]
@@ -22,17 +21,15 @@ flake8 = "*"
 flake8-bugbear = "*"
 flake8-comprehensions = "*"
 flake8-quotes = "*"
+flake8-type-checking = "*"
 isort = "*"
 mypy = "*"
 pep8-naming = "*"
 pytest = "*"
+pytest-cov = "*"
 pytest-mock = "*"
-pytest-timeout = "*"
 pytest-xdist = "*"
-
-[tool.poetry.scripts]
-kmir = "kmir.__main__:main"
-kmir-preprocess = "kmir.preprocessor:main"
+pyupgrade = "*"
 
 [tool.isort]
 profile = "black"

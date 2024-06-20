@@ -1,3 +1,0 @@
-fn main() -> () {
-  bb0 (cleanup): { return; }
-}

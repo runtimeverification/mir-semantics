@@ -1,4 +1,0 @@
-fn main() -> () {
-  let _1: [generator@path/to/file.rs:1:10: 20:30];
-  let _2: [static generator@path/to/file.rs:1:10: 20:30];
-}

@@ -1,8 +1,0 @@
-
-fn main() -> usize {
-  let _1: &[closure@ui/closures/deeply-nested_closures.rs:8:8: 8:10];
-
-  bb0: {
-      return;
-  }
-}

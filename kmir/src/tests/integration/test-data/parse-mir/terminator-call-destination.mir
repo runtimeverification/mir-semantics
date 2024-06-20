@@ -1,8 +1,0 @@
-fn main(_1: usize) -> () {
-  bb0: {
-    _0 = function_name() -> bb1;
-  }
-  bb1: {
-    return;
-  }
-}

@@ -1,8 +1,0 @@
-fn main(_1: usize) -> () {
-  let _2: usize;
-  bb0: {
-    _2 = deref_copy (*_1);
-    _2 = deref_copy (_1.0: usize);
-    return;
-  }
-}
