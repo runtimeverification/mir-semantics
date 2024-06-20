@@ -1,6 +1,6 @@
 requires "kmir-ast.k"
 
-module CONFIG
+module KMIR
   imports KMIR-AST
   imports LIST
   imports MAP
