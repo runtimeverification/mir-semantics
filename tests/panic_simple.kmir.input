@@ -1,0 +1,17 @@
+#init(0,
+0 |-> FnVal(
+  basicBlock(
+    emptyBlock,
+    terminator(terminatorKindCall(
+    operandConstant(constant(span(0), noUserTypeAnnotationIndex, const(constantKindZeroSized, ty(0, tyKindRigidTy( rigidTyFnDef( 1, emptyArgs ))), constId(0)))),
+    emptyOperands,
+    place(local(1), noProjection),
+    noBasicBlockIdx,
+    unwindActionContinue), span(2))),
+  2,
+  0)
+1 |-> FnVal(
+  basicBlock(emptyBlock, terminator(terminatorKindUnreachable, span(3))),
+  0,
+  0)
+)
