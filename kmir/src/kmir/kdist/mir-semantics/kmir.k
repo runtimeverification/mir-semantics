@@ -24,26 +24,27 @@ module KMIR
                           | Uninit()
                           | FnVal( BasicBlocks, Int, Int )
 
+  syntax InitialState ::= #init( Int, Map )
+
   configuration <kmir>
-                  <k> #init($PGM:Int) </k>
+                  <k> $PGM:InitialState </k>
                   <callStack> .List </callStack>
                   <funcAddr> FnAddr( -1 ) </funcAddr>
                   <body> .BasicBlocks </body>
                   <locals> Uninit() .Values </locals>
-                  <memory> $ENV:Map </memory>
+                  <memory> .Map </memory>
                 </kmir>
 
   // Initialization
 
-  syntax KItem ::= #init( Int )
-
-  rule <k> #init( Addr )
+  rule <k> #init( Addr, Mem )
         => #evaluated( Ptr( Addr, Uninit() )  )
         ~> #prepareCall( place( local( 0 ), .ProjectionElems ),
                          someBasicBlockIdx(basicBlockIdx( -1 )),
                          unwindActionTerminate
                        )
        </k>
+       <memory> .Map => Mem </memory>
 
   // Evaluation
 
