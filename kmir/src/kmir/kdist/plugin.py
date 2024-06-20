@@ -44,7 +44,7 @@ def _default_args(src_dir: Path) -> dict[str, Any]:
         'include_dirs': [src_dir],
         'md_selector': 'k',
         'warnings_to_errors': True,
-        'syntax_module': 'KMIR-AST',
+        'syntax_module': 'KMIR-SYNTAX',
     }
 
 
