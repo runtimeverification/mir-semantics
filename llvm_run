@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+[ $# -ne 1 ] && { echo "usage: $0 <infile>"; exit 1; }
+infile=$(realpath "$1")
+LLVM_DIR=$(cd kmir; poetry run kdist which mir-semantics.llvm)
+krun "$infile" -d "$LLVM_DIR"
