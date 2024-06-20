@@ -10,6 +10,9 @@ authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
 ]
 
+[tool.poetry.scripts]
+convert-json = "kmir.convert_json.__main__:main"
+
 [tool.poetry.plugins.kdist]
 mir-semantics = "kmir.kdist.plugin"
 
