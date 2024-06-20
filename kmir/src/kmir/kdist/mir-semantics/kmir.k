@@ -1,9 +1,26 @@
 requires "kmir-ast.k"
 
-module KMIR
+module KMIR-SYNTAX
   imports KMIR-AST
-  imports LIST
   imports MAP
+
+  syntax InitialState ::= #init( Int, Map )
+
+  syntax Statements ::= "emptyBlock" [function]
+  rule emptyBlock => .Statements
+  syntax GenericArgs ::= "emptyArgs" [function]
+  rule emptyArgs => .GenericArgs
+  syntax Operands ::= "emptyOperands" [function]
+  rule emptyOperands => .Operands
+  syntax ProjectionElems ::= "noProjection" [function]
+  rule noProjection => .ProjectionElems
+
+  syntax Value ::= FnVal( BasicBlocks, Int, Int )
+endmodule
+
+module KMIR
+  imports KMIR-SYNTAX
+  imports LIST
   imports STRING
   imports BOOL
   imports BYTES
@@ -22,9 +39,6 @@ module KMIR
                           | Adt( Int, Int, Values )
                             // Semantics Specific Types
                           | Uninit()
-                          | FnVal( BasicBlocks, Int, Int )
-
-  syntax InitialState ::= #init( Int, Map )
 
   configuration <kmir>
                   <k> $PGM:InitialState </k>
@@ -64,8 +78,9 @@ module KMIR
 
   syntax Value ::= #evalConst( ConstantKind, TyKind )
 
-  rule <k> #evalConst( constantKindZeroSized, tyKindRigidTy( rigidTyFnDef( FNDEF, _ )))
-        => Ptr( FNDEF, Uninit() )
+  rule <k> #evalConst( constantKindZeroSized, tyKindRigidTy( rigidTyFnDef( Id:FnDef, _ )))
+        => Ptr( {Id}:>Int, Uninit() )
+           ...
        </k>
 
   // Update
