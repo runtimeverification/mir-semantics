@@ -1,9 +1,13 @@
 {
   description = "mir-semantics - ";
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-22.05";
-    flake-utils.url = "github:numtide/flake-utils";
-    poetry2nix.url = "github:nix-community/poetry2nix";
+    k-framework.url = "github:runtimeverification/k/v7.1.5";
+    nixpkgs.follows = "k-framework/nixpkgs";
+    flake-utils.follows = "k-framework/flake-utils";
+    rv-utils.follows = "k-framework/rv-utils";
+    pyk.url = "github:runtimeverification/k/v7.1.5?dir=pyk";
+    nixpkgs-pyk.follows = "pyk/nixpkgs";
+    poetry2nix.follows = "pyk/poetry2nix";
   };
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
     let
