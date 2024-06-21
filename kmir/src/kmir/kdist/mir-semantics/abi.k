@@ -6,7 +6,7 @@ module ABI
 
 syntax RangeInclusiveForVariantIdx ::= rangeInclusiveForVariantIdx(start: VariantIdx, end: VariantIdx)
 
-syntax FnAbi ::= fnAbi(args : ArgAbis, ret: ArgAbi, fixedCount: Int, conv: CallConvention, cVariadic: Bool)
+syntax FnAbi ::= fnAbi(args: ArgAbis, ret: ArgAbi, fixedCount: Int, conv: CallConvention, cVariadic: Bool)
 
 syntax ArgAbi ::= argAbi(ty: Ty, layout: Layout, mode: PassMode)
 syntax ArgAbis ::= List {ArgAbi, ""}
