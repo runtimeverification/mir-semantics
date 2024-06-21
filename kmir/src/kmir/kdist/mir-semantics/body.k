@@ -184,7 +184,6 @@ syntax Rvalue ::= RvalueAddressOf
 
 /////// Statements
 
-
 syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue)
 syntax StatementKindFakeRead ::= statementKindFakeRead(cause: FakeReadCause, place: Place)
 syntax StatementKindSetDiscriminant ::= statementKindSetDiscriminant(place: Place, variantIndex: VariantIdx)
