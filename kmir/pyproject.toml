@@ -4,11 +4,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.3.2"
+version = "0.3.3"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
 ]
+
+[tool.poetry.plugins.kdist]
+mir-semantics = "kmir.kdist.plugin"
 
 [tool.poetry.dependencies]
 python = "^3.10"
