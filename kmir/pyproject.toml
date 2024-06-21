@@ -10,6 +10,9 @@ authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
 ]
 
+[tool.poetry.plugins.kdist]
+mir-semantics = "kmir.kdist.plugin"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.15", subdirectory = "pyk" }
