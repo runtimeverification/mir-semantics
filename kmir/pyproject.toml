@@ -16,6 +16,9 @@ convert-json = "kmir.convert_json.__main__:main"
 [tool.poetry.plugins.kdist]
 mir-semantics = "kmir.kdist.plugin"
 
+[tool.poetry.plugins.pytest11]
+pytest-kmir = "kmir.testing.fixtures"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.12", subdirectory = "pyk" }
