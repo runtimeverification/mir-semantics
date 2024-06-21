@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from .kparse import KParse
 
+from pyk.ktool.kprint import KPrint
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -19,4 +21,8 @@ class Tools:
 
     @property
     def kparse(self) -> KParse:
+        return self.__kparse
+
+    @property
+    def kprint(self) -> KPrint:
         return self.__kparse
