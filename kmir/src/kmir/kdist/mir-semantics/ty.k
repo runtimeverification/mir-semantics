@@ -206,6 +206,7 @@ syntax Align ::= align(Int)
 syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId)
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries)
+
 syntax AllocByte ::= someByte(Int)
                    | "noByte"
 syntax AllocBytes ::= List {AllocByte, ""}
