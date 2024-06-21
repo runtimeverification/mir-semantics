@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
 from pyk.kast.inner import KApply, KSort, KToken
 
+from .labels import klabel
+
 
 def _raise_conversion_error(msg: str) -> NoReturn:
     raise AssertionError(msg)
@@ -171,7 +173,7 @@ def terminator_kind_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {'Call': dict(call)}:
             return KApply(
-                'terminatorKindCall(_,_,_,_,_)_BODY_TerminatorKindCall_Operand_Operands_Place_MaybeBasicBlockIdx_UnwindAction',
+                klabel("terminatorKindCall"),
                 (
                     operand_from_dict(call['func']),
                     operands_from_dict(call['args']),
