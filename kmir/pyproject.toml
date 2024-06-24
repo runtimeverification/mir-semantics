@@ -15,7 +15,7 @@ mir-semantics = "kmir.kdist.plugin"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kframework = "7.1.15"
+kframework = "7.1.21"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
