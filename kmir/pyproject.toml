@@ -15,7 +15,7 @@ mir-semantics = "kmir.kdist.plugin"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.20", subdirectory = "pyk" }
+kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.21", subdirectory = "pyk" }
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
