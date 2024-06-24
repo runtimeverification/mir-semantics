@@ -20,31 +20,57 @@ def _unimplemented() -> NoReturn:
 
 def maybe_byte_from_dict(js: int | None) -> KApply:
     if js is None:
-        return KApply('noByte_BODY_MaybeByte', ())
+        return KApply('noByte', ())
 
-    return KApply('someByte(_)_TYPES_MaybeByte_Int', (KToken(str(js), KSort('Int'))))
+    return KApply('someByte', (KToken(str(js), KSort('Int'))))
 
 
 def bytes_from_dict(js: Sequence[int]) -> KApply:
     if len(js) == 0:
-        return KApply('.List{"___TYPES_Bytes_MaybeByte_Bytes"}_Bytes', ())
+        return KApply('.maybeBytes', ())
 
-    return KApply('___TYPES_Bytes_MaybeByte_Bytes', (maybe_byte_from_dict(js[0]), bytes_from_dict(js[1:])))
+    return KApply('maybeBytes', (maybe_byte_from_dict(js[0]), bytes_from_dict(js[1:])))
+
+
+def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
+    match js:
+        case [int(size), {'Memory': dict()}]:
+            # TODO: we actually want to parse a provenance map here; need to
+            # update the golden test example to match the current output of the
+            # compiler
+            return KApply(
+                'provenanceMapEntry', KToken(str(size), KSort('Int')), KApply('allocId', KToken('0', KSort('Int')))
+            )
+
+    _unimplemented()
+
+
+def provenance_map_entries_from_dict(js: Sequence[Sequence[object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.provenanceMapEntries')
+
+    return KApply(
+        'provenanceMapEntries', (provenance_map_entry_from_dict(js[0]), provenance_map_entries_from_dict(js[1:]))
+    )
 
 
 def provenance_map_from_dict(js: Mapping[str, object]) -> KApply:
-    return KApply('DraftProvenanceMap', ())
+    match js:
+        case {'ptrs': list(ptrs)}:
+            return KApply('provenanceMap', provenance_map_entries_from_dict(ptrs))
+
+    _raise_conversion_error('')
 
 
 def align_from_dict(n: int) -> KApply:
-    return KApply('align(_)_TYPES_Align_Int', (KToken(str(n), KSort('Int'))))
+    return KApply('align', (KToken(str(n), KSort('Int'))))
 
 
 def allocation_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {'bytes': list(bs), 'provenance': dict(provenance), 'align': int(align), 'mutability': str(mutability)}:
             return KApply(
-                'allocation(_,_,_,_)_TYPES_Allocation_Bytes_ProvenanceMap_Align_Mutability',
+                'allocation',
                 (
                     bytes_from_dict(bs),
                     provenance_map_from_dict(provenance),
@@ -129,7 +155,7 @@ def operands_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def local_from_dict(n: int) -> KApply:
-    return KApply('ilocal(_)_BODY_Local_Int', (KToken(str(n), KSort('Int'))))
+    return KApply('local(_)_BODY_Local_Int', (KToken(str(n), KSort('Int'))))
 
 
 def projection_elems_from_dict(js: Sequence[Any]) -> KApply:
@@ -143,7 +169,7 @@ def place_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {'local': int(local), 'projection': list(projection)}:
             return KApply(
-                'iplace(_,_)_BODY_Place_Local_ProjectionElems',
+                'place(_,_)_BODY_Place_Local_ProjectionElems',
                 (local_from_dict(local), projection_elems_from_dict(projection)),
             )
 

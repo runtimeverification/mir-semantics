@@ -202,14 +202,18 @@ syntax BoundTy ::= boundTy(var: Int, kind: BoundTyKind)
 syntax Promoted ::= promoted(Int)
 syntax MaybePromoted ::= somePromoted(Promoted) | "noPromoted"
 
-syntax Align ::= align(Int)
-syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId)
-syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
-syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries)
-syntax MaybeByte ::= someByte(Int)
-                   | "noByte"
-syntax Bytes ::= List {MaybeByte, ""}
-syntax Allocation ::= allocation(bytes: Bytes, provenance: ProvenanceMap, align: Align, mutability: Mutability)
+syntax Align ::= align(Int) [symbol(align)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
+syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
+syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
+syntax MaybeByte ::= someByte(Int) [symbol(someByte)]
+                   | "noByte"      [symbol(noByte)]
+syntax MaybeBytes ::= List {MaybeByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
+syntax Allocation ::= allocation(
+                        bytes: MaybeBytes,
+                        provenance: ProvenanceMap,
+                        align: Align,
+                        mutability: Mutability) [symbol(allocation)]
 
 syntax ConstantKind ::= constantKindAllocated(Allocation)
                       | constantKindUnevaluated(UnevaluatedConst)
