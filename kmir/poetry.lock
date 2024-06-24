@@ -441,7 +441,7 @@ colors = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "kframework"
-version = "7.1.21"
+version = "7.1.22"
 description = ""
 category = "main"
 optional = false
@@ -464,8 +464,8 @@ xdg-base-dirs = "^6.0.1"
 [package.source]
 type = "git"
 url = "https://github.com/runtimeverification/k.git"
-reference = "v7.1.21"
-resolved_reference = "f6e4789c8d5cc6bcb348651440276cfa794df586"
+reference = "v7.1.22"
+resolved_reference = "80864c7b2e238a5d09942d6846736a6bb314cd0a"
 subdirectory = "pyk"
 [[package]]
 name = "linkify-it-py"
@@ -1041,4 +1041,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e6e56fc29dfaba6acd05ce7c0031aed747cb0df752c3731a271e5ffb43c2f791"
+content-hash = "76689098448fc3f3c666c7b24a648dc2bae87f8a5c0780e2be779d3e7b2151a4"
