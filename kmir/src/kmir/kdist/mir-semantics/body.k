@@ -225,7 +225,12 @@ syntax TerminatorKindAbort ::= "terminatorKindAbort"
 syntax TerminatorKindReturn ::= "terminatorKindReturn"
 syntax TerminatorKindUnreachable ::= "terminatorKindUnreachable"
 syntax TerminatorKindDrop ::= terminatorKindDrop(place: Place, target: BasicBlockIdx, unwind: UnwindAction)
-syntax TerminatorKindCall ::= terminatorKindCall(func: Operand, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction)
+syntax TerminatorKindCall ::= terminatorKindCall(
+                                func: Operand,
+                                args: Operands,
+                                destination: Place,
+                                target: MaybeBasicBlockIdx,
+                                unwind: UnwindAction) [symbol(terminatorKindCall)]
 
 syntax AssertMessageBoundsCheck ::= assertMessageBoundsCheck(len: Operand, index: Operand)
 syntax AssertMessageOverflow ::= assertMessageOverflow(BinOp, Operand, Operand)

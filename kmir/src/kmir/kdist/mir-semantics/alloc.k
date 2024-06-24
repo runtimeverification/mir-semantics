@@ -17,6 +17,6 @@ syntax GlobalAlloc ::= globalAllocFunction(Instance)
                      | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
                      | globalAllocStatic(StaticDef)
                      | globalAllocMemory(Allocation)
-syntax AllocId ::= allocId(Int)
+syntax AllocId ::= allocId(Int) [symbol(allocId)]
 
 endmodule
