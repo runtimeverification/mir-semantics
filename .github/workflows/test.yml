@@ -69,28 +69,10 @@ jobs:
         uses: ./.github/actions/with-docker
         with:
           container-name: mir-semantics-ci-${{ github.sha }}
-      - name: 'Run integration tests'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
-      - name: 'Tear down Docker'
-        if: always()
-        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
-
-  smoke-tests:
-    needs: code-quality-checks
-    name: 'Smoke tests'
-    runs-on: [self-hosted, linux, normal]
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
-          submodules: recursive
-      - name: 'Set up Docker'
-        uses: ./.github/actions/with-docker
-        with:
-          container-name: mir-semantics-ci-${{ github.sha }}
       - name: 'Build kmir'
         run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
+      - name: 'Run integration tests'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
