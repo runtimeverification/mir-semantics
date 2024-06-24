@@ -21,7 +21,7 @@ pytest-kmir = "kmir.testing.fixtures"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.15", subdirectory = "pyk" }
+kframework = { git = "https://github.com/runtimeverification/k.git", tag = "v7.1.21", subdirectory = "pyk" }
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
