@@ -2,9 +2,6 @@ from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
-
-from pyk.ktool.kprint import KPrint
 
 from .convert import from_dict
 
