@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.3.8"
+version = "0.3.9"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
@@ -12,6 +12,7 @@ authors = [
 
 [tool.poetry.scripts]
 convert-json = "kmir.convert_json.__main__:main"
+kmir = "kmir.__main__:main"
 
 [tool.poetry.plugins.kdist]
 mir-semantics = "kmir.kdist.plugin"
