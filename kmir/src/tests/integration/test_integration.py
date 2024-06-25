@@ -49,7 +49,7 @@ def test_run_panic(test_file: Path, tools: Tools) -> None:
         k_cell = CTerm(config).cell('K_CELL')
 
         match k_cell:
-            case KSequence(items=[KApply(KLabel(name='panicked'))]):
+            case KSequence((KApply(KLabel(name='panicked')), *rest)):
                 return True
 
         return False
