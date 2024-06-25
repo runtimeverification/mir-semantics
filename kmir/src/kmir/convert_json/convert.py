@@ -338,7 +338,6 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
         case {'body': [dict(body), None], 'gallocs': list(gallocs)}:
-            ast_body = body_from_dict(body)
             return KApply(
                 'pgm',
                 (
