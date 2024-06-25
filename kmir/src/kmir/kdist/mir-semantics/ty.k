@@ -119,7 +119,7 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int, TyKind)
+syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeConst, end: MaybeConst, includeEnd: Bool)
@@ -188,11 +188,12 @@ syntax RigidTy ::= "rigidTyBool"
                  | "rigidTyNever"
                  | rigidTyTuple(Tys)
                  | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
+                 | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
 
-syntax TyKind ::= tyKindRigidTy(RigidTy)
-                | tyKindAlias(AliasKind, AliasTy)
-                | tyKindParam(ParamTy)
-                | tyKindBound(Int, BoundTy)
+syntax TyKind ::= tyKindRigidTy(RigidTy)          [symbol(tyKindRigidTy)]
+                | tyKindAlias(AliasKind, AliasTy) [symbol(tyKindAlias)]
+                | tyKindParam(ParamTy)            [symbol(tyKindParam)]
+                | tyKindBound(Int, BoundTy)       [symbol(tyKindBound)]
 
 syntax TypeAndMut ::= typeAndMut(ty: Ty, mutability: Mutability)
 
