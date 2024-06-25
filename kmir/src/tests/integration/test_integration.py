@@ -34,7 +34,7 @@ def test_convert_body(test_dir: Path, tools: Tools) -> None:
     with serialized_json.open('r') as f:
         converted_ast = from_dict(json.load(f))
 
-    rc, parsed_ast = tools.kparse.kparse(reference_mir, sort='Body')
+    rc, parsed_ast = tools.kparse.kparse(reference_mir, sort='Pgm')
 
     assert converted_ast == parsed_ast
 

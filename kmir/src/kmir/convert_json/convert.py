@@ -34,12 +34,9 @@ def bytes_from_dict(js: Sequence[int]) -> KApply:
 
 def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
     match js:
-        case [int(size), {'Memory': dict()}]:
-            # TODO: we actually want to parse a provenance map here; need to
-            # update the golden test example to match the current output of the
-            # compiler
+        case [int(size), int(allocid)]:
             return KApply(
-                'provenanceMapEntry', KToken(str(size), KSort('Int')), KApply('allocId', KToken('0', KSort('Int')))
+                'provenanceMapEntry', KToken(str(size), KSort('Int')), KApply('allocId', KToken(str(allocid), KSort('Int')))
             )
 
     _unimplemented()
@@ -310,19 +307,45 @@ def maybe_local_from_dict(js: int | Mapping[str, object] | None) -> KApply:
 def span_from_dict(n: int) -> KApply:
     return KApply('span(_)_TYPES_Span_Int', (KToken(str(n), KSort('Int'))))
 
+def global_alloc_from_dict(js: Mapping[str, object]) -> KApply:
+    match js:
+        case {'Memory': dict(allocation)}:
+            return KApply('globalAllocMemory', (allocation_from_dict(allocation)))
+        case _:
+            _unimplemented()
+
+def global_allocs_from_dict(js: Sequence[object]) -> KApply:
+    if len(js) == 0:
+        return KApply('.globalAllocs')
+
+    return KApply('globalAllocs', (global_alloc_from_dict(js[0]), global_allocs_from_dict(js[1:])))
+
+def body_from_dict(js: Mapping[str, object]) -> KApply:
+    match js:
+        case {'blocks': list(blocks), 'locals': list(locals), 'arg_count': int(arg_count), 'var_debug_info': list(var_debug_infos), 'spread_arg': int(_) | None as spread_arg, 'span': int(span)}:
+            return KApply(
+                'body(_,_,_,_,_,_)_BODY_Body_BasicBlocks_LocalDecls_Int_VarDebugInfos_MaybeLocal_Span',
+                (
+                    basicblocks_from_dict(blocks),
+                    localdecls_from_dict(locals),
+                    arg_count_from_dict(arg_count),
+                    var_debug_infos_from_dict(var_debug_infos),
+                    maybe_local_from_dict(spread_arg),
+                    span_from_dict(span)
+                )
+            )
 
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
-        case {'body': [dict(body), None]}:
-            blocks = basicblocks_from_dict(body['blocks'])
-            locals = localdecls_from_dict(body['locals'])
-            arg_count = arg_count_from_dict(body['arg_count'])
-            var_debug_infos = var_debug_infos_from_dict(body['var_debug_info'])
-            spread_arg = maybe_local_from_dict(body['spread_arg'])
-            span = span_from_dict(body['span'])
+        case {'body': [dict(body), None], 'gallocs': list(gallocs)}:
+            ast_body = body_from_dict(body)
             return KApply(
-                'body(_,_,_,_,_,_)_BODY_Body_BasicBlocks_LocalDecls_Int_VarDebugInfos_MaybeLocal_Span',
-                (blocks, locals, arg_count, var_debug_infos, spread_arg, span),
+                'pgm',
+                (
+                    global_allocs_from_dict(gallocs),
+                    body_from_dict(body)
+                )
             )
-        case _:
-            return KToken('Catchall', 'Catchall')
+
+    _raise_conversion_error('')
+

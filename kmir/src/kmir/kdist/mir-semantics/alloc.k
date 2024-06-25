@@ -1,6 +1,7 @@
 module ALLOC-SORTS
 
 syntax AllocId
+syntax GlobalAllocs
 
 endmodule
 
@@ -16,7 +17,8 @@ syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(Bi
 syntax GlobalAlloc ::= globalAllocFunction(Instance)
                      | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
                      | globalAllocStatic(StaticDef)
-                     | globalAllocMemory(Allocation)
+                     | globalAllocMemory(Allocation) [symbol(globalAllocMemory)]
+syntax GlobalAllocs ::= List {GlobalAlloc, ""} [symbol(globalAllocs), terminator-symbol(.globalAllocs)]
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 
 endmodule
