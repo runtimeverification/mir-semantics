@@ -314,7 +314,7 @@ def global_alloc_from_dict(js: Mapping[str, object]) -> KApply:
         case _:
             _unimplemented()
 
-def global_allocs_from_dict(js: Sequence[object]) -> KApply:
+def global_allocs_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
     if len(js) == 0:
         return KApply('.globalAllocs')
 
@@ -334,6 +334,8 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
                     span_from_dict(span)
                 )
             )
+
+    _raise_conversion_error('')
 
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
