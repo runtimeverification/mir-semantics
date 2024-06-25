@@ -143,7 +143,7 @@ module KMIR
        <memory> ... CallerAddr |-> FnVal( CallerBody, _, _ ) ... </memory>
     requires Target =/=K noBasicBlockIdx
 
-  syntax KItem ::= panicked()
+  syntax KItem ::= panicked() [symbol(panicked)]
 
   rule <k> basicBlock( .Statements, terminator( terminatorKindUnreachable, _SPAN )) ~> _:K
         => panicked()
