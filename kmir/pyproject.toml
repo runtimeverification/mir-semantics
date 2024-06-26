@@ -12,6 +12,7 @@ authors = [
 
 [tool.poetry.scripts]
 convert-json = "kmir.convert_json.__main__:main"
+kmir = "kmir.__main__:main"
 
 [tool.poetry.plugins.kdist]
 mir-semantics = "kmir.kdist.plugin"

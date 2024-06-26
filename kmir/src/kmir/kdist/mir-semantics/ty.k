@@ -119,7 +119,7 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int)
+syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeConst, end: MaybeConst, includeEnd: Bool)
@@ -188,11 +188,12 @@ syntax RigidTy ::= "rigidTyBool"
                  | "rigidTyNever"
                  | rigidTyTuple(Tys)
                  | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
+                 | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
 
-syntax TyKind ::= tyKindRigidTy(RigidTy)
-                | tyKindAlias(AliasKind, AliasTy)
-                | tyKindParam(ParamTy)
-                | tyKindBound(Int, BoundTy)
+syntax TyKind ::= tyKindRigidTy(RigidTy)          [symbol(tyKindRigidTy)]
+                | tyKindAlias(AliasKind, AliasTy) [symbol(tyKindAlias)]
+                | tyKindParam(ParamTy)            [symbol(tyKindParam)]
+                | tyKindBound(Int, BoundTy)       [symbol(tyKindBound)]
 
 syntax TypeAndMut ::= typeAndMut(ty: Ty, mutability: Mutability)
 
@@ -206,11 +207,11 @@ syntax Align ::= align(Int) [symbol(align)]
 syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
-syntax MaybeByte ::= someByte(Int) [symbol(someByte)]
+syntax AllocByte ::= someByte(Int) [symbol(someByte)]
                    | "noByte"      [symbol(noByte)]
-syntax MaybeBytes ::= List {MaybeByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
+syntax AllocBytes ::= List {AllocByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
 syntax Allocation ::= allocation(
-                        bytes: MaybeBytes,
+                        bytes: AllocBytes,
                         provenance: ProvenanceMap,
                         align: Align,
                         mutability: Mutability) [symbol(allocation)]

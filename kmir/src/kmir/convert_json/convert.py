@@ -254,7 +254,9 @@ def basicblocks_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def ty_from_dict(js: Mapping[str, object]) -> KApply:
-    return KApply('ty(_)_TYPES_Ty_Int', (KToken(str(js['id']), KSort('Int'))))
+    return KApply(
+        'ty', (KToken(str(js['id']), KSort('Int')), KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),)))
+    )
 
 
 def mutability_from_dict(s: str) -> KApply:
