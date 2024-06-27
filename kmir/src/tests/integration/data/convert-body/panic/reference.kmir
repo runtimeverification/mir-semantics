@@ -1,3 +1,11 @@
+globalAllocMemory(
+allocation(
+someByte(101) someByte(120) someByte(112) someByte(108) someByte(105) someByte(99) someByte(105) someByte(116) someByte(32) someByte(112) someByte(97) someByte(110) someByte(105) someByte(99),
+provenanceMap(),
+align(1),
+mutabilityNot
+)
+)
 body(
 basicBlock( , terminator(terminatorKindCall(operandConstant(constant(span(0), noUserTypeAnnotationIndex, const(constantKindZeroSized, ty(0, tyKindRigidTy(rigidTyUnimplemented)), constId(0)))), operandConstant(constant(span(1), noUserTypeAnnotationIndex, const(constantKindAllocated(allocation(someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(14) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0), provenanceMap(provenanceMapEntry(0, allocId(0))), align(8), mutabilityMut)), ty(1, tyKindRigidTy(rigidTyUnimplemented)), constId(1)))), place(local(1), ), noBasicBlockIdx, unwindActionContinue), span(2))),
 localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(3), mutabilityMut) localDecl(ty(3, tyKindRigidTy(rigidTyUnimplemented)), span(2), mutabilityMut),

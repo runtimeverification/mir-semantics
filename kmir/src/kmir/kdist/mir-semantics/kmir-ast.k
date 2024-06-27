@@ -14,4 +14,6 @@ module KMIR-AST
   imports MONO
   imports TARGET
   imports TYPES
+
+  syntax Pgm ::= GlobalAllocs Body [symbol(pgm)]
 endmodule
