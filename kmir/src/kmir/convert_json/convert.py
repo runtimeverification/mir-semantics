@@ -34,7 +34,7 @@ def bytes_from_dict(js: Sequence[int]) -> KApply:
 
 def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
     match js:
-        case [int(size), int(allocid)]:
+        case [int(size), [int(_), int(allocid)]]:
             return KApply(
                 'provenanceMapEntry',
                 KToken(str(size), KSort('Int')),
@@ -350,9 +350,85 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def defid_from_dict(n: int) -> KApply:
+    return KApply('defId', (KApply('opaque', (KToken("\"" + str(n) + "\"", KSort('String'))))))
+
+
+def item_kind_from_dict(js: str) -> KApply:
+    if js == 'Fn':
+        return KApply('itemKindFn', ())
+    if js == 'Static':
+        return KApply('itemKindStatic', ())
+    if js == 'Const':
+        return KApply('itemKindConst', ())
+
+    _unimplemented()
+
+
+def bodies_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.bodies')
+
+    return KApply('bodies', (body_from_dict(js[0]), bodies_from_dict(js[1:])))
+
+
+def string_from_dict(js: str) -> KToken:
+    return KToken("\"" + js + "\"", KSort('String'))
+
+
+def crate_item_from_dict(js: Mapping[str, object]) -> Kapply:
+    match js:
+        case {
+            'name': str(name),
+            'id': int(id),
+            'kind': str(kind),
+            'body': [dict(body), None],
+            'promoted': list(promoted),
+            'details': None,
+        }:
+            return KApply(
+                'crateItem',
+                (
+                    string_from_dict(name),
+                    defid_from_dict(id),
+                    item_kind_from_dict(kind),
+                    body_from_dict(body),
+                    bodies_from_dict(promoted),
+                ),
+            )
+    _raise_conversion_error('')
+
+
+def crate_items_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.crateItems')
+
+    return KApply('crateItems', (crate_item_from_dict(js[0]), crate_items_from_dict(js[1:])))
+
+
+def crate_from_dict(js: Mapping[str, object]) -> KApply:
+    match js:
+        case {
+            'name': str(name),
+            'items': list(items),
+            'foreign_modules': list(_),
+            'upstream_monomorphizations': str(_),
+            'upstream_monomorphizations_resolved': list(_),
+        }:
+            return KApply(
+                'crate',
+                (
+                    string_from_dict(name),
+                    crate_items_from_dict(items),
+                ),
+            )
+
+    _raise_conversion_error('')
+
+
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
-        case {'body': [dict(body), None], 'gallocs': list(gallocs)}:
-            return KApply('pgm', (global_allocs_from_dict(gallocs), body_from_dict(body)))
+        case {'crates': dict(crate), 'gallocs': list(gallocs)}:
+            return KApply('pgm', (crate_from_dict(crate), global_allocs_from_dict(gallocs)))
 
     _raise_conversion_error('')
