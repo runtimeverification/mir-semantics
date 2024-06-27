@@ -351,7 +351,7 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
 
 
 def defid_from_dict(n: int) -> KApply:
-    return KApply('defId', (KApply('opaque', (KToken("\"" + str(n) + "\"", KSort('String'))))))
+    return KApply('defId', (KApply('opaque', (KToken('\"' + str(n) + '\"', KSort('String'))))))
 
 
 def item_kind_from_dict(js: str) -> KApply:
@@ -373,10 +373,10 @@ def bodies_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def string_from_dict(js: str) -> KToken:
-    return KToken("\"" + js + "\"", KSort('String'))
+    return KToken('\"' + js + '\"', KSort('String'))
 
 
-def crate_item_from_dict(js: Mapping[str, object]) -> Kapply:
+def crate_item_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {
             'name': str(name),
