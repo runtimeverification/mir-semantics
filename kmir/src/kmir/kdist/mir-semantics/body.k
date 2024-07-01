@@ -1,5 +1,7 @@
 module BODY-SORTS
 
+syntax Body
+syntax Bodies
 syntax DefId
 syntax MaybeInt
 syntax Mutability
@@ -14,7 +16,7 @@ module BODY
   imports INT
   imports STRING
 
-syntax DefId ::= defId(Opaque)
+syntax DefId ::= defId(Opaque) [symbol(defId)]
 syntax LocalDefId ::= localDefId(Opaque)
 syntax Coverage ::= coverage(Opaque)
 
@@ -306,5 +308,6 @@ syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, compo
 syntax VarDebugInfos ::= List {VarDebugInfo, ""}
 
 syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: Int, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span)
+syntax Bodies ::= List {Body, ""} [symbol(bodies), terminator-symbol(.bodies)]
 
 endmodule
