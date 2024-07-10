@@ -6,7 +6,7 @@ NOTE: This project is currently under reconstruction with changes and work outli
 
 Currently the project is working to stablise serialised output of stable MIR (see our current [Rust PR](https://github.com/rust-lang/rust/pull/126963)), and develop the semantics for this output. 
 
-If you would like to try a legacy version of the project, [this blog post](https://runtimeverification.com/blog/introducing-kmir) has a tutorial to get started with. However it is important to install a legacy version for this to work, and so when the tutorial prompts to install the latest version of KMIR with `kup install kmir`, this should be replaced instead with `kup install kmir --version v0.2.44`
+If you would like to try a legacy version of the project, [this blog post](https://runtimeverification.com/blog/introducing-kmir) has a tutorial to get started with. However it is important to install a legacy version for this to work, and so when the tutorial prompts to install the latest version of KMIR with `kup install kmir`, this should be replaced instead with `kup install kmir --version v0.2.21`
 
 ## Installation
 
