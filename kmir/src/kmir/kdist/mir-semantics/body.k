@@ -16,7 +16,7 @@ module BODY
   imports INT
   imports STRING
 
-syntax DefId ::= defId(Opaque) [symbol(defId)]
+syntax DefId ::= defId(Int) [symbol(defId)]
 syntax LocalDefId ::= localDefId(Opaque)
 syntax Coverage ::= coverage(Opaque)
 
@@ -26,10 +26,9 @@ syntax Safety ::= "safetyUnsafe" | "safetyNormal"
 syntax BasicBlockIdx ::= basicBlockIdx(Int)
 syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) | "noBasicBlockIdx"
 
-syntax Constant ::= constant(span: Span, userTy: MaybeUserTypeAnnotationIndex, literal: Const)
 syntax Operand ::= operandCopy(Place)
                  | operandMove(Place)
-                 | operandConstant(Constant)
+                 | operandConstant(ConstOperand)
 syntax MaybeOperand ::= someOperand(Operand) | "noOperand"
 syntax Operands ::= List {Operand, ""}
 
@@ -88,6 +87,7 @@ syntax BinOp ::= "binOpAdd"
 
 syntax UnOp ::= "unOpNot"
               | "unOpNeg"
+              | "unOpPtrMetadata"
 
 syntax NullOp ::= "nullOpSizeOf"
                 | "nullOpAlignOf"
@@ -158,7 +158,7 @@ syntax RvalueCopyForDeref ::= rvalueCopyForDeref(Place)
 syntax RvalueDiscriminant ::= rvalueDiscriminant(Place)
 syntax RvalueLen ::= rvalueLen(Place)
 syntax RvalueRef ::= rvalueRef(Region, BorrowKind, Place)
-syntax RvalueRepeat ::= rvalueRepeat(Operand, Const)
+syntax RvalueRepeat ::= rvalueRepeat(Operand, TyConst)
 syntax RvalueShallowInitBox ::= rvalueShallowInitBox(Operand, Ty)
 syntax RvalueThreadLocalRef ::= rvalueThreadLocalRef(crate: CrateItem)
 syntax RvalueNullaryOp ::= rvalueNullaryOp(NullOp, Ty)
@@ -300,7 +300,7 @@ syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope)
 syntax VarDebugInfoFragment ::= varDebugInfoFragment(ty: Ty, projection: ProjectionElems)
 syntax MaybeVarDebugInfoFragment ::= someVarDebugInfoFragment(VarDebugInfoFragment)
                                    | "noVarDebugInfoFragment"
-syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: Const)
+syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: MirConst)
 syntax VarDebugInfoContents ::= varDebugInfoContentsPlace(Place)
                               | varDebugInfoContentsConst(ConstOperand)
 syntax MaybeInt ::= someInt(Int) | "noInt"
