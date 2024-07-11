@@ -16,6 +16,7 @@ syntax Span
 syntax TraitDef
 syntax Ty
 syntax TyConst
+syntax TysMap
 syntax VariantIdx
 
 endmodule
@@ -120,7 +121,9 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
+syntax Ty ::= ty(TyKind) [symbol(ty)]
+syntax TyEntry ::= tyEntry(Int, Ty)
+syntax TysMap ::= List {TyEntry, ""} [symbol(TysMap), terminator-symbol(.TysMap)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
