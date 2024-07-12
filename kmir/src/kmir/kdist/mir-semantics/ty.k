@@ -121,7 +121,7 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(TyKind) [symbol(ty)]
+syntax Ty ::= ty(Int) [symbol(ty)]
 syntax TyEntry ::= tyEntry(Int, Ty)
 syntax TysMap ::= List {TyEntry, ""} [symbol(TysMap), terminator-symbol(.TysMap)]
 syntax Tys ::= List {Ty, ""}
