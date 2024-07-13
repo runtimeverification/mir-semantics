@@ -14,8 +14,130 @@ module KMIR-SYNTAX
   rule emptyOperands => .Operands
   syntax ProjectionElems ::= "noProjection" [function]
   rule noProjection => .ProjectionElems
+endmodule
 
-  syntax Value ::= FnVal( BasicBlocks, Int, Int )
+module KMIR-MEMORY
+  imports INT
+  imports KMIR-SYNTAX
+
+  configuration <memoryConfig>
+                  <stack> .List </stack>
+                  <heap>  .Map  </heap>
+                </memoryConfig>
+endmodule
+
+module KMIR-MEMORY-API
+  imports KMIR-SYNTAX
+
+  syntax Address
+  syntax Value
+  syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
+                 | #setLocal( Local, Value )   [function]
+
+  syntax Value ::= #loadValue( Address )       [function]
+                 | #loadLocal( Local )         [function]
+                 | #loadPtr( Address, Value )  [function]
+endmodule
+
+module KMIR-CONFIGURATION
+  imports KMIR-SYNTAX
+  imports KMIR-MEMORY
+
+  configuration <kmir>
+                  <k> $PGM:InitialState </k>
+                  <body> .BasicBlocks </body>
+                  <memoryConfig/>
+                </kmir>
+endmodule
+
+module KMIR-MEMORY-IMPL [private]
+  imports KMIR-MEMORY-API
+  imports KMIR-CONFIGURATION
+
+  // Memory Implementation Structures
+
+  syntax Address ::= LocalAddr( Int,                     // stack frame height
+                                Place )                  // stack local address
+                   | GlobalAddr( Int,                    // global address
+                                 ProjectionElems )       // projection out of global address
+
+  syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
+                 | Float( Float, Int )                   // value, bit-width               for f16-f128
+                 | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
+                 | Range( List )                         // homogenous values              for array/slice
+                 | Struct( List )                        // heterogenous value list        for tuples and structs (standard, tuple, or anonymous) | Uninit()                              // for uninitialized values
+                 | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
+
+  syntax StackFrameRecord ::= Frame( Address,            // address of caller function
+                                     MaybeBasicBlockIdx, // basic block to return to
+                                     Place,              // place to store return value
+                                     UnwindAction,       // action to perform if we panic
+                                     List )              // stack locals
+
+  syntax MemoryWrite ::= MemWrite( writeAddr: Int,       // address to overwrite
+                                   writeVal:  Value )    // value to store at address
+
+  // Memory Implementation Rules
+
+  syntax ProjectionElems ::= #getProj( Address )                        [function] // get projections from Address
+
+  syntax Value ::= #prj( Address, ProjectionElem, Value )               [function] // project point out of Value located at address
+
+  syntax MemoryWrite ::= #set( Int, ProjectionElems, Value, Value )     [function] // update Value1 at projected point with Value2 and store at Int address
+                       | #inj( Int, PrjectionElem, Value, MemoryWrite ) [function] // perform Write, accumulating any missing context
+                       | #inj(      PrjectionElem, Value, MemoryWrite ) [function] // helper function for #inj
+
+  syntax List ::= #update1(List, Int, Value )                           [function] // updates an index in the list
+                | #updateN(List, Int, Int, Bool, Value )                [function] // updates multiple indices in the list
+
+  syntax KItem ::= #write( MemoryWrite )                                       // perform memory write
+
+  rule <k> #setValue( Addr, Val ) => #write( #set( #prj(Addr), #loadValue( Addr ), Val ) ) ... </k>
+
+  rule #getProj(LocalAddr(_, place(_, Prjs))) => Prjs
+  rule #getProj(GlobalAddr(_, Prjs))          => Prjs
+
+  rule #set( Addr, Prj Prjs, Scrutinee, Val )
+    => #if NoOpProjection(Prj)
+         #then #set( Addr, Prjs, Scrutinee, Val )
+         #else #if Prj ==K projectionElemDeref
+           #then #set( Addr, Prjs, #prj( Addr, Prj, Scrutinee ) )
+           #else #inj( Addr, Prj, Scrutinee, #set( Addr, Prjs, #prj( Prj, Scrutinee ) Val ) )
+       #fi #fi
+
+  // TODO: deal with self-referential pointers
+  rule #prj( Addr, projectionElemDeref,                          Ptr(Next, Meta) ) => #loadPtr(Addr, Meta)
+  rule #prj( Addr, projectionElemField(fieldIdx(I), _),          Struct( Flds )  ) => #loadField(I, Flds)
+  rule #prj( Addr, projectionElemIndex(local(Idx)),              Range(Mem)      ) => #loadIndex(#loadLocal(Idx), Mem)
+  rule #prj( Addr, projectionElemConstantIndex(Off, _, FromEnd), Range(Mem)      ) => #loadIndex(Off, Mem)
+  rule #prj( Addr, projectionElemSubslice(From, To, Dir),        Range(Mem)      ) => #loadSlice(From, To, Dir, Mem)
+
+  rule #inj( Orig, Prj, Scrutinee, MemWrite(Addr, Val) )
+    => #if Orig =/= Addr
+         #then MemWrite(Addr, Val)
+         #else #inj( Prj, Scrutinee, MemWrite(Orig, Val) )
+       #fi
+
+  rule #inj( projectionElemField(fieldIdx(I), _),          Struct( Flds ),  MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Flds, I,               Val))
+  rule #inj( projectionElemIndex(local(Idx)),              Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Mem,  I,               Val))
+  rule #inj( projectionElemConstantIndex(Off, _, FromEnd), Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Mem,  #loadLocal(Idx), Val))
+  rule #inj( projectionElemSubslice(From, To, Dir),        Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #updateN(Mem,  From, To, Dir,   Val))
+
+  rule #update1( Mem, Idx, Val )
+    => #if Idx >=Int size(Mem)
+         #then Mem
+         #else Mem [ Idx <- Val ]
+       #else
+    requires Idx >=Int 0
+
+  rule #updateN( Mem, From, To, Dir, Range(New) )
+    => #if From >= size(Mem)
+         #then Mem
+         #else updateList(Mem, From, range(New, 0, 
+    requires From >=Int 0
+     andBool To   >=Int 0
+     andBool (notBool Dir) impliesBool (                To  -Int From ==Int size(New))
+     andBool          Dir  impliesBool ((size(Mem) -Int To) -Int From ==Int size(New))
 endmodule
 
 module KMIR
@@ -26,69 +148,14 @@ module KMIR
   imports BYTES
   imports K-EQUAL
 
-  syntax CallStackItem  ::= CallRecord( FuncAddress, MaybeBasicBlockIdx, Place, UnwindAction, Values)
-  syntax FuncAddress    ::= FnAddr( Int )
-  syntax Values         ::= List{ Value, "" }
-  syntax Value          ::= // MIR Value Types
-                            Scalar( Int )
-                          | Ref( Int )
-                          | Ptr( Int, Value )
-                          | Array( Bytes )
-                          | Tuple( Values )
-                          | Closure( Int, Values )
-                          | Adt( Int, Int, Values )
-                            // Semantics Specific Types
-                          | Uninit()
 
-  configuration <kmir>
-                  <k> $PGM:InitialState </k>
-                  <callStack> .List </callStack>
-                  <funcAddr> FnAddr( -1 ) </funcAddr>
-                  <body> .BasicBlocks </body>
-                  <locals> Uninit() .Values </locals>
-                  <memory> .Map </memory>
-                </kmir>
 
-  // Initialization
+  // Operand Evaluation
 
-  rule <k> #init( Addr, Mem )
-        => #evaluated( Ptr( Addr, Uninit() )  )
-        ~> #prepareCall( place( local( 0 ), .ProjectionElems ),
-                         someBasicBlockIdx(basicBlockIdx( -1 )),
-                         unwindActionTerminate
-                       )
-       </k>
-       <memory> .Map => Mem </memory>
-
-  // Evaluation
-
-  syntax KItem ::= #evaluating( Operands, Values )
-                 | #evaluated( Values )
-
-  rule <k> #evaluating( Opr Oprs,  Vals )         => #evaluate( Opr ) ~> #evaluating( Oprs, Vals ) ... </k>
-  rule <k> Val:Value ~> #evaluating( Oprs, Vals ) => #evaluating( Oprs, Val Vals )                 ...  </k>
-  rule <k> #evaluating( .Operands, Vals )         => #evaluated( #concatValues(Vals, .Values) )    ... </k>
-
-  syntax Value ::= #evaluate( Operand )
-
-  rule <k> #evaluate( operandConstant(constOperand(_SPAN, _UTY, mirConst( CK, ty( _TID, TY ), _CID ))) )
-        => #evalConst( CK, TY )
-           ...
-       </k>
-
-  syntax Value ::= #evalConst( ConstantKind, TyKind )
-
-  rule <k> #evalConst( constantKindZeroSized, tyKindRigidTy( rigidTyFnDef( Id:FnDef, _ )))
-        => Ptr( {Id}:>Int, Uninit() )
-           ...
-       </k>
-
-  // Update
-
-  syntax Value ::= #setPlace( Value, ProjectionElems, Value ) [function]
-
-  rule #setPlace( _Val, .ProjectionElems, Val' ) => Val'
-  // TODO: finish add update cases
+  // Statement/Terminator Evaluation
+  //
+  syntax KItem ::= #exec(StatementKind)
+                 | #exec(TerminatorKind)
 
   // Terminators
 
@@ -96,91 +163,14 @@ module KMIR
                  | #goto( MaybeBasicBlockIdx )
 
   rule <k> basicBlock( .Statements, terminator( terminatorKindGoto( basicBlockIdx( N ) ), _SPAN ))
-        => #goto( N )
+        => #exec( terminatorKindGoto( basicBlockIdx( N ) ) )
            ...
        </k>
 
-  rule <k> #goto( someBasicBlockIdx(basicBlockIdx( N ))) => #goto( N ) ... </k>
+  rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
 
   rule <k> #goto( N ) => #getBlock(N, Blocks) ... </k>
        <body> Blocks </body>
     requires N <Int #numBlocks(Blocks)
 
-  syntax KItem ::= #prepareCall( Place, MaybeBasicBlockIdx, UnwindAction )
-                 | #call( Int, Value, Values, Place, MaybeBasicBlockIdx, UnwindAction )
-
-  rule <k> basicBlock( .Statements, terminator( terminatorKindCall( Callee, Args, Dest, Target, Unwind ), _SPAN ))
-        => #evaluating( Callee Args, .Values )
-        ~> #prepareCall( Dest, Target, Unwind )
-           ...
-       </k>
-
-  rule <k> #evaluated( Ptr( Addr, Uninit() ) Args )
-        ~> #prepareCall( Dest, Target, Unwind )
-        => #call( Addr, { Mem [ Addr ] }:>Value, Args, Dest, Target, Unwind )
-           ...
-       </k>
-       <memory> Mem:Map </memory>
-    requires Addr in_keys( Mem )
-     andBool FnVal( _, _, _ ) :=K Mem [ Addr ]
-
-  rule <k> #call( CalleeAddr, FnVal( CalleeBody, ArgCount, LocalCount ), Args, Dest, Target, Unwind )
-        => #goto( 0 )
-           ...
-       </k>
-       <callStack> Stack => ListItem(CallRecord( FnAddr( CallerAddr ), Target, Dest, Unwind, CallerLocals )) Stack </callStack>
-       <body> _CallerBody => CalleeBody </body>
-       <locals> CallerLocals => #makeLocals( LocalCount, ArgCount, Args ) </locals>
-       <funcAddr> FnAddr( CallerAddr => CalleeAddr ) </funcAddr>
-
-  rule <k> basicBlock( .Statements, terminator( terminatorKindReturn, _SPAN ))
-        => #goto( Target:MaybeBasicBlockIdx )
-           ...
-       </k>
-       <callStack> ListItem(CallRecord( FnAddr( CallerAddr ), Target, Dest, _Unwind, CallerLocals )) Stack => Stack </callStack>
-       <locals> (RetValue _Locals:Values) => #setValue( CallerLocals, Dest, RetValue ) </locals>
-       <body> _CalleeBody => CallerBody </body>
-       <memory> ... CallerAddr |-> FnVal( CallerBody, _, _ ) ... </memory>
-    requires Target =/=K noBasicBlockIdx
-
-  syntax KItem ::= panicked() [symbol(panicked)]
-
-  rule <k> basicBlock( .Statements, terminator( terminatorKindUnreachable, _SPAN )) ~> _:K
-        => panicked()
-       </k>
-       <callStack> _Stack => .List </callStack>
-       <locals> _Locals => .Values </locals>
-       <body> _Body => .BasicBlocks </body>
-       <funcAddr> _Addr => FnAddr(-1) </funcAddr>
-
-
-  // Helpers
-
-  syntax Values ::= #makeLocals( Int, Int, Values )           [function]
-                  | #setValue( Values, Place, Value )         [function]
-                  | #setValue( Values, Values, Place, Value ) [function]
-                  | #concatValues( Values, Values )           [function]
-                  | #makeValues( Int, Value )                 [function]
-
-  rule #makeLocals( LocalCount, ArgCount, Args )
-    => #concatValues( #concatValues( Args, Uninit() ), #makeValues( LocalCount -Int ArgCount, Uninit() ) )
-
-  rule #setValue( Vals, I, Val' ) => #setValue( Vals, .Values, I, Val' )
-
-  rule #setValue( Val RestVals, Vals, place(local(I:Int), Projs), Val' ) => #setValue( RestVals, Val Vals, place(local(I -Int 1), Projs), Val' ) requires I >Int 0
-  rule #setValue( Val RestVals, Vals, place(local(0),     Projs), Val' ) => #concatValues( Vals, #setPlace(Val, Projs, Val') RestVals )
-
-  rule #concatValues( Val Vals, Vals2 ) => #concatValues( Vals, Val Vals2 )
-  rule #concatValues( .Values,  Vals2 ) => Vals2
-
-  rule #makeValues( N,  Val ) => Val #makeValues( N -Int 1, Val ) requires N >Int  0
-  rule #makeValues( N, _Val ) => .Values                          requires N <=Int 0
-
-  syntax Int ::= #numBlocks( BasicBlocks ) [function]
-  rule #numBlocks( _ BS ) => 1 +Int #numBlocks( BS )
-  rule #numBlocks( .BasicBlocks ) => 0
-
-  syntax BasicBlock ::= #getBlock( Int, BasicBlocks ) [function]
-  rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
-  rule #getBlock( 0,  Block _Blocks ) => Block
 endmodule
