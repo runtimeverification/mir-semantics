@@ -19,10 +19,12 @@ endmodule
 module KMIR-MEMORY
   imports INT
   imports KMIR-SYNTAX
+  imports LIST
+  imports MAP
 
   configuration <memoryConfig>
                   <stack> .List </stack>
-                  <heap>  .Map  </heap>
+                  <globals>  .Map  </globals>
                 </memoryConfig>
 endmodule
 
@@ -32,6 +34,7 @@ module KMIR-MEMORY-API
   syntax Address
   syntax Value
   syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
+                 | #setPlace( Place, Value )   [function]
                  | #setLocal( Local, Value )   [function]
 
   syntax Value ::= #loadValue( Address )       [function]
@@ -53,124 +56,275 @@ endmodule
 module KMIR-MEMORY-IMPL [private]
   imports KMIR-MEMORY-API
   imports KMIR-CONFIGURATION
+  imports BOOL
+  imports K-EQUAL
+  imports INT
 
   // Memory Implementation Structures
+
+  syntax AddressBase ::= AddrBase( Bool,                 // local or global
+                                   Int )                 // address index
 
   syntax Address ::= LocalAddr( Int,                     // stack frame height
                                 Place )                  // stack local address
                    | GlobalAddr( Int,                    // global address
                                  ProjectionElems )       // projection out of global address
 
+  syntax MaybeValue ::= Value
+                      | "NoValue"
+
   syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
                  | Float( Float, Int )                   // value, bit-width               for f16-f128
                  | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
                  | Range( List )                         // homogenous values              for array/slice
-                 | Struct( List )                        // heterogenous value list        for tuples and structs (standard, tuple, or anonymous) | Uninit()                              // for uninitialized values
+                 | Struct( List )                        // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
 
   syntax StackFrameRecord ::= Frame( Address,            // address of caller function
                                      MaybeBasicBlockIdx, // basic block to return to
                                      Place,              // place to store return value
                                      UnwindAction,       // action to perform if we panic
-                                     List )              // stack locals
+                                     locals: List )      // stack locals
 
-  syntax MemoryWrite ::= MemWrite( writeAddr: Int,       // address to overwrite
-                                   writeVal:  Value )    // value to store at address
+  syntax MemoryWrite ::= MemWrite( AddressBase,          // address to overwrite
+                                   Value )               // value to store at address
 
   // Memory Implementation Rules
 
-  syntax ProjectionElems ::= #getProj( Address )                        [function] // get projections from Address
+  syntax AddressBase ::= #base( Address )                                        [function] // get address base
 
-  syntax Value ::= #prj( Address, ProjectionElem, Value )               [function] // project point out of Value located at address
+  syntax ProjectionElems ::= #getProj( Address )                                 [function] // get projections from Address
 
-  syntax MemoryWrite ::= #set( Int, ProjectionElems, Value, Value )     [function] // update Value1 at projected point with Value2 and store at Int address
-                       | #inj( Int, PrjectionElem, Value, MemoryWrite ) [function] // perform Write, accumulating any missing context
-                       | #inj(      PrjectionElem, Value, MemoryWrite ) [function] // helper function for #inj
+  syntax Value ::= #prj( ProjectionElem, Value )                                 [function] // project point out of Value
+                 | #prjs( ProjectionElems, Value )                               [function] // project point out of Value
 
-  syntax List ::= #update1(List, Int, Value )                           [function] // updates an index in the list
-                | #updateN(List, Int, Int, Bool, Value )                [function] // updates multiple indices in the list
+  syntax MemoryWrite ::= #set( AddressBase, ProjectionElems, Value, Value )      [function] // update Value1 at projected point with Value2 and store at Int address
+                       | #inj( AddressBase, ProjectionElem, Value, MemoryWrite ) [function] // perform Write, accumulating any missing context
+                       | #inj(              ProjectionElem, Value, MemoryWrite ) [function] // helper function for #inj
 
-  syntax KItem ::= #write( MemoryWrite )                                       // perform memory write
+  syntax List ::= #update1(List, Int, Value )                                    [function] // updates an index in the list
+                | #updateN(List, Int, Int, Bool, Value )                         [function] // updates multiple indices in the list
 
-  rule <k> #setValue( Addr, Val ) => #write( #set( #prj(Addr), #loadValue( Addr ), Val ) ) ... </k>
+  syntax KItem ::= #write( MemoryWrite )                                                    // perform memory write
+
+  syntax Value ::= #loadField( Int, List )                                       [function]
+                 | #loadIndex( Value, List )                                     [function]
+                 | #loadIndex( Int, List )                                       [function]
+                 | #loadSlice( Int, Int, Bool, List )                            [function]
+                 | #loadVar( List, Int, Int )                                    [function]
+                 | #loadVar( StackFrameRecord, Int )                             [function]
+
+  syntax Bool ::= #validSlice(List, Int, Int, Bool)                              [macro]
+                | #NoOpProjection( ProjectionElem )                              [function]
+
+  syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
+               | #readScalar( Value )                                            [function]
+
+  // Set Impl
+
+  rule #setLocal( LIdx, Val ) => #setPlace( place(LIdx, .ProjectionElems), Val )
+
+  rule [[ #setPlace( place(LIdx, Prjs), Val ) => #setValue( LocalAddr(size(Stack) -Int 1, place(LIdx, Prjs)), Val ) ]]
+       <stack> Stack </stack>
+    requires size(Stack) >Int 0
+
+  rule <k> #setValue( Addr, Val )         => #write( #set( #base(Addr), #getProj(Addr), #loadValue( Addr ), Val ) ) ... </k>
+
+  rule <k> #write( MemWrite( AddrBase(true,  Idx), Val ) ) => .K ... </k>
+       <stack> Locals => Locals [ Idx <- Val ] </stack>
+  rule <k> #write( MemWrite( AddrBase(false, Idx), Val ) ) => .K ... </k>
+       <globals> Globals => Globals [ Idx <- Val ] </globals>
+
+  // Load Impl
+
+  rule [[ #loadValue( LocalAddr( Idx, place(local(LIdx), Prjs) ) ) => #prjs( Prjs, #loadVar( Stack,  Idx, LIdx ) ) ]]
+       <stack> Stack </stack>
+
+  rule [[ #loadValue( GlobalAddr( Idx, Prjs ) ) => #prjs( Prjs, { Global [ Idx ] }:>Value ) ]]
+       <globals> Global </globals>
+    requires 0 <=Int Idx andBool Idx <Int size(Global)
+
+  rule [[ #loadLocal( `local(_)_BODY_Local_Int`(LIdx) ) => #loadValue( LocalAddr(size(Stack) -Int 1, `place(_,_)_BODY_Place_Local_ProjectionElems`(local(LIdx), .ProjectionElems)) ) ]]
+       <stack> Stack </stack>
+
+  rule #loadPtr( Addr, _ ) => #loadValue( Addr )
+
+  rule #loadVar( Stack, Idx, LIdx ) => #loadVar({ Stack [ Idx ] }:>StackFrameRecord, LIdx)
+    requires 0 <=Int Idx andBool Idx <Int size(Stack)
+
+  rule #loadVar( StkFrm, LIdx ) => { locals(StkFrm) [ LIdx ] }:>Value
+    requires 0 <=Int LIdx andBool LIdx <Int size(locals(StkFrm))
+
+  // Helper Functions
+
+  rule #base(LocalAddr(Idx,  _)) => AddrBase(true,  Idx)
+  rule #base(GlobalAddr(Idx, _)) => AddrBase(false, Idx)
 
   rule #getProj(LocalAddr(_, place(_, Prjs))) => Prjs
   rule #getProj(GlobalAddr(_, Prjs))          => Prjs
 
   rule #set( Addr, Prj Prjs, Scrutinee, Val )
-    => #if NoOpProjection(Prj)
+    => #if #NoOpProjection(Prj)
          #then #set( Addr, Prjs, Scrutinee, Val )
          #else #if Prj ==K projectionElemDeref
-           #then #set( Addr, Prjs, #prj( Addr, Prj, Scrutinee ) )
-           #else #inj( Addr, Prj, Scrutinee, #set( Addr, Prjs, #prj( Prj, Scrutinee ) Val ) )
+           #then #set( Addr, Prjs, #prj( Prj, Scrutinee ), Val )
+           #else #inj( Addr, Prj, Scrutinee, #set( Addr, Prjs, #prj( Prj, Scrutinee ), Val ) )
        #fi #fi
 
-  // TODO: deal with self-referential pointers
-  rule #prj( Addr, projectionElemDeref,                          Ptr(Next, Meta) ) => #loadPtr(Addr, Meta)
-  rule #prj( Addr, projectionElemField(fieldIdx(I), _),          Struct( Flds )  ) => #loadField(I, Flds)
-  rule #prj( Addr, projectionElemIndex(local(Idx)),              Range(Mem)      ) => #loadIndex(#loadLocal(Idx), Mem)
-  rule #prj( Addr, projectionElemConstantIndex(Off, _, FromEnd), Range(Mem)      ) => #loadIndex(Off, Mem)
-  rule #prj( Addr, projectionElemSubslice(From, To, Dir),        Range(Mem)      ) => #loadSlice(From, To, Dir, Mem)
+  rule #set( Addr, .ProjectionElems, _Scrutinee, Val ) => MemWrite( Addr, Val )
+
+  // NOTE: an infinite descent of only deref chains cannot exist because:
+  //       any self-referntial type has to be mediated by a struct which wraps a pointer
+  rule #prj( projectionElemDeref,                          Ptr(Next, Meta) ) => #loadPtr(Next, Meta)
+  rule #prj( projectionElemField(fieldIdx(I), _),          Struct( Flds )  ) => #loadField(I, Flds)
+  rule #prj( projectionElemIndex(Idx),                     Range(Mem)      ) => #loadIndex(#loadLocal(Idx), Mem)
+  rule #prj( projectionElemConstantIndex(Off, _, _),       Range(Mem)      ) => #loadIndex(Off, Mem)
+  rule #prj( projectionElemSubslice(From, To, Dir),        Range(Mem)      ) => #loadSlice(From, To, Dir, Mem)
+
+  rule #prjs( Prj Prjs,         Val ) => #prjs( Prjs, #prj( Prj, Val ) )
+  rule #prjs( .ProjectionElems, Val ) => Val
 
   rule #inj( Orig, Prj, Scrutinee, MemWrite(Addr, Val) )
-    => #if Orig =/= Addr
+    => #if Orig =/=K Addr
          #then MemWrite(Addr, Val)
          #else #inj( Prj, Scrutinee, MemWrite(Orig, Val) )
        #fi
 
-  rule #inj( projectionElemField(fieldIdx(I), _),          Struct( Flds ),  MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Flds, I,               Val))
-  rule #inj( projectionElemIndex(local(Idx)),              Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Mem,  I,               Val))
-  rule #inj( projectionElemConstantIndex(Off, _, FromEnd), Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #update1(Mem,  #loadLocal(Idx), Val))
-  rule #inj( projectionElemSubslice(From, To, Dir),        Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, #updateN(Mem,  From, To, Dir,   Val))
+  rule #inj( projectionElemField(fieldIdx(I), _),          Struct( Flds ),  MemWrite(Addr, Val) ) => MemWrite(Addr, Struct( #update1(Flds, I, Val) ) )
+  rule #inj( projectionElemIndex(Idx),                     Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, #readScalar(#loadLocal(Idx)), Val) ) )
+  rule #inj( projectionElemConstantIndex(Off, _, _),       Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, Off, Val) ) )
+  rule #inj( projectionElemSubslice(From, To, Dir),        Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #updateN(Mem, From, To, Dir,   Val) ) )
+
+  rule #loadField( Idx, Fields:List   ) => { Fields [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Fields)
+  rule #loadIndex( Idx, Mem:List      ) => { Mem    [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Mem)
+  rule #loadIndex( Val, Mem:List      ) => #loadIndex(#readScalar(Val), Mem)
+  rule #loadSlice( From, To, Dir, Mem )
+    => #if Dir
+         #then Range( range( Mem, From, size(Mem) -Int To ) )
+         #else Range( range( Mem, From, To                ) )
+       #fi
+    requires #validSlice(Mem, From, To, Dir)
 
   rule #update1( Mem, Idx, Val )
     => #if Idx >=Int size(Mem)
          #then Mem
          #else Mem [ Idx <- Val ]
-       #else
+       #fi
     requires Idx >=Int 0
 
   rule #updateN( Mem, From, To, Dir, Range(New) )
-    => #if From >= size(Mem)
-         #then Mem
-         #else updateList(Mem, From, range(New, 0, 
-    requires From >=Int 0
-     andBool To   >=Int 0
-     andBool (notBool Dir) impliesBool (                To  -Int From ==Int size(New))
-     andBool          Dir  impliesBool ((size(Mem) -Int To) -Int From ==Int size(New))
+    => updateList(Mem, From, New)
+    requires #validSlice(Mem, From, To, Dir)
+     andBool size(New) ==Int #sizeSlice(Mem, From, To, Dir)
+
+  rule #validSlice(Mem, From, To, Dir) => 0  <=Int From
+                                  andBool 0  <=Int To
+                                  andBool To <=Int size(Mem)
+                                  andBool 0  <=Int #sizeSlice(Mem, From, To, Dir)
+
+  rule #sizeSlice(Mem, From, To, Dir) => #if Dir
+                                           #then (size(Mem) -Int To) -Int From
+                                           #else To -Int From
+                                         #fi
+
+  rule #NoOpProjection( projectionElemDeref ) => false
+  rule #NoOpProjection( projectionElemField(_, _) ) => false
+  rule #NoOpProjection( projectionElemIndex(_) ) => false
+  rule #NoOpProjection( projectionElemConstantIndex(_, _, _) ) => false
+  rule #NoOpProjection( projectionElemSubslice(_, _, _) ) => false
+  rule #NoOpProjection( projectionElemDowncast(_) ) => true
+  rule #NoOpProjection( projectionElemOpaqueCast(_) ) => true
+  rule #NoOpProjection( projectionElemSubtype(_) ) => true
+
+  rule #readScalar( Scalar( Val, _Width, _Signed ) ) => Val
 endmodule
 
 module KMIR
   imports KMIR-SYNTAX
+  imports KMIR-MEMORY-IMPL
+  imports KMIR-CONFIGURATION
+  imports KMIR-MEMORY-API
   imports LIST
   imports STRING
   imports BOOL
   imports BYTES
   imports K-EQUAL
 
+  // Expression Evaluation
 
+  syntax KItem ::= #eval(Rvalue)
 
-  // Operand Evaluation
+  rule <k> #eval(rvalueAddressOf(_MUT, _PLACE))            => .K </k>
+  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => .K </k>
+  rule <k> #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
+  rule <k> #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
+  rule <k> #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
+  rule <k> #eval(rvalueCopyForDeref(_PLACE))               => .K </k>
+  rule <k> #eval(rvalueDiscriminant(_PLACE))               => .K </k>
+  rule <k> #eval(rvalueLen(_PLACE))                        => .K </k>
+  rule <k> #eval(rvalueRef(_REG, _BRW_KIND, _PLACE))       => .K </k>
+  rule <k> #eval(rvalueRepeat(_ARG, _CONST))               => .K </k>
+  rule <k> #eval(rvalueShallowInitBox(_ARG, _TY))          => .K </k>
+  rule <k> #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => .K </k>
+  rule <k> #eval(rvalueNullaryOp(_OP, _TY))                => .K </k>
+  rule <k> #eval(rvalueUnaryOp(_OP, _ARG))                 => .K </k>
+  rule <k> #eval(rvalueUse(_OP))                           => .K </k>
 
   // Statement/Terminator Evaluation
-  //
+
   syntax KItem ::= #exec(StatementKind)
                  | #exec(TerminatorKind)
+
+  rule <k> basicBlock( statement(STMT, _SPAN) STMTS, TERM )     => #exec( STMT ) ~> basicBlock( STMTS, TERM ) ... </k>
+  rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #exec( TERM )                              ... </k>
+
+  // Statements
+
+  syntax Value ::= "WIPValue"
+
+  rule <k> #exec(statementKindAssign(PLACE, _RVAL))           => #setPlace(PLACE, WIPValue) ... </k>
+  rule <k> #exec(statementKindIntrinsic(_INT))                => .K ... </k>
+  rule <k> #exec(statementKindSetDiscriminant(PLACE, _VIDX))  => #setPlace(PLACE, WIPValue) ... </k>
+
+  rule <k> #exec(deinit(_Place))                                                       => .K ... </k>
+  rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))                        => .K ... </k>
+  rule <k> #exec(statementKindStorageLive(_Local))                                     => .K ... </k>
+  rule <k> #exec(statementKindStorageDead(_Local))                                     => .K ... </k>
+  rule <k> #exec(statementKindRetag(_RetagKind, _Place))                               => .K ... </k>
+  rule <k> #exec(statementKindPlaceMention(_Place))                                    => .K ... </k>
+  rule <k> #exec(statementKindAscribeUserType(_Place, _UserTypeProjection, _Variance)) => .K ... </k>
+  rule <k> #exec(statementKindCoverage(_Coverage))                                     => .K ... </k>
+  rule <k> #exec(statementKindConstEvalCounter)                                        => .K ... </k>
+  rule <k> #exec(statementKindNop)                                                     => .K ... </k>
 
   // Terminators
 
   syntax KItem ::= #goto( Int )
                  | #goto( MaybeBasicBlockIdx )
 
-  rule <k> basicBlock( .Statements, terminator( terminatorKindGoto( basicBlockIdx( N ) ), _SPAN ))
-        => #exec( terminatorKindGoto( basicBlockIdx( N ) ) )
-           ...
-       </k>
-
   rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
 
-  rule <k> #goto( N ) => #getBlock(N, Blocks) ... </k>
+  rule <k> #goto( someBasicBlockIdx( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
+
+  rule <k> #goto( N ) => #getBlock( N, Blocks ) ... </k>
        <body> Blocks </body>
     requires N <Int #numBlocks(Blocks)
 
+  syntax Int ::= #numBlocks( BasicBlocks ) [function]
+  rule #numBlocks( _ BS ) => 1 +Int #numBlocks( BS )
+  rule #numBlocks( .BasicBlocks ) => 0
+
+  syntax BasicBlock ::= #getBlock( Int, BasicBlocks ) [function]
+  rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
+  rule #getBlock( 0,  Block _Blocks ) => Block
+
+  rule <k> #exec(terminatorKindSwitchInt(_ARG, _TARGETS))                                 => .K </k>
+  rule <k> #exec(terminatorKindResume)                                                    => .K </k>
+  rule <k> #exec(terminatorKindAbort)                                                     => .K </k>
+  rule <k> #exec(terminatorKindReturn)                                                    => .K </k>
+  rule <k> #exec(terminatorKindUnreachable)                                               => .K </k>
+  rule <k> #exec(terminatorKindDrop(_PLACE, _TARGET, _ACT))                               => .K </k>
+  rule <k> #exec(terminatorKindCall(_FUNC, _ARGS, _DEST, _TARGET, _ACT))                  => .K </k>
+  rule <k> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                           => .K </k>
+  rule <k> #exec(terminatorKindInlineAsm(_TEMPLATE, _ARGS, _OPTS, _SPANS, _TARGET, _ACT)) => .K </k>
 endmodule

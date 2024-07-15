@@ -220,7 +220,7 @@ syntax Promoted ::= promoted(Int)
 syntax MaybePromoted ::= somePromoted(Promoted) | "noPromoted"
 
 syntax Align ::= align(Int) [symbol(align)]
-syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
 syntax AllocByte ::= someByte(Int) [symbol(someByte)]
