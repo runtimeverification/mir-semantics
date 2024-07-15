@@ -16,7 +16,7 @@ syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(Bi
                                            | "noBinderForExistentialTraitRef"
 syntax GlobalAlloc ::= globalAllocFunction(Instance)
                      | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
-                     | globalAllocStatic(StaticDef)
+                     | globalAllocStatic(StaticDef) [symbol(globalAllocStatic)]
                      | globalAllocMemory(Allocation) [symbol(globalAllocMemory)]
 
 syntax GlobalAllocEntry ::= globalAllocEntry(Int, GlobalAlloc)

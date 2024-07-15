@@ -23,16 +23,17 @@ syntax Coverage ::= coverage(Opaque)
 syntax Mutability ::= "mutabilityNot" | "mutabilityMut"
 syntax Safety ::= "safetyUnsafe" | "safetyNormal"
 
-syntax BasicBlockIdx ::= basicBlockIdx(Int)
-syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) | "noBasicBlockIdx"
+syntax BasicBlockIdx ::= basicBlockIdx(Int) [symbol(basicBlockIdx)]
+syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) [symbol(someBasicBlockIdx)]
+                           | "noBasicBlockIdx" [symbol(noBasicBlockIdx)]
 
-syntax Operand ::= operandCopy(Place)
-                 | operandMove(Place)
-                 | operandConstant(ConstOperand)
+syntax Operand ::= operandCopy(Place) [symbol(operandCopy)]
+                 | operandMove(Place) [symbol(operandMove)]
+                 | operandConstant(ConstOperand) [symbol(operandConstant)]
 syntax MaybeOperand ::= someOperand(Operand) | "noOperand"
 syntax Operands ::= List {Operand, ""}
 
-syntax Local ::= local(Int)
+syntax Local ::= local(Int) [symbol(local)]
 syntax MaybeLocal ::= someLocal(Local) | "noLocal"
 
 syntax ProjectionElemDeref ::= "projectionElemDeref"
@@ -152,7 +153,7 @@ syntax AggregateKind ::= aggregateKindArray(Ty)
 syntax RvalueAddressOf ::= rvalueAddressOf(Mutability, Place)
 syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands)
 syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand)
-syntax RvalueCast ::= rvalueCast(CastKind, Operand, Operand)
+syntax RvalueCast ::= rvalueCast(CastKind, Operand, Ty)
 syntax RvalueCheckedBinaryOp ::= rvalueCheckedBinaryOp(BinOp, Operand, Operand)
 syntax RvalueCopyForDeref ::= rvalueCopyForDeref(Place)
 syntax RvalueDiscriminant ::= rvalueDiscriminant(Place)
@@ -186,12 +187,12 @@ syntax Rvalue ::= RvalueAddressOf
 
 /////// Statements
 
-syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue)
+syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue) [symbol(statementKindAssign)]
 syntax StatementKindFakeRead ::= statementKindFakeRead(cause: FakeReadCause, place: Place)
 syntax StatementKindSetDiscriminant ::= statementKindSetDiscriminant(place: Place, variantIndex: VariantIdx)
 syntax StatementKindDeinit ::= deinit(place: Place)
-syntax StatementKindStorageLive ::= statementKindStorageLive(Local)
-syntax StatementKindStorageDead ::= statementKindStorageDead(Local)
+syntax StatementKindStorageLive ::= statementKindStorageLive(Local) [symbol(statementKindStorageLive)]
+syntax StatementKindStorageDead ::= statementKindStorageDead(Local) [symbol(statementKindStorageDead)]
 syntax StatementKindRetag ::= statementKindRetag(kind: RetagKind, place: Place)
 syntax StatementKindPlaceMention ::= statementKindPlaceMention(place: Place)
 syntax StatementKindAscribeUserType ::= statementKindAscribeUserType(place: Place, projections: UserTypeProjection, variance: Variance)
@@ -224,7 +225,7 @@ syntax TerminatorKindGoto ::= terminatorKindGoto(target: BasicBlockIdx)
 syntax TerminatorKindSwitchInt ::= terminatorKindSwitchInt(discr: Operand, targets: SwitchTargets)
 syntax TerminatorKindResume ::= "terminatorKindResume"
 syntax TerminatorKindAbort ::= "terminatorKindAbort"
-syntax TerminatorKindReturn ::= "terminatorKindReturn"
+syntax TerminatorKindReturn ::= "terminatorKindReturn" [symbol(terminatorKindReturn)]
 syntax TerminatorKindUnreachable ::= "terminatorKindUnreachable"
 syntax TerminatorKindDrop ::= terminatorKindDrop(place: Place, target: BasicBlockIdx, unwind: UnwindAction)
 syntax TerminatorKindCall ::= terminatorKindCall(
