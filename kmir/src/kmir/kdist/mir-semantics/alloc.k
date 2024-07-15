@@ -19,7 +19,7 @@ syntax GlobalAlloc ::= globalAllocFunction(Instance)
                      | globalAllocStatic(StaticDef) [symbol(globalAllocStatic)]
                      | globalAllocMemory(Allocation) [symbol(globalAllocMemory)]
 
-syntax GlobalAllocEntry ::= globalAllocEntry(Int, GlobalAlloc)
+syntax GlobalAllocEntry ::= globalAllocEntry(Int, GlobalAlloc) [symbol(globalAllocEntry)]
 syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""} [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap)]
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 

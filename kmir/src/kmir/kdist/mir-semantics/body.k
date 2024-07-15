@@ -33,7 +33,7 @@ syntax Operand ::= operandCopy(Place) [symbol(operandCopy)]
 syntax MaybeOperand ::= someOperand(Operand) | "noOperand"
 syntax Operands ::= List {Operand, ""}
 
-syntax Local ::= local(Int) [symbol(local)]
+syntax Local ::= local(Int)
 syntax MaybeLocal ::= someLocal(Local) | "noLocal"
 
 syntax ProjectionElemDeref ::= "projectionElemDeref"
