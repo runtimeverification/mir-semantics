@@ -123,7 +123,7 @@ syntax PolyFnSig ::= BinderForFnSig
 
 syntax Ty ::= ty(Int) [symbol(ty)]
 syntax TyEntry ::= tyEntry(Int, Ty)
-syntax TysMap ::= List {TyEntry, ""} [symbol(TysMap), terminator-symbol(.TysMap)]
+syntax TysMap ::= List {TyEntry, ""} [symbol(tysMap), terminator-symbol(.tysMap)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
