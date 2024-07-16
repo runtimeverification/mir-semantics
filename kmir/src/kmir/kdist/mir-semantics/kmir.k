@@ -37,6 +37,7 @@ module KMIR-MEMORY-API
                  | #setPlace( Place, Value )   [function]
                  | #setLocal( Local, Value )   [function]
 
+  // TODO: make this a non-contextual function
   syntax Value ::= #loadValue( Address )       [function]
                  | #loadLocal( Local )         [function]
                  | #loadPtr( Address, Value )  [function]
@@ -62,9 +63,11 @@ module KMIR-MEMORY-IMPL [private]
 
   // Memory Implementation Structures
 
-  syntax AddressBase ::= AddrBase( Bool,                 // local or global
-                                   Int )                 // address index
+  // Address to top-level objects
+  syntax AddressBase ::= AddrBase( Int )                 // global index
+                       | AddrBase( Int, Int )            // stack frame index, local var index
 
+  // Address to top-level or nested objects
   syntax Address ::= LocalAddr( Int,                     // stack frame height
                                 Place )                  // stack local address
                    | GlobalAddr( Int,                    // global address
@@ -107,6 +110,8 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax KItem ::= #write( MemoryWrite )                                                    // perform memory write
 
+  syntax StackFrameRecord ::= #setStkVar( StackFrameRecord, Int, Value )         [function] // perform stack variable update
+
   syntax Value ::= #loadField( Int, List )                                       [function]
                  | #loadIndex( Value, List )                                     [function]
                  | #loadIndex( Int, List )                                       [function]
@@ -122,17 +127,19 @@ module KMIR-MEMORY-IMPL [private]
 
   // Set Impl
 
+  rule #setStkVar( Frame( Addr, Target, Dest, Unwind, LocalVars ), LIdx, Val ) => Frame( Addr, Target, Dest, Unwind, LocalVars [ LIdx <- Val ] )
+
   rule #setLocal( LIdx, Val ) => #setPlace( place(LIdx, .ProjectionElems), Val )
 
   rule [[ #setPlace( place(LIdx, Prjs), Val ) => #setValue( LocalAddr(size(Stack) -Int 1, place(LIdx, Prjs)), Val ) ]]
        <stack> Stack </stack>
     requires size(Stack) >Int 0
 
-  rule <k> #setValue( Addr, Val )         => #write( #set( #base(Addr), #getProj(Addr), #loadValue( Addr ), Val ) ) ... </k>
+  rule <k> #setValue( Addr, Val ) => #write( #set( #base(Addr), #getProj(Addr), #loadValue( Addr ), Val ) ) ... </k>
 
-  rule <k> #write( MemWrite( AddrBase(true,  Idx), Val ) ) => .K ... </k>
-       <stack> Locals => Locals [ Idx <- Val ] </stack>
-  rule <k> #write( MemWrite( AddrBase(false, Idx), Val ) ) => .K ... </k>
+  rule <k> #write( MemWrite( AddrBase(Idx, LIdx), Val ) ) => .K ... </k>
+       <stack> Stack => Stack [ Idx <- #setStkVar( { Stack }:>StackFrameRecord, LIdx, Val ) ] </stack>
+  rule <k> #write( MemWrite( AddrBase(Idx), Val ) ) => .K ... </k>
        <globals> Globals => Globals [ Idx <- Val ] </globals>
 
   // Load Impl
@@ -157,8 +164,8 @@ module KMIR-MEMORY-IMPL [private]
 
   // Helper Functions
 
-  rule #base(LocalAddr(Idx,  _)) => AddrBase(true,  Idx)
-  rule #base(GlobalAddr(Idx, _)) => AddrBase(false, Idx)
+  rule #base(LocalAddr(Idx:Int,  place(local(LIdx:Int), _:ProjectionElems))) => AddrBase(Idx, LIdx)
+  rule #base(GlobalAddr(Idx:Int,                        _:ProjectionElems) ) => AddrBase(Idx)
 
   rule #getProj(LocalAddr(_, place(_, Prjs))) => Prjs
   rule #getProj(GlobalAddr(_, Prjs))          => Prjs
