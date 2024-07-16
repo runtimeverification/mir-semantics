@@ -230,13 +230,29 @@ def terminator_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def statement_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
+    if isinstance(js, str):
+        _unimplemented()
+    else:
+        match js:
+            case {'Assign': dict()}:
+                _unimplemented()
+            case {'StorageLive': int(local)}:
+                return KApply('statementKindStorageLive', (local_from_dict(local)))
+            case {'StorageDead': int(local)}:
+                return KApply('statementKindStorageLive', (local_from_dict(local)))
+            case _:
+                _unimplemented()
+
+
 def statement_from_dict(js: Mapping[str, object]) -> KApply:
-    _unimplemented()
-
-
-# storagelive
-# storagedead
-# assign
+    match js:
+        case {'kind': str() | dict() as kind, 'span': int(span)}:
+            return KApply(
+                'statement(_,_)_BODY_Serminator_StatementKind_Span',
+                (statement_kind_from_dict(kind), span_from_dict(span)),
+            )
+    _raise_conversion_error('')
 
 
 def statements_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
