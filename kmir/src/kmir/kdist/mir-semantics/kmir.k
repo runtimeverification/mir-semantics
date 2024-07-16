@@ -97,11 +97,14 @@ module KMIR-MEMORY-IMPL [private]
   syntax AddressBase ::= #base( Address )                                        [function] // get address base
 
   syntax ProjectionElems ::= #getProj( Address )                                 [function] // get projections from Address
+                           | #revPrjs( ProjectionElems, ProjectionElems )        [function] // reverse a list of projections
+                           | #catPrjs( ProjectionElems, ProjectionElems )        [function] // concatenate two lists of projections
 
   syntax Value ::= #prj( ProjectionElem, Value )                                 [function] // project point out of Value
                  | #prjs( ProjectionElems, Value )                               [function] // project point out of Value
 
-  syntax MemoryWrite ::= #set( AddressBase, ProjectionElems, Value, Value )      [function] // update Value1 at projected point with Value2 and store at Int address
+  syntax MemoryWrite ::= #set( AddressBase, ProjectionElems, Value, Value )      [function] // update Value1 projected via ProjectionElems with Value2 and store at Int address
+                       | #setPtr( Address, ProjectionElems, Value  )             [function] // update Value at address, further projected out via ProjectionElems
                        | #inj( AddressBase, ProjectionElem, Value, MemoryWrite ) [function] // perform Write, accumulating any missing context
                        | #inj(              ProjectionElem, Value, MemoryWrite ) [function] // helper function for #inj
 
@@ -124,6 +127,9 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
                | #readScalar( Value )                                            [function]
+
+  syntax Address ::= #readAddr( Value )                                          [function]
+                   | #delProj( Address )                                         [function]
 
   // Set Impl
 
@@ -162,7 +168,7 @@ module KMIR-MEMORY-IMPL [private]
   rule #loadVar( StkFrm, LIdx ) => { locals(StkFrm) [ LIdx ] }:>Value
     requires 0 <=Int LIdx andBool LIdx <Int size(locals(StkFrm))
 
-  // Helper Functions
+  // Address Manipulation
 
   rule #base(LocalAddr(Idx:Int,  place(local(LIdx:Int), _:ProjectionElems))) => AddrBase(Idx, LIdx)
   rule #base(GlobalAddr(Idx:Int,                        _:ProjectionElems) ) => AddrBase(Idx)
@@ -170,15 +176,27 @@ module KMIR-MEMORY-IMPL [private]
   rule #getProj(LocalAddr(_, place(_, Prjs))) => Prjs
   rule #getProj(GlobalAddr(_, Prjs))          => Prjs
 
+  rule #delProj(LocalAddr(Idx:Int, place(LIdx:Local, _:ProjectionElems))) => LocalAddr(Idx, place(LIdx, .ProjectionElems))
+  rule #delProj(GlobalAddr(Idx:Int,                  _:ProjectionElems) ) => GlobalAddr(Idx, .ProjectionElems)
+
+  // Writing a value
+
   rule #set( Addr, Prj Prjs, Scrutinee, Val )
     => #if #NoOpProjection(Prj)
          #then #set( Addr, Prjs, Scrutinee, Val )
          #else #if Prj ==K projectionElemDeref
-           #then #set( Addr, Prjs, #prj( Prj, Scrutinee ), Val )
+           #then #setPtr( #readAddr( Scrutinee ), Prjs, Val )
            #else #inj( Addr, Prj, Scrutinee, #set( Addr, Prjs, #prj( Prj, Scrutinee ), Val ) )
        #fi #fi
 
   rule #set( Addr, .ProjectionElems, _Scrutinee, Val ) => MemWrite( Addr, Val )
+
+  rule #setPtr( Addr, Prjs, Val ) => #set( #base( Addr ), #catPrjs( #getProj( Addr ), Prjs ), #loadValue( #delProj( Addr ) ), Val )
+
+  // Projecting out a nested object
+
+  rule #prjs( Prj Prjs,         Val ) => #prjs( Prjs, #prj( Prj, Val ) )
+  rule #prjs( .ProjectionElems, Val ) => Val
 
   // NOTE: an infinite descent of only deref chains cannot exist because:
   //       any self-referntial type has to be mediated by a struct which wraps a pointer
@@ -188,8 +206,30 @@ module KMIR-MEMORY-IMPL [private]
   rule #prj( projectionElemConstantIndex(Off, _, _),       Range(Mem)      ) => #loadIndex(Off, Mem)
   rule #prj( projectionElemSubslice(From, To, Dir),        Range(Mem)      ) => #loadSlice(From, To, Dir, Mem)
 
-  rule #prjs( Prj Prjs,         Val ) => #prjs( Prjs, #prj( Prj, Val ) )
-  rule #prjs( .ProjectionElems, Val ) => Val
+  rule #loadField( Idx, Fields:List   ) => { Fields [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Fields)
+  rule #loadIndex( Idx, Mem:List      ) => { Mem    [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Mem)
+  rule #loadIndex( Val, Mem:List      ) => #loadIndex(#readScalar(Val), Mem)
+  rule #loadSlice( From, To, Dir, Mem )
+    => #if Dir
+         #then Range( range( Mem, From, size(Mem) -Int To ) )
+         #else Range( range( Mem, From, To                ) )
+       #fi
+    requires #validSlice(Mem, From, To, Dir)
+
+  rule #NoOpProjection( projectionElemDeref                  ) => false
+  rule #NoOpProjection( projectionElemField(_, _)            ) => false
+  rule #NoOpProjection( projectionElemIndex(_)               ) => false
+  rule #NoOpProjection( projectionElemConstantIndex(_, _, _) ) => false
+  rule #NoOpProjection( projectionElemSubslice(_, _, _)      ) => false
+  rule #NoOpProjection( projectionElemDowncast(_)            ) => true
+  rule #NoOpProjection( projectionElemOpaqueCast(_)          ) => true
+  rule #NoOpProjection( projectionElemSubtype(_)             ) => true
+
+  rule #catPrjs( Prjs1,            Prjs2 ) => #revPrjs( #revPrjs( Prjs1, .ProjectionElems ), Prjs2     )
+  rule #revPrjs( Prj Prjs1,        Prjs2 ) => #revPrjs( Prjs1,                               Prj Prjs2 )
+  rule #revPrjs( .ProjectionElems, Prjs2 ) => Prjs2
+
+  // Injecting an updated value into a nested object
 
   rule #inj( Orig, Prj, Scrutinee, MemWrite(Addr, Val) )
     => #if Orig =/=K Addr
@@ -201,16 +241,6 @@ module KMIR-MEMORY-IMPL [private]
   rule #inj( projectionElemIndex(Idx),                     Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, #readScalar(#loadLocal(Idx)), Val) ) )
   rule #inj( projectionElemConstantIndex(Off, _, _),       Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, Off, Val) ) )
   rule #inj( projectionElemSubslice(From, To, Dir),        Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #updateN(Mem, From, To, Dir,   Val) ) )
-
-  rule #loadField( Idx, Fields:List   ) => { Fields [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Fields)
-  rule #loadIndex( Idx, Mem:List      ) => { Mem    [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Mem)
-  rule #loadIndex( Val, Mem:List      ) => #loadIndex(#readScalar(Val), Mem)
-  rule #loadSlice( From, To, Dir, Mem )
-    => #if Dir
-         #then Range( range( Mem, From, size(Mem) -Int To ) )
-         #else Range( range( Mem, From, To                ) )
-       #fi
-    requires #validSlice(Mem, From, To, Dir)
 
   rule #update1( Mem, Idx, Val )
     => #if Idx >=Int size(Mem)
@@ -224,6 +254,8 @@ module KMIR-MEMORY-IMPL [private]
     requires #validSlice(Mem, From, To, Dir)
      andBool size(New) ==Int #sizeSlice(Mem, From, To, Dir)
 
+  // Access sanity checks
+
   rule #validSlice(Mem, From, To, Dir) => 0  <=Int From
                                   andBool 0  <=Int To
                                   andBool To <=Int size(Mem)
@@ -234,16 +266,10 @@ module KMIR-MEMORY-IMPL [private]
                                            #else To -Int From
                                          #fi
 
-  rule #NoOpProjection( projectionElemDeref ) => false
-  rule #NoOpProjection( projectionElemField(_, _) ) => false
-  rule #NoOpProjection( projectionElemIndex(_) ) => false
-  rule #NoOpProjection( projectionElemConstantIndex(_, _, _) ) => false
-  rule #NoOpProjection( projectionElemSubslice(_, _, _) ) => false
-  rule #NoOpProjection( projectionElemDowncast(_) ) => true
-  rule #NoOpProjection( projectionElemOpaqueCast(_) ) => true
-  rule #NoOpProjection( projectionElemSubtype(_) ) => true
+  // Value Interpretation
 
   rule #readScalar( Scalar( Val, _Width, _Signed ) ) => Val
+  rule #readAddr( Ptr( Addr, _ ) )                   => Addr
 endmodule
 
 module KMIR
