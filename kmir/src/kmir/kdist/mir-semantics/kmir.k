@@ -286,12 +286,46 @@ module KMIR
   imports BYTES
   imports K-EQUAL
 
+  // Argument Evaluation
+
+  syntax K ::= #evalArgs( Rvalue ) [function]
+
+  rule #getArgs(rvalueAddressOf(_MUT, PLACE))           => .K
+  rule #getArgs(rvalueAggregate(_KIND, ARGS))           => #evalArgs(#argsToList(ARGS, .List), .List)
+  rule #getArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #getArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
+  rule #getArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2)) => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #getArgs(rvalueCopyForDeref(_PLACE))             => .K
+  rule #getArgs(rvalueDiscriminant(_PLACE))             => .K
+  rule #getArgs(rvalueLen(_PLACE))                      => .K
+  rule #getArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
+  rule #getArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG), ListItem(CONST), .List)
+  rule #getArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
+  rule #getArgs(rvalueThreadLocalRef(_CRATE_ITEM))      => .K
+  rule #getArgs(rvalueNullaryOp(_OP, _TY))              => .K
+  rule #getArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
+  rule #getArgs(rvalueUse(_OP))                         => .K
+
+  syntax List ::= #argsToList( Operands, List )
+                | #reverse( List, List )
+  rule #argsToList( ARG1 ARGS, REST ) => #argsToList( ARGS, ListItem( ARG1 ) REST )
+  rule #argsToList( .Operands, REST ) => #reverse(REST, .List)
+  rule #reverse( LI L1, L2 ) => #reverse( L1, LI L2 )
+  rule #reverse( .List, L2 ) => L2
+
+  syntax KItem ::= #evalArgs( List, List )
+
+  rule <k> #evalArgs( 
+
   // Expression Evaluation
 
   syntax KItem ::= #eval(Rvalue)
+                 | #value(Value)
 
-  rule <k> #eval(rvalueAddressOf(_MUT, _PLACE))            => .K </k>
-  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => .K </k>
+  rule <k> #eval(rvalueAddressOf(_MUT, PLACE))             => #value( Ptr(LocalAddr(size(Stack) -Int 1, PLACE)) ) ... </k>
+       <stack> Stack </stack>
+
+  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => #eval( </k>
   rule <k> #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
   rule <k> #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
   rule <k> #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
@@ -318,8 +352,10 @@ module KMIR
 
   syntax Value ::= "WIPValue"
 
-  rule <k> #exec(statementKindAssign(PLACE, _RVAL))           => #setPlace(PLACE, WIPValue) ... </k>
-  rule <k> #exec(statementKindIntrinsic(_INT))                => .K ... </k>
+  rule <k> #exec(statementKindAssign(PLACE, RVAL))            => #getArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
+  rule <k> #value(VAL) ~> #assign(PLACE)                      => #setValue(PLACE, VAL) ... </k>
+
+  rule <k> #exec(statementKindIntrinsic(_INT))                => .K ... </k> 
   rule <k> #exec(statementKindSetDiscriminant(PLACE, _VIDX))  => #setPlace(PLACE, WIPValue) ... </k>
 
   rule <k> #exec(deinit(_Place))                                                       => .K ... </k>
