@@ -240,10 +240,10 @@ module KMIR-MEMORY-IMPL [private]
          #else #inj( Prj, Scrutinee, MemWrite(Orig, Val) )
        #fi
 
-  rule #inj( projectionElemField(fieldIdx(I), _),          Struct( Flds ),  MemWrite(Addr, Val) ) => MemWrite(Addr, Struct( #update1(Flds, I, Val) ) )
-  rule #inj( projectionElemIndex(Idx),                     Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, #readScalar(#loadLocal(Idx)), Val) ) )
-  rule #inj( projectionElemConstantIndex(Off, _, _),       Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #update1(Mem, Off, Val) ) )
-  rule #inj( projectionElemSubslice(From, To, Dir),        Range(Mem),      MemWrite(Addr, Val) ) => MemWrite(Addr, Range ( #updateN(Mem, From, To, Dir,   Val) ) )
+  rule #inj( projectionElemField( fieldIdx(I), _ ),    Struct( Flds ), MemWrite( Addr, Val ) ) => MemWrite( Addr, Struct( #update1( Flds, I, Val ) ) )
+  rule #inj( projectionElemIndex( Idx ),               Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, #readScalar( #loadLocal( Idx ) ), Val ) ) )
+  rule #inj( projectionElemConstantIndex( Off, _, _ ), Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, Off, Val ) ) )
+  rule #inj( projectionElemSubslice( From, To, Dir ),  Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #updateN( Mem, From, To, Dir, Val) ) )
 
   rule #update1( Mem, Idx, Val )
     => #if Idx >=Int size(Mem)
