@@ -63,11 +63,14 @@ module KMIR-MEMORY-IMPL [private]
 
   // Memory Implementation Structures
 
-  // Address to top-level objects
+  // 1. Address to top-level objects
+  // 2. Address to top-level or nested objects
+  // 3. Value Structure
+  // 4. Stack Frame Structure
+
   syntax AddressBase ::= AddrBase( Int )                 // global index
                        | AddrBase( Int, Int )            // stack frame index, local var index
 
-  // Address to top-level or nested objects
   syntax Address ::= LocalAddr( Int,                     // stack frame height
                                 Place )                  // stack local address
                    | GlobalAddr( Int,                    // global address
