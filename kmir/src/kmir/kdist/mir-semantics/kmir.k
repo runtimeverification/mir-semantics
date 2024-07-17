@@ -39,6 +39,7 @@ module KMIR-MEMORY-API
 
   // TODO: make this a non-contextual function
   syntax Value ::= #loadValue( Address )       [function]
+                 | #loadPlace( Place )         [function]
                  | #loadLocal( Local )         [function]
                  | #loadPtr( Address, Value )  [function]
 endmodule
@@ -160,7 +161,10 @@ module KMIR-MEMORY-IMPL [private]
        <globals> Global </globals>
     requires 0 <=Int Idx andBool Idx <Int size(Global)
 
-  rule [[ #loadLocal( `local(_)_BODY_Local_Int`(LIdx) ) => #loadValue( LocalAddr(size(Stack) -Int 1, `place(_,_)_BODY_Place_Local_ProjectionElems`(local(LIdx), .ProjectionElems)) ) ]]
+  rule [[ #loadPlace( PLACE ) => #loadValue( LocalAddr(size(Stack) -Int 1, PLACE) ) ]]
+       <stack> Stack </stack>
+
+  rule [[ #loadLocal( local(LIdx:Int) ) => #loadValue( LocalAddr(size(Stack) -Int 1, place(local(LIdx:Int), .ProjectionElems)) ) ]]
        <stack> Stack </stack>
 
   rule #loadPtr( Addr, _ ) => #loadValue( Addr )
@@ -290,21 +294,21 @@ module KMIR
 
   syntax K ::= #evalArgs( Rvalue ) [function]
 
-  rule #getArgs(rvalueAddressOf(_MUT, PLACE))           => .K
-  rule #getArgs(rvalueAggregate(_KIND, ARGS))           => #evalArgs(#argsToList(ARGS, .List), .List)
-  rule #getArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #getArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
-  rule #getArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2)) => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #getArgs(rvalueCopyForDeref(_PLACE))             => .K
-  rule #getArgs(rvalueDiscriminant(_PLACE))             => .K
-  rule #getArgs(rvalueLen(_PLACE))                      => .K
-  rule #getArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
-  rule #getArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG), ListItem(CONST), .List)
-  rule #getArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
-  rule #getArgs(rvalueThreadLocalRef(_CRATE_ITEM))      => .K
-  rule #getArgs(rvalueNullaryOp(_OP, _TY))              => .K
-  rule #getArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
-  rule #getArgs(rvalueUse(_OP))                         => .K
+  rule #evalArgs(rvalueAddressOf(_MUT, PLACE))           => .K
+  rule #evalArgs(rvalueAggregate(_KIND, ARGS))           => #evalArgs(#argsToList(ARGS, .List), .List)
+  rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2)) => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCopyForDeref(_PLACE))             => .K
+  rule #evalArgs(rvalueDiscriminant(_PLACE))             => .K
+  rule #evalArgs(rvalueLen(_PLACE))                      => .K
+  rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
+  rule #evalArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG), ListItem(CONST), .List)
+  rule #evalArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))      =>
+  rule #evalArgs(rvalueNullaryOp(_OP, _TY))              => .K
+  rule #evalArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueUse(_OP))                         => .K
 
   syntax List ::= #argsToList( Operands, List )
                 | #reverse( List, List )
@@ -315,7 +319,26 @@ module KMIR
 
   syntax KItem ::= #evalArgs( List, List )
 
-  rule <k> #evalArgs( 
+  rule <k> #evalArgs( ListItem( operandCopy(PLACE) ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #loadPlace( PLACE ) ) EVALED )
+           ...
+       </k>
+
+  rule <k> #evalArgs( ListItem( operandMove(PLACE) ) ARGS, EVALED )
+        => #setValue( PLACE, WIPValue )
+        ~> #evalArgs( ARGS, ListItem( #loadPlace( PLACE ) ) EVALED )
+           ...
+       </k>
+
+  rule <k> #evalArgs( ListItem( operandConst(CONST) ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
+           ...
+       </k>
+
+  rule <k> #evalArgs( ListItem( CONST:Constant ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
+           ...
+       </k>
 
   // Expression Evaluation
 
