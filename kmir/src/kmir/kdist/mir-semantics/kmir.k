@@ -54,6 +54,10 @@ module KMIR-MEMORY-API
                  | #setDisc( Place, Int )
                  | #setPlace( Place, Value )   [function]
                  | #setLocal( Local, Value )   [function]
+                 | #deinitPlace( Place )
+
+  syntax KItem ::= #assume( List )
+                 | #copy( List )
 
   // TODO: make this a non-contextual function
   syntax Value ::= #loadValue( Address )       [function]
@@ -155,6 +159,8 @@ module KMIR-MEMORY-IMPL [private]
                    | #delProj( Address )                                         [function]
 
   // Eval Impl
+
+  rule <k> #deinitPlace( _PLACE ) => .K ... </k> // TODO: flesh out this implementation
 
   rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
   rule #evalOp( binOpAddUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 +Int N2, WIDTH, SIGN ))
@@ -369,23 +375,26 @@ module KMIR
   syntax KItem ::= #operands( List )
                  | #getArg( List ) [function]
 
-  syntax K ::= #evalArgs( Rvalue ) [function]
+  syntax K ::= #evalArgs( Rvalue )                [function]
+             | #evalArgs( NonDivergingIntrinsic ) [function]
 
-  rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))          => .K
-  rule #evalArgs(rvalueAggregate(_KIND, ARGS))           => #evalArgs(#argsToList(ARGS, .List), .List)
-  rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #evalArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2)) => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #evalArgs(rvalueCopyForDeref(PLACE))              => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueDiscriminant(PLACE))              => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueLen(PLACE))                       => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
-  rule #evalArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
-  rule #evalArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))      => .K
-  rule #evalArgs(rvalueNullaryOp(_OP, _TY))              => .K
-  rule #evalArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueUse(ARG))                         => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))                 => .K
+  rule #evalArgs(rvalueAggregate(_KIND, ARGS))                  => #evalArgs(#argsToList(ARGS, .List), .List)
+  rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))               => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCast(_KIND, ARG, _TY))                   => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCopyForDeref(PLACE))                     => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueDiscriminant(PLACE))                     => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueLen(PLACE))                              => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))            => .K
+  rule #evalArgs(rvalueRepeat(ARG, CONST))                      => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
+  rule #evalArgs(rvalueShallowInitBox(ARG, _TY))                => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))             => .K
+  rule #evalArgs(rvalueNullaryOp(_OP, _TY))                     => .K
+  rule #evalArgs(rvalueUnaryOp(_OP, ARG))                       => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueUse(ARG))                                => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(nonDivergingIntrinsicAssume(ARG))              => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(nonDivergingIntrinsicCopyNonOverlapping(ARGS)) => #evalArgs(ListItem(src(ARGS)) ListItem(dst(ARGS)) ListItem(count(ARGS)), .List)
 
   syntax List ::= #argsToList( Operands, List ) [function]
                 | #reverse( List, List )        [function]
@@ -402,7 +411,7 @@ module KMIR
        </k>
 
   rule <k> #evalArgs( ListItem( operandMove(PLACE) ) ARGS, EVALED )
-        => #setPlace( PLACE, WIPValue )
+        => #deinitPlace( PLACE )
         ~> #evalArgs( ARGS, ListItem( #loadPlace( PLACE ) ) EVALED )
            ...
        </k>
@@ -456,35 +465,39 @@ module KMIR
   rule #makeAggregate(aggregateKindCoroutine(_CoroutineDef, _GenericArgs, _Movability),                                    Args ) => #makeStruct( 0, Args )
   rule #makeAggregate(aggregateKindRawPtr(_Ty, _Mutability),                                                               Args ) => #buildPtr( Args )
 
+  // Intrinsic
+
+  syntax KItem ::= #eval(NonDivergingIntrinsic)
+
+  rule <k> #operands(ARGS) ~> #eval(nonDivergingIntrinsicAssume(_))             => #assume( ARGS ) ... </k>
+  rule <k> #operands(ARGS) ~> #eval(nonDivergingIntrinsicCopyNonOverlapping(_)) => #copy( ARGS )   ... </k>
+
   // Statement/Terminator Evaluation
 
   syntax KItem ::= #exec(StatementKind)
                  | #exec(TerminatorKind)
-                 | #assign(Place)
 
   rule <k> basicBlock( statement(STMT, _SPAN) STMTS, TERM )     => #exec( STMT ) ~> basicBlock( STMTS, TERM ) ... </k>
   rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #exec( TERM )                              ... </k>
 
   // Statements
 
-  syntax Value ::= "WIPValue"
+  syntax KItem ::= #assign(Place)
 
-  rule <k> #exec(statementKindAssign(PLACE, RVAL))            => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
-  rule <k> #value(VAL) ~> #assign(PLACE)                      => #setPlace(PLACE, VAL) ... </k>
-
-  rule <k> #exec(statementKindIntrinsic(_INT))                         => .K ... </k>
-  rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX))) => #setDisc(PLACE, IDX) ... </k>
-
-  rule <k> #exec(deinit(_Place))                                                       => .K ... </k>
-  rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))                        => .K ... </k>
-  rule <k> #exec(statementKindStorageLive(_Local))                                     => .K ... </k>
-  rule <k> #exec(statementKindStorageDead(_Local))                                     => .K ... </k>
-  rule <k> #exec(statementKindRetag(_RetagKind, _Place))                               => .K ... </k>
-  rule <k> #exec(statementKindPlaceMention(_Place))                                    => .K ... </k>
-  rule <k> #exec(statementKindAscribeUserType(_Place, _UserTypeProjection, _Variance)) => .K ... </k>
-  rule <k> #exec(statementKindCoverage(_Coverage))                                     => .K ... </k>
-  rule <k> #exec(statementKindConstEvalCounter)                                        => .K ... </k>
-  rule <k> #exec(statementKindNop)                                                     => .K ... </k>
+  rule <k> #exec(statementKindAssign(PLACE, RVAL))                                     => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
+  rule <k> #value(VAL) ~> #assign(PLACE)                                               => #setPlace(PLACE, VAL)                            ... </k>
+  rule <k> #exec(statementKindIntrinsic(INT))                                          => #evalArgs(INT) ~> #eval(INT)                     ... </k>
+  rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX)))                 => #setDisc(PLACE, IDX)                             ... </k>
+  rule <k> #exec(deinit(PLACE))                                                        => #deinitPlace(PLACE)                              ... </k>
+  rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))                        => .K                                               ... </k>
+  rule <k> #exec(statementKindStorageLive(_Local))                                     => .K                                               ... </k>
+  rule <k> #exec(statementKindStorageDead(_Local))                                     => .K                                               ... </k>
+  rule <k> #exec(statementKindRetag(_RetagKind, _Place))                               => .K                                               ... </k>
+  rule <k> #exec(statementKindPlaceMention(_Place))                                    => .K                                               ... </k>
+  rule <k> #exec(statementKindAscribeUserType(_Place, _UserTypeProjection, _Variance)) => .K                                               ... </k>
+  rule <k> #exec(statementKindCoverage(_Coverage))                                     => .K                                               ... </k>
+  rule <k> #exec(statementKindConstEvalCounter)                                        => .K                                               ... </k>
+  rule <k> #exec(statementKindNop)                                                     => .K                                               ... </k>
 
   // Terminators
 
