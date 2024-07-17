@@ -71,7 +71,7 @@ module KMIR
 
   syntax Value ::= #evaluate( Operand )
 
-  rule <k> #evaluate( operandConstant(constant(_SPAN, _UTY, const( CK, ty( _TID, TY ), _CID ))) )
+  rule <k> #evaluate( operandConstant(constOperand(_SPAN, _UTY, mirConst( CK, ty( _TID, TY ), _CID ))) )
         => #evalConst( CK, TY )
            ...
        </k>
