@@ -37,9 +37,19 @@ module KMIR-MEMORY-API
   syntax KItem ::= #evalConst( Constant )
 
   // Value Production
-  syntax KItem ::= #value(Value)
+  syntax KItem ::= #value( Value )
                  | #makeAddress( Place )
                  | #makeAggregate( AggregateKind, List )
+                 | #evalOp( BinOp, List )
+                 | #evalOp( UnOp, List )
+                 | #evalOp( NullOp, List )
+                 | #evalCast( CastKind, List )
+                 | #evalCopy( Place )
+                 | #evalDisc( Place )
+                 | #evalLen( Place )
+                 | #makeArray( List )
+                 | #makeBox( List )
+                 | #makeTLRef( )
 
   syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
                  | #setPlace( Place, Value )   [function]
@@ -304,6 +314,7 @@ module KMIR
   // Argument Evaluation
 
   syntax KItem ::= #operands( List )
+                 | #getArg( List ) [function]
 
   syntax K ::= #evalArgs( Rvalue ) [function]
 
@@ -321,7 +332,7 @@ module KMIR
   rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))      => .K
   rule #evalArgs(rvalueNullaryOp(_OP, _TY))              => .K
   rule #evalArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueUse(_OP))                         => .K
+  rule #evalArgs(rvalueUse(ARG))                         => #evalArgs(ListItem(ARG), .List)
 
   syntax List ::= #argsToList( Operands, List ) [function]
                 | #reverse( List, List )        [function]
@@ -355,25 +366,27 @@ module KMIR
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
+  rule #getArg( ListItem( Val:Value ) ) => #value( Val )
+
   // Expression Evaluation
 
   syntax KItem ::= #eval(Rvalue)
 
   rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))             => #makeAddress(PLACE)        ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _ARGS))             => #makeAggregate(KIND, ARGS) ... </k>
-  rule <k>                    #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
-  rule <k>                    #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
-  rule <k>                    #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
-  rule <k>                    #eval(rvalueCopyForDeref(_PLACE))               => .K </k>
-  rule <k>                    #eval(rvalueDiscriminant(_PLACE))               => .K </k>
-  rule <k>                    #eval(rvalueLen(_PLACE))                        => .K </k>
-  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, _PLACE))       => .K </k>
-  rule <k>                    #eval(rvalueRepeat(_ARG, _CONST))               => .K </k>
-  rule <k>                    #eval(rvalueShallowInitBox(_ARG, _TY))          => .K </k>
-  rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => .K </k>
-  rule <k>                    #eval(rvalueNullaryOp(_OP, _TY))                => .K </k>
-  rule <k>                    #eval(rvalueUnaryOp(_OP, _ARG))                 => .K </k>
-  rule <k>                    #eval(rvalueUse(_OP))                           => .K </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _))                 => #makeAggregate(KIND, ARGS) ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueBinaryOp(OP, _, _))                 => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCheckedBinaryOp(OP, _, _))          => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCast(KIND, _, _TY))                 => #evalCast(KIND, ARGS)      ... </k>
+  rule <k>                    #eval(rvalueCopyForDeref(PLACE))                => #evalCopy(PLACE)           ... </k>
+  rule <k>                    #eval(rvalueDiscriminant(PLACE))                => #evalDisc(PLACE)           ... </k>
+  rule <k>                    #eval(rvalueLen(PLACE))                         => #evalLen(PLACE)            ... </k>
+  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE))        => #makeAddress(PLACE)        ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                       => #makeArray(ARGS)           ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))               => #makeBox(ARGS)             ... </k>
+  rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => #makeTLRef()               ... </k>
+  rule <k>                    #eval(rvalueNullaryOp(OP, _TY))                 => #evalOp(OP, .List)         ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))                     => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #getArg(ARGS)              ... </k>
 
   // Statement/Terminator Evaluation
 
