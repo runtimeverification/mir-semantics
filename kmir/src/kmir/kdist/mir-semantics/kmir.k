@@ -40,7 +40,7 @@ module KMIR-MEMORY-API
   syntax KItem ::= #value( Value )
                  | #evalOp( BinOp, List )
                  | #evalOp( UnOp, List )
-                 | #evalOp( NullOp, List )
+                 | #evalNullOp( NullOp, Ty )
                  | #evalCast( CastKind, List )
                  | #evalDisc( List )
                  | #evalLen( List )
@@ -182,6 +182,11 @@ module KMIR-MEMORY-IMPL [private]
 
   rule #evalOp( unOpNot,           ListItem(Scalar(N, WIDTH, SIGN))) => #value( Scalar( #if WIDTH ==Int 1 andBool SIGN ==Bool false #then #boolToInt(notBool (N =/=Int 0)) #else (~Int N) #fi, WIDTH, SIGN) )
   rule #evalOp( unOpNeg,           ListItem(Scalar(N, WIDTH, true))) => #value( Scalar( N *Int -1, WIDTH, true ) )
+
+  rule #evalNullOp( nullOpSizeOf,            _TY ) => #value( Scalar( 0, 32, false ) )
+  rule #evalNullOp( nullOpAlignOf,           _TY ) => #value( Scalar( 0, 32, false ) )
+  rule #evalNullOp( nullOpOffsetOf(_VFIdxs), _TY ) => #value( Scalar( 0, 32, false ) )
+  rule #evalNullOp( nullOpUbChecks,          _TY ) => #value( Scalar( 0, 1,  false ) )
 
   rule #boolToInt( true  ) => 1
   rule #boolToInt( false ) => 0
@@ -437,7 +442,7 @@ module KMIR
   rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                       => #makeArray(ARGS)           ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))               => #buildPtr(ARGS)            ... </k>
   rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => #makeTLRef()               ... </k>
-  rule <k>                    #eval(rvalueNullaryOp(OP, _TY))                 => #evalOp(OP, .List)         ... </k>
+  rule <k>                    #eval(rvalueNullaryOp(OP, TY))                  => #evalNullOp(OP, TY)        ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))                     => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #getArg(ARGS)              ... </k>
 
