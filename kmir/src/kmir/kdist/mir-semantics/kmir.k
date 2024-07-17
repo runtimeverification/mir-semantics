@@ -149,11 +149,42 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
                | #readScalar( Value )                                            [function]
+               | #boolToInt( Bool )                                              [function]
 
   syntax Address ::= #readAddr( Value )                                          [function]
                    | #delProj( Address )                                         [function]
 
   // Eval Impl
+
+  rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
+  rule #evalOp( binOpAddUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 +Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 -Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
+  rule #evalOp( binOpSubUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 -Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 *Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
+  rule #evalOp( binOpMulUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 *Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpDiv,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 /Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpRem,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 %Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpBitXor,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 xorInt N2, WIDTH, SIGN ))
+  rule #evalOp( binOpBitAnd,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 &Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpBitOr,        ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 |Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 <<Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
+  rule #evalOp( binOpShlUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 <<Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 >>Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
+  rule #evalOp( binOpShrUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 >>Int N2, WIDTH, SIGN ))
+  rule #evalOp( binOpEq,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpLt,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpLe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpNe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpGe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpGt,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpCmp,          ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  rule #evalOp( binOpOffset,       ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+
+  rule #evalOp( unOpNot,           ListItem(Scalar(N, WIDTH, SIGN))) => #value( Scalar( #if WIDTH ==Int 1 andBool SIGN ==Bool false #then #boolToInt(notBool (N =/=Int 0)) #else (~Int N) #fi, WIDTH, SIGN) )
+  rule #evalOp( unOpNeg,           ListItem(Scalar(N, WIDTH, true))) => #value( Scalar( N *Int -1, WIDTH, true ) )
+
+  rule #boolToInt( true  ) => 1
+  rule #boolToInt( false ) => 0
 
   rule <k> #evalCast( _KIND, ListItem( _:Value ) )       => #value( Any )                            ... </k>
   rule <k> #evalLen( ListItem( Range( Mem ) ) )          => #value( Scalar( size(Mem), 64, false ) ) ... </k>
