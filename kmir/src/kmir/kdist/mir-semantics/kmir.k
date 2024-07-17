@@ -39,6 +39,7 @@ module KMIR-MEMORY-API
   // Value Production
   syntax KItem ::= #value(Value)
                  | #makeAddress( Place )
+                 | #makeAggregate( AggregateKind, List )
 
   syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
                  | #setPlace( Place, Value )   [function]
@@ -302,6 +303,8 @@ module KMIR
 
   // Argument Evaluation
 
+  syntax KItem ::= #operands( List )
+
   syntax K ::= #evalArgs( Rvalue ) [function]
 
   rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))          => .K
@@ -350,25 +353,27 @@ module KMIR
            ...
        </k>
 
+  rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
+
   // Expression Evaluation
 
   syntax KItem ::= #eval(Rvalue)
 
-  rule <k> #eval(rvalueAddressOf(_MUT, PLACE))             => #makeAddress(PLACE) ... </k>
-  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => .K </k>
-  rule <k> #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
-  rule <k> #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
-  rule <k> #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
-  rule <k> #eval(rvalueCopyForDeref(_PLACE))               => .K </k>
-  rule <k> #eval(rvalueDiscriminant(_PLACE))               => .K </k>
-  rule <k> #eval(rvalueLen(_PLACE))                        => .K </k>
-  rule <k> #eval(rvalueRef(_REG, _BRW_KIND, _PLACE))       => .K </k>
-  rule <k> #eval(rvalueRepeat(_ARG, _CONST))               => .K </k>
-  rule <k> #eval(rvalueShallowInitBox(_ARG, _TY))          => .K </k>
-  rule <k> #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => .K </k>
-  rule <k> #eval(rvalueNullaryOp(_OP, _TY))                => .K </k>
-  rule <k> #eval(rvalueUnaryOp(_OP, _ARG))                 => .K </k>
-  rule <k> #eval(rvalueUse(_OP))                           => .K </k>
+  rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))             => #makeAddress(PLACE)        ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _ARGS))             => #makeAggregate(KIND, ARGS) ... </k>
+  rule <k>                    #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
+  rule <k>                    #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
+  rule <k>                    #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
+  rule <k>                    #eval(rvalueCopyForDeref(_PLACE))               => .K </k>
+  rule <k>                    #eval(rvalueDiscriminant(_PLACE))               => .K </k>
+  rule <k>                    #eval(rvalueLen(_PLACE))                        => .K </k>
+  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, _PLACE))       => .K </k>
+  rule <k>                    #eval(rvalueRepeat(_ARG, _CONST))               => .K </k>
+  rule <k>                    #eval(rvalueShallowInitBox(_ARG, _TY))          => .K </k>
+  rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => .K </k>
+  rule <k>                    #eval(rvalueNullaryOp(_OP, _TY))                => .K </k>
+  rule <k>                    #eval(rvalueUnaryOp(_OP, _ARG))                 => .K </k>
+  rule <k>                    #eval(rvalueUse(_OP))                           => .K </k>
 
   // Statement/Terminator Evaluation
 
