@@ -38,20 +38,20 @@ module KMIR-MEMORY-API
 
   // Value Production
   syntax KItem ::= #value( Value )
-                 | #makeAddress( Place )
-                 | #makeAggregate( AggregateKind, List )
                  | #evalOp( BinOp, List )
                  | #evalOp( UnOp, List )
                  | #evalOp( NullOp, List )
                  | #evalCast( CastKind, List )
-                 | #evalCopy( Place )
-                 | #evalDisc( Place )
-                 | #evalLen( Place )
+                 | #evalDisc( List )
+                 | #evalLen( List )
+                 | #makePtr( Place )
+                 | #buildPtr( List )
+                 | #makeStruct( Int, List )
                  | #makeArray( List )
-                 | #makeBox( List )
                  | #makeTLRef( )
 
   syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
+                 | #setDisc( Place, Int )
                  | #setPlace( Place, Value )   [function]
                  | #setLocal( Local, Value )   [function]
 
@@ -102,7 +102,7 @@ module KMIR-MEMORY-IMPL [private]
                  | Float( Float, Int )                   // value, bit-width               for f16-f128
                  | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
                  | Range( List )                         // homogenous values              for array/slice
-                 | Struct( List )                        // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
+                 | Struct( Int, List )                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
 
   syntax StackFrameRecord ::= Frame( Address,            // address of caller function
@@ -153,10 +153,27 @@ module KMIR-MEMORY-IMPL [private]
   syntax Address ::= #readAddr( Value )                                          [function]
                    | #delProj( Address )                                         [function]
 
-  // Set Impl
+  // Eval Impl
 
-  rule <k> #makeAddress(PLACE) => #value( Ptr( LocalAddr(size(Stack) -Int 1, PLACE), NoValue ) ) </k>
+  rule <k> #evalCast( _KIND, ListItem( _:Value ) )       => #value( Any )                            ... </k>
+  rule <k> #evalLen( ListItem( Range( Mem ) ) )          => #value( Scalar( size(Mem), 64, false ) ) ... </k>
+  rule <k> #evalDisc( ListItem( Struct( Idx, _Args ) ) ) => #value( Scalar( Idx,       8,  false ) ) ... </k>
+
+  // Make Impl
+
+  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, Meta:Value ) )                        ) => #value( Ptr( Addr, Meta ) ) ... </k>
+  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, NoValue    ) ) ListItem( Meta:Value ) ) => #value( Ptr( Addr, Meta ) ) ... </k>
+
+  rule <k> #makePtr(PLACE) => #value( Ptr( LocalAddr(size(Stack) -Int 1, PLACE), NoValue ) ) ... </k>
        <stack> Stack </stack>
+
+  rule <k> #makeStruct(VIdx, Args) => #value( Struct( VIdx, Args ) ) ... </k>
+
+  rule <k> #makeArray( Args ) => #value( Range( Args ) ) ... </k>
+
+  rule <k> #makeTLRef() => #value( Any ) ... </k>
+
+  // Set Impl
 
   rule #setStkVar( Frame( Addr, Target, Dest, Unwind, LocalVars ), LIdx, Val ) => Frame( Addr, Target, Dest, Unwind, LocalVars [ LIdx <- Val ] )
 
@@ -228,11 +245,11 @@ module KMIR-MEMORY-IMPL [private]
 
   // NOTE: an infinite descent of only deref chains cannot exist because:
   //       any self-referntial type has to be mediated by a struct which wraps a pointer
-  rule #prj( projectionElemDeref,                          Ptr(Next, Meta) ) => #loadPtr(Next, Meta)
-  rule #prj( projectionElemField(fieldIdx(I), _),          Struct( Flds )  ) => #loadField(I, Flds)
-  rule #prj( projectionElemIndex(Idx),                     Range(Mem)      ) => #loadIndex(#loadLocal(Idx), Mem)
-  rule #prj( projectionElemConstantIndex(Off, _, _),       Range(Mem)      ) => #loadIndex(Off, Mem)
-  rule #prj( projectionElemSubslice(From, To, Dir),        Range(Mem)      ) => #loadSlice(From, To, Dir, Mem)
+  rule #prj( projectionElemDeref,                    Ptr( Next, Meta ) ) => #loadPtr(Next, Meta)
+  rule #prj( projectionElemField(fieldIdx(I), _),    Struct( _, Flds ) ) => #loadField(I, Flds)
+  rule #prj( projectionElemIndex(Idx),               Range( Mem )      ) => #loadIndex(#loadLocal(Idx), Mem)
+  rule #prj( projectionElemConstantIndex(Off, _, _), Range( Mem )      ) => #loadIndex(Off, Mem)
+  rule #prj( projectionElemSubslice(From, To, Dir),  Range( Mem )      ) => #loadSlice(From, To, Dir, Mem)
 
   rule #loadField( Idx, Fields:List   ) => { Fields [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Fields)
   rule #loadIndex( Idx, Mem:List      ) => { Mem    [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Mem)
@@ -265,10 +282,10 @@ module KMIR-MEMORY-IMPL [private]
          #else #inj( Prj, Scrutinee, MemWrite(Orig, Val) )
        #fi
 
-  rule #inj( projectionElemField( fieldIdx(I), _ ),    Struct( Flds ), MemWrite( Addr, Val ) ) => MemWrite( Addr, Struct( #update1( Flds, I, Val ) ) )
-  rule #inj( projectionElemIndex( Idx ),               Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, #readScalar( #loadLocal( Idx ) ), Val ) ) )
-  rule #inj( projectionElemConstantIndex( Off, _, _ ), Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, Off, Val ) ) )
-  rule #inj( projectionElemSubslice( From, To, Dir ),  Range( Mem ),   MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #updateN( Mem, From, To, Dir, Val) ) )
+  rule #inj( projectionElemField( fieldIdx(I), _ ),    Struct( VIdx, Flds ), MemWrite( Addr, Val ) ) => MemWrite( Addr, Struct( VIdx, #update1( Flds, I, Val ) ) )
+  rule #inj( projectionElemIndex( Idx ),               Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, #readScalar( #loadLocal( Idx ) ), Val ) ) )
+  rule #inj( projectionElemConstantIndex( Off, _, _ ), Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, Off, Val ) ) )
+  rule #inj( projectionElemSubslice( From, To, Dir ),  Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #updateN( Mem, From, To, Dir, Val) ) )
 
   rule #update1( Mem, Idx, Val )
     => #if Idx >=Int size(Mem)
@@ -323,9 +340,9 @@ module KMIR
   rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
   rule #evalArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
   rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2)) => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #evalArgs(rvalueCopyForDeref(_PLACE))             => .K
-  rule #evalArgs(rvalueDiscriminant(_PLACE))             => .K
-  rule #evalArgs(rvalueLen(_PLACE))                      => .K
+  rule #evalArgs(rvalueCopyForDeref(PLACE))              => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueDiscriminant(PLACE))              => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueLen(PLACE))                       => #evalArgs(ListItem(PLACE), .List)
   rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
   rule #evalArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
   rule #evalArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
@@ -364,6 +381,11 @@ module KMIR
            ...
        </k>
 
+  rule <k> #evalArgs( ListItem( PLACE:Place ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #loadPlace( PLACE ) ) EVALED )
+           ...
+       </k>
+
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
   rule #getArg( ListItem( Val:Value ) ) => #value( Val )
@@ -372,21 +394,31 @@ module KMIR
 
   syntax KItem ::= #eval(Rvalue)
 
-  rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))             => #makeAddress(PLACE)        ... </k>
+  rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))             => #makePtr(PLACE)            ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _))                 => #makeAggregate(KIND, ARGS) ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueBinaryOp(OP, _, _))                 => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueCheckedBinaryOp(OP, _, _))          => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueCast(KIND, _, _TY))                 => #evalCast(KIND, ARGS)      ... </k>
-  rule <k>                    #eval(rvalueCopyForDeref(PLACE))                => #evalCopy(PLACE)           ... </k>
-  rule <k>                    #eval(rvalueDiscriminant(PLACE))                => #evalDisc(PLACE)           ... </k>
-  rule <k>                    #eval(rvalueLen(PLACE))                         => #evalLen(PLACE)            ... </k>
-  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE))        => #makeAddress(PLACE)        ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCopyForDeref(_))                    => #getArg(ARGS)              ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueDiscriminant(_))                    => #evalDisc(ARGS)            ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueLen(_))                             => #evalLen(ARGS)             ... </k>
+  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE))        => #makePtr(PLACE)            ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                       => #makeArray(ARGS)           ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))               => #makeBox(ARGS)             ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))               => #buildPtr(ARGS)            ... </k>
   rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => #makeTLRef()               ... </k>
   rule <k>                    #eval(rvalueNullaryOp(OP, _TY))                 => #evalOp(OP, .List)         ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))                     => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #getArg(ARGS)              ... </k>
+
+  // Aggregate Builder
+
+  syntax KItem ::= #makeAggregate(AggregateKind, List) [function]
+  rule #makeAggregate(aggregateKindArray(_),                                                                               Args ) => #makeArray( Args )
+  rule #makeAggregate(aggregateKindTuple,                                                                                  Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindAdt(_AdtDef, variantIdx(Idx), _GenericArgs, _MaybeUserTypeAnnotationIndex, noFieldIdx), Args ) => #makeStruct( Idx, Args )
+  rule #makeAggregate(aggregateKindClosure(_ClosureDef, _GenericArgs),                                                     Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindCoroutine(_CoroutineDef, _GenericArgs, _Movability),                                    Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindRawPtr(_Ty, _Mutability),                                                               Args ) => #buildPtr( Args )
 
   // Statement/Terminator Evaluation
 
@@ -404,8 +436,8 @@ module KMIR
   rule <k> #exec(statementKindAssign(PLACE, RVAL))            => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
   rule <k> #value(VAL) ~> #assign(PLACE)                      => #setPlace(PLACE, VAL) ... </k>
 
-  rule <k> #exec(statementKindIntrinsic(_INT))                => .K ... </k> 
-  rule <k> #exec(statementKindSetDiscriminant(PLACE, _VIDX))  => #setPlace(PLACE, WIPValue) ... </k>
+  rule <k> #exec(statementKindIntrinsic(_INT))                         => .K ... </k>
+  rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX))) => #setDisc(PLACE, IDX) ... </k>
 
   rule <k> #exec(deinit(_Place))                                                       => .K ... </k>
   rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))                        => .K ... </k>
