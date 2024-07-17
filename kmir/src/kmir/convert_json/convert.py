@@ -230,13 +230,121 @@ def terminator_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def rvalue_binary_op_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
+    if len(js) != 3:
+        _raise_conversion_error('')
+    match js:
+        case ['Shr' as s, dict(operand1), dict(operand2)]:
+            return KApply(
+                'rvalueBinaryOp',
+                (string_from_dict(f'binOp{s}'), operand_from_dict(operand1), operand_from_dict(operand2)),
+            )
+
+    _unimplemented()
+
+
+def rvalue_cast_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
+    if len(js) != 3:
+        _raise_conversion_error('')
+    match js:
+        case ['IntToInt' as s, dict(operand), int(ty)]:
+            return KApply(
+                'rvalueCast',
+                (string_from_dict(f'castKind{s}'), operand_from_dict(operand), ty_from_dict(ty)),
+            )
+    _unimplemented()
+
+
+def variant_idx_from_dict(js: int) -> KApply:
+    return KApply('variantIdx', (KToken(str(js), KSort('Int'))))
+
+
+def field_idx_from_dict(js: int) -> KApply:
+    return KApply('fieldIdx', (KToken(str(js), KSort('Int'))))
+
+
+def maybe_field_idx_from_dict(js: int | None) -> KApply:
+    if js is None:
+        return KApply('noFieldIdx', ())
+
+    return KApply('someFieldIdx', (field_idx_from_dict(js)))
+
+
+def generic_arg_from_dict(js: Mapping[str, object]) -> KApply:
+    _unimplemented()
+
+
+def generic_args_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.genericArgs')
+
+    return KApply('genericArgs', (generic_arg_from_dict(js[0]), generic_args_from_dict(js[1:])))
+
+
+def aggregate_kind_adt_from_dict(
+    js: tuple[int, int, Sequence[Mapping[str, object]], None | Mapping[str, object], None | int]
+) -> KApply:
+    if len(js) != 5:
+        _raise_conversion_error('')
+    return KApply(
+        'aggregateKindAdt',
+        (
+            KToken(str(js[0]), KSort('Int')),
+            variant_idx_from_dict(js[1]),
+            generic_args_from_dict(js[2]),
+            maybe_user_type_annotation_index_from_dict(js[3]),
+            maybe_field_idx_from_dict(js[4]),
+        ),
+    )
+
+
+def rvalue_aggregate_from_dict(js: Sequence[str | Mapping[str, object] | Sequence[Mapping[str, object]]]) -> KApply:
+    if len(js) != 2:
+        _raise_conversion_error('')
+    match js:
+        case ['Tuple' as s, list(operands)]:
+            return KApply(
+                'rvalueAggregate',
+                (string_from_dict(f'aggregateKind{s}'), operands_from_dict(operands)),
+            )
+        case [{'Adt': tuple(adtinfo)}, list(operands)]:
+            return KApply(
+                'rvalueAggregate',
+                (aggregate_kind_adt_from_dict(adtinfo), operands_from_dict(operands)),
+            )
+    _unimplemented()
+
+
+def rvalue_from_dict(js: Mapping[str, object]) -> KApply:
+    if len(js) != 1:
+        _raise_conversion_error('')
+    match js:
+        case {'BinaryOp': list(payload)}:
+            return rvalue_binary_op_from_dict(payload)
+        case {'Cast': list(payload)}:
+            return rvalue_cast_from_dict(payload)
+        case {'Aggregate': list(payload)}:
+            return rvalue_aggregate_from_dict(payload)
+        case _:
+            _unimplemented()
+
+
+def statement_kind_assign_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) != 2:
+        _raise_conversion_error('')
+    match js:
+        case [dict(place), dict(rval)]:
+            return KApply('statementKindAssign', (place_from_dict(place), rvalue_from_dict(rval)))
+    _raise_conversion_error('')
+
+
 def statement_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
     if isinstance(js, str):
         _unimplemented()
     else:
         match js:
-            case {'Assign': dict()}:
-                _unimplemented()
+            case {'Assign': list(payload)}:
+                return statement_kind_assign_from_dict(payload)
             case {'StorageLive': int(local)}:
                 return KApply('statementKindStorageLive', (local_from_dict(local)))
             case {'StorageDead': int(local)}:

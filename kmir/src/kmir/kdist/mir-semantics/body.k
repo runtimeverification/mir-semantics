@@ -75,7 +75,7 @@ syntax BinOp ::= "binOpAdd"
                | "binOpBitOr"
                | "binOpShl"
                | "binOpShlUnchecked"
-               | "binOpShr"
+               | "binOpShr" [symbol(binOpShr)]
                | "binOpShrUnchecked"
                | "binOpEq"
                | "binOpLt"
@@ -122,7 +122,7 @@ syntax CastKind ::= "castKindPointerExposeAddress"
                   | "castKindPointerWithExposedProvenance"
                   | castKindPointerCoersion(PointerCoersion)
                   | "castKindDynStar"
-                  | "castKindIntToInt"
+                  | "castKindIntToInt" [symbol(castKindIntToInt)]
                   | "castKindFloatToInt"
                   | "castKindFloatToFloat"
                   | "castKindIntToFloat"
@@ -140,20 +140,21 @@ syntax FakeBorrowKind ::= "fakeBorrowKindDeep"
 syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)
 syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex)
                                       | "noUserTypeAnnotationIndex"
-syntax FieldIdx ::= fieldIdx(Int)
-syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx) | "noFieldIdx"
+syntax FieldIdx ::= fieldIdx(Int) [symbol(fieldIdx)]
+syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx) [symbol(someFieldIdx)]
+                      | "noFieldIdx" [symbol(noFieldIdx)]
 
 syntax AggregateKind ::= aggregateKindArray(Ty)
-                       | "aggregateKindTuple"
-                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx)
+                       | "aggregateKindTuple" [symbol(aggregateKindTuple)]
+                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx) [symbol(aggregateKindAdt)]
                        | aggregateKindClosure(ClosureDef, GenericArgs)
                        | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)
                        | aggregateKindRawPtr(Ty, Mutability)
 
 syntax RvalueAddressOf ::= rvalueAddressOf(Mutability, Place)
-syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands)
-syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand)
-syntax RvalueCast ::= rvalueCast(CastKind, Operand, Ty)
+syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands) [symbol(rvalueAggregate)]
+syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand) [symbol(rvalueBinaryOp)]
+syntax RvalueCast ::= rvalueCast(CastKind, Operand, Ty) [symbol(rvalueCast)]
 syntax RvalueCheckedBinaryOp ::= rvalueCheckedBinaryOp(BinOp, Operand, Operand)
 syntax RvalueCopyForDeref ::= rvalueCopyForDeref(Place)
 syntax RvalueDiscriminant ::= rvalueDiscriminant(Place)

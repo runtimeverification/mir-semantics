@@ -49,7 +49,7 @@ syntax ParamDef ::= Int // imported from crate
 syntax RegionDef ::= Int // imported from crate
 syntax TraitDef ::= Int // imported from crate
 
-syntax VariantIdx ::= variantIdx(Int)
+syntax VariantIdx ::= variantIdx(Int) [symbol(variantIdx)]
 
 syntax DynKind ::= "dynKindDyn" | "dynKindDynStar"
 
@@ -69,7 +69,7 @@ syntax FieldDef ::= fieldDef(def: DefId, name: Symbol)
 syntax GenericArgKind ::= genericArgKindLifetime(Region)
                         | genericArgKindType(Ty)
                         | genericArgKindConst(TyConst)
-syntax GenericArgs ::= List {GenericArgKind, ""}
+syntax GenericArgs ::= List {GenericArgKind, ""} [symbol(genericArgs), terminator-symbol(.genericArgs)]
 
 syntax TermKind ::= termKindType(Ty)
                   | termKindConst(TyConst)
