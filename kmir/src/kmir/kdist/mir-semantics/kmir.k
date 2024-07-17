@@ -33,6 +33,13 @@ module KMIR-MEMORY-API
 
   syntax Address
   syntax Value
+
+  syntax KItem ::= #evalConst( Constant )
+
+  // Value Production
+  syntax KItem ::= #value(Value)
+                 | #makeAddress( Place )
+
   syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
                  | #setPlace( Place, Value )   [function]
                  | #setLocal( Local, Value )   [function]
@@ -136,6 +143,9 @@ module KMIR-MEMORY-IMPL [private]
                    | #delProj( Address )                                         [function]
 
   // Set Impl
+
+  rule <k> #makeAddress(PLACE) => #value( Ptr( LocalAddr(size(Stack) -Int 1, PLACE), NoValue ) ) </k>
+       <stack> Stack </stack>
 
   rule #setStkVar( Frame( Addr, Target, Dest, Unwind, LocalVars ), LIdx, Val ) => Frame( Addr, Target, Dest, Unwind, LocalVars [ LIdx <- Val ] )
 
@@ -294,7 +304,7 @@ module KMIR
 
   syntax K ::= #evalArgs( Rvalue ) [function]
 
-  rule #evalArgs(rvalueAddressOf(_MUT, PLACE))           => .K
+  rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))          => .K
   rule #evalArgs(rvalueAggregate(_KIND, ARGS))           => #evalArgs(#argsToList(ARGS, .List), .List)
   rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
   rule #evalArgs(rvalueCast(_KIND, ARG, _TY))            => #evalArgs(ListItem(ARG), .List)
@@ -303,18 +313,18 @@ module KMIR
   rule #evalArgs(rvalueDiscriminant(_PLACE))             => .K
   rule #evalArgs(rvalueLen(_PLACE))                      => .K
   rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))     => .K
-  rule #evalArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG), ListItem(CONST), .List)
+  rule #evalArgs(rvalueRepeat(ARG, CONST))               => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
   rule #evalArgs(rvalueShallowInitBox(ARG, _TY))         => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))      =>
+  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))      => .K
   rule #evalArgs(rvalueNullaryOp(_OP, _TY))              => .K
   rule #evalArgs(rvalueUnaryOp(_OP, ARG))                => #evalArgs(ListItem(ARG), .List)
   rule #evalArgs(rvalueUse(_OP))                         => .K
 
-  syntax List ::= #argsToList( Operands, List )
-                | #reverse( List, List )
+  syntax List ::= #argsToList( Operands, List ) [function]
+                | #reverse( List, List )        [function]
   rule #argsToList( ARG1 ARGS, REST ) => #argsToList( ARGS, ListItem( ARG1 ) REST )
   rule #argsToList( .Operands, REST ) => #reverse(REST, .List)
-  rule #reverse( LI L1, L2 ) => #reverse( L1, LI L2 )
+  rule #reverse( ListItem(LI) L1:List, L2 ) => #reverse( L1, ListItem(LI) L2 )
   rule #reverse( .List, L2 ) => L2
 
   syntax KItem ::= #evalArgs( List, List )
@@ -325,12 +335,12 @@ module KMIR
        </k>
 
   rule <k> #evalArgs( ListItem( operandMove(PLACE) ) ARGS, EVALED )
-        => #setValue( PLACE, WIPValue )
+        => #setPlace( PLACE, WIPValue )
         ~> #evalArgs( ARGS, ListItem( #loadPlace( PLACE ) ) EVALED )
            ...
        </k>
 
-  rule <k> #evalArgs( ListItem( operandConst(CONST) ) ARGS, EVALED )
+  rule <k> #evalArgs( ListItem( operandConstant(CONST) ) ARGS, EVALED )
         => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
            ...
        </k>
@@ -343,12 +353,9 @@ module KMIR
   // Expression Evaluation
 
   syntax KItem ::= #eval(Rvalue)
-                 | #value(Value)
 
-  rule <k> #eval(rvalueAddressOf(_MUT, PLACE))             => #value( Ptr(LocalAddr(size(Stack) -Int 1, PLACE)) ) ... </k>
-       <stack> Stack </stack>
-
-  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => #eval( </k>
+  rule <k> #eval(rvalueAddressOf(_MUT, PLACE))             => #makeAddress(PLACE) ... </k>
+  rule <k> #eval(rvalueAggregate(_KIND, _ARGS))            => .K </k>
   rule <k> #eval(rvalueBinaryOp(_OP, _ARG1, _ARG2))        => .K </k>
   rule <k> #eval(rvalueCast(_KIND, _OP, _TY))              => .K </k>
   rule <k> #eval(rvalueCheckedBinaryOp(_OP, _ARG1, _ARG2)) => .K </k>
@@ -367,6 +374,7 @@ module KMIR
 
   syntax KItem ::= #exec(StatementKind)
                  | #exec(TerminatorKind)
+                 | #assign(Place)
 
   rule <k> basicBlock( statement(STMT, _SPAN) STMTS, TERM )     => #exec( STMT ) ~> basicBlock( STMTS, TERM ) ... </k>
   rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #exec( TERM )                              ... </k>
@@ -375,8 +383,8 @@ module KMIR
 
   syntax Value ::= "WIPValue"
 
-  rule <k> #exec(statementKindAssign(PLACE, RVAL))            => #getArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
-  rule <k> #value(VAL) ~> #assign(PLACE)                      => #setValue(PLACE, VAL) ... </k>
+  rule <k> #exec(statementKindAssign(PLACE, RVAL))            => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
+  rule <k> #value(VAL) ~> #assign(PLACE)                      => #setPlace(PLACE, VAL) ... </k>
 
   rule <k> #exec(statementKindIntrinsic(_INT))                => .K ... </k> 
   rule <k> #exec(statementKindSetDiscriminant(PLACE, _VIDX))  => #setPlace(PLACE, WIPValue) ... </k>
