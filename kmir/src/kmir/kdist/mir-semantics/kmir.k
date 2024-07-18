@@ -34,11 +34,14 @@ module KMIR-MEMORY-API
   syntax Address
   syntax Value
 
+  // Returning Results
+  syntax KItem ::= #value( Value )
+                 | #function( Body )
+
   syntax KItem ::= #loadConst( Int, Map )
 
   // Value Production
-  syntax KItem ::= #value( Value )
-                 | #evalOp( BinOp, List )
+  syntax KItem ::= #evalOp( BinOp, List )
                  | #evalOp( UnOp, List )
                  | #evalNullOp( NullOp, Ty )
                  | #evalCast( CastKind, List )
@@ -67,6 +70,12 @@ module KMIR-MEMORY-API
                  | #makeFnPtr( String, Map )   [function]
 
   syntax Int ::= #readScalar( Value )          [function]
+  syntax Bool ::= #isTrue( Value )             [function]
+
+  syntax Body ::= #loadFnPtr( Value )
+
+  syntax KItem ::= #setupStackFrame( List, Int, LocalDecls, Place, MaybeBasicBlockIdx )
+                 | "#return"
 endmodule
 
 module KMIR-CONFIGURATION
@@ -538,7 +547,8 @@ module KMIR
                  | #goto( BasicBlockIdx )
                  | #goto( MaybeBasicBlockIdx )
                  | #jump( Int, Branches, BasicBlockIdx )
-                 | #call( Value, List, Place, MaybeBasicBlockIdx )
+                 | #prepareCall( Value, List, Place, MaybeBasicBlockIdx )
+                 | #call( List, Place, MaybeBasicBlockIdx )
                  | #assert( Value )
 
   rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
@@ -558,14 +568,32 @@ module KMIR
   rule #getBlock( 0,  Block _Blocks ) => Block
 
   rule <k> #operands(ARGS) ~> #exec(terminatorKindSwitchInt(_ARG, TARGETS))                             => #jump(#readScalar(#getArg(ARGS)), branches(TARGETS), otherwise(TARGETS)) ... </k>
-  rule <k>                    #jump( I, branch(J, BBIdx) TGTS, OWISE)                                   => #if I ==Int J #then #goto(BBIdx) #else #jump(I, TGTS, OWISE) #fi         ... </k>
-  rule <k>                    #jump(_I, .Branches,             OWISE)                                   => #goto(OWISE)                                                             ... </k>
   rule <k>                    #exec(terminatorKindResume)                                               => .K                                                                       ... </k>
   rule <k>                    #exec(terminatorKindAbort)                                                => .K                                                                       ... </k>
-  rule <k>                    #exec(terminatorKindReturn)                                               => .K                                                                       ... </k>
-  rule <k>                    #exec(terminatorKindUnreachable)                                          => .K                                                                       ... </k>
+  rule <k>                    #exec(terminatorKindReturn)                                               => #return                                                                  ... </k>
+  rule <k>                    #exec(terminatorKindUnreachable)                                          => #stuck                                                                   ... </k>
   rule <k>                    #exec(terminatorKindDrop(PLACE, _TARGET, _ACT))                           => #deinitPlace(PLACE)                                                      ... </k>
-  rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, _ACT))               => #call(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET)                ... </k>
+  rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, _ACT))               => #prepareCall(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET)         ... </k>
   rule <k> #operands(ARGS) ~> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                      => #assert(#getArg(ARGS))                                                   ... </k>
   rule <k>                    #exec(terminatorKindInlineAsm(_TMPL, _ARGS, _OPTS, _SPNS, _TARGET, _ACT)) => #stuck                                                                   ... </k>
+
+  // Jump Terminator
+
+  rule <k> #jump( I, branch(J, BBIdx) TGTS, OWISE) => #if I ==Int J #then #goto(BBIdx) #else #jump(I, TGTS, OWISE) #fi ... </k>
+  rule <k> #jump(_I, .Branches,             OWISE) => #goto(OWISE)                                                     ... </k>
+
+  // Assert Terminator
+
+  rule <k> #assert( Val:Value ) => #if #isTrue( Val ) #then .K #else #stuck #fi ... </k>
+
+  // Call Terminator
+
+  rule <k> #prepareCall( Func, Args, Dest, Target ) => #loadFnPtr( Func ) ~> #call( Args, Dest, Target ) ... </k>
+
+  rule <k> #function(body(Blocks, Locals, ArgCount, _DebugInfo, _SpreadArg, _Span))
+        ~> #call( Args, Dest, Target )
+        => #setupStackFrame( Args, ArgCount, Locals, Dest, Target )
+        ~> #goto( 0 )
+       </k>
+       <body> _PrevBlocks => Blocks </body>
 endmodule
