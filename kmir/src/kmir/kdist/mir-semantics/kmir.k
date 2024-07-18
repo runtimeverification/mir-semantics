@@ -37,6 +37,7 @@ module KMIR-MEMORY-API
   // Returning Results
   syntax KItem ::= #value( Value )
                  | #function( Body )
+                 | #goto( MaybeBasicBlockIdx )
 
   syntax KItem ::= #loadConst( Int, Map )
 
@@ -74,7 +75,8 @@ module KMIR-MEMORY-API
 
   syntax Body ::= #loadFnPtr( Value )
 
-  syntax KItem ::= #setupStackFrame( List, Int, LocalDecls, Place, MaybeBasicBlockIdx )
+  syntax KItem ::= #setupStackFrame( Value, List, Int, LocalDecls, Int, Place, MaybeBasicBlockIdx, UnwindAction )
+                 | "#saveRetVal"
                  | "#return"
 endmodule
 
@@ -168,6 +170,17 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax Address ::= #readAddr( Value )                                          [function]
                    | #delProj( Address )                                         [function]
+
+  // Call Impl
+
+  rule <k> #setupStackFrame( Func, Args, ArgCount, _Locals, LocalCount, Dest, Target, Act ) => .K ... </k>
+       <stack> Frames => ListItem(Frame( #readAddr(Func), Target, Dest, Act, Args makeList( LocalCount -Int ArgCount, Any ) )) Frames </stack>
+
+  rule <k> #saveRetVal => #setValue( LocalAddr( size(Frames) -Int 2, Dest ), { Locals [ 0 ] }:>Value ) ... </k>
+       <stack> ListItem(Frame( _, _, Dest, _, Locals )) Frames </stack>
+
+  rule <k> #return => #goto(Target) ... </k>
+       <stack> ListItem(Frame(_, Target, _, _, _)) Frames => Frames </stack>
 
   // Eval Impl
 
@@ -545,10 +558,9 @@ module KMIR
   syntax KItem ::= "#stuck"
                  | #goto( Int )
                  | #goto( BasicBlockIdx )
-                 | #goto( MaybeBasicBlockIdx )
                  | #jump( Int, Branches, BasicBlockIdx )
-                 | #prepareCall( Value, List, Place, MaybeBasicBlockIdx )
-                 | #call( List, Place, MaybeBasicBlockIdx )
+                 | #prepareCall( Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
+                 | #call( Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
                  | #assert( Value )
 
   rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
@@ -570,10 +582,10 @@ module KMIR
   rule <k> #operands(ARGS) ~> #exec(terminatorKindSwitchInt(_ARG, TARGETS))                             => #jump(#readScalar(#getArg(ARGS)), branches(TARGETS), otherwise(TARGETS)) ... </k>
   rule <k>                    #exec(terminatorKindResume)                                               => .K                                                                       ... </k>
   rule <k>                    #exec(terminatorKindAbort)                                                => .K                                                                       ... </k>
-  rule <k>                    #exec(terminatorKindReturn)                                               => #return                                                                  ... </k>
+  rule <k>                    #exec(terminatorKindReturn)                                               => #saveRetVal ~> #return                                                   ... </k>
   rule <k>                    #exec(terminatorKindUnreachable)                                          => #stuck                                                                   ... </k>
   rule <k>                    #exec(terminatorKindDrop(PLACE, _TARGET, _ACT))                           => #deinitPlace(PLACE)                                                      ... </k>
-  rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, _ACT))               => #prepareCall(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET)         ... </k>
+  rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, ACT))                => #prepareCall(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET, ACT)    ... </k>
   rule <k> #operands(ARGS) ~> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                      => #assert(#getArg(ARGS))                                                   ... </k>
   rule <k>                    #exec(terminatorKindInlineAsm(_TMPL, _ARGS, _OPTS, _SPNS, _TARGET, _ACT)) => #stuck                                                                   ... </k>
 
@@ -588,12 +600,17 @@ module KMIR
 
   // Call Terminator
 
-  rule <k> #prepareCall( Func, Args, Dest, Target ) => #loadFnPtr( Func ) ~> #call( Args, Dest, Target ) ... </k>
+  syntax Int ::= #numLocals( LocalDecls ) [function]
+
+  rule <k> #prepareCall( Func, Args, Dest, Target, Act ) => #loadFnPtr( Func ) ~> #call( Func, Args, Dest, Target, Act ) ... </k>
 
   rule <k> #function(body(Blocks, Locals, ArgCount, _DebugInfo, _SpreadArg, _Span))
-        ~> #call( Args, Dest, Target )
-        => #setupStackFrame( Args, ArgCount, Locals, Dest, Target )
+        ~> #call( Func, Args, Dest, Target, Act )
+        => #setupStackFrame( Func, Args, ArgCount, Locals, #numLocals(Locals), Dest, Target, Act )
         ~> #goto( 0 )
        </k>
        <body> _PrevBlocks => Blocks </body>
+
+  rule #numLocals( _:LocalDecl Rest:LocalDecls ) => 1 +Int #numLocals( Rest )
+  rule #numLocals( .LocalDecls )                 => 0
 endmodule
