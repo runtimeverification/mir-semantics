@@ -234,6 +234,10 @@ def terminator_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def binop_from_dict(s: str) -> KApply:
+    return KApply(f'binOp{s}', ())
+
+
 def rvalue_binary_op_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
     if len(js) != 3:
         _raise_conversion_error('')
@@ -241,10 +245,14 @@ def rvalue_binary_op_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApp
         case ['Shr' as s, dict(operand1), dict(operand2)]:
             return KApply(
                 'rvalueBinaryOp',
-                (string_from_dict(f'binOp{s}'), operand_from_dict(operand1), operand_from_dict(operand2)),
+                (binop_from_dict(s), operand_from_dict(operand1), operand_from_dict(operand2)),
             )
 
     _unimplemented()
+
+
+def cast_kind_from_dict(s: str) -> KApply:
+    return KApply(f'castKind{s}', ())
 
 
 def rvalue_cast_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
@@ -254,7 +262,7 @@ def rvalue_cast_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
         case ['IntToInt' as s, dict(operand), int(ty)]:
             return KApply(
                 'rvalueCast',
-                (string_from_dict(f'castKind{s}'), operand_from_dict(operand), ty_from_dict(ty)),
+                (cast_kind_from_dict(s), operand_from_dict(operand), ty_from_dict(ty)),
             )
     _unimplemented()
 
@@ -309,7 +317,7 @@ def rvalue_aggregate_from_dict(js: Sequence[str | Mapping[str, object] | Sequenc
         case ['Tuple' as s, list(operands)]:
             return KApply(
                 'rvalueAggregate',
-                (string_from_dict(f'aggregateKind{s}'), operands_from_dict(operands)),
+                (KApply(f'aggregateKind{s}', ()), operands_from_dict(operands)),
             )
         case [{'Adt': list(adtinfo)}, list(operands)]:
             return KApply(
