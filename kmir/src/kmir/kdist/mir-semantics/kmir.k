@@ -489,12 +489,13 @@ module KMIR
   // Aggregate Builder
 
   syntax KItem ::= #makeAggregate(AggregateKind, List) [function]
-  rule #makeAggregate(aggregateKindArray(_),                                                                               Args ) => #makeArray( Args )
-  rule #makeAggregate(aggregateKindTuple,                                                                                  Args ) => #makeStruct( 0, Args )
-  rule #makeAggregate(aggregateKindAdt(_AdtDef, variantIdx(Idx), _GenericArgs, _MaybeUserTypeAnnotationIndex, noFieldIdx), Args ) => #makeStruct( Idx, Args )
-  rule #makeAggregate(aggregateKindClosure(_ClosureDef, _GenericArgs),                                                     Args ) => #makeStruct( 0, Args )
-  rule #makeAggregate(aggregateKindCoroutine(_CoroutineDef, _GenericArgs, _Movability),                                    Args ) => #makeStruct( 0, Args )
-  rule #makeAggregate(aggregateKindRawPtr(_Ty, _Mutability),                                                               Args ) => #buildPtr( Args )
+  rule #makeAggregate(aggregateKindArray(_),                                                                         Args ) => #makeArray( Args )
+  rule #makeAggregate(aggregateKindTuple,                                                                            Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindAdt(_AdtDef, variantIdx(Idx), _Generics, _UserType, noFieldIdx),                  Args ) => #makeStruct( Idx, Args )
+  rule #makeAggregate(aggregateKindAdt(_AdtDef, variantIdx(0),   _Generics, _UserType, someFieldIdx(fieldIdx(Idx))), Args ) => #makeStruct( Idx, Args )
+  rule #makeAggregate(aggregateKindClosure(_ClosureDef, _Generics),                                                  Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindCoroutine(_CoroutineDef, _Generics, _Movability),                                 Args ) => #makeStruct( 0, Args )
+  rule #makeAggregate(aggregateKindRawPtr(_Ty, _Mutability),                                                         Args ) => #buildPtr( Args )
 
   // Intrinsic
 
