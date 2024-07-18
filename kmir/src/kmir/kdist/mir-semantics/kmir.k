@@ -4,7 +4,7 @@ module KMIR-SYNTAX
   imports KMIR-AST
   imports MAP
 
-  syntax InitialState ::= #init( Int, Map )
+  syntax InitialState ::= #init( String, Map )
 
   syntax Statements ::= "emptyBlock" [function]
   rule emptyBlock => .Statements
@@ -382,6 +382,7 @@ module KMIR-MEMORY-IMPL [private]
   rule #readScalar( Scalar( Val, _Width, _Signed ) ) => Val
   rule #readAddr( Ptr( Addr, _ ) )                   => Addr
   rule #isTrue( Scalar( Val, 1, false ) )            => Val =/=Int 0
+
 endmodule
 
 module KMIR
@@ -395,9 +396,17 @@ module KMIR
   imports BYTES
   imports K-EQUAL
 
+  // Initialization
+
+  rule <k> #init( FnName, Mem )
+        => #call( #makeFnPtr( FnName, .Map), .List, place(local(-1), .ProjectionElems), noBasicBlockIdx, unwindActionTerminate )
+           ...
+       </k>
+       <globals> .Map => Mem </globals>
+
   // Lookup Fn Type
 
-  syntax String ::= #lookupFnType( Int ) [function]
+  syntax String ::= #lookupFnByType( Int )    [function]
 
   // Argument Evaluation
 
@@ -475,7 +484,7 @@ module KMIR
 
   rule #evalConst( constOperand(_SPAN, _USERTY, mirConst(KIND, ty(TID, _), mirConstId(CID))) )
         => #if KIND ==K constantKindZeroSized
-             #then #makeFnPtr( #lookupFnType(TID), .Map )
+             #then #makeFnPtr( #lookupFnByType(TID), .Map )
              #else #loadConst( CID, .Map )
            #fi
 
