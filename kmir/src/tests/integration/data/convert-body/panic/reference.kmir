@@ -28,7 +28,7 @@ monoItemWrapper
                 (
                   span(0),
                   noUserTypeAnnotationIndex,
-                  mirConst(constantKindZeroSized, ty(0), mirConstId(0))
+                  mirConst(constantKindZeroSized, ty(0, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(0))
                 )
               ),
               ,
@@ -69,7 +69,7 @@ monoItemWrapper
                           mutabilityMut
                         )
                       ),
-                      ty(1),
+                      ty(1, tyKindRigidTy(rigidTyUnimplemented)),
                       mirConstId(1)
                     )
                   )
@@ -87,7 +87,7 @@ monoItemWrapper
               (
                 castKindIntToInt,
                 operandMove(place(local(4), )),
-                ty(2)
+                ty(2, tyKindRigidTy(rigidTyUnimplemented))
               )
             ),
             span(6)
@@ -102,7 +102,7 @@ monoItemWrapper
               (
                 castKindIntToInt,
                 operandCopy(place(local(2), )),
-                ty(2)
+                ty(2, tyKindRigidTy(rigidTyUnimplemented))
               )
             ),
             span(8)
@@ -151,13 +151,13 @@ monoItemWrapper
             span(3)
           )
         ),
-        localDecl(ty(3), span(12), mutabilityMut)
-        localDecl(ty(4), span(13), mutabilityNot)
-        localDecl(ty(5), span(14), mutabilityNot)
-        localDecl(ty(2), span(15), mutabilityNot)
-        localDecl(ty(5), span(4), mutabilityMut)
-        localDecl(ty(2), span(16), mutabilityNot)
-        localDecl(ty(6), span(9), mutabilityMut),
+        localDecl(ty(3, tyKindRigidTy(rigidTyUnimplemented)), span(12), mutabilityMut)
+        localDecl(ty(4, tyKindRigidTy(rigidTyUnimplemented)), span(13), mutabilityNot)
+        localDecl(ty(5, tyKindRigidTy(rigidTyUnimplemented)), span(14), mutabilityNot)
+        localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(15), mutabilityNot)
+        localDecl(ty(5, tyKindRigidTy(rigidTyUnimplemented)), span(4), mutabilityMut)
+        localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(16), mutabilityNot)
+        localDecl(ty(6, tyKindRigidTy(rigidTyUnimplemented)), span(9), mutabilityMut),
         1,
         , ///vardebuginfo ignored
         noLocal,
@@ -193,7 +193,7 @@ monoItemWrapper
                 (
                   span(417),
                   noUserTypeAnnotationIndex,
-                  mirConst(constantKindZeroSized, ty(112), mirConstId(53))
+                  mirConst(constantKindZeroSized, ty(112, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(53))
                 )
               ),
               operandConstant
@@ -214,7 +214,7 @@ monoItemWrapper
                         mutabilityMut
                       )
                     ),
-                    ty(32),
+                    ty(32, tyKindRigidTy(rigidTyUnimplemented)),
                     mirConstId(54)
                   )
                 )
@@ -226,8 +226,8 @@ monoItemWrapper
             span(419)
           )
         ),
-        localDecl(ty(8), span(420), mutabilityMut)
-        localDecl(ty(27), span(419), mutabilityMut),
+        localDecl(ty(8, tyKindRigidTy(rigidTyUnimplemented)), span(420), mutabilityMut)
+        localDecl(ty(27, tyKindRigidTy(rigidTyUnimplemented)), span(419), mutabilityMut),
         0,
         , ///vardebuginfo ignored
         noLocal,

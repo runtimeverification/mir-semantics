@@ -34,7 +34,7 @@ def bytes_from_dict(js: Sequence[int]) -> KApply:
 
 def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
     match js:
-        case [int(size), [int(_), int(allocid)]]:
+        case [int(size), int(allocid)]:
             return KApply(
                 'provenanceMapEntry',
                 KToken(str(size), KSort('Int')),
@@ -286,7 +286,7 @@ def generic_args_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def aggregate_kind_adt_from_dict(
-    js: tuple[int, int, Sequence[Mapping[str, object]], None | Mapping[str, object], None | int]
+    js: list[int | Sequence[Mapping[str, object]] | Mapping[str, object] | None]
 ) -> KApply:
     if len(js) != 5:
         _raise_conversion_error('')
@@ -311,12 +311,13 @@ def rvalue_aggregate_from_dict(js: Sequence[str | Mapping[str, object] | Sequenc
                 'rvalueAggregate',
                 (string_from_dict(f'aggregateKind{s}'), operands_from_dict(operands)),
             )
-        case [{'Adt': tuple(adtinfo)}, list(operands)]:
+        case [{'Adt': list(adtinfo)}, list(operands)]:
             return KApply(
                 'rvalueAggregate',
                 (aggregate_kind_adt_from_dict(adtinfo), operands_from_dict(operands)),
             )
-    _unimplemented()
+        case _:
+            _unimplemented()
 
 
 def rvalue_from_dict(js: Mapping[str, object]) -> KApply:
