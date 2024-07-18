@@ -179,11 +179,15 @@ def place_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def basicblock_idx_from_dict(js: int) -> KApply:
+    return KApply('basicBlockIdx', (KToken(str(js), KSort('Int'))))
+
+
 def maybe_basicblock_idx_from_dict(js: int | None) -> KApply:
     if js is None:
-        return KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
+        return KApply('noBasicBlockIdx', ())
 
-    _unimplemented()
+    return KApply('someBasicBlockIdx', (basicblock_idx_from_dict(js)))
 
 
 def unwind_action_from_dict(js: str) -> KApply:
@@ -391,13 +395,7 @@ def basicblocks_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def ty_from_dict(n: int) -> KApply:
-    return KApply(
-        'ty',
-        (
-            KToken(str(n), KSort('Int')),
-            KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),))
-        )
-    )
+    return KApply('ty', (KToken(str(n), KSort('Int')), KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),))))
 
 
 def mutability_from_dict(s: str) -> KApply:
