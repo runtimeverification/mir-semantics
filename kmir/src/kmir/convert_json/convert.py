@@ -302,10 +302,10 @@ def aggregate_kind_adt_from_dict(
         'aggregateKindAdt',
         (
             KToken(str(js[0]), KSort('Int')),
-            variant_idx_from_dict(js[1]),
-            generic_args_from_dict(js[2]),
-            maybe_user_type_annotation_index_from_dict(js[3]),
-            maybe_field_idx_from_dict(js[4]),
+            variant_idx_from_dict(js[1]),  # type: ignore
+            generic_args_from_dict(js[2]),  # type: ignore
+            maybe_user_type_annotation_index_from_dict(js[3]),  # type: ignore
+            maybe_field_idx_from_dict(js[4]),  # type: ignore
         ),
     )
 
