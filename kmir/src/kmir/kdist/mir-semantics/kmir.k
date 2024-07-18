@@ -64,6 +64,8 @@ module KMIR-MEMORY-API
                  | #loadPlace( Place )         [function]
                  | #loadLocal( Local )         [function]
                  | #loadPtr( Address, Value )  [function]
+
+  syntax Int ::= #readScalar( Value )          [function]
 endmodule
 
 module KMIR-CONFIGURATION
@@ -152,7 +154,6 @@ module KMIR-MEMORY-IMPL [private]
                 | #NoOpProjection( ProjectionElem )                              [function]
 
   syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
-               | #readScalar( Value )                                            [function]
                | #boolToInt( Bool )                                              [function]
 
   syntax Address ::= #readAddr( Value )                                          [function]
@@ -373,28 +374,37 @@ module KMIR
   // Argument Evaluation
 
   syntax KItem ::= #operands( List )
-                 | #getArg( List ) [function]
 
   syntax K ::= #evalArgs( Rvalue )                [function]
              | #evalArgs( NonDivergingIntrinsic ) [function]
+             | #evalArgs( TerminatorKind )        [function]
 
-  rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))                 => .K
-  rule #evalArgs(rvalueAggregate(_KIND, ARGS))                  => #evalArgs(#argsToList(ARGS, .List), .List)
-  rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))               => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #evalArgs(rvalueCast(_KIND, ARG, _TY))                   => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2))        => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
-  rule #evalArgs(rvalueCopyForDeref(PLACE))                     => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueDiscriminant(PLACE))                     => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueLen(PLACE))                              => #evalArgs(ListItem(PLACE), .List)
-  rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))            => .K
-  rule #evalArgs(rvalueRepeat(ARG, CONST))                      => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
-  rule #evalArgs(rvalueShallowInitBox(ARG, _TY))                => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))             => .K
-  rule #evalArgs(rvalueNullaryOp(_OP, _TY))                     => .K
-  rule #evalArgs(rvalueUnaryOp(_OP, ARG))                       => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(rvalueUse(ARG))                                => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(nonDivergingIntrinsicAssume(ARG))              => #evalArgs(ListItem(ARG), .List)
-  rule #evalArgs(nonDivergingIntrinsicCopyNonOverlapping(ARGS)) => #evalArgs(ListItem(src(ARGS)) ListItem(dst(ARGS)) ListItem(count(ARGS)), .List)
+  rule #evalArgs(rvalueAddressOf(_MUT, _PLACE))                                      => .K
+  rule #evalArgs(rvalueAggregate(_KIND, ARGS))                                       => #evalArgs(#argsToList(ARGS, .List), .List)
+  rule #evalArgs(rvalueBinaryOp(_OP, ARG1, ARG2))                                    => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCast(_KIND, ARG, _TY))                                        => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueCheckedBinaryOp(_OP, ARG1, ARG2))                             => #evalArgs(ListItem(ARG1) ListItem(ARG2), .List)
+  rule #evalArgs(rvalueCopyForDeref(PLACE))                                          => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueDiscriminant(PLACE))                                          => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueLen(PLACE))                                                   => #evalArgs(ListItem(PLACE), .List)
+  rule #evalArgs(rvalueRef(_REG, _BRW_KIND, _PLACE))                                 => .K
+  rule #evalArgs(rvalueRepeat(ARG, CONST))                                           => #evalArgs(ListItem(ARG) ListItem(CONST), .List)
+  rule #evalArgs(rvalueShallowInitBox(ARG, _TY))                                     => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueThreadLocalRef(_CRATE_ITEM))                                  => .K
+  rule #evalArgs(rvalueNullaryOp(_OP, _TY))                                          => .K
+  rule #evalArgs(rvalueUnaryOp(_OP, ARG))                                            => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(rvalueUse(ARG))                                                     => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(nonDivergingIntrinsicAssume(ARG))                                   => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(nonDivergingIntrinsicCopyNonOverlapping(ARGS))                      => #evalArgs(ListItem(src(ARGS)) ListItem(dst(ARGS)) ListItem(count(ARGS)), .List)
+  rule #evalArgs(terminatorKindSwitchInt(ARG, _TARGETS))                             => #evalArgs(ListItem(ARG), .List)
+  rule #evalArgs(terminatorKindResume)                                               => .K
+  rule #evalArgs(terminatorKindAbort)                                                => .K
+  rule #evalArgs(terminatorKindReturn)                                               => .K
+  rule #evalArgs(terminatorKindUnreachable)                                          => .K
+  rule #evalArgs(terminatorKindDrop(_PLACE, _TARGET, _ACT))                          => .K
+  rule #evalArgs(terminatorKindCall(FUNC, ARGS, _DEST, _TARGET, _ACT))               => #evalArgs(#argsToList(FUNC ARGS, .List), .List)
+  rule #evalArgs(assert(COND, _EXPECTED, _MSG, _TARGET, _ACT))                       => #evalArgs(ListItem(COND), .List)
+  rule #evalArgs(terminatorKindInlineAsm(_TMPL, _ARGS, _OPTS, _SPNS, _TARGET, _ACT)) => .K
 
   syntax List ::= #argsToList( Operands, List ) [function]
                 | #reverse( List, List )        [function]
@@ -433,7 +443,13 @@ module KMIR
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
-  rule #getArg( ListItem( Val:Value ) ) => #value( Val )
+  syntax Value ::= #getArg( List )     [function]
+                 | #getFstArg( List )  [function]
+  syntax List ::= #getRestArgs( List ) [function]
+
+  rule #getArg( ListItem( Val:Value ) )     => Val
+  rule #getFstArg( ListItem( Val:Value ) )  => Val
+  rule #getRestArgs( ListItem(_) RestArgs ) => RestArgs
 
   // Expression Evaluation
 
@@ -444,7 +460,7 @@ module KMIR
   rule <k> #operands(ARGS) ~> #eval(rvalueBinaryOp(OP, _, _))                 => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueCheckedBinaryOp(OP, _, _))          => #evalOp(OP, ARGS)          ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueCast(KIND, _, _TY))                 => #evalCast(KIND, ARGS)      ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueCopyForDeref(_))                    => #getArg(ARGS)              ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCopyForDeref(_))                    => #value( #getArg(ARGS) )    ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueDiscriminant(_))                    => #evalDisc(ARGS)            ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueLen(_))                             => #evalLen(ARGS)             ... </k>
   rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE))        => #makePtr(PLACE)            ... </k>
@@ -453,7 +469,7 @@ module KMIR
   rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => #makeTLRef()               ... </k>
   rule <k>                    #eval(rvalueNullaryOp(OP, TY))                  => #evalNullOp(OP, TY)        ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))                     => #evalOp(OP, ARGS)          ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #getArg(ARGS)              ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #value( #getArg(ARGS) )    ... </k>
 
   // Aggregate Builder
 
@@ -478,7 +494,7 @@ module KMIR
                  | #exec(TerminatorKind)
 
   rule <k> basicBlock( statement(STMT, _SPAN) STMTS, TERM )     => #exec( STMT ) ~> basicBlock( STMTS, TERM ) ... </k>
-  rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #exec( TERM )                              ... </k>
+  rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #evalArgs( TERM ) ~> #exec( TERM )         ... </k>
 
   // Statements
 
@@ -501,14 +517,19 @@ module KMIR
 
   // Terminators
 
-  syntax KItem ::= #goto( Int )
+  syntax KItem ::= "#stuck"
+                 | #goto( Int )
+                 | #goto( BasicBlockIdx )
                  | #goto( MaybeBasicBlockIdx )
+                 | #jump( Int, Branches, BasicBlockIdx )
+                 | #call( Value, List, Place, MaybeBasicBlockIdx )
+                 | #assert( Value )
 
   rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
 
-  rule <k> #goto( someBasicBlockIdx( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
-
-  rule <k> #goto( N ) => #getBlock( N, Blocks ) ... </k>
+  rule <k> #goto(                    basicBlockIdx( N )   ) => #goto( N )             ... </k>
+  rule <k> #goto( someBasicBlockIdx( basicBlockIdx( N ) ) ) => #goto( N )             ... </k>
+  rule <k> #goto( N )                                       => #getBlock( N, Blocks ) ... </k>
        <body> Blocks </body>
     requires N <Int #numBlocks(Blocks)
 
@@ -520,13 +541,15 @@ module KMIR
   rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
   rule #getBlock( 0,  Block _Blocks ) => Block
 
-  rule <k> #exec(terminatorKindSwitchInt(_ARG, _TARGETS))                                 => .K </k>
-  rule <k> #exec(terminatorKindResume)                                                    => .K </k>
-  rule <k> #exec(terminatorKindAbort)                                                     => .K </k>
-  rule <k> #exec(terminatorKindReturn)                                                    => .K </k>
-  rule <k> #exec(terminatorKindUnreachable)                                               => .K </k>
-  rule <k> #exec(terminatorKindDrop(_PLACE, _TARGET, _ACT))                               => .K </k>
-  rule <k> #exec(terminatorKindCall(_FUNC, _ARGS, _DEST, _TARGET, _ACT))                  => .K </k>
-  rule <k> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                           => .K </k>
-  rule <k> #exec(terminatorKindInlineAsm(_TEMPLATE, _ARGS, _OPTS, _SPANS, _TARGET, _ACT)) => .K </k>
+  rule <k> #operands(ARGS) ~> #exec(terminatorKindSwitchInt(_ARG, TARGETS))                             => #jump(#readScalar(#getArg(ARGS)), branches(TARGETS), otherwise(TARGETS)) ... </k>
+  rule <k>                    #jump( I, branch(J, BBIdx) TGTS, OWISE)                                   => #if I ==Int J #then #goto(BBIdx) #else #jump(I, TGTS, OWISE) #fi         ... </k>
+  rule <k>                    #jump(_I, .Branches,             OWISE)                                   => #goto(OWISE)                                                             ... </k>
+  rule <k>                    #exec(terminatorKindResume)                                               => .K                                                                       ... </k>
+  rule <k>                    #exec(terminatorKindAbort)                                                => .K                                                                       ... </k>
+  rule <k>                    #exec(terminatorKindReturn)                                               => .K                                                                       ... </k>
+  rule <k>                    #exec(terminatorKindUnreachable)                                          => .K                                                                       ... </k>
+  rule <k>                    #exec(terminatorKindDrop(PLACE, _TARGET, _ACT))                           => #deinitPlace(PLACE)                                                      ... </k>
+  rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, _ACT))               => #call(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET)                ... </k>
+  rule <k> #operands(ARGS) ~> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                      => #assert(#getArg(ARGS))                                                   ... </k>
+  rule <k>                    #exec(terminatorKindInlineAsm(_TMPL, _ARGS, _OPTS, _SPNS, _TARGET, _ACT)) => #stuck                                                                   ... </k>
 endmodule
