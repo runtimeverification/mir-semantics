@@ -562,22 +562,7 @@ module KMIR
                  | #call( Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
                  | #assert( Value )
 
-  rule <k> #exec( terminatorKindGoto( basicBlockIdx( N ) ) ) => #goto( N ) ... </k>
-
-  rule <k> #goto(                    basicBlockIdx( N )   ) => #goto( N )             ... </k>
-  rule <k> #goto( someBasicBlockIdx( basicBlockIdx( N ) ) ) => #goto( N )             ... </k>
-  rule <k> #goto( N )                                       => #getBlock( N, Blocks ) ... </k>
-       <body> Blocks </body>
-    requires N <Int #numBlocks(Blocks)
-
-  syntax Int ::= #numBlocks( BasicBlocks ) [function]
-  rule #numBlocks( _ BS ) => 1 +Int #numBlocks( BS )
-  rule #numBlocks( .BasicBlocks ) => 0
-
-  syntax BasicBlock ::= #getBlock( Int, BasicBlocks ) [function]
-  rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
-  rule #getBlock( 0,  Block _Blocks ) => Block
-
+  rule <k>                    #exec( terminatorKindGoto( basicBlockIdx( N ) ) )                         => #goto( N )                                                               ... </k>
   rule <k> #operands(ARGS) ~> #exec(terminatorKindSwitchInt(_ARG, TARGETS))                             => #jump(#readScalar(#getArg(ARGS)), branches(TARGETS), otherwise(TARGETS)) ... </k>
   rule <k>                    #exec(terminatorKindResume)                                               => .K                                                                       ... </k>
   rule <k>                    #exec(terminatorKindAbort)                                                => .K                                                                       ... </k>
@@ -587,6 +572,15 @@ module KMIR
   rule <k> #operands(ARGS) ~> #exec(terminatorKindCall(_FUNC, _ARGS, DEST, TARGET, ACT))                => #prepareCall(#getFstArg(ARGS), #getRestArgs(ARGS), DEST, TARGET, ACT)    ... </k>
   rule <k> #operands(ARGS) ~> #exec(assert(_COND, _EXPECTED, _MSG, _TARGET, _ACT))                      => #assert(#getArg(ARGS))                                                   ... </k>
   rule <k>                    #exec(terminatorKindInlineAsm(_TMPL, _ARGS, _OPTS, _SPNS, _TARGET, _ACT)) => #stuck                                                                   ... </k>
+
+  // Goto Terminator
+
+  rule <k> #goto(                    basicBlockIdx( N )   ) => #goto( N )             ... </k>
+  rule <k> #goto( someBasicBlockIdx( basicBlockIdx( N ) ) ) => #goto( N )             ... </k>
+  rule <k> #goto( N )                                       => #getBlock( N, Blocks ) ... </k>
+       <body> Blocks </body>
+    requires N <Int #numBlocks(Blocks)
+
 
   // Jump Terminator
 
@@ -609,6 +603,16 @@ module KMIR
         ~> #goto( 0 )
        </k>
        <body> _PrevBlocks => Blocks </body>
+
+  // Terminator Helper Functions
+
+  syntax Int ::= #numBlocks( BasicBlocks ) [function]
+  rule #numBlocks( _ BS ) => 1 +Int #numBlocks( BS )
+  rule #numBlocks( .BasicBlocks ) => 0
+
+  syntax BasicBlock ::= #getBlock( Int, BasicBlocks ) [function]
+  rule #getBlock( I, _Block  Blocks ) => #getBlock( I -Int 1, Blocks ) requires I >Int 0
+  rule #getBlock( 0,  Block _Blocks ) => Block
 
   rule #numLocals( _:LocalDecl Rest:LocalDecls ) => 1 +Int #numLocals( Rest )
   rule #numLocals( .LocalDecls )                 => 0
