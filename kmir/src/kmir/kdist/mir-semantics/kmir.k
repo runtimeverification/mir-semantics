@@ -470,21 +470,21 @@ module KMIR
 
   syntax KItem ::= #eval(Rvalue)
 
-  rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))             => #makePtr(PLACE)            ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _))                 => #makeAggregate(KIND, ARGS) ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueBinaryOp(OP, _, _))                 => #evalOp(OP, ARGS)          ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueCheckedBinaryOp(OP, _, _))          => #evalOp(OP, ARGS)          ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueCast(KIND, _, _TY))                 => #evalCast(KIND, ARGS)      ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueCopyForDeref(_))                    => #value( #getArg(ARGS) )    ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueDiscriminant(_))                    => #evalDisc(ARGS)            ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueLen(_))                             => #evalLen(ARGS)             ... </k>
-  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE))        => #makePtr(PLACE)            ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                       => #makeArray(ARGS)           ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))               => #buildPtr(ARGS)            ... </k>
-  rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM))        => #makeTLRef()               ... </k>
-  rule <k>                    #eval(rvalueNullaryOp(OP, TY))                  => #evalNullOp(OP, TY)        ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))                     => #evalOp(OP, ARGS)          ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                             => #value( #getArg(ARGS) )    ... </k>
+  rule <k>                    #eval(rvalueAddressOf(_MUT, PLACE))      => #makePtr(PLACE)            ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueAggregate(KIND, _))          => #makeAggregate(KIND, ARGS) ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueBinaryOp(OP, _, _))          => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCheckedBinaryOp(OP, _, _))   => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCast(KIND, _, _TY))          => #evalCast(KIND, ARGS)      ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueCopyForDeref(_))             => #value( #getArg(ARGS) )    ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueDiscriminant(_))             => #evalDisc(ARGS)            ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueLen(_))                      => #evalLen(ARGS)             ... </k>
+  rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE)) => #makePtr(PLACE)            ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                => #makeArray(ARGS)           ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))        => #buildPtr(ARGS)            ... </k>
+  rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM)) => #makeTLRef()               ... </k>
+  rule <k>                    #eval(rvalueNullaryOp(OP, TY))           => #evalNullOp(OP, TY)        ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueUnaryOp(OP, _))              => #evalOp(OP, ARGS)          ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                      => #value( #getArg(ARGS) )    ... </k>
 
   // Aggregate Builder
 
@@ -515,20 +515,20 @@ module KMIR
 
   syntax KItem ::= #assign(Place)
 
-  rule <k> #exec(statementKindAssign(PLACE, RVAL))                                     => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
-  rule <k> #value(VAL) ~> #assign(PLACE)                                               => #setPlace(PLACE, VAL)                            ... </k>
-  rule <k> #exec(statementKindIntrinsic(INT))                                          => #evalArgs(INT) ~> #eval(INT)                     ... </k>
-  rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX)))                 => #setDisc(PLACE, IDX)                             ... </k>
-  rule <k> #exec(deinit(PLACE))                                                        => #deinitPlace(PLACE)                              ... </k>
-  rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))                        => .K                                               ... </k>
-  rule <k> #exec(statementKindStorageLive(_Local))                                     => .K                                               ... </k>
-  rule <k> #exec(statementKindStorageDead(_Local))                                     => .K                                               ... </k>
-  rule <k> #exec(statementKindRetag(_RetagKind, _Place))                               => .K                                               ... </k>
-  rule <k> #exec(statementKindPlaceMention(_Place))                                    => .K                                               ... </k>
-  rule <k> #exec(statementKindAscribeUserType(_Place, _UserTypeProjection, _Variance)) => .K                                               ... </k>
-  rule <k> #exec(statementKindCoverage(_Coverage))                                     => .K                                               ... </k>
-  rule <k> #exec(statementKindConstEvalCounter)                                        => .K                                               ... </k>
-  rule <k> #exec(statementKindNop)                                                     => .K                                               ... </k>
+  rule <k> #exec(statementKindAssign(PLACE, RVAL))                           => #evalArgs(RVAL) ~> #eval(RVAL) ~> #assign(PLACE) ... </k>
+  rule <k> #value(VAL) ~> #assign(PLACE)                                     => #setPlace(PLACE, VAL)                            ... </k>
+  rule <k> #exec(statementKindIntrinsic(INT))                                => #evalArgs(INT) ~> #eval(INT)                     ... </k>
+  rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX)))       => #setDisc(PLACE, IDX)                             ... </k>
+  rule <k> #exec(deinit(PLACE))                                              => #deinitPlace(PLACE)                              ... </k>
+  rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))              => .K                                               ... </k>
+  rule <k> #exec(statementKindStorageLive(_Local))                           => .K                                               ... </k>
+  rule <k> #exec(statementKindStorageDead(_Local))                           => .K                                               ... </k>
+  rule <k> #exec(statementKindRetag(_RetagKind, _Place))                     => .K                                               ... </k>
+  rule <k> #exec(statementKindPlaceMention(_Place))                          => .K                                               ... </k>
+  rule <k> #exec(statementKindAscribeUserType(_Place, _UserType, _Variance)) => .K                                               ... </k>
+  rule <k> #exec(statementKindCoverage(_Coverage))                           => .K                                               ... </k>
+  rule <k> #exec(statementKindConstEvalCounter)                              => .K                                               ... </k>
+  rule <k> #exec(statementKindNop)                                           => .K                                               ... </k>
 
   // Terminators
 
