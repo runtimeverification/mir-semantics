@@ -459,7 +459,7 @@ module KMIR
            ...
        </k>
 
-  rule <k> #evalArgs( ListItem( CONST:Constant ) ARGS, EVALED )
+  rule <k> #evalArgs( ListItem( CONST:ConstOperand ) ARGS, EVALED )
         => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
            ...
        </k>
@@ -471,9 +471,9 @@ module KMIR
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
-  syntax Value ::= #evalConst( Constant )
+  syntax Value ::= #evalConst( ConstOperand )
 
-  rule #evalConst( constant(_SPAN, _USERTY, const(KIND, ty(TID, _), constId(CID))) )
+  rule #evalConst( constOperand(_SPAN, _USERTY, mirConst(KIND, ty(TID, _), mirConstId(CID))) )
         => #if KIND ==K constantKindZeroSized
              #then #makeFnPtr( #lookupFnType(TID), .Map )
              #else #loadConst( CID, .Map )
