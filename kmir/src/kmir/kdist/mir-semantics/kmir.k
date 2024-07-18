@@ -381,6 +381,7 @@ module KMIR-MEMORY-IMPL [private]
 
   rule #readScalar( Scalar( Val, _Width, _Signed ) ) => Val
   rule #readAddr( Ptr( Addr, _ ) )                   => Addr
+  rule #isTrue( Scalar( Val, 1, false ) )            => Val =/=Int 0
 endmodule
 
 module KMIR
@@ -472,13 +473,11 @@ module KMIR
 
   syntax Value ::= #evalConst( Constant )
 
-  rule <k> #evalConst( constant(_SPAN, _USERTY, const(KIND, ty(TID, _), constId(CID))) )
+  rule #evalConst( constant(_SPAN, _USERTY, const(KIND, ty(TID, _), constId(CID))) )
         => #if KIND ==K constantKindZeroSized
              #then #makeFnPtr( #lookupFnType(TID), .Map )
              #else #loadConst( CID, .Map )
            #fi
-           ...
-       </k>
 
   syntax Value ::= #getArg( List )     [function]
                  | #getFstArg( List )  [function]
