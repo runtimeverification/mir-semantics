@@ -34,7 +34,7 @@ module KMIR-MEMORY-API
   syntax Address
   syntax Value
 
-  syntax KItem ::= #evalConst( Constant )
+  syntax KItem ::= #loadConst( Int, Map )
 
   // Value Production
   syntax KItem ::= #value( Value )
@@ -64,6 +64,7 @@ module KMIR-MEMORY-API
                  | #loadPlace( Place )         [function]
                  | #loadLocal( Local )         [function]
                  | #loadPtr( Address, Value )  [function]
+                 | #makeFnPtr( String, Map )   [function]
 
   syntax Int ::= #readScalar( Value )          [function]
 endmodule
@@ -371,6 +372,10 @@ module KMIR
   imports BYTES
   imports K-EQUAL
 
+  // Lookup Fn Type
+
+  syntax String ::= #lookupFnType( Int ) [function]
+
   // Argument Evaluation
 
   syntax KItem ::= #operands( List )
@@ -442,6 +447,16 @@ module KMIR
        </k>
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
+
+  syntax Value ::= #evalConst( Constant )
+
+  rule <k> #evalConst( constant(_SPAN, _USERTY, const(KIND, ty(TID, _), constId(CID))) )
+        => #if KIND ==K constantKindZeroSized
+             #then #makeFnPtr( #lookupFnType(TID), .Map )
+             #else #loadConst( CID, .Map )
+           #fi
+           ...
+       </k>
 
   syntax Value ::= #getArg( List )     [function]
                  | #getFstArg( List )  [function]
