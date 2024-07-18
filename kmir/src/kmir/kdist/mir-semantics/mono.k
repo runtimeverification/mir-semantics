@@ -16,8 +16,8 @@ syntax StaticDef ::= Int // imported from crate
 
 syntax MaybeItemKind ::= someItemKind(ItemKind) [symbol(someItemKind)]
                        | "noItemKind" [symbol(noItemKind)]
-syntax MaybeBody ::= someBody(Body)[symbol(someBody)]
-                   | "noBody"
+syntax MaybeBody ::= someBody(Body) [symbol(someBody)]
+                   | "noBody" [symbol(noBody)]
 syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
 syntax MonoItem ::= monoItemFn(Instance)
                   | monoItemStatic(StaticDef)

@@ -353,7 +353,7 @@ def statement_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
             case {'StorageLive': int(local)}:
                 return KApply('statementKindStorageLive', (local_from_dict(local)))
             case {'StorageDead': int(local)}:
-                return KApply('statementKindStorageLive', (local_from_dict(local)))
+                return KApply('statementKindStorageDead', (local_from_dict(local)))
             case _:
                 _unimplemented()
 
@@ -362,7 +362,7 @@ def statement_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {'kind': str() | dict() as kind, 'span': int(span)}:
             return KApply(
-                'statement(_,_)_BODY_Serminator_StatementKind_Span',
+                'statement(_,_)_BODY_Statement_StatementKind_Span',
                 (statement_kind_from_dict(kind), span_from_dict(span)),
             )
     _raise_conversion_error('')
@@ -490,9 +490,15 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def maybe_body_from_dict(js: Mapping[str, object] | None) -> KApply:
+    if js is None:
+        return KApply('noBody', ())
+    return KApply('someBody', (body_from_dict(js)))
+
+
 def defid_from_dict(n: int) -> KApply:
-    #    return KApply('defId', (KApply('opaque', (KToken('\"' + str(n) + '\"', KSort('String'))))))
-    return KApply('defId', (KToken('\"' + str(n) + '\"', KSort('String'))))
+    #    return KApply('defId', (KToken('\"' + str(n) + '\"', KSort('String'))))
+    return KApply('defId', (KToken(str(n), KSort('Int'))))
 
 
 def item_kind_from_dict(js: str) -> KApply:
@@ -553,7 +559,7 @@ def mono_item_fn_from_dict(js: Mapping[str, object]) -> KApply:
                     defid_from_dict(id),
                     instance_kind_from_dict(instance_kind),
                     maybe_item_kind_from_dict(item_kind),
-                    body_from_dict(body),
+                    maybe_body_from_dict(body),
                     bodies_from_dict(promoted),
                 ),
             )

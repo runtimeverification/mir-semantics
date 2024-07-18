@@ -46,7 +46,7 @@ monoItemWrapper
           (
             statementKindAssign
             (
-              place(local(2), ),
+              place(local(4), ),
               rvalueBinaryOp
               (
                 binOpShr,
@@ -112,7 +112,7 @@ monoItemWrapper
           (
             statementKindAssign
             (
-              place(local(5), ),
+              place(local(6), ),
               rvalueAggregate
               (
                 aggregateKindTuple,
