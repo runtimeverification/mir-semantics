@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pyk.ktool.krun import KRun
 from pyk.kast.outer import read_kast_definition
+from pyk.ktool.krun import KRun
 
 from .kparse import KParse
 

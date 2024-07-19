@@ -3,14 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pyk.kast.att import Atts
-from pyk.kast.outer import KTerminal, KNonTerminal
-from pyk.kast.inner import KLabel, KApply, KSort
+from pyk.kast.inner import KApply, KLabel, KSort
+from pyk.kast.outer import KTerminal
 
 if TYPE_CHECKING:
     from pyk.kast.outer import KProduction, KDefinition
     from pyk.kast.inner import KInner
     from typing import Callable, Any
-
 
 from kmir.build import semantics
 
@@ -32,6 +31,7 @@ def _mir_terminal(prod: KProduction) -> str | None:
 
     return None
 
+
 def _mir_non_terminal(prod: KProduction) -> tuple[KSort, ...] | None:
     if _is_mir_production(prod) and not _mir_terminal(prod):
         return tuple(nt.sort for nt in prod.non_terminals)
@@ -49,9 +49,11 @@ def _build_parser(defn: KDefinition) -> Callable[[dict[Any, Any]], KInner]:
             if sort not in terminal_table:
                 terminal_table[sort] = {}
 
+            assert prod.klabel
             terminal_table[sort][term] = prod.klabel
 
         if non_terms := _mir_non_terminal(prod):
+            assert prod.klabel
             non_terminal_table[non_terms] = prod.klabel
 
     def _parse(data: dict[Any, Any]) -> KInner:
@@ -68,8 +70,8 @@ def _build_parser(defn: KDefinition) -> Callable[[dict[Any, Any]], KInner]:
 
         if isinstance(value, dict):
             arg = _parse(value)
-            arg_sort = KSort('IntTy') # TODO: HARD CODED!
-            label = non_terminal_table[(arg_sort,)] 
+            arg_sort = KSort('IntTy')  # TODO: HARD CODED!
+            label = non_terminal_table[(arg_sort,)]
             return KApply(label=label, args=[arg])
 
         if isinstance(value, list):
