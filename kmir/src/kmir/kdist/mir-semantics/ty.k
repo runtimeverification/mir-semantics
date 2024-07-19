@@ -164,12 +164,13 @@ syntax ExistentialPredicate ::= existentialPredicateTrait(ExistentialTraitRef)
 syntax BinderForExistentialPredicate ::= binderForExistentialPredicate(value: ExistentialPredicate, boundVars: BoundVariableKindList)
 syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, ""}
 
-syntax IntTy ::= "intTyIsize"
-               | "intTyI8"
-               | "intTyI16"
-               | "intTyI32"
-               | "intTyI64"
-               | "intTyI128"
+  syntax IntTy ::= "Isize"  [group(mir)]
+                 | "I8"     [group(mir)]
+                 | "I16"    [group(mir)]
+                 | "I32"    [group(mir)]
+                 | "I64"    [group(mir)]
+                 | "I128"   [group(mir)]
+
 syntax UintTy ::= "uintTyUsize"
                 | "uintTyU8"
                 | "uintTyU16"
@@ -184,7 +185,7 @@ syntax Movability ::= "movabilityStatic"
                     | "movabilityMovable"
 syntax RigidTy ::= "rigidTyBool"
                  | "rigidTyChar"
-                 | rigidTyInt(IntTy)
+                 | rigidTyInt(IntTy) [group(mir)]
                  | rigidTyUint(UintTy)
                  | rigidTyFloat(FloatTy)
                  | rigidTyAdt(AdtDef, GenericArgs)
