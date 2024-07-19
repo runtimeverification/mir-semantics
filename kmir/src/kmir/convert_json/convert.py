@@ -34,7 +34,7 @@ def bytes_from_dict(js: Sequence[int]) -> KApply:
 
 def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
     match js:
-        case [int(size), [int(_), int(allocid)]]:
+        case [int(size), int(allocid)]:
             return KApply(
                 'provenanceMapEntry',
                 KToken(str(size), KSort('Int')),
@@ -98,16 +98,16 @@ def constant_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
         _raise_conversion_error('')
 
 
-def constid_from_dict(n: int) -> KApply:
-    return KApply('constId(_)_TYPES_ConstId_Int', (KToken(str(n), KSort('Int'))))
+def mirconstid_from_dict(n: int) -> KApply:
+    return KApply('mirConstId(_)_TYPES_MirConstId_Int', (KToken(str(n), KSort('Int'))))
 
 
-def const_from_dict(js: Mapping[str, object]) -> KApply:
+def mirconst_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
-        case {'kind': str() | dict() as kind, 'ty': dict(ty), 'id': int(id_)}:
+        case {'kind': str() | dict() as kind, 'ty': int(ty), 'id': int(id_)}:
             return KApply(
-                'const(_,_,_)_TYPES_Const_ConstantKind_Ty_ConstId',
-                (constant_kind_from_dict(kind), ty_from_dict(ty), constid_from_dict(id_)),
+                'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                (constant_kind_from_dict(kind), ty_from_dict(ty), mirconstid_from_dict(id_)),
             )
 
     _raise_conversion_error('')
@@ -120,15 +120,15 @@ def maybe_user_type_annotation_index_from_dict(js: Mapping[str, object] | None) 
     _unimplemented()
 
 
-def constant_from_dict(js: Mapping[str, object]) -> KApply:
+def const_operand_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
-        case {'span': int(span), 'user_ty': dict() | None as user_ty, 'literal': dict(literal)}:
+        case {'span': int(span), 'user_ty': dict() | None as user_ty, 'const_': dict(literal)}:
             return KApply(
-                'constant(_,_,_)_BODY_Constant_Span_MaybeUserTypeAnnotationIndex_Const',
+                'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
                 (
                     span_from_dict(span),
                     maybe_user_type_annotation_index_from_dict(user_ty),
-                    const_from_dict(literal),
+                    mirconst_from_dict(literal),
                 ),
             )
 
@@ -141,7 +141,11 @@ def operand_from_dict(js: Mapping[str, object]) -> KApply:
 
     match js:
         case {'Constant': dict(constant)}:
-            return KApply('operandConstant(_)_BODY_Operand_Constant', (constant_from_dict(constant)))
+            return KApply('operandConstant', (const_operand_from_dict(constant)))
+        case {'Copy': dict(place)}:
+            return KApply('operandCopy', (place_from_dict(place)))
+        case {'Move': dict(place)}:
+            return KApply('operandMove', (place_from_dict(place)))
         case _:
             _unimplemented()
 
@@ -175,44 +179,53 @@ def place_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def basicblock_idx_from_dict(js: int) -> KApply:
+    return KApply('basicBlockIdx', (KToken(str(js), KSort('Int'))))
+
+
 def maybe_basicblock_idx_from_dict(js: int | None) -> KApply:
     if js is None:
-        return KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
+        return KApply('noBasicBlockIdx', ())
 
-    _unimplemented()
+    return KApply('someBasicBlockIdx', (basicblock_idx_from_dict(js)))
 
 
 def unwind_action_from_dict(js: str) -> KApply:
     if js == 'Continue':
         return KApply('unwindActionContinue_BODY_UnwindAction', ())
+    if js == 'Unreachable':
+        return KApply('unwindActionUnreachable_BODY_UnwindAction', ())
 
     _unimplemented()
 
 
-def terminator_kind_from_dict(js: Mapping[str, object]) -> KApply:
-    if len(js) != 1:
-        _raise_conversion_error('')
-
-    match js:
-        case {'Call': dict(call)}:
-            return KApply(
-                'terminatorKindCall',
-                (
-                    operand_from_dict(call['func']),
-                    operands_from_dict(call['args']),
-                    place_from_dict(call['destination']),
-                    maybe_basicblock_idx_from_dict(call['target']),
-                    unwind_action_from_dict(call['unwind']),
-                ),
-            )
-
-        case _:
-            _unimplemented()
+def terminator_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
+    if isinstance(js, str):
+        if js == 'Return':
+            return KApply('terminatorKindReturn', ())
+        _unimplemented()
+    else:
+        if len(js) != 1:
+            _raise_conversion_error('')
+        match js:
+            case {'Call': dict(call)}:
+                return KApply(
+                    'terminatorKindCall',
+                    (
+                        operand_from_dict(call['func']),
+                        operands_from_dict(call['args']),
+                        place_from_dict(call['destination']),
+                        maybe_basicblock_idx_from_dict(call['target']),
+                        unwind_action_from_dict(call['unwind']),
+                    ),
+                )
+            case _:
+                _unimplemented()
 
 
 def terminator_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
-        case {'kind': dict(kind), 'span': int(span)}:
+        case {'kind': str() | dict() as kind, 'span': int(span)}:
             return KApply(
                 'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
                 (terminator_kind_from_dict(kind), span_from_dict(span)),
@@ -221,8 +234,146 @@ def terminator_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
-def statement_from_dict(js: Mapping[str, object]) -> KApply:
+def binop_from_dict(s: str) -> KApply:
+    return KApply(f'binOp{s}', ())
+
+
+def rvalue_binary_op_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
+    if len(js) != 3:
+        _raise_conversion_error('')
+    match js:
+        case ['Shr' as s, dict(operand1), dict(operand2)]:
+            return KApply(
+                'rvalueBinaryOp',
+                (binop_from_dict(s), operand_from_dict(operand1), operand_from_dict(operand2)),
+            )
+
     _unimplemented()
+
+
+def cast_kind_from_dict(s: str) -> KApply:
+    return KApply(f'castKind{s}', ())
+
+
+def rvalue_cast_from_dict(js: Sequence[str | Mapping[str, object]]) -> KApply:
+    if len(js) != 3:
+        _raise_conversion_error('')
+    match js:
+        case ['IntToInt' as s, dict(operand), int(ty)]:
+            return KApply(
+                'rvalueCast',
+                (cast_kind_from_dict(s), operand_from_dict(operand), ty_from_dict(ty)),
+            )
+    _unimplemented()
+
+
+def variant_idx_from_dict(js: int) -> KApply:
+    return KApply('variantIdx', (KToken(str(js), KSort('Int'))))
+
+
+def field_idx_from_dict(js: int) -> KApply:
+    return KApply('fieldIdx', (KToken(str(js), KSort('Int'))))
+
+
+def maybe_field_idx_from_dict(js: int | None) -> KApply:
+    if js is None:
+        return KApply('noFieldIdx', ())
+
+    return KApply('someFieldIdx', (field_idx_from_dict(js)))
+
+
+def generic_arg_from_dict(js: Mapping[str, object]) -> KApply:
+    _unimplemented()
+
+
+def generic_args_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.genericArgs')
+
+    return KApply('genericArgs', (generic_arg_from_dict(js[0]), generic_args_from_dict(js[1:])))
+
+
+def aggregate_kind_adt_from_dict(
+    js: list[int | Sequence[Mapping[str, object]] | Mapping[str, object] | None]
+) -> KApply:
+    if len(js) != 5:
+        _raise_conversion_error('')
+    return KApply(
+        'aggregateKindAdt',
+        (
+            KToken(str(js[0]), KSort('Int')),
+            variant_idx_from_dict(js[1]),  # type: ignore
+            generic_args_from_dict(js[2]),  # type: ignore
+            maybe_user_type_annotation_index_from_dict(js[3]),  # type: ignore
+            maybe_field_idx_from_dict(js[4]),  # type: ignore
+        ),
+    )
+
+
+def rvalue_aggregate_from_dict(js: Sequence[str | Mapping[str, object] | Sequence[Mapping[str, object]]]) -> KApply:
+    if len(js) != 2:
+        _raise_conversion_error('')
+    match js:
+        case ['Tuple' as s, list(operands)]:
+            return KApply(
+                'rvalueAggregate',
+                (KApply(f'aggregateKind{s}', ()), operands_from_dict(operands)),
+            )
+        case [{'Adt': list(adtinfo)}, list(operands)]:
+            return KApply(
+                'rvalueAggregate',
+                (aggregate_kind_adt_from_dict(adtinfo), operands_from_dict(operands)),
+            )
+        case _:
+            _unimplemented()
+
+
+def rvalue_from_dict(js: Mapping[str, object]) -> KApply:
+    if len(js) != 1:
+        _raise_conversion_error('')
+    match js:
+        case {'BinaryOp': list(payload)}:
+            return rvalue_binary_op_from_dict(payload)
+        case {'Cast': list(payload)}:
+            return rvalue_cast_from_dict(payload)
+        case {'Aggregate': list(payload)}:
+            return rvalue_aggregate_from_dict(payload)
+        case _:
+            _unimplemented()
+
+
+def statement_kind_assign_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) != 2:
+        _raise_conversion_error('')
+    match js:
+        case [dict(place), dict(rval)]:
+            return KApply('statementKindAssign', (place_from_dict(place), rvalue_from_dict(rval)))
+    _raise_conversion_error('')
+
+
+def statement_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
+    if isinstance(js, str):
+        _unimplemented()
+    else:
+        match js:
+            case {'Assign': list(payload)}:
+                return statement_kind_assign_from_dict(payload)
+            case {'StorageLive': int(local)}:
+                return KApply('statementKindStorageLive', (local_from_dict(local)))
+            case {'StorageDead': int(local)}:
+                return KApply('statementKindStorageDead', (local_from_dict(local)))
+            case _:
+                _unimplemented()
+
+
+def statement_from_dict(js: Mapping[str, object]) -> KApply:
+    match js:
+        case {'kind': str() | dict() as kind, 'span': int(span)}:
+            return KApply(
+                'statement(_,_)_BODY_Statement_StatementKind_Span',
+                (statement_kind_from_dict(kind), span_from_dict(span)),
+            )
+    _raise_conversion_error('')
 
 
 def statements_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
@@ -252,10 +403,8 @@ def basicblocks_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
     )
 
 
-def ty_from_dict(js: Mapping[str, object]) -> KApply:
-    return KApply(
-        'ty', (KToken(str(js['id']), KSort('Int')), KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),)))
-    )
+def ty_from_dict(n: int) -> KApply:
+    return KApply('ty', (KToken(str(n), KSort('Int')), KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),))))
 
 
 def mutability_from_dict(s: str) -> KApply:
@@ -264,7 +413,7 @@ def mutability_from_dict(s: str) -> KApply:
 
 def localdecl_from_dict(js: Mapping[str, object]) -> KInner:
     match js:
-        case {'ty': dict(ty), 'span': int(span), 'mutability': str(mutability)}:
+        case {'ty': int(ty), 'span': int(span), 'mutability': str(mutability)}:
             return KApply(
                 'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
                 (ty_from_dict(ty), span_from_dict(span), mutability_from_dict(mutability)),
@@ -284,18 +433,9 @@ def arg_count_from_dict(n: int) -> KToken:
     return KToken(str(n), KSort('Int'))
 
 
-def var_debug_info_from_dict(js: Mapping[str, object]) -> KInner:
-    _unimplemented()
-
-
 def var_debug_infos_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
-    if len(js) == 0:
-        return KApply('.List{"___BODY_VarDebugInfos_VarDebugInfo_VarDebugInfos"}_VarDebugInfos', ())
-
-    return KApply(
-        '___BODY_VarDebugInfos_VarDebugInfo_VarDebugInfos',
-        (var_debug_info_from_dict(js[0]), var_debug_infos_from_dict(js[1:])),
-    )
+    # Ignore var_debug_info for now
+    return KApply('.List{"___BODY_VarDebugInfos_VarDebugInfo_VarDebugInfos"}_VarDebugInfos', ())
 
 
 def maybe_local_from_dict(js: int | Mapping[str, object] | None) -> KApply:
@@ -310,19 +450,27 @@ def span_from_dict(n: int) -> KApply:
     return KApply('span(_)_TYPES_Span_Int', (KToken(str(n), KSort('Int'))))
 
 
-def global_alloc_from_dict(js: Mapping[str, object]) -> KApply:
+def global_alloc_from_dict(js: tuple[int, Mapping[str, object]]) -> KApply:
     match js:
-        case {'Memory': dict(allocation)}:
-            return KApply('globalAllocMemory', (allocation_from_dict(allocation)))
+        case [int(n), {'Memory': dict(allocation)}]:
+            return KApply(
+                'globalAllocEntry',
+                (KToken(str(n), KSort('Int')), KApply('globalAllocMemory', (allocation_from_dict(allocation)))),
+            )
+        case [int(n), {'Static': int(s)}]:
+            return KApply(
+                'globalAllocEntry',
+                (KToken(str(n), KSort('Int')), KApply('globalAllocStatic', (KToken(str(s), KSort('Int'))))),
+            )
         case _:
             _unimplemented()
 
 
-def global_allocs_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+def global_allocs_from_dict(js: Sequence[tuple[int, Mapping[str, object]]]) -> KApply:
     if len(js) == 0:
-        return KApply('.globalAllocs')
+        return KApply('.globalAllocsMap')
 
-    return KApply('globalAllocs', (global_alloc_from_dict(js[0]), global_allocs_from_dict(js[1:])))
+    return KApply('globalAllocsMap', (global_alloc_from_dict(js[0]), global_allocs_from_dict(js[1:])))
 
 
 def body_from_dict(js: Mapping[str, object]) -> KApply:
@@ -350,8 +498,15 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
+def maybe_body_from_dict(js: Mapping[str, object] | None) -> KApply:
+    if js is None:
+        return KApply('noBody', ())
+    return KApply('someBody', (body_from_dict(js)))
+
+
 def defid_from_dict(n: int) -> KApply:
-    return KApply('defId', (KApply('opaque', (KToken('\"' + str(n) + '\"', KSort('String'))))))
+    #    return KApply('defId', (KToken('\"' + str(n) + '\"', KSort('String'))))
+    return KApply('defId', (KToken(str(n), KSort('Int'))))
 
 
 def item_kind_from_dict(js: str) -> KApply:
@@ -362,6 +517,25 @@ def item_kind_from_dict(js: str) -> KApply:
     if js == 'Const':
         return KApply('itemKindConst', ())
 
+    _unimplemented()
+
+
+def maybe_item_kind_from_dict(js: str) -> KApply:
+    if js == 'Fn':
+        return KApply('someItemKind', KApply('itemKindFn', ()))
+    if js == 'Static':
+        return KApply('someItemKind', KApply('itemKindStatic', ()))
+    if js == 'Const':
+        return KApply('someItemKind', KApply('itemKindConst', ()))
+    if js == '':
+        return KApply('noItemKind', ())
+
+    _unimplemented()
+
+
+def instance_kind_from_dict(js: str) -> KApply:
+    if js == 'Item':
+        return KApply('instanceKindItem', ())
     _unimplemented()
 
 
@@ -376,59 +550,107 @@ def string_from_dict(js: str) -> KToken:
     return KToken('\"' + js + '\"', KSort('String'))
 
 
-def crate_item_from_dict(js: Mapping[str, object]) -> KApply:
+def mono_item_fn_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {
             'name': str(name),
             'id': int(id),
-            'kind': str(kind),
+            'instance_kind': str(instance_kind),
+            'item_kind': str(item_kind),
             'body': [dict(body), None],
             'promoted': list(promoted),
-            'details': None,
         }:
             return KApply(
-                'crateItem',
+                'monoItemFn',
                 (
                     string_from_dict(name),
                     defid_from_dict(id),
-                    item_kind_from_dict(kind),
-                    body_from_dict(body),
+                    instance_kind_from_dict(instance_kind),
+                    maybe_item_kind_from_dict(item_kind),
+                    maybe_body_from_dict(body),
                     bodies_from_dict(promoted),
                 ),
             )
+
     _raise_conversion_error('')
 
 
-def crate_items_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
-    if len(js) == 0:
-        return KApply('.crateItems')
+def mono_item_from_dict(js: Mapping[str, object]) -> KApply:
+    match js:
+        case {'MonoItemFn': dict(payload)}:
+            return mono_item_fn_from_dict(payload)
+        case {'MonoItemStatic': dict()}:
+            _unimplemented()
+        case {'MonoItemGlobalAsm': dict()}:
+            _unimplemented()
+    _raise_conversion_error('')
 
-    return KApply('crateItems', (crate_item_from_dict(js[0]), crate_items_from_dict(js[1:])))
 
-
-def crate_from_dict(js: Mapping[str, object]) -> KApply:
+def mono_item_wrapper_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {
-            'name': str(name),
-            'items': list(items),
-            'foreign_modules': list(_),
-            'upstream_monomorphizations': str(_),
-            'upstream_monomorphizations_resolved': list(_),
+            'symbol_name': str(name),
+            'mono_item_kind': dict(mono_item),
+            'details': str(_) | None,
         }:
             return KApply(
-                'crate',
+                'monoItemWrapper',
                 (
                     string_from_dict(name),
-                    crate_items_from_dict(items),
+                    mono_item_from_dict(mono_item),
                 ),
             )
 
     _raise_conversion_error('')
+
+
+def mono_items_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.monoItems')
+
+    return KApply('monoItems', (mono_item_wrapper_from_dict(js[0]), mono_items_from_dict(js[1:])))
+
+
+def function_map_entry_from_dict(js: tuple[int, str]) -> KApply:
+    match js:
+        case [int(n), str(s)]:
+            return KApply(
+                'functionMapEntry',
+                (KToken(str(n), KSort('Int')), string_from_dict(s)),
+            )
+    _raise_conversion_error('')
+
+
+def functions_map_from_dict(js: Sequence[tuple[int, str]]) -> KApply:
+    if len(js) == 0:
+        return KApply('.functionsMap')
+
+    return KApply('functionsMap', (function_map_entry_from_dict(js[0]), functions_map_from_dict(js[1:])))
+
+
+def types_map_from_dict(js: Sequence[tuple[int, Mapping[str, object]]]) -> KApply:
+    # We ignore the types map for now
+    return KApply('.tysMap', ())
 
 
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
-        case {'crates': dict(crate), 'gallocs': list(gallocs)}:
-            return KApply('pgm', (crate_from_dict(crate), global_allocs_from_dict(gallocs)))
+        case {
+            'name': str(name),
+            'items': list(items),
+            'crate_functions': list(crate_functions),
+            'allocs': list(allocs),
+            'types': list(types),
+        }:
+            return KApply(
+                'pgm',
+                (
+                    string_from_dict(name),
+                    mono_items_from_dict(items),
+                    functions_map_from_dict(crate_functions),
+                    global_allocs_from_dict(allocs),
+                    types_map_from_dict(types),
+                ),
+            )
 
     _raise_conversion_error('')

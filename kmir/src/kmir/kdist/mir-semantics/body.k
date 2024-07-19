@@ -16,20 +16,20 @@ module BODY
   imports INT
   imports STRING
 
-syntax DefId ::= defId(Opaque) [symbol(defId)]
+syntax DefId ::= defId(Int) [symbol(defId)]
 syntax LocalDefId ::= localDefId(Opaque)
 syntax Coverage ::= coverage(Opaque)
 
 syntax Mutability ::= "mutabilityNot" | "mutabilityMut"
 syntax Safety ::= "safetyUnsafe" | "safetyNormal"
 
-syntax BasicBlockIdx ::= basicBlockIdx(Int)
-syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) | "noBasicBlockIdx"
+syntax BasicBlockIdx ::= basicBlockIdx(Int) [symbol(basicBlockIdx)]
+syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) [symbol(someBasicBlockIdx)]
+                           | "noBasicBlockIdx" [symbol(noBasicBlockIdx)]
 
-syntax Constant ::= constant(span: Span, userTy: MaybeUserTypeAnnotationIndex, literal: Const)
-syntax Operand ::= operandCopy(Place)
-                 | operandMove(Place)
-                 | operandConstant(Constant)
+syntax Operand ::= operandCopy(Place) [symbol(operandCopy)]
+                 | operandMove(Place) [symbol(operandMove)]
+                 | operandConstant(ConstOperand) [symbol(operandConstant)]
 syntax MaybeOperand ::= someOperand(Operand) | "noOperand"
 syntax Operands ::= List {Operand, ""}
 
@@ -75,7 +75,7 @@ syntax BinOp ::= "binOpAdd"
                | "binOpBitOr"
                | "binOpShl"
                | "binOpShlUnchecked"
-               | "binOpShr"
+               | "binOpShr" [symbol(binOpShr)]
                | "binOpShrUnchecked"
                | "binOpEq"
                | "binOpLt"
@@ -88,6 +88,7 @@ syntax BinOp ::= "binOpAdd"
 
 syntax UnOp ::= "unOpNot"
               | "unOpNeg"
+              | "unOpPtrMetadata"
 
 syntax NullOp ::= "nullOpSizeOf"
                 | "nullOpAlignOf"
@@ -121,7 +122,7 @@ syntax CastKind ::= "castKindPointerExposeAddress"
                   | "castKindPointerWithExposedProvenance"
                   | castKindPointerCoersion(PointerCoersion)
                   | "castKindDynStar"
-                  | "castKindIntToInt"
+                  | "castKindIntToInt" [symbol(castKindIntToInt)]
                   | "castKindFloatToInt"
                   | "castKindFloatToFloat"
                   | "castKindIntToFloat"
@@ -139,26 +140,27 @@ syntax FakeBorrowKind ::= "fakeBorrowKindDeep"
 syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)
 syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex)
                                       | "noUserTypeAnnotationIndex"
-syntax FieldIdx ::= fieldIdx(Int)
-syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx) | "noFieldIdx"
+syntax FieldIdx ::= fieldIdx(Int) [symbol(fieldIdx)]
+syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx) [symbol(someFieldIdx)]
+                      | "noFieldIdx" [symbol(noFieldIdx)]
 
 syntax AggregateKind ::= aggregateKindArray(Ty)
-                       | "aggregateKindTuple"
-                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx)
+                       | "aggregateKindTuple" [symbol(aggregateKindTuple)]
+                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx) [symbol(aggregateKindAdt)]
                        | aggregateKindClosure(ClosureDef, GenericArgs)
                        | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)
                        | aggregateKindRawPtr(Ty, Mutability)
 
 syntax RvalueAddressOf ::= rvalueAddressOf(Mutability, Place)
-syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands)
-syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand)
-syntax RvalueCast ::= rvalueCast(CastKind, Operand, Operand)
+syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands) [symbol(rvalueAggregate)]
+syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand) [symbol(rvalueBinaryOp)]
+syntax RvalueCast ::= rvalueCast(CastKind, Operand, Ty) [symbol(rvalueCast)]
 syntax RvalueCheckedBinaryOp ::= rvalueCheckedBinaryOp(BinOp, Operand, Operand)
 syntax RvalueCopyForDeref ::= rvalueCopyForDeref(Place)
 syntax RvalueDiscriminant ::= rvalueDiscriminant(Place)
 syntax RvalueLen ::= rvalueLen(Place)
 syntax RvalueRef ::= rvalueRef(Region, BorrowKind, Place)
-syntax RvalueRepeat ::= rvalueRepeat(Operand, Const)
+syntax RvalueRepeat ::= rvalueRepeat(Operand, TyConst)
 syntax RvalueShallowInitBox ::= rvalueShallowInitBox(Operand, Ty)
 syntax RvalueThreadLocalRef ::= rvalueThreadLocalRef(crate: CrateItem)
 syntax RvalueNullaryOp ::= rvalueNullaryOp(NullOp, Ty)
@@ -186,12 +188,12 @@ syntax Rvalue ::= RvalueAddressOf
 
 /////// Statements
 
-syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue)
+syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue) [symbol(statementKindAssign)]
 syntax StatementKindFakeRead ::= statementKindFakeRead(cause: FakeReadCause, place: Place)
 syntax StatementKindSetDiscriminant ::= statementKindSetDiscriminant(place: Place, variantIndex: VariantIdx)
 syntax StatementKindDeinit ::= deinit(place: Place)
-syntax StatementKindStorageLive ::= statementKindStorageLive(Local)
-syntax StatementKindStorageDead ::= statementKindStorageDead(Local)
+syntax StatementKindStorageLive ::= statementKindStorageLive(Local) [symbol(statementKindStorageLive)]
+syntax StatementKindStorageDead ::= statementKindStorageDead(Local) [symbol(statementKindStorageDead)]
 syntax StatementKindRetag ::= statementKindRetag(kind: RetagKind, place: Place)
 syntax StatementKindPlaceMention ::= statementKindPlaceMention(place: Place)
 syntax StatementKindAscribeUserType ::= statementKindAscribeUserType(place: Place, projections: UserTypeProjection, variance: Variance)
@@ -224,7 +226,7 @@ syntax TerminatorKindGoto ::= terminatorKindGoto(target: BasicBlockIdx)
 syntax TerminatorKindSwitchInt ::= terminatorKindSwitchInt(discr: Operand, targets: SwitchTargets)
 syntax TerminatorKindResume ::= "terminatorKindResume"
 syntax TerminatorKindAbort ::= "terminatorKindAbort"
-syntax TerminatorKindReturn ::= "terminatorKindReturn"
+syntax TerminatorKindReturn ::= "terminatorKindReturn" [symbol(terminatorKindReturn)]
 syntax TerminatorKindUnreachable ::= "terminatorKindUnreachable"
 syntax TerminatorKindDrop ::= terminatorKindDrop(place: Place, target: BasicBlockIdx, unwind: UnwindAction)
 syntax TerminatorKindCall ::= terminatorKindCall(
@@ -300,7 +302,7 @@ syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope)
 syntax VarDebugInfoFragment ::= varDebugInfoFragment(ty: Ty, projection: ProjectionElems)
 syntax MaybeVarDebugInfoFragment ::= someVarDebugInfoFragment(VarDebugInfoFragment)
                                    | "noVarDebugInfoFragment"
-syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: Const)
+syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: MirConst)
 syntax VarDebugInfoContents ::= varDebugInfoContentsPlace(Place)
                               | varDebugInfoContentsConst(ConstOperand)
 syntax MaybeInt ::= someInt(Int) | "noInt"

@@ -4,17 +4,19 @@ syntax AdtDef
 syntax Align
 syntax Allocation
 syntax BoundVariableKindList
-syntax Const
 syntax ClosureDef
 syntax CoroutineDef
 syntax ExistentialTraitRef
 syntax GenericArgs
 syntax ImplDef
+syntax MirConst
 syntax Movability
 syntax Region
 syntax Span
 syntax TraitDef
 syntax Ty
+syntax TyConst
+syntax TysMap
 syntax VariantIdx
 
 endmodule
@@ -47,7 +49,7 @@ syntax ParamDef ::= Int // imported from crate
 syntax RegionDef ::= Int // imported from crate
 syntax TraitDef ::= Int // imported from crate
 
-syntax VariantIdx ::= variantIdx(Int)
+syntax VariantIdx ::= variantIdx(Int) [symbol(variantIdx)]
 
 syntax DynKind ::= "dynKindDyn" | "dynKindDynStar"
 
@@ -66,11 +68,11 @@ syntax FieldDef ::= fieldDef(def: DefId, name: Symbol)
 
 syntax GenericArgKind ::= genericArgKindLifetime(Region)
                         | genericArgKindType(Ty)
-                        | genericArgKindConst(Const)
-syntax GenericArgs ::= List {GenericArgKind, ""}
+                        | genericArgKindConst(TyConst)
+syntax GenericArgs ::= List {GenericArgKind, ""} [symbol(genericArgs), terminator-symbol(.genericArgs)]
 
 syntax TermKind ::= termKindType(Ty)
-                  | termKindConst(Const)
+                  | termKindConst(TyConst)
 
 syntax AliasKind ::= "aliasKindProjection"
                    | "aliasKindInherent"
@@ -120,17 +122,28 @@ syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
 syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
+syntax TyEntry ::= tyEntry(Int, Ty)
+syntax TysMap ::= List {TyEntry, ""} [symbol(tysMap), terminator-symbol(.tysMap)]
 syntax Tys ::= List {Ty, ""}
 
-syntax Pattern ::= patternRange(start: MaybeConst, end: MaybeConst, includeEnd: Bool)
+syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
 
-syntax Const ::= const(kind: ConstantKind, ty: Ty, id: ConstId)
-syntax MaybeConst ::= someConst(Const) | "noConst"
-syntax ConstId ::= constId(Int)
+syntax TyConst ::= tyConst(kind: TyConstKind, id: TyConstId)
+syntax TyConstId ::= tyConstId(Int)
+syntax MaybeTyConst ::= someTyConst(TyConst) | "noTyConst"
+
+syntax MirConst ::= mirConst(kind: ConstantKind, ty: Ty, id: MirConstId)
+syntax MirConstId ::= mirConstId(Int)
+
+syntax TyConstKind ::= tyConstKindParam(ParamConst)
+                     | tyConstKindBound(DebruijinIndex, BoundVar)
+                     | tyConstKindUnevaluated(ConstDef, GenericArgs)
+                     | tyConstKindValue(Ty, Allocation)
+                     | tyConstKindZSTValue(Ty)
 
 syntax DebruijinIndex ::= debruijinIndex(Int)
 syntax UniverseIndex ::= universeIndex(Int)
-syntax EarlyParamRegion ::= earlyParamRegion(defId: RegionDef, index: Int, name: Symbol)
+syntax EarlyParamRegion ::= earlyParamRegion(index: Int, name: Symbol)
 syntax BoundVar ::= boundVar(Int)
 syntax BoundRegion ::= boundRegion(var: BoundVar, kind: BoundRegionKind)
 syntax PlaceholderForBoundRegion ::= placeholderForBoundRegion(universe: UniverseIndex, bound: BoundRegion)
@@ -163,8 +176,10 @@ syntax UintTy ::= "uintTyUsize"
                 | "uintTyU32"
                 | "uintTyU64"
                 | "uintTyU128"
-syntax FloatTy ::= "floatTyF32"
+syntax FloatTy ::= "floatTyF16"
+                 | "floatTyF32"
                  | "floatTyF64"
+                 | "floatTyF128"
 syntax Movability ::= "movabilityStatic"
                     | "movabilityMovable"
 syntax RigidTy ::= "rigidTyBool"
@@ -175,7 +190,7 @@ syntax RigidTy ::= "rigidTyBool"
                  | rigidTyAdt(AdtDef, GenericArgs)
                  | rigidTyForeign(ForeignDef)
                  | "rigidTyStr"
-                 | rigidTyArray(Ty, Const)
+                 | rigidTyArray(Ty, TyConst)
                  | rigidTyPat(Ty, Pattern)
                  | rigidTySlice(Ty)
                  | rigidTyRawPtr(Ty, Mutability)
@@ -216,7 +231,8 @@ syntax Allocation ::= allocation(
                         align: Align,
                         mutability: Mutability) [symbol(allocation)]
 
-syntax ConstantKind ::= constantKindAllocated(Allocation)
+syntax ConstantKind ::= constantKindTy(TyConst)
+                      | constantKindAllocated(Allocation)
                       | constantKindUnevaluated(UnevaluatedConst)
                       | constantKindParam(ParamConst)
                       | "constantKindZeroSized"
@@ -256,7 +272,7 @@ syntax PredicateKind ::= predicateKindClause(ClauseKind)
                        | predicateKindObjectSafe(TraitDef)
                        | predicateKindSubType(SubtypePredicate)
                        | predicateKindCoerce(CoercePredicate)
-                       | predicateKindConstEquate(Const, Const)
+                       | predicateKindConstEquate(TyConst, TyConst)
                        | "predicateKindAmbiguous"
                        | predicateKindAliasRelate(TermKind, TermKind, AliasRelationDirection)
 
@@ -264,9 +280,9 @@ syntax ClauseKind ::= clauseKindTrait(TraitPredicate)
                     | clauseKindRegionOutlives(RegionOutlivesPredicate)
                     | clauseKindTypeOutlives(TypeOutlivesPredicate)
                     | clauseKindProjection(ProjectionPredicate)
-                    | clauseKindConstArgHasType(Const, Ty)
+                    | clauseKindConstArgHasType(TyConst, Ty)
                     | clauseKindWellFormed(GenericArgKind)
-                    | clauseKindConstEvaluatable(Const)
+                    | clauseKindConstEvaluatable(TyConst)
 
 syntax TraitPredicate ::= traitPredicate(traitDef: TraitDef, polarity: PredicatePolarity)
 syntax RegionOutlivesPredicate ::= regionOutlivesPredicate(Region, Region)
