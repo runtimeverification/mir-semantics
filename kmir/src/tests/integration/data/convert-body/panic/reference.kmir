@@ -1,26 +1,278 @@
-crate(
-"panic_example",
-crateItem(
-"main",
-defId(opaque("0")),
-itemKindFn,
-body(
-basicBlock( , terminator(terminatorKindCall(operandConstant(constant(span(0), noUserTypeAnnotationIndex, const(constantKindZeroSized, ty(0, tyKindRigidTy(rigidTyUnimplemented)), constId(0)))), operandConstant(constant(span(1), noUserTypeAnnotationIndex, const(constantKindAllocated(allocation(someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(14) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0), provenanceMap(provenanceMapEntry(0, allocId(0))), align(8), mutabilityMut)), ty(1, tyKindRigidTy(rigidTyUnimplemented)), constId(1)))), place(local(1), ), noBasicBlockIdx, unwindActionContinue), span(2))),
-localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(3), mutabilityMut) localDecl(ty(3, tyKindRigidTy(rigidTyUnimplemented)), span(2), mutabilityMut),
-0,
-,
-noLocal,
-span(4)
-),
+"panic_example"
 
+monoItemWrapper
+(
+  "_ZN36_$LT$T$u20$as$u20$core..any..Any$GT$7type_id17h47f08f385fff4cbaE",
+  monoItemFn
+  (
+    "<&str as std::any::Any>::type_id",
+    defId(1),
+    instanceKindItem,
+    someItemKind(itemKindFn),
+    someBody
+    (
+      body
+      (
+        basicBlock
+        (
+          statement(statementKindStorageLive(local(2)), span(2))
+          statement(statementKindStorageLive(local(3)), span(2))
+          statement(statementKindStorageLive(local(5)), span(2)),
+          terminator
+          (
+            terminatorKindCall
+            (
+              operandConstant
+              (
+                constOperand
+                (
+                  span(0),
+                  noUserTypeAnnotationIndex,
+                  mirConst(constantKindZeroSized, ty(0, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(0))
+                )
+              ),
+              ,
+              place(local(2), ),
+              someBasicBlockIdx(basicBlockIdx(1)),
+              unwindActionUnreachable
+            ),
+            span(1)
+          )
+        )
+        basicBlock
+        (
+          statement(statementKindStorageLive(local(4)), span(4))
+          statement
+          (
+            statementKindAssign
+            (
+              place(local(4), ),
+              rvalueBinaryOp
+              (
+                binOpShr,
+                operandCopy(place(local(2), )),
+                operandConstant
+                (
+                  constOperand
+                  (
+                    span(5),
+                    noUserTypeAnnotationIndex,
+                    mirConst
+                    (
+                      constantKindAllocated
+                      (
+                        allocation
+                        (
+                          someByte(64) someByte(0) someByte(0) someByte(0),
+                          provenanceMap(),
+                          align(4),
+                          mutabilityMut
+                        )
+                      ),
+                      ty(1, tyKindRigidTy(rigidTyUnimplemented)),
+                      mirConstId(1)
+                    )
+                  )
+                )
+              )
+            ),
+            span(4)
+          )
+          statement
+          (
+            statementKindAssign
+            (
+              place(local(3), ),
+              rvalueCast
+              (
+                castKindIntToInt,
+                operandMove(place(local(4), )),
+                ty(2, tyKindRigidTy(rigidTyUnimplemented))
+              )
+            ),
+            span(6)
+          )
+          statement(statementKindStorageDead(local(4)), span(7))
+          statement
+          (
+            statementKindAssign
+            (
+              place(local(5), ),
+              rvalueCast
+              (
+                castKindIntToInt,
+                operandCopy(place(local(2), )),
+                ty(2, tyKindRigidTy(rigidTyUnimplemented))
+              )
+            ),
+            span(8)
+          )
+          statement(statementKindStorageLive(local(6)), span(9))
+          statement
+          (
+            statementKindAssign
+            (
+              place(local(6), ),
+              rvalueAggregate
+              (
+                aggregateKindTuple,
+                operandCopy(place(local(3), )) operandCopy(place(local(5), ))
+              )
+            ),
+            span(9)
+          )
+          statement
+          (
+            statementKindAssign
+            (
+              place(local(0), ),
+              rvalueAggregate
+              (
+                aggregateKindAdt
+                (
+                  0,
+                  variantIdx(0),
+                  ,
+                  noUserTypeAnnotationIndex,
+                  noFieldIdx
+                ),
+                operandMove(place(local(6), ))
+              )
+            ),
+            span(10)
+          )
+          statement(statementKindStorageDead(local(6)), span(11))
+          statement(statementKindStorageDead(local(5)), span(2))
+          statement(statementKindStorageDead(local(3)), span(2))
+          statement(statementKindStorageDead(local(2)), span(2)),
+          terminator
+          (
+            terminatorKindReturn,
+            span(3)
+          )
+        ),
+        localDecl(ty(3, tyKindRigidTy(rigidTyUnimplemented)), span(12), mutabilityMut)
+        localDecl(ty(4, tyKindRigidTy(rigidTyUnimplemented)), span(13), mutabilityNot)
+        localDecl(ty(5, tyKindRigidTy(rigidTyUnimplemented)), span(14), mutabilityNot)
+        localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(15), mutabilityNot)
+        localDecl(ty(5, tyKindRigidTy(rigidTyUnimplemented)), span(4), mutabilityMut)
+        localDecl(ty(2, tyKindRigidTy(rigidTyUnimplemented)), span(16), mutabilityNot)
+        localDecl(ty(6, tyKindRigidTy(rigidTyUnimplemented)), span(9), mutabilityMut),
+        1,
+        , ///vardebuginfo ignored
+        noLocal,
+        span(17)
+      )
+    ),
+    
+  )
 )
+monoItemWrapper
+(
+  "_ZN13panic_example4main17h2043a6493a4d8283E",
+  monoItemFn
+  (
+    "main",
+    defId(30),
+    instanceKindItem,
+    someItemKind(itemKindFn),
+    someBody
+    (
+      body
+      (
+        basicBlock
+        (
+          ,
+          terminator
+          (
+            terminatorKindCall
+            (
+              operandConstant
+              (
+                constOperand
+                (
+                  span(417),
+                  noUserTypeAnnotationIndex,
+                  mirConst(constantKindZeroSized, ty(112, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(53))
+                )
+              ),
+              operandConstant
+              (
+                constOperand
+                (
+                  span(418),
+                  noUserTypeAnnotationIndex,
+                  mirConst
+                  (
+                    constantKindAllocated
+                    (
+                      allocation
+                      (
+                        someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(14) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0),
+                        provenanceMap(provenanceMapEntry(0, allocId(8))),
+                        align(8),
+                        mutabilityMut
+                      )
+                    ),
+                    ty(32, tyKindRigidTy(rigidTyUnimplemented)),
+                    mirConstId(54)
+                  )
+                )
+              ),
+              place(local(1), ),
+              noBasicBlockIdx,
+              unwindActionContinue
+            ),
+            span(419)
+          )
+        ),
+        localDecl(ty(8, tyKindRigidTy(rigidTyUnimplemented)), span(420), mutabilityMut)
+        localDecl(ty(27, tyKindRigidTy(rigidTyUnimplemented)), span(419), mutabilityMut),
+        0,
+        , ///vardebuginfo ignored
+        noLocal,
+        span(421)
+      )
+    ),
+
+  )
 )
 
-globalAllocMemory(
-allocation(
-someByte(101) someByte(120) someByte(112) someByte(108) someByte(105) someByte(99) someByte(105) someByte(116) someByte(32) someByte(112) someByte(97) someByte(110) someByte(105) someByte(99),
-provenanceMap(),
-align(1),
-mutabilityNot
+functionMapEntry(1, "sym1")
+functionMapEntry(2, "sym2")
+
+globalAllocEntry
+(
+  0,
+  globalAllocMemory
+  (
+    allocation
+    (
+      someByte(117) someByte(110) someByte(115) someByte(97) someByte(102) someByte(101) someByte(32) someByte(112) someByte(114) someByte(101) someByte(99) someByte(111) someByte(110) someByte(100) someByte(105) someByte(116) someByte(105) someByte(111) someByte(110) someByte(40) someByte(115) someByte(41) someByte(32) someByte(118) someByte(105) someByte(111) someByte(108) someByte(97) someByte(116) someByte(101) someByte(100) someByte(58) someByte(32) someByte(112) someByte(116) someByte(114) someByte(58) someByte(58) someByte(114) someByte(101) someByte(97) someByte(100) someByte(95) someByte(118) someByte(111) someByte(108) someByte(97) someByte(116) someByte(105) someByte(108) someByte(101) someByte(32) someByte(114) someByte(101) someByte(113) someByte(117) someByte(105) someByte(114) someByte(101) someByte(115) someByte(32) someByte(116) someByte(104) someByte(97) someByte(116) someByte(32) someByte(116) someByte(104) someByte(101) someByte(32) someByte(112) someByte(111) someByte(105) someByte(110) someByte(116) someByte(101) someByte(114) someByte(32) someByte(97) someByte(114) someByte(103) someByte(117) someByte(109) someByte(101) someByte(110) someByte(116) someByte(32) someByte(105) someByte(115) someByte(32) someByte(97) someByte(108) someByte(105) someByte(103) someByte(110) someByte(101) someByte(100) someByte(32) someByte(97) someByte(110) someByte(100) someByte(32) someByte(110) someByte(111) someByte(110) someByte(45) someByte(110) someByte(117) someByte(108) someByte(108),
+      provenanceMap(),
+      align(1),
+      mutabilityNot
+    )
+  )
 )
+globalAllocEntry
+(
+  1,
+  globalAllocMemory
+  (
+    allocation
+    (
+      someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(42) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0),
+      provenanceMap(provenanceMapEntry(0, allocId(9))),
+      align(8),
+      mutabilityNot
+    )
+  )
 )
+globalAllocEntry
+(
+  7,
+  globalAllocStatic(99)
+)
+
+

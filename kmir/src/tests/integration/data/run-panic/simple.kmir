@@ -3,7 +3,7 @@
   basicBlock(
     emptyBlock,
     terminator(terminatorKindCall(
-    operandConstant(constant(span(0), noUserTypeAnnotationIndex, const(constantKindZeroSized, ty(0, tyKindRigidTy( rigidTyFnDef( 1, emptyArgs ))), constId(0)))),
+    operandConstant(constOperand(span(0), noUserTypeAnnotationIndex, mirConst(constantKindZeroSized, ty(0, tyKindRigidTy( rigidTyFnDef( 1, emptyArgs ))), mirConstId(0)))),
     emptyOperands,
     place(local(1), noProjection),
     noBasicBlockIdx,
