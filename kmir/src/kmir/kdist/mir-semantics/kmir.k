@@ -48,7 +48,8 @@ module KMIR-MEMORY-API
                  | #function( Body )
                  | #goto( MaybeBasicBlockIdx )
 
-  syntax KItem ::= #loadConst( Int )
+  syntax Value ::= #loadAllocation( Ty, Allocation ) [function]
+                 | #loadUnevalConst( Ty, Int, MaybePromoted ) [function]
 
   // Value Production
   syntax KItem ::= #evalOp( BinOp, List )
@@ -516,11 +517,15 @@ module KMIR
   rule <k> #evalArgs( ListItem( operandConstant(CONST)    => CONST ) _ARGS, _EVALED ) ... </k>
   rule <k> #evalArgs( ListItem( constOperand(_, _, CONST) => CONST ) _ARGS, _EVALED ) ... </k>
 
-  rule <k> #evalArgs( ListItem( mirConst( KIND, TY, mirConstId(CID) )  ) ARGS, EVALED ) 
-        => #if KIND ==K constantKindZeroSized
-              #then #evalArgs( ARGS, ListItem( #makeZeroConst( TY ) ) EVALED )
-              #else #evalArgs( ARGS, ListItem( #loadConst( CID ) ) EVALED )
-           #fi
+  rule <k> #evalArgs( ListItem( tyConst( KIND, _TID ) => KIND ) _ARGS, _EVALED ) ... </k>
+
+  rule <k> #evalArgs( ListItem( TYCONST:TyConstKind ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #evalTyConst(TYCONST) ) EVALED )
+           ...
+       </k>
+
+  rule <k> #evalArgs( ListItem( mirConst( KIND, TY, mirConstId(CID) )  ) ARGS, EVALED )
+        => #evalArgs( ARGS, ListItem( #evalMirConst( TY, CID, KIND ) ) EVALED )
            ...
        </k>
 
@@ -531,12 +536,22 @@ module KMIR
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
+  syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
+                 | #evalTyConst( TyConstKind )            [function]
+
+  rule #evalMirConst( TY, _CID, constantKindZeroSized                                                     ) => #makeZeroConst ( TY )
+  rule #evalMirConst( TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
+  rule #evalMirConst( TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
+  rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                   ) => #evalTyConst( KIND )
+
+  rule #evalTyConst( tyConstKindZSTValue( TY )            ) => #makeZeroConst( TY )
+  rule #evalTyConst( tyConstKindValue( TY, ALLOC )        ) => #loadAllocation( TY, ALLOC )
+  // NOTE: tyConstKindUnevaluated( DEF, ARGS ) should not occur --- all type system constants must be fully evaluated
+
   syntax Value ::= #makeZeroConst( Ty ) [function]
   rule #makeZeroConst( ty( ID, _) ) => #makeZeroConst( ty( ID ) )
   rule [[ #makeZeroConst( `ty(_)_TYPES_Ty_Int`( ID ) ) => #if ID in_keys(Funcs:Map) #then #makeFnPtrValue( { Funcs:Map [ ID ] }:>Int ) #else #makeStructValue(0, .List) #fi ]]
        <functions> Funcs:Map </functions>
-
-  syntax Value ::= #evalConst( ConstOperand )
 
   syntax Value ::= #getArg( List )     [function]
                  | #getFstArg( List )  [function]
