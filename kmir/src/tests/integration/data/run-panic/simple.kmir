@@ -1,17 +1,36 @@
 #init(0,
-0 |-> FnVal(
-  basicBlock(
-    emptyBlock,
-    terminator(terminatorKindCall(
-    operandConstant(constOperand(span(0), noUserTypeAnnotationIndex, mirConst(constantKindZeroSized, ty(0, tyKindRigidTy( rigidTyFnDef( 1, emptyArgs ))), mirConstId(0)))),
-    emptyOperands,
-    place(local(1), noProjection),
-    noBasicBlockIdx,
-    unwindActionContinue), span(2))),
-  2,
-  0)
-1 |-> FnVal(
-  basicBlock(emptyBlock, terminator(terminatorKindUnreachable, span(3))),
-  0,
-  0)
+0 |-> body(
+        basicBlock(
+          emptyBlock,
+          terminator(terminatorKindCall(
+          operandConstant(constOperand(span(0), noUserTypeAnnotationIndex, mirConst(constantKindZeroSized, ty(1), mirConstId(0)))),
+          emptyOperands,
+          place(local(0), noProjection),
+          someBasicBlockIdx( basicBlockIdx( 1 ) ),
+          unwindActionContinue), span(2))
+        )
+        basicBlock(
+          emptyBlock,
+          terminator(terminatorKindReturn, span(2))
+        )
+        ,
+        localDecl(ty(0), span(0), mutabilityMut),
+        0,
+        noVarDebug,
+        noLocal,
+        span(0)
+      )
+1 |-> body(
+        basicBlock(
+          statement( statementKindAssign(place( local(0), noProjection ), rvalueAddressOf( mutabilityNot, place( local(0), noProjection ) ) ), span(2) ),
+          terminator(terminatorKindReturn, span(3))),
+        localDecl(ty(0), span(0), mutabilityMut),
+        0,
+        noVarDebug,
+        noLocal,
+        span(0)
+      ),
+emptyMap,
+0 |-> 0
+1 |-> 1
 )
