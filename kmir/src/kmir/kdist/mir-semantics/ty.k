@@ -236,6 +236,9 @@ syntax ConstantKind ::= constantKindTy(TyConst)
                       | constantKindUnevaluated(UnevaluatedConst)
                       | constantKindParam(ParamConst)
                       | "constantKindZeroSized"
+                      | "constantKindNoOp" [symbol(constantKindNoOp)]
+                      | constantKindFnDef(id: Int) [symbol(constantKindFnDef)]
+                      | constantKindIntrinsic(name: Symbol) [symbol(constantKindIntrinsic)]
 
 syntax ParamConst ::= paramConst(index: Int, name: String)
 

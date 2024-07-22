@@ -28,7 +28,7 @@ monoItemWrapper
                 (
                   span(0),
                   noUserTypeAnnotationIndex,
-                  mirConst(constantKindZeroSized, ty(0, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(0))
+                  mirConst(constantKindFnDef(101607534795001661171744142039246446589866164119921093626357884962576494844730), ty(0, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(0))
                 )
               ),
               ,
@@ -193,7 +193,7 @@ monoItemWrapper
                 (
                   span(417),
                   noUserTypeAnnotationIndex,
-                  mirConst(constantKindZeroSized, ty(112, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(53))
+                  mirConst(constantKindFnDef(82814223631423340973322886089092265191457705702674733133346357022966146822619), ty(112, tyKindRigidTy(rigidTyUnimplemented)), mirConstId(53))
                 )
               ),
               operandConstant
@@ -237,9 +237,6 @@ monoItemWrapper
 
   )
 )
-
-functionMapEntry(1, "sym1")
-functionMapEntry(2, "sym2")
 
 globalAllocEntry
 (

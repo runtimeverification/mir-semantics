@@ -10,6 +10,11 @@ if TYPE_CHECKING:
 from pyk.kast.inner import KApply, KSort, KToken
 
 
+import hashlib
+
+func_map = {}
+
+
 def _raise_conversion_error(msg: str) -> NoReturn:
     raise AssertionError(msg)
 
@@ -98,12 +103,33 @@ def constant_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
         _raise_conversion_error('')
 
 
+def constant_kind_from_func_map(n: int) -> KApply:
+    # This will throw KeyError exceptipn if the key (type id) is not in the map.
+    func = func_map[n]
+    match func:
+        case {'NormalSym': str(s)}:
+            hash_object = hashlib.sha256(s.encode('utf-8'))
+            hash_value = int.from_bytes(hash_object.digest(), 'big')
+            return KApply(f'constantKindFnDef', (KToken(str(hash_value), KSort('Int'))))
+        case {'IntrinsicSym': str(s)}:
+            return KApply(f'constantKindIntrinsic', (string_from_dict(s)))
+        case {'NoOpSym': str('')}:
+            return KApply(f'constantKindNoOp', ())
+        case _:
+            _raise_conversion_error('')
+
+
 def mirconstid_from_dict(n: int) -> KApply:
     return KApply('mirConstId(_)_TYPES_MirConstId_Int', (KToken(str(n), KSort('Int'))))
 
 
 def mirconst_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
+        case {'kind': 'ZeroSized', 'ty': int(ty), 'id': int(id_)}:
+            return KApply(
+                'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                (constant_kind_from_func_map(ty), ty_from_dict(ty), mirconstid_from_dict(id_)),
+            )
         case {'kind': str() | dict() as kind, 'ty': int(ty), 'id': int(id_)}:
             return KApply(
                 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
@@ -611,21 +637,20 @@ def mono_items_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
     return KApply('monoItems', (mono_item_wrapper_from_dict(js[0]), mono_items_from_dict(js[1:])))
 
 
-def function_map_entry_from_dict(js: tuple[int, str]) -> KApply:
+def function_map_entry_from_dict(js: tuple[int, Mapping[str, str]]) -> None:
     match js:
-        case [int(n), str(s)]:
-            return KApply(
-                'functionMapEntry',
-                (KToken(str(n), KSort('Int')), string_from_dict(s)),
-            )
-    _raise_conversion_error('')
+        case [int(n), dict(payload)]:
+            func_map[n] = payload
+        case _:
+            _raise_conversion_error('')
 
 
-def functions_map_from_dict(js: Sequence[tuple[int, str]]) -> KApply:
+def functions_map_from_dict(js: Sequence[tuple[int, Mapping[str, str]]]) -> None:
     if len(js) == 0:
-        return KApply('.functionsMap')
+        return
 
-    return KApply('functionsMap', (function_map_entry_from_dict(js[0]), functions_map_from_dict(js[1:])))
+    function_map_entry_from_dict(js[0])
+    functions_map_from_dict(js[1:])
 
 
 def types_map_from_dict(js: Sequence[tuple[int, Mapping[str, object]]]) -> KApply:
@@ -637,17 +662,17 @@ def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
         case {
             'name': str(name),
-            'items': list(items),
             'crate_functions': list(crate_functions),
+            'items': list(items),
             'allocs': list(allocs),
             'types': list(types),
         }:
+            functions_map_from_dict(crate_functions),
             return KApply(
                 'pgm',
                 (
                     string_from_dict(name),
                     mono_items_from_dict(items),
-                    functions_map_from_dict(crate_functions),
                     global_allocs_from_dict(allocs),
                     types_map_from_dict(types),
                 ),

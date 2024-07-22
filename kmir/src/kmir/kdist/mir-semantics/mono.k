@@ -34,7 +34,4 @@ syntax InstanceKind ::= "instanceKindItem" [symbol(instanceKindItem)]
                       | "instanceKindShim"
 syntax InstanceDef ::= instanceDef(Int)
 
-syntax FunctionMapEntry ::= functionMapEntry(Int, Symbol) [symbol(functionMapEntry)]
-syntax FunctionsMap ::= List {FunctionMapEntry, ""} [symbol(functionsMap), terminator-symbol(.functionsMap)]
-
 endmodule
