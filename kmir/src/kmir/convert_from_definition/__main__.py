@@ -1,93 +1,148 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from pyk.kast.att import Atts
-from pyk.kast.inner import KApply, KLabel, KSort
+from pyk.kast.inner import KApply, KSort
 from pyk.kast.outer import KTerminal
 
 if TYPE_CHECKING:
-    from pyk.kast.outer import KProduction, KDefinition
-    from pyk.kast.inner import KInner
-    from typing import Callable, Any
+    from collections.abc import Iterable
+    from pyk.kast.outer import KDefinition, KProduction
 
 from kmir.build import semantics
 
-
-def _sort_name_to_json(sort: str) -> str:
-    return {
-        'IntTy': 'Int',
-    }.get(sort, sort)
+JSON = dict[object, object]
+ParseResult = tuple[KApply, KSort] | None
 
 
 def _is_mir_production(prod: KProduction) -> bool:
     group = prod.att.get(Atts.GROUP)
-    return group is not None and group == 'mir'
+    symbol = prod.att.get(Atts.SYMBOL)
+    return group is not None and group == 'mir' and symbol is not None
 
 
-def _mir_terminal(prod: KProduction) -> str | None:
-    if _is_mir_production(prod) and len(prod.items) == 1 and isinstance(prod.items[0], KTerminal):
-        return prod.items[0].value
-
-    return None
-
-
-def _mir_non_terminal(prod: KProduction) -> tuple[KSort, ...] | None:
-    if _is_mir_production(prod) and not _mir_terminal(prod):
-        return tuple(nt.sort for nt in prod.non_terminals)
-
-    return None
+def _get_symbol(prod: KProduction) -> str:
+    symbol = prod.att.get(Atts.SYMBOL)
+    assert symbol
+    return symbol
 
 
-def _build_parser(defn: KDefinition) -> Callable[[dict[Any, Any]], KInner]:
-    terminal_table: dict[str, dict[str, KLabel]] = {}
-    non_terminal_table: dict[tuple[KSort, ...], KLabel] = {}
-
-    for prod in defn.productions:
-        if term := _mir_terminal(prod):
-            sort = _sort_name_to_json(prod.sort.name)
-            if sort not in terminal_table:
-                terminal_table[sort] = {}
-
-            assert prod.klabel
-            terminal_table[sort][term] = prod.klabel
-
-        if non_terms := _mir_non_terminal(prod):
-            assert prod.klabel
-            non_terminal_table[non_terms] = prod.klabel
-
-    def _parse(data: dict[Any, Any]) -> KInner:
-        if len(data) != 1:
-            raise RuntimeError
-
-        sort, value = list(data.items())[0]
-
-        if isinstance(value, str):
-            if sort in terminal_table:
-                if value in terminal_table[sort]:
-                    label = terminal_table[sort][value]
-                    return KApply(label=label)
-
-        if isinstance(value, dict):
-            arg = _parse(value)
-            arg_sort = KSort('IntTy')  # TODO: HARD CODED!
-            label = non_terminal_table[(arg_sort,)]
-            return KApply(label=label, args=[arg])
-
-        if isinstance(value, list):
-            pass
-
-        raise RuntimeError
-
-    return _parse
+def _is_mir_terminal(prod: KProduction) -> bool:
+    return _is_mir_production(prod) and len(prod.items) == 1 and isinstance(prod.items[0], KTerminal)
 
 
-def main() -> None:
-    tools = semantics()
-    defn = tools.definition
+def _json_terminal(json: JSON) -> tuple[str, str] | None:
+    if len(json) != 1:
+        return None
 
-    parser = _build_parser(defn)
+    (k, v), *_ = list(json.items())
+    if not isinstance(k, str) or not isinstance(v, str):
+        return None
 
-    data = {'RigidTy': {'Int': 'I32'}}
-    kast = parser(data)
-    print(tools.kprint.pretty_print(kast))
+    return (k, v)
+
+
+def _json_non_terminal(json: JSON) -> tuple[str, object] | None:
+    if len(json) != 1:
+        return None
+
+    (k, v), *_ = list(json.items())
+    if not isinstance(k, str):
+        return None
+
+    return (k, v)
+
+
+def _terminal_symbol(sort: str, value: str) -> str:
+    return f'{sort}::{value}'
+
+
+def _sort_name_from_json(sort: str) -> str:
+    return {
+        'Int': 'IntTy',
+    }.get(sort, sort)
+
+
+def _non_terminal_sorts(prod: KProduction) -> Iterable[KSort]:
+    return (nt.sort for nt in prod.non_terminals)
+
+
+class Parser:
+    __definition: KDefinition
+
+    def __init__(
+        self,
+        defn: KDefinition,
+    ):
+        self.__definition = defn
+
+    def parse_mir_json(self, json: JSON) -> ParseResult:
+        maybe_terminal = self._parse_terminal(json)
+        if maybe_terminal is not None:
+            return maybe_terminal
+
+        maybe_non_terminal = self._parse_non_terminal(json)
+        if maybe_non_terminal is not None:
+            return maybe_non_terminal
+
+        return self._parse_other(json)
+
+    def _parse_terminal(self, json: JSON) -> ParseResult:
+        maybe_terminal = _json_terminal(json)
+        if maybe_terminal is None:
+            return None
+
+        sort, value = maybe_terminal
+        sort = _sort_name_from_json(sort)
+
+        return KApply(_terminal_symbol(sort, value)), KSort(sort)
+
+    def _parse_non_terminal(self, json: JSON) -> ParseResult:
+        maybe_non_terminal = _json_non_terminal(json)
+        if maybe_non_terminal is None:
+            return None
+
+        sort, sub_object = maybe_non_terminal
+        sort = _sort_name_from_json(sort)
+
+        if not isinstance(sub_object, dict):
+            return None
+
+        # TODO: this will need a different entrypoint when you have N > 1
+        # children; it'll do for now
+        maybe_child = self.parse_mir_json(sub_object)
+        if maybe_child is None:
+            return None
+
+        child_value, child_sort = maybe_child
+        if (child_sort,) not in self._mir_non_terminal_symbols:
+            return None
+
+        symbol = self._mir_non_terminal_symbols[(child_sort,)]
+
+        return KApply(symbol, args=(child_value,)), KSort(sort)
+
+    def _parse_other(self, json: JSON) -> ParseResult:
+        return None
+
+    @cached_property
+    def _mir_productions(self) -> tuple[KProduction, ...]:
+        return tuple(prod for prod in self.__definition.productions if _is_mir_production(prod))
+
+    @cached_property
+    def _mir_terminals(self) -> tuple[KProduction, ...]:
+        return tuple(prod for prod in self._mir_productions if _is_mir_terminal(prod))
+
+    @cached_property
+    def _mir_non_terminals(self) -> tuple[KProduction, ...]:
+        return tuple(prod for prod in self._mir_productions if not _is_mir_terminal(prod))
+
+    @cached_property
+    def _mir_terminal_symbols(self) -> set[str]:
+        return {_get_symbol(prod) for prod in self._mir_terminals}
+
+    @cached_property
+    def _mir_non_terminal_symbols(self) -> dict[tuple[KSort, ...], str]:
+        return {tuple(_non_terminal_sorts(p)): _get_symbol(p) for p in self._mir_non_terminals}
