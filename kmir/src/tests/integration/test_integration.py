@@ -54,6 +54,10 @@ SCHEMA_PARSE_DATA = [
     ({'Float': 'F32'}, KApply('FloatTy::F32'), KSort('FloatTy')),
     ({'Float': 'F64'}, KApply('FloatTy::F64'), KSort('FloatTy')),
     ({'Float': 'F128'}, KApply('FloatTy::F128'), KSort('FloatTy')),
+    ({'RigidTy': 'Bool'}, KApply('RigidTy::Bool'), KSort('RigidTy')),
+    ({'RigidTy': {'Int': 'I8'}}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
+    ({'RigidTy': {'Uint': 'Usize'}}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
+    ({'RigidTy': {'Float': 'F128'}}, KApply('RigidTy::Float', (KApply('FloatTy::F128'))), KSort('RigidTy')),
 ]
 
 

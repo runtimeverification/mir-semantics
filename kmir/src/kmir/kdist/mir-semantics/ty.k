@@ -186,14 +186,14 @@ syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, "
   syntax Movability ::= "movabilityStatic"
                       | "movabilityMovable"
 
-  syntax RigidTy ::= "rigidTyBool"
-                   | "rigidTyChar"
+  syntax RigidTy ::= "rigidTyBool" [group(mir), symbol(RigidTy::Bool)]
+                   | "rigidTyChar" [group(mir), symbol(RigidTy::Char)]
                    | rigidTyInt(IntTy)  [group(mir), symbol(RigidTy::Int)]
                    | rigidTyUint(UintTy)  [group(mir), symbol(RigidTy::Uint)]
                    | rigidTyFloat(FloatTy)  [group(mir), symbol(RigidTy::Float)]
                    | rigidTyAdt(AdtDef, GenericArgs)
                    | rigidTyForeign(ForeignDef)
-                   | "rigidTyStr"
+                   | "rigidTyStr" [group(mir), symbol(RigidTy::Str)]
                    | rigidTyArray(Ty, TyConst)
                    | rigidTyPat(Ty, Pattern)
                    | rigidTySlice(Ty)
@@ -204,7 +204,7 @@ syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, "
                    | rigidTyClosure(ClosureDef, GenericArgs)
                    | rigidTyCoroutine(CoroutineDef, GenericArgs, Movability)
                    | rigidTyDynamic(BindersForExistentialPredicate, Region, DynKind)
-                   | "rigidTyNever"
+                   | "rigidTyNever" [group(mir), symbol(RigidTy::Never)]
                    | rigidTyTuple(Tys)
                    | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
                    | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
