@@ -316,11 +316,12 @@ module KMIR-MEMORY-IMPL [private]
     requires 0 <=Int LIdx andBool LIdx <Int size(locals(StkFrm))
 
   rule <k> #loadFnPtr( Ptr( GlobalAddr( Addr, .ProjectionElems ), NoValue ) )
-        => #function( { Mem [ Addr ] }:>Body )
+        => #function( { { Mem [ Addr ] }:>List [0] }:>Body )
            ...
        </k>
        <globals> Mem </globals>
-       requires isBody(Mem [ Addr ])
+       requires isList(Mem [ Addr ])
+        andBool isBody({ Mem [ Addr ] }:>List [0])
 
   // Address Manipulation
 
