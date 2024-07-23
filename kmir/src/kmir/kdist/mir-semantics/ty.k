@@ -209,10 +209,10 @@ syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, "
                    | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
                    | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
 
-syntax TyKind ::= tyKindRigidTy(RigidTy)          [symbol(tyKindRigidTy)]
-                | tyKindAlias(AliasKind, AliasTy) [symbol(tyKindAlias)]
-                | tyKindParam(ParamTy)            [symbol(tyKindParam)]
-                | tyKindBound(Int, BoundTy)       [symbol(tyKindBound)]
+syntax TyKind ::= tyKindRigidTy(RigidTy)          [group(mir), symbol(TyKind::RigidTy)]
+                | tyKindAlias(AliasKind, AliasTy) [group(mir), symbol(TyKind::Alias)]
+                | tyKindParam(ParamTy)            [group(mir), symbol(TyKind::Param)]
+                | tyKindBound(Int, BoundTy)       [group(mir), symbol(TyKind::Bound)]
 
 syntax TypeAndMut ::= typeAndMut(ty: Ty, mutability: Mutability)
 
