@@ -39,6 +39,21 @@ def test_convert_body(test_dir: Path, tools: Tools) -> None:
 
 SCHEMA_PARSE_DATA = [
     ({'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
+    ({'Int': 'I8'}, KApply('IntTy::I8'), KSort('IntTy')),
+    ({'Int': 'I16'}, KApply('IntTy::I16'), KSort('IntTy')),
+    ({'Int': 'I32'}, KApply('IntTy::I32'), KSort('IntTy')),
+    ({'Int': 'I64'}, KApply('IntTy::I64'), KSort('IntTy')),
+    ({'Int': 'I128'}, KApply('IntTy::I128'), KSort('IntTy')),
+    ({'Uint': 'Usize'}, KApply('UintTy::Usize'), KSort('UintTy')),
+    ({'Uint': 'U8'}, KApply('UintTy::U8'), KSort('UintTy')),
+    ({'Uint': 'U16'}, KApply('UintTy::U16'), KSort('UintTy')),
+    ({'Uint': 'U32'}, KApply('UintTy::U32'), KSort('UintTy')),
+    ({'Uint': 'U64'}, KApply('UintTy::U64'), KSort('UintTy')),
+    ({'Uint': 'U128'}, KApply('UintTy::U128'), KSort('UintTy')),
+    ({'Float': 'F16'}, KApply('FloatTy::F16'), KSort('FloatTy')),
+    ({'Float': 'F32'}, KApply('FloatTy::F32'), KSort('FloatTy')),
+    ({'Float': 'F64'}, KApply('FloatTy::F64'), KSort('FloatTy')),
+    ({'Float': 'F128'}, KApply('FloatTy::F128'), KSort('FloatTy')),
 ]
 
 

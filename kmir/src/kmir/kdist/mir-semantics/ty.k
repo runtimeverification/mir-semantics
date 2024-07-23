@@ -165,46 +165,49 @@ syntax BinderForExistentialPredicate ::= binderForExistentialPredicate(value: Ex
 syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, ""}
 
   syntax IntTy ::= "intTyIsize"  [group(mir), symbol(IntTy::Isize)]
-                 | "intTyI8"     [group(mir)]
-                 | "intTyI16"    [group(mir)]
-                 | "intTyI32"    [group(mir)]
-                 | "intTyI64"    [group(mir)]
-                 | "intTyI128"   [group(mir)]
+                 | "intTyI8"     [group(mir), symbol(IntTy::I8)]
+                 | "intTyI16"    [group(mir), symbol(IntTy::I16)]
+                 | "intTyI32"    [group(mir), symbol(IntTy::I32)]
+                 | "intTyI64"    [group(mir), symbol(IntTy::I64)]
+                 | "intTyI128"   [group(mir), symbol(IntTy::I128)]
 
-syntax UintTy ::= "uintTyUsize"
-                | "uintTyU8"
-                | "uintTyU16"
-                | "uintTyU32"
-                | "uintTyU64"
-                | "uintTyU128"
-syntax FloatTy ::= "floatTyF16"
-                 | "floatTyF32"
-                 | "floatTyF64"
-                 | "floatTyF128"
-syntax Movability ::= "movabilityStatic"
-                    | "movabilityMovable"
-syntax RigidTy ::= "rigidTyBool"
-                 | "rigidTyChar"
-                 | rigidTyInt(IntTy) [group(mir), symbol(RigidTy::Int)]
-                 | rigidTyUint(UintTy)
-                 | rigidTyFloat(FloatTy)
-                 | rigidTyAdt(AdtDef, GenericArgs)
-                 | rigidTyForeign(ForeignDef)
-                 | "rigidTyStr"
-                 | rigidTyArray(Ty, TyConst)
-                 | rigidTyPat(Ty, Pattern)
-                 | rigidTySlice(Ty)
-                 | rigidTyRawPtr(Ty, Mutability)
-                 | rigidTyRef(Region, Ty, Mutability)
-                 | rigidTyFnDef(FnDef, GenericArgs)
-                 | rigidTyFnPtr(PolyFnSig)
-                 | rigidTyClosure(ClosureDef, GenericArgs)
-                 | rigidTyCoroutine(CoroutineDef, GenericArgs, Movability)
-                 | rigidTyDynamic(BindersForExistentialPredicate, Region, DynKind)
-                 | "rigidTyNever"
-                 | rigidTyTuple(Tys)
-                 | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
-                 | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
+  syntax UintTy ::= "uintTyUsize" [group(mir), symbol(UintTy::Usize)]
+                  | "uintTyU8"    [group(mir), symbol(UintTy::U8)]
+                  | "uintTyU16"   [group(mir), symbol(UintTy::U16)]
+                  | "uintTyU32"   [group(mir), symbol(UintTy::U32)]
+                  | "uintTyU64"   [group(mir), symbol(UintTy::U64)]
+                  | "uintTyU128"  [group(mir), symbol(UintTy::U128)]
+
+  syntax FloatTy ::= "floatTyF16"   [group(mir), symbol(FloatTy::F16)]
+                   | "floatTyF32"   [group(mir), symbol(FloatTy::F32)]
+                   | "floatTyF64"   [group(mir), symbol(FloatTy::F64)]
+                   | "floatTyF128"  [group(mir), symbol(FloatTy::F128)]
+
+  syntax Movability ::= "movabilityStatic"
+                      | "movabilityMovable"
+
+  syntax RigidTy ::= "rigidTyBool"
+                   | "rigidTyChar"
+                   | rigidTyInt(IntTy)  [group(mir), symbol(RigidTy::Int)]
+                   | rigidTyUint(UintTy)  [group(mir), symbol(RigidTy::Uint)]
+                   | rigidTyFloat(FloatTy)  [group(mir), symbol(RigidTy::Float)]
+                   | rigidTyAdt(AdtDef, GenericArgs)
+                   | rigidTyForeign(ForeignDef)
+                   | "rigidTyStr"
+                   | rigidTyArray(Ty, TyConst)
+                   | rigidTyPat(Ty, Pattern)
+                   | rigidTySlice(Ty)
+                   | rigidTyRawPtr(Ty, Mutability)
+                   | rigidTyRef(Region, Ty, Mutability)
+                   | rigidTyFnDef(FnDef, GenericArgs)
+                   | rigidTyFnPtr(PolyFnSig)
+                   | rigidTyClosure(ClosureDef, GenericArgs)
+                   | rigidTyCoroutine(CoroutineDef, GenericArgs, Movability)
+                   | rigidTyDynamic(BindersForExistentialPredicate, Region, DynKind)
+                   | "rigidTyNever"
+                   | rigidTyTuple(Tys)
+                   | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
+                   | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
 
 syntax TyKind ::= tyKindRigidTy(RigidTy)          [symbol(tyKindRigidTy)]
                 | tyKindAlias(AliasKind, AliasTy) [symbol(tyKindAlias)]

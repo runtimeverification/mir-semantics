@@ -62,6 +62,8 @@ def _terminal_symbol(sort: str, value: str) -> str:
 def _sort_name_from_json(sort: str) -> str:
     return {
         'Int': 'IntTy',
+        'Uint': 'UintTy',
+        'Float': 'FloatTy',
     }.get(sort, sort)
 
 
