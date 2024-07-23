@@ -14,14 +14,10 @@ module MONO
 
 syntax StaticDef ::= Int // imported from crate
 
-syntax MaybeItemKind ::= someItemKind(ItemKind) [symbol(someItemKind)]
-                       | "noItemKind" [symbol(noItemKind)]
-syntax MaybeBody ::= someBody(Body) [symbol(someBody)]
-                   | "noBody" [symbol(noBody)]
 syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
 syntax MonoItem ::= monoItemFn(Instance)
                   | monoItemStatic(StaticDef)
-                  | monoItemFn(name: Symbol, defId: DefId, instanceKind: InstanceKind, itemKind: MaybeItemKind, body: MaybeBody, promoted: Bodies) [symbol(monoItemFn)]
+                  | monoItemFn(name: Symbol, defId: DefId, body: Bodies) [symbol(monoItemFn)]
                   | monoItemStatic(name: Symbol, defId: DefId, allocation: MaybeAllocation)
                   | monoItemGlobalAsm(Opaque)
 syntax MonoItemWrapper ::= monoItemWrapper(symbolName: Symbol, monoItemKind: MonoItem) [symbol(monoItemWrapper)]

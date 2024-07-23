@@ -12,7 +12,8 @@ from pyk.kast.inner import KApply, KSort, KToken
 
 import hashlib
 
-func_map = {}
+
+func_map: dict[int, Mapping[str, str]] = {}
 
 
 def _raise_conversion_error(msg: str) -> NoReturn:
@@ -110,11 +111,11 @@ def constant_kind_from_func_map(n: int) -> KApply:
         case {'NormalSym': str(s)}:
             hash_object = hashlib.sha256(s.encode('utf-8'))
             hash_value = int.from_bytes(hash_object.digest(), 'big')
-            return KApply(f'constantKindFnDef', (KToken(str(hash_value), KSort('Int'))))
+            return KApply('constantKindFnDef', (KToken(str(hash_value), KSort('Int'))))
         case {'IntrinsicSym': str(s)}:
-            return KApply(f'constantKindIntrinsic', (string_from_dict(s)))
+            return KApply('constantKindIntrinsic', (string_from_dict(s)))
         case {'NoOpSym': str('')}:
-            return KApply(f'constantKindNoOp', ())
+            return KApply('constantKindNoOp', ())
         case _:
             _raise_conversion_error('')
 
@@ -579,22 +580,16 @@ def string_from_dict(js: str) -> KToken:
 def mono_item_fn_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
         case {
-            'name': str(name),
+            'body': list(bodies),
             'id': int(id),
-            'instance_kind': str(instance_kind),
-            'item_kind': str(item_kind),
-            'body': [dict(body), None],
-            'promoted': list(promoted),
+            'name': str(name),
         }:
             return KApply(
                 'monoItemFn',
                 (
                     string_from_dict(name),
                     defid_from_dict(id),
-                    instance_kind_from_dict(instance_kind),
-                    maybe_item_kind_from_dict(item_kind),
-                    maybe_body_from_dict(body),
-                    bodies_from_dict(promoted),
+                    bodies_from_dict(bodies),
                 ),
             )
 
@@ -653,28 +648,21 @@ def functions_map_from_dict(js: Sequence[tuple[int, Mapping[str, str]]]) -> None
     functions_map_from_dict(js[1:])
 
 
-def types_map_from_dict(js: Sequence[tuple[int, Mapping[str, object]]]) -> KApply:
-    # We ignore the types map for now
-    return KApply('.tysMap', ())
-
-
 def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
         case {
             'name': str(name),
-            'crate_functions': list(crate_functions),
-            'items': list(items),
             'allocs': list(allocs),
-            'types': list(types),
+            'functions': list(functions),
+            'items': list(items),
         }:
-            functions_map_from_dict(crate_functions),
+            functions_map_from_dict(functions)
             return KApply(
                 'pgm',
                 (
                     string_from_dict(name),
-                    mono_items_from_dict(items),
                     global_allocs_from_dict(allocs),
-                    types_map_from_dict(types),
+                    mono_items_from_dict(items),
                 ),
             )
 
