@@ -9,9 +9,9 @@ from pyk.kast.outer import KTerminal
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
     from pyk.kast.outer import KDefinition, KProduction
 
-from kmir.build import semantics
 
 JSON = dict[object, object]
 ParseResult = tuple[KApply, KSort] | None
@@ -97,7 +97,11 @@ class Parser:
         sort, value = maybe_terminal
         sort = _sort_name_from_json(sort)
 
-        return KApply(_terminal_symbol(sort, value)), KSort(sort)
+        symbol = _terminal_symbol(sort, value)
+        if symbol not in self._mir_terminal_symbols:
+            return None
+
+        return KApply(symbol), KSort(sort)
 
     def _parse_non_terminal(self, json: JSON) -> ParseResult:
         maybe_non_terminal = _json_non_terminal(json)
