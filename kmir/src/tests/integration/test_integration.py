@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 from pyk.cterm import CTerm
-from pyk.kast.inner import KApply, KLabel, KSequence
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort
 
 from kmir.convert_json.convert import from_dict
+from kmir.convert_from_definition.parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
@@ -17,9 +18,6 @@ if TYPE_CHECKING:
 
 CONVERT_BODY_DATA = (Path(__file__).parent / 'data' / 'convert-body').resolve(strict=True)
 CONVERT_BODY_INPUT_DIRS = [CONVERT_BODY_DATA / 'panic']
-
-RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
-RUN_PANIC_INPUT = [RUN_PANIC_DATA / 'simple.kmir']
 
 
 @pytest.mark.parametrize(
@@ -37,6 +35,28 @@ def test_convert_body(test_dir: Path, tools: Tools) -> None:
     rc, parsed_ast = tools.kparse.kparse(reference_mir, sort='Pgm')
 
     assert converted_ast == parsed_ast
+
+
+SCHEMA_PARSE_DATA = [
+    ('Isize', {'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
+]
+
+
+@pytest.mark.parametrize(
+    'test_case',
+    SCHEMA_PARSE_DATA,
+    ids=[str(case[0]) for case in SCHEMA_PARSE_DATA],
+)
+def test_schema_parse(test_case: tuple[str, dict[object, object], KInner], tools: Tools) -> None:
+    parser = Parser(tools.definition)
+
+    _, json_data, expected_term, expected_sort = test_case
+
+    assert parser.parse_mir_json(json_data) == (expected_term, expected_sort)
+
+
+RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
+RUN_PANIC_INPUT = [RUN_PANIC_DATA / 'simple.kmir']
 
 
 @pytest.mark.parametrize(
