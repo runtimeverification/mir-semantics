@@ -7,13 +7,19 @@ if TYPE_CHECKING:
     from collections.abc import Sequence, Mapping
     from pyk.kast.inner import KInner
 
-from pyk.kast.inner import KApply, KSort, KToken
-
-
 import hashlib
 
+from pyk.kast.inner import KApply, KSort, KToken
 
 func_map: dict[int, Mapping[str, str]] = {}
+
+crate_id = 0
+
+
+def create_unique_id(n: int) -> int:
+    msb = crate_id.to_bytes(8, 'big')
+    lsb = n.to_bytes(8, 'big')
+    return int.from_bytes(msb + lsb, 'big')
 
 
 def _raise_conversion_error(msg: str) -> NoReturn:
@@ -44,7 +50,7 @@ def provenance_map_entry_from_dict(js: Sequence[object]) -> KApply:
             return KApply(
                 'provenanceMapEntry',
                 KToken(str(size), KSort('Int')),
-                KApply('allocId', KToken(str(allocid), KSort('Int'))),
+                KApply('allocId', KToken(str(create_unique_id(allocid)), KSort('Int'))),
             )
 
     _unimplemented()
@@ -652,10 +658,13 @@ def from_dict(js: Mapping[str, object]) -> KInner:
     match js:
         case {
             'name': str(name),
+            'crate_id': int(id),
             'allocs': list(allocs),
             'functions': list(functions),
             'items': list(items),
         }:
+            global crate_id
+            crate_id = id
             functions_map_from_dict(functions)
             return KApply(
                 'pgm',

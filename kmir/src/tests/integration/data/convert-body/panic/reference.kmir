@@ -8,7 +8,7 @@ globalAllocEntry
     allocation
     (
       someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(42) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0),
-      provenanceMap(provenanceMapEntry(0, allocId(12))),
+      provenanceMap(provenanceMapEntry(0, allocId(301983463899098910253850633168379445260))),
       align(8),
       mutabilityNot
     )
@@ -233,7 +233,7 @@ monoItemWrapper
                     allocation
                     (
                       someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(14) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0) someByte(0),
-                      provenanceMap(provenanceMapEntry(0, allocId(11))),
+                      provenanceMap(provenanceMapEntry(0, allocId(301983463899098910253850633168379445259))),
                       align(8),
                       mutabilityMut
                     )
