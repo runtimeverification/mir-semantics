@@ -11,13 +11,13 @@ import hashlib
 
 from pyk.kast.inner import KApply, KSort, KToken
 
-func_map: dict[int, Mapping[str, str]] = {}
+CRATE_FUNCTIONS_MAP: dict[int, Mapping[str, str]] = {}
 
-crate_id = 0
+CRATE_ID = 0
 
 
 def create_unique_id(n: int) -> int:
-    msb = crate_id.to_bytes(8, 'big')
+    msb = CRATE_ID.to_bytes(8, 'big')
     lsb = n.to_bytes(8, 'big')
     return int.from_bytes(msb + lsb, 'big')
 
@@ -110,9 +110,9 @@ def constant_kind_from_dict(js: str | Mapping[str, object]) -> KApply:
         _raise_conversion_error('')
 
 
-def constant_kind_from_func_map(n: int) -> KApply:
+def constant_kind_from_crate_functions_map(n: int) -> KApply:
     # This will throw KeyError exceptipn if the key (type id) is not in the map.
-    func = func_map[n]
+    func = CRATE_FUNCTIONS_MAP[n]
     match func:
         case {'NormalSym': str(s)}:
             hash_object = hashlib.sha256(s.encode('utf-8'))
@@ -135,7 +135,7 @@ def mirconst_from_dict(js: Mapping[str, object]) -> KApply:
         case {'kind': 'ZeroSized', 'ty': int(ty), 'id': int(id_)}:
             return KApply(
                 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
-                (constant_kind_from_func_map(ty), ty_from_dict(ty), mirconstid_from_dict(id_)),
+                (constant_kind_from_crate_functions_map(ty), ty_from_dict(ty), mirconstid_from_dict(id_)),
             )
         case {'kind': str() | dict() as kind, 'ty': int(ty), 'id': int(id_)}:
             return KApply(
@@ -605,7 +605,7 @@ def mono_items_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 def function_map_entry_from_dict(js: tuple[int, Mapping[str, str]]) -> None:
     match js:
         case [int(n), dict(payload)]:
-            func_map[n] = payload
+            CRATE_FUNCTIONS_MAP[n] = payload
         case _:
             _raise_conversion_error('')
 
@@ -627,8 +627,8 @@ def from_dict(js: Mapping[str, object]) -> KInner:
             'functions': list(functions),
             'items': list(items),
         }:
-            global crate_id
-            crate_id = id
+            global CRATE_ID
+            CRATE_ID = id
             functions_map_from_dict(functions)
             return KApply(
                 'pgm',
