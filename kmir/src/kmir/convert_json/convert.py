@@ -132,11 +132,17 @@ def mirconstid_from_dict(n: int) -> KApply:
 
 def mirconst_from_dict(js: Mapping[str, object]) -> KApply:
     match js:
-        case {'kind': 'ZeroSized', 'ty': int(ty), 'id': int(id_)}:
-            return KApply(
-                'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
-                (constant_kind_from_crate_functions_map(ty), ty_from_dict(ty), mirconstid_from_dict(id_)),
-            )
+        case {'kind': 'ZeroSized' as kind, 'ty': int(ty), 'id': int(id_)}:
+            if ty in CRATE_FUNCTIONS_MAP:
+                return KApply(
+                    'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                    (constant_kind_from_crate_functions_map(ty), ty_from_dict(ty), mirconstid_from_dict(id_)),
+                )
+            else:
+                return KApply(
+                    'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                    (constant_kind_from_dict(kind), ty_from_dict(ty), mirconstid_from_dict(id_)),
+                )
         case {'kind': str() | dict() as kind, 'ty': int(ty), 'id': int(id_)}:
             return KApply(
                 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
