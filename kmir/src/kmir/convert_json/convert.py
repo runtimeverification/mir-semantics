@@ -531,45 +531,9 @@ def body_from_dict(js: Mapping[str, object]) -> KApply:
     _raise_conversion_error('')
 
 
-def maybe_body_from_dict(js: Mapping[str, object] | None) -> KApply:
-    if js is None:
-        return KApply('noBody', ())
-    return KApply('someBody', (body_from_dict(js)))
-
-
 def defid_from_dict(n: int) -> KApply:
     #    return KApply('defId', (KToken('\"' + str(n) + '\"', KSort('String'))))
     return KApply('defId', (KToken(str(n), KSort('Int'))))
-
-
-def item_kind_from_dict(js: str) -> KApply:
-    if js == 'Fn':
-        return KApply('itemKindFn', ())
-    if js == 'Static':
-        return KApply('itemKindStatic', ())
-    if js == 'Const':
-        return KApply('itemKindConst', ())
-
-    _unimplemented()
-
-
-def maybe_item_kind_from_dict(js: str) -> KApply:
-    if js == 'Fn':
-        return KApply('someItemKind', KApply('itemKindFn', ()))
-    if js == 'Static':
-        return KApply('someItemKind', KApply('itemKindStatic', ()))
-    if js == 'Const':
-        return KApply('someItemKind', KApply('itemKindConst', ()))
-    if js == '':
-        return KApply('noItemKind', ())
-
-    _unimplemented()
-
-
-def instance_kind_from_dict(js: str) -> KApply:
-    if js == 'Item':
-        return KApply('instanceKindItem', ())
-    _unimplemented()
 
 
 def bodies_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
