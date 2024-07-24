@@ -443,7 +443,7 @@ def basicblocks_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def ty_from_dict(n: int) -> KApply:
-    return KApply('ty', (KToken(str(n), KSort('Int')), KApply('tyKindRigidTy', (KApply('rigidTyUnimplemented'),))))
+    return KApply('ty', (KToken(str(n), KSort('Int')), KApply('TyKind::RigidTy', (KApply('rigidTyUnimplemented'),))))
 
 
 def mutability_from_dict(s: str) -> KApply:
