@@ -4,7 +4,7 @@ module KMIR-SYNTAX
   imports KMIR-AST
   imports MAP
 
-  syntax InitialState ::= #init( String, Map )
+  syntax InitialState ::= #init( Int, Map, Map, Map )
 
   syntax Statements ::= "emptyBlock" [function]
   rule emptyBlock => .Statements
@@ -14,6 +14,10 @@ module KMIR-SYNTAX
   rule emptyOperands => .Operands
   syntax ProjectionElems ::= "noProjection" [function]
   rule noProjection => .ProjectionElems
+  syntax Map ::= "emptyMap" [function]
+  rule emptyMap => .Map
+  syntax VarDebugInfos ::= "noVarDebug" [function]
+  rule noVarDebug => .VarDebugInfos
 endmodule
 
 module KMIR-MEMORY
@@ -22,9 +26,15 @@ module KMIR-MEMORY
   imports LIST
   imports MAP
 
+  syntax Value
+
   configuration <memoryConfig>
+                  <body> .BasicBlocks </body>
                   <stack> .List </stack>
                   <globals>  .Map  </globals>
+                  <allocs> .Map </allocs>
+                  <functions> .Map </functions>
+                  <currentFunc> -1 </currentFunc>
                 </memoryConfig>
 endmodule
 
@@ -32,14 +42,13 @@ module KMIR-MEMORY-API
   imports KMIR-SYNTAX
 
   syntax Address
-  syntax Value
 
   // Returning Results
   syntax KItem ::= #value( Value )
                  | #function( Body )
                  | #goto( MaybeBasicBlockIdx )
 
-  syntax KItem ::= #loadConst( Int, Map )
+  syntax KItem ::= #loadConst( Int )
 
   // Value Production
   syntax KItem ::= #evalOp( BinOp, List )
@@ -68,15 +77,20 @@ module KMIR-MEMORY-API
                  | #loadPlace( Place )         [function]
                  | #loadLocal( Local )         [function]
                  | #loadPtr( Address, Value )  [function]
-                 | #makeFnPtr( String, Map )   [function]
+
+  syntax Value ::= #makeFnPtrValue( Int )        [function]
+                 | #makeStructValue( Int, List ) [function]
 
   syntax Int ::= #readScalar( Value )          [function]
+
   syntax Bool ::= #isTrue( Value )             [function]
 
-  syntax Body ::= #loadFnPtr( Value )
+  syntax KItem ::= #loadFnPtr( Value )
 
-  syntax KItem ::= #setupStackFrame( Value, List, Int, LocalDecls, Int, Place, MaybeBasicBlockIdx, UnwindAction )
+  syntax KItem ::= #setupStackFrame( Value, BasicBlocks, List, Int, LocalDecls, Int, Place, MaybeBasicBlockIdx, UnwindAction )
+                 | #setupFakeStackFrame()
                  | "#saveRetVal"
+                 | "#setProcRetVal"
                  | "#return"
 endmodule
 
@@ -84,9 +98,12 @@ module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports KMIR-MEMORY
 
+  syntax RetVal ::= "NoRetVal"
+                  | Value
+
   configuration <kmir>
                   <k> $PGM:InitialState </k>
-                  <body> .BasicBlocks </body>
+                  <retVal> NoRetVal </retVal>
                   <memoryConfig/>
                 </kmir>
 endmodule
@@ -123,7 +140,7 @@ module KMIR-MEMORY-IMPL [private]
                  | Struct( Int, List )                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
 
-  syntax StackFrameRecord ::= Frame( Address,            // address of caller function
+  syntax StackFrameRecord ::= Frame( Int,                // address of caller function
                                      MaybeBasicBlockIdx, // basic block to return to
                                      Place,              // place to store return value
                                      UnwindAction,       // action to perform if we panic
@@ -167,20 +184,33 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
                | #boolToInt( Bool )                                              [function]
+               | #readAddrAsInt( Value )                                         [function]
 
   syntax Address ::= #readAddr( Value )                                          [function]
                    | #delProj( Address )                                         [function]
 
   // Call Impl
 
-  rule <k> #setupStackFrame( Func, Args, ArgCount, _Locals, LocalCount, Dest, Target, Act ) => .K ... </k>
-       <stack> Frames => ListItem(Frame( #readAddr(Func), Target, Dest, Act, Args makeList( LocalCount -Int ArgCount, Any ) )) Frames </stack>
+  rule <k> #setupStackFrame( CalleeFun, Blocks, Args, ArgCount, _Locals, LocalCount, Dest, Target, Act ) => .K ... </k>
+       <stack> Frames => ListItem(Frame( CurrFun, Target, Dest, Act, Args makeList( LocalCount -Int ArgCount, Any ) )) Frames </stack>
+       <currentFunc> CurrFun => #readAddrAsInt(CalleeFun) </currentFunc>
+       <body> _PrevBlocks => Blocks </body>
 
-  rule <k> #saveRetVal => #setValue( LocalAddr( size(Frames) -Int 2, Dest ), { Locals [ 0 ] }:>Value ) ... </k>
+  rule <k> #setupFakeStackFrame() => .K ... </k>
+       <stack> .List => ListItem(Frame( -1, noBasicBlockIdx, place(local(-1), .ProjectionElems), unwindActionTerminate, ListItem(Any))) </stack>
+
+  rule <k> #saveRetVal => #setValue( LocalAddr( size(Frames) -Int 1, Dest ), { Locals [ 0 ] }:>Value ) ... </k>
        <stack> ListItem(Frame( _, _, Dest, _, Locals )) Frames </stack>
+    requires size(Frames) >=Int 1
 
-  rule <k> #return => #goto(Target) ... </k>
-       <stack> ListItem(Frame(_, Target, _, _, _)) Frames => Frames </stack>
+  rule <k> #setProcRetVal => .K ... </k>
+       <stack> ListItem(Frame( _, _, _, _, ListItem( V:Value ) )) => .List </stack>
+       <retVal> NoRetVal => V </retVal>
+
+  rule <k> #return => #if size(Frames) =/=Int 1 #then #goto(Target) #else .K #fi ... </k>
+       <stack> ListItem(Frame(Addr, Target, _, _, _)) Frames => Frames </stack>
+       <body> _PrevBlocks => #if size(Frames) =/=Int 1 #then blocks( { Mem [ Addr ] }:>Body ) #else .BasicBlocks #fi </body>
+       <globals> Mem </globals>
 
   // Eval Impl
 
@@ -252,9 +282,14 @@ module KMIR-MEMORY-IMPL [private]
   rule <k> #setValue( Addr, Val ) => #write( #set( #base(Addr), #getProj(Addr), #loadValue( Addr ), Val ) ) ... </k>
 
   rule <k> #write( MemWrite( AddrBase(Idx, LIdx), Val ) ) => .K ... </k>
-       <stack> Stack => Stack [ Idx <- #setStkVar( { Stack }:>StackFrameRecord, LIdx, Val ) ] </stack>
+       <stack> Stack => #updateStk( Stack, Idx, LIdx, Val ) </stack>
+
   rule <k> #write( MemWrite( AddrBase(Idx), Val ) ) => .K ... </k>
        <globals> Globals => Globals [ Idx <- Val ] </globals>
+
+  syntax List ::= #updateStk( List, Int, Int, Value ) [function]
+  rule #updateStk( Stack, Idx, LIdx, Val )
+    => Stack [ size(Stack) -Int (Idx +Int 1) <- #setStkVar( { Stack [ size(Stack) -Int (Idx +Int 1)] }:>StackFrameRecord, LIdx, Val ) ]
 
   // Load Impl
 
@@ -278,6 +313,13 @@ module KMIR-MEMORY-IMPL [private]
 
   rule #loadVar( StkFrm, LIdx ) => { locals(StkFrm) [ LIdx ] }:>Value
     requires 0 <=Int LIdx andBool LIdx <Int size(locals(StkFrm))
+
+  rule <k> #loadFnPtr( Ptr( GlobalAddr( Addr, .ProjectionElems ), NoValue ) )
+        => #function( { Mem [ Addr ] }:>Body )
+           ...
+       </k>
+       <globals> Mem </globals>
+       requires isBody(Mem [ Addr ])
 
   // Address Manipulation
 
@@ -379,10 +421,13 @@ module KMIR-MEMORY-IMPL [private]
 
   // Value Interpretation
 
-  rule #readScalar( Scalar( Val, _Width, _Signed ) ) => Val
-  rule #readAddr( Ptr( Addr, _ ) )                   => Addr
-  rule #isTrue( Scalar( Val, 1, false ) )            => Val =/=Int 0
+  rule #readScalar( Scalar( Val, _Width, _Signed ) )     => Val
+  rule #readAddrAsInt( Ptr( GlobalAddr( Addr, _ ), _ ) ) => Addr
+  rule #readAddr( Ptr( Addr, _ ) )                       => Addr
+  rule #isTrue( Scalar( Val, 1, false ) )                => Val =/=Int 0
 
+  rule #makeFnPtrValue( Addr ) => Ptr( GlobalAddr( Addr, .ProjectionElems ), NoValue )
+  rule #makeStructValue( Id, Args ) => Struct( Id, Args )
 endmodule
 
 module KMIR
@@ -395,18 +440,23 @@ module KMIR
   imports BOOL
   imports BYTES
   imports K-EQUAL
+  imports MAP
 
   // Initialization
 
-  rule <k> #init( FnName, Mem )
-        => #call( #makeFnPtr( FnName, .Map), .List, place(local(-1), .ProjectionElems), noBasicBlockIdx, unwindActionTerminate )
+  rule <k> #init( FnAddr, Mem, Allocs, Funcs )
+        => #setupFakeStackFrame()
+        ~> #prepareCall( #makeFnPtrValue( FnAddr ), .List, place(local(0), .ProjectionElems), noBasicBlockIdx, unwindActionTerminate )
+        ~> #setProcRetVal
            ...
        </k>
        <globals> .Map => Mem </globals>
+       <allocs> .Map => Allocs </allocs>
+       <functions> .Map => Funcs </functions>
 
   // Lookup Fn Type
 
-  syntax String ::= #lookupFnByType( Int )    [function]
+  syntax Int ::= #lookupFnByType( Int ) [function]
 
   // Argument Evaluation
 
@@ -463,13 +513,14 @@ module KMIR
            ...
        </k>
 
-  rule <k> #evalArgs( ListItem( operandConstant(CONST) ) ARGS, EVALED )
-        => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
-           ...
-       </k>
+  rule <k> #evalArgs( ListItem( operandConstant(CONST)    => CONST ) _ARGS, _EVALED ) ... </k>
+  rule <k> #evalArgs( ListItem( constOperand(_, _, CONST) => CONST ) _ARGS, _EVALED ) ... </k>
 
-  rule <k> #evalArgs( ListItem( CONST:ConstOperand ) ARGS, EVALED )
-        => #evalArgs( ARGS, ListItem( #evalConst(CONST) ) EVALED )
+  rule <k> #evalArgs( ListItem( mirConst( KIND, TY, mirConstId(CID) )  ) ARGS, EVALED ) 
+        => #if KIND ==K constantKindZeroSized
+              #then #evalArgs( ARGS, ListItem( #makeZeroConst( TY ) ) EVALED )
+              #else #evalArgs( ARGS, ListItem( #loadConst( CID ) ) EVALED )
+           #fi
            ...
        </k>
 
@@ -480,13 +531,12 @@ module KMIR
 
   rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
 
-  syntax Value ::= #evalConst( ConstOperand )
+  syntax Value ::= #makeZeroConst( Ty ) [function]
+  rule #makeZeroConst( ty( ID, _) ) => #makeZeroConst( ty( ID ) )
+  rule [[ #makeZeroConst( `ty(_)_TYPES_Ty_Int`( ID ) ) => #if ID in_keys(Funcs:Map) #then #makeFnPtrValue( { Funcs:Map [ ID ] }:>Int ) #else #makeStructValue(0, .List) #fi ]]
+       <functions> Funcs:Map </functions>
 
-  rule #evalConst( constOperand(_SPAN, _USERTY, mirConst(KIND, ty(TID, _), mirConstId(CID))) )
-        => #if KIND ==K constantKindZeroSized
-             #then #makeFnPtr( #lookupFnByType(TID), .Map )
-             #else #loadConst( CID, .Map )
-           #fi
+  syntax Value ::= #evalConst( ConstOperand )
 
   syntax Value ::= #getArg( List )     [function]
                  | #getFstArg( List )  [function]
@@ -568,7 +618,7 @@ module KMIR
                  | #goto( BasicBlockIdx )
                  | #jump( Int, Branches, BasicBlockIdx )
                  | #prepareCall( Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
-                 | #call( Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
+                 | #call(        Value, List, Place, MaybeBasicBlockIdx, UnwindAction )
                  | #assert( Value )
 
   rule <k>                    #exec( terminatorKindGoto( basicBlockIdx( N ) ) )                         => #goto( N )                                                               ... </k>
@@ -608,10 +658,10 @@ module KMIR
 
   rule <k> #function(body(Blocks, Locals, ArgCount, _DebugInfo, _SpreadArg, _Span))
         ~> #call( Func, Args, Dest, Target, Act )
-        => #setupStackFrame( Func, Args, ArgCount, Locals, #numLocals(Locals), Dest, Target, Act )
+        => #setupStackFrame( Func, Blocks, Args, ArgCount, Locals, #numLocals(Locals), Dest, Target, Act )
         ~> #goto( 0 )
+           ...
        </k>
-       <body> _PrevBlocks => Blocks </body>
 
   // Terminator Helper Functions
 
