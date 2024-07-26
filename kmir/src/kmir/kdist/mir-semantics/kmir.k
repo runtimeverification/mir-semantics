@@ -251,7 +251,7 @@ module KMIR-MEMORY-IMPL [private]
 
   rule <k> #return => #if size(Frames) =/=Int 1 #then #goto(Target) #else .K #fi ... </k>
        <stack> ListItem(Frame(Addr, Target, _, _, _)) Frames => Frames </stack>
-       <body> _PrevBlocks => #if size(Frames) =/=Int 1 #then blocks( { Mem [ Addr ] }:>Body ) #else .BasicBlocks #fi </body>
+       <body> _PrevBlocks => #if size(Frames) =/=Int 1 #then blocks( { { Mem [ Addr ] }:>List [0] }:>Body ) #else .BasicBlocks #fi </body>
        <globals> Mem </globals>
 
   // Eval Impl
