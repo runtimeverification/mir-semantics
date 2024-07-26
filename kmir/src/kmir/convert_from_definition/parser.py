@@ -8,8 +8,6 @@ from pyk.kast.inner import KApply, KSort
 from pyk.kast.outer import KTerminal
 
 if TYPE_CHECKING:
-    pass
-
     from pyk.kast.outer import KDefinition, KProduction
 
 
