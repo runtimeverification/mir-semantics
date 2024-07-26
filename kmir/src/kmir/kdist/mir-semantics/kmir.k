@@ -93,7 +93,7 @@ module KMIR-MEMORY-API
                  | #makeStructValue( Int, List ) [function]
 
   syntax Int ::= #readScalar( Value )          [function]
-               | #getNopFnAddr()               [function]
+               | #getNoOpFnAddr()              [function]
                | #getIntrinsicAddr( String )   [function]
 
   syntax Bool ::= #isTrue( Value )             [function]
@@ -444,7 +444,7 @@ module KMIR-MEMORY-IMPL [private]
   rule #makeStructValue( Id, Args ) => Struct( Id, Args )
 
   // Special Address Creation
-  rule #getNopFnAddr()        => -1 // TODO: implement NOP using correct intrinsic mapping
+  rule #getNoOpFnAddr()       => -1 // TODO: implement NOP using correct intrinsic mapping
   rule #getIntrinsicAddr( _ ) => -2 // TODO: implement correct intrinsic mapping
 endmodule
 
@@ -556,16 +556,16 @@ module KMIR
   syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
                  | #evalTyConst( TyConstKind )            [function]
 
-  rule #evalMirConst( TY, _CID, constantKindZeroSized                                                     ) => #makeStructValue ( 0, .List )
-  rule #evalMirConst( TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
-  rule #evalMirConst( TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
-  rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                   ) => #evalTyConst( KIND )
+  rule #evalMirConst( _TY, _CID, constantKindZeroSized                                                     ) => #makeStructValue ( 0, .List )
+  rule #evalMirConst(  TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
+  rule #evalMirConst(  TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
+  rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                    ) => #evalTyConst( KIND )
   // Handle extended function constant types
-  rule #evalMirConst( _TY, _CID, constantKindNop                                                          ) => #makeFnPtrValue( #NopFnAddr() )
-  rule #evalMirConst( _TY, _CID, constantKindFnDef( Addr )                                                ) => #makeFnPtrValue( Addr )
-  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                             ) => #makeIntrinsicPtr( Sym )
+  rule #evalMirConst( _TY, _CID, constantKindFnDef( Addr )                                                 ) => #makeFnPtrValue( Addr )
+  rule #evalMirConst( _TY, _CID, constantKindNoOp                                                          ) => #makeFnPtrValue( #getNoOpFnAddr() )
+  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                              ) => #makeFnPtrValue( #getIntrinsicAddr( Sym ) )
 
-  rule #evalTyConst( tyConstKindZSTValue( TY )            ) => #makeZeroConst( TY )
+  rule #evalTyConst( tyConstKindZSTValue( _TY )           ) => #makeStructValue( 0, .List )
   rule #evalTyConst( tyConstKindValue( TY, ALLOC )        ) => #loadAllocation( TY, ALLOC )
   // NOTE: tyConstKindUnevaluated( DEF, ARGS ) should not occur --- all type system constants must be fully evaluated
 
