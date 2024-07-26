@@ -38,12 +38,23 @@ module KMIR-MEMORY
                 </memoryConfig>
 endmodule
 
+// TODO: try to rewrite most contextual functions to not be contextual
+//
+// setPlace
+// loadPlace
+// loadValue
+// loadLocal
+//
+// TODO: parameterize #makeStruct by two values:
+// 1. the variant index (we currently have this)
+// 2. the struct kind index (we currently lack this)
+// In particular, the concrete memory model will need BOTH indices to look up the type layout
+
 module KMIR-MEMORY-API
   imports KMIR-SYNTAX
 
   syntax Address
 
-  // Returning Results
   syntax KItem ::= #value( Value )
                  | #function( Body )
                  | #goto( MaybeBasicBlockIdx )
@@ -73,7 +84,6 @@ module KMIR-MEMORY-API
   syntax KItem ::= #assume( List )
                  | #copy( List )
 
-  // TODO: make this a non-contextual function
   syntax Value ::= #loadValue( Address )       [function]
                  | #loadPlace( Place )         [function]
                  | #loadLocal( Local )         [function]
@@ -83,6 +93,8 @@ module KMIR-MEMORY-API
                  | #makeStructValue( Int, List ) [function]
 
   syntax Int ::= #readScalar( Value )          [function]
+               | #getNopFnAddr()               [function]
+               | #getIntrinsicAddr( String )   [function]
 
   syntax Bool ::= #isTrue( Value )             [function]
 
@@ -430,6 +442,10 @@ module KMIR-MEMORY-IMPL [private]
 
   rule #makeFnPtrValue( Addr ) => Ptr( GlobalAddr( Addr, .ProjectionElems ), NoValue )
   rule #makeStructValue( Id, Args ) => Struct( Id, Args )
+
+  // Special Address Creation
+  rule #getNopFnAddr()        => -1 // TODO: implement NOP using correct intrinsic mapping
+  rule #getIntrinsicAddr( _ ) => -2 // TODO: implement correct intrinsic mapping
 endmodule
 
 module KMIR
@@ -540,19 +556,18 @@ module KMIR
   syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
                  | #evalTyConst( TyConstKind )            [function]
 
-  rule #evalMirConst( TY, _CID, constantKindZeroSized                                                     ) => #makeZeroConst ( TY )
+  rule #evalMirConst( TY, _CID, constantKindZeroSized                                                     ) => #makeStructValue ( 0, .List )
   rule #evalMirConst( TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
   rule #evalMirConst( TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
   rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                   ) => #evalTyConst( KIND )
+  // Handle extended function constant types
+  rule #evalMirConst( _TY, _CID, constantKindNop                                                          ) => #makeFnPtrValue( #NopFnAddr() )
+  rule #evalMirConst( _TY, _CID, constantKindFnDef( Addr )                                                ) => #makeFnPtrValue( Addr )
+  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                             ) => #makeIntrinsicPtr( Sym )
 
   rule #evalTyConst( tyConstKindZSTValue( TY )            ) => #makeZeroConst( TY )
   rule #evalTyConst( tyConstKindValue( TY, ALLOC )        ) => #loadAllocation( TY, ALLOC )
   // NOTE: tyConstKindUnevaluated( DEF, ARGS ) should not occur --- all type system constants must be fully evaluated
-
-  syntax Value ::= #makeZeroConst( Ty ) [function]
-  rule #makeZeroConst( ty( ID, _) ) => #makeZeroConst( ty( ID ) )
-  rule [[ #makeZeroConst( `ty(_)_TYPES_Ty_Int`( ID ) ) => #if ID in_keys(Funcs:Map) #then #makeFnPtrValue( { Funcs:Map [ ID ] }:>Int ) #else #makeStructValue(0, .List) #fi ]]
-       <functions> Funcs:Map </functions>
 
   syntax Value ::= #getArg( List )     [function]
                  | #getFstArg( List )  [function]
