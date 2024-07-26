@@ -8,7 +8,7 @@ from pyk.kast.inner import KApply, KSort
 from pyk.kast.outer import KTerminal
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    pass
 
     from pyk.kast.outer import KDefinition, KProduction
 
@@ -67,8 +67,8 @@ def _sort_name_from_json(sort: str) -> str:
     }.get(sort, sort)
 
 
-def _non_terminal_sorts(prod: KProduction) -> Iterable[KSort]:
-    return (nt.sort for nt in prod.non_terminals)
+def _non_terminal_sorts(prod: KProduction) -> tuple[KSort, ...]:
+    return (prod.sort,) + tuple(nt.sort for nt in prod.non_terminals)
 
 
 class Parser:
