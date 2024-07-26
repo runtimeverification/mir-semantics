@@ -3,8 +3,9 @@ requires "kmir-ast.k"
 module KMIR-SYNTAX
   imports KMIR-AST
   imports MAP
+  imports LIST
 
-  syntax InitialState ::= #init( Int, Map, Map, Map )
+  syntax InitialState ::= #init( Int, Map, Map )
 
   syntax Statements ::= "emptyBlock" [function]
   rule emptyBlock => .Statements
@@ -33,7 +34,6 @@ module KMIR-MEMORY
                   <stack> .List </stack>
                   <globals>  .Map  </globals>
                   <allocs> .Map </allocs>
-                  <functions> .Map </functions>
                   <currentFunc> -1 </currentFunc>
                 </memoryConfig>
 endmodule
@@ -494,7 +494,7 @@ module KMIR
 
   // Initialization
 
-  rule <k> #init( FnAddr, Mem, Allocs, Funcs )
+  rule <k> #init( FnAddr, Mem, Allocs )
         => #setupFakeStackFrame()
         ~> #prepareCall( #makeFnPtrValue( FnAddr ), .List, place(local(0), .ProjectionElems), noBasicBlockIdx, unwindActionTerminate )
         ~> #setProcRetVal
@@ -502,7 +502,6 @@ module KMIR
        </k>
        <globals> .Map => Mem </globals>
        <allocs> .Map => Allocs </allocs>
-       <functions> .Map => Funcs </functions>
 
   // Lookup Fn Type
 
