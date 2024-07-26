@@ -40,29 +40,46 @@ endmodule
 
 // TODO: try to rewrite most contextual functions to not be contextual
 //
-// setPlace
-// loadPlace
-// loadValue
-// loadLocal
+// 1. setPlace
+// 2. loadPlace
+// 3. loadValue
+// 4. loadLocal
 //
 // TODO: parameterize #makeStruct by two values:
 // 1. the variant index (we currently have this)
 // 2. the struct kind index (we currently lack this)
 // In particular, the concrete memory model will need BOTH indices to look up the type layout
+//
+// TODO: implement missing functions
+// 1. #loadAllocation
+// 2. #loadUnevalConst
+// 3. #deinitPlace
+// 4. #setDisc
+// 5. #assume
+// 6. #copy
+//
+// TODO: fixup incorrect function implementations
+// 1. #evalOp
+// 2. #evalCast
+// 3. #makeTLRef
 
 module KMIR-MEMORY-API
   imports KMIR-SYNTAX
 
+  // information transfers between the frontend and backend via these three types
+  // 1. Addresses are abstract representations of memory locations
+  // 2. Values are abstract representations of results of operations which may be stored to/read from addresses
+  // 3. Results capture respones from the backend to the frontend that are more structured than mere Values/Addresses
   syntax Address
+  syntax Value
+  syntax Result ::= #value( Value )
+                  | #function( Body )
+                  | #goto( MaybeBasicBlockIdx )
 
-  syntax KItem ::= #value( Value )
-                 | #function( Body )
-                 | #goto( MaybeBasicBlockIdx )
+  // UN-EFFECTFUL OPERATIONS
+  // =======================
 
-  syntax Value ::= #loadAllocation( Ty, Allocation ) [function]
-                 | #loadUnevalConst( Ty, Int, MaybePromoted ) [function]
-
-  // Value Production
+  // Un-effectul operations that produce a Value wrapped in a Result
   syntax KItem ::= #evalOp( BinOp, List )
                  | #evalOp( UnOp, List )
                  | #evalNullOp( NullOp, Ty )
@@ -75,36 +92,47 @@ module KMIR-MEMORY-API
                  | #makeArray( List )
                  | #makeTLRef( )
 
-  syntax KItem ::= #setValue( Address, Value ) // non-functional due to state update
-                 | #setDisc( Place, Int )
-                 | #setPlace( Place, Value )   [function]
-                 | #setLocal( Local, Value )   [function]
-                 | #deinitPlace( Place )
-
-  syntax KItem ::= #assume( List )
-                 | #copy( List )
-
-  syntax Value ::= #loadValue( Address )       [function]
-                 | #loadPlace( Place )         [function]
-                 | #loadLocal( Local )         [function]
-                 | #loadPtr( Address, Value )  [function]
-
-  syntax Value ::= #makeFnPtrValue( Int )        [function]
-                 | #makeStructValue( Int, List ) [function]
-
-  syntax Int ::= #readScalar( Value )          [function]
-               | #getNoOpFnAddr()              [function]
-               | #getIntrinsicAddr( String )   [function]
-
-  syntax Bool ::= #isTrue( Value )             [function]
-
+  // Un-effectful operations that produce a Body wrapped in a Result
   syntax KItem ::= #loadFnPtr( Value )
 
+  // Un-effectful operations that directly return values
+  syntax Value ::= #loadValue( Address )                      [function]
+                 | #loadPlace( Place )                        [function]
+                 | #loadLocal( Local )                        [function]
+                 | #loadPtr( Address, Value )                 [function]
+                 | #loadAllocation( Ty, Allocation )          [function]
+                 | #loadUnevalConst( Ty, Int, MaybePromoted ) [function]
+                 | #makeFnPtrValue( Int )                     [function]
+                 | #makeStructValue( Int, List )              [function]
+                 | #getNoOpFnAddr()                           [function]
+                 | #getIntrinsicAddr( String )                [function]
+
+  // Un-effectful operations that decode values into K built-in sorts
+  syntax Int  ::= #readScalar( Value ) [function]
+  syntax Bool ::= #isTrue( Value )     [function]
+
+  // EFFECTFUL OPERATIONS
+  // ====================
+
+  // NOTE: Any effectful operation which is a function must desugar into a non-functional effectful operation
+
+  // Effectful operations that update memory (on stack or otherwise) with no Result
+  syntax KItem ::= #setValue( Address, Value )
+                 | #setDisc( Place, Int )
+                 | #deinitPlace( Place )
+                 | #copy( List )
+                 | #setPlace( Place, Value )   [function]
+                 | #setLocal( Local, Value )   [function]
+
+  // Effectful operations that modify the stack with no Result
   syntax KItem ::= #setupStackFrame( Value, BasicBlocks, List, Int, LocalDecls, Int, Place, MaybeBasicBlockIdx, UnwindAction )
                  | #setupFakeStackFrame()
                  | "#saveRetVal"
                  | "#setProcRetVal"
                  | "#return"
+
+  // Effectful operations that modify control flow with no Result
+  syntax KItem ::= #assume( List )
 endmodule
 
 module KMIR-CONFIGURATION
@@ -130,10 +158,11 @@ module KMIR-MEMORY-IMPL [private]
 
   // Memory Implementation Structures
 
-  // 1. Address to top-level objects
-  // 2. Address to top-level or nested objects
-  // 3. Value Structure
-  // 4. Stack Frame Structure
+  // 1. AddressBase: represents addresses at the level of K maps; these are the only truly "writable" addresses
+  // 2. Address: represents an address that may refer to the interior of a structured value
+  // 3. Value: represents byte structures abstractly
+  // 4. StackFrameRecord: represents stack frames abstractly
+  // 5. MemoryWrite: represents a possible write to memory
 
   syntax AddressBase ::= AddrBase( Int )                 // global index
                        | AddrBase( Int, Int )            // stack frame index, local var index
@@ -171,9 +200,9 @@ module KMIR-MEMORY-IMPL [private]
                            | #catPrjs( ProjectionElems, ProjectionElems )        [function] // concatenate two lists of projections
 
   syntax Value ::= #prj( ProjectionElem, Value )                                 [function] // project point out of Value
-                 | #prjs( ProjectionElems, Value )                               [function] // project point out of Value
+                 | #prjs( ProjectionElems, Value )                               [function] // project point out of Value at arbitrary depth
 
-  syntax MemoryWrite ::= #set( AddressBase, ProjectionElems, Value, Value )      [function] // update Value1 projected via ProjectionElems with Value2 and store at Int address
+  syntax MemoryWrite ::= #set( AddressBase, ProjectionElems, Value, Value )      [function] // update Value1 projected via ProjectionElems with Value2 and store at AddressBase
                        | #setPtr( Address, ProjectionElems, Value  )             [function] // update Value at address, further projected out via ProjectionElems
                        | #inj( AddressBase, ProjectionElem, Value, MemoryWrite ) [function] // perform Write, accumulating any missing context
                        | #inj(              ProjectionElem, Value, MemoryWrite ) [function] // helper function for #inj
@@ -185,22 +214,22 @@ module KMIR-MEMORY-IMPL [private]
 
   syntax StackFrameRecord ::= #setStkVar( StackFrameRecord, Int, Value )         [function] // perform stack variable update
 
-  syntax Value ::= #loadField( Int, List )                                       [function]
+  syntax Value ::= #loadField( Int, List )                                       [function] // these are helper functions for implementing loads
                  | #loadIndex( Value, List )                                     [function]
                  | #loadIndex( Int, List )                                       [function]
                  | #loadSlice( Int, Int, Bool, List )                            [function]
                  | #loadVar( List, Int, Int )                                    [function]
                  | #loadVar( StackFrameRecord, Int )                             [function]
 
-  syntax Bool ::= #validSlice(List, Int, Int, Bool)                              [macro]
-                | #NoOpProjection( ProjectionElem )                              [function]
+  syntax Bool ::= #NoOpProjection( ProjectionElem )                              [function] // this is a helper function for implementing loads
+                | #validSlice(List, Int, Int, Bool)                              [macro]    // this is a helper function for implementing loads/stores
 
-  syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]
-               | #boolToInt( Bool )                                              [function]
-               | #readAddrAsInt( Value )                                         [function]
+  syntax Int ::= #sizeSlice(List, Int, Int, Bool)                                [macro]    // this is a helper function for implementing loads/stores
+               | #boolToInt( Bool )                                              [function] // miscellaneous helper function
+               | #readAddrAsInt( Value )                                         [function] // miscellaneous helper function
 
-  syntax Address ::= #readAddr( Value )                                          [function]
-                   | #delProj( Address )                                         [function]
+  syntax Address ::= #readAddr( Value )                                          [function] // miscellaneous helper function
+                   | #delProj( Address )                                         [function] // miscellaneous helper function
 
   // Call Impl
 
@@ -227,7 +256,7 @@ module KMIR-MEMORY-IMPL [private]
 
   // Eval Impl
 
-  rule <k> #deinitPlace( _PLACE ) => .K ... </k> // TODO: flesh out this implementation
+  rule <k> #deinitPlace( _PLACE ) => .K ... </k>
 
   rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
   rule #evalOp( binOpAddUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 +Int N2, WIDTH, SIGN ))
@@ -372,6 +401,9 @@ module KMIR-MEMORY-IMPL [private]
   rule #prj( projectionElemIndex(Idx),               Range( Mem )      ) => #loadIndex(#loadLocal(Idx), Mem)
   rule #prj( projectionElemConstantIndex(Off, _, _), Range( Mem )      ) => #loadIndex(Off, Mem)
   rule #prj( projectionElemSubslice(From, To, Dir),  Range( Mem )      ) => #loadSlice(From, To, Dir, Mem)
+  rule #prj( projectionElemDowncast(_),              Val               ) => Val
+  rule #prj( projectionElemOpaqueCast(_),            Val               ) => Val
+  rule #prj( projectionElemSubtype(_),               Val               ) => Val
 
   rule #loadField( Idx, Fields:List   ) => { Fields [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Fields)
   rule #loadIndex( Idx, Mem:List      ) => { Mem    [ Idx ] }:>Value requires 0 <=Int Idx andBool Idx <Int size(Mem)
@@ -444,8 +476,8 @@ module KMIR-MEMORY-IMPL [private]
   rule #makeStructValue( Id, Args ) => Struct( Id, Args )
 
   // Special Address Creation
-  rule #getNoOpFnAddr()       => -1 // TODO: implement NOP using correct intrinsic mapping
-  rule #getIntrinsicAddr( _ ) => -2 // TODO: implement correct intrinsic mapping
+  rule #getNoOpFnAddr()       => #makeFnPtrValue( -1 ) // TODO: implement NOP using correct intrinsic mapping
+  rule #getIntrinsicAddr( _ ) => #makeFnPtrValue( -2 ) // TODO: implement correct intrinsic mapping
 endmodule
 
 module KMIR
@@ -562,8 +594,8 @@ module KMIR
   rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                    ) => #evalTyConst( KIND )
   // Handle extended function constant types
   rule #evalMirConst( _TY, _CID, constantKindFnDef( Addr )                                                 ) => #makeFnPtrValue( Addr )
-  rule #evalMirConst( _TY, _CID, constantKindNoOp                                                          ) => #makeFnPtrValue( #getNoOpFnAddr() )
-  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                              ) => #makeFnPtrValue( #getIntrinsicAddr( Sym ) )
+  rule #evalMirConst( _TY, _CID, constantKindNoOp                                                          ) => #getNoOpFnAddr()
+  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                              ) => #getIntrinsicAddr( Sym )
 
   rule #evalTyConst( tyConstKindZSTValue( _TY )           ) => #makeStructValue( 0, .List )
   rule #evalTyConst( tyConstKindValue( TY, ALLOC )        ) => #loadAllocation( TY, ALLOC )
