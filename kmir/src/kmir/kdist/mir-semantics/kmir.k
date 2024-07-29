@@ -503,10 +503,6 @@ module KMIR
        <globals> .Map => Mem </globals>
        <allocs> .Map => Allocs </allocs>
 
-  // Lookup Fn Type
-
-  syntax Int ::= #lookupFnByType( Int ) [function]
-
   // Argument Evaluation
 
   syntax KItem ::= #operands( List )
