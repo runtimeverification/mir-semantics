@@ -69,7 +69,7 @@ module KMIR-MEMORY-API
   // information transfers between the frontend and backend via these three types
   // 1. Addresses are abstract representations of memory locations
   // 2. Values are abstract representations of results of operations which may be stored to/read from addresses
-  // 3. Results capture respones from the backend to the frontend that are more structured than mere Values/Addresses
+  // 3. Results capture responses from the backend to the frontend that are more structured than mere Values/Addresses
   syntax Address
   syntax Value
   syntax Result ::= #value( Value )
@@ -395,7 +395,7 @@ module KMIR-MEMORY-IMPL [private]
   rule #prjs( .ProjectionElems, Val ) => Val
 
   // NOTE: an infinite descent of only deref chains cannot exist because:
-  //       any self-referntial type has to be mediated by a struct which wraps a pointer
+  //       any self-referential type has to be mediated by a struct which wraps a pointer
   rule #prj( projectionElemDeref,                    Ptr( Next, Meta ) ) => #loadPtr(Next, Meta)
   rule #prj( projectionElemField(fieldIdx(I), _),    Struct( _, Flds ) ) => #loadField(I, Flds)
   rule #prj( projectionElemIndex(Idx),               Range( Mem )      ) => #loadIndex(#loadLocal(Idx), Mem)
