@@ -532,6 +532,7 @@ module KMIR
   rule #evalArgs(rvalueUse(ARG))                                                     => #evalArgs(ListItem(ARG), .List)
   rule #evalArgs(nonDivergingIntrinsicAssume(ARG))                                   => #evalArgs(ListItem(ARG), .List)
   rule #evalArgs(nonDivergingIntrinsicCopyNonOverlapping(ARGS))                      => #evalArgs(ListItem(src(ARGS)) ListItem(dst(ARGS)) ListItem(count(ARGS)), .List)
+  rule #evalArgs(terminatorKindGoto(_TARGET))                                        => .K
   rule #evalArgs(terminatorKindSwitchInt(ARG, _TARGETS))                             => #evalArgs(ListItem(ARG), .List)
   rule #evalArgs(terminatorKindResume)                                               => .K
   rule #evalArgs(terminatorKindAbort)                                                => .K
