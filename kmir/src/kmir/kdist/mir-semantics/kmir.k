@@ -655,7 +655,12 @@ module KMIR
   rule <k> basicBlock( statement(STMT, _SPAN) STMTS, TERM )     => #exec( STMT ) ~> basicBlock( STMTS, TERM ) ... </k>
   rule <k> basicBlock( .Statements, terminator( TERM, _SPAN ) ) => #evalArgs( TERM ) ~> #exec( TERM )         ... </k>
 
-  // Statements
+  // Statements: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.StatementKind.html
+  //
+  // NOTE: To the best of our understanding, all statements here which are currently NoOps actually are uneffectful.
+  // The most complex case is PlaceMention: it attempts to compute a place _without_ loading it.
+  // In practice, such a read can only indirectly affect machine state through cache/page table updates, instruction pipelining, etc...
+  // However, since we do not model either of these effects, for us, this is a NoOp.
 
   syntax KItem ::= #assign(Place)
 
@@ -664,11 +669,11 @@ module KMIR
   rule <k> #exec(statementKindIntrinsic(INT))                                => #evalArgs(INT) ~> #eval(INT)                     ... </k>
   rule <k> #exec(statementKindSetDiscriminant(PLACE, variantIdx(IDX)))       => #setDisc(PLACE, IDX)                             ... </k>
   rule <k> #exec(deinit(PLACE))                                              => #deinitPlace(PLACE)                              ... </k>
+  rule <k> #exec(statementKindPlaceMention(_Place))                          => .K                                               ... </k>
   rule <k> #exec(statementKindFakeRead(_FakeReadCause, _Place))              => .K                                               ... </k>
   rule <k> #exec(statementKindStorageLive(_Local))                           => .K                                               ... </k>
   rule <k> #exec(statementKindStorageDead(_Local))                           => .K                                               ... </k>
   rule <k> #exec(statementKindRetag(_RetagKind, _Place))                     => .K                                               ... </k>
-  rule <k> #exec(statementKindPlaceMention(_Place))                          => .K                                               ... </k>
   rule <k> #exec(statementKindAscribeUserType(_Place, _UserType, _Variance)) => .K                                               ... </k>
   rule <k> #exec(statementKindCoverage(_Coverage))                           => .K                                               ... </k>
   rule <k> #exec(statementKindConstEvalCounter)                              => .K                                               ... </k>
