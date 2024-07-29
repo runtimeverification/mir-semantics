@@ -601,9 +601,9 @@ module KMIR
                  | #getFstArg( List )  [function]
   syntax List ::= #getRestArgs( List ) [function]
 
-  rule #getArg( ListItem( Val:Value ) )     => Val
-  rule #getFstArg( ListItem( Val:Value ) )  => Val
-  rule #getRestArgs( ListItem(_) RestArgs ) => RestArgs
+  rule #getArg( ListItem( Val:Value ) )              => Val
+  rule #getFstArg( ListItem( Val:Value ) RestArgs )  => Val
+  rule #getRestArgs( ListItem(_) RestArgs         )  => RestArgs
 
   // Expression Evaluation
 
