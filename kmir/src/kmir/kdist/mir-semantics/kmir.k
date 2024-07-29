@@ -583,7 +583,7 @@ module KMIR
            ...
        </k>
 
-  rule <k> #evalArgs( .List, ARGS ) => #operands( #reverse(ARGS) ) ... </k>
+  rule <k> #evalArgs( .List, ARGS ) => #operands( #reverse(ARGS, .List) ) ... </k>
 
   syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
                  | #evalTyConst( TyConstKind )            [function]
@@ -614,9 +614,9 @@ module KMIR
                  | #getFstArg( List )  [function]
   syntax List ::= #getRestArgs( List ) [function]
 
-  rule #getArg( ListItem( Val:Value ) )              => Val
-  rule #getFstArg( ListItem( Val:Value ) RestArgs )  => Val
-  rule #getRestArgs( ListItem(_) RestArgs         )  => RestArgs
+  rule #getArg( ListItem( Val:Value )              )  => Val
+  rule #getFstArg( ListItem( Val:Value ) _RestArgs )  => Val
+  rule #getRestArgs( ListItem(_) RestArgs          )  => RestArgs
 
   // Expression Evaluation
 
