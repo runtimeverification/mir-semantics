@@ -679,7 +679,11 @@ module KMIR
   rule <k> #exec(statementKindConstEvalCounter)                              => .K                                               ... </k>
   rule <k> #exec(statementKindNop)                                           => .K                                               ... </k>
 
-  // Terminators
+  // Terminators: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.TerminatorKind.html
+  //
+  // NOTE: Internal MIR terminator UnwindTermiante maps to stable MIR Abort.
+  // NOTE: Some internal MIR terminators are not implemented in stable MIR yet --- we do not implement these either.
+  // TODO: implement resume/abort --- i.e. logic for panicking
 
   syntax KItem ::= "#stuck"
                  | #goto( Int )
