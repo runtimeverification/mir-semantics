@@ -16,7 +16,6 @@ syntax Span
 syntax TraitDef
 syntax Ty
 syntax TyConst
-syntax TysMap
 syntax VariantIdx
 
 endmodule
@@ -122,8 +121,6 @@ syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
 syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
-syntax TyEntry ::= tyEntry(Int, Ty)
-syntax TysMap ::= List {TyEntry, ""} [symbol(tysMap), terminator-symbol(.tysMap)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
@@ -164,51 +161,55 @@ syntax ExistentialPredicate ::= existentialPredicateTrait(ExistentialTraitRef)
 syntax BinderForExistentialPredicate ::= binderForExistentialPredicate(value: ExistentialPredicate, boundVars: BoundVariableKindList)
 syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, ""}
 
-syntax IntTy ::= "intTyIsize"
-               | "intTyI8"
-               | "intTyI16"
-               | "intTyI32"
-               | "intTyI64"
-               | "intTyI128"
-syntax UintTy ::= "uintTyUsize"
-                | "uintTyU8"
-                | "uintTyU16"
-                | "uintTyU32"
-                | "uintTyU64"
-                | "uintTyU128"
-syntax FloatTy ::= "floatTyF16"
-                 | "floatTyF32"
-                 | "floatTyF64"
-                 | "floatTyF128"
-syntax Movability ::= "movabilityStatic"
-                    | "movabilityMovable"
-syntax RigidTy ::= "rigidTyBool"
-                 | "rigidTyChar"
-                 | rigidTyInt(IntTy)
-                 | rigidTyUint(UintTy)
-                 | rigidTyFloat(FloatTy)
-                 | rigidTyAdt(AdtDef, GenericArgs)
-                 | rigidTyForeign(ForeignDef)
-                 | "rigidTyStr"
-                 | rigidTyArray(Ty, TyConst)
-                 | rigidTyPat(Ty, Pattern)
-                 | rigidTySlice(Ty)
-                 | rigidTyRawPtr(Ty, Mutability)
-                 | rigidTyRef(Region, Ty, Mutability)
-                 | rigidTyFnDef(FnDef, GenericArgs)
-                 | rigidTyFnPtr(PolyFnSig)
-                 | rigidTyClosure(ClosureDef, GenericArgs)
-                 | rigidTyCoroutine(CoroutineDef, GenericArgs, Movability)
-                 | rigidTyDynamic(BindersForExistentialPredicate, Region, DynKind)
-                 | "rigidTyNever"
-                 | rigidTyTuple(Tys)
-                 | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
-                 | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
+  syntax IntTy ::= "intTyIsize"  [group(mir), symbol(IntTy::Isize)]
+                 | "intTyI8"     [group(mir), symbol(IntTy::I8)]
+                 | "intTyI16"    [group(mir), symbol(IntTy::I16)]
+                 | "intTyI32"    [group(mir), symbol(IntTy::I32)]
+                 | "intTyI64"    [group(mir), symbol(IntTy::I64)]
+                 | "intTyI128"   [group(mir), symbol(IntTy::I128)]
 
-syntax TyKind ::= tyKindRigidTy(RigidTy)          [symbol(tyKindRigidTy)]
-                | tyKindAlias(AliasKind, AliasTy) [symbol(tyKindAlias)]
-                | tyKindParam(ParamTy)            [symbol(tyKindParam)]
-                | tyKindBound(Int, BoundTy)       [symbol(tyKindBound)]
+  syntax UintTy ::= "uintTyUsize" [group(mir), symbol(UintTy::Usize)]
+                  | "uintTyU8"    [group(mir), symbol(UintTy::U8)]
+                  | "uintTyU16"   [group(mir), symbol(UintTy::U16)]
+                  | "uintTyU32"   [group(mir), symbol(UintTy::U32)]
+                  | "uintTyU64"   [group(mir), symbol(UintTy::U64)]
+                  | "uintTyU128"  [group(mir), symbol(UintTy::U128)]
+
+  syntax FloatTy ::= "floatTyF16"   [group(mir), symbol(FloatTy::F16)]
+                   | "floatTyF32"   [group(mir), symbol(FloatTy::F32)]
+                   | "floatTyF64"   [group(mir), symbol(FloatTy::F64)]
+                   | "floatTyF128"  [group(mir), symbol(FloatTy::F128)]
+
+  syntax Movability ::= "movabilityStatic"
+                      | "movabilityMovable"
+
+  syntax RigidTy ::= "rigidTyBool" [group(mir), symbol(RigidTy::Bool)]
+                   | "rigidTyChar" [group(mir), symbol(RigidTy::Char)]
+                   | rigidTyInt(IntTy)  [group(mir), symbol(RigidTy::Int)]
+                   | rigidTyUint(UintTy)  [group(mir), symbol(RigidTy::Uint)]
+                   | rigidTyFloat(FloatTy)  [group(mir), symbol(RigidTy::Float)]
+                   | rigidTyAdt(AdtDef, GenericArgs)
+                   | rigidTyForeign(ForeignDef)
+                   | "rigidTyStr" [group(mir), symbol(RigidTy::Str)]
+                   | rigidTyArray(Ty, TyConst)
+                   | rigidTyPat(Ty, Pattern)
+                   | rigidTySlice(Ty)
+                   | rigidTyRawPtr(Ty, Mutability)
+                   | rigidTyRef(Region, Ty, Mutability)
+                   | rigidTyFnDef(FnDef, GenericArgs)
+                   | rigidTyFnPtr(PolyFnSig)
+                   | rigidTyClosure(ClosureDef, GenericArgs)
+                   | rigidTyCoroutine(CoroutineDef, GenericArgs, Movability)
+                   | rigidTyDynamic(BindersForExistentialPredicate, Region, DynKind)
+                   | "rigidTyNever" [group(mir), symbol(RigidTy::Never)]
+                   | rigidTyTuple(Tys)
+                   | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)
+                   | "rigidTyUnimplemented" [symbol(rigidTyUnimplemented), deprecated] // TODO: remove
+
+syntax TyKind ::= tyKindRigidTy(RigidTy)          [group(mir), symbol(TyKind::RigidTy)]
+                | tyKindAlias(AliasKind, AliasTy) [group(mir), symbol(TyKind::Alias)]
+                | tyKindParam(ParamTy)            [group(mir), symbol(TyKind::Param)]
+                | tyKindBound(Int, BoundTy)       [group(mir), symbol(TyKind::Bound)]
 
 syntax TypeAndMut ::= typeAndMut(ty: Ty, mutability: Mutability)
 
@@ -236,6 +237,9 @@ syntax ConstantKind ::= constantKindTy(TyConst)
                       | constantKindUnevaluated(UnevaluatedConst)
                       | constantKindParam(ParamConst)
                       | "constantKindZeroSized"
+                      | "constantKindNoOp" [symbol(constantKindNoOp)]
+                      | constantKindFnDef(id: Int) [symbol(constantKindFnDef)]
+                      | constantKindIntrinsic(name: Symbol) [symbol(constantKindIntrinsic)]
 
 syntax ParamConst ::= paramConst(index: Int, name: String)
 

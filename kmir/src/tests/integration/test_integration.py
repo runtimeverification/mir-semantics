@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 from pyk.cterm import CTerm
-from pyk.kast.inner import KApply, KLabel, KSequence
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort
 
+from kmir.convert_from_definition.parser import Parser
 from kmir.convert_json.convert import from_dict
 
 if TYPE_CHECKING:
@@ -17,9 +18,6 @@ if TYPE_CHECKING:
 
 CONVERT_BODY_DATA = (Path(__file__).parent / 'data' / 'convert-body').resolve(strict=True)
 CONVERT_BODY_INPUT_DIRS = [CONVERT_BODY_DATA / 'panic']
-
-RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
-RUN_PANIC_INPUT = [RUN_PANIC_DATA / 'simple.kmir']
 
 
 @pytest.mark.parametrize(
@@ -37,6 +35,50 @@ def test_convert_body(test_dir: Path, tools: Tools) -> None:
     rc, parsed_ast = tools.kparse.kparse(reference_mir, sort='Pgm')
 
     assert converted_ast == parsed_ast
+
+
+SCHEMA_PARSE_DATA = [
+    ({'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
+    ({'Int': 'I8'}, KApply('IntTy::I8'), KSort('IntTy')),
+    ({'Int': 'I16'}, KApply('IntTy::I16'), KSort('IntTy')),
+    ({'Int': 'I32'}, KApply('IntTy::I32'), KSort('IntTy')),
+    ({'Int': 'I64'}, KApply('IntTy::I64'), KSort('IntTy')),
+    ({'Int': 'I128'}, KApply('IntTy::I128'), KSort('IntTy')),
+    ({'Uint': 'Usize'}, KApply('UintTy::Usize'), KSort('UintTy')),
+    ({'Uint': 'U8'}, KApply('UintTy::U8'), KSort('UintTy')),
+    ({'Uint': 'U16'}, KApply('UintTy::U16'), KSort('UintTy')),
+    ({'Uint': 'U32'}, KApply('UintTy::U32'), KSort('UintTy')),
+    ({'Uint': 'U64'}, KApply('UintTy::U64'), KSort('UintTy')),
+    ({'Uint': 'U128'}, KApply('UintTy::U128'), KSort('UintTy')),
+    ({'Float': 'F16'}, KApply('FloatTy::F16'), KSort('FloatTy')),
+    ({'Float': 'F32'}, KApply('FloatTy::F32'), KSort('FloatTy')),
+    ({'Float': 'F64'}, KApply('FloatTy::F64'), KSort('FloatTy')),
+    ({'Float': 'F128'}, KApply('FloatTy::F128'), KSort('FloatTy')),
+    ({'RigidTy': 'Bool'}, KApply('RigidTy::Bool'), KSort('RigidTy')),
+    ({'RigidTy': {'Int': 'I8'}}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
+    ({'RigidTy': {'Uint': 'Usize'}}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
+    ({'RigidTy': {'Float': 'F128'}}, KApply('RigidTy::Float', (KApply('FloatTy::F128'))), KSort('RigidTy')),
+]
+
+
+@pytest.mark.parametrize(
+    'test_case',
+    SCHEMA_PARSE_DATA,
+    ids=[f'{sort.name}-{i}' for i, (_, _, sort) in enumerate(SCHEMA_PARSE_DATA)],
+)
+def test_schema_parse(
+    test_case: tuple[dict[object, object], KInner, KSort],
+    tools: Tools,
+) -> None:
+    parser = Parser(tools.definition)
+
+    json_data, expected_term, expected_sort = test_case
+
+    assert parser.parse_mir_json(json_data) == (expected_term, expected_sort)
+
+
+RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
+RUN_PANIC_INPUT = [RUN_PANIC_DATA / 'simple.kmir']
 
 
 @pytest.mark.parametrize(
