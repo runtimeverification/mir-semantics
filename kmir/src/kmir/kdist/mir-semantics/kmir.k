@@ -588,6 +588,15 @@ module KMIR
   syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
                  | #evalTyConst( TyConstKind )            [function]
 
+  // #evalMirConst
+  //
+  // 1. KindZeroSized   - since structs are represented by ordered lists of fields with a variant index --- a zero-sized struct always has just one variant and no fields.
+  // 2. KindAllocated   - TODO: supporting this requires either a new kind of pointer (or) pre-loading allocations into the global memory space
+  // 3. KindUnevaluated - equal to a function call: if the promoted index is non-null, to the promoted body; otherwise, to the top-level monoitem given by the def index
+  // 4. KindFnDef       - equal to a function pointer with the given address
+  // 5. KindNoOp        - equal to a function pointer with a special semantics-defined address
+  // 6. KindIntrinsic   - equal to a function pointer with a special semantics-defined address
+
   rule #evalMirConst( _TY, _CID, constantKindZeroSized                                                     ) => #makeStructValue ( 0, .List )
   rule #evalMirConst(  TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
   rule #evalMirConst(  TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
