@@ -165,7 +165,7 @@ module KMIR-MEMORY-IMPL [private]
   // 5. MemoryWrite: represents a possible write to memory
 
   syntax AddressBase ::= AddrBase( Int )                 // global index
-                       | AddrBase( Int, Int )            // stack frame index, local var index
+                       | AddrBase( Int, Int )            // stack frame height, local var index
 
   syntax Address ::= LocalAddr( Int,                     // stack frame height
                                 Place )                  // stack local address
