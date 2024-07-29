@@ -504,6 +504,10 @@ module KMIR
        <allocs> .Map => Allocs </allocs>
 
   // Argument Evaluation
+  //
+  // NOTE: In general, we need to evaluate any place or operand that refers to memory that we must load.
+  //       Things that are used during evaluation, but not loaded from memory, are not required to be evaluated.
+  //       This latter class includes, e.g., the PLACE argument in `addressOf` --- such a place is not loaded from memory, so it need not be evaluated.
 
   syntax KItem ::= #operands( List )
 
