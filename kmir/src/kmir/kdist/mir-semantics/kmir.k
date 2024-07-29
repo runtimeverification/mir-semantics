@@ -579,7 +579,7 @@ module KMIR
            ...
        </k>
 
-  rule <k> #evalArgs( .List, ARGS ) => #operands( ARGS ) ... </k>
+  rule <k> #evalArgs( .List, ARGS ) => #operands( #reverse(ARGS) ) ... </k>
 
   syntax Value ::= #evalMirConst( Ty, Int, ConstantKind ) [function]
                  | #evalTyConst( TyConstKind )            [function]
