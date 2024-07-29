@@ -91,7 +91,7 @@ def test_run_panic(test_file: Path, tools: Tools) -> None:
         k_cell = CTerm(config).cell('K_CELL')
 
         match k_cell:
-            case KSequence((KApply(KLabel(name='panicked')), *_)):
+            case KSequence((KApply(KLabel(name='#stuck_KMIR_KItem')), *_)):
                 return True
 
         return False
