@@ -618,7 +618,7 @@ module KMIR
   rule <k> #operands(ARGS) ~> #eval(rvalueDiscriminant(_))             => #evalDisc(ARGS)            ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueLen(_))                      => #evalLen(ARGS)             ... </k>
   rule <k>                    #eval(rvalueRef(_REG, _BRW_KIND, PLACE)) => #makePtr(PLACE)            ... </k>
-  rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                => #makeArray(ARGS)           ... </k>
+  rule <k> #operands(ARGS) ~> #eval(rvalueRepeat(_, _))                => #makeArray(#repeat(ARGS))  ... </k>
   rule <k> #operands(ARGS) ~> #eval(rvalueShallowInitBox(_, _))        => #buildPtr(ARGS)            ... </k>
   rule <k>                    #eval(rvalueThreadLocalRef(_CRATE_ITEM)) => #makeTLRef()               ... </k>
   rule <k>                    #eval(rvalueNullaryOp(OP, TY))           => #evalNullOp(OP, TY)        ... </k>
@@ -626,6 +626,9 @@ module KMIR
   rule <k> #operands(ARGS) ~> #eval(rvalueUse(_))                      => #value( #getArg(ARGS) )    ... </k>
 
   // Aggregate Builder
+
+  syntax List ::= #repeat(List) [function]
+  rule #repeat(ListItem(Val) ListItem(Count)) => makeList(#readScalar(Count), Val)
 
   syntax KItem ::= #makeAggregate(AggregateKind, List) [function]
   rule #makeAggregate(aggregateKindArray(_),                                                                         Args ) => #makeArray( Args )
