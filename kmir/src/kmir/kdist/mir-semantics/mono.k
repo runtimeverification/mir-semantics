@@ -12,7 +12,7 @@ module MONO
   imports TYPES-SORTS
   imports INT
 
-syntax StaticDef ::= Int // imported from crate
+syntax StaticDef ::= staticDef(Int) // imported from crate
 
 syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
 syntax MonoItem ::= monoItemFn(Instance)

@@ -4,6 +4,9 @@ syntax Body
 syntax Bodies
 syntax DefId
 syntax MaybeInt
+syntax MIRBool
+syntax MIRInt
+syntax MIRString
 syntax Mutability
 syntax Safety
 
@@ -15,6 +18,10 @@ module BODY
   imports TYPES-SORTS
   imports INT
   imports STRING
+
+syntax MIRInt ::= mirInt(Int) [group(mir-int), symbol(MIRInt::Int)]
+syntax MIRBool ::= mirBool(Bool) [group(mir-bool), symbol(MIRBool::Bool)]
+syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
 
 syntax DefId ::= defId(Int) [symbol(defId)]
 syntax LocalDefId ::= localDefId(Opaque)
@@ -39,8 +46,8 @@ syntax MaybeLocal ::= someLocal(Local) | "noLocal"
 syntax ProjectionElemDeref ::= "projectionElemDeref"
 syntax ProjectionElemField ::= projectionElemField(FieldIdx, Ty)
 syntax ProjectionElemIndex ::= projectionElemIndex(Local)
-syntax ProjectionElemConstantIndex ::= projectionElemConstantIndex(offset: Int, minLength: Int, fromEnd: Bool)
-syntax ProjectionElemSubslice ::= projectionElemSubslice(from: Int, to: Int, fromEnd: Bool)
+syntax ProjectionElemConstantIndex ::= projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool)
+syntax ProjectionElemSubslice ::= projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)
 syntax ProjectionElemDowncast ::= projectionElemDowncast(VariantIdx)
 syntax ProjectionElemOpaqueCast ::= projectionElemOpaqueCast(Ty)
 syntax ProjectionElemSubtype ::= projectionElemSubtype(Ty)
@@ -56,7 +63,7 @@ syntax ProjectionElems ::= List {ProjectionElem, ""}
 syntax Place ::= place(local: Local, projection: ProjectionElems)
 syntax MaybePlace ::= somePlace(Place) | "noPlace"
 
-syntax Branch ::= branch(Int, BasicBlockIdx)
+syntax Branch ::= branch(MIRInt, BasicBlockIdx)
 syntax Branches ::= List {Branch, ""}
 syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx)
 
@@ -252,10 +259,10 @@ syntax AssertMessage ::= AssertMessageBoundsCheck
                        | AssertMessageResumedAfterReturn
                        | AssertMessageResumedAfterPanic
                        | AssertMessageMisalignedPointerDereference
-syntax TerminatorKindAssert ::= assert(cond: Operand, expected: Bool, msg: AssertMessage, target: BasicBlockIdx, unwind: UnwindAction)
-syntax InlineAsmOperand ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: String)
+syntax TerminatorKindAssert ::= assert(cond: Operand, expected: MIRBool, msg: AssertMessage, target: BasicBlockIdx, unwind: UnwindAction)
+syntax InlineAsmOperand ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString)
 syntax InlineAsmOperands ::= List {InlineAsmOperand, ""}
-syntax TerminatorKindInlineAsm ::= terminatorKindInlineAsm(template: String, operands: InlineAsmOperands, options: String, lineSpans: String, destination: MaybeBasicBlockIdx, unwind: UnwindAction)
+syntax TerminatorKindInlineAsm ::= terminatorKindInlineAsm(template: MIRString, operands: InlineAsmOperands, options: MIRString, lineSpans: MIRString, destination: MaybeBasicBlockIdx, unwind: UnwindAction)
 
 syntax TerminatorKind ::= TerminatorKindGoto
                         | TerminatorKindSwitchInt
@@ -309,7 +316,7 @@ syntax MaybeInt ::= someInt(Int) | "noInt"
 syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, composite: MaybeVarDebugInfoFragment, value: VarDebugInfoContents, argumentIndex: MaybeInt)
 syntax VarDebugInfos ::= List {VarDebugInfo, ""}
 
-syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: Int, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span)
+syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span)
 syntax Bodies ::= List {Body, ""} [symbol(bodies), terminator-symbol(.bodies)]
 
 endmodule
