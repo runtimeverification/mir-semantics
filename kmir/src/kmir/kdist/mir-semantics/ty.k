@@ -121,6 +121,7 @@ syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
 syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
+            | ty(Int)
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
@@ -220,7 +221,7 @@ syntax Promoted ::= promoted(Int)
 syntax MaybePromoted ::= somePromoted(Promoted) | "noPromoted"
 
 syntax Align ::= align(Int) [symbol(align)]
-syntax ProvenanceMapEntry ::= provenanceMapEntry(size: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
 syntax AllocByte ::= someByte(Int) [symbol(someByte)]

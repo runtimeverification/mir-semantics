@@ -20,7 +20,7 @@ syntax PassMode ::= "passModeIgnore"
                   | passModeCast(padI32: Bool, cast: Opaque)
                   | passModeIndirect(attrs: Opaque, metaAttrs: Opaque, onStack: Bool)
 
-syntax LayoutShape ::= layoutShape(fields: FieldsShape, variants: VariantsShape, abi: ValueAbi, abiAlign: Align, size: MachineSize)
+syntax LayoutShape ::= layoutShape(fields: FieldsShape, variants: VariantsShape, abi: ValueAbi, abiAlign: Align, layoutSize: MachineSize)
 syntax LayoutShapes ::= List {LayoutShape, ""}
 
 syntax FieldsShape ::= "fieldsShapePrimitive"
