@@ -17,6 +17,9 @@ syntax TraitDef
 syntax Ty
 syntax TyConst
 syntax VariantIdx
+syntax MIRInt
+syntax MIRBool
+syntax MIRString
 
 endmodule
 
@@ -28,6 +31,10 @@ module TYPES
   imports TYPES-SORTS
   imports INT
   imports STRING
+
+syntax MIRInt ::= mirInt(Int)          [group(mir-int), symbol(MIRInt::Int)]
+syntax MIRBool ::= mirBool(Bool)       [group(mir-bool), symbol(MIRBool::Bool)]
+syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
 
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
@@ -50,12 +57,14 @@ syntax TraitDef ::= traitDef(Int) // imported from crate
 
 syntax VariantIdx ::= variantIdx(Int) [symbol(variantIdx)]
 
-syntax DynKind ::= "dynKindDyn" | "dynKindDynStar"
+syntax DynKind ::= "dynKindDyn"      [group(mir-enum), symbol(DynKind::Dyn)]
+                 | "dynKindDynStar"  [group(mir-enum), symbol(DynKind::DynStar)]
 
-syntax ForeignModule ::= foreignModule(defId: ForeignModuleDef, abi: Abi)
-syntax ForeignItemKind ::= foreignItemKindFn()
-                         | foreignItemKindStatic(StaticDef)
-                         | foreignItemKindType(Ty)
+syntax ForeignModule ::= foreignModule(defId: ForeignModuleDef, abi: Abi) [group(mir-def-id-abi)]
+
+syntax ForeignItemKind ::= foreignItemKindFn()               [group("mir-enum"), symbol("ForeignItemKind::Fn")]
+                         | foreignItemKindStatic(StaticDef)  [group("mir-enum"), symbol("ForeignItemKind::Static")]
+                         | foreignItemKindType(Ty)           [group("mir-enum"), symbol("ForeignItemKind::Type")]
 
 syntax AdtKind ::= "adtKindEnum"
                  | "adtKindUnion"
