@@ -23,7 +23,7 @@ syntax MIRInt ::= mirInt(Int)          [group(mir-int), symbol(MIRInt::Int)]
 syntax MIRBool ::= mirBool(Bool)       [group(mir-bool), symbol(MIRBool::Bool)]
 syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
 
-syntax DefId ::= defId(Int)              [group(mir)]
+syntax DefId ::= defId(Int)              [group(mir-int)]
 syntax LocalDefId ::= localDefId(Opaque) [group(mir)]
 syntax Coverage ::= coverage(Opaque)     [group(mir)]
 
@@ -33,7 +33,7 @@ syntax Mutability ::= "mutabilityNot" [group(mir-enum), symbol(Mutability::Not)]
 syntax Safety ::= "safetyUnsafe" [group(mir-enum), symbol(Safety::Unsafe)]
                 | "safetyNormal" [group(mir-enum), symbol(Safety::Normal)]
 
-syntax BasicBlockIdx ::= basicBlockIdx(Int)                    [group(mir)]
+syntax BasicBlockIdx ::= basicBlockIdx(Int)                    [group(mir-int)]
 syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) [group(mir-option)]
                            | "noBasicBlockIdx"                 [group(mir-option)]
 
@@ -46,25 +46,25 @@ syntax MaybeOperand ::= someOperand(Operand) [group(mir-option)]
 
 syntax Operands ::= List {Operand, ""} [group(mir-list), symbol(Operand::append), terminator-symbol(Operand::empty)]
 
-syntax Local ::= local(Int)
+syntax Local ::= local(Int)            [group(mir-int)]
 syntax MaybeLocal ::= someLocal(Local) [group(mir-option)]
                     | "noLocal"        [group(mir-option)]
 
-syntax ProjectionElem ::=  "projectionElemDeref"                                                            [group(mir-enum), symbol(ProjectionElem::Deref)]
-                        |  projectionElemField(FieldIdx, Ty)                                                [group(mir-enum), symbol(ProjectionElem::Field)]
-                        |  projectionElemIndex(Local)                                                       [group(mir-enum), symbol(ProjectionElem::Index)]
-                        |  projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool) [group(mir-enum), symbol(ProjectionElem::ConstantIndex)]
-                        |  projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)               [group(mir-enum), symbol(ProjectionElem::Subslice)]
-                        |  projectionElemDowncast(VariantIdx)                                               [group(mir-enum), symbol(ProjectionElem::Downcast)]
-                        |  projectionElemOpaqueCast(Ty)                                                     [group(mir-enum), symbol(ProjectionElem::OpaqueCast)]
-                        |  projectionElemSubtype(Ty)                                                        [group(mir-enum), symbol(ProjectionElem::Subtype)]
+syntax ProjectionElem ::=  "projectionElemDeref"                                                            [group(mir-enum),                            symbol(ProjectionElem::Deref)]
+                        |  projectionElemField(FieldIdx, Ty)                                                [group(mir-enum),                            symbol(ProjectionElem::Field)]
+                        |  projectionElemIndex(Local)                                                       [group(mir-enum),                            symbol(ProjectionElem::Index)]
+                        |  projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool) [group(mir-enum@offset:min_length:from_end), symbol(ProjectionElem::ConstantIndex)]
+                        |  projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)               [group(mir-enum),                            symbol(ProjectionElem::Subslice)]
+                        |  projectionElemDowncast(VariantIdx)                                               [group(mir-enum),                            symbol(ProjectionElem::Downcast)]
+                        |  projectionElemOpaqueCast(Ty)                                                     [group(mir-enum),                            symbol(ProjectionElem::OpaqueCast)]
+                        |  projectionElemSubtype(Ty)                                                        [group(mir-enum),                            symbol(ProjectionElem::Subtype)]
 
 syntax ProjectionElems ::= List {ProjectionElem, ""} [group(mir-list), symbol(ProjectionElem::append), terminator-symbol(ProjectionElem::empty)]
 syntax Place ::= place(local: Local, projection: ProjectionElems) [group(mir@local:projection)]
 syntax MaybePlace ::= somePlace(Place)                            [group(mir-option)]
                     | "noPlace"                                   [group(mir-option)]
 
-syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir-tuple)]
+syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir)]
 syntax Branches ::= List {Branch, ""} [group(mir-list), symbol(Branch::append), terminator-symbol(Branch::empty)]
 syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx) [group(mir@branches:otherwise)]
 
@@ -152,11 +152,11 @@ syntax MutBorrowKind ::= "mutBorrowKindDefault"           [group(mir-enum), symb
 syntax FakeBorrowKind ::= "fakeBorrowKindDeep"            [group(mir-enum), symbol(FakeBorrowKind::Deep)]
                         | "fakeBorrowKindShallow"         [group(mir-enum), symbol(FakeBorrowKind::Shallow)]
 
-syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)                              [group(mir)]
+syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)                              [group(mir-int)]
 syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex) [group(mir-option)]
                                       | "noUserTypeAnnotationIndex"                          [group(mir-option)]
 
-syntax FieldIdx ::= fieldIdx(Int)                [group(mir)]
+syntax FieldIdx ::= fieldIdx(Int)                [group(mir-int)]
 syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx)  [group(mir-option)]
                       | "noFieldIdx"             [group(mir-option)]
 
@@ -261,7 +261,7 @@ syntax BasicBlocks ::= List {BasicBlock, ""} [group(mir-list), symbol(BasicBlock
 syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability) [group(mir@ty:span:mutability)]
 syntax LocalDecls ::= List {LocalDecl, ""} [group(mir-list), symbol(LocalDecl::append), terminator-symbol(LocalDecl::empty)]
 
-syntax SourceScope ::= sourceScope(Int)
+syntax SourceScope ::= sourceScope(Int)                          [group(mir-int)]
 syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope) [group(mir@span:scope)]
 syntax VarDebugInfoFragment ::= varDebugInfoFragment(ty: Ty, projection: ProjectionElems) [group(mir@ty:projection)]
 syntax MaybeVarDebugInfoFragment ::= someVarDebugInfoFragment(VarDebugInfoFragment) [group(mir-option)]
