@@ -44,7 +44,7 @@ syntax Operand ::= operandCopy(Place)            [group(mir-enum), symbol(Operan
 syntax MaybeOperand ::= someOperand(Operand) [group(mir-option)]
                       | "noOperand"          [group(mir-option)]
 
-syntax Operands ::= List {Operand, ""}
+syntax Operands ::= List {Operand, ""} [group(mir-list), symbol(Operand::append), terminator-symbol(Operand::empty)]
 
 syntax Local ::= local(Int)
 syntax MaybeLocal ::= someLocal(Local) [group(mir-option)]
@@ -59,13 +59,13 @@ syntax ProjectionElem ::=  "projectionElemDeref"                                
                         |  projectionElemOpaqueCast(Ty)                                                     [group(mir-enum), symbol(ProjectionElem::OpaqueCast)]
                         |  projectionElemSubtype(Ty)                                                        [group(mir-enum), symbol(ProjectionElem::Subtype)]
 
-syntax ProjectionElems ::= List {ProjectionElem, ""}
+syntax ProjectionElems ::= List {ProjectionElem, ""} [group(mir-list), symbol(ProjectionElem::append), terminator-symbol(ProjectionElem::empty)]
 syntax Place ::= place(local: Local, projection: ProjectionElems) [group(mir@local:projection)]
 syntax MaybePlace ::= somePlace(Place)                            [group(mir-option)]
                     | "noPlace"                                   [group(mir-option)]
 
 syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir-tuple)]
-syntax Branches ::= List {Branch, ""}
+syntax Branches ::= List {Branch, ""} [group(mir-list), symbol(Branch::append), terminator-symbol(Branch::empty)]
 syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx) [group(mir)]
 
 syntax UserTypeProjection ::= userTypeProjection(base: UserTypeAnnotationIndex, projection: Opaque) [group(mir@base:projection)]
@@ -120,8 +120,8 @@ syntax UnwindAction ::= "unwindActionContinue"              [group(mir-enum), sy
                       | unwindActionCleanup(BasicBlockIdx)  [group(mir-enum), symbol(UnwindAction::Cleanup)]
 
 /////// Rvalue
-syntax VariantAndFieldIndex ::= vfi(VariantIdx, FieldIdx)
-syntax VariantAndFieldIndices ::= List {VariantAndFieldIndex, ""}
+syntax VariantAndFieldIndex ::= vfi(VariantIdx, FieldIdx)           [group(mir)]
+syntax VariantAndFieldIndices ::= List {VariantAndFieldIndex, ""}   [group(mir-list), symbol(VariantAndField::append), terminator-symbol(VariantAndField::empty)]
 syntax PointerCoercion ::= "pointerCoercionReifyFnPointer"          [group(mir-enum), symbol(PointerCoercion::ReifyFnPointer)]
                          | "pointerCoercionUnsafeFnPointer"         [group(mir-enum), symbol(PointerCoercion::UnsafeFnPointer)]
                          | pointerCoercionClosureFnPointer(Safety)  [group(mir-enum), symbol(PointerCoercion::ClosureFnPointer)]
@@ -203,7 +203,7 @@ syntax StatementKind ::= statementKindAssign(place: Place, rvalue: Rvalue)      
                        | "statementKindNop"                                                                              [group(mir-enum),                            symbol(StatementKind::Nop)]
 
 syntax Statement ::= statement(kind: StatementKind, span: Span) [group(mir@kind:span)]
-syntax Statements ::= List {Statement, ""}
+syntax Statements ::= List {Statement, ""} [group(mir-list), symbol(Statement::append), terminator-symbol(Statement::empty)]
 /////// End Statements
 
 /////// Terminators
@@ -218,7 +218,7 @@ syntax AssertMessage ::= assertMessageBoundsCheck(len: Operand, index: Operand) 
                        | assertMessageMisalignedPointerDereference(required: Operand, found: Operand) [group(mir-enum), symbol(AssertMessage::MisalignedPointerDerefence)]
 
 syntax InlineAsmOperand  ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString)
-syntax InlineAsmOperands ::= List {InlineAsmOperand, ""}
+syntax InlineAsmOperands ::= List {InlineAsmOperand, ""} [group(mir-list), symbol(InlineAsmOperand::append), terminator-symbol(InlineAsmOperand::empty)]
 
 syntax TerminatorKind ::= terminatorKindGoto(target: BasicBlockIdx)                                                                                                                                  [group(mir-enum@target),                                                  symbol(TerminatorKind::Goto)]
                         | terminatorKindSwitchInt(discr: Operand, targets: SwitchTargets)                                                                                                            [group(mir-enum@discr:targets),                                           symbol(TerminatorKind::SwitchInt)]
@@ -256,10 +256,10 @@ syntax NonDivergingIntrinsic ::= nonDivergingIntrinsicAssume(Operand)           
 /////// End terminators
 
 syntax BasicBlock ::= basicBlock(statements: Statements, terminator: Terminator) [group(mir@statements:terminator)]
-syntax BasicBlocks ::= List {BasicBlock, ""}
+syntax BasicBlocks ::= List {BasicBlock, ""} [group(mir-list), symbol(BasicBlock::append), terminator-symbol(BasicBlock::empty)]
 
 syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability) [group(mir@ty:span:mutability)]
-syntax LocalDecls ::= List {LocalDecl, ""}
+syntax LocalDecls ::= List {LocalDecl, ""} [group(mir-list), symbol(LocalDecl::append), terminator-symbol(LocalDecl::empty)]
 
 syntax SourceScope ::= sourceScope(Int)
 syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope) [group(mir@span:scope)]
@@ -275,9 +275,9 @@ syntax MaybeInt ::= someInt(Int) [group(mir-option)]
                   | "noInt"      [group(mir-option)]
 
 syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, composite: MaybeVarDebugInfoFragment, value: VarDebugInfoContents, argumentIndex: MaybeInt) [group(mir@name:source_info:composite:value:argument_index)]
-syntax VarDebugInfos ::= List {VarDebugInfo, ""}
+syntax VarDebugInfos ::= List {VarDebugInfo, ""} [group(mir-list), symbol(VarDebugInfo::append), terminator-symbol(VarDebugInfo::empty)]
 
 syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span) [group(mir@blocks:locals:arg_count:var_debug_info:spread_arg:span)]
-syntax Bodies ::= List {Body, ""} [symbol(bodies), terminator-symbol(.bodies)]
+syntax Bodies ::= List {Body, ""} [group(mir-list), symbol(Body::append), terminator-symbol(Body::empty)]
 
 endmodule
