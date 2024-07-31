@@ -66,7 +66,7 @@ syntax MaybePlace ::= somePlace(Place)                            [group(mir-opt
 
 syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir-tuple)]
 syntax Branches ::= List {Branch, ""} [group(mir-list), symbol(Branch::append), terminator-symbol(Branch::empty)]
-syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx) [group(mir)]
+syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx) [group(mir@branches:otherwise)]
 
 syntax UserTypeProjection ::= userTypeProjection(base: UserTypeAnnotationIndex, projection: Opaque) [group(mir@base:projection)]
 
@@ -141,9 +141,9 @@ syntax CastKind ::= "castKindPointerExposeAddress"                  [group(mir-e
                   | "castKindFnPtrToPtr"                            [group(mir-enum), symbol(CastKind::FnPtrToPtr)]
                   | "castKindTransmute"                             [group(mir-enum), symbol(CastKind::Transmute)]
 
-syntax BorrowKind ::= "borrowKindShared"                  [group(mir-enum), symbol(BorrowKind::Shared)]
-                    | borrowKindFake(FakeBorrowKind)      [group(mir-enum), symbol(BorrowKind::Fake)]
-                    | borrowKindMut(kind: MutBorrowKind)  [group(mir-enum), symbol(BorrowKind::Mut)]
+syntax BorrowKind ::= "borrowKindShared"                  [group(mir-enum),      symbol(BorrowKind::Shared)]
+                    | borrowKindFake(FakeBorrowKind)      [group(mir-enum),      symbol(BorrowKind::Fake)]
+                    | borrowKindMut(kind: MutBorrowKind)  [group(mir-enum@kind), symbol(BorrowKind::Mut)]
 
 syntax MutBorrowKind ::= "mutBorrowKindDefault"           [group(mir-enum), symbol(MutBorrowKind::Default)]
                        | "mutBorrowKindTwoPhaseBorrow"    [group(mir-enum), symbol(MutBorrowKind::TwoPhaseBorrow)]
@@ -208,16 +208,16 @@ syntax Statements ::= List {Statement, ""} [group(mir-list), symbol(Statement::a
 
 /////// Terminators
 
-syntax AssertMessage ::= assertMessageBoundsCheck(len: Operand, index: Operand)                       [group(mir-enum), symbol(AssertMessage::BoundsCheck)]
-                       | assertMessageOverflow(BinOp, Operand, Operand)                               [group(mir-enum), symbol(AssertMessage::Overflow)]
-                       | assertMessageOverflowNeg(Operand)                                            [group(mir-enum), symbol(AssertMessage::OverflowNeg)]
-                       | assertMessageDivisionByZero(Operand)                                         [group(mir-enum), symbol(AssertMessage::DivisionByZero)]
-                       | assertMessageRemainderByZero(Operand)                                        [group(mir-enum), symbol(AssertMessage::RemainderByZero)]
-                       | assertMessageResumedAfterReturn(CoroutineKind)                               [group(mir-enum), symbol(AssertMessage::ResumedAfterReturn)]
-                       | assertMessageResumedAfterPanic(CoroutineKind)                                [group(mir-enum), symbol(AssertMessage::ResumedAfterPanic)]
-                       | assertMessageMisalignedPointerDereference(required: Operand, found: Operand) [group(mir-enum), symbol(AssertMessage::MisalignedPointerDerefence)]
+syntax AssertMessage ::= assertMessageBoundsCheck(len: Operand, index: Operand)                       [group(mir-enum@len:index),      symbol(AssertMessage::BoundsCheck)]
+                       | assertMessageOverflow(BinOp, Operand, Operand)                               [group(mir-enum),                symbol(AssertMessage::Overflow)]
+                       | assertMessageOverflowNeg(Operand)                                            [group(mir-enum),                symbol(AssertMessage::OverflowNeg)]
+                       | assertMessageDivisionByZero(Operand)                                         [group(mir-enum),                symbol(AssertMessage::DivisionByZero)]
+                       | assertMessageRemainderByZero(Operand)                                        [group(mir-enum),                symbol(AssertMessage::RemainderByZero)]
+                       | assertMessageResumedAfterReturn(CoroutineKind)                               [group(mir-enum),                symbol(AssertMessage::ResumedAfterReturn)]
+                       | assertMessageResumedAfterPanic(CoroutineKind)                                [group(mir-enum),                symbol(AssertMessage::ResumedAfterPanic)]
+                       | assertMessageMisalignedPointerDereference(required: Operand, found: Operand) [group(mir-enum@required:found), symbol(AssertMessage::MisalignedPointerDerefence)]
 
-syntax InlineAsmOperand  ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString)
+syntax InlineAsmOperand  ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString) [group(mir@in_value:out_place:raw_rpr)]
 syntax InlineAsmOperands ::= List {InlineAsmOperand, ""} [group(mir-list), symbol(InlineAsmOperand::append), terminator-symbol(InlineAsmOperand::empty)]
 
 syntax TerminatorKind ::= terminatorKindGoto(target: BasicBlockIdx)                                                                                                                                  [group(mir-enum@target),                                                  symbol(TerminatorKind::Goto)]
@@ -231,7 +231,7 @@ syntax TerminatorKind ::= terminatorKindGoto(target: BasicBlockIdx)             
                         | assert(cond: Operand, expected: MIRBool, msg: AssertMessage, target: BasicBlockIdx, unwind: UnwindAction)                                                                  [group(mir-enum@cond:expected:msg:target:unwind),                         symbol(TerminatorKind::Assert)]
                         | terminatorKindInlineAsm(template: MIRString, operands: InlineAsmOperands, options: MIRString, lineSpans: MIRString, destination: MaybeBasicBlockIdx, unwind: UnwindAction) [group(mir-enum@template:operands:options:line_spans:destination:unwind), symbol(TerminatorKind::InlineAsm)]
 
-syntax Terminator ::= terminator(kind: TerminatorKind, span: Span)
+syntax Terminator ::= terminator(kind: TerminatorKind, span: Span) [group(mir@kind:span)]
 
 syntax FakeReadCause ::= "fakeReadCauseForMatchGuard"             [group(mir-enum), symbol(FakeReadCause::ForMatchGuard)]
                        | fakeReadCauseForMatchedPlace(LocalDefId) [group(mir-enum), symbol(FakeReadCause::ForMatchedPlace)]
