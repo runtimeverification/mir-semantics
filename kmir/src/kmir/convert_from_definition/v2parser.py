@@ -34,6 +34,19 @@ def _get_group(prod: KProduction) -> str:
     assert group
     return group
 
+def _extract_mir_group_info(group_info: str) -> tuple(str, Sequence[str])
+    # --- separates the field names from the mir instruction kind
+    # --  separates the individual field names
+    # -   is a symbol for _
+    tokens = group_info.split("---")
+    l = len(tokens)
+    assert l == 1 or l == 2
+    if l == 1:
+        return (tokens[0], [])
+    if l == 2:
+        field_name_tokens = tokens[1].split("--")
+        field_names = [ s.replace("-", "_") for s in field_name_tokens ]
+        return (tokens[0], field_names)
 
 def _is_mir_terminal(prod: KProduction) -> bool:
     return _is_mir_production(prod) and len(prod.items) == 1 and isinstance(prod.items[0], KTerminal)
@@ -62,12 +75,6 @@ def _element_sort(sort: KSort) -> KSort:
     return KSort(name[:-1])
 
 
-def json_key_from_sort(psort: str, asort: str) -> str:
-    return {
-        ('Statement', 'StatementKind'): 'kind',
-    }.get((psort, asort))
-
-
 
 class Parser:
     __definition: KDefinition
@@ -92,7 +99,8 @@ class Parser:
         assert prod in _mir_productions
 
         group = _get_group(prod)
-        match group:
+        kind, _ = _extract_mir_group_info(group)
+        match kind:
             case 'mir':
                 if prod in _mir_terminals:
                     return self._parse_mir_terminal_json(json, prod)
@@ -126,6 +134,9 @@ class Parser:
 
     def _parse_mir_nonterminal_json(self, json: JSON, prod: KProduction) -> ParseResult:
         assert isinstance(json, dict[object, object]) or isinstance(json, Sequence[object])
+
+        group = _get_group(prod)
+        _, field_names = _extract_mir_group_info(group)
         symbol = _get_symbol(prod)
         sort = prod.sort
         args = []
@@ -133,10 +144,11 @@ class Parser:
         for arg_sort in prod.argument_sorts:
             arg_json = None
             if isinstance(json, dict[object, object]):
-                key = json_key_from_sort(sort.name, arg_sort.name)
-                assert key
+                assert arg_count < len(field_names)
+                key = field_names[arg_count]
                 assert key in json
                 arg_json = json[key]
+                arg_count += 1
             else:
                 arg_json = json[arg_count]
                 arg_count += 1
