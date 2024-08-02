@@ -67,10 +67,10 @@ def _list_symbols(sort: str) -> Tuple[str, str]:
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
     element_name = {
-        ('Statement', 'StatementKind'): 'kind',
+        'Bodies': 'Body',
     }.get(name)
     if element_name:
-      return KSort(element_name)
+        return KSort(element_name)
     assert name.endswith('s')
     return KSort(name[:-1])
 
