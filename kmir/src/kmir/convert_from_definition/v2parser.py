@@ -107,6 +107,8 @@ class Parser:
                 return self._parse_mir_string_json(json, prod)
             case 'mir-int':
                 return self._parse_mir_int_json(json, prod)
+            case 'mir-bool':
+                return self._parse_mir_bool_json(json, prod)
             case _:
                assert False
 
@@ -181,6 +183,13 @@ class Parser:
         sort = prod.sort
         symbol = _get_symbol(prod)
         return KApply(symbol, (KToken(str(json), KSort('Int')))), sort
+
+
+    def _parse_mir_bool_json(self, json: JSON, prod: KProduction) -> ParseResult:
+        assert isinstance(json, bool)
+        sort = prod.sort
+        symbol = _get_symbol(prod)
+        return KApply(symbol, (KToken(str(json), KSort('Bool')))), sort
 
 
     @cached_property
