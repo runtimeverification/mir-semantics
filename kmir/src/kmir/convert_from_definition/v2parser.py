@@ -111,6 +111,8 @@ class Parser:
                 return self._parse_mir_enum_json(json, prod.sort)
             case 'mir-list':
                 return self._parse_mir_list_json(json, prod.sort)
+            case 'mir-option' | 'mir-option-string' | 'mir-option-int' | 'mir-option-bool':
+                return self._parse_mir_option_json(json, prod.sort)
             case 'mir-string':
                 return self._parse_mir_string_json(json, prod)
             case 'mir-int':
@@ -181,6 +183,37 @@ class Parser:
             element_kapply, _ =  self.parse_mir_json(element, element_prods[0])
             list_kapply = KApply(append_symbol, (element_kapply, list_kapply))
         return list_kapply, sort
+
+
+    def _parse_mir_option_json(self, json: JSON, sort: KSort) -> ParseResult:
+        assert isinstance(json, None) or isinstance(json, dict[object, object]) or isinstance(json, Sequence[object]) or isinstance(json, string) or isinstance(json, int) or isinstance(json, bool)
+        prods = self._mir_productions_for_sort(sort)
+        assert len(prods) == 2
+        if isinstance(json, None):
+            tprod = prods[0] if prods[0] in _mir_terminals else prods[1]
+            tsymbol = _get_symbol(tprod)
+            return KApply(tsymbol, ()), sort
+        ntprod = prods[0] if prods[0] not in _mir_terminals else prods[1]
+        ntsymbol = _get_symbol(ntprod)
+        group = _get_group(ntprod)
+        kind, _ = _extract_mir_group_info(group)
+        match kind:
+            case 'mir-option-string':
+                return KApply(ntsymbol, (KToken('\"' + json + '\"', KSort('String')))), sort
+            case 'mir-option-int':
+                return KApply(ntsymbol, (KToken(str(json), KSort('Int')))), sort
+            case 'mir-option-bool':
+                return KApply(ntsymbol, (KToken(str(json), KSort('Bool')))), sort
+            case 'mir-option':
+                arg_sorts = ntprod.argument_sorts
+                assert len(arg_sorts) == 1
+                arg_sort = arg_sorts[0]
+                arg_prods = self._mir_productions_for_sort(arg_sort)
+                assert len(arg_prods) > 0
+                arg_kapply, _ =  self.parse_mir_json(json, arg_prods[0])
+                return KApply(ntsymbol, (arg_kapply)), sort
+            case _:
+                assert False
 
 
     def _parse_mir_string_json(self, json: JSON, prod: KProduction) -> ParseResult:
