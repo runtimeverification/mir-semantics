@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json
+#import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -9,7 +9,8 @@ from pyk.cterm import CTerm
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort
 
 from kmir.convert_from_definition.parser import Parser
-from kmir.convert_json.convert import from_dict
+
+#from kmir.convert_json.convert import from_dict
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
