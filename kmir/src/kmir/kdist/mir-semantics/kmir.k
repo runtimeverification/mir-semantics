@@ -144,15 +144,18 @@ module KMIR-CONFIGURATION
 
   syntax Int ::= #getInt(MIRInt)   [function]
                | #getInt(ConstDef) [function]
+//  rule #getInt(I:Int)       => I
   rule #getInt(mirInt(I))   => I
   rule #getInt(constDef(I)) => I
 
   syntax String ::= #getStr(MIRString) [function]
                   | #getStr(Symbol)    [function]
+//  rule #getStr(S:String) => S
   rule #getStr(mirString(S)) => S
   rule #getStr(symbol(S))    => S
 
   syntax Bool ::= #getBool(MIRBool) [function]
+//  rule #getBool(S:Bool) => S
   rule #getBool(mirBool(S)) => S
 
   configuration <kmir>
