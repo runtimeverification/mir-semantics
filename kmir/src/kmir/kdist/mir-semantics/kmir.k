@@ -142,6 +142,22 @@ module KMIR-CONFIGURATION
   syntax RetVal ::= "NoRetVal"
                   | Value
 
+  syntax Int ::= #getInt(MIRInt)   [function]
+               | #getInt(ConstDef) [function]
+//  rule #getInt(I:Int)       => I
+  rule #getInt(mirInt(I))   => I
+  rule #getInt(constDef(I)) => I
+
+  syntax String ::= #getStr(MIRString) [function]
+                  | #getStr(Symbol)    [function]
+//  rule #getStr(S:String) => S
+  rule #getStr(mirString(S)) => S
+  rule #getStr(symbol(S))    => S
+
+  syntax Bool ::= #getBool(MIRBool) [function]
+//  rule #getBool(S:Bool) => S
+  rule #getBool(mirBool(S)) => S
+
   configuration <kmir>
                   <k> $PGM:InitialState </k>
                   <retVal> NoRetVal </retVal>
@@ -399,8 +415,8 @@ module KMIR-MEMORY-IMPL [private]
   rule #prj( projectionElemDeref,                    Ptr( Next, Meta ) ) => #loadPtr(Next, Meta)
   rule #prj( projectionElemField(fieldIdx(I), _),    Struct( _, Flds ) ) => #loadField(I, Flds)
   rule #prj( projectionElemIndex(Idx),               Range( Mem )      ) => #loadIndex(#loadLocal(Idx), Mem)
-  rule #prj( projectionElemConstantIndex(Off, _, _), Range( Mem )      ) => #loadIndex(Off, Mem)
-  rule #prj( projectionElemSubslice(From, To, Dir),  Range( Mem )      ) => #loadSlice(From, To, Dir, Mem)
+  rule #prj( projectionElemConstantIndex(Off, _, _), Range( Mem )      ) => #loadIndex(#getInt(Off), Mem)
+  rule #prj( projectionElemSubslice(From, To, Dir),  Range( Mem )      ) => #loadSlice(#getInt(From), #getInt(To), #getBool(Dir), Mem)
   rule #prj( projectionElemDowncast(_),              Val               ) => Val
   rule #prj( projectionElemOpaqueCast(_),            Val               ) => Val
   rule #prj( projectionElemSubtype(_),               Val               ) => Val
@@ -438,8 +454,8 @@ module KMIR-MEMORY-IMPL [private]
 
   rule #inj( projectionElemField( fieldIdx(I), _ ),    Struct( VIdx, Flds ), MemWrite( Addr, Val ) ) => MemWrite( Addr, Struct( VIdx, #update1( Flds, I, Val ) ) )
   rule #inj( projectionElemIndex( Idx ),               Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, #readScalar( #loadLocal( Idx ) ), Val ) ) )
-  rule #inj( projectionElemConstantIndex( Off, _, _ ), Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, Off, Val ) ) )
-  rule #inj( projectionElemSubslice( From, To, Dir ),  Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #updateN( Mem, From, To, Dir, Val) ) )
+  rule #inj( projectionElemConstantIndex( Off, _, _ ), Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #update1( Mem, #getInt(Off), Val ) ) )
+  rule #inj( projectionElemSubslice( From, To, Dir ),  Range( Mem ),         MemWrite( Addr, Val ) ) => MemWrite( Addr, Range( #updateN( Mem, #getInt(From), #getInt(To), #getBool(Dir), Val) ) )
 
   rule #update1( Mem, Idx, Val )
     => #if Idx >=Int size(Mem)
@@ -599,12 +615,12 @@ module KMIR
 
   rule #evalMirConst( _TY, _CID, constantKindZeroSized                                                     ) => #makeStructValue ( 0, .List )
   rule #evalMirConst(  TY, _CID, constantKindAllocated( ALLOC )                                            ) => #loadAllocation( TY, ALLOC )
-  rule #evalMirConst(  TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, DEF, PROMOTED_INDEX )
+  rule #evalMirConst(  TY, _CID, constantKindUnevaluated( unevaluatedConst( DEF, _ARGS, PROMOTED_INDEX ) ) ) => #loadUnevalConst( TY, #getInt(DEF), PROMOTED_INDEX )
   rule #evalMirConst( _TY, _CID, constantKindTy( tyConst( KIND, _ID ) )                                    ) => #evalTyConst( KIND )
   // Handle extended function constant types
   rule #evalMirConst( _TY, _CID, constantKindFnDef( Addr )                                                 ) => #makeFnPtrValue( Addr )
   rule #evalMirConst( _TY, _CID, constantKindNoOp                                                          ) => #getNoOpFnAddr()
-  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                              ) => #getIntrinsicAddr( Sym )
+  rule #evalMirConst( _TY, _CID, constantKindIntrinsic( Sym )                                              ) => #getIntrinsicAddr( #getStr(Sym) )
 
   rule #evalTyConst( tyConstKindZSTValue( _TY )           ) => #makeStructValue( 0, .List )
   rule #evalTyConst( tyConstKindValue( TY, ALLOC )        ) => #loadAllocation( TY, ALLOC )
@@ -727,8 +743,8 @@ module KMIR
 
   // Jump Terminator
 
-  rule <k> #jump( I, branch(J, BBIdx) TGTS, OWISE) => #if I ==Int J #then #goto(BBIdx) #else #jump(I, TGTS, OWISE) #fi ... </k>
-  rule <k> #jump(_I, .Branches,             OWISE) => #goto(OWISE)                                                     ... </k>
+  rule <k> #jump( I, branch(J, BBIdx) TGTS, OWISE) => #if I ==Int #getInt(J) #then #goto(BBIdx) #else #jump(I, TGTS, OWISE) #fi ... </k>
+  rule <k> #jump(_I, .Branches,             OWISE) => #goto(OWISE)                                                              ... </k>
 
   // Assert Terminator
 
@@ -742,7 +758,7 @@ module KMIR
 
   rule <k> #function(body(Blocks, Locals, ArgCount, _DebugInfo, _SpreadArg, _Span))
         ~> #call( Func, Args, Dest, Target, Act )
-        => #setupStackFrame( Func, Blocks, Args, ArgCount, Locals, #numLocals(Locals), Dest, Target, Act )
+        => #setupStackFrame( Func, Blocks, Args, #getInt(ArgCount), Locals, #numLocals(Locals), Dest, Target, Act )
         ~> #goto( 0 )
            ...
        </k>

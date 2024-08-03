@@ -19,304 +19,261 @@ module BODY
   imports INT
   imports STRING
 
-syntax MIRInt ::= mirInt(Int) [group(mir-int), symbol(MIRInt::Int)]
-syntax MIRBool ::= mirBool(Bool) [group(mir-bool), symbol(MIRBool::Bool)]
-syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
+syntax DefId ::= defId(Int)              [group(mir-int)]
+syntax LocalDefId ::= localDefId(Opaque) [group(mir)]
+syntax Coverage ::= coverage(Opaque)     [group(mir)]
 
-syntax DefId ::= defId(Int) [symbol(defId)]
-syntax LocalDefId ::= localDefId(Opaque)
-syntax Coverage ::= coverage(Opaque)
+syntax Mutability ::= "mutabilityNot" [group(mir-enum), symbol(Mutability::Not)]
+                    | "mutabilityMut" [group(mir-enum), symbol(Mutability::Mut)]
 
-syntax Mutability ::= "mutabilityNot" | "mutabilityMut"
-syntax Safety ::= "safetyUnsafe" | "safetyNormal"
+syntax Safety ::= "safetyUnsafe" [group(mir-enum), symbol(Safety::Unsafe)]
+                | "safetyNormal" [group(mir-enum), symbol(Safety::Normal)]
 
-syntax BasicBlockIdx ::= basicBlockIdx(Int) [symbol(basicBlockIdx)]
-syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) [symbol(someBasicBlockIdx)]
-                           | "noBasicBlockIdx" [symbol(noBasicBlockIdx)]
+syntax BasicBlockIdx ::= basicBlockIdx(Int)                    [group(mir-int)]
+syntax MaybeBasicBlockIdx ::= someBasicBlockIdx(BasicBlockIdx) [group(mir-option)]
+                           | "noBasicBlockIdx"                 [group(mir-option)]
 
-syntax Operand ::= operandCopy(Place) [symbol(operandCopy)]
-                 | operandMove(Place) [symbol(operandMove)]
-                 | operandConstant(ConstOperand) [symbol(operandConstant)]
-syntax MaybeOperand ::= someOperand(Operand) | "noOperand"
-syntax Operands ::= List {Operand, ""}
+syntax Operand ::= operandCopy(Place)            [group(mir-enum), symbol(Operand::Copy)]
+                 | operandMove(Place)            [group(mir-enum), symbol(Operand::Move)]
+                 | operandConstant(ConstOperand) [group(mir-enum), symbol(Operand::Constant)]
 
-syntax Local ::= local(Int)
-syntax MaybeLocal ::= someLocal(Local) | "noLocal"
+syntax MaybeOperand ::= someOperand(Operand) [group(mir-option)]
+                      | "noOperand"          [group(mir-option)]
 
-syntax ProjectionElemDeref ::= "projectionElemDeref"
-syntax ProjectionElemField ::= projectionElemField(FieldIdx, Ty)
-syntax ProjectionElemIndex ::= projectionElemIndex(Local)
-syntax ProjectionElemConstantIndex ::= projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool)
-syntax ProjectionElemSubslice ::= projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)
-syntax ProjectionElemDowncast ::= projectionElemDowncast(VariantIdx)
-syntax ProjectionElemOpaqueCast ::= projectionElemOpaqueCast(Ty)
-syntax ProjectionElemSubtype ::= projectionElemSubtype(Ty)
-syntax ProjectionElem ::= ProjectionElemDeref
-                        | ProjectionElemField
-                        | ProjectionElemIndex
-                        | ProjectionElemConstantIndex
-                        | ProjectionElemSubslice
-                        | ProjectionElemDowncast
-                        | ProjectionElemOpaqueCast
-                        | ProjectionElemSubtype
-syntax ProjectionElems ::= List {ProjectionElem, ""}
-syntax Place ::= place(local: Local, projection: ProjectionElems)
-syntax MaybePlace ::= somePlace(Place) | "noPlace"
+syntax Operands ::= List {Operand, ""} [group(mir-list), symbol(Operand::append), terminator-symbol(Operand::empty)]
 
-syntax Branch ::= branch(MIRInt, BasicBlockIdx)
-syntax Branches ::= List {Branch, ""}
-syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx)
+syntax Local ::= local(Int)            [group(mir-int)]
+syntax MaybeLocal ::= someLocal(Local) [group(mir-option)]
+                    | "noLocal"        [group(mir-option)]
 
-syntax UserTypeProjection ::= userTypeProjection(base: UserTypeAnnotationIndex, projection: Opaque)
+syntax ProjectionElem ::=  "projectionElemDeref"                                                            [group(mir-enum),                               symbol(ProjectionElem::Deref)]
+                        |  projectionElemField(FieldIdx, Ty)                                                [group(mir-enum),                               symbol(ProjectionElem::Field)]
+                        |  projectionElemIndex(Local)                                                       [group(mir-enum),                               symbol(ProjectionElem::Index)]
+                        |  projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool) [group(mir-enum---offset-min-length--from-end), symbol(ProjectionElem::ConstantIndex)]
+                        |  projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)               [group(mir-enum),                               symbol(ProjectionElem::Subslice)]
+                        |  projectionElemDowncast(VariantIdx)                                               [group(mir-enum),                               symbol(ProjectionElem::Downcast)]
+                        |  projectionElemOpaqueCast(Ty)                                                     [group(mir-enum),                               symbol(ProjectionElem::OpaqueCast)]
+                        |  projectionElemSubtype(Ty)                                                        [group(mir-enum),                               symbol(ProjectionElem::Subtype)]
 
-syntax BinOp ::= "binOpAdd"
-               | "binOpAddUnchecked"
-               | "binOpSub"
-               | "binOpSubUnchecked"
-               | "binOpMul"
-               | "binOpMulUnchecked"
-               | "binOpDiv"
-               | "binOpRem"
-               | "binOpBitXor"
-               | "binOpBitAnd"
-               | "binOpBitOr"
-               | "binOpShl"
-               | "binOpShlUnchecked"
-               | "binOpShr" [symbol(binOpShr)]
-               | "binOpShrUnchecked"
-               | "binOpEq"
-               | "binOpLt"
-               | "binOpLe"
-               | "binOpNe"
-               | "binOpGe"
-               | "binOpGt"
-               | "binOpCmp"
-               | "binOpOffset"
+syntax ProjectionElems ::= List {ProjectionElem, ""} [group(mir-list), symbol(ProjectionElem::append), terminator-symbol(ProjectionElem::empty)]
+syntax Place ::= place(local: Local, projection: ProjectionElems) [group(mir---local--projection)]
+syntax MaybePlace ::= somePlace(Place)                            [group(mir-option)]
+                    | "noPlace"                                   [group(mir-option)]
 
-syntax UnOp ::= "unOpNot"
-              | "unOpNeg"
-              | "unOpPtrMetadata"
+syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir)]
+syntax Branches ::= List {Branch, ""} [group(mir-list), symbol(Branch::append), terminator-symbol(Branch::empty)]
+syntax SwitchTargets ::= switchTargets(branches: Branches, otherwise: BasicBlockIdx) [group(mir---branches--otherwise)]
 
-syntax NullOp ::= "nullOpSizeOf"
-                | "nullOpAlignOf"
-                | nullOpOffsetOf(VariantAndFieldIndices)
-                | "nullOpUbChecks"
+syntax UserTypeProjection ::= userTypeProjection(base: UserTypeAnnotationIndex, projection: Opaque) [group(mir---base--projection)]
 
-syntax CoroutineSource ::= "coroutineSourceBlock"
-                         | "coroutineSourceClosure"
-                         | "coroutineSourceFn"
-syntax CoroutineDesugaring ::= "coroutineDesugaringAsync"
-                             | "coroutineDesugaringGen"
-                             | "coroutineDesugaringAsyncGen"
-syntax CoroutineKind ::= coroutineKindDesugared(CoroutineDesugaring, CoroutineSource)
-                       | coroutineKindCoroutine(Movability)
+syntax BinOp ::= "binOpAdd"          [group(mir-enum), symbol(BinOp::Add)]
+               | "binOpAddUnchecked" [group(mir-enum), symbol(BinOp::AddUnchecked)]
+               | "binOpSub"          [group(mir-enum), symbol(BinOp::Sub)]
+               | "binOpSubUnchecked" [group(mir-enum), symbol(BinOp::SubUnchecked)]
+               | "binOpMul"          [group(mir-enum), symbol(BinOp::Mul)]
+               | "binOpMulUnchecked" [group(mir-enum), symbol(BinOp::MulUnchecked)]
+               | "binOpDiv"          [group(mir-enum), symbol(BinOp::Div)]
+               | "binOpRem"          [group(mir-enum), symbol(BinOp::Rem)]
+               | "binOpBitXor"       [group(mir-enum), symbol(BinOp::BitXor)]
+               | "binOpBitAnd"       [group(mir-enum), symbol(BinOp::BitAnd)]
+               | "binOpBitOr"        [group(mir-enum), symbol(BinOp::BitOr)]
+               | "binOpShl"          [group(mir-enum), symbol(BinOp::Shl)]
+               | "binOpShlUnchecked" [group(mir-enum), symbol(BinOp::ShlUnchecked)]
+               | "binOpShr"          [group(mir-enum), symbol(BinOp::Shr)]
+               | "binOpShrUnchecked" [group(mir-enum), symbol(BinOp::ShrUnchecked)]
+               | "binOpEq"           [group(mir-enum), symbol(BinOp::Eq)]
+               | "binOpLt"           [group(mir-enum), symbol(BinOp::Lt)]
+               | "binOpLe"           [group(mir-enum), symbol(BinOp::Le)]
+               | "binOpNe"           [group(mir-enum), symbol(BinOp::Ne)]
+               | "binOpGe"           [group(mir-enum), symbol(BinOp::Ge)]
+               | "binOpGt"           [group(mir-enum), symbol(BinOp::Gt)]
+               | "binOpCmp"          [group(mir-enum), symbol(BinOp::Cmp)]
+               | "binOpOffset"       [group(mir-enum), symbol(BinOp::Offset)]
 
-syntax UnwindAction ::= "unwindActionContinue"
-                      | "unwindActionUnreachable"
-                      | "unwindActionTerminate"
-                      | unwindActionCleanup(BasicBlockIdx)
+syntax UnOp ::= "unOpNot"            [group(mir-enum), symbol(UnOp::Not)]
+              | "unOpNeg"            [group(mir-enum), symbol(UnOp::Net)]
+              | "unOpPtrMetadata"    [group(mir-enum), symbol(UnOp::PtrMetadata)]
+
+syntax NullOp ::= "nullOpSizeOf"                         [group(mir-enum), symbol(NullOp::SizeOf)]
+                | "nullOpAlignOf"                        [group(mir-enum), symbol(NullOp::AlignOf)]
+                | nullOpOffsetOf(VariantAndFieldIndices) [group(mir-enum), symbol(NullOp::OffsetOf)]
+                | "nullOpUbChecks"                       [group(mir-enum), symbol(NullOp::UbChecks)]
+
+syntax CoroutineSource ::= "coroutineSourceBlock"   [group(mir-enum), symbol(CoroutineSource::Block)]
+                         | "coroutineSourceClosure" [group(mir-enum), symbol(CoroutineSource::Closure)]
+                         | "coroutineSourceFn"      [group(mir-enum), symbol(CoroutineSource::Fn)]
+
+syntax CoroutineDesugaring ::= "coroutineDesugaringAsync"    [group(mir-enum), symbol(CoroutineDesguaring::Async)]
+                             | "coroutineDesugaringGen"      [group(mir-enum), symbol(CoroutineDesguaring::Gen)]
+                             | "coroutineDesugaringAsyncGen" [group(mir-enum), symbol(CoroutineDesguaring::AsyncGen)]
+
+syntax CoroutineKind ::= coroutineKindDesugared(CoroutineDesugaring, CoroutineSource) [group(mir-enum), symbol(CoroutineKind::Desguared)]
+                       | coroutineKindCoroutine(Movability)                           [group(mir-enum), symbol(CoroutineKind::Coroutine)]
+
+syntax UnwindAction ::= "unwindActionContinue"              [group(mir-enum), symbol(UnwindAction::Continue)]
+                      | "unwindActionUnreachable"           [group(mir-enum), symbol(UnwindAction::Unreachable)]
+                      | "unwindActionTerminate"             [group(mir-enum), symbol(UnwindAction::Terminate)]
+                      | unwindActionCleanup(BasicBlockIdx)  [group(mir-enum), symbol(UnwindAction::Cleanup)]
 
 /////// Rvalue
-syntax VariantAndFieldIndex ::= vfi(VariantIdx, FieldIdx)
-syntax VariantAndFieldIndices ::= List {VariantAndFieldIndex, ""}
-syntax PointerCoersion ::= "pointerCoersionReifyFnPointer"
-                         | "pointerCoersionUnsafeFnPointer"
-                         | pointerCoersionClosureFnPointer(Safety)
-                         | "pointerCoersionMutToConstPointer"
-                         | "pointerCoersionArrayToPointer"
-                         | "pointerCoersionUnsize"
-syntax CastKind ::= "castKindPointerExposeAddress"
-                  | "castKindPointerWithExposedProvenance"
-                  | castKindPointerCoersion(PointerCoersion)
-                  | "castKindDynStar"
-                  | "castKindIntToInt" [symbol(castKindIntToInt)]
-                  | "castKindFloatToInt"
-                  | "castKindFloatToFloat"
-                  | "castKindIntToFloat"
-                  | "castKindPtrToPtr"
-                  | "castKindFnPtrToPtr"
-                  | "castKindTransmute"
-syntax BorrowKind ::= "borrowKindShared"
-                    | borrowKindFake(FakeBorrowKind)
-                    | borrowKindMut(kind: MutBorrowKind)
-syntax MutBorrowKind ::= "mutBorrowKindDefault"
-                       | "mutBorrowKindTwoPhaseBorrow"
-                       | "mutBorrowKindClosureCapture"
-syntax FakeBorrowKind ::= "fakeBorrowKindDeep"
-                        | "fakeBorrowKindShallow"
-syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)
-syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex)
-                                      | "noUserTypeAnnotationIndex"
-syntax FieldIdx ::= fieldIdx(Int) [symbol(fieldIdx)]
-syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx) [symbol(someFieldIdx)]
-                      | "noFieldIdx" [symbol(noFieldIdx)]
+syntax VariantAndFieldIndex ::= vfi(VariantIdx, FieldIdx)           [group(mir)]
+syntax VariantAndFieldIndices ::= List {VariantAndFieldIndex, ""}   [group(mir-list), symbol(VariantAndField::append), terminator-symbol(VariantAndField::empty)]
+syntax PointerCoercion ::= "pointerCoercionReifyFnPointer"          [group(mir-enum), symbol(PointerCoercion::ReifyFnPointer)]
+                         | "pointerCoercionUnsafeFnPointer"         [group(mir-enum), symbol(PointerCoercion::UnsafeFnPointer)]
+                         | pointerCoercionClosureFnPointer(Safety)  [group(mir-enum), symbol(PointerCoercion::ClosureFnPointer)]
+                         | "pointerCoercionMutToConstPointer"       [group(mir-enum), symbol(PointerCoercion::MutToConstPointer)]
+                         | "pointerCoercionArrayToPointer"          [group(mir-enum), symbol(PointerCoercion::CoercionArrayToPointer)]
+                         | "pointerCoercionUnsize"                  [group(mir-enum), symbol(PointerCoercion::Unsize)]
 
-syntax AggregateKind ::= aggregateKindArray(Ty)
-                       | "aggregateKindTuple" [symbol(aggregateKindTuple)]
-                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx) [symbol(aggregateKindAdt)]
-                       | aggregateKindClosure(ClosureDef, GenericArgs)
-                       | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)
-                       | aggregateKindRawPtr(Ty, Mutability)
+syntax CastKind ::= "castKindPointerExposeAddress"                  [group(mir-enum), symbol(CastKind::ExposeAddress)]
+                  | "castKindPointerWithExposedProvenance"          [group(mir-enum), symbol(CastKind::PointerWithExposedProvenance)]
+                  | castKindPointerCoercion(PointerCoercion)        [group(mir-enum), symbol(CastKind::PointerCoercision)]
+                  | "castKindDynStar"                               [group(mir-enum), symbol(CastKind::DynStar)]
+                  | "castKindIntToInt"                              [group(mir-enum), symbol(CastKind::IntToInt)]
+                  | "castKindFloatToInt"                            [group(mir-enum), symbol(CastKind::FloatToInt)]
+                  | "castKindFloatToFloat"                          [group(mir-enum), symbol(CastKind::FloatToFloat)]
+                  | "castKindIntToFloat"                            [group(mir-enum), symbol(CastKind::IntToFloat)]
+                  | "castKindPtrToPtr"                              [group(mir-enum), symbol(CastKind::PtrToPtr)]
+                  | "castKindFnPtrToPtr"                            [group(mir-enum), symbol(CastKind::FnPtrToPtr)]
+                  | "castKindTransmute"                             [group(mir-enum), symbol(CastKind::Transmute)]
 
-syntax RvalueAddressOf ::= rvalueAddressOf(Mutability, Place)
-syntax RvalueAggregate ::= rvalueAggregate(AggregateKind, Operands) [symbol(rvalueAggregate)]
-syntax RvalueBinaryOp ::= rvalueBinaryOp(BinOp, Operand, Operand) [symbol(rvalueBinaryOp)]
-syntax RvalueCast ::= rvalueCast(CastKind, Operand, Ty) [symbol(rvalueCast)]
-syntax RvalueCheckedBinaryOp ::= rvalueCheckedBinaryOp(BinOp, Operand, Operand)
-syntax RvalueCopyForDeref ::= rvalueCopyForDeref(Place)
-syntax RvalueDiscriminant ::= rvalueDiscriminant(Place)
-syntax RvalueLen ::= rvalueLen(Place)
-syntax RvalueRef ::= rvalueRef(Region, BorrowKind, Place)
-syntax RvalueRepeat ::= rvalueRepeat(Operand, TyConst)
-syntax RvalueShallowInitBox ::= rvalueShallowInitBox(Operand, Ty)
-syntax RvalueThreadLocalRef ::= rvalueThreadLocalRef(crate: CrateItem)
-syntax RvalueNullaryOp ::= rvalueNullaryOp(NullOp, Ty)
-syntax RvalueUnaryOp ::= rvalueUnaryOp(UnOp, Operand)
-syntax RvalueUse ::= rvalueUse(Operand)
+syntax BorrowKind ::= "borrowKindShared"                  [group(mir-enum),        symbol(BorrowKind::Shared)]
+                    | borrowKindFake(FakeBorrowKind)      [group(mir-enum),        symbol(BorrowKind::Fake)]
+                    | borrowKindMut(kind: MutBorrowKind)  [group(mir-enum---kind), symbol(BorrowKind::Mut)]
 
-syntax Rvalue ::= RvalueAddressOf
-                | RvalueAggregate
-                | RvalueBinaryOp
-                | RvalueCast
-                | RvalueCheckedBinaryOp
-                | RvalueCopyForDeref
-                | RvalueDiscriminant
-                | RvalueLen
-                | RvalueRef
-                | RvalueRepeat
-                | RvalueShallowInitBox
-                | RvalueThreadLocalRef
-                | RvalueNullaryOp
-                | RvalueUnaryOp
-                | RvalueUse
+syntax MutBorrowKind ::= "mutBorrowKindDefault"           [group(mir-enum), symbol(MutBorrowKind::Default)]
+                       | "mutBorrowKindTwoPhaseBorrow"    [group(mir-enum), symbol(MutBorrowKind::TwoPhaseBorrow)]
+                       | "mutBorrowKindClosureCapture"    [group(mir-enum), symbol(MutBorrowKind::ClosureCapture)]
+
+syntax FakeBorrowKind ::= "fakeBorrowKindDeep"            [group(mir-enum), symbol(FakeBorrowKind::Deep)]
+                        | "fakeBorrowKindShallow"         [group(mir-enum), symbol(FakeBorrowKind::Shallow)]
+
+syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)                              [group(mir-int)]
+syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex) [group(mir-option)]
+                                      | "noUserTypeAnnotationIndex"                          [group(mir-option)]
+
+syntax FieldIdx ::= fieldIdx(Int)                [group(mir-int)]
+syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx)  [group(mir-option)]
+                      | "noFieldIdx"             [group(mir-option)]
+
+syntax AggregateKind ::= aggregateKindArray(Ty)                                                                         [group(mir-enum), symbol(AggregateKind::Array)]
+                       | "aggregateKindTuple"                                                                           [group(mir-enum), symbol(AggregateKind::Tuple)]
+                       | aggregateKindAdt(AdtDef, VariantIdx, GenericArgs, MaybeUserTypeAnnotationIndex, MaybeFieldIdx) [group(mir-enum), symbol(AggregateKind::Adt)]
+                       | aggregateKindClosure(ClosureDef, GenericArgs)                                                  [group(mir-enum), symbol(AggregateKind::Closure)]
+                       | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)                                  [group(mir-enum), symbol(AggregateKind::Coroutine)]
+                       | aggregateKindRawPtr(Ty, Mutability)                                                            [group(mir-enum), symbol(AggregateKind::RawPtr)]
+
+syntax Rvalue ::= rvalueAddressOf(Mutability, Place)                     [group(mir-enum), symbol(Rvalue::AddressOf)]
+                | rvalueAggregate(AggregateKind, Operands)               [group(mir-enum), symbol(Rvalue::Aggregate)]
+                | rvalueBinaryOp(BinOp, Operand, Operand)                [group(mir-enum), symbol(Rvalue::BinaryOp)]
+                | rvalueCast(CastKind, Operand, Ty)                      [group(mir-enum), symbol(Rvalue::Cast)]
+                | rvalueCheckedBinaryOp(BinOp, Operand, Operand)         [group(mir-enum), symbol(Rvalue::CheckedBinaryOp)]
+                | rvalueCopyForDeref(Place)                              [group(mir-enum), symbol(Rvalue::CopyForDeref)]
+                | rvalueDiscriminant(Place)                              [group(mir-enum), symbol(Rvalue::Discriminant)]
+                | rvalueLen(Place)                                       [group(mir-enum), symbol(Rvalue::Len)]
+                | rvalueRef(Region, BorrowKind, Place)                   [group(mir-enum), symbol(Rvalue::Ref)]
+                | rvalueRepeat(Operand, TyConst)                         [group(mir-enum), symbol(Rvalue::Repeat)]
+                | rvalueShallowInitBox(Operand, Ty)                      [group(mir-enum), symbol(Rvalue::ShallowInitBox)]
+                | rvalueThreadLocalRef(crate: CrateItem)                 [group(mir-enum), symbol(Rvalue::ThreadLocalRef)]
+                | rvalueNullaryOp(NullOp, Ty)                            [group(mir-enum), symbol(Rvalue::NullaryOp)]
+                | rvalueUnaryOp(UnOp, Operand)                           [group(mir-enum), symbol(Rvalue::UnaryOp)]
+                | rvalueUse(Operand)                                     [group(mir-enum), symbol(Rvalue::Use)]
 
 /////// End Rvalue
 
 
 /////// Statements
 
-syntax StatementKindAssign ::= statementKindAssign(place: Place, rvalue: Rvalue) [symbol(statementKindAssign)]
-syntax StatementKindFakeRead ::= statementKindFakeRead(cause: FakeReadCause, place: Place)
-syntax StatementKindSetDiscriminant ::= statementKindSetDiscriminant(place: Place, variantIndex: VariantIdx)
-syntax StatementKindDeinit ::= deinit(place: Place)
-syntax StatementKindStorageLive ::= statementKindStorageLive(Local) [symbol(statementKindStorageLive)]
-syntax StatementKindStorageDead ::= statementKindStorageDead(Local) [symbol(statementKindStorageDead)]
-syntax StatementKindRetag ::= statementKindRetag(kind: RetagKind, place: Place)
-syntax StatementKindPlaceMention ::= statementKindPlaceMention(place: Place)
-syntax StatementKindAscribeUserType ::= statementKindAscribeUserType(place: Place, projections: UserTypeProjection, variance: Variance)
-syntax StatementKindCoverage ::= statementKindCoverage(Coverage)
-syntax StatementKindIntrinsic ::= statementKindIntrinsic(NonDivergingIntrinsic)
-syntax StatementKindConstEvalCounter ::= "statementKindConstEvalCounter"
-syntax StatementKindNop ::= "statementKindNop"
+syntax StatementKind ::= statementKindAssign(place: Place, rvalue: Rvalue)                                               [group(mir-enum),                                symbol(StatementKind::Assign)]
+                       | statementKindFakeRead(cause: FakeReadCause, place: Place)                                       [group(mir-enum),                                symbol(StatementKind::FakeRead)]
+                       | statementKindSetDiscriminant(place: Place, variantIndex: VariantIdx)                            [group(mir-enum---place--variant-index),         symbol(StatementKind::SetDiscriminant)]
+                       | deinit(place: Place)                                                                            [group(mir-enum),                                symbol(StatementKind::Deinit)]
+                       | statementKindStorageLive(Local)                                                                 [group(mir-enum),                                symbol(StatementKind::StorageLive)]
+                       | statementKindStorageDead(Local)                                                                 [group(mir-enum),                                symbol(StatementKind::StorageDead)]
+                       | statementKindRetag(kind: RetagKind, place: Place)                                               [group(mir-enum),                                symbol(StatementKind::Retag)]
+                       | statementKindPlaceMention(place: Place)                                                         [group(mir-enum),                                symbol(StatementKind::PlaceMention)]
+                       | statementKindAscribeUserType(place: Place, projections: UserTypeProjection, variance: Variance) [group(mir-enum---place--projections--variance), symbol(StatementKind::AscribeUserType)]
+                       | statementKindCoverage(Coverage)                                                                 [group(mir-enum),                                symbol(StatementKind::Coverage)]
+                       | statementKindIntrinsic(NonDivergingIntrinsic)                                                   [group(mir-enum),                                symbol(StatementKind::Intrinsic)]
+                       | "statementKindConstEvalCounter"                                                                 [group(mir-enum),                                symbol(StatementKind::ConstEvalCounter)]
+                       | "statementKindNop"                                                                              [group(mir-enum),                                symbol(StatementKind::Nop)]
 
-syntax StatementKind ::= StatementKindAssign
-                       | StatementKindFakeRead
-                       | StatementKindSetDiscriminant
-                       | StatementKindDeinit
-                       | StatementKindStorageLive
-                       | StatementKindStorageDead
-                       | StatementKindRetag
-                       | StatementKindPlaceMention
-                       | StatementKindAscribeUserType
-                       | StatementKindCoverage
-                       | StatementKindIntrinsic
-                       | StatementKindConstEvalCounter
-                       | StatementKindNop
-
-syntax Statement ::= statement(kind: StatementKind, span: Span)
-syntax Statements ::= List {Statement, ""}
+syntax Statement ::= statement(kind: StatementKind, span: Span) [group(mir---kind--span)]
+syntax Statements ::= List {Statement, ""} [group(mir-list), symbol(Statement::append), terminator-symbol(Statement::empty)]
 /////// End Statements
 
 /////// Terminators
 
-syntax TerminatorKindGoto ::= terminatorKindGoto(target: BasicBlockIdx)
-syntax TerminatorKindSwitchInt ::= terminatorKindSwitchInt(discr: Operand, targets: SwitchTargets)
-syntax TerminatorKindResume ::= "terminatorKindResume"
-syntax TerminatorKindAbort ::= "terminatorKindAbort"
-syntax TerminatorKindReturn ::= "terminatorKindReturn" [symbol(terminatorKindReturn)]
-syntax TerminatorKindUnreachable ::= "terminatorKindUnreachable"
-syntax TerminatorKindDrop ::= terminatorKindDrop(place: Place, target: BasicBlockIdx, unwind: UnwindAction)
-syntax TerminatorKindCall ::= terminatorKindCall(
-                                func: Operand,
-                                args: Operands,
-                                destination: Place,
-                                target: MaybeBasicBlockIdx,
-                                unwind: UnwindAction) [symbol(terminatorKindCall)]
+syntax AssertMessage ::= assertMessageBoundsCheck(len: Operand, index: Operand)                       [group(mir-enum---len--index),      symbol(AssertMessage::BoundsCheck)]
+                       | assertMessageOverflow(BinOp, Operand, Operand)                               [group(mir-enum),                   symbol(AssertMessage::Overflow)]
+                       | assertMessageOverflowNeg(Operand)                                            [group(mir-enum),                   symbol(AssertMessage::OverflowNeg)]
+                       | assertMessageDivisionByZero(Operand)                                         [group(mir-enum),                   symbol(AssertMessage::DivisionByZero)]
+                       | assertMessageRemainderByZero(Operand)                                        [group(mir-enum),                   symbol(AssertMessage::RemainderByZero)]
+                       | assertMessageResumedAfterReturn(CoroutineKind)                               [group(mir-enum),                   symbol(AssertMessage::ResumedAfterReturn)]
+                       | assertMessageResumedAfterPanic(CoroutineKind)                                [group(mir-enum),                   symbol(AssertMessage::ResumedAfterPanic)]
+                       | assertMessageMisalignedPointerDereference(required: Operand, found: Operand) [group(mir-enum---required--found), symbol(AssertMessage::MisalignedPointerDerefence)]
 
-syntax AssertMessageBoundsCheck ::= assertMessageBoundsCheck(len: Operand, index: Operand)
-syntax AssertMessageOverflow ::= assertMessageOverflow(BinOp, Operand, Operand)
-syntax AssertMessageOverflowNeg ::= assertMessageOverflowNeg(Operand)
-syntax AssertMessageDivisionByZero ::= assertMessageDivisionByZero(Operand)
-syntax AssertMessageRemainderByZero ::= assertMessageRemainderByZero(Operand)
-syntax AssertMessageResumedAfterReturn ::= assertMessageResumedAfterReturn(CoroutineKind)
-syntax AssertMessageResumedAfterPanic ::= assertMessageResumedAfterPanic(CoroutineKind)
-syntax AssertMessageMisalignedPointerDereference ::= assertMessageMisalignedPointerDereference(required: Operand, found: Operand)
-syntax AssertMessage ::= AssertMessageBoundsCheck
-                       | AssertMessageOverflow
-                       | AssertMessageOverflowNeg
-                       | AssertMessageDivisionByZero
-                       | AssertMessageRemainderByZero
-                       | AssertMessageResumedAfterReturn
-                       | AssertMessageResumedAfterPanic
-                       | AssertMessageMisalignedPointerDereference
-syntax TerminatorKindAssert ::= assert(cond: Operand, expected: MIRBool, msg: AssertMessage, target: BasicBlockIdx, unwind: UnwindAction)
-syntax InlineAsmOperand ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString)
-syntax InlineAsmOperands ::= List {InlineAsmOperand, ""}
-syntax TerminatorKindInlineAsm ::= terminatorKindInlineAsm(template: MIRString, operands: InlineAsmOperands, options: MIRString, lineSpans: MIRString, destination: MaybeBasicBlockIdx, unwind: UnwindAction)
+syntax InlineAsmOperand  ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString) [group(mir---in-value--out-place--raw-rpr)]
+syntax InlineAsmOperands ::= List {InlineAsmOperand, ""} [group(mir-list), symbol(InlineAsmOperand::append), terminator-symbol(InlineAsmOperand::empty)]
 
-syntax TerminatorKind ::= TerminatorKindGoto
-                        | TerminatorKindSwitchInt
-                        | TerminatorKindResume
-                        | TerminatorKindAbort
-                        | TerminatorKindReturn
-                        | TerminatorKindUnreachable
-                        | TerminatorKindDrop
-                        | TerminatorKindCall
-                        | TerminatorKindAssert
-                        | TerminatorKindInlineAsm
-syntax Terminator ::= terminator(kind: TerminatorKind, span: Span)
+syntax TerminatorKind ::= terminatorKindGoto(target: BasicBlockIdx)                                                                                                                                  [group(mir-enum---target),                                                       symbol(TerminatorKind::Goto)]
+                        | terminatorKindSwitchInt(discr: Operand, targets: SwitchTargets)                                                                                                            [group(mir-enum---discr--targets),                                               symbol(TerminatorKind::SwitchInt)]
+                        | "terminatorKindResume"                                                                                                                                                     [group(mir-enum),                                                                symbol(TerminatorKind::Resume)]
+                        | "terminatorKindAbort"                                                                                                                                                      [group(mir-enum),                                                                symbol(TerminatorKind::Abort)]
+                        | "terminatorKindReturn"                                                                                                                                                     [group(mir-enum),                                                                symbol(TerminatorKind::Return)]
+                        | "terminatorKindUnreachable"                                                                                                                                                [group(mir-enum),                                                                symbol(TerminatorKind::Unreachable)]
+                        | terminatorKindDrop(place: Place, target: BasicBlockIdx, unwind: UnwindAction)                                                                                              [group(mir-enum---place--target--unwind),                                        symbol(TerminatorKind::Drop)]
+                        | terminatorKindCall( func: Operand, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction)                                                   [group(mir-enum---func--args--destination--target--unwind),                      symbol(TerminatorKind::Call)]
+                        | assert(cond: Operand, expected: MIRBool, msg: AssertMessage, target: BasicBlockIdx, unwind: UnwindAction)                                                                  [group(mir-enum---cond--expected--msg--target--unwind),                          symbol(TerminatorKind::Assert)]
+                        | terminatorKindInlineAsm(template: MIRString, operands: InlineAsmOperands, options: MIRString, lineSpans: MIRString, destination: MaybeBasicBlockIdx, unwind: UnwindAction) [group(mir-enum---template--operands--options--line-spans--destination--unwind), symbol(TerminatorKind::InlineAsm)]
 
-syntax FakeReadCause ::= "fakeReadCauseForMatchGuard"
-                       | fakeReadCauseForMatchedPlace(LocalDefId)
-                       | "fakeReadCauseForGuardBinding"
-                       | fakeReadCauseForLet(LocalDefId)
-                       | "fakeReadCauseForIndex"
+syntax Terminator ::= terminator(kind: TerminatorKind, span: Span) [group(mir---kind--span)]
 
-syntax RetagKind ::= "retagKindFnEntry"
-                   | "retagKindTwoPhase"
-                   | "retagKindRaw"
-                   | "retagKindDefault"
+syntax FakeReadCause ::= "fakeReadCauseForMatchGuard"             [group(mir-enum), symbol(FakeReadCause::ForMatchGuard)]
+                       | fakeReadCauseForMatchedPlace(LocalDefId) [group(mir-enum), symbol(FakeReadCause::ForMatchedPlace)]
+                       | "fakeReadCauseForGuardBinding"           [group(mir-enum), symbol(FakeReadCause::ForGuardBinding)]
+                       | fakeReadCauseForLet(LocalDefId)          [group(mir-enum), symbol(FakeReadCause::ForLet)]
+                       | "fakeReadCauseForIndex"                  [group(mir-enum), symbol(FakeReadCause::ForIndex)]
 
-syntax Variance ::= "varianceCovariant"
-                  | "varianceInvariant"
-                  | "varianceContravariant"
-                  | "varianceBivariant"
+syntax RetagKind ::= "retagKindFnEntry"  [group(mir-enum), symbol(RetagKind::FnEntry)]
+                   | "retagKindTwoPhase" [group(mir-enum), symbol(RetagKind::TwoPhase)]
+                   | "retagKindRaw"      [group(mir-enum), symbol(RetagKind::Raw)]
+                   | "retagKindDefault"  [group(mir-enum), symbol(RetagKind::Default)]
 
-syntax CopyNonOverlapping ::= copyNonOverlapping(src: Operand, dst: Operand, count: Operand)
-syntax NonDivergingIntrinsic ::= nonDivergingIntrinsicAssume(Operand)
-                               | nonDivergingIntrinsicCopyNonOverlapping(CopyNonOverlapping)
+syntax Variance ::= "varianceCovariant"     [group(mir-enum), symbol(Variance::Covariant)]
+                  | "varianceInvariant"     [group(mir-enum), symbol(Variance::Invariant)]
+                  | "varianceContravariant" [group(mir-enum), symbol(Variance::Contravariant)]
+                  | "varianceBivariant"     [group(mir-enum), symbol(Variance::Bivariant)]
+
+syntax CopyNonOverlapping ::= copyNonOverlapping(src: Operand, dst: Operand, count: Operand) [group(mir---src--dst--count)]
+syntax NonDivergingIntrinsic ::= nonDivergingIntrinsicAssume(Operand)                        [group(mir-enum), symbol(NonDivergingIntrinsic::Assume)]
+                               | nonDivergingIntrinsicCopyNonOverlapping(CopyNonOverlapping) [group(mir-enum), symbol(NonDivergingIntrinsic::CopyNonOverlapping)]
 
 /////// End terminators
 
-syntax BasicBlock ::= basicBlock(statements: Statements, terminator: Terminator)
-syntax BasicBlocks ::= List {BasicBlock, ""}
+syntax BasicBlock ::= basicBlock(statements: Statements, terminator: Terminator) [group(mir---statements--terminator)]
+syntax BasicBlocks ::= List {BasicBlock, ""} [group(mir-list), symbol(BasicBlock::append), terminator-symbol(BasicBlock::empty)]
 
-syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability)
-syntax LocalDecls ::= List {LocalDecl, ""}
+syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability) [group(mir---ty--span--mutability)]
+syntax LocalDecls ::= List {LocalDecl, ""} [group(mir-list), symbol(LocalDecl::append), terminator-symbol(LocalDecl::empty)]
 
-syntax SourceScope ::= sourceScope(Int)
-syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope)
-syntax VarDebugInfoFragment ::= varDebugInfoFragment(ty: Ty, projection: ProjectionElems)
-syntax MaybeVarDebugInfoFragment ::= someVarDebugInfoFragment(VarDebugInfoFragment)
-                                   | "noVarDebugInfoFragment"
-syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: MirConst)
-syntax VarDebugInfoContents ::= varDebugInfoContentsPlace(Place)
-                              | varDebugInfoContentsConst(ConstOperand)
-syntax MaybeInt ::= someInt(Int) | "noInt"
-syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, composite: MaybeVarDebugInfoFragment, value: VarDebugInfoContents, argumentIndex: MaybeInt)
-syntax VarDebugInfos ::= List {VarDebugInfo, ""}
+syntax SourceScope ::= sourceScope(Int)                          [group(mir-int)]
+syntax SourceInfo ::= sourceInfo(span: Span, scope: SourceScope) [group(mir---span--scope)]
+syntax VarDebugInfoFragment ::= varDebugInfoFragment(ty: Ty, projection: ProjectionElems) [group(mir---ty--projection)]
+syntax MaybeVarDebugInfoFragment ::= someVarDebugInfoFragment(VarDebugInfoFragment) [group(mir-option)]
+                                   | "noVarDebugInfoFragment"                       [group(mir-option)]
 
-syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span)
-syntax Bodies ::= List {Body, ""} [symbol(bodies), terminator-symbol(.bodies)]
+syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotationIndex, const: MirConst) [group(mir---span--user-ty--const-)]
+syntax VarDebugInfoContents ::= varDebugInfoContentsPlace(Place)        [group(mir-enum), symbol(VarDebugInfoContents::Place)]
+                              | varDebugInfoContentsConst(ConstOperand) [group(mir-enum), symbol(VarDebugInfoContents::Const)]
+
+syntax MaybeInt ::= someInt(Int) [group(mir-option)]
+                  | "noInt"      [group(mir-option)]
+
+syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, composite: MaybeVarDebugInfoFragment, value: VarDebugInfoContents, argumentIndex: MaybeInt) [group(mir---name--source-info--composite--value--argument-index)]
+syntax VarDebugInfos ::= List {VarDebugInfo, ""} [group(mir-list), symbol(VarDebugInfo::append), terminator-symbol(VarDebugInfo::empty)]
+
+syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span) [group(mir---blocks--locals--arg-count--var-debug-info--spread-arg--span)]
+syntax Bodies ::= List {Body, ""} [group(mir-list), symbol(Body::append), terminator-symbol(Body::empty)]
 
 endmodule
