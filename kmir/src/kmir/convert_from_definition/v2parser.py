@@ -167,7 +167,14 @@ class Parser:
         symbol = _enum_symbol(sort.name, key)
         json_value = json[key]
         assert isinstance(json_value, JSON)
-        return self.parse_mir_json(json_value, self._mir_production_for_symbol(sort, symbol))
+        prod = self._mir_production_for_symbol(sort, symbol)
+        if prod in self._mir_terminals:
+            return self._parse_mir_terminal_json(json_value, prod)
+        else:
+            assert prod in self._mir_non_terminals
+            if not (isinstance(json_value, dict) or isinstance(json_value, Sequence)):
+                json_value = [json_value]
+            return self._parse_mir_nonterminal_json(json_value, prod)
 
     def _parse_mir_list_json(self, json: JSON, sort: KSort) -> ParseResult:
         assert isinstance(json, Sequence)
