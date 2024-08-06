@@ -18,8 +18,16 @@ ParseResult = tuple[KApply, KSort] | None
 
 def _is_mir_production(prod: KProduction) -> bool:
     group = prod.att.get(Atts.GROUP)
+    return group is not None and group.startswith('mir')
+
+
+def _get_label(prod: KProduction) -> str:
     symbol = prod.att.get(Atts.SYMBOL)
-    return group is not None and group.startswith('mir') and symbol is not None
+    if symbol is not None:
+        return symbol
+    label = prod.klabel
+    assert label
+    return label.name
 
 
 def _get_symbol(prod: KProduction) -> str:
@@ -88,12 +96,12 @@ class Parser:
         return tuple(p for p in self._mir_productions if p.sort == sort)
 
     def _mir_production_for_symbol_outer(self, symbol: str) -> KProduction:
-        prods = [p for p in self._mir_productions if _get_symbol(p) == symbol]
+        prods = [p for p in self._mir_productions if _get_label(p) == symbol]
         assert len(prods) == 1
         return prods[0]
 
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
-        prods = [p for p in self._mir_productions_for_sort(sort) if _get_symbol(p) == symbol]
+        prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
         assert len(prods) == 1
         return prods[0]
 
@@ -141,7 +149,7 @@ class Parser:
 
         group = _get_group(prod)
         _, field_names = _extract_mir_group_info(group)
-        symbol = _get_symbol(prod)
+        symbol = _get_label(prod)
         sort = prod.sort
         args = []
         arg_count = 0
@@ -216,10 +224,10 @@ class Parser:
         assert len(prods) == 2
         if json is None:
             tprod = prods[0] if prods[0] in self._mir_terminals else prods[1]
-            tsymbol = _get_symbol(tprod)
+            tsymbol = _get_label(tprod)
             return KApply(tsymbol, ()), sort
         ntprod = prods[0] if prods[0] not in self._mir_terminals else prods[1]
-        ntsymbol = _get_symbol(ntprod)
+        ntsymbol = _get_label(ntprod)
         group = _get_group(ntprod)
         kind, _ = _extract_mir_group_info(group)
         match kind:
@@ -248,19 +256,19 @@ class Parser:
     def _parse_mir_string_json(self, json: JSON, prod: KProduction) -> ParseResult:
         assert isinstance(json, str)
         sort = prod.sort
-        symbol = _get_symbol(prod)
+        symbol = _get_label(prod)
         return KApply(symbol, (KToken('\"' + json + '\"', KSort('String')))), sort
 
     def _parse_mir_int_json(self, json: JSON, prod: KProduction) -> ParseResult:
         assert isinstance(json, int)
         sort = prod.sort
-        symbol = _get_symbol(prod)
+        symbol = _get_label(prod)
         return KApply(symbol, (KToken(str(json), KSort('Int')))), sort
 
     def _parse_mir_bool_json(self, json: JSON, prod: KProduction) -> ParseResult:
         assert isinstance(json, bool)
         sort = prod.sort
-        symbol = _get_symbol(prod)
+        symbol = _get_label(prod)
         return KApply(symbol, (KToken(str(json), KSort('Bool')))), sort
 
     @cached_property
@@ -274,7 +282,3 @@ class Parser:
     @cached_property
     def _mir_non_terminals(self) -> tuple[KProduction, ...]:
         return tuple(prod for prod in self._mir_productions if not _is_mir_terminal(prod))
-
-    @cached_property
-    def _mir_terminal_symbols(self) -> set[str]:
-        return {_get_symbol(prod) for prod in self._mir_terminals}

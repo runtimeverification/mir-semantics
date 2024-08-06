@@ -133,7 +133,7 @@ syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
 syntax Ty ::= ty(MIRInt, TyKind) [symbol(ty)]
-            | ty(Int)            [group(mir-int), symbol(ty::Ty::Int)]
+            | ty(Int)            [group(mir-int)]
 syntax Tys ::= List {Ty, ""}
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: MIRBool)
@@ -164,7 +164,7 @@ syntax RegionKind ::= regionKindReEarlyParam(EarlyParamRegion)
                     | "regionKindReErased"
 syntax Region ::= region(kind: RegionKind)
 
-syntax Span ::= span(Int) [group(mir-int), symbol(span::Span::Int)]
+syntax Span ::= span(Int) [group(mir-int)]
 
 syntax ExistentialTraitRef ::= existentialTraitRef(defId: TraitDef, genericArgs: GenericArgs)
 syntax ExistentialProjection ::= existentialProjection(defId: TraitDef, genericArgs: GenericArgs, term: TermKind)
