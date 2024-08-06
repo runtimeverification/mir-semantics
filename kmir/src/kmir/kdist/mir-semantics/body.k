@@ -42,7 +42,7 @@ syntax MaybeOperand ::= someOperand(Operand) [group(mir-option)]
 
 syntax Operands ::= List {Operand, ""} [group(mir-list), symbol(Operand::append), terminator-symbol(Operand::empty)]
 
-syntax Local ::= local(Int)            [group(mir-int), symbol(Local::Int)]
+syntax Local ::= local(Int)            [group(mir-int), symbol(local::Local::Int)]
 syntax MaybeLocal ::= someLocal(Local) [group(mir-option)]
                     | "noLocal"        [group(mir-option)]
 
@@ -254,7 +254,7 @@ syntax NonDivergingIntrinsic ::= nonDivergingIntrinsicAssume(Operand)           
 syntax BasicBlock ::= basicBlock(statements: Statements, terminator: Terminator) [group(mir---statements--terminator)]
 syntax BasicBlocks ::= List {BasicBlock, ""} [group(mir-list), symbol(BasicBlock::append), terminator-symbol(BasicBlock::empty)]
 
-syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability) [group(mir---ty--span--mutability), symbol(LocalDecl::Ty::Span::Mutability)]
+syntax LocalDecl ::= localDecl(ty: Ty, span: Span, mut: Mutability) [group(mir---ty--span--mutability), symbol(localDecl::LocalDecl::Ty::Span::Mutability)]
 syntax LocalDecls ::= List {LocalDecl, ""} [group(mir-list), symbol(LocalDecl::append), terminator-symbol(LocalDecl::empty)]
 
 syntax SourceScope ::= sourceScope(Int)                          [group(mir-int)]
