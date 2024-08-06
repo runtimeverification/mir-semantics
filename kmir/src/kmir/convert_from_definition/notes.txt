@@ -26,7 +26,17 @@ syntax MyEnum ::= myEnumField1(...) [group(mir-enum), ...]
                 | myEnumField2(...) [group(mir-enum), ...]
 json: a dictionary with a single key value pair. The key should correspond to one of the productions for the MyEnum Sort, and the value should be a  
 
-mir: 
+mir-option:
+syntax MaybeA::= someA(A) [group(mir-option)]
+               | "noA"    [group(mir-option)]
+json: represented as A would be.
+
+mir-option-int, mir-option-bool, mir-option-string:
+Options of primitive sorts need to have the some production annotated with these group names instead, e.g.,
+syntax MaybeInt::= someInt(Int) [group(mir-option-int)]
+                | "noInt"    [group(mir-option)]
+
+mir: Any remaining production describing MIR syntax.
 
 3. Syntax productions with more than one non terminals should not include sorts Int, Bool, String, but should instead use the sorts MIRInt, MIRBool, MIRString. These are intended to be semantically equivalent, i.e. mirInt(I) => I, mirBool(B) => B, mirString(S) => S.
 Note: This transformation should have happened already. If a place has been missed, where a sort has not been replaced with MIRsort, this should be trasformed. Also, this should happen for any other primitive sorts.
@@ -54,6 +64,13 @@ We need to always have rules of form (a). This transformation has not happened y
 5. The symbols for the terminals should be sort::value, e.g. Mutability::Not.
 6. The symbols for the terminals should also be sort::value, e.g. StatementKind::StorageLive.
 
+Issues to be addressed for usability:
+1. The current inplementation requires all mir productions to have symbols. However, there are two categories of productions. (a) Productions which we find by automatically constructing their symbol from the json file. For those, we need the symbol to have an expected form, therefore we need to explicitly assign symbols to these production. (e.g., mir-enum) (b) Productions we are able to identify as being the ones we need to apply, and using their symbol just to do so. (e.g., mir-int)
+It would be easier if we did not need to add symbols to all productions, but only to those in group (a). To do so, we need to find a way to extract the automatically generated symbol that K generates.
+2. It seems possible to change the parser to require a Sort instead of a symbol as an input.
+
 Not yet handled:
-Maybe...
-Special parsing (maps, crate_id + unique IDs, new constant kinds)
+1. Special case parsing
+We decided to not use the parser to do json processing, but to preprocess the json (or do so at the Rust level) instead. Therefore, cases that will need to be handled include:
+- Creating unique IDs for functions (hash of function name) and alloc IDs (concatenation of alloc id and crate id). The crate id is currently included in the json file, but not expected in K AST, and the IDs might not be unique.
+- The functions map exists in the json file, but is not expected in the K AST. Instead, it was used to map the type to a function name and type (noop, intrinsic, function definition), and used later to construct a Node ConstantKind{NoOp, InrinsicSym, FnDef} instead of ConstandKindZeroSized.
