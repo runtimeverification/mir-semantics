@@ -12,11 +12,11 @@ module MONO
   imports TYPES-SORTS
   imports INT
 
-syntax StaticDef ::= Int // imported from crate
+syntax StaticDef ::= staticDef(Int) // imported from crate
 
 syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
-syntax MonoItem ::= monoItemFn(Instance)
-                  | monoItemStatic(StaticDef)
+syntax MonoItem ::= monoItemFn(Instance) // do not use - parser uses the key to generate the other production
+                  | monoItemStatic(StaticDef) // do not use - parser uses the key to generate the other production
                   | monoItemFn(name: Symbol, defId: DefId, body: Bodies) [symbol(monoItemFn)]
                   | monoItemStatic(name: Symbol, defId: DefId, allocation: MaybeAllocation)
                   | monoItemGlobalAsm(Opaque)

@@ -6,7 +6,7 @@ module ABI
 
 syntax RangeInclusiveForVariantIdx ::= rangeInclusiveForVariantIdx(start: VariantIdx, end: VariantIdx)
 
-syntax FnAbi ::= fnAbi(args: ArgAbis, ret: ArgAbi, fixedCount: Int, conv: CallConvention, cVariadic: Bool)
+syntax FnAbi ::= fnAbi(args: ArgAbis, ret: ArgAbi, fixedCount: MIRInt, conv: CallConvention, cVariadic: MIRBool)
 
 syntax ArgAbi ::= argAbi(ty: Ty, layout: Layout, mode: PassMode)
 syntax ArgAbis ::= List {ArgAbi, ""}
@@ -17,35 +17,35 @@ syntax TyAndLayout ::= tyAndLayout(ty: Ty, layout: Layout)
 syntax PassMode ::= "passModeIgnore"
                   | passModeDirect(Opaque)
                   | passModePair(Opaque, Opaque)
-                  | passModeCast(padI32: Bool, cast: Opaque)
-                  | passModeIndirect(attrs: Opaque, metaAttrs: Opaque, onStack: Bool)
+                  | passModeCast(padI32: MIRBool, cast: Opaque)
+                  | passModeIndirect(attrs: Opaque, metaAttrs: Opaque, onStack: MIRBool)
 
 syntax LayoutShape ::= layoutShape(fields: FieldsShape, variants: VariantsShape, abi: ValueAbi, abiAlign: Align, layoutSize: MachineSize)
 syntax LayoutShapes ::= List {LayoutShape, ""}
 
 syntax FieldsShape ::= "fieldsShapePrimitive"
                      | fieldsShapeUnion(NonZero)
-                     | fieldsShapeArray(stride: MachineSize, count: Int)
+                     | fieldsShapeArray(stride: MachineSize, count: MIRInt)
                      | fieldsShapeArbitrary(offsets: MachineSizeList)
 
 syntax VariantsShape ::= variantsShapeSingle(index: VariantIdx)
-                       | variantsShapeMultiple(tag: Scalar, tagEncoding: TagEncoding, tagField: Int, variants: LayoutShapes)
+                       | variantsShapeMultiple(tag: Scalar, tagEncoding: TagEncoding, tagField: MIRInt, variants: LayoutShapes)
 
 syntax ValueAbi ::= "valueAbiUninhabited"
                    | valueAbiScalar(Scalar)
                    | valueAbiScalarPair(Scalar, Scalar)
-                   | valueAbiVector(element: Scalar, count: Int)
+                   | valueAbiVector(element: Scalar, count: MIRInt)
                    | valueAbiAggregate(sized: Bool)
 
 syntax NonZero ::= nonZero(Int)
 syntax MachineSizeList ::= List {MachineSize, ""}
 
 syntax TagEncoding ::= "tagEncodingDirect"
-                      | tagEncodingNiche(untaggedVariant: VariantIdx, nicheVariants: RangeInclusiveForVariantIdx, nicheStart: Int)
+                      | tagEncodingNiche(untaggedVariant: VariantIdx, nicheVariants: RangeInclusiveForVariantIdx, nicheStart: MIRInt)
 
 syntax Scalar ::= scalarInitialized(value: Primitive, validRange: WrappingRange)
                 | scalarUnion(value: Primitive)
-syntax Primitive ::= primitiveInt(length: IntegerLength, signed: Bool)
+syntax Primitive ::= primitiveInt(length: IntegerLength, signed: MIRBool)
                    | primitiveFloat(length: FloatLength)
                    | primitivePointer(addressSpace: AddressSpace)
 syntax IntegerLength ::= "integerLengthI8"
@@ -60,7 +60,7 @@ syntax FloatLength ::= "floatLengthF16"
 
 syntax AddressSpace ::= addressSpace(Int)
 
-syntax WrappingRange ::= wrappingRange(start: Int, end: Int)
+syntax WrappingRange ::= wrappingRange(start: MIRInt, end: MIRInt)
 
 syntax CallConvention ::= "callConventionC"
                         | "callConventionRust"
