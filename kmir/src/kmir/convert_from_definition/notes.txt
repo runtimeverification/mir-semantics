@@ -61,8 +61,9 @@ syntax MyEnumField2 ::= myEnumField2
 
 We need to always have rules of form (a). This transformation has not happened yet.
 
-5. The symbols for the terminals should be sort::value, e.g. Mutability::Not.
-6. The symbols for the terminals should also be sort::value, e.g. StatementKind::StorageLive.
+5. The symbols for the enums should be sort::value, e.g. StatementKind::StorageLive.
+6. The symbols for the terminals should also be sort::value, e.g. Mutability::Not. This is a terminal, but it represents a choice and therefore is also an enum.
+7. The symbols for the lists should  be list_sort::append, list_sort::empty, e.g. Statements::append, Statements::empty.
 
 Issues to be addressed for usability:
 1. The current inplementation requires all mir productions to have symbols. However, there are two categories of productions. (a) Productions which we find by automatically constructing their symbol from the json file. For those, we need the symbol to have an expected form, therefore we need to explicitly assign symbols to these production. (e.g., mir-enum) (b) Productions we are able to identify as being the ones we need to apply, and using their symbol just to do so. (e.g., mir-int)
