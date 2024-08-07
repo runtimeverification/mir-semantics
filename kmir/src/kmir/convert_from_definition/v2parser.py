@@ -97,43 +97,44 @@ class Parser:
     def _mir_productions_for_sort(self, sort: KSort) -> tuple[KProduction, ...]:
         return tuple(p for p in self._mir_productions if p.sort == sort)
 
-    def _mir_production_for_symbol_outer(self, symbol: str) -> KProduction:
-        prods = [p for p in self._mir_productions if _get_label(p) == symbol]
-        assert len(prods) == 1
-        return prods[0]
-
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
         prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
         assert len(prods) == 1
         return prods[0]
 
-    def parse_mir_json(self, json: JSON, symbol: str) -> ParseResult:
-        prod = self._mir_production_for_symbol_outer(symbol)
-        return self._parse_mir_json(json, prod)
+    def parse_mir_json(self, json: JSON, sort: str) -> ParseResult:
+        return self._parse_mir_json(json, KSort(sort))
 
-    def _parse_mir_json(self, json: JSON, prod: KProduction) -> ParseResult:
+    def _parse_mir_json(self, json: JSON, sort: KSort) -> ParseResult:
+        prods = self._mir_productions_for_sort(sort)
+        assert len(prods) > 0
+        prod = prods[0]
         assert prod in self._mir_productions
 
         group = _get_group(prod)
         kind, _ = _extract_mir_group_info(group)
         match kind:
             case 'mir':
+                assert len(prods) == 1
                 if prod in self._mir_terminals:
                     return self._parse_mir_terminal_json(json, prod)
                 else:
                     assert prod in self._mir_non_terminals
                     return self._parse_mir_nonterminal_json(json, prod)
             case 'mir-enum':
-                return self._parse_mir_enum_json(json, prod.sort)
+                return self._parse_mir_enum_json(json, sort)
             case 'mir-list':
-                return self._parse_mir_list_json(json, prod.sort)
+                return self._parse_mir_list_json(json, sort)
             case 'mir-option' | 'mir-option-string' | 'mir-option-int' | 'mir-option-bool':
-                return self._parse_mir_option_json(json, prod.sort)
+                return self._parse_mir_option_json(json, sort)
             case 'mir-string':
+                assert len(prods) == 1
                 return self._parse_mir_string_json(json, prod)
             case 'mir-int':
+                assert len(prods) == 1
                 return self._parse_mir_int_json(json, prod)
             case 'mir-bool':
+                assert len(prods) == 1
                 return self._parse_mir_bool_json(json, prod)
             case _:
                 raise AssertionError()
@@ -166,10 +167,8 @@ class Parser:
             else:
                 arg_json = json[arg_count]
                 arg_count += 1
-            arg_prods = self._mir_productions_for_sort(arg_sort)
-            assert len(arg_prods) > 0
             assert isinstance(arg_json, JSON)
-            arg_parse_result = self._parse_mir_json(arg_json, arg_prods[0])
+            arg_parse_result = self._parse_mir_json(arg_json, arg_sort)
             assert isinstance(arg_parse_result, tuple)
             arg_kapply, arg_ksort = arg_parse_result
             assert arg_kapply
@@ -202,12 +201,10 @@ class Parser:
         assert isinstance(json, Sequence)
         append_symbol, empty_symbol = _list_symbols(sort.name)
         element_sort = _element_sort(sort)
-        element_prods = self._mir_productions_for_sort(element_sort)
-        assert len(element_prods) > 0
         list_kapply = KApply(empty_symbol, ())
         for element in reversed(json):
             assert isinstance(element, JSON)
-            element_parse_result = self._parse_mir_json(element, element_prods[0])
+            element_parse_result = self._parse_mir_json(element, element_sort)
             assert isinstance(element_parse_result, tuple)
             element_kapply, _ = element_parse_result
             list_kapply = KApply(append_symbol, (element_kapply, list_kapply))
@@ -246,9 +243,7 @@ class Parser:
                 arg_sorts = ntprod.argument_sorts
                 assert len(arg_sorts) == 1
                 arg_sort = arg_sorts[0]
-                arg_prods = self._mir_productions_for_sort(arg_sort)
-                assert len(arg_prods) > 0
-                arg_parse_result = self._parse_mir_json(json, arg_prods[0])
+                arg_parse_result = self._parse_mir_json(json, arg_sort)
                 assert isinstance(arg_parse_result, tuple)
                 arg_kapply, _ = arg_parse_result
                 return KApply(ntsymbol, (arg_kapply)), sort

@@ -40,21 +40,18 @@ SCHEMA_PARSE_INPUT_DIRS = [
 )
 def test_schema_parse(test_dir: Path, tools: Tools) -> None:
     input_json = test_dir / 'input.json'
-    input_symbol = test_dir / 'input.symbol'
     reference_sort = test_dir / 'reference.sort'
     reference_kmir = test_dir / 'reference.kmir'
     parser = Parser(tools.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
-    with input_symbol.open('r') as f:
-        input_symbol_data = f.read().rstrip()
-    parser_result = parser.parse_mir_json(json_data, input_symbol_data)
+    with reference_sort.open('r') as f:
+        reference_sort_data = f.read().rstrip()
+    parser_result = parser.parse_mir_json(json_data, reference_sort_data)
     assert parser_result is not None
     converted_ast, _ = parser_result
 
-    with reference_sort.open('r') as f:
-        reference_sort_data = f.read().rstrip()
     rc, parsed_ast = tools.kparse.kparse(reference_kmir, sort=reference_sort_data)
 
     assert converted_ast == parsed_ast
@@ -81,19 +78,17 @@ SCHEMA_PARSE_KAPPLY_DATA = [
     #    ({'RigidTy': {'Int': 'I8'}}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
     #    ({'RigidTy': {'Uint': 'Usize'}}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
     #    ({'RigidTy': {'Float': 'F128'}}, KApply('RigidTy::Float', (KApply('FloatTy::F128'))), KSort('RigidTy')),
-    (2, 'local(_)_BODY_Local_Int', KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
+    (2, KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
     (
         {'StorageLive': 2},
-        'StatementKind::StorageLive',
         KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))))),
         KSort('StatementKind'),
     ),
-    ('Not', 'Mutability::Not', KApply('Mutability::Not', ()), KSort('Mutability')),
-    (2, 'span(_)_TYPES_Span_Int', KApply('span(_)_TYPES_Span_Int', (KToken('2', KSort('Int')))), KSort('Span')),
-    (9, 'ty(_)_TYPES_Ty_Int', KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))), KSort('Ty')),
+    ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
+    (2, KApply('span(_)_TYPES_Span_Int', (KToken('2', KSort('Int')))), KSort('Span')),
+    (9, KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))), KSort('Ty')),
     (
         {'mutability': 'Mut', 'span': 420, 'ty': 9},
-        'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
         KApply(
             'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
             (
@@ -110,17 +105,17 @@ SCHEMA_PARSE_KAPPLY_DATA = [
 @pytest.mark.parametrize(
     'test_case',
     SCHEMA_PARSE_KAPPLY_DATA,
-    ids=[f'{sort.name}-{i}' for i, (_, _, _, sort) in enumerate(SCHEMA_PARSE_KAPPLY_DATA)],
+    ids=[f'{sort.name}-{i}' for i, (_, _, sort) in enumerate(SCHEMA_PARSE_KAPPLY_DATA)],
 )
 def test_schema_kapply_parse(
-    test_case: tuple[JSON, str, KInner, KSort],
+    test_case: tuple[JSON, KInner, KSort],
     tools: Tools,
 ) -> None:
     parser = Parser(tools.definition)
 
-    json_data, symbol, expected_term, expected_sort = test_case
+    json_data, expected_term, expected_sort = test_case
 
-    assert parser.parse_mir_json(json_data, symbol) == (expected_term, expected_sort)
+    assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
 
 
 RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
