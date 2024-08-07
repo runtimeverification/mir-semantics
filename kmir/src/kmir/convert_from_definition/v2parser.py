@@ -205,7 +205,7 @@ class Parser:
         element_prods = self._mir_productions_for_sort(element_sort)
         assert len(element_prods) > 0
         list_kapply = KApply(empty_symbol, ())
-        for element in json:
+        for element in reversed(json):
             assert isinstance(element, JSON)
             element_parse_result = self._parse_mir_json(element, element_prods[0])
             assert isinstance(element_parse_result, tuple)

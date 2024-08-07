@@ -27,6 +27,9 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'maybebasicblockidx',
     SCHEMA_PARSE_DATA / 'terminatorkindreturn',
     SCHEMA_PARSE_DATA / 'terminatorkindgoto',
+    SCHEMA_PARSE_DATA / 'terminatorreturn',
+    SCHEMA_PARSE_DATA / 'terminatorgoto',
+    SCHEMA_PARSE_DATA / 'statements',
 ]
 
 
