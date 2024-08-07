@@ -13,16 +13,16 @@ module LIB
   imports TYPES-SORTS
   imports STRING
 
-syntax Symbol ::= String
+syntax Symbol ::= symbol(String)
 syntax Opaque ::= opaque(String) [symbol(opaque)]
-syntax Filename ::= String
+syntax Filename ::= filename(String)
 
 syntax TraitDecls ::= List {TraitDef, ""}
 syntax ImplTraitDecls ::= List {ImplDef, ""}
 
-syntax CrateItem ::= Int // imported from crate
+syntax CrateItem ::= crateItem(Int) // imported from crate
 syntax CrateNum ::= crateNum(Int)
-syntax Crate ::= crate(id: CrateNum, name: Symbol, isLocal: Bool)
+syntax Crate ::= crate(id: CrateNum, name: Symbol, isLocal: MIRBool)
 
 syntax ItemKind ::= "itemKindFn" [symbol(itemKindFn)]
                   | "itemKindStatic" [symbol(itemKindStatic)]

@@ -17,6 +17,9 @@ syntax TraitDef
 syntax Ty
 syntax TyConst
 syntax VariantIdx
+syntax MIRInt
+syntax MIRBool
+syntax MIRString
 
 endmodule
 
@@ -29,33 +32,42 @@ module TYPES
   imports INT
   imports STRING
 
-syntax LineInfo ::= lineInfo(startLine: Int, startCol: Int, endLine: Int, endCol: Int)
-syntax InitMaskMaterialized ::= List {Int, ""}
+syntax MIRInt ::= mirInt(Int)          [group(mir-int), symbol(MIRInt::Int)]
+                //| Int
+syntax MIRBool ::= mirBool(Bool)       [group(mir-bool), symbol(MIRBool::Bool)]
+                //| Bool
+syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
+                   //| String
 
-syntax AdtDef ::= Int // imported from crate
-syntax AliasDef ::= Int // imported from crate
-syntax BrNamedDef ::= Int // imported from crate
-syntax ClosureDef ::= Int // imported from crate
-syntax ConstDef ::= Int // imported from crate
-syntax CoroutineDef ::= Int // imported from crate
-syntax CoroutineWitnessDef ::= Int // imported from crate
-syntax FnDef ::= Int // imported from crate
-syntax ForeignDef ::= Int // imported from crate
-syntax ForeignModuleDef ::= Int // imported from crate
-syntax GenericDef ::= Int // imported from crate
-syntax ImplDef ::= Int // imported from crate
-syntax ParamDef ::= Int // imported from crate
-syntax RegionDef ::= Int // imported from crate
-syntax TraitDef ::= Int // imported from crate
+syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
+syntax InitMaskMaterialized ::= List {MIRInt, ""}
+
+syntax AdtDef ::= adtDef(Int) // imported from crate
+syntax AliasDef ::= aliasDef(Int) // imported from crate
+syntax BrNamedDef ::= brNamedDef(Int) // imported from crate
+syntax ClosureDef ::= closureDef(Int) // imported from crate
+syntax ConstDef ::= constDef(Int) // imported from crate
+syntax CoroutineDef ::= coroutineDef(Int) // imported from crate
+syntax CoroutineWitnessDef ::= coroutineWitnessDef(Int) // imported from crate
+syntax FnDef ::= fnDef(Int) // imported from crate
+syntax ForeignDef ::= foreignDef(Int) // imported from crate
+syntax ForeignModuleDef ::= foreignModuleDef(Int) // imported from crate
+syntax GenericDef ::= genericDef(Int) // imported from crate
+syntax ImplDef ::= implDef(Int) // imported from crate
+syntax ParamDef ::= paramDef(Int) // imported from crate
+syntax RegionDef ::= regionDef(Int) // imported from crate
+syntax TraitDef ::= traitDef(Int) // imported from crate
 
 syntax VariantIdx ::= variantIdx(Int) [symbol(variantIdx)]
 
-syntax DynKind ::= "dynKindDyn" | "dynKindDynStar"
+syntax DynKind ::= "dynKindDyn"      [group(mir-enum), symbol(DynKind::Dyn)]
+                 | "dynKindDynStar"  [group(mir-enum), symbol(DynKind::DynStar)]
 
-syntax ForeignModule ::= foreignModule(defId: ForeignModuleDef, abi: Abi)
-syntax ForeignItemKind ::= foreignItemKindFn()
-                         | foreignItemKindStatic(StaticDef)
-                         | foreignItemKindType(Ty)
+syntax ForeignModule ::= foreignModule(defId: ForeignModuleDef, abi: Abi) [group(mir-def-id-abi)]
+
+syntax ForeignItemKind ::= foreignItemKindFn()               [group("mir-enum"), symbol("ForeignItemKind::Fn")]
+                         | foreignItemKindStatic(StaticDef)  [group("mir-enum"), symbol("ForeignItemKind::Static")]
+                         | foreignItemKindType(Ty)           [group("mir-enum"), symbol("ForeignItemKind::Type")]
 
 syntax AdtKind ::= "adtKindEnum"
                  | "adtKindUnion"
@@ -106,25 +118,25 @@ syntax Abi ::= "abiRust"
              | "abiRiscvInterruptS"
 
 syntax BoundTyKind ::= "boundTyKindAnon"
-                     | boundTyKindParam(ParamDef, String)
+                     | boundTyKindParam(ParamDef, MIRString)
 syntax BoundRegionKind ::= "boundRegionKindBrAnon"
-                         | boundRegionKindBrNamed(BrNamedDef, String)
+                         | boundRegionKindBrNamed(BrNamedDef, MIRString)
                          | "boundRegionKindBrEnv"
 syntax BoundVariableKind ::= boundVariableKindTy(BoundTyKind)
                            | boundVariableKindRegion(BoundRegionKind)
                            | "boundVariableKindConst"
 syntax BoundVariableKindList ::= List {BoundVariableKind, ""}
 
-syntax FnSig ::= fnSig(inputsAndOutput: Tys, cVaradic: Bool, unsafety: Safety, abi: Abi)
+syntax FnSig ::= fnSig(inputsAndOutput: Tys, cVaradic: MIRBool, unsafety: Safety, abi: Abi)
 syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList)
 syntax PolyFnSig ::= BinderForFnSig
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int, TyKind) [symbol(ty)]
-            | ty(Int)
+syntax Ty ::= ty(MIRInt, TyKind) [symbol(ty)]
+            | ty(Int)            [group(mir-int)]
 syntax Tys ::= List {Ty, ""}
 
-syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: Bool)
+syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: MIRBool)
 
 syntax TyConst ::= tyConst(kind: TyConstKind, id: TyConstId)
 syntax TyConstId ::= tyConstId(Int)
@@ -141,7 +153,7 @@ syntax TyConstKind ::= tyConstKindParam(ParamConst)
 
 syntax DebruijinIndex ::= debruijinIndex(Int)
 syntax UniverseIndex ::= universeIndex(Int)
-syntax EarlyParamRegion ::= earlyParamRegion(index: Int, name: Symbol)
+syntax EarlyParamRegion ::= earlyParamRegion(index: MIRInt, name: Symbol)
 syntax BoundVar ::= boundVar(Int)
 syntax BoundRegion ::= boundRegion(var: BoundVar, kind: BoundRegionKind)
 syntax PlaceholderForBoundRegion ::= placeholderForBoundRegion(universe: UniverseIndex, bound: BoundRegion)
@@ -152,7 +164,7 @@ syntax RegionKind ::= regionKindReEarlyParam(EarlyParamRegion)
                     | "regionKindReErased"
 syntax Region ::= region(kind: RegionKind)
 
-syntax Span ::= span(Int)
+syntax Span ::= span(Int) [group(mir-int)]
 
 syntax ExistentialTraitRef ::= existentialTraitRef(defId: TraitDef, genericArgs: GenericArgs)
 syntax ExistentialProjection ::= existentialProjection(defId: TraitDef, genericArgs: GenericArgs, term: TermKind)
@@ -210,18 +222,18 @@ syntax BindersForExistentialPredicate ::= List {BinderForExistentialPredicate, "
 syntax TyKind ::= tyKindRigidTy(RigidTy)          [group(mir), symbol(TyKind::RigidTy)]
                 | tyKindAlias(AliasKind, AliasTy) [group(mir), symbol(TyKind::Alias)]
                 | tyKindParam(ParamTy)            [group(mir), symbol(TyKind::Param)]
-                | tyKindBound(Int, BoundTy)       [group(mir), symbol(TyKind::Bound)]
+                | tyKindBound(MIRInt, BoundTy)       [group(mir), symbol(TyKind::Bound)]
 
 syntax TypeAndMut ::= typeAndMut(ty: Ty, mutability: Mutability)
 
-syntax ParamTy ::= paramTy(index: Int, name: String)
-syntax BoundTy ::= boundTy(var: Int, kind: BoundTyKind)
+syntax ParamTy ::= paramTy(index: MIRInt, name: MIRString)
+syntax BoundTy ::= boundTy(var: MIRInt, kind: BoundTyKind)
 
 syntax Promoted ::= promoted(Int)
 syntax MaybePromoted ::= somePromoted(Promoted) | "noPromoted"
 
 syntax Align ::= align(Int) [symbol(align)]
-syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: Int, allocId: AllocId) [symbol(provenanceMapEntry)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [symbol(provenanceMapEntry)]
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
 syntax AllocByte ::= someByte(Int) [symbol(someByte)]
@@ -242,7 +254,7 @@ syntax ConstantKind ::= constantKindTy(TyConst)
                       | constantKindFnDef(id: Int) [symbol(constantKindFnDef)]
                       | constantKindIntrinsic(name: Symbol) [symbol(constantKindIntrinsic)]
 
-syntax ParamConst ::= paramConst(index: Int, name: String)
+syntax ParamConst ::= paramConst(index: MIRInt, name: MIRString)
 
 syntax UnevaluatedConst ::= unevaluatedConst(def: ConstDef, args: GenericArgs, promoted: MaybePromoted)
 
@@ -253,20 +265,20 @@ syntax TraitSpecializationKind ::= "traitSpecializationKindNone"
 syntax Ident ::= ident(Opaque)
 syntax Idents ::= List {Ident, ""}
 syntax MaybeIdents ::= someIdents(Idents) | "noIdents"
-syntax TraitDecl ::= traitDecl(defId: TraitDef, unsafety: Safety, parenSugar: Bool, hasAutoImpl: Bool, isMarker: Bool, isCoinductive: Bool, skipArrayDuringMethodDispatch: Bool, specializationKind: TraitSpecializationKind, mustImplementOneOf: MaybeIdents, implementViaObject: Bool, denyExplicitImpl: Bool)
+syntax TraitDecl ::= traitDecl(defId: TraitDef, unsafety: Safety, parenSugar: MIRBool, hasAutoImpl: MIRBool, isMarker: MIRBool, isCoinductive: MIRBool, skipArrayDuringMethodDispatch: MIRBool, specializationKind: TraitSpecializationKind, mustImplementOneOf: MaybeIdents, implementViaObject: MIRBool, denyExplicitImpl: MIRBool)
 
 syntax TraitRef ::= traitRef(defId: TraitDef, args: GenericArgs)
 
 syntax GenericParamDefKind ::= "genericParamDefKindLifetime"
-                             | genericParamDefKindType(hasDefault: Bool, synthetic: Bool)
+                             | genericParamDefKindType(hasDefault: MIRBool, synthetic: MIRBool)
                              | genericParamDefKindConst(hasDefault: Bool)
-syntax GenericParamDef ::= genericParamDef(name: Symbol, defId: GenericDef, index: Int, pureWrtDrop: Bool, kind: GenericParamDefKind)
+syntax GenericParamDef ::= genericParamDef(name: Symbol, defId: GenericDef, index: MIRInt, pureWrtDrop: MIRBool, kind: GenericParamDefKind)
 syntax MaybeGenericDef ::= someGenericDef(GenericDef) | "noGenericDef"
 syntax GenericParamDefs ::= List {GenericParamDef, ""}
-syntax GenericDefAndIdxPair ::= genericDefAndIdxPair(GenericDef, Int)
+syntax GenericDefAndIdxPair ::= genericDefAndIdxPair(GenericDef, MIRInt)
 syntax GenericDefAndIdxPairs ::= List {GenericDefAndIdxPair, ""}
 syntax MaybeSpan ::= someSpan(Span) | "noSpan"
-syntax Generics ::= generics(parent: MaybeGenericDef, parentCount: Int, params: GenericParamDefs, paramDefIdToIndex: GenericDefAndIdxPairs, hasSelf: Bool, hasLateBoundRegions: MaybeSpan, hostEffectIndex: MaybeInt)
+syntax Generics ::= generics(parent: MaybeGenericDef, parentCount: MIRInt, params: GenericParamDefs, paramDefIdToIndex: GenericDefAndIdxPairs, hasSelf: MIRBool, hasLateBoundRegions: MaybeSpan, hostEffectIndex: MaybeInt)
 
 syntax MaybeTraitDef ::= someTraitDef(TraitDef) | "noTraitDef"
 syntax PredicateKindAndSpanPair ::= predicateKindAndSpanPair(predicateKind: PredicateKind, span: Span)
