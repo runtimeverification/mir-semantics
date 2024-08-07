@@ -76,6 +76,8 @@ def _element_sort(sort: KSort) -> KSort:
     name = sort.name
     element_name = {
         'Bodies': 'Body',
+        'Branches': 'Branch',
+        'VariantAndFieldIndices': 'VariantAndFieldIndex',
     }.get(name)
     if element_name:
         return KSort(element_name)
