@@ -20,7 +20,13 @@ if TYPE_CHECKING:
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
 SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'local',
+    SCHEMA_PARSE_DATA / 'maybelocal',
     SCHEMA_PARSE_DATA / 'span',
+    SCHEMA_PARSE_DATA / 'statement',
+    SCHEMA_PARSE_DATA / 'basicblockidx',
+    SCHEMA_PARSE_DATA / 'maybebasicblockidx',
+    SCHEMA_PARSE_DATA / 'terminatorkindreturn',
+    SCHEMA_PARSE_DATA / 'terminatorkindgoto',
 ]
 
 
