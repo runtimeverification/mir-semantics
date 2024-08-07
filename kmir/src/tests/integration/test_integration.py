@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-# import json
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -39,7 +39,41 @@ if TYPE_CHECKING:
 #    assert converted_ast == parsed_ast
 
 
-SCHEMA_PARSE_DATA = [
+SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
+SCHEMA_PARSE_INPUT_DIRS = [
+    SCHEMA_PARSE_DATA / 'local',
+    SCHEMA_PARSE_DATA / 'span',
+]
+
+
+@pytest.mark.parametrize(
+    'test_dir',
+    SCHEMA_PARSE_INPUT_DIRS,
+    ids=[str(test_file.relative_to(SCHEMA_PARSE_DATA)) for test_file in SCHEMA_PARSE_INPUT_DIRS],
+)
+def test_schema_parse(test_dir: Path, tools: Tools) -> None:
+    input_json = test_dir / 'input.json'
+    input_symbol = test_dir / 'input.symbol'
+    reference_sort = test_dir / 'reference.sort'
+    reference_kmir = test_dir / 'reference.kmir'
+    parser = Parser(tools.definition)
+
+    with input_json.open('r') as f:
+        json_data = json.load(f)
+    with input_symbol.open('r') as f:
+        input_symbol_data = f.read().rstrip()
+    parser_result = parser.parse_mir_json(json_data, input_symbol_data)
+    assert parser_result is not None
+    converted_ast, _ = parser_result
+
+    with reference_sort.open('r') as f:
+        reference_sort_data = f.read().rstrip()
+    rc, parsed_ast = tools.kparse.kparse(reference_kmir, sort=reference_sort_data)
+
+    assert converted_ast == parsed_ast
+
+
+SCHEMA_PARSE_KAPPLY_DATA = [
     #    ({'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
     #    ({'Int': 'I8'}, KApply('IntTy::I8'), KSort('IntTy')),
     #    ({'Int': 'I16'}, KApply('IntTy::I16'), KSort('IntTy')),
@@ -88,10 +122,10 @@ SCHEMA_PARSE_DATA = [
 
 @pytest.mark.parametrize(
     'test_case',
-    SCHEMA_PARSE_DATA,
-    ids=[f'{sort.name}-{i}' for i, (_, _, _, sort) in enumerate(SCHEMA_PARSE_DATA)],
+    SCHEMA_PARSE_KAPPLY_DATA,
+    ids=[f'{sort.name}-{i}' for i, (_, _, _, sort) in enumerate(SCHEMA_PARSE_KAPPLY_DATA)],
 )
-def test_schema_parse(
+def test_schema_kapply_parse(
     test_case: tuple[JSON, str, KInner, KSort],
     tools: Tools,
 ) -> None:
