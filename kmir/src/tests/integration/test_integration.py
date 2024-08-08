@@ -30,6 +30,8 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'terminatorreturn',
     SCHEMA_PARSE_DATA / 'terminatorgoto',
     SCHEMA_PARSE_DATA / 'statements',
+    SCHEMA_PARSE_DATA / 'basicblock1',
+    SCHEMA_PARSE_DATA / 'basicblock2',
 ]
 
 
