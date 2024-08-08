@@ -1,9 +1,36 @@
 requires "kmir-ast.k"
 
+module KMIR-VALUE-SYNTAX
+  imports INT
+  imports LIST
+  imports KMIR-AST
+
+  // Memory Implementation Structures
+
+  // 1. Address: represents an address that may refer to the interior of a structured value
+  // 2. Value: represents byte structures abstractly
+
+  syntax Address ::= LocalAddr( Int,                     // stack frame height
+                                Place )                  // stack local address
+                   | GlobalAddr( Int,                    // global address
+                                 ProjectionElems )       // projection out of global address
+
+  syntax MaybeValue ::= Value
+                      | "NoValue"
+
+  syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
+                 | Float( Float, Int )                   // value, bit-width               for f16-f128
+                 | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
+                 | Range( List )                         // homogenous values              for array/slice
+                 | Struct( Int, List )                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
+                 | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
+endmodule
+
 module KMIR-SYNTAX
   imports KMIR-AST
   imports MAP
   imports LIST
+  imports KMIR-VALUE-SYNTAX
 
   syntax InitialState ::= #init( Int, Map, Map )
 
@@ -26,8 +53,6 @@ module KMIR-MEMORY
   imports KMIR-SYNTAX
   imports LIST
   imports MAP
-
-  syntax Value
 
   configuration <memoryConfig>
                   <body> .BasicBlocks </body>
@@ -70,8 +95,6 @@ module KMIR-MEMORY-API
   // 1. Addresses are abstract representations of memory locations
   // 2. Values are abstract representations of results of operations which may be stored to/read from addresses
   // 3. Results capture responses from the backend to the frontend that are more structured than mere Values/Addresses
-  syntax Address
-  syntax Value
   syntax Result ::= #value( Value )
                   | #function( Body )
                   | #goto( MaybeBasicBlockIdx )
@@ -175,28 +198,11 @@ module KMIR-MEMORY-IMPL [private]
   // Memory Implementation Structures
 
   // 1. AddressBase: represents addresses at the level of K maps; these are the only truly "writable" addresses
-  // 2. Address: represents an address that may refer to the interior of a structured value
-  // 3. Value: represents byte structures abstractly
-  // 4. StackFrameRecord: represents stack frames abstractly
-  // 5. MemoryWrite: represents a possible write to memory
+  // 2. StackFrameRecord: represents stack frames abstractly
+  // 3. MemoryWrite: represents a possible write to memory
 
   syntax AddressBase ::= AddrBase( Int )                 // global index
                        | AddrBase( Int, Int )            // stack frame height, local var index
-
-  syntax Address ::= LocalAddr( Int,                     // stack frame height
-                                Place )                  // stack local address
-                   | GlobalAddr( Int,                    // global address
-                                 ProjectionElems )       // projection out of global address
-
-  syntax MaybeValue ::= Value
-                      | "NoValue"
-
-  syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
-                 | Float( Float, Int )                   // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
-                 | Range( List )                         // homogenous values              for array/slice
-                 | Struct( Int, List )                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
 
   syntax StackFrameRecord ::= Frame( Int,                // address of caller function
                                      MaybeBasicBlockIdx, // basic block to return to
