@@ -15,6 +15,19 @@ if TYPE_CHECKING:
 JSON = dict | str | int | bool | Sequence
 ParseResult = tuple[KApply, KSort] | None
 
+def _is_builtin_sort(sort: str) -> bool:
+    return sort.name in { 'Int', 'Bool' }
+
+def _parse_builtin(arg: JSON, sort: KSort) -> KToken:
+    match sort.name:
+        case 'Int':
+            assert isinstance(arg, int)
+            return KToken(str(arg), sort)
+        case 'Bool':
+            assert isinstance(arg, bool)
+            return KToken('true' if arg else 'false', sort)
+        case _:
+            raise ValueError("Unexpected builtin")
 
 def _is_mir_production(prod: KProduction) -> bool:
     group = prod.att.get(Atts.GROUP)
@@ -164,15 +177,20 @@ class Parser:
             else:
                 arg_json = json[arg_count]
                 arg_count += 1
-            arg_prods = self._mir_productions_for_sort(arg_sort)
-            assert len(arg_prods) > 0
-            assert isinstance(arg_json, JSON)
-            arg_parse_result = self._parse_mir_json(arg_json, arg_prods[0])
-            assert isinstance(arg_parse_result, tuple)
-            arg_kapply, arg_ksort = arg_parse_result
-            assert arg_kapply
-            assert arg_ksort
-            args.append(arg_kapply)
+            print(arg_sort)
+            if _is_builtin_sort(arg_sort):
+              token = _parse_builtin(arg_json, arg_sort)
+              args.append(token)
+            else:
+              arg_prods = self._mir_productions_for_sort(arg_sort)
+              assert len(arg_prods) > 0
+              assert isinstance(arg_json, JSON)
+              arg_parse_result = self._parse_mir_json(arg_json, arg_prods[0])
+              assert isinstance(arg_parse_result, tuple)
+              arg_kapply, arg_ksort = arg_parse_result
+              assert arg_kapply
+              assert arg_ksort
+              args.append(arg_kapply)
         return KApply(symbol, args), sort
 
     def _parse_mir_enum_json(self, json: JSON, sort: KSort) -> ParseResult:

@@ -83,6 +83,7 @@ SCHEMA_PARSE_DATA = [
         ),
         KSort('LocalDecl'),
     ),
+    ({'Scalar': [ 2, 3, True] }, 'Value::Scalar', KApply('Value::Scalar', [KToken('2', KSort('Int')), KToken('3', KSort('Int')), KToken('true', KSort('Bool'))]), KSort('Value'))
 ]
 
 

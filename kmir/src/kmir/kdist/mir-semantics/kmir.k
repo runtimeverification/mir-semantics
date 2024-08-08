@@ -9,21 +9,27 @@ module KMIR-VALUE-SYNTAX
 
   // 1. Address: represents an address that may refer to the interior of a structured value
   // 2. Value: represents byte structures abstractly
+  //
+  // LocalAddr: stack frame height, stack local address
+  // GlobalAddr: global memory address, projection out of global address
+  syntax Address ::= LocalAddr( Int, Place )            [group(mir-enum), symbol(Address::LocalAddr)]
+                   | GlobalAddr( Int, ProjectionElems ) [group(mir-enum), symbol(Address::GlobalAddr)]
 
-  syntax Address ::= LocalAddr( Int,                     // stack frame height
-                                Place )                  // stack local address
-                   | GlobalAddr( Int,                    // global address
-                                 ProjectionElems )       // projection out of global address
+  syntax MaybeValue ::=  Meta(Value)                    [group(mir-option)]
+                      | "NoValue"                       [group(mir-option)]
 
-  syntax MaybeValue ::= Value
-                      | "NoValue"
-
-  syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
-                 | Float( Float, Int )                   // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
-                 | Range( List )                         // homogenous values              for array/slice
-                 | Struct( Int, List )                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | "Any"                                 // arbitrary value                for transmute/invalid ptr lookup
+  // value, bit-width, signedness for bool, un/signed int
+  // value, bit-width             for f16-f128
+  // address, metadata            for ref/ptr
+  // homogenous values            for array/slice
+  // heterogenous value list      for tuples and structs (standard, tuple, or anonymous)
+  // arbitrary value              for transmute/invalid ptr lookup
+  syntax Value ::= Scalar( Int, Int, Bool )             [group(mir-enum), symbol(Value::Scalar)]
+                 | Float( Float, Int )                  [group(mir-enum), symbol(Value::Float)]
+                 | Ptr( Address, MaybeValue )           [group(mir-enum), symbol(Value::Ptr)]
+                 | Range( List )                        [group(mir-enum), symbol(Value::Range)]
+                 | Struct( Int, List )                  [group(mir-enum), symbol(Value::Struct)]
+                 | "Any"                                [group(mir-enum), symbol(Value::Any)]
 endmodule
 
 module KMIR-SYNTAX
@@ -122,7 +128,7 @@ module KMIR-MEMORY-API
   syntax Value ::= #loadValue( Address )                      [function]
                  | #loadPlace( Place )                        [function]
                  | #loadLocal( Local )                        [function]
-                 | #loadPtr( Address, Value )                 [function]
+                 | #loadPtr( Address, MaybeValue )            [function]
                  | #loadAllocation( Ty, Allocation )          [function]
                  | #loadUnevalConst( Ty, Int, MaybePromoted ) [function]
                  | #makeFnPtrValue( Int )                     [function]
@@ -321,8 +327,8 @@ module KMIR-MEMORY-IMPL [private]
 
   // Make Impl
 
-  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, Meta:Value ) )                        ) => #value( Ptr( Addr, Meta ) ) ... </k>
-  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, NoValue    ) ) ListItem( Meta:Value ) ) => #value( Ptr( Addr, Meta ) ) ... </k>
+  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, Meta(Val)  ) )                       ) => #value( Ptr( Addr, Meta(Val) ) ) ... </k>
+  rule <k> #buildPtr( ListItem( Ptr( Addr:Address, NoValue    ) ) ListItem( Val:Value ) ) => #value( Ptr( Addr, Meta(Val) ) ) ... </k>
 
   rule <k> #makePtr(PLACE) => #value( Ptr( LocalAddr(size(Stack) -Int 1, PLACE), NoValue ) ) ... </k>
        <stack> Stack </stack>
@@ -418,7 +424,7 @@ module KMIR-MEMORY-IMPL [private]
 
   // NOTE: an infinite descent of only deref chains cannot exist because:
   //       any self-referential type has to be mediated by a struct which wraps a pointer
-  rule #prj( projectionElemDeref,                    Ptr( Next, Meta ) ) => #loadPtr(Next, Meta)
+  rule #prj( projectionElemDeref,                    Ptr( Next, Val  ) ) => #loadPtr(Next, Val)
   rule #prj( projectionElemField(fieldIdx(I), _),    Struct( _, Flds ) ) => #loadField(I, Flds)
   rule #prj( projectionElemIndex(Idx),               Range( Mem )      ) => #loadIndex(#loadLocal(Idx), Mem)
   rule #prj( projectionElemConstantIndex(Off, _, _), Range( Mem )      ) => #loadIndex(#getInt(Off), Mem)
