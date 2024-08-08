@@ -95,9 +95,6 @@ We need to always have rules of form (a). This transformation has not happened y
 
 - The symbols for the lists should  be list_sort::append, list_sort::empty, e.g. `Statements::append`, `Statements::empty`.
 
-## Issues to be addressed for usability
-1. It seems possible to change the parser to require a Sort instead of a symbol as an input.
-
 ## Not yet handled
 1. Special case parsing
 We decided to not use the parser to do json processing, but to preprocess the json (or make changes at the Rust level) instead. Therefore, cases that will need to be handled include:
