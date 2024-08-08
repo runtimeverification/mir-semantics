@@ -1,4 +1,3 @@
-statement(statementKindStorageLive(local(2)), span(2))
 statement
 (
   statementKindAssign
@@ -13,4 +12,3 @@ statement
   ),
   span(6)
 )
-statement(statementKindStorageDead(local(3)), span(2))
