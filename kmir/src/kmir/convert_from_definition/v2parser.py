@@ -56,6 +56,10 @@ def _extract_mir_group_info(group_info: str) -> tuple[str, Sequence[str]]:
     return (tokens[0], field_names)
 
 
+def _has_named_fields(group_info: str) -> bool:
+    return '---' in group_info
+
+
 def _is_mir_terminal(prod: KProduction) -> bool:
     return _is_mir_production(prod) and len(prod.items) == 1 and isinstance(prod.items[0], KTerminal)
 
@@ -188,7 +192,8 @@ class Parser:
             assert isinstance(json_value, JSON)
             prod = self._mir_production_for_symbol(sort, symbol)
             assert prod in self._mir_non_terminals
-            if not (isinstance(json_value, dict) or isinstance(json_value, Sequence)):
+            if not _has_named_fields(_get_group(prod)) and len(prod.argument_sorts) == 1:
+                assert not isinstance(json_value, Sequence)
                 json_value = [json_value]
             return self._parse_mir_nonterminal_json(json_value, prod)
         else:

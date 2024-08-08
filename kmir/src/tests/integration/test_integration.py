@@ -32,6 +32,8 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'statements',
     SCHEMA_PARSE_DATA / 'basicblock1',
     SCHEMA_PARSE_DATA / 'basicblock2',
+    SCHEMA_PARSE_DATA / 'place',
+    SCHEMA_PARSE_DATA / 'operand',
 ]
 
 
