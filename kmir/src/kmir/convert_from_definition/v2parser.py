@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 # Expected json
 JSON = dict | str | int | bool | Sequence | None
-ParseResult = tuple[KApply, KSort] | None
+ParseResult = tuple[KApply | KToken, KSort] | None
 
 
 # Return true if a production has been annotated with a mir* group
@@ -339,6 +339,9 @@ class Parser:
         assert isinstance(json, str)
         sort = prod.sort
         symbol = _get_label(prod)
+        # Special handling of MIRString: return the string token instead.
+        if symbol == 'MIRString::String':
+            return KToken('\"' + json + '\"', KSort('String')), KSort('String')
         # Apply the production to the generated string token
         return KApply(symbol, (KToken('\"' + json + '\"', KSort('String')))), sort
 
@@ -348,6 +351,9 @@ class Parser:
         assert isinstance(json, int)
         sort = prod.sort
         symbol = _get_label(prod)
+        # Special handling of MIRInt: return the int token instead.
+        if symbol == 'MIRInt::Int':
+            return KToken(str(json), KSort('Int')), KSort('Int')
         # Apply the production to the generated int token
         return KApply(symbol, (KToken(str(json), KSort('Int')))), sort
 
@@ -357,6 +363,9 @@ class Parser:
         assert isinstance(json, bool)
         sort = prod.sort
         symbol = _get_label(prod)
+        # Special handling of MIRBool: return the bool token instead.
+        if symbol == 'MIRBool::Bool':
+            return KToken(str(json), KSort('Bool')), KSort('Bool')
         # Apply the production to the generated bool token
         return KApply(symbol, (KToken(str(json), KSort('Bool')))), sort
 
