@@ -33,11 +33,8 @@ module TYPES
   imports STRING
 
 syntax MIRInt ::= mirInt(Int)          [group(mir-int), symbol(MIRInt::Int)]
-                //| Int
 syntax MIRBool ::= mirBool(Bool)       [group(mir-bool), symbol(MIRBool::Bool)]
-                //| Bool
 syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
-                   //| String
 
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
