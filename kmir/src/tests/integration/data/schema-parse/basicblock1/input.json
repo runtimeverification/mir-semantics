@@ -1,0 +1,1 @@
+{"statements":[{"kind":{"StorageLive":1},"span":2},{"kind":{"StorageLive":2},"span":2},{"kind":{"StorageDead":3},"span":2}], "terminator":{"kind":"Return","span":2}}

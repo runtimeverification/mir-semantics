@@ -1,0 +1,1 @@
+basicBlock(statement(statementKindStorageLive(local(1)), span(2)) statement(statementKindStorageLive(local(2)), span(2)) statement(statementKindStorageDead(local(3)), span(2)), terminator(terminatorKindReturn,span(2)))
