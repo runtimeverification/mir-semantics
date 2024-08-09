@@ -42,7 +42,7 @@ syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::Str
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
 
-syntax AdtDef ::= adtDef(Int) // imported from crate
+syntax AdtDef ::= adtDef(Int)             [group(mir-int)] // imported from crate
 syntax AliasDef ::= aliasDef(Int) // imported from crate
 syntax BrNamedDef ::= brNamedDef(Int) // imported from crate
 syntax ClosureDef ::= closureDef(Int) // imported from crate
@@ -58,7 +58,7 @@ syntax ParamDef ::= paramDef(Int) // imported from crate
 syntax RegionDef ::= regionDef(Int) // imported from crate
 syntax TraitDef ::= traitDef(Int) // imported from crate
 
-syntax VariantIdx ::= variantIdx(Int) [symbol(variantIdx)]
+syntax VariantIdx ::= variantIdx(Int) [group(mir-int)]
 
 syntax DynKind ::= "dynKindDyn"      [group(mir-enum), symbol(DynKind::Dyn)]
                  | "dynKindDynStar"  [group(mir-enum), symbol(DynKind::DynStar)]
@@ -80,7 +80,7 @@ syntax FieldDef ::= fieldDef(def: DefId, name: Symbol)
 syntax GenericArgKind ::= genericArgKindLifetime(Region)
                         | genericArgKindType(Ty)
                         | genericArgKindConst(TyConst)
-syntax GenericArgs ::= List {GenericArgKind, ""} [symbol(genericArgs), terminator-symbol(.genericArgs)]
+syntax GenericArgs ::= List {GenericArgKind, ""} [group(mir-list), symbol(GenericArgs::append), terminator-symbol(GenericArgs::empty)]
 
 syntax TermKind ::= termKindType(Ty)
                   | termKindConst(TyConst)

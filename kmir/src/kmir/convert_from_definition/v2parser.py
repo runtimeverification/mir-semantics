@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from pyk.kast.outer import KDefinition, KProduction
 
 
-JSON = dict | str | int | bool | Sequence
+JSON = dict | str | int | bool | Sequence | None
 ParseResult = tuple[KApply, KSort] | None
 
 

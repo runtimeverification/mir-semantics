@@ -38,6 +38,7 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'rvalueaggregate',
     SCHEMA_PARSE_DATA / 'statementassign1',
     SCHEMA_PARSE_DATA / 'statementassign2',
+    SCHEMA_PARSE_DATA / 'aggregatekindadt',
 ]
 
 
