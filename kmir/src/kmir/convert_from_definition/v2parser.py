@@ -113,16 +113,6 @@ def _element_sort(sort: KSort) -> KSort:
     return KSort(name[:-1])
 
 
-# Aimed to include way to determine element sorts of K Lists in case they
-# are used as part of non terminal productions. It could use mappings from
-# the production and the argument position to an intended element sort.
-# E.g., { 'Rvalue::Struct', 1 -> Value }
-def _find_element_sort(symbol: str, pos: int) -> KSort:
-    name = {('testSort1', 1): 'MIRInt'}.get((symbol, pos))
-    assert name is not None
-    return KSort(name)
-
-
 class Parser:
     __definition: KDefinition
 
@@ -240,15 +230,7 @@ class Parser:
                 arg_json = json[arg_count]
                 arg_count += 1
             assert isinstance(arg_json, JSON)
-            arg_parse_result = None
-            if arg_sort.name == 'List':
-                # There needs to be a way to identify the element sort here.
-                # This is the purpose of this function, but the details may
-                # change.
-                element_sort = _find_element_sort(symbol, arg_count - 1)
-                arg_parse_result = self._parse_mir_klist_json(arg_json, element_sort)
-            else:
-                arg_parse_result = self._parse_mir_json(arg_json, arg_sort)
+            arg_parse_result = self._parse_mir_json(arg_json, arg_sort)
             assert isinstance(arg_parse_result, tuple)
             arg_kapply, arg_ksort = arg_parse_result
             assert arg_kapply
