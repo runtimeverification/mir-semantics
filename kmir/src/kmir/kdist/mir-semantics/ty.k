@@ -31,6 +31,10 @@ module TYPES
   imports TYPES-SORTS
   imports INT
   imports STRING
+  imports LIST
+
+syntax TestSort2 ::= testSort2(MIRInt, MyList)     [group(mir), symbol(testSort2)]
+syntax MyList ::= List [group(mir-klist-MIRInt)]
 
 syntax MIRInt ::= mirInt(Int)          [group(mir-int), symbol(MIRInt::Int)]
                 | Int

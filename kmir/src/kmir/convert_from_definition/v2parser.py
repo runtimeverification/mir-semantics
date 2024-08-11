@@ -168,6 +168,9 @@ class Parser:
                     return self._parse_mir_nonterminal_json(json, prod)
             case 'mir-enum':
                 return self._parse_mir_enum_json(json, sort)
+            case s if s.startswith('mir-klist'):
+                element_sort_name = s.split('-')[-1]
+                return self._parse_mir_klist_json(json, KSort(element_sort_name))
             case 'mir-list':
                 return self._parse_mir_list_json(json, sort)
             case 'mir-option' | 'mir-option-string' | 'mir-option-int' | 'mir-option-bool':
@@ -282,6 +285,28 @@ class Parser:
             assert isinstance(element_parse_result, tuple)
             element_kapply, _ = element_parse_result
             list_kapply = KApply(append_symbol, (element_kapply, list_kapply))
+        return list_kapply, sort
+
+    # Parser's internal method,
+    # Parse the provided json as a K list using expected Sort sort for the list elements.
+    def _parse_mir_klist_json(self, json: JSON, sort: KSort) -> ParseResult:
+        assert isinstance(json, Sequence)
+        append_symbol = '_List_'
+        empty_symbol = '.List'
+        list_item_symbol = 'ListItem'
+        list_kapply = KApply(empty_symbol, ())
+        first_iter = True
+        for element in json:
+            assert isinstance(element, JSON)
+            element_parse_result = self._parse_mir_json(element, sort)
+            assert isinstance(element_parse_result, tuple)
+            element_kapply, _ = element_parse_result
+            element_list_item = KApply(list_item_symbol, (element_kapply))
+            if first_iter:
+                list_kapply = element_list_item
+                first_iter = False
+            else:
+                list_kapply = KApply(append_symbol, (list_kapply, element_list_item))
         return list_kapply, sort
 
     # Parser's internal method,

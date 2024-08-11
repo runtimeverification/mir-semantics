@@ -40,6 +40,7 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'statementassign2',
     SCHEMA_PARSE_DATA / 'aggregatekindadt',
     SCHEMA_PARSE_DATA / 'body',
+    SCHEMA_PARSE_DATA / 'testsort2',
 ]
 
 

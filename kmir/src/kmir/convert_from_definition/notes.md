@@ -32,6 +32,13 @@ syntax L ::= List {E, ""} [group(mir-list), ...]
 json: a homogeneous list, e.g. `[e1, e2, e3, ...]`
 Note that all elements of the json list `(e1, e2, e3)` should correspond to syntactic productions for the sort E.
 
+#### mir-klist-ElementSort
+```
+syntax KL ::= List [group(mir-klist-ElementSort), ...]
+```
+json: a homogeneous list, e.g. `[e1, e2, e3, ...]`
+Note that all elements of the json list `(e1, e2, e3)` should correspond to syntactic productions for the sort expected for the list KL, ElementSort.
+
 #### mir-enum
 ```
 syntax MyEnum ::= myEnumField1(...) [group(mir-enum), ...]
@@ -64,6 +71,12 @@ mirBool(B) => B
 mirString(S) => S
 ```
 Note: This transformation should have happened already. If a place has been missed, where a `Sort` has not been replaced with `MIRsort`, this should be trasformed. Also, this should happen for any other primitive sorts.
+
+- Similarly, productions should not directly include the List sort. They should instead use a different sort in its place, and then annotate the corresponding production with mir-klist-{ElementSort of the List}, e.g.,
+```
+syntax A ::= a(B, MyList) [group(mir)]
+syntax MyList ::= List [group(mir-klist-MIRInt)]
+```
 
 - There are productions that correspond to enumerations
 
