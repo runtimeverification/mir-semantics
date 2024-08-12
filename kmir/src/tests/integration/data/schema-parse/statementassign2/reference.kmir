@@ -1,0 +1,13 @@
+statement
+(
+  statementKindAssign
+  (
+    place(local(6), ),
+    rvalueAggregate
+    (
+      aggregateKindTuple,
+      operandCopy(place(local(3), )) operandCopy(place(local(5), ))
+    )
+  ),
+  span(9)
+)

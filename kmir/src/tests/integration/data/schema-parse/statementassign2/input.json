@@ -1,0 +1,1 @@
+{"kind":{"Assign":[{"local":6,"projection":[]},{"Aggregate":["Tuple",[{"Copy":{"local":3,"projection":[]}},{"Copy":{"local":5,"projection":[]}}]]}]},"span":9}

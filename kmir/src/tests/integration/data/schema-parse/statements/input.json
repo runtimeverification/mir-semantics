@@ -1,0 +1,5 @@
+[
+  {"kind":{"StorageLive":2},"span":2},
+  {"kind":{"Assign":[{"local":3,"projection":[]},{"Cast":["IntToInt",{"Move":{"local":4,"projection":[]}},2]}]},"span":6},
+  {"kind":{"StorageDead":3},"span":2}
+]

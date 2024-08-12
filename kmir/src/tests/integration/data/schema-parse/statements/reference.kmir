@@ -1,0 +1,16 @@
+statement(statementKindStorageLive(local(2)), span(2))
+statement
+(
+  statementKindAssign
+  (
+    place(local(3), ),
+    rvalueCast
+    (
+      castKindIntToInt,
+      operandMove(place(local(4), )),
+      ty(2)
+    )
+  ),
+  span(6)
+)
+statement(statementKindStorageDead(local(3)), span(2))

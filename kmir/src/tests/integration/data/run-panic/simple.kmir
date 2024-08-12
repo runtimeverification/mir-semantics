@@ -15,7 +15,7 @@
         )
         ,
         localDecl(ty(0), span(0), mutabilityMut),
-        mirInt(0),
+        0,
         noVarDebug,
         noLocal,
         span(0)
@@ -25,7 +25,7 @@
           emptyBlock,
           terminator(terminatorKindUnreachable, span(3))),
         localDecl(ty(0), span(0), mutabilityMut),
-        mirInt(0),
+        0,
         noVarDebug,
         noLocal,
         span(0)
