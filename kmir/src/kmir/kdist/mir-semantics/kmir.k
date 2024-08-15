@@ -1,4 +1,5 @@
 requires "kmir-ast.k"
+requires "utils.k"
 
 module KMIR-SYNTAX
   imports KMIR-AST
@@ -26,6 +27,7 @@ module KMIR-MEMORY
   imports KMIR-SYNTAX
   imports LIST
   imports MAP
+  imports UTILS
 
   syntax Value
 
