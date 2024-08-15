@@ -193,7 +193,7 @@ module KMIR-MEMORY-IMPL [private]
   syntax MaybeValue ::= Value
                       | "NoValue"
 
-  syntax Value ::= Scalar( Int, Int, Bool )              // value, bit-width, signedness   for bool, un/signed int
+  syntax Value ::= Scalar( Int, Int, Bool )            // value, bit-width, signedness   for bool, un/signed int
                  | Float( Float, Int )                   // value, bit-width               for f16-f128
                  | Ptr( Address, MaybeValue )            // address, metadata              for ref/ptr
                  | Range( List )                         // homogenous values              for array/slice
@@ -275,22 +275,36 @@ module KMIR-MEMORY-IMPL [private]
   // Eval Impl
 
   rule <k> #deinitPlace( _PLACE ) => .K ... </k>
+  
+  // Intentionally commented out for now as Unchecked are undefined behaviour
+  // rule #evalOp( binOpAddUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 +Int N2, WIDTH, SIGN ))
+  // rule #evalOp( binOpSubUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 -Int N2, WIDTH, SIGN ))
+  // rule #evalOp( binOpMulUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 *Int N2, WIDTH, SIGN ))
+  // rule #evalOp( binOpShlUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 <<Int N2, WIDTH, SIGN ))
+  // rule #evalOp( binOpShrUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 >>Int N2, WIDTH, SIGN ))
 
-  rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
-  rule #evalOp( binOpAddUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 +Int N2, WIDTH, SIGN ))
-  rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 -Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
-  rule #evalOp( binOpSubUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 -Int N2, WIDTH, SIGN ))
-  rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 *Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
-  rule #evalOp( binOpMulUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 *Int N2, WIDTH, SIGN ))
+  // In range NOTE: Can I assume 0 <= N1 and 0 <= N2? Are N1 and N2 well formed?
+  rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires 0 <=Int N1 +Int N2 andBool N1 +Int N2 <=Int #width_max(WIDTH, SIGN)
+  rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 -Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires 0 <=Int N1 -Int N2 andBool N1 -Int N2 <=Int #width_max(WIDTH, SIGN)
+  rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 *Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires 0 <=Int N1 *Int N2 andBool N1 *Int N2 <=Int #width_max(WIDTH, SIGN)
+
+  // Unsigned and overflow
+  rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 +Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 +Int N2
+  rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 -Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 -Int N2
+  rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 *Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 *Int N2
+  
+  // Signed and overflow / underflow
+  rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 +Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 +Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 +Int N2
+  rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 -Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 -Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 -Int N2
+  rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 *Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 *Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 *Int N2
+
   rule #evalOp( binOpDiv,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 /Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpRem,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 %Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitXor,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 xorInt N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitAnd,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 &Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitOr,        ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 |Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 <<Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
-  rule #evalOp( binOpShlUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 <<Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 >>Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, false )) ))
-  rule #evalOp( binOpShrUnchecked, ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 >>Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpEq,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
   rule #evalOp( binOpLt,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
   rule #evalOp( binOpLe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
