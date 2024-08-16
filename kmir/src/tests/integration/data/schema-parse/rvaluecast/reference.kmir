@@ -1,0 +1,6 @@
+rvalueCast
+(
+  castKindIntToInt,
+  operandMove(place(local(4), )),
+  ty(2)
+)

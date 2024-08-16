@@ -1,0 +1,13 @@
+body
+(
+  basicBlock
+  (
+    ,
+    terminator(terminatorKindReturn, span(3))
+  ),
+  localDecl(ty(3), span(12), mutabilityMut),
+  0,
+  ,
+  noLocal,
+  span(17)
+)
