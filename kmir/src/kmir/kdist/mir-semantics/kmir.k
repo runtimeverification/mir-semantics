@@ -315,14 +315,26 @@ module KMIR-MEMORY-IMPL [private]
   rule #evalOp( binOpBitXor,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 xorInt N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitAnd,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 &Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitOr,        ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 |Int N2, WIDTH, SIGN ))
-  rule #evalOp( binOpEq,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpLt,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpLe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpNe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpGe,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpGt,           ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpCmp,          ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
-  rule #evalOp( binOpOffset,       ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
+  
+  rule #evalOp( binOpEq,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  ==Int N2
+  rule #evalOp( binOpLt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1   <Int N2
+  rule #evalOp( binOpLe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  <=Int N2
+  rule #evalOp( binOpNe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1 =/=Int N2
+  rule #evalOp( binOpGe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  >=Int N2
+  rule #evalOp( binOpGt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1   >Int N2
+  
+  rule #evalOp( binOpEq,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpLt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpLe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpNe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpGe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpGt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+
+  rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar( 0, 8, true) ) requires N1 ==Int N2
+  rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(-1, 8, true) ) requires N1  <Int N2
+  rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar( 1, 8, true) ) requires N1  >Int N2
+
+  rule #evalOp( binOpOffset,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1 Int N2
 
   rule #evalOp( unOpNot,           ListItem(Scalar(N, WIDTH, SIGN))) => #value( Scalar( #if WIDTH ==Int 1 andBool SIGN ==Bool false #then #boolToInt(notBool (N =/=Int 0)) #else (~Int N) #fi, WIDTH, SIGN) )
   rule #evalOp( unOpNeg,           ListItem(Scalar(N, WIDTH, true))) => #value( Scalar( N *Int -1, WIDTH, true ) )
