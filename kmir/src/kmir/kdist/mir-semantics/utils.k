@@ -2,14 +2,15 @@ module UTILS-SYNTAX
     imports INT-SYNTAX
     imports BOOL-SYNTAX
 
-    syntax Int ::= "#width_max" "(" Int "," Bool ")"       [function] // params: width, signed. Calculates maximum number for the width.
-    syntax Int ::= "#width_min" "(" Int "," Bool ")"       [function] // params: width, signed. Calculates minimum number for the width.
+    syntax Int ::= "#width_max" "(" Int "," Bool ")"    [function] // params: width, signed. Calculates maximum number for the width.
+    syntax Int ::= "#width_min" "(" Int "," Bool ")"    [function] // params: width, signed. Calculates minimum number for the width.
     syntax Int ::= "#chop" "(" Int "," Int "," Bool ")" [function] // params: number, width, signed. Wraps a number into it's bound.
 endmodule
 
 module UTILS
     imports UTILS-SYNTAX
     imports INT
+    imports MINT
     imports BOOL
 
     // Unsigned
@@ -40,7 +41,11 @@ module UTILS
     rule #width_min(64,  true) => -9223372036854775808                     // -2^(64-1)
     rule #width_min(128, true) => -170141183460469231731687303715884105728 // -2^(128-1)
     
-    rule #chop(NUM, WIDTH, false) => NUM %Int #width_max(WIDTH, false)
-    rule #chop(NUM, WIDTH, true)  => NUM %Int #width_max(WIDTH, true) requires 0 <=Int NUM 
-    rule #chop(NUM, WIDTH, true)  => NUM %Int #width_min(WIDTH, true) requires NUM <Int 0 
+    // Unsigned
+    rule #chop(NUM, WIDTH, false) => NUM %Int (#width_max(WIDTH, false) +Int 1) requires 0 <=Int NUM
+
+    // Signed 
+    rule #chop(NUM, WIDTH, true) => 
+        (-1 *Int (NUM &Int (1 <<Int (WIDTH -Int 1)))) // Negate value of MSB
+        |Int (NUM &Int ((1 <<Int (WIDTH)) -Int 1)) // Bitmask all lower bits in
 endmodule
