@@ -61,7 +61,7 @@ endmodule
 // 6. #copy
 //
 // TODO: fixup incorrect function implementations
-// 1. #evalOp
+// 1. #evalOp - Pointers
 // 2. #evalCast
 // 3. #makeTLRef
 
@@ -287,35 +287,31 @@ module KMIR-MEMORY-IMPL [private]
   rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 +Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires #width_min(WIDTH, SIGN) <=Int N1 +Int N2 andBool N1 +Int N2 <=Int #width_max(WIDTH, SIGN)
   rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 -Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires #width_min(WIDTH, SIGN) <=Int N1 -Int N2 andBool N1 -Int N2 <=Int #width_max(WIDTH, SIGN)
   rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Struct( 0, ListItem(Scalar( N1 *Int N2, WIDTH, SIGN )) ListItem(Scalar( 0, 1, SIGN )) )) requires #width_min(WIDTH, SIGN) <=Int N1 *Int N2 andBool N1 *Int N2 <=Int #width_max(WIDTH, SIGN)
+  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires 0 <=Int WIDTH2 orBool WIDTH2 <Int WIDTH1
+  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires 0 <=Int WIDTH2 orBool WIDTH2 <Int WIDTH1
+  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires WIDTH2 <Int WIDTH1
+  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires WIDTH2 <Int WIDTH1
 
   // Unsigned and overflow
   rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 +Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 +Int N2
   rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 -Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 -Int N2
   rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, false)) ListItem(Scalar(N2, WIDTH, false)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 *Int N2, WIDTH, false), WIDTH, false )) ListItem(Scalar( 1, 1, false )) )) requires #width_max(WIDTH, false) <Int N1 *Int N2
+  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) requires WIDTH1 <=Int WIDTH2
+  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) requires WIDTH1 <=Int WIDTH2
   
   // Signed and overflow / underflow
   rule #evalOp( binOpAdd,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 +Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 +Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 +Int N2
   rule #evalOp( binOpSub,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 -Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 -Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 -Int N2
   rule #evalOp( binOpMul,          ListItem(Scalar(N1, WIDTH, true)) ListItem(Scalar(N2, WIDTH, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 *Int N2, WIDTH, true), WIDTH, true )) ListItem(Scalar( 1, 1, true )) )) requires N1 *Int N2 <Int #width_min(WIDTH, true) andBool #width_max(WIDTH, true) <Int N1 *Int N2
-  
-  // Signed no-overflow
-  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires 0 <=Int WIDTH2 orBool WIDTH2 <Int WIDTH1
-  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires 0 <=Int WIDTH2 orBool WIDTH2 <Int WIDTH1
-  // Signed overflow
   rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) [owise]
   rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) [owise]
   
-  // Unsigned no-overflow
-  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires WIDTH2 <Int WIDTH1
-  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 0, 1, false )) )) requires WIDTH2 <Int WIDTH1
-  // Unsigned overflow
-  rule #evalOp( binOpShl,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 <<Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) requires WIDTH1 <=Int WIDTH2
-  rule #evalOp( binOpShr,          ListItem(Scalar(N1, WIDTH1, true)) ListItem(Scalar(N2, WIDTH2, true)) ) => #value(Struct( 0, ListItem(Scalar( #chop(N1 >>Int N2, WIDTH1, true), WIDTH2, true )) ListItem(Scalar( 1, 1, false )) )) requires WIDTH1 <=Int WIDTH2
-
+  // Bitwise (not shifts)
   rule #evalOp( binOpBitXor,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 xorInt N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitAnd,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 &Int N2, WIDTH, SIGN ))
   rule #evalOp( binOpBitOr,        ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value(Scalar( N1 |Int N2, WIDTH, SIGN ))
-  
+
+  // Comparison operations
   rule #evalOp( binOpEq,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  ==Int N2
   rule #evalOp( binOpLt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1   <Int N2
   rule #evalOp( binOpLe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  <=Int N2
@@ -323,18 +319,19 @@ module KMIR-MEMORY-IMPL [private]
   rule #evalOp( binOpGe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1  >=Int N2
   rule #evalOp( binOpGt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1   >Int N2
   
-  rule #evalOp( binOpEq,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
-  rule #evalOp( binOpLt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
-  rule #evalOp( binOpLe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
-  rule #evalOp( binOpNe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
-  rule #evalOp( binOpGe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
-  rule #evalOp( binOpGt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) [owise]
+  rule #evalOp( binOpEq,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1 =/=Int N2
+  rule #evalOp( binOpLt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1  >=Int N2
+  rule #evalOp( binOpLe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1   >Int N2
+  rule #evalOp( binOpNe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1  ==Int N2
+  rule #evalOp( binOpGe,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1   <Int N2
+  rule #evalOp( binOpGt,           ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(0, 1, false) ) requires N1  <=Int N2
 
   rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar( 0, 8, true) ) requires N1 ==Int N2
   rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(-1, 8, true) ) requires N1  <Int N2
   rule #evalOp( binOpCmp,          ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar( 1, 8, true) ) requires N1  >Int N2
 
-  rule #evalOp( binOpOffset,       ListItem(Scalar(N1, WIDTH, SIGN)) ListItem(Scalar(N2, WIDTH, SIGN)) ) => #value( Scalar(1, 1, false) ) requires N1 Int N2
+  // TODO
+  rule #evalOp( binOpOffset,       ListItem(_Arg1) ListItem(_Arg2) ) => #value( Any )
 
   rule #evalOp( unOpNot,           ListItem(Scalar(N, WIDTH, SIGN))) => #value( Scalar( #if WIDTH ==Int 1 andBool SIGN ==Bool false #then #boolToInt(notBool (N =/=Int 0)) #else (~Int N) #fi, WIDTH, SIGN) )
   rule #evalOp( unOpNeg,           ListItem(Scalar(N, WIDTH, true))) => #value( Scalar( N *Int -1, WIDTH, true ) )
