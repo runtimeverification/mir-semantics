@@ -10,7 +10,6 @@ endmodule
 module UTILS
     imports UTILS-SYNTAX
     imports INT
-    imports MINT
     imports BOOL
 
     // Unsigned
