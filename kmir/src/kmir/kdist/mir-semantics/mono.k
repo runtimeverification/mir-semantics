@@ -1,3 +1,7 @@
+requires "body.k"
+requires "lib.k"
+requires "ty.k"
+
 module MONO-SORTS
 
 syntax Instance

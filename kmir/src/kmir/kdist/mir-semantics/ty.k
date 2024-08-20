@@ -1,3 +1,8 @@
+requires "alloc.k"
+requires "body.k"
+requires "lib.k"
+requires "mono.k"
+
 module TYPES-SORTS
 
 syntax AdtDef

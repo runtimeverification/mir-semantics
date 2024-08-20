@@ -1,3 +1,6 @@
+requires "lib.k"
+requires "ty.k"
+
 module BODY-SORTS
 
 syntax Body

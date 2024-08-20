@@ -1,3 +1,6 @@
+requires "body.k"
+requires "ty.k"
+
 module LIB-SORTS
 
 syntax CrateItem

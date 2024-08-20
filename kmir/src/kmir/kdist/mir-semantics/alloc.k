@@ -1,3 +1,6 @@
+requires "ty.k"
+requires "mono.k"
+
 module ALLOC-SORTS
 
 syntax AllocId
