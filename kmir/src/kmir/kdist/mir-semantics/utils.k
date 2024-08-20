@@ -45,7 +45,13 @@ module UTILS
     rule #chop(NUM, WIDTH, false) => NUM %Int (#width_max(WIDTH, false) +Int 1) requires 0 <=Int NUM
 
     // Signed 
-    rule #chop(NUM, WIDTH, true) => 
-        (-1 *Int (NUM &Int (1 <<Int (WIDTH -Int 1)))) // Negate value of MSB
-        |Int (NUM &Int ((1 <<Int (WIDTH)) -Int 1)) // Bitmask all lower bits in
+    rule #chop(NUM, WIDTH, true) => // chopped number stays positive if in range
+        NUM &Int #width_max(WIDTH, false)
+      requires
+        NUM &Int #width_max(WIDTH, false) <Int width_max(WIDTH, true)
+
+    rule #chop(NUM, WIDTH, true) => // chopped number wraps around if too large for signed WIDTH
+        (NUM &Int #width_max(WIDTH, false)) -Int (#width_max(WIDTH, false) +Int 1)
+      requires
+        NUM &Int #width_max(WIDTH, false) >=Int width_max(WIDTH, true)
 endmodule
