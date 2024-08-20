@@ -18,12 +18,21 @@ syntax BinderForExistentialTraitRef ::= binderForExistentialTraitRef(value: Exis
 syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(BinderForExistentialTraitRef)
                                            | "noBinderForExistentialTraitRef"
 syntax GlobalAlloc ::= globalAllocFunction(Instance)
+                         [group(mir-enum)]
                      | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
-                     | globalAllocStatic(StaticDef) [symbol(globalAllocStatic)]
-                     | globalAllocMemory(Allocation) [symbol(globalAllocMemory)]
+                         [group(mir-enum)]
+                     | Static(StaticDef)
+                         [symbol(globalAllocStatic), group(mir-enum)]
+                     | Memory(Allocation)
+                         [symbol(globalAllocMemory), group(mir-enum)]
 
-syntax GlobalAllocEntry ::= globalAllocEntry(MIRInt, GlobalAlloc) [symbol(globalAllocEntry)]
-syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""} [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap)]
+syntax GlobalAllocEntry ::= globalAllocEntry(MIRInt, GlobalAlloc)
+         [symbol(globalAllocEntry), group(mir)]
+syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""}
+         [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap), group(mir-list)]
+
+////////////////////////////// unused for parsing?
+
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 
 endmodule
