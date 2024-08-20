@@ -47,10 +47,10 @@ module UTILS
     rule #chop(NUM, WIDTH, true) => // chopped number stays positive if in range
         NUM &Int #width_max(WIDTH, false)
       requires
-        NUM &Int #width_max(WIDTH, false) <Int width_max(WIDTH, true)
+        NUM &Int #width_max(WIDTH, false) <Int #width_max(WIDTH, true)
 
     rule #chop(NUM, WIDTH, true) => // chopped number wraps around if too large for signed WIDTH
         (NUM &Int #width_max(WIDTH, false)) -Int (#width_max(WIDTH, false) +Int 1)
       requires
-        NUM &Int #width_max(WIDTH, false) >=Int width_max(WIDTH, true)
+        NUM &Int #width_max(WIDTH, false) >=Int #width_max(WIDTH, true)
 endmodule
