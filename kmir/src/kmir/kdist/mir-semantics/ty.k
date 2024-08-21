@@ -151,8 +151,8 @@ syntax TyConst ::= tyConst(kind: TyConstKind, id: TyConstId)
 syntax TyConstId ::= tyConstId(Int)
 syntax MaybeTyConst ::= someTyConst(TyConst) | "noTyConst"
 
-syntax MirConst ::= mirConst(kind: ConstantKind, ty: Ty, id: MirConstId)
-syntax MirConstId ::= mirConstId(Int)
+syntax MirConst ::= mirConst(kind: ConstantKind, ty: Ty, id: MirConstId) [group(mir---kind--ty--id)]
+syntax MirConstId ::= mirConstId(Int) [group(mir-int)]
 
 syntax TyConstKind ::= tyConstKindParam(ParamConst)
                      | tyConstKindBound(DebruijinIndex, BoundVar)
@@ -254,14 +254,14 @@ syntax Allocation ::= allocation(
                         align: Align,
                         mutability: Mutability) [symbol(allocation)]
 
-syntax ConstantKind ::= constantKindTy(TyConst)
-                      | constantKindAllocated(Allocation)
-                      | constantKindUnevaluated(UnevaluatedConst)
-                      | constantKindParam(ParamConst)
-                      | "constantKindZeroSized"
-                      | "constantKindNoOp" [symbol(constantKindNoOp)]
-                      | constantKindFnDef(id: Int) [symbol(constantKindFnDef)]
-                      | constantKindIntrinsic(name: Symbol) [symbol(constantKindIntrinsic)]
+syntax ConstantKind ::= constantKindTy(TyConst)                   [group(mir-enum), symbol(ConstantKind::Ty)]
+                      | constantKindAllocated(Allocation)         [group(mir-enum), symbol(ConstantKind::Allocation)]
+                      | constantKindUnevaluated(UnevaluatedConst) [group(mir-enum), symbol(ConstantKind::Unevaluated)]
+                      | constantKindParam(ParamConst)             [group(mir-enum), symbol(ConstantKind::Param)]
+                      | "constantKindZeroSized"                   [group(mir-enum), symbol(ConstantKind::ZeroSized)]
+                      | "constantKindNoOp"                        [group(mir-enum), symbol(ConstantKind::NoOp)]
+                      | constantKindFnDef(id: Int)                [group(mir-enum), symbol(ConstantKind::FnDef)]
+                      | constantKindIntrinsic(name: Symbol)       [group(mir-enum), symbol(ConstantKind::Intrinsic)]
 
 syntax ParamConst ::= paramConst(index: MIRInt, name: MIRString)
 

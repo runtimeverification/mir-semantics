@@ -270,7 +270,7 @@ syntax ConstOperand ::= constOperand(span: Span, userTy: MaybeUserTypeAnnotation
 syntax VarDebugInfoContents ::= varDebugInfoContentsPlace(Place)        [group(mir-enum), symbol(VarDebugInfoContents::Place)]
                               | varDebugInfoContentsConst(ConstOperand) [group(mir-enum), symbol(VarDebugInfoContents::Const)]
 
-syntax MaybeInt ::= someInt(Int) [group(mir-option)]
+syntax MaybeInt ::= someInt(Int) [group(mir-option-int)]
                   | "noInt"      [group(mir-option)]
 
 syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, composite: MaybeVarDebugInfoFragment, value: VarDebugInfoContents, argumentIndex: MaybeInt) [group(mir---name--source-info--composite--value--argument-index)]
