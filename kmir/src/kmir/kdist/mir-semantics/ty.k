@@ -241,21 +241,27 @@ syntax BoundTy ::= boundTy(var: MIRInt, kind: BoundTyKind)
 syntax Promoted ::= promoted(Int)
 syntax MaybePromoted ::= somePromoted(Promoted) | "noPromoted"
 
-syntax Align ::= align(Int) [symbol(align)]
-syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [symbol(provenanceMapEntry)]
-syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
-syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [symbol(provenanceMap)]
-syntax AllocByte ::= someByte(Int) [symbol(someByte)]
-                   | "noByte"      [symbol(noByte)]
-syntax AllocBytes ::= List {AllocByte, ""} [symbol(maybeBytes), terminator-symbol(.maybeBytes)]
+syntax Align ::= align(Int) [group(mir-int), symbol(align)]
+
+// FIXME provSize and allocId are in a _list_ in json
+syntax ProvenanceMapEntry ::= // provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [group(mir), symbol(provenanceMapEntry)]
+                              List [group(mir-klist-MIRInt)]
+
+syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [group(mir-list), symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
+syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [group(mir---ptrs), symbol(provenanceMap)]
+
+// FIXME why are the bytes optional? What does it mean???
+syntax AllocByte ::= someByte(Int) [group(mir-option-int), symbol(someByte)]
+                   | "noByte"      [group(mir-option), symbol(noByte)]
+syntax AllocBytes ::= List {AllocByte, ""} [group(mir-list), symbol(maybeBytes), terminator-symbol(.maybeBytes)]
 syntax Allocation ::= allocation(
                         bytes: AllocBytes,
                         provenance: ProvenanceMap,
                         align: Align,
-                        mutability: Mutability) [symbol(allocation)]
+                        mutability: Mutability) [group(mir---bytes--provenance--align--mutability), symbol(allocation)]
 
 syntax ConstantKind ::= constantKindTy(TyConst)                   [group(mir-enum), symbol(ConstantKind::Ty)]
-                      | constantKindAllocated(Allocation)         [group(mir-enum), symbol(ConstantKind::Allocation)]
+                      | constantKindAllocated(Allocation)         [group(mir-enum), symbol(ConstantKind::Allocated)]
                       | constantKindUnevaluated(UnevaluatedConst) [group(mir-enum), symbol(ConstantKind::Unevaluated)]
                       | constantKindParam(ParamConst)             [group(mir-enum), symbol(ConstantKind::Param)]
                       | "constantKindZeroSized"                   [group(mir-enum), symbol(ConstantKind::ZeroSized)]
