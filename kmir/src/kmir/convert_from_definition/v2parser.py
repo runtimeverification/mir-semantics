@@ -266,7 +266,8 @@ class Parser:
             # case, the argument needs to be changed to a list, so that its
             # structure is not cosidered a part of the current enumeration.
             if not _has_named_fields(_get_group(prod)) and len(prod.argument_sorts) == 1:
-                assert not isinstance(json_value, Sequence)
+                # str is a Sequence, therefore the extra check
+                assert isinstance(json_value, str) or not isinstance(json_value, Sequence)
                 json_value = [json_value]
             return self._parse_mir_nonterminal_json(json_value, prod)
         else:
