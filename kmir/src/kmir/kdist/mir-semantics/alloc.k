@@ -15,20 +15,24 @@ module ALLOC
   imports INT
 
 syntax BinderForExistentialTraitRef ::= binderForExistentialTraitRef(value: ExistentialTraitRef, boundVars: BoundVariableKindList)
-syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(BinderForExistentialTraitRef)
-                                           | "noBinderForExistentialTraitRef"
-syntax GlobalAlloc ::= globalAllocFunction(Instance)
-                         [group(mir-enum)]
-                     | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
-                         [group(mir-enum)]
-                     | Static(StaticDef)
-                         [symbol(globalAllocStatic), group(mir-enum)]
-                     | Memory(Allocation)
-                         [symbol(globalAllocMemory), group(mir-enum)]
+                                          [group(mir---value--bound-vars)]
 
-syntax GlobalAllocEntry ::= globalAllocEntry(MIRInt, GlobalAlloc)
+syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(BinderForExistentialTraitRef) [group(mir-option)]
+                                           | "noBinderForExistentialTraitRef"                               [group(mir-option)]
+
+syntax GlobalAllocKind ::= globalAllocFunction(Instance)
+                             [group(mir-enum), symbol(GlobalAllocKind::Function)]
+                         | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
+                             [group(mir-enum), symbol(GlobalAllocKind::VTable)]
+                         | Static(StaticDef)
+                             [group(mir-enum), symbol(GlobalAllocKind::Static)]
+                         | Memory(Allocation)
+                             [group(mir-enum), symbol(GlobalAllocKind::Memory)]
+
+syntax GlobalAlloc ::= globalAllocEntry(MIRInt, GlobalAllocKind)
          [symbol(globalAllocEntry), group(mir)]
-syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""}
+
+syntax GlobalAllocs ::= List {GlobalAlloc, ""}
          [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap), group(mir-list)]
 
 ////////////////////////////// unused for parsing?
