@@ -18,19 +18,25 @@ module MONO
 
 syntax StaticDef ::= staticDef(Int) [group(mir-int)] // imported from crate
 
-syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
-syntax MonoItem ::= monoItemFn(Instance) // do not use - parser uses the key to generate the other production
-                  | monoItemStatic(StaticDef) // do not use - parser uses the key to generate the other production
-                  | monoItemFn(name: Symbol, id: DefId, body: Bodies)
-                      [symbol(MonoItemFn), group(mir-enum)]
-                  | monoItemStatic(name: Symbol, id: DefId, allocation: MaybeAllocation)
-                      [group(mir-enum)]
-                  | monoItemGlobalAsm(Opaque)
-                      [group(mir-enum)]
-syntax MonoItemWrapper ::= monoItemWrapper(symbolName: Symbol, monoItemKind: MonoItem)
-         [symbol(monoItemWrapper), group(mir)]
-syntax MonoItems ::= List {MonoItemWrapper, ""}
-         [symbol(monoItems), terminator-symbol(.monoItems), group(mir-list)]
+syntax MaybeAllocation ::= someAllocation(Allocation) [group(mir-option)]
+                         | "noAllocation"             [group(mir-option)]
+
+syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: Bodies)
+                          [ group(mir-enum---name--id--body)
+                          , symbol(MonoItemKind::MonoItemFn)
+                          ]
+                      | monoItemStatic(name: Symbol, id: DefId, allocation: MaybeAllocation)
+                          [ group(mir-enum---name--id--allocation)
+                          , symbol(MonoItemKind::MonoItemStatic)
+                          ]
+                      | monoItemGlobalAsm(Opaque)
+                          [ group(mir-enum)
+                          , symbol(MonoItemKind::MonoItemGlobalAsm)
+                          ]
+syntax MonoItem ::= monoItem(symbolName: Symbol, monoItemKind: MonoItemKind)
+                      [symbol(monoItemWrapper), group(mir---symbol-name--mono-item-kind)]
+syntax MonoItems ::= List {MonoItem, ""}
+                      [symbol(monoItems), terminator-symbol(.monoItems), group(mir-list)]
 
 ////////////////////////////////////////// unused for parsing?
 
