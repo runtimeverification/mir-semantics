@@ -86,11 +86,11 @@ syntax VariantDef ::= variantDef(idx: VariantIdx, adtDef: AdtDef) [group(mir---i
 
 syntax FieldDef ::= fieldDef(def: DefId, name: Symbol) [group(mir---def--name)]
 
-syntax GenericArgKind ::= genericArgKindLifetime(Region) [group(mir-enum), symbol(GenericArgKind::Lifetime)]
-                        | genericArgKindType(Ty)         [group(mir-enum), symbol(GenericArgKind::Type)]
-                        | genericArgKindConst(TyConst)   [group(mir-enum), symbol(GenericArgKind::Const)]
+syntax GenericArg ::= genericArgKindLifetime(Region) [group(mir-enum), symbol(GenericArg::Lifetime)]
+                    | genericArgKindType(Ty)         [group(mir-enum), symbol(GenericArg::Type)]
+                    | genericArgKindConst(TyConst)   [group(mir-enum), symbol(GenericArg::Const)]
 
-syntax GenericArgs ::= List {GenericArgKind, ""} [group(mir-list), symbol(GenericArgs::append), terminator-symbol(GenericArgs::empty)]
+syntax GenericArgs ::= List {GenericArg, ""} [group(mir-list), symbol(GenericArgs::append), terminator-symbol(GenericArgs::empty)]
 
 syntax TermKind ::= termKindType(Ty)       [group(mir-enum), symbol(TermKind::Type)]
                   | termKindConst(TyConst) [group(mir-enum), symbol(TermKind::Const)]
@@ -143,8 +143,10 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig                                                         [group(mir)]
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(MIRInt, TyKind) [symbol(ty)]
-            | ty(Int)            [group(mir-int)]
+// the struct variant of Ty was not observed in the wild yet, commenting it out
+syntax Ty ::= // ty(MIRInt, TyKind) [group(mir-enum), symbol(Ty::ty)]
+              ty(Int)            [group(mir-int)]
+
 syntax Tys ::= List {Ty, ""}     [group(mir-list)]
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: MIRBool) [group(mir---start--end--includeEnd)]
@@ -354,7 +356,7 @@ syntax ClauseKind ::= clauseKindTrait(TraitPredicate)                   [group(m
                     | clauseKindTypeOutlives(TypeOutlivesPredicate)     [group(mir-enum), symbol(ClauseKind::TypeOutlives)]
                     | clauseKindProjection(ProjectionPredicate)         [group(mir-enum), symbol(ClauseKind::Projection)]
                     | clauseKindConstArgHasType(TyConst, Ty)            [group(mir-enum), symbol(ClauseKind::ConstArgHasType)]
-                    | clauseKindWellFormed(GenericArgKind)              [group(mir-enum), symbol(ClauseKind::WellFormed)]
+                    | clauseKindWellFormed(GenericArg)                  [group(mir-enum), symbol(ClauseKind::WellFormed)]
                     | clauseKindConstEvaluatable(TyConst)               [group(mir-enum), symbol(ClauseKind::ConstEvaluatable)]
 
 syntax TraitPredicate ::= traitPredicate(traitDef: TraitDef, polarity: PredicatePolarity) [group(mir---traitDef--polarity)]

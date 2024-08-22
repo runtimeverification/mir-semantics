@@ -130,7 +130,7 @@ syntax PointerCoercion ::= "pointerCoercionReifyFnPointer"          [group(mir-e
 
 syntax CastKind ::= "castKindPointerExposeAddress"                  [group(mir-enum), symbol(CastKind::ExposeAddress)]
                   | "castKindPointerWithExposedProvenance"          [group(mir-enum), symbol(CastKind::PointerWithExposedProvenance)]
-                  | castKindPointerCoercion(PointerCoercion)        [group(mir-enum), symbol(CastKind::PointerCoercision)]
+                  | castKindPointerCoercion(PointerCoercion)        [group(mir-enum), symbol(CastKind::PointerCoercion)]
                   | "castKindDynStar"                               [group(mir-enum), symbol(CastKind::DynStar)]
                   | "castKindIntToInt"                              [group(mir-enum), symbol(CastKind::IntToInt)]
                   | "castKindFloatToInt"                            [group(mir-enum), symbol(CastKind::FloatToInt)]
@@ -166,6 +166,7 @@ syntax AggregateKind ::= aggregateKindArray(Ty)                                 
                        | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)                                  [group(mir-enum), symbol(AggregateKind::Coroutine)]
                        | aggregateKindRawPtr(Ty, Mutability)                                                            [group(mir-enum), symbol(AggregateKind::RawPtr)]
 
+ // FIXME the arguments for some of these are _heterogenous lists_ in smir_pretty
 syntax Rvalue ::= rvalueAddressOf(Mutability, Place)                     [group(mir-enum), symbol(Rvalue::AddressOf)]
                 | rvalueAggregate(AggregateKind, Operands)               [group(mir-enum), symbol(Rvalue::Aggregate)]
                 | rvalueBinaryOp(BinOp, Operand, Operand)                [group(mir-enum), symbol(Rvalue::BinaryOp)]
