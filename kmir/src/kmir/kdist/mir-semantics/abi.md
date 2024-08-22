@@ -1,3 +1,4 @@
+```k
 module ABI
   imports LIB-SORTS
   imports TARGET-SORTS
@@ -83,3 +84,4 @@ syntax CallConvention ::= "callConventionC"
                         | "callConventionRiscvInterrupt"
 
 endmodule
+```

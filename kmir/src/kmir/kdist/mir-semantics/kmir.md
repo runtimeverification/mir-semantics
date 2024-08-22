@@ -1,4 +1,5 @@
-requires "kmir-ast.k"
+```k
+requires "kmir-ast.md"
 requires "utils.k"
 
 module KMIR-SYNTAX
@@ -811,3 +812,4 @@ module KMIR
   rule #numLocals( _:LocalDecl Rest:LocalDecls ) => 1 +Int #numLocals( Rest )
   rule #numLocals( .LocalDecls )                 => 0
 endmodule
+```

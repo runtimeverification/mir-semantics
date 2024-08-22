@@ -1,3 +1,4 @@
+```k
 module TARGET-SORTS
 
 syntax MachineSize
@@ -13,3 +14,4 @@ syntax Endian ::= "endianLittle" |  "endianBig"
 syntax MachineSize ::= machineSize(numBits: Int)
 
 endmodule
+```

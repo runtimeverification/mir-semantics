@@ -1,3 +1,4 @@
+```k
 module BODY-SORTS
 
 syntax Body
@@ -277,3 +278,4 @@ syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, 
 syntax Bodies ::= List {Body, ""} [group(mir-list), symbol(Bodies::append), terminator-symbol(Bodies::empty)]
 
 endmodule
+```

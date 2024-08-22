@@ -1,3 +1,4 @@
+```k
 module ALLOC-SORTS
 
 syntax AllocId
@@ -24,3 +25,4 @@ syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""} [symbol(globalAllocsMap),
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 
 endmodule
+```

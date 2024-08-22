@@ -1,3 +1,4 @@
+```k
 module TYPES-SORTS
 
 syntax AdtDef
@@ -326,3 +327,4 @@ syntax PredicatePolarity ::= "predicatePolarityPositive"
                            | "predicatePolarityNegative"
 
 endmodule
+```
