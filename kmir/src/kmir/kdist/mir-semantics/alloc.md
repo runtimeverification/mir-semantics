@@ -48,9 +48,7 @@ syntax GlobalAlloc ::= globalAllocEntry(MIRInt, GlobalAllocKind)
          [symbol(globalAllocEntry), group(mir)]
 
 syntax GlobalAllocs ::= List {GlobalAlloc, ""}
-         [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap), group(mir-list)]
-
-////////////////////////////// unused for parsing?
+         [symbol(GlobalAllocs::append), terminator-symbol(GlobalAllocs::empty), group(mir-list)]
 
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 

@@ -137,18 +137,17 @@ syntax BoundRegionKind ::= "boundRegionKindBrAnon"                       [group(
 syntax BoundVariableKind ::= boundVariableKindTy(BoundTyKind)            [group(mir-enum), symbol(BoundVariableKind::Ty)]
                            | boundVariableKindRegion(BoundRegionKind)    [group(mir-enum), symbol(BoundVariableKind::Region)]
                            | "boundVariableKindConst"                    [group(mir-enum), symbol(BoundVariableKind::Const)]
-syntax BoundVariableKindList ::= List {BoundVariableKind, ""} [group(mir-list)]
+syntax BoundVariableKindList ::= List {BoundVariableKind, ""}
+                                 [group(mir-list), symbol(BoundVariableKindList::append), terminator-symbol(BoundVariableKindList::empty)]
 
 syntax FnSig ::= fnSig(inputsAndOutput: Tys, cVaradic: MIRBool, unsafety: Safety, abi: Abi) [group(mir---inputsAndOutput--cVariadic--unsafety--abi)]
 syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList)    [group(mir---value--boundVars)]
 syntax PolyFnSig ::= BinderForFnSig                                                         [group(mir)]
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-// the struct variant of Ty was not observed in the wild yet, commenting it out
-syntax Ty ::= // ty(MIRInt, TyKind) [group(mir-enum), symbol(Ty::ty)]
-              ty(Int)            [group(mir-int)]
+syntax Ty ::= ty(Int)            [group(mir-int)]
 
-syntax Tys ::= List {Ty, ""}     [group(mir-list)]
+syntax Tys ::= List {Ty, ""}     [group(mir-list), symbol(Tys::append), terminator-symbol(Tys::empty)]
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: MIRBool) [group(mir---start--end--includeEnd)]
 
@@ -192,7 +191,8 @@ syntax ExistentialPredicate ::= existentialPredicateTrait(ExistentialTraitRef)  
 
 syntax ExistentialPredicateBinder ::= existentialPredicateBinder(value: ExistentialPredicate, boundVars: BoundVariableKindList)
                                          [group(mir---value--boundVars)]
-syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""} [group(mir-list)]
+syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
+                                       [group(mir-list), symbol(ExistentialPredicateBinders::append), terminator-symbol(ExistentialPredicateBinders::empty)]
 
   syntax IntTy ::= "intTyIsize"  [group(mir-enum), symbol(IntTy::Isize)]
                  | "intTyI8"     [group(mir-enum), symbol(IntTy::I8)]
@@ -259,14 +259,15 @@ syntax Align ::= align(Int) [group(mir-int), symbol(align)]
 syntax ProvenanceMapEntry ::= // provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [group(mir), symbol(provenanceMapEntry)]
                               List [group(mir-klist-MIRInt)]
 
-syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""} [group(mir-list), symbol(provenanceMapEntries), terminator-symbol(.provenanceMapEntries)]
+syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
+                                [group(mir-list), symbol(ProvenanceMapEntries::append), terminator-symbol(ProvenanceMapEntries::empty)]
 
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [group(mir---ptrs), symbol(provenanceMap)]
 
 // FIXME why are the bytes optional? What does it mean???
 syntax AllocByte ::= someByte(Int) [group(mir-option-int), symbol(someByte)]
                    | "noByte"      [group(mir-option), symbol(noByte)]
-syntax AllocBytes ::= List {AllocByte, ""} [group(mir-list), symbol(maybeBytes), terminator-symbol(.maybeBytes)]
+syntax AllocBytes ::= List {AllocByte, ""} [group(mir-list), symbol(AllocBytes::append), terminator-symbol(AllocBytes::empty)]
 syntax Allocation ::= allocation(
                         bytes: AllocBytes,
                         provenance: ProvenanceMap,
@@ -293,7 +294,7 @@ syntax TraitSpecializationKind ::= "traitSpecializationKindNone"             [gr
                                  | "traitSpecializationKindAlwaysApplicable" [group(mir-enum), symbol(TraitSpecializationKind::AlwaysApplicable)]
 
 syntax Ident ::= ident(Opaque)     [group(mir)]
-syntax Idents ::= List {Ident, ""} [group(mir-list)]
+syntax Idents ::= List {Ident, ""} [group(mir-list), symbol(Idents::append), terminator-symbol(Idents::empty)]
 syntax MaybeIdents ::= someIdents(Idents) [group(mir-option)]
                      | "noIdents"         [group(mir-option)]
 syntax TraitDecl ::= traitDecl(
@@ -319,9 +320,12 @@ syntax GenericParamDef ::= genericParamDef(name: Symbol, defId: GenericDef, inde
                            [group(mir---name--defId--index--purtWrtDrop--kind)]
 syntax MaybeGenericDef ::= someGenericDef(GenericDef)  [group(mir-option)]
                          | "noGenericDef"              [group(mir-option)]
-syntax GenericParamDefs ::= List {GenericParamDef, ""} [group(mir-list)]
-syntax GenericDefAndIdxPair ::= genericDefAndIdxPair(GenericDef, MIRInt) [group(mir)] // FIXME field names?
-syntax GenericDefAndIdxPairs ::= List {GenericDefAndIdxPair, ""}         [group(mir-list)]
+syntax GenericParamDefs ::= List {GenericParamDef, ""} [group(mir-list), symbol(GenericParamDefs::append), terminator-symbol(GenericParamDefs::empty)]
+
+syntax GenericDefAndIdxPair ::= genericDefAndIdxPair(GenericDef, MIRInt) [group(mir)]
+syntax GenericDefAndIdxPairs ::= List {GenericDefAndIdxPair, ""}
+                                 [group(mir-list), symbol(GenericDefAndIdxPairs::append), terminator-symbol(GenericDefAndIdxPairs::empty)]
+
 syntax MaybeSpan ::= someSpan(Span) [group(mir-option)]
                    | "noSpan"       [group(mir-option)]
 syntax Generics ::= generics(
@@ -339,7 +343,8 @@ syntax MaybeTraitDef ::= someTraitDef(TraitDef) [group(mir-option)]
 
 syntax PredicateKindAndSpanPair ::= predicateKindAndSpanPair(predicateKind: PredicateKind, span: Span)
                                                                          [group(mir---predicateKind--span)]
-syntax PredicateKindAndSpanPairs ::= List {PredicateKindAndSpanPair, ""} [group(mir-list)]
+syntax PredicateKindAndSpanPairs ::= List {PredicateKindAndSpanPair, ""}
+                                     [group(mir-list), symbol(PredicateKindAndSpanPairs::append), terminator-symbol(PredicateKindAndSpanPairs::empty)]
 
 syntax GenericPredicates ::= genericPredicates(parent: MaybeTraitDef, predicates: PredicateKindAndSpanPairs)
                              [group(mir---parent--predicates)]
