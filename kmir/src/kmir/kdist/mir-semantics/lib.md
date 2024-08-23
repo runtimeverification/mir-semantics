@@ -1,5 +1,6 @@
-requires "body.k"
-requires "ty.k"
+```k
+requires "body.md"
+requires "ty.md"
 
 module LIB-SORTS
 
@@ -35,3 +36,4 @@ syntax CtorKind ::= "ctorKindConst"
                   | "ctorKindFn"
 
 endmodule
+```

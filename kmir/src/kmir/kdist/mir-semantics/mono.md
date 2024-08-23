@@ -1,6 +1,7 @@
-requires "body.k"
-requires "lib.k"
-requires "ty.k"
+```k
+requires "body.md"
+requires "lib.md"
+requires "ty.md"
 
 module MONO-SORTS
 
@@ -48,3 +49,4 @@ syntax InstanceKind ::= "instanceKindItem" [symbol(instanceKindItem)]
 syntax InstanceDef ::= instanceDef(Int)
 
 endmodule
+```

@@ -1,5 +1,6 @@
-requires "lib.k"
-requires "ty.k"
+```k
+requires "lib.md"
+requires "ty.md"
 
 module BODY-SORTS
 
@@ -21,6 +22,48 @@ module BODY
   imports TYPES-SORTS
   imports INT
   imports STRING
+```
+
+#### Internal MIR
+- [DefId](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_span/src/def_id.rs#L216-L235)
+- LocalDefId - not present ?
+- Coverage - not present ?
+- [Mutability](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_ast_ir/src/lib.rs#L21-L27)
+- [Safety](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_hir/src/hir.rs#L3221-L3226)
+- BasicBlockIdx - not present
+- [Operand](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/syntax.rs#L1155-L1200)
+- [Local](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/mod.rs#L901-L909)
+- [ProjectionElem](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/syntax.rs#L1065-L1148) [PlaceElem](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/syntax.rs#L1150-L1152)
+- [Place](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/syntax.rs#L979-L1063)
+- [SwitchTargets](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/mir/syntax.rs#L877-L896)
+
+#### SMIR (Bridge)
+- [DefId](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_internal/mod.rs#L148-L150)
+- LocalDefId - not present
+- Coverage - not present
+- [Mutability](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L221-L230)
+- [Safety](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mod.rs#L14-L22)
+- BasicBlockIdx - not present
+- [Operand](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L318-L328)
+- [Local](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L394-L399)
+- [ProjectionElem](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L352-L384)
+- [Place](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L342-L350)
+- [SwitchTargets](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/mir.rs#L613-L619)
+
+#### Stable MIR
+- [DefId](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/crate_def.rs#L8-L10)
+- [LocalDefId](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L383)
+- [Coverage](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L387)
+- [Mutability](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L916-L920)
+- [Safety](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L922-L926)
+- [BasicBlockIdx](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L38)
+- [Operand](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L637-L641)
+- [Local](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L811)
+- [ProjectionElem](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L725-L802)
+- [Place](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L644-L649)
+- [SwitchTargets](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/mir/body.rs#L833-L842)
+
+```k
 
 syntax DefId ::= defId(Int)              [group(mir-int)]
 syntax LocalDefId ::= localDefId(Opaque) [group(mir)]
@@ -361,3 +404,4 @@ syntax Bodies ::= List {Body, ""}
                   [group(mir-list), symbol(Bodies::append), terminator-symbol(Bodies::empty)]
 
 endmodule
+```

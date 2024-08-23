@@ -1,7 +1,8 @@
-requires "alloc.k"
-requires "body.k"
-requires "lib.k"
-requires "mono.k"
+```k
+requires "alloc.md"
+requires "body.md"
+requires "lib.md"
+requires "mono.md"
 
 module TYPES-SORTS
 
@@ -380,3 +381,4 @@ syntax PredicatePolarity ::= "predicatePolarityPositive" [group(mir-enum), symbo
                            | "predicatePolarityNegative" [group(mir-enum), symbol(PredicatePolarity::Negative)]
 
 endmodule
+```

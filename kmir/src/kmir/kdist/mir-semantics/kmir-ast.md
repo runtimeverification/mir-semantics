@@ -1,10 +1,11 @@
-requires "abi.k"
-requires "alloc.k"
-requires "body.k"
-requires "lib.k"
-requires "mono.k"
-requires "target.k"
-requires "ty.k"
+```k
+requires "abi.md"
+requires "alloc.md"
+requires "body.md"
+requires "lib.md"
+requires "mono.md"
+requires "target.md"
+requires "ty.md"
 
 module KMIR-AST
   imports ABI
@@ -18,3 +19,4 @@ module KMIR-AST
   syntax Pgm ::= Symbol GlobalAllocs MonoItems [symbol(pgm), group(mir---name--allocs--items)]
 
 endmodule
+```
