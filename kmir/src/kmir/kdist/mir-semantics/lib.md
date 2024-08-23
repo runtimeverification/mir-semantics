@@ -1,3 +1,4 @@
+```k
 module LIB-SORTS
 
 syntax CrateItem
@@ -32,3 +33,4 @@ syntax CtorKind ::= "ctorKindConst"
                   | "ctorKindFn"
 
 endmodule
+```

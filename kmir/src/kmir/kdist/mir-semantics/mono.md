@@ -1,3 +1,4 @@
+```k
 module MONO-SORTS
 
 syntax Instance
@@ -31,3 +32,4 @@ syntax InstanceKind ::= "instanceKindItem" [symbol(instanceKindItem)]
 syntax InstanceDef ::= instanceDef(Int)
 
 endmodule
+```
