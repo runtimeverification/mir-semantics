@@ -1,4 +1,7 @@
 ```k
+requires "body.md"
+requires "ty.md"
+
 module LIB-SORTS
 
 syntax CrateItem
@@ -14,7 +17,7 @@ module LIB
   imports TYPES-SORTS
   imports STRING
 
-syntax Symbol ::= symbol(String)
+syntax Symbol ::= symbol(String) [group(mir-string)]
 syntax Opaque ::= opaque(String) [symbol(opaque)]
 syntax Filename ::= filename(String)
 

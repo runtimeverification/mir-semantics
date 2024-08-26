@@ -99,14 +99,19 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 # Given a list Sort, return the element sort.
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
-    # Dictionary containing irregular plural to singular sort names.
-    element_name = {
-        'Bodies': 'Body',
-        'Branches': 'Branch',
-        'VariantAndFieldIndices': 'VariantAndFieldIndex',
-    }.get(name)
-    if element_name:
-        return KSort(element_name)
+    if name.endswith('ies'):  # Bodies, Entries, ...
+        return KSort(name[:-3] + 'y')
+    elif (  # -es for words ending in 's', 'ch', 'sh', 'ss', 'x' or 'z'
+        name.endswith('ses')
+        or name.endswith('ches')
+        or name.endswith('shes')
+        or name.endswith('sses')
+        or name.endswith('xes')
+        or name.endswith('zes')
+    ):
+        return KSort(name[:-2])
+    elif name.endswith('Indices'):
+        return KSort(name[:-7] + 'Index')
     # If the name is not lsted above, we assume it has a regular plural form.
     # Simply remove trailing 's' to get the singular for element sort name.
     assert name.endswith('s')
@@ -261,7 +266,8 @@ class Parser:
             # case, the argument needs to be changed to a list, so that its
             # structure is not cosidered a part of the current enumeration.
             if not _has_named_fields(_get_group(prod)) and len(prod.argument_sorts) == 1:
-                assert not isinstance(json_value, Sequence)
+                # str is a Sequence, therefore the extra check
+                assert isinstance(json_value, str) or not isinstance(json_value, Sequence)
                 json_value = [json_value]
             return self._parse_mir_nonterminal_json(json_value, prod)
         else:

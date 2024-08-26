@@ -1,4 +1,8 @@
 ```k
+requires "body.md"
+requires "lib.md"
+requires "ty.md"
+
 module MONO-SORTS
 
 syntax Instance
@@ -13,16 +17,29 @@ module MONO
   imports TYPES-SORTS
   imports INT
 
-syntax StaticDef ::= staticDef(Int) // imported from crate
+syntax StaticDef ::= staticDef(Int) [group(mir-int)] // imported from crate
 
-syntax MaybeAllocation ::= someAllocation(Allocation) | "noAllocation"
-syntax MonoItem ::= monoItemFn(Instance) // do not use - parser uses the key to generate the other production
-                  | monoItemStatic(StaticDef) // do not use - parser uses the key to generate the other production
-                  | monoItemFn(name: Symbol, defId: DefId, body: Bodies) [symbol(monoItemFn)]
-                  | monoItemStatic(name: Symbol, defId: DefId, allocation: MaybeAllocation)
-                  | monoItemGlobalAsm(Opaque)
-syntax MonoItemWrapper ::= monoItemWrapper(symbolName: Symbol, monoItemKind: MonoItem) [symbol(monoItemWrapper)]
-syntax MonoItems ::= List {MonoItemWrapper, ""} [symbol(monoItems), terminator-symbol(.monoItems)]
+syntax MaybeAllocation ::= someAllocation(Allocation) [group(mir-option)]
+                         | "noAllocation"             [group(mir-option)]
+
+syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: Bodies)
+                          [ group(mir-enum---name--id--body)
+                          , symbol(MonoItemKind::MonoItemFn)
+                          ]
+                      | monoItemStatic(name: Symbol, id: DefId, allocation: MaybeAllocation)
+                          [ group(mir-enum---name--id--allocation)
+                          , symbol(MonoItemKind::MonoItemStatic)
+                          ]
+                      | monoItemGlobalAsm(Opaque)
+                          [ group(mir-enum)
+                          , symbol(MonoItemKind::MonoItemGlobalAsm)
+                          ]
+syntax MonoItem ::= monoItem(symbolName: Symbol, monoItemKind: MonoItemKind)
+                      [symbol(monoItemWrapper), group(mir---symbol-name--mono-item-kind)]
+syntax MonoItems ::= List {MonoItem, ""}
+                      [symbol(monoItems), terminator-symbol(.monoItems), group(mir-list)]
+
+////////////////////////////////////////// unused for parsing?
 
 syntax Instance ::= instance(kind: InstanceKind, def: InstanceDef)
 syntax InstanceKind ::= "instanceKindItem" [symbol(instanceKindItem)]
