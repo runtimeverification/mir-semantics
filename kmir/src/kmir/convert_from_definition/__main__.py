@@ -19,7 +19,9 @@ def main() -> None:
     tools = semantics()
     p = Parser(tools.definition)
 
-    result = p.parse_mir_json(json.loads(args.json), args.sort)
+    with open(args.json, 'r') as f:
+        json_data = json.load(f)
+    result = p.parse_mir_json(json_data, args.sort)
     if result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)

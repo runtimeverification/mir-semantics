@@ -27,10 +27,10 @@ json: a boolean value, e.g., `true`
 
 #### mir-list
 ```
-syntax L ::= List {E, ""} [group(mir-list), ...]
+syntax Elems ::= List {Elem, ""} [group(mir-list), ...]
 ```
-json: a homogeneous list, e.g. `[e1, e2, e3, ...]`
-Note that all elements of the json list `(e1, e2, e3)` should correspond to syntactic productions for the sort E.
+json: a homogeneous list, e.g. `[e1, e2, e3, ...]`, where all elements correspond to syntactic productions for the sort `Elem`.
+As per naming convention, the list sort `Elems` (plural) should contain elements of sort `Elem` (singular). Usual plural formation rules (`Body -> Bodies`, `Branch -> Branches`) are respected.
 
 #### mir-klist-ElementSort
 ```
@@ -41,10 +41,16 @@ Note that all elements of the json list `(e1, e2, e3)` should correspond to synt
 
 #### mir-enum
 ```
-syntax MyEnum ::= myEnumField1(...) [group(mir-enum), ...]
-                | myEnumField2(...) [group(mir-enum), ...]
+syntax MyEnum ::= myEnumCon1(ArgSort)     [group(mir-enum)        , symbol(MyEnum::Con1)]
+                | myEnumCon2(Sort1,Sort2) [group(mir-enum)        , symbol(MyEnum::Con2)]
+                | myEnumCon3(field:...)   [group(mir-enum---field), symbol(MyEnum::Con3)]
+                | "myEnumCon4"            [group(mir-enum)        , symbol(MyEnum::Con4)]
 ```
-json: a dictionary with a single key-value pair. The key should correspond to one of the productions for the `MyEnum` Sort, and the value should be valid json.
+json: a dictionary with a single key-value pair.
+The key should correspond to (symbol for) one of the productions for the `MyEnum` Sort, and the value should be valid json.
+Arguments for variants that do not use field names are encoded as (heterogenous) _lists_ in json.
+Field names can be added after `mir-enum`, separated by `---`.
+Enum variants without arguments are encoded as _json strings_.
 
 #### mir-option
 ```
@@ -62,6 +68,7 @@ syntax MaybeInt::= someInt(Int) [group(mir-option-int)]
 
 #### mir
 Any remaining production describing MIR syntax.
+
 
 ### Conventions for productions
 - Syntax productions with more than one non terminals should not include sorts `Int`, `Bool`, `String`, but should instead use the sorts `MIRInt`, `MIRBool`, `MIRString`. These are intended to be semantically equivalent, i.e.

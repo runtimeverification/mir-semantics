@@ -1,4 +1,7 @@
 ```k
+requires "ty.md"
+requires "mono.md"
+
 module ALLOC-SORTS
 
 syntax AllocId
@@ -27,15 +30,26 @@ module ALLOC
 
 ```k
 syntax BinderForExistentialTraitRef ::= binderForExistentialTraitRef(value: ExistentialTraitRef, boundVars: BoundVariableKindList)
-syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(BinderForExistentialTraitRef)
-                                           | "noBinderForExistentialTraitRef"
-syntax GlobalAlloc ::= globalAllocFunction(Instance)
-                     | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
-                     | globalAllocStatic(StaticDef) [symbol(globalAllocStatic)]
-                     | globalAllocMemory(Allocation) [symbol(globalAllocMemory)]
+                                          [group(mir---value--bound-vars)]
 
-syntax GlobalAllocEntry ::= globalAllocEntry(MIRInt, GlobalAlloc) [symbol(globalAllocEntry)]
-syntax GlobalAllocsMap ::= List {GlobalAllocEntry, ""} [symbol(globalAllocsMap), terminator-symbol(.globalAllocsMap)]
+syntax MaybeBinderForExistentialTraitRef ::= someBinderForExistentialTraitRef(BinderForExistentialTraitRef) [group(mir-option)]
+                                           | "noBinderForExistentialTraitRef"                               [group(mir-option)]
+
+syntax GlobalAllocKind ::= globalAllocFunction(Instance)
+                             [group(mir-enum), symbol(GlobalAllocKind::Function)]
+                         | globalAllocVTable(Ty, MaybeBinderForExistentialTraitRef)
+                             [group(mir-enum), symbol(GlobalAllocKind::VTable)]
+                         | Static(StaticDef)
+                             [group(mir-enum), symbol(GlobalAllocKind::Static)]
+                         | Memory(Allocation)
+                             [group(mir-enum), symbol(GlobalAllocKind::Memory)]
+
+syntax GlobalAlloc ::= globalAllocEntry(MIRInt, GlobalAllocKind)
+         [symbol(globalAllocEntry), group(mir)]
+
+syntax GlobalAllocs ::= List {GlobalAlloc, ""}
+         [symbol(GlobalAllocs::append), terminator-symbol(GlobalAllocs::empty), group(mir-list)]
+
 syntax AllocId ::= allocId(Int) [symbol(allocId)]
 
 endmodule

@@ -16,7 +16,7 @@ module KMIR-AST
   imports TARGET
   imports TYPES
 
-  syntax Pgm ::= Symbol GlobalAllocsMap MonoItems [symbol(pgm)]
+  syntax Pgm ::= Symbol GlobalAllocs MonoItems [symbol(pgm), group(mir---name--allocs--items)]
 
 endmodule
 ```
