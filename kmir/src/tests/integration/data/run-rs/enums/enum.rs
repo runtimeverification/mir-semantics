@@ -1,3 +1,5 @@
+#![allow(unused)]
+#![allow(dead_code)]
 enum Letter {
     A,
     B,
