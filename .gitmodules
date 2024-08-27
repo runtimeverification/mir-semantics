@@ -1,0 +1,3 @@
+[submodule "deps/smir_pretty"]
+	path = deps/smir_pretty
+	url = https://github.com/runtimeverification/smir_pretty
