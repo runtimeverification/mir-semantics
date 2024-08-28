@@ -90,15 +90,15 @@ jobs:
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-semantics-ci-smir-${{ github.sha }}
+          container-name: mir-smir-ci-${{ github.sha }}
       - name: 'Build kmir'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
       - name: 'Set up and build rust dependency of smir_pretty'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-pretty-setup
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-pretty-setup
       - name: 'Build smir_pretty'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-pretty
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-pretty
       - name: 'Run parser tests'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-parse-test
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-test
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
