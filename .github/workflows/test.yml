@@ -93,12 +93,12 @@ jobs:
           container-name: mir-smir-ci-${{ github.sha }}
       - name: 'Build kmir'
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
-      - name: 'Set up and build rust dependency of smir_pretty'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-pretty-setup
-      - name: 'Build smir_pretty'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-pretty
-      - name: 'Run parser tests'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-test
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
+      - name: 'Set up and build rust dependency of smir_pretty'
+        run: make smir-pretty-setup
+      - name: 'Build smir_pretty'
+        run: make smir-pretty
+      - name: 'Run parser tests'
+        run: make smir-parse-test
