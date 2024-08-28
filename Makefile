@@ -15,7 +15,7 @@ build: kmir
 
 ##################################################
 # this will change/go away as soon as we have a submodule setup in smir_pretty
-smir-pretty-setup: deps/smir_pretty/deps/rust
+smir-pretty-setup: deps/smir_pretty/deps/rust/src
 
 deps/smir_pretty/deps/rust:
 	cd deps/smir_pretty && make setup
