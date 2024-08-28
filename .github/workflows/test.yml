@@ -96,9 +96,11 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
-      - name: 'Set up and build rust dependency of smir_pretty'
+      - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
+        uses: dtolnay/rust-toolchain@nightly
+      - name: 'Set up tree for rust dependency of smir_pretty'
         run: make smir-pretty-setup
-      - name: 'Build smir_pretty'
+      - name: 'Build smir_pretty and its rustc dependency'
         run: make smir-pretty
       - name: 'Run parser tests'
         run: make smir-parse-test
