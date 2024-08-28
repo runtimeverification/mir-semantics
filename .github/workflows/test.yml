@@ -76,3 +76,29 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+
+  smir-integration-tests:
+    needs: code-quality-checks
+    name: "Integration with smir_pretty"
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-semantics-ci-smir-${{ github.sha }}
+      - name: 'Build kmir'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
+      - name: 'Set up and build rust dependency of smir_pretty'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-pretty-setup
+      - name: 'Build smir_pretty'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-pretty
+      - name: 'Run parser tests'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make smir-parse-test
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
