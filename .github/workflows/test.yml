@@ -102,6 +102,8 @@ jobs:
           workspaces: |
             deps/smir_pretty
             deps/smir_pretty/deps/rust/src
+          cache-directories: |
+            deps/smir_pretty/deps/rust/src/build
 
       - name: 'Build smir_pretty and its rustc dependency'
         run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
