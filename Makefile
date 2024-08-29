@@ -14,11 +14,23 @@ build: kmir
 # for integration tests: build smir_pretty in-tree
 
 ##################################################
-# this will change/go away as soon as we have a submodule setup in smir_pretty
+# This will change when we set up rustc as a submodule in smir_pretty
+# The config.toml is a kludge to work around CI-specific logic in the
+# rustc bootstrap process that assumes we want a stage 2 build in CI.
+smir-pretty-setup: CHANGE_ID = 120593
 smir-pretty-setup: deps/smir_pretty/deps/rust/src
+	printf "%s\n"                    \
+	    "change-id = ${CHANGE_ID}"   \
+	    ""                           \
+	    "[build]" 			 \
+	    "build-stage = 1" 		 \
+	    "docs = false" 		 \
+	    'tools = [ "cargo", "src" ]' \
+	> $</config.toml
 
 deps/smir_pretty/deps/rust/src:
 	cd deps/smir_pretty && make setup
+
 ##################################################
 
 smir-pretty: smir-pretty-setup deps/smir_pretty/target/debug/smir_pretty
