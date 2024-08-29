@@ -102,5 +102,7 @@ jobs:
         run: make smir-pretty-setup
       - name: 'Build smir_pretty and its rustc dependency'
         run: make smir-pretty
+        env:
+          GITHUB_ACTIONS: "in denial" # rustc bootstrap checks this and refuses stage 1 in "CI"
       - name: 'Run parser tests'
         run: make smir-parse-test
