@@ -91,6 +91,13 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly-2024-08-29
       - name: 'Set up tree for rust dependency of smir_pretty'
         run: make smir-pretty-setup
+
+      - name: 'Cache smir_pretty and rustc'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            deps/smir_pretty
+            deps/smir_pretty/deps/rust/src
       - name: 'Build smir_pretty and its rustc dependency'
         run:
           export GITHUB_ACTIONS="nope" && echo "GITHUB_ACTIONS = ${GITHUB_ACTIONS}" && make smir-pretty
