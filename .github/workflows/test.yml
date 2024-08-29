@@ -88,7 +88,7 @@ jobs:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
-        uses: dtolnay/rust-toolchain@nightly
+        uses: dtolnay/rust-toolchain@nightly-2024-08-29
       - name: 'Set up tree for rust dependency of smir_pretty'
         run: make smir-pretty-setup
       - name: 'Build smir_pretty and its rustc dependency'
