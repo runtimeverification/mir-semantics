@@ -89,7 +89,7 @@ jobs:
           submodules: recursive
 
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
-        uses: dtolnay/rust-toolchain@nightly-2024-08-29
+        uses: dtolnay/rust-toolchain@nightly-2024-08-28
 
       - name: 'Set up tree for rust dependency of smir_pretty'
         run: make smir-pretty-setup
