@@ -87,15 +87,6 @@ jobs:
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
-      - name: 'Set up Docker'
-        uses: ./.github/actions/with-docker
-        with:
-          container-name: mir-smir-ci-${{ github.sha }}
-      - name: 'Build kmir'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
-      - name: 'Tear down Docker'
-        if: always()
-        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
         uses: dtolnay/rust-toolchain@nightly
       - name: 'Set up tree for rust dependency of smir_pretty'
@@ -105,5 +96,14 @@ jobs:
           export GITHUB_ACTIONS="nope" && echo "GITHUB_ACTIONS = ${GITHUB_ACTIONS}" && make smir-pretty
         env:
           GITHUB_ACTIONS: "in denial" # rustc bootstrap checks this and refuses stage 1 in "CI"
-      - name: 'Run parser tests'
-        run: make smir-parse-tests
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-smir-ci-${{ github.sha }}
+      - name: 'Build kmir (within docker)'
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
+      - name: 'Run parser tests (within docker)'
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
