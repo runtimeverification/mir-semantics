@@ -106,4 +106,4 @@ jobs:
         env:
           GITHUB_ACTIONS: "in denial" # rustc bootstrap checks this and refuses stage 1 in "CI"
       - name: 'Run parser tests'
-        run: make smir-parse-test
+        run: make smir-parse-tests
