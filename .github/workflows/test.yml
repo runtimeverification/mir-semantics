@@ -119,6 +119,14 @@ jobs:
       - name: 'Build kmir (within docker)'
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
 
+      - name: 'HACK: patch rustc_arch.sh script (within docker)'
+        run: |
+          arch=$(rustc -vV | sed -e 's/host: \(.*\)$/\1/')
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              bash -c "echo 'echo $arch' > deps/smir_pretty/rustc_arch.sh"
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              deps/smir_pretty/rustc_arch.sh
+
       - name: 'Run parser tests (within docker)'
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
 
