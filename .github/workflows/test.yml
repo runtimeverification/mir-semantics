@@ -121,9 +121,11 @@ jobs:
 
       - name: 'HACK: patch rustc_arch.sh script (within docker)'
         run: |
-          arch=$(rustc -vV | sed -e 's/host: \(.*\)$/\1/')
+          arch=$(rustc -vV | sed -n -e 's/host: \(.*\)$/\1/p')
           docker exec --user user mir-smir-ci-${GITHUB_SHA} \
-              bash -c "echo 'echo $arch' > deps/smir_pretty/rustc_arch.sh"
+              bash -c "printf '#!/bin/sh\necho \"$arch\"\n' > deps/smir_pretty/rustc_arch.sh"
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              cat deps/smir_pretty/rustc_arch.sh
           docker exec --user user mir-smir-ci-${GITHUB_SHA} \
               deps/smir_pretty/rustc_arch.sh
 
