@@ -31,6 +31,8 @@ deps/smir_pretty/target/debug/smir_pretty: deps/smir_pretty
 smir-parse-tests: TESTS = $(shell find kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
 smir-parse-tests: SMIR = deps/smir_pretty/run.sh
 smir-parse-tests: build smir-pretty
+	errors=""; \
+	report() { echo $$2; errors="$$errors $$1"; }; \
 	for source in ${TESTS}; do \
 	    echo -n "$$source: "; \
 	    dir=$$(dirname $${source}); \
@@ -38,6 +40,7 @@ smir-parse-tests: build smir-pretty
 	    ${SMIR} -Z no-codegen --out-dir $${dir} $$source \
 		&& (echo -n "smir-ed "; \
 		    ${POETRY_RUN} convert-from-definition $${target} Pgm > /dev/null \
-			&& (echo "and parsed!"; rm $${target}) || echo "PARSE ERROR!") \
-		|| echo "SMIR ERROR!" ; \
-	    done
+			&& (echo "and parsed!"; rm $${target}) || report "$$source" "PARSE ERROR!") \
+		|| report "$$source" "SMIR ERROR!" ; \
+	    done; \
+	[ -z "$$errors" ] || (echo "FAILING TESTS:"; printf ". %s\n" $${errors}; exit 1); \
