@@ -76,3 +76,62 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+
+  smir-integration-tests:
+    needs: code-quality-checks
+    name: "Integration with smir_pretty"
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+
+      - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2024-08-28
+
+      - name: 'Set up tree for rust dependency of smir_pretty'
+        run: make smir-pretty-setup
+
+      - name: 'Cache smir_pretty and rustc'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            deps/smir_pretty
+            deps/smir_pretty/deps/rust/src
+          cache-directories: |
+            deps/smir_pretty/deps/rust/src/build
+
+      - name: 'Build smir_pretty and its rustc dependency'
+        run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
+          export GITHUB_ACTIONS="in denial" && \
+          echo "GITHUB_ACTIONS = ${GITHUB_ACTIONS}" && \
+          make smir-pretty
+
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-smir-ci-${{ github.sha }}
+
+      - name: 'Build kmir (within docker)'
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
+
+      - name: 'HACK: patch rustc_arch.sh script (within docker)'
+        run: |
+          arch=$(rustc -vV | sed -n -e 's/host: \(.*\)$/\1/p')
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              bash -c "printf '#!/bin/sh\necho \"$arch\"\n' > deps/smir_pretty/rustc_arch.sh"
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              cat deps/smir_pretty/rustc_arch.sh
+          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
+              deps/smir_pretty/rustc_arch.sh
+
+      - name: 'Run parser tests (within docker)'
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
