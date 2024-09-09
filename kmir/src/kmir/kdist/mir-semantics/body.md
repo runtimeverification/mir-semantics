@@ -243,7 +243,7 @@ syntax StatementKind ::= statementKindAssign(place: Place, rvalue: Rvalue)
                          [ group(mir-enum---place--variant-index)
                          , symbol(StatementKind::SetDiscriminant)
                          ]
-                       | deinit(place: Place)
+                       | statementKindDeinit(place: Place)
                          [ group(mir-enum)
                          , symbol(StatementKind::Deinit)
                          ]
