@@ -37,7 +37,7 @@ syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: Bodies)
 syntax MonoItem ::= monoItem(symbolName: Symbol, monoItemKind: MonoItemKind)
                       [symbol(monoItemWrapper), group(mir---symbol-name--mono-item-kind)]
 syntax MonoItems ::= List {MonoItem, ""}
-                      [symbol(monoItems), terminator-symbol(.monoItems), group(mir-list)]
+                      [symbol(MonoItems::append), terminator-symbol(MonoItems::empty), group(mir-list)]
 
 ////////////////////////////////////////// unused for parsing?
 

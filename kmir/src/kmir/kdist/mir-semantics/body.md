@@ -137,7 +137,7 @@ syntax BinOp ::= "binOpAdd"          [group(mir-enum), symbol(BinOp::Add)]
                | "binOpOffset"       [group(mir-enum), symbol(BinOp::Offset)]
 
 syntax UnOp ::= "unOpNot"            [group(mir-enum), symbol(UnOp::Not)]
-              | "unOpNeg"            [group(mir-enum), symbol(UnOp::Net)]
+              | "unOpNeg"            [group(mir-enum), symbol(UnOp::Neg)]
               | "unOpPtrMetadata"    [group(mir-enum), symbol(UnOp::PtrMetadata)]
 
 syntax NullOp ::= "nullOpSizeOf"                         [group(mir-enum), symbol(NullOp::SizeOf)]
@@ -302,7 +302,7 @@ syntax AssertMessage ::= assertMessageBoundsCheck(len: Operand, index: Operand)
                        | assertMessageResumedAfterPanic(CoroutineKind)
                          [group(mir-enum),                   symbol(AssertMessage::ResumedAfterPanic)]
                        | assertMessageMisalignedPointerDereference(required: Operand, found: Operand)
-                         [group(mir-enum---required--found), symbol(AssertMessage::MisalignedPointerDerefence)]
+                         [group(mir-enum---required--found), symbol(AssertMessage::MisalignedPointerDereference)]
 
 syntax InlineAsmOperand  ::= inlineAsmOperand(inValue: MaybeOperand, outValue: MaybePlace, rawPtr: MIRString)
                              [group(mir---in-value--out-place--raw-rpr)]

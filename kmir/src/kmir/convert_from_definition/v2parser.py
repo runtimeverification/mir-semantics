@@ -138,7 +138,8 @@ class Parser:
     # aiming for optimization (cache?) in the future.
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
         prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
-        assert len(prods) == 1
+        assert len(prods) > 0, f"No production for `{symbol}' in sort `{sort.name}'"
+        assert len(prods) == 1, f"Expected a single production for `{symbol}' as sort `{sort.name}'"
         return prods[0]
 
     # Parse the provided json term, with expected Sort name sort.
@@ -155,7 +156,7 @@ class Parser:
         # correct rule to apply. In the other cases there should only be one
         # production anyway, which is asserted as needed.
         prods = self._mir_productions_for_sort(sort)
-        assert len(prods) > 0
+        assert len(prods) > 0, f"Don't know how to parse sort `{sort.name}'"
         prod = prods[0]
         assert prod in self._mir_productions
 
