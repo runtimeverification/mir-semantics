@@ -34,7 +34,6 @@ jobs:
         run: |
           K_VERSION=$(cat deps/k_release)
           sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/v'"${K_VERSION}"'"!' flake.nix
-          sed -i 's!    pyk.url = "github:runtimeverification/k/[v0-9\.]*?dir=pyk"!    pyk.url = "github:runtimeverification/k/v'"${K_VERSION}"'?dir=pyk"!' flake.nix
           nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
           git add flake.nix flake.lock
           git commit -m 'flake.{nix,lock}: update Nix derivations' || true
