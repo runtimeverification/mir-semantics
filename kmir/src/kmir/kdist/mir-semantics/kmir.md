@@ -79,7 +79,7 @@ module KMIR-CONFIGURATION
                   <currentFunc> defId(-1) </currentFunc> // necessary to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
-                    <currentBody> .BasicBlocks </currentBody>
+                    <currentBody> .List </currentBody>
                     <caller> defId(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
                     <target> -1 </target>
@@ -106,6 +106,7 @@ module KMIR
   imports MONO
 
   imports BOOL
+  imports LIST
   imports MAP
   imports K-EQUAL
 ```
@@ -177,13 +178,18 @@ block of the body.
        </k>
        <currentFunc> _ => ID </currentFunc>
        <currentFrame>
-         <currentBody> _ => BLOCKS </currentBody>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> _ => defId(-1) </caller>
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
          <target> _ => -1 </target>
          <unwind> _ => unwindActionUnreachable </unwind> // FIXME
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
+
+  syntax List ::= toKList(BasicBlocks) [function, total]
+
+  rule toKList( .BasicBlocks )                => .List
+  rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
 
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
                   // basically `replicate (length LOCALS) Any`
@@ -193,15 +199,132 @@ block of the body.
   rule #reserveFor(_:LocalDecl REST:LocalDecls) => ListItem(Any) #reserveFor(REST)
 ```
 
+Executing a function body consists of repeated calls to `#execBlock`
+for the basic blocks that, together, constitute the function body. The
+execution of blocks is straightforward (first execute all statements,
+then finish with the terminator that may branch, call other basic
+blocks, or call another function).
+
 ```k
   // execution of blocks (composed of statements and terminator)
-  syntax KItem ::= #execBlock ( BasicBlock )
+  syntax KItem ::= #execBlockIdx ( BasicBlockIdx )
+                 | #execBlock ( BasicBlock )
                  | #execStmts ( Statements )
                  | #execStmt ( Statement )
                  | #execTerminator ( Terminator )
 
+  rule <k> #execBlockIdx(basicBlockIdx(I))
+         =>
+           #execBlock( {BLOCKS[I]}:>BasicBlock )
+         ...
+       </k>
+       <currentBody> BLOCKS </currentBody>
+    requires 0 <=Int I
+     andBool I <Int size(BLOCKS)
+     andBool isBasicBlock(BLOCKS[I])
+
+  rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
+         =>
+           #execStmts(STATEMENTS) ~> #execTerminator(TERMINATOR)
+         ...
+       </k>
+
+  rule <k> #execStmts(.Statements) => .K  ... </k>
+
+  rule <k> #execStmts(STATEMENT:Statement STATEMENTS:Statements)
+         =>
+           #execStmt(STATEMENT) ~> #execStmts(STATEMENTS)
+         ...
+       </k>
+```
+
+`Statement` execution handles the different `StatementKind`s. Some of
+these are irrelevant at the MIR level that this semantics is modeling
+(e.g., all statements related to compile-time checks like borrowing
+will effectively be no-ops at this level).
+
+```k
 
   // all memory accesses relegated to another module (to be added)
+  rule <k> #execStmt(statement(statementKindAssign(_PLACE, _RVAL), _SPAN))
+         =>
+           .K // FIXME! evaluate RVAL and write to PLACE
+         ...
+       </k>
+
+  rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
+         =>
+           .K // FIXME! write variant index to PLACE
+         ...
+       </k>
+
+  rule <k> #execStmt(statement(statementKindIntrinsic(_INTRINSIC), _SPAN))
+         =>
+           .K // FIXME! effect of calling INTRINSIC
+         ...
+       </k>
+
+  // statements related to locals allocation (not modelled here)
+  rule <k> #execStmt(statement(deinit(_PLACE)                  , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindStorageLive(_LOCAL), _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindStorageDead(_LOCAL), _SPAN)) => .K ... </k>
+
+
+  // no-op statements
+  rule <k> #execStmt(statement(statementKindRetag(_, _)             , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindPlaceMention(_)         , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindFakeRead(_, _)          , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindAscribeUserType(_, _, _), _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindCoverage(_)             , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindConstEvalCounter        , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindNop                     , _SPAN)) => .K ... </k>
+```
+
+Execution of a `Terminator` can mean to jump to another block, branch
+to more than one block (based on a variant index), or to perform a
+function call, pushing a new stack frame and returning to a different
+block after the call returns.
+
+```k
+  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN))
+         =>
+           #execBlockIdx(I)
+         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
+       </k>
+
+  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN))
+         =>
+           #readInt(DISCR) ~> #selectBlock(TARGETS)
+         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
+       </k>
+
+  rule <k> I:Int ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(I, TARGETS))
+       ...
+       </k>
+
+  syntax KItem ::= #selectBlock ( SwitchTargets )
+                 | #readInt ( Operand ) // FIXME not implemented, accesses a place
+
+  syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
+                         | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
+
+  rule #selectBlock(I, switchTargets(BRANCHES, OTHERWISE)) => #selectBlockAux(I, BRANCHES, OTHERWISE)
+
+  rule #selectBlockAux(I, branch( J       , IDX) _REST, _      ) => IDX
+    requires I ==Int J
+  rule #selectBlockAux(I, branch(mirInt(J), IDX) _REST, _      ) => IDX
+    requires I ==Int J
+
+  rule #selectBlockAux(I, branch( J       , _  ) REST , DEFAULT) => #selectBlockAux(I, REST, DEFAULT)
+    requires I =/=Int J
+  rule #selectBlockAux(I, branch(mirInt(J), _  ) REST , DEFAULT) => #selectBlockAux(I, REST, DEFAULT)
+    requires I =/=Int J
+
+  rule #selectBlockAux(_,                   .Branches , DEFAULT) => DEFAULT
+
+
 
 endmodule
 ```
