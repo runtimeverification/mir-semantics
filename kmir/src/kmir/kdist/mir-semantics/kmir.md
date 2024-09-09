@@ -265,7 +265,7 @@ will effectively be no-ops at this level).
        </k>
 
   // statements related to locals allocation (not modelled here)
-  rule <k> #execStmt(statement(deinit(_PLACE)                  , _SPAN)) => .K ... </k>
+  rule <k> #execStmt(statement(statementKindDeinit(_PLACE)     , _SPAN)) => .K ... </k>
   rule <k> #execStmt(statement(statementKindStorageLive(_LOCAL), _SPAN)) => .K ... </k>
   rule <k> #execStmt(statement(statementKindStorageDead(_LOCAL), _SPAN)) => .K ... </k>
 
