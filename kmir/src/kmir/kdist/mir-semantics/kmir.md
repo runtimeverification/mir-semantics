@@ -67,11 +67,11 @@ module KMIR-CONFIGURATION
   syntax RetVal ::= "NoRetVal"
                   | Int // FIXME is this enough?
 
-  syntax StackFrame ::= StackFrame(caller:Int,    // index of caller function
-                                   dest:Place,    // place to store return value
-                                   target:Int,    // basic block to return to
-                                   UnwindAction,  // action to perform on panic
-                                   locals:List)   // return val, args, local variables
+  syntax StackFrame ::= StackFrame(caller:DefId,         // index of caller function
+                                   dest:Place,           // place to store return value
+                                   target:BasicBlockIdx, // basic block to return to
+                                   UnwindAction,         // action to perform on panic
+                                   locals:List)          // return val, args, local variables
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
@@ -82,7 +82,7 @@ module KMIR-CONFIGURATION
                     <currentBody> .List </currentBody>
                     <caller> defId(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
-                    <target> -1 </target>
+                    <target> basicBlockIdx(-1) </target>
                     <unwind> unwindActionUnreachable </unwind>
                     <locals> .List </locals>
                   </currentFrame>
@@ -181,7 +181,7 @@ block of the body.
          <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> _ => defId(-1) </caller>
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
-         <target> _ => -1 </target>
+         <target> _ => basicBlockIdx(-1) </target>
          <unwind> _ => unwindActionUnreachable </unwind> // FIXME
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
@@ -192,7 +192,8 @@ block of the body.
   rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
 
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
-                  // basically `replicate (length LOCALS) Any`
+                  // basically `replicate (length LOCALS) Any`.
+                  // FIXME what about function arguments and return?
 
   rule #reserveFor(.LocalDecls) => .List
 
@@ -291,7 +292,12 @@ block after the call returns.
            #execBlockIdx(I)
          ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
        </k>
+```
 
+A `SwitchInt` terminator selects one of the blocks given as _targets_,
+depending on the value of a _discriminant_.
+
+```k
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN))
          =>
            #readInt(DISCR) ~> #selectBlock(TARGETS)
@@ -324,6 +330,63 @@ block after the call returns.
 
   rule #selectBlockAux(_,                   .Branches , DEFAULT) => DEFAULT
 
+```
+
+`Return` simply returns from a function call, using the information
+stored in the top stack frame to pass the returned value. The return
+value is the value in local `_0`, and will go to the _destination_ in
+the stack frame. Execution continues with the context of the enclosing
+stack frame, at the _target_.
+
+```k
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN))
+         =>
+           #execBlockIdx(TARGET)
+         ...
+       </k>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller>  CALLER => NEWCALLER </caller>
+         <dest> DEST => NEWDEST </dest>
+         <target> TARGET => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(L0) _ => #setLocal(LOCALS, DEST, L0) </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, LOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+      // andBool #withinLocals(DEST, LOCALS)
+     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+
+  syntax List ::= #getBlocks(Map, DefId) [function]
+                | #getBlocksAux(Bodies)  [function, total]
+
+  rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>Bodies)
+    requires ID in_keys(FUNCS)
+     andBool isBodies(FUNCS[ID])
+
+  // returns blocks from the _first_ body if there are several
+  rule #getBlocksAux(.Bodies) => .List
+  rule #getBlocksAux(body(BLOCKS, _, _, _, _, _) _) => toKList(BLOCKS)
+
+  // set a local to a new value. Assumes the place is valid
+  syntax List ::= #setLocal(List, Place, Value) [function]
+
+  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), VALUE)
+     =>
+       LOCALS[I <- VALUE]
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
+
+  // rule #setLocal(LOCALS, place(local(I), PROJECTION), VALUE)
+  //    =>
+  //      LOCALS[I <- #updateProjection(LOCALS[I], PROJECTION, VALUE)]
+  //   requires 0 <=Int I
+  //    andBool I <Int size(LOCALS)
+  //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
+  //   [preserves-definedness] // valid list indexing and projection checked
 
 
 endmodule
