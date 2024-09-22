@@ -1,7 +1,7 @@
 {
   description = "mir-semantics - ";
   inputs = {
-    k-framework.url = "github:runtimeverification/k/v7.1.147";
+    k-framework.url = "github:runtimeverification/k/v7.1.149";
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-utils.follows = "k-framework/rv-utils";
