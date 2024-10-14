@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "kmir"
-version = "0.3.51"
+version = "0.3.52"
 description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
@@ -23,7 +23,7 @@ pytest-kmir = "kmir.testing.fixtures"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kframework = "7.1.156"
+kframework = "7.1.158"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
