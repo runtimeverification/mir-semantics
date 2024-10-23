@@ -1,4 +1,8 @@
 ```k
+requires "lib.md"
+requires "target.md"
+requires "ty.md"
+
 module ABI
   imports LIB-SORTS
   imports TARGET-SORTS

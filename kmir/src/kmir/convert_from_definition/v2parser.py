@@ -99,14 +99,19 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 # Given a list Sort, return the element sort.
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
-    # Dictionary containing irregular plural to singular sort names.
-    element_name = {
-        'Bodies': 'Body',
-        'Branches': 'Branch',
-        'VariantAndFieldIndices': 'VariantAndFieldIndex',
-    }.get(name)
-    if element_name:
-        return KSort(element_name)
+    if name.endswith('ies'):  # Bodies, Entries, ...
+        return KSort(name[:-3] + 'y')
+    elif (  # -es for words ending in 's', 'ch', 'sh', 'ss', 'x' or 'z'
+        name.endswith('ses')
+        or name.endswith('ches')
+        or name.endswith('shes')
+        or name.endswith('sses')
+        or name.endswith('xes')
+        or name.endswith('zes')
+    ):
+        return KSort(name[:-2])
+    elif name.endswith('Indices'):
+        return KSort(name[:-7] + 'Index')
     # If the name is not lsted above, we assume it has a regular plural form.
     # Simply remove trailing 's' to get the singular for element sort name.
     assert name.endswith('s')
@@ -133,7 +138,8 @@ class Parser:
     # aiming for optimization (cache?) in the future.
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
         prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
-        assert len(prods) == 1
+        assert len(prods) > 0, f"No production for `{symbol}' in sort `{sort.name}'"
+        assert len(prods) == 1, f"Expected a single production for `{symbol}' as sort `{sort.name}'"
         return prods[0]
 
     # Parse the provided json term, with expected Sort name sort.
@@ -150,7 +156,7 @@ class Parser:
         # correct rule to apply. In the other cases there should only be one
         # production anyway, which is asserted as needed.
         prods = self._mir_productions_for_sort(sort)
-        assert len(prods) > 0
+        assert len(prods) > 0, f"Don't know how to parse sort `{sort.name}'"
         prod = prods[0]
         assert prod in self._mir_productions
 
@@ -261,7 +267,8 @@ class Parser:
             # case, the argument needs to be changed to a list, so that its
             # structure is not cosidered a part of the current enumeration.
             if not _has_named_fields(_get_group(prod)) and len(prod.argument_sorts) == 1:
-                assert not isinstance(json_value, Sequence)
+                # str is a Sequence, therefore the extra check
+                assert isinstance(json_value, str) or not isinstance(json_value, Sequence)
                 json_value = [json_value]
             return self._parse_mir_nonterminal_json(json_value, prod)
         else:

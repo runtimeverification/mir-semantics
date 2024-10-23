@@ -1,4 +1,7 @@
 ```k
+requires "body.md"
+requires "ty.md"
+
 module LIB-SORTS
 
 syntax CrateItem
@@ -52,7 +55,7 @@ module LIB
 - [CtorKind](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/lib.rs#L110-L114)
 
 ```k
-syntax Symbol ::= symbol(String)
+syntax Symbol ::= symbol(String) [group(mir-string)]
 syntax Opaque ::= opaque(String) [symbol(opaque)]
 syntax Filename ::= filename(String)
 
