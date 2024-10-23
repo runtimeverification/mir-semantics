@@ -23,7 +23,7 @@ pytest-kmir = "kmir.testing.fixtures"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kframework = "7.1.164"
+kframework = "7.1.165"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
