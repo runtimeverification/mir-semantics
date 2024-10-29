@@ -16,7 +16,29 @@ module LIB
   imports LIB-SORTS
   imports TYPES-SORTS
   imports STRING
+
+syntax Symbol ::= symbol(String) [group(mir-string)]
+syntax Opaque ::= opaque(String) [symbol(opaque)]
+syntax Filename ::= filename(String)
+
+syntax TraitDecls ::= List {TraitDef, ""}
+syntax ImplTraitDecls ::= List {ImplDef, ""}
+
+syntax CrateItem ::= crateItem(Int) // imported from crate
+syntax CrateNum ::= crateNum(Int)
+syntax Crate ::= crate(id: CrateNum, name: Symbol, isLocal: MIRBool)
+
+syntax ItemKind ::= "itemKindFn" [symbol(itemKindFn)]
+                  | "itemKindStatic" [symbol(itemKindStatic)]
+                  | "itemKindConst" [symbol(itemKindConst)]
+                  | itemKindCtor(CtorKind)
+syntax CtorKind ::= "ctorKindConst"
+                  | "ctorKindFn"
+
+endmodule
 ```
+
+### Index
 
 #### Internal MIR
 - [Symbol](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_span/src/symbol.rs#L2233-L2243)
@@ -53,25 +75,3 @@ module LIB
 - [Crate](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/lib.rs#L77-L83)
 - [ItemKind](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/lib.rs#L102-L108)
 - [CtorKind](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/lib.rs#L110-L114)
-
-```k
-syntax Symbol ::= symbol(String) [group(mir-string)]
-syntax Opaque ::= opaque(String) [symbol(opaque)]
-syntax Filename ::= filename(String)
-
-syntax TraitDecls ::= List {TraitDef, ""}
-syntax ImplTraitDecls ::= List {ImplDef, ""}
-
-syntax CrateItem ::= crateItem(Int) // imported from crate
-syntax CrateNum ::= crateNum(Int)
-syntax Crate ::= crate(id: CrateNum, name: Symbol, isLocal: MIRBool)
-
-syntax ItemKind ::= "itemKindFn" [symbol(itemKindFn)]
-                  | "itemKindStatic" [symbol(itemKindStatic)]
-                  | "itemKindConst" [symbol(itemKindConst)]
-                  | itemKindCtor(CtorKind)
-syntax CtorKind ::= "ctorKindConst"
-                  | "ctorKindFn"
-
-endmodule
-```

@@ -8,7 +8,15 @@ endmodule
 module TARGET
   imports TARGET-SORTS
   imports INT
+
+syntax MachineInfo ::= machineInfo(endian: Endian, pointerWidth: MachineSize)
+syntax Endian ::= "endianLittle" |  "endianBig"
+syntax MachineSize ::= machineSize(numBits: Int)
+
+endmodule
 ```
+
+### Index
 
 #### Internal MIR
 - MachineInfo - not present
@@ -24,12 +32,3 @@ module TARGET
 - [MachineInfo](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/target.rs#L6-L11)
 - [Endian](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/target.rs#L27-L31)
 - [MachineSize](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/target.rs#L33-L37)
-
-```k
-
-syntax MachineInfo ::= machineInfo(endian: Endian, pointerWidth: MachineSize)
-syntax Endian ::= "endianLittle" |  "endianBig"
-syntax MachineSize ::= machineSize(numBits: Int)
-
-endmodule
-```
