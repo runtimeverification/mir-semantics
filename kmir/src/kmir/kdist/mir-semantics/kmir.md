@@ -387,6 +387,32 @@ stack frame, at the _target_.
   //    andBool I <Int size(LOCALS)
   //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
   //   [preserves-definedness] // valid list indexing and projection checked
+```
+
+`Call` is calling another function, setting up its stack frame and
+where the returned result should go.
+
+```k
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
+         =>
+           #execBlockIdx(basicBlockIdx(0))
+         ...
+       </k>
+       <currentFunc> CURRENT </currentFunc>
+       <currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, FUNC) </currentBody> // FIXME FUNC is an _Operand_!
+         <caller> OLDCALLER => CURRENT </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS => .List </locals> // FIXME
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+      // andBool #withinLocals(DEST, LOCALS)
+     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+
 
 
 endmodule
