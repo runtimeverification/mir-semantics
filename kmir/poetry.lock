@@ -112,28 +112,21 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "cmd2"
-version = "2.5.8"
+version = "2.5.9"
 description = "cmd2 - quickly build feature-rich and user-friendly interactive command line applications in Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cmd2-2.5.8-py3-none-any.whl", hash = "sha256:aeb6eb6cd6d783bb7d92d37aa920bcfa7379690ba9ab1188576562f73a13471c"},
-    {file = "cmd2-2.5.8.tar.gz", hash = "sha256:ddf29beaa7c9d4e9806eefad528a59c372ca97b4c0d83e019fef0e37c44f4497"},
+    {file = "cmd2-2.5.9-py3-none-any.whl", hash = "sha256:b2621661fe48a5a94343bd0f3285c18ca51ed9edda61406b6898895be0eb99ad"},
+    {file = "cmd2-2.5.9.tar.gz", hash = "sha256:09bb13637832bc818aad5577ccdf5dbeb0c9fbe5b9412ff78d5084f7846f83ab"},
 ]
 
 [package.dependencies]
-gnureadline = {version = "*", markers = "platform_system == \"Darwin\""}
-pyperclip = "*"
-pyreadline3 = {version = "*", markers = "platform_system == \"Windows\""}
-wcwidth = "*"
-
-[package.extras]
-build = ["build", "setuptools", "setuptools-scm"]
-dev = ["codecov", "doc8", "invoke", "mypy", "pytest", "pytest-cov", "pytest-mock", "ruff", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme", "twine"]
-docs = ["setuptools", "setuptools_scm", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme"]
-test = ["codecov", "coverage", "pytest", "pytest-cov", "pytest-mock"]
-validate = ["mypy", "ruff", "types-setuptools"]
+gnureadline = {version = ">=8", markers = "platform_system == \"Darwin\""}
+pyperclip = ">=1.8"
+pyreadline3 = {version = ">=3.4", markers = "platform_system == \"Windows\""}
+wcwidth = ">=0.2.10"
 
 [[package]]
 name = "colorama"
@@ -358,14 +351,14 @@ setuptools = "*"
 
 [[package]]
 name = "flake8-type-checking"
-version = "2.9.1"
+version = "3.0.0"
 description = "A flake8 plugin for managing type-checking imports & forward references"
 category = "dev"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "flake8_type_checking-2.9.1-py3-none-any.whl", hash = "sha256:9f9be261a2b1f2bbd25e6f14acbcd92d060ec59062af5724ebaa909c8bea0d7b"},
-    {file = "flake8_type_checking-2.9.1.tar.gz", hash = "sha256:1a14f300c8e32183cef95798b86a650dc38463664ea10b0bf0884115b47d4cfe"},
+    {file = "flake8_type_checking-3.0.0-py3-none-any.whl", hash = "sha256:e9dfb370d246414e0a25033b1826be5b1499787370b8e2c3f9696c44530e3f65"},
+    {file = "flake8_type_checking-3.0.0.tar.gz", hash = "sha256:acd5c08cc618e9b3a6257246e5cdf5c0d5b2ba2c5120e20df880823fe84de738"},
 ]
 
 [package.dependencies]
@@ -446,14 +439,14 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "hypothesis"
-version = "6.124.0"
+version = "6.124.1"
 description = "A library for property-based testing"
 category = "main"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "hypothesis-6.124.0-py3-none-any.whl", hash = "sha256:8d642bee278f933c2b3c41db69cbb001f89a7eed03c6a9cc37f6c59396b30815"},
-    {file = "hypothesis-6.124.0.tar.gz", hash = "sha256:397a740af269646d87915c59d4299f58ef68ba89c213653d899aa533df76a03a"},
+    {file = "hypothesis-6.124.1-py3-none-any.whl", hash = "sha256:40c8be982d3a79b26d5ae11b6606189784f1654f3c750ffcb99fc5b352d5e2ba"},
+    {file = "hypothesis-6.124.1.tar.gz", hash = "sha256:6e21995c3cb3198ef7e60853acce1fbaa6c16de59c2fb3158845664dfe639bd9"},
 ]
 
 [package.dependencies]
@@ -531,14 +524,14 @@ colors = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "kframework"
-version = "7.1.199"
+version = "7.1.202"
 description = ""
 category = "main"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "kframework-7.1.199-py3-none-any.whl", hash = "sha256:c8e64d3f2b13c9e9353eef8cc41c3945261e7d5398de2324ba2c95504ecbff55"},
-    {file = "kframework-7.1.199.tar.gz", hash = "sha256:d7ab05b154269bf3141a0d90dda7534668a1678721f945333e29a05c6679b1c6"},
+    {file = "kframework-7.1.202-py3-none-any.whl", hash = "sha256:1b682f985c78b4ac1b5a04da650c0b71a46bc46d08a42f49866536d23b72b568"},
+    {file = "kframework-7.1.202.tar.gz", hash = "sha256:4612fb861ae522a6c5c5a85162548af4e9df10c00101419834173f4d4666a352"},
 ]
 
 [package.dependencies]
@@ -1197,4 +1190,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4a82bfa533149e58f0fb91fbdd5b348b0bdcda58bcea17600ff2018353ecb226"
+content-hash = "caa74479193cd34eef09ed8cb99563ba9fe0385883832cf378b8af93c4af28e8"
