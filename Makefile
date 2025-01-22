@@ -40,8 +40,8 @@ smir-parse-tests: build smir-pretty
 	    ${SMIR} -Z no-codegen --out-dir $${dir} $$source \
 		&& echo -n "smir-ed " \
 		|| report "$$source" "SMIR ERROR!"; \
-	    if [ -s $(PWD)/$${target} ]; then \
-		${POETRY_RUN} convert-from-definition $(PWD)/$${target} Pgm > /dev/null \
+	    if [ -s $${target} ]; then \
+		${POETRY_RUN} convert-from-definition $$(realpath $${target}) Pgm > /dev/null \
 			&& (echo "and parsed!"; rm $${target}) \
 			|| report "$$source" "PARSE ERROR!"; \
 		fi; \
