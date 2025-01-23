@@ -38,9 +38,12 @@ smir-parse-tests: build smir-pretty
 	    dir=$$(dirname $${source}); \
 	    target=$${dir}/$$(basename $${source%.rs}).smir.json; \
 	    ${SMIR} -Z no-codegen --out-dir $${dir} $$source \
-		&& (echo -n "smir-ed "; \
-		    ${POETRY_RUN} convert-from-definition $${target} Pgm > /dev/null \
-			&& (echo "and parsed!"; rm $${target}) || report "$$source" "PARSE ERROR!") \
-		|| report "$$source" "SMIR ERROR!" ; \
-	    done; \
+		&& echo -n "smir-ed " \
+		|| report "$$source" "SMIR ERROR!"; \
+	    if [ -s $${target} ]; then \
+		${POETRY_RUN} convert-from-definition $$(realpath $${target}) Pgm > /dev/null \
+			&& (echo "and parsed!"; rm $${target}) \
+			|| report "$$source" "PARSE ERROR!"; \
+		fi; \
+	done; \
 	[ -z "$$errors" ] || (echo "FAILING TESTS:"; printf ". %s\n" $${errors}; exit 1); \
