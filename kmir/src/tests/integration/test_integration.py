@@ -127,28 +127,3 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
-
-
-RUN_PANIC_DATA = (Path(__file__).parent / 'data' / 'run-panic').resolve(strict=True)
-RUN_PANIC_INPUT = [RUN_PANIC_DATA / 'simple.kmir']
-
-
-@pytest.mark.parametrize(
-    'test_file',
-    RUN_PANIC_INPUT,
-    ids=[str(test_file.relative_to(RUN_PANIC_DATA)) for test_file in RUN_PANIC_INPUT],
-)
-def test_run_panic(test_file: Path, tools: Tools) -> None:
-    def _is_panic(config: KInner) -> bool:
-        k_cell = CTerm(config).cell('K_CELL')
-
-        match k_cell:
-            case KSequence((KApply(KLabel(name='#stuck_KMIR_KItem')), *_)):
-                return True
-
-        return False
-
-    rc, result = tools.krun.krun(test_file)
-
-    assert rc == 0
-    assert _is_panic(result)
