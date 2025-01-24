@@ -392,7 +392,9 @@ stack frame, at the _target_.
 `Call` is calling another function, setting up its stack frame and
 where the returned result should go.
 
-```k
+TODO This rule currently causes a sort error because of a mismatch between parsed data for the `Call` terminator and stack frame data/configuration.
+
+```
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
            #execBlockIdx(basicBlockIdx(0))
@@ -412,8 +414,9 @@ where the returned result should go.
      requires CALLER in_keys(FUNCS)
       // andBool #withinLocals(DEST, LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+```
 
 
-
+```k
 endmodule
 ```
