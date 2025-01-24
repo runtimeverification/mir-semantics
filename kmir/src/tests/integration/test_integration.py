@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.cterm import CTerm
-from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
+from pyk.kast.inner import KApply, KSort, KToken
 
 from kmir.convert_from_definition.v2parser import Parser
 
