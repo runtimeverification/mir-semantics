@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyk.kast.inner import KSort, Subst
+
 from kmir.build import semantics
+from kmir.convert_from_definition.v2parser import parse_json
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -23,8 +26,20 @@ class RunOpts(KMirOpts):
 
 def _kmir_run(opts: RunOpts) -> None:
     tools = semantics()
-    rc, result = tools.krun.krun(opts.input_file)
-    print(tools.kprint.pretty_print(result))
+
+    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+    if parse_result is None:
+        print('Parse error!', file=sys.stderr)
+        sys.exit(1)
+
+    kmir_kast, _ = parse_result
+
+    subst = Subst({'$PGM': kmir_kast})
+    init_config = subst.apply(tools.definition.init_config(KSort('GeneratedTopCell')))
+    init_kore = tools.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+    result = tools.krun.run_pattern(init_kore)
+
+    print(tools.kprint.kore_to_pretty(result))
 
 
 def kmir(args: Sequence[str]) -> None:
