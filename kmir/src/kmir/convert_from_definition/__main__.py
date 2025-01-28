@@ -1,10 +1,10 @@
 import argparse
-import json
 import sys
+from pathlib import Path
 
 from kmir.build import semantics
 
-from .v2parser import Parser
+from .v2parser import parse_json
 
 
 def parse_args() -> argparse.Namespace:
@@ -17,11 +17,9 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     tools = semantics()
-    p = Parser(tools.definition)
 
-    with open(args.json, 'r') as f:
-        json_data = json.load(f)
-    result = p.parse_mir_json(json_data, args.sort)
+    result = parse_json(tools.definition, Path(args.json), args.sort)
+
     if result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
