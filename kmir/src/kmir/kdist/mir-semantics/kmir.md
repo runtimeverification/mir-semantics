@@ -91,6 +91,12 @@ module KMIR-CONFIGURATION
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   // function store, Int -> Body
                   <functions> .Map </functions>
+                  <function-names>
+                    <function-name multiplicity="*" type="Map">
+                      <ty> 0 </ty>
+                      <kind> functionNoop(symbol("")) </kind>
+                    </function-name>
+                  </function-names>
                   // heap
                   <memory> .Map </memory> // FIXME unclear how to model
                 </kmir>
@@ -117,11 +123,24 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs _Functions:FunctionNames Items:MonoItems)
+  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
          =>
-           #execMain(#findMainItem(Items))
+           #mkFunctionNames(Functions)
+        ~> #execMain(#findMainItem(Items))
        </k>
        <functions> _ => #mkFunctionMap(Items) </functions>
+
+  syntax KItem ::= #mkFunctionNames(FunctionNames)
+  rule <k> #mkFunctionNames(.List) => .K ... </k>
+  rule <k> #mkFunctionNames(ListItem(functionName(I, S)) REST) => #mkFunctionNames(REST) ... </k>
+       <function-names>
+         .Bag =>
+         <function-name>
+            <ty> I </ty>
+            <kind> S </kind>
+         </function-name>
+         ...
+       </function-names>
 ```
 
 The `Map` of `functions` is keyed on the `DefId` of each `MonoItemFn`
