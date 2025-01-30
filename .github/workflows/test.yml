@@ -91,7 +91,7 @@ jobs:
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2024-08-28
+          toolchain: nightly-2024-11-29 # Hardcoded version, same as smir_pretty
 
       - name: 'Build smir_pretty and its rustc dependency'
         run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
