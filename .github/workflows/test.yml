@@ -93,18 +93,6 @@ jobs:
         with:
           toolchain: nightly-2024-08-28
 
-      - name: 'Set up tree for rust dependency of smir_pretty'
-        run: make smir-pretty-setup
-
-      - name: 'Cache smir_pretty and rustc'
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            deps/smir_pretty
-            deps/smir_pretty/deps/rust/src
-          cache-directories: |
-            deps/smir_pretty/deps/rust/src/build
-
       - name: 'Build smir_pretty and its rustc dependency'
         run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
           export GITHUB_ACTIONS="in denial" && \
