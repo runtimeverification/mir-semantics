@@ -117,7 +117,7 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Items:MonoItems)
+  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs _Functions:FunctionNames Items:MonoItems)
          =>
            #execMain(#findMainItem(Items))
        </k>
