@@ -93,10 +93,10 @@ jobs:
         with:
           toolchain: nightly-2024-11-29 # Hardcoded version, same as smir_pretty
 
-      - name: 'Build smir_pretty and its rustc dependency'
+      - name: 'Build smir_pretty'
         run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
-          export GITHUB_ACTIONS="in denial" && \
-          echo "GITHUB_ACTIONS = ${GITHUB_ACTIONS}" && \
+          rustup component add rustc-dev
+          rustup component add llvm-tools
           make smir-pretty
 
       - name: 'Set up Docker'
