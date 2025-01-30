@@ -276,7 +276,7 @@ class Parser:
             json_value = json[key]
             assert isinstance(json_value, JSON)
             prod = self._mir_production_for_symbol(sort, symbol)
-            assert prod in self._mir_non_terminals
+            assert prod in self._mir_non_terminals, f"{prod} not in mir_non_terminals "
             # Check for single-argument enums with non named argument. In this
             # case, the argument needs to be changed to a list, so that its
             # structure is not cosidered a part of the current enumeration.

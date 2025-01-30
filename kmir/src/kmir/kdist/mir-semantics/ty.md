@@ -280,9 +280,6 @@ syntax ConstantKind ::= constantKindTy(TyConst)                   [group(mir-enu
                       | constantKindUnevaluated(UnevaluatedConst) [group(mir-enum), symbol(ConstantKind::Unevaluated)]
                       | constantKindParam(ParamConst)             [group(mir-enum), symbol(ConstantKind::Param)]
                       | "constantKindZeroSized"                   [group(mir-enum), symbol(ConstantKind::ZeroSized)]
-                      | "constantKindNoOp"                        [group(mir-enum), symbol(ConstantKind::NoOp)]
-                      | constantKindFnDef(id: Int)                [group(mir-enum), symbol(ConstantKind::FnDef)]
-                      | constantKindIntrinsic(name: Symbol)       [group(mir-enum), symbol(ConstantKind::Intrinsic)]
 
 syntax ParamConst ::= paramConst(index: MIRInt, name: MIRString)  [group(mir---index--name)]
 
