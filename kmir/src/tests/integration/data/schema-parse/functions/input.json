@@ -1,0 +1,44 @@
+[
+  [
+    114,
+    {
+      "NormalSym": "_ZN4core3ptr42drop_in_place$LT$alloc..string..String$GT$17h1018ac0f9e0b0734E"
+    }
+  ],
+  [
+    102,
+    {
+      "NoOpSym": ""
+    }
+  ],
+  [
+    19,
+    {
+      "NormalSym": "_ZN4core3ops8function6FnOnce9call_once17ha726c80bc9e6a2adE"
+    }
+  ],
+  [
+    100,
+    {
+      "NormalSym": "__rust_dealloc"
+    }
+  ],
+  [
+    78,
+    {
+      "IntrinsicSym": "volatile_load"
+    }
+  ],
+  [
+    27,
+    {
+      "IntrinsicSym": "ctpop"
+    }
+  ],
+  [
+    109,
+    {
+      "NormalSym": "_ZN10mainfoobar3bar17hc9f701b05bebc012E"
+    }
+  ]
+]
