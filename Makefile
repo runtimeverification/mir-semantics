@@ -13,23 +13,12 @@ build: kmir
 ##################################################
 # for integration tests: build smir_pretty in-tree
 
-##################################################
-# This will change when we set up rustc as a submodule in smir_pretty
-smir-pretty-setup: deps/smir_pretty/deps/rust/src
-
-deps/smir_pretty/deps/rust/src:
-	cd deps/smir_pretty && make setup
-
-##################################################
-
-smir-pretty: smir-pretty-setup deps/smir_pretty/target/debug/smir_pretty
-
-deps/smir_pretty/target/debug/smir_pretty: deps/smir_pretty
-	cd deps/smir_pretty && make build_all
+smir-pretty:
+	cd deps/smir_pretty && cargo build
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
-smir-parse-tests: TESTS = $(shell find kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
-smir-parse-tests: SMIR = deps/smir_pretty/run.sh
+smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
+smir-parse-tests: SMIR = cargo -Z unstable-options -C deps/smir_pretty run -- 
 smir-parse-tests: build smir-pretty
 	errors=""; \
 	report() { echo $$2; errors="$$errors $$1"; }; \
