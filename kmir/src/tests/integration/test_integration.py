@@ -112,20 +112,27 @@ SCHEMA_PARSE_KAPPLY_DATA = [
     ),
     (
         {'NormalSym': 'very normal'},
-        KApply('FunctionKind::NormalSym', (KApply('symbol(_)_LIB_Symbol_String',(KToken('"very normal"', KSort('String')))))),
-        KSort('FunctionKind')
+        KApply(
+            'FunctionKind::NormalSym',
+            (KApply('symbol(_)_LIB_Symbol_String', (KToken('"very normal"', KSort('String'))))),
+        ),
+        KSort('FunctionKind'),
     ),
     (
         {'IntrinsicSym': 'intrinsic'},
-        KApply('FunctionKind::IntrinsicSym', (KApply('symbol(_)_LIB_Symbol_String',(KToken('"intrinsic"', KSort('String')))))),
-        KSort('FunctionKind')
+        KApply(
+            'FunctionKind::IntrinsicSym',
+            (KApply('symbol(_)_LIB_Symbol_String', (KToken('"intrinsic"', KSort('String'))))),
+        ),
+        KSort('FunctionKind'),
     ),
     (
         {'NoOpSym': ''},
-        KApply('FunctionKind::NoOpSym', (KApply('symbol(_)_LIB_Symbol_String',(KToken('""', KSort('String')))))),
-        KSort('FunctionKind')
+        KApply('FunctionKind::NoOpSym', (KApply('symbol(_)_LIB_Symbol_String', (KToken('""', KSort('String')))))),
+        KSort('FunctionKind'),
     ),
 ]
+
 
 @pytest.mark.parametrize(
     'test_case',
