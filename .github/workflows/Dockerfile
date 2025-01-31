@@ -13,3 +13,5 @@ USER 1000
 WORKDIR /home/user
 RUN curl https://sh.rustup.rs -sSf > rustinstaller.sh && chmod +x rustinstaller.sh
 RUN sh rustinstaller.sh -y
+
+USER root
