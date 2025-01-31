@@ -11,14 +11,14 @@ build: kmir
 	$(POETRY) run kdist -v build mir-semantics.\* -j4
 
 ##################################################
-# for integration tests: build smir_pretty in-tree
+# for integration tests: build stable-mir-json in-tree
 
-smir-pretty:
-	cd deps/smir_pretty && cargo build
+stable-mir-json:
+	cd deps/stable-mir-json && cargo build
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
 smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
-smir-parse-tests: SMIR = cargo -Z unstable-options -C deps/smir_pretty run -- 
+smir-parse-tests: SMIR = cargo -Z unstable-options -C deps/stable-mir-json run -- 
 smir-parse-tests:
 	errors=""; \
 	report() { echo $$2; errors="$$errors $$1"; }; \
