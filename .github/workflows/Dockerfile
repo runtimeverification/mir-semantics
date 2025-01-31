@@ -12,6 +12,6 @@ RUN groupadd -g $GROUP_ID user && useradd -m -u $USER_ID -s /bin/sh -g user user
 USER 1000
 WORKDIR /home/user
 RUN curl https://sh.rustup.rs -sSf > rustinstaller.sh && chmod +x rustinstaller.sh
-RUN sh rustinstaller.sh -y
+RUN sh rustinstaller.sh -y --default-toolchain nightly
 
 USER root
