@@ -114,7 +114,7 @@ jobs:
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
 
       - name: 'Run parser tests (within docker)'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+        run: make smir-parse-tests POETRY_RUN='docker exec --user user mir-smir-ci-${GITHUB_SHA} poetry -C kmir run'
 
       - name: 'Tear down Docker'
         if: always()
