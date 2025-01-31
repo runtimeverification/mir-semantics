@@ -91,24 +91,18 @@ jobs:
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2024-08-28
+          toolchain: nightly-2024-11-29 # Hardcoded version, same as smir_pretty
 
-      - name: 'Set up tree for rust dependency of smir_pretty'
-        run: make smir-pretty-setup
+      - name: 'remove override'
+        run: |
+          cd deps/smir_pretty
+          rustup override unset
+          rustup override unset --nonexistent
+          rustup toolchain uninstall smir_pretty | echo "rustup toolchain uninstall smir_pretty: FAILED"
+          rustup toolchain remove smir_pretty | echo "rustup toolchain remove smir_pretty: FAILED"
 
-      - name: 'Cache smir_pretty and rustc'
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            deps/smir_pretty
-            deps/smir_pretty/deps/rust/src
-          cache-directories: |
-            deps/smir_pretty/deps/rust/src/build
-
-      - name: 'Build smir_pretty and its rustc dependency'
-        run: | # rustc bootstrap checks this and refuses stage 1 in "CI"
-          export GITHUB_ACTIONS="in denial" && \
-          echo "GITHUB_ACTIONS = ${GITHUB_ACTIONS}" && \
+      - name: 'Build smir_pretty'
+        run: |
           make smir-pretty
 
       - name: 'Set up Docker'
@@ -119,18 +113,8 @@ jobs:
       - name: 'Build kmir (within docker)'
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
 
-      - name: 'HACK: patch rustc_arch.sh script (within docker)'
-        run: |
-          arch=$(rustc -vV | sed -n -e 's/host: \(.*\)$/\1/p')
-          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
-              bash -c "printf '#!/bin/sh\necho \"$arch\"\n' > deps/smir_pretty/rustc_arch.sh"
-          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
-              cat deps/smir_pretty/rustc_arch.sh
-          docker exec --user user mir-smir-ci-${GITHUB_SHA} \
-              deps/smir_pretty/rustc_arch.sh
-
       - name: 'Run parser tests (within docker)'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+        run: make smir-parse-tests POETRY_RUN='docker exec --user user mir-smir-ci-${GITHUB_SHA} poetry -C kmir run'
 
       - name: 'Tear down Docker'
         if: always()
