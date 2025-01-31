@@ -38,6 +38,7 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'statementassign1',
     SCHEMA_PARSE_DATA / 'statementassign2',
     SCHEMA_PARSE_DATA / 'aggregatekindadt',
+    SCHEMA_PARSE_DATA / 'functions',
     SCHEMA_PARSE_DATA / 'body',
     SCHEMA_PARSE_DATA / 'testsort2',
 ]
@@ -108,6 +109,27 @@ SCHEMA_PARSE_KAPPLY_DATA = [
             ),
         ),
         KSort('LocalDecl'),
+    ),
+    (
+        {'NormalSym': 'very normal'},
+        KApply(
+            'FunctionKind::NormalSym',
+            (KApply('symbol(_)_LIB_Symbol_String', (KToken('"very normal"', KSort('String'))))),
+        ),
+        KSort('FunctionKind'),
+    ),
+    (
+        {'IntrinsicSym': 'intrinsic'},
+        KApply(
+            'FunctionKind::IntrinsicSym',
+            (KApply('symbol(_)_LIB_Symbol_String', (KToken('"intrinsic"', KSort('String'))))),
+        ),
+        KSort('FunctionKind'),
+    ),
+    (
+        {'NoOpSym': ''},
+        KApply('FunctionKind::NoOpSym', (KApply('symbol(_)_LIB_Symbol_String', (KToken('""', KSort('String')))))),
+        KSort('FunctionKind'),
     ),
 ]
 
