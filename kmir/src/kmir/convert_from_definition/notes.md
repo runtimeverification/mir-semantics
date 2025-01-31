@@ -119,4 +119,3 @@ We need to always have rules of form (a). This transformation has not happened y
 1. Special case parsing
 We decided to not use the parser to do json processing, but to preprocess the json (or make changes at the Rust level) instead. Therefore, cases that will need to be handled include:
    - Creating unique IDs for functions (hash of function name) and alloc IDs (concatenation of alloc id and crate id). The crate id is currently included in the json file, but not expected in K AST, and the IDs might not be unique.
-   - The functions map exists in the json file, but is not expected in the K AST. Instead, it was used to map the type to a function name and type (noop, intrinsic, function definition), and used later to construct a Node ConstantKind{NoOp, InrinsicSym, FnDef} instead of ConstandKindZeroSized.
