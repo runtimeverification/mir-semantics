@@ -93,12 +93,6 @@ jobs:
         with:
           toolchain: nightly-2024-11-29 # Hardcoded version, same as smir_pretty
 
-      - name: 'remove override'
-        run: |
-          rustup override unset
-          rustup override unset --nonexistent
-          rustup toolchain uninstall smir_serde_derive_intern_scripts
-
       - name: 'Build smir_pretty'
         run: |
           make smir-pretty
