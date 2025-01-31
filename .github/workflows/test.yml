@@ -70,9 +70,9 @@ jobs:
         with:
           container-name: mir-semantics-ci-${{ github.sha }}
       - name: 'Build kmir'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} /bin/bash --login -c 'make build'
       - name: 'Run integration tests'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} /bin/bash --login -c 'make -C kmir test-integration'
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
@@ -111,10 +111,10 @@ jobs:
           container-name: mir-smir-ci-${{ github.sha }}
 
       - name: 'Build kmir (within docker)'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} /bin/bash --login -c 'make build'
 
       - name: 'Run parser tests (within docker)'
-        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} /bin/bash --login -c 'make smir-parse-tests'
 
       - name: 'Tear down Docker'
         if: always()
