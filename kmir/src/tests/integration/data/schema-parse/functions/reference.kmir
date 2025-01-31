@@ -1,0 +1,42 @@
+ListItem(
+  functionName(
+    114,
+    functionNormalSym(symbol("_ZN4core3ptr42drop_in_place$LT$alloc..string..String$GT$17h1018ac0f9e0b0734E"))
+  )
+)
+ListItem(
+  functionName(
+    102,
+    functionNoop(symbol(""))
+  )
+)
+ListItem(
+  functionName(
+    19,
+    functionNormalSym(symbol("_ZN4core3ops8function6FnOnce9call_once17ha726c80bc9e6a2adE"))
+  )
+)
+ListItem(
+  functionName(
+    100,
+    functionNormalSym(symbol("__rust_dealloc"))
+  )
+)
+ListItem(
+  functionName(
+    78,
+    functionIntrinsic(symbol("volatile_load"))
+  )
+)
+ListItem(
+  functionName(
+    27,
+    functionIntrinsic(symbol("ctpop"))
+  )
+)
+ListItem(
+  functionName(
+    109,
+    functionNormalSym(symbol("_ZN10mainfoobar3bar17hc9f701b05bebc012E"))
+  )
+)
