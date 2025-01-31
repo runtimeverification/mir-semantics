@@ -25,8 +25,8 @@ runs:
         --interactive            \
         --tty                    \
         --detach                 \
-        --workdir /home/user     \
+        --workdir ${PWD}         \
         ${TAG}
 
-      docker cp . ${CONTAINER_NAME}:/home/user
-      docker exec ${CONTAINER_NAME} chown -R user:user /home/user
+      docker cp . ${CONTAINER_NAME}:${PWD}
+      docker exec ${CONTAINER_NAME} chown -R user:user ${PWD}
