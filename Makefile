@@ -19,7 +19,7 @@ smir-pretty:
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
 smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
 smir-parse-tests: SMIR = cargo -Z unstable-options -C deps/smir_pretty run -- 
-smir-parse-tests: build smir-pretty
+smir-parse-tests:
 	errors=""; \
 	report() { echo $$2; errors="$$errors $$1"; }; \
 	for source in ${TESTS}; do \
