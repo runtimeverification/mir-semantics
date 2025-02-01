@@ -76,3 +76,46 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+
+  stable-mir-json-integration-tests:
+    needs: code-quality-checks
+    name: "Integration with stable-mir-json"
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+
+      - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2024-11-29 # Hardcoded version, same as stable-mir-json
+
+      - name: 'remove override'
+        run: |
+          cd deps/stable-mir-json
+          rustup override unset
+          rustup override unset --nonexistent
+          rustup toolchain uninstall stable-mir-json | echo "rustup toolchain uninstall stable-mir-json: FAILED"
+          rustup toolchain remove stable-mir-json | echo "rustup toolchain remove stable-mir-json: FAILED"
+
+      - name: 'Build stable-mir-json'
+        run: |
+          make stable-mir-json
+
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-smir-ci-${{ github.sha }}
+
+      - name: 'Build kmir (within docker)'
+        run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
+
+      - name: 'Run parser tests (within docker)'
+        run: make smir-parse-tests POETRY_RUN='docker exec --user user mir-smir-ci-${GITHUB_SHA} poetry -C kmir run'
+
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
