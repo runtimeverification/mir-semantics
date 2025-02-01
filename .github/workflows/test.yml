@@ -77,9 +77,9 @@ jobs:
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
 
-  smir-integration-tests:
+  stable-mir-json-integration-tests:
     needs: code-quality-checks
-    name: "Integration with smir_pretty"
+    name: "Integration with stable-mir-json"
     runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
@@ -91,19 +91,19 @@ jobs:
       - name: "Set up nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2024-11-29 # Hardcoded version, same as smir_pretty
+          toolchain: nightly-2024-11-29 # Hardcoded version, same as stable-mir-json
 
       - name: 'remove override'
         run: |
-          cd deps/smir_pretty
+          cd deps/stable-mir-json
           rustup override unset
           rustup override unset --nonexistent
-          rustup toolchain uninstall smir_pretty | echo "rustup toolchain uninstall smir_pretty: FAILED"
-          rustup toolchain remove smir_pretty | echo "rustup toolchain remove smir_pretty: FAILED"
+          rustup toolchain uninstall stable-mir-json | echo "rustup toolchain uninstall stable-mir-json: FAILED"
+          rustup toolchain remove stable-mir-json | echo "rustup toolchain remove stable-mir-json: FAILED"
 
-      - name: 'Build smir_pretty'
+      - name: 'Build stable-mir-json'
         run: |
-          make smir-pretty
+          make stable-mir-json
 
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
