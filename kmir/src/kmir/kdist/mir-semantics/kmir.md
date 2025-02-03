@@ -364,23 +364,25 @@ the stack frame. Execution continues with the context of the enclosing
 stack frame, at the _target_.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #execBlockIdx(TARGET)
-         ...
+           #execBlockIdx(TARGET) ~> .K
        </k>
+       <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
          <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
-         <caller>  CALLER => NEWCALLER </caller>
+         <caller> CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(L0) _ => #setLocal(LOCALS, DEST, L0) </locals>
+         <locals> LOCALS => #setLocal(NEWLOCALS, DEST, {LOCALS[0]}:>MaybeValue ) </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, LOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
+      andBool 0 <Int size(LOCALS)
+      andBool isMaybeValue(LOCALS[0])
       // andBool #withinLocals(DEST, LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
@@ -399,11 +401,15 @@ stack frame, at the _target_.
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 
   // set a local to a new value. Assumes the place is valid
-  syntax List ::= #setLocal(List, Place, Value) [function]
+  syntax List ::= #setLocal(List, Place, MaybeValue) [function]
 
-  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), VALUE)
+  rule #setLocal(LOCALS, _, NoValue)
      =>
-       LOCALS[I <- VALUE]
+       LOCALS
+
+  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), V:Value)
+     =>
+       LOCALS[I <- V]
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
