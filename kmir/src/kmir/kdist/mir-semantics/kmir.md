@@ -222,7 +222,7 @@ block of the body.
 
   rule #reserveFor(.LocalDecls) => .List
 
-  rule #reserveFor(_:LocalDecl REST:LocalDecls) => ListItem(Any) #reserveFor(REST)
+  rule #reserveFor(_:LocalDecl REST:LocalDecls) => ListItem(NoValue) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -422,33 +422,73 @@ where the returned result should go.
 
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, _ARGS, DEST, TARGET, UNWIND), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #execBlockIdx(basicBlockIdx(0))
+           #setUpCalleeData( FUNCS[#tyOfCall(FUNC)]:>MonoItemKind, ARGS)
          ...
        </k>
-       <currentFunc> CURRENT => #tyOfCall(FUNC) </currentFunc>
+       <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, #tyOfCall(FUNC)) </currentBody>
-         <caller> OLDCALLER => CURRENT </caller>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS => .List </locals> // FIXME reserve space and insert arg.s
+         <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
        <functions> FUNCS </functions>
      requires #tyOfCall(FUNC) in_keys(FUNCS)
-      // andBool #withinLocals(DEST, LOCALS)
-     [preserves-definedness] // callee lookup defined, DEST within locals TODO
+     [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
   rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))))
     => Ty
   rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
+```
 
+The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references into the heap, i.e., the reference needs to be copied
+(NB: A function won't ever access any other function call's `local` variables).
 
+```k
+  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
+
+  // reserve space for local variables and copy arguments from old locals into their place
+  rule <k> #setUpCalleeData(
+              monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
+              ARGS
+              )
+         =>
+           #execBlock(FIRST) 
+         ...
+       </k>
+       //<currentFunc> CALLEE </currentFunc>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+        //  <caller> CALLER </caller>
+        //  <dest> DEST </dest>
+        //  <target> TARGET </target>
+        //  <unwind> UNWIND </unwind>
+         <locals> OLDLOCALS => #setArgs(OLDLOCALS, 1, ARGS, #reserveFor(NEWLOCALS)) </locals>
+         // assumption: arguments stored as _1 .. _n before actual "local" data
+       </currentFrame>
+
+  syntax List ::= #setArgs ( List, Int, Operands, List) [function]
+
+  rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
+  rule #setArgs(PRIOR_LOCALS, IDX, ARG:Operand ARGS:Operands, ACC)
+       => 
+       #setArgs(
+          PRIOR_LOCALS,
+          IDX +Int 1,
+          ARGS,
+          #setLocal(ACC, place(local(IDX), .ProjectionElems), #readValue(PRIOR_LOCALS, ARG))
+        )
+
+  syntax Value ::= #readValue ( List, Operand )
+
+  rule #readValue(_, _) => Any // FIXME! Not reading anything
 ```
 
 
