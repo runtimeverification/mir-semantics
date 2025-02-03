@@ -23,7 +23,7 @@ module KMIR-AST
                         | functionIntrinsic(Symbol) [symbol(FunctionKind::IntrinsicSym), group(mir-enum)]
                         | functionNoop(Symbol)      [symbol(FunctionKind::NoOpSym), group(mir-enum)]
 
-  syntax FunctionName ::= functionName(MIRInt, FunctionKind)
+  syntax FunctionName ::= functionName(Ty, FunctionKind)
                           [symbol(functionName), group(mir)]
 
   syntax FunctionNames ::= List [group(mir-klist-FunctionName)]
