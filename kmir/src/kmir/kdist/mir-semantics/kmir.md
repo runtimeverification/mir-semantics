@@ -67,11 +67,11 @@ module KMIR-CONFIGURATION
   syntax RetVal ::= "NoRetVal"
                   | Int // FIXME is this enough?
 
-  syntax StackFrame ::= StackFrame(caller:Ty,            // index of caller function
-                                   dest:Place,           // place to store return value
-                                   target:BasicBlockIdx, // basic block to return to
-                                   UnwindAction,         // action to perform on panic
-                                   locals:List)          // return val, args, local variables
+  syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
+                                   dest:Place,                // place to store return value
+                                   target:MaybeBasicBlockIdx, // basic block to return to
+                                   UnwindAction,              // action to perform on panic
+                                   locals:List)               // return val, args, local variables
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
@@ -82,7 +82,7 @@ module KMIR-CONFIGURATION
                     <currentBody> .List </currentBody>
                     <caller> ty(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
-                    <target> basicBlockIdx(-1) </target>
+                    <target> noBasicBlockIdx </target>
                     <unwind> unwindActionUnreachable </unwind>
                     <locals> .List </locals>
                   </currentFrame>
@@ -206,7 +206,7 @@ block of the body.
          <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> _ => ty(-1) </caller> // no caller of main
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
-         <target> _ => basicBlockIdx(-1) </target>
+         <target> _ => noBasicBlockIdx </target>
          <unwind> _ => unwindActionUnreachable </unwind> // FIXME
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
@@ -373,7 +373,7 @@ stack frame, at the _target_.
          <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
          <caller>  CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
-         <target> TARGET => NEWTARGET </target>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
          <locals> ListItem(L0) _ => #setLocal(LOCALS, DEST, L0) </locals>
        //</currentFrame>
@@ -420,28 +420,35 @@ stack frame, at the _target_.
 `Call` is calling another function, setting up its stack frame and
 where the returned result should go.
 
-TODO This rule currently causes a sort error because of a mismatch between parsed data for the `Call` terminator and stack frame data/configuration.
 
-```
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
+```k
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, _ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
            #execBlockIdx(basicBlockIdx(0))
          ...
        </k>
-       <currentFunc> CURRENT </currentFunc>
+       <currentFunc> CURRENT => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, FUNC) </currentBody> // FIXME FUNC is an _Operand_!
+         <currentBody> _ => #getBlocks(FUNCS, #tyOfCall(FUNC)) </currentBody>
          <caller> OLDCALLER => CURRENT </caller>
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS => .List </locals> // FIXME
+         <locals> LOCALS => .List </locals> // FIXME reserve space and insert arg.s
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
        <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
+     requires #tyOfCall(FUNC) in_keys(FUNCS)
       // andBool #withinLocals(DEST, LOCALS)
-     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+     [preserves-definedness] // callee lookup defined, DEST within locals TODO
+
+  syntax Ty ::= #tyOfCall( Operand ) [function, total]
+
+  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))))
+    => Ty
+  rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
+
+
 ```
 
 
