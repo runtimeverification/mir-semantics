@@ -67,7 +67,7 @@ module KMIR-CONFIGURATION
   syntax RetVal ::= "NoRetVal"
                   | Int // FIXME is this enough?
 
-  syntax StackFrame ::= StackFrame(caller:DefId,         // index of caller function
+  syntax StackFrame ::= StackFrame(caller:Ty,            // index of caller function
                                    dest:Place,           // place to store return value
                                    target:BasicBlockIdx, // basic block to return to
                                    UnwindAction,         // action to perform on panic
@@ -76,11 +76,11 @@ module KMIR-CONFIGURATION
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
                   <retVal> NoRetVal </retVal>
-                  <currentFunc> defId(-1) </currentFunc> // necessary to retrieve caller
+                  <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
                     <currentBody> .List </currentBody>
-                    <caller> defId(-1) </caller>
+                    <caller> ty(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
                     <target> basicBlockIdx(-1) </target>
                     <unwind> unwindActionUnreachable </unwind>
@@ -88,17 +88,11 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
-                  // function store, Int -> Body
+                  // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
-                  <function-names>
-                    <function-name multiplicity="*" type="Map">
-                      <ty> 0 </ty>
-                      <kind> functionNoop(symbol("")) </kind>
-                    </function-name>
-                  </function-names>
                   // heap
                   <memory> .Map </memory> // FIXME unclear how to model
+                  // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                 </kmir>
 endmodule
 ```
@@ -125,48 +119,60 @@ function map and the initial memory have to be set up.
   // #init step, assuming a singleton in the K cell
   rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
          =>
-           #mkFunctionNames(Functions)
-        ~> #execMain(#findMainItem(Items))
+           #execMain(#findMainItem(Items)) // TODO could execute a different function
        </k>
-       <functions> _ => #mkFunctionMap(Items) </functions>
-
-  syntax KItem ::= #mkFunctionNames(FunctionNames)
-  rule <k> #mkFunctionNames(.List) => .K ... </k>
-  rule <k> #mkFunctionNames(ListItem(functionName(I, S)) REST) => #mkFunctionNames(REST) ... </k>
-       <function-names>
-         .Bag =>
-         <function-name>
-            <ty> I </ty>
-            <kind> S </kind>
-         </function-name>
-         ...
-       </function-names>
+       <functions> _ => #mkFunctionMap(Functions, Items) </functions>
 ```
 
-The `Map` of `functions` is keyed on the `DefId` of each `MonoItemFn`
-found in the `MonoItems` of the program. The function _names_ are
-not relevant for execution and therefore dropped.
+The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
+composed with a secondary lookup of `Item`s via `symbolName`. This composed map will
+only be populated for `MonoItemFn` items that are indeed _called_ in the code (i.e.,
+they are callee in a `Call` terminator within an `Item`).
+
+The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
-  syntax Map ::= #mkFunctionMap ( MonoItems )       [ function, total ]
-               | #accumFunctions ( Map, MonoItems ) [ function, total ]
+  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems )   [ function, total ]
+               | #accumFunctions ( Map, Map, FunctionNames )        [ function, total ]
+               | #accumItems ( Map, MonoItems )           [ function, total ]
 
-  rule #mkFunctionMap(Items) => #accumFunctions(.Map, Items)
+  rule #mkFunctionMap(Functions, Items) => #accumFunctions(.Map, #accumItems(.Map, Items), Functions)
 
-  // accumulate function map discarding duplicate IDs
-  rule #accumFunctions(Acc, .MonoItems) => Acc
+  // accumulate map of symbol_name -> function (MonoItemFn), discarding duplicate IDs
+  rule #accumItems(Acc, .MonoItems) => Acc
 
-  rule #accumFunctions(Acc, monoItem(_, monoItemFn(_, Id, Body)) Rest:MonoItems)
+  rule #accumItems(Acc, monoItem(SymName, monoItemFn(_, _, _) #as Function) Rest:MonoItems)
      =>
-       #accumFunctions(Acc (Id |-> Body), Rest)
-    requires notBool (Id in_keys(Acc))
+       #accumItems(Acc (SymName |-> Function), Rest)
+    requires notBool (SymName in_keys(Acc))
     [ preserves-definedness ] // key collisions checked
 
-  // discard other items and duplicate IDs
-  rule #accumFunctions(Acc, _:MonoItem Rest:MonoItems)
+  // discard other items and duplicate symbolNames
+  rule #accumItems(Acc, _:MonoItem Rest:MonoItems)
      =>
-       #accumFunctions(Acc, Rest)
+       #accumItems(Acc, Rest)
     [ owise ]
+
+  // accumulate composed map of Ty -> MonoItemFn, using item map from before and function names
+  rule #accumFunctions(Acc, _, .List) => Acc
+
+  rule #accumFunctions(Acc, ItemMap, ListItem(functionName(TyIdx, functionNormalSym(SymName))) Rest )
+    =>
+      #accumFunctions(Acc (TyIdx |-> ItemMap[SymName]), ItemMap, Rest)
+    requires SymName in_keys(ItemMap)
+     andBool notBool (TyIdx in_keys(Acc))
+    [preserves-definedness]
+
+  // TODO handle NoOpSym and IntrinsicSym cases here
+
+  // discard anything else:
+  // - duplicate Ty mappings (impossible by construction in stable-mir-json)
+  // - unknown symbol_name (impossible by construction in stable-mir-json)
+  rule #accumFunctions(Acc, ItemMap, ListItem(_) Rest)
+    =>
+       #accumFunctions(Acc, ItemMap, Rest)
+    [ owise ]
+
 ```
 
 Executing the `main` function means to create the `currentFrame` data
@@ -190,15 +196,15 @@ block of the body.
   syntax KItem ::= #execMain ( MonoItemKind )
 
   // NB differs from arbitrary function execution only by not pushing a stack frame
-  rule <k> #execMain(monoItemFn(_, ID, body(FIRST:BasicBlock _ #as BLOCKS, LOCALS, _, _, _, _) .Bodies))
+  rule <k> #execMain(monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS, LOCALS, _, _, _, _) .Bodies))
          =>
            #execBlock(FIRST)
          ...
        </k>
-       <currentFunc> _ => ID </currentFunc>
+       <currentFunc> _ => ty(-1) </currentFunc> // Index of main is not known
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <caller> _ => defId(-1) </caller>
+         <caller> _ => ty(-1) </caller> // no caller of main
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
          <target> _ => basicBlockIdx(-1) </target>
          <unwind> _ => unwindActionUnreachable </unwind> // FIXME
@@ -378,16 +384,19 @@ stack frame, at the _target_.
       // andBool #withinLocals(DEST, LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
-  syntax List ::= #getBlocks(Map, DefId) [function]
-                | #getBlocksAux(Bodies)  [function, total]
+  syntax List ::= #getBlocks(Map, Ty) [function]
+                | #getBlocksAux(MonoItemKind)  [function, total]
 
-  rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>Bodies)
+  rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>MonoItemKind)
     requires ID in_keys(FUNCS)
-     andBool isBodies(FUNCS[ID])
 
   // returns blocks from the _first_ body if there are several
-  rule #getBlocksAux(.Bodies) => .List
-  rule #getBlocksAux(body(BLOCKS, _, _, _, _, _) _) => toKList(BLOCKS)
+  // TODO handle cases with several blocks
+  rule #getBlocksAux(monoItemFn(_, _, .Bodies)) => .List
+  rule #getBlocksAux(monoItemFn(_, _, body(BLOCKS, _, _, _, _, _) _)) => toKList(BLOCKS)
+  // other item kinds are not expected or supported
+  rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
+  rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 
   // set a local to a new value. Assumes the place is valid
   syntax List ::= #setLocal(List, Place, Value) [function]
