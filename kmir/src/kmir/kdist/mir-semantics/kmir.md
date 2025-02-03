@@ -424,7 +424,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData( FUNCS[#tyOfCall(FUNC)]:>MonoItemKind, ARGS)
+           #setUpCalleeData( {FUNCS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -472,6 +472,7 @@ The local data has to be set up for the call, which requires information about t
         //  <unwind> UNWIND </unwind>
          <locals> OLDLOCALS => #setArgs(OLDLOCALS, 1, ARGS, #reserveFor(NEWLOCALS)) </locals>
          // assumption: arguments stored as _1 .. _n before actual "local" data
+         ...
        </currentFrame>
 
   syntax List ::= #setArgs ( List, Int, Operands, List) [function]
