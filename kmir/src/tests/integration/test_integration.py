@@ -191,17 +191,19 @@ def test_exec_smir(
     kast_result = tools.kprint.kore_to_kast(result)
 
     kcell = None
-    def get_k_cell(term):
+
+    def get_k_cell(term: KInner) -> None:
         match term:
-            case KApply(label=KLabel("<k>")):
+            case KApply(label=KLabel('<k>')):
                 nonlocal kcell
-                kcell=term
+                kcell = term
 
     collect(get_k_cell, kast_result)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
+    assert isinstance(kcell, KApply)
     result_pretty = tools.kprint.pretty_print(kcell).rstrip()
 
     assert result_pretty == expected
