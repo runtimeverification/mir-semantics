@@ -16,7 +16,7 @@ module KMIR-SYNTAX
   imports INT-SYNTAX
   imports FLOAT-SYNTAX
 
-  syntax KItem ::= #init( Pgm, Symbol )
+  syntax KItem ::= #init( Pgm )
 
 ////////////////////////////////////////////
 // FIXME things below related to memory and
@@ -73,7 +73,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm, symbol("main")) </k>
+                  <k> #init($PGM:Pgm) </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
@@ -92,6 +92,7 @@ module KMIR-CONFIGURATION
                   // heap
                   <memory> .Map </memory> // FIXME unclear how to model
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
+                  <start-symbol> $STARTSYM:String </start-symbol>
                 </kmir>
 endmodule
 ```
@@ -116,11 +117,12 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems, FuncName)
+  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
          =>
-           #execFunction(#findItem(Items, FuncName), Functions)
+           #execFunction(#findItem(Items, symbol(FuncName)), Functions)
        </k>
        <functions> _ => #mkFunctionMap(Functions, Items) </functions>
+       <start-symbol> FuncName </start-symbol>
 ```
 
 The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
