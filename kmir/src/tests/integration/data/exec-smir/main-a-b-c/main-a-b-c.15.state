@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <currentBody>
-      .List
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) )
     </currentBody>
     <caller>
       ty ( 26 )

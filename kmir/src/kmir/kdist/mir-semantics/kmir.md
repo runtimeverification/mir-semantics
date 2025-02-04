@@ -504,7 +504,7 @@ The local data has to be set up for the call, which requires information about t
 
   // reserve space for local variables and copy arguments from old locals into their place
   rule <k> #setUpCalleeData(
-              monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
+              monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
               ARGS
               )
          =>
