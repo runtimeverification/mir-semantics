@@ -195,8 +195,6 @@ def test_exec_smir(
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
-    print(result)
-
     result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
 
     assert result_pretty == expected
