@@ -140,7 +140,7 @@ The function _names_ and _ids_ are not relevant for calls and therefore dropped.
        #accumFunctions(#mainIsMinusOne(Items), #accumItems(.Map, Items), Functions)
   //////////////////// ^^^^^^^^^^^^^^^^^^^^^^ HACK Adds "main" as function with ty(-1)
   syntax Map ::= #mainIsMinusOne(MonoItems) [function]
-  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> #findItem(ITEMS, symbol("main"))
+  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> monoItemKind(#findItem(ITEMS, symbol("main")))
   ////////////////////////////////////////////////////////////////
 
   // accumulate map of symbol_name -> function (MonoItemFn), discarding duplicate IDs
