@@ -333,7 +333,7 @@ def generic_args_from_dict(js: Sequence[Mapping[str, object]]) -> KApply:
 
 
 def aggregate_kind_adt_from_dict(
-    js: list[int | Sequence[Mapping[str, object]] | Mapping[str, object] | None]
+    js: list[int | Sequence[Mapping[str, object]] | Mapping[str, object] | None],
 ) -> KApply:
     if len(js) != 5:
         _raise_conversion_error('')
