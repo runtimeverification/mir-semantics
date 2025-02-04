@@ -72,7 +72,7 @@ jobs:
       - name: 'Build kmir'
         run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
       - name: 'Run integration tests'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration TEST_ARGS=-vv
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
