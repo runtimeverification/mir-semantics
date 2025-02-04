@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.kast.inner import KApply, KSort, KToken
+from pyk.kast.inner import KApply, KSort, KToken, Subst
 
 from kmir.convert_from_definition.v2parser import Parser
 
@@ -148,3 +148,51 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
+
+EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict = True)
+EXEC_DATA = [
+    (
+        "main-a-b-c",
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.run.state',
+        None,
+    ),
+    (
+        "main-a-b-c --depth 15",
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.15.state',
+        15,
+    ),
+]
+
+@pytest.mark.parametrize(
+    'test_case',
+    EXEC_DATA,
+    ids=[ name for (name, _, _, _) in EXEC_DATA ],
+)
+def test_exec_smir(
+        test_case: tuple(str, Path, Path, int),
+        tools: Tools,
+) -> None:
+
+    (_, input_json, output_kast, depth) = test_case
+
+    parser = Parser(tools.definition)
+
+    with input_json.open('r') as f:
+        json_data = json.load(f)
+    kmir_kast, _ = parser.parse_mir_json(json_data, 'Pgm')
+
+    subst = Subst({'$PGM': kmir_kast})
+    init_config = subst.apply(tools.definition.init_config(KSort('GeneratedTopCell')))
+    init_kore = tools.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+    result = tools.krun.run_pattern(init_kore, depth=depth)
+
+    with output_kast.open('r') as f:
+        expected = f.read().rstrip()
+
+    print(result)
+
+    result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
+
+    assert result_pretty == expected
