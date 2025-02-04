@@ -64,8 +64,7 @@ module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports INT-SYNTAX
 
-  syntax RetVal ::= "NoRetVal"
-                  | Int // FIXME is this enough?
+  syntax RetVal ::= MaybeValue
 
   syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
                                    dest:Place,                // place to store return value
@@ -75,7 +74,7 @@ module KMIR-CONFIGURATION
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
-                  <retVal> NoRetVal </retVal>
+                  <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
@@ -429,6 +428,28 @@ stack frame, at the _target_.
   //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
   //   [preserves-definedness] // valid list indexing and projection checked
 ```
+
+When a `terminatorKindReturn` is executed but the optional target is empty
+(`noBasicBlockIdx`), the program is ended, using the returned value from `_0`
+as the program's `retVal`.  
+The call stack is not necessarily empty at this point so it is left untouched.
+
+```k
+  syntax KItem ::= "#EndProgram"
+
+  rule [endprogram]:
+       <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #EndProgram
+       </k>
+       <retVal> _ => {LOCALS[0]}:>MaybeValue </retVal>
+       <currentFrame>
+         <target> noBasicBlockIdx </target>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+```
+
 
 `Call` is calling another function, setting up its stack frame and
 where the returned result should go.
