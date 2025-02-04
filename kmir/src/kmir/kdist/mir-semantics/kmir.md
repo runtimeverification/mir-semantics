@@ -136,7 +136,14 @@ The function _names_ and _ids_ are not relevant for calls and therefore dropped.
                | #accumFunctions ( Map, Map, FunctionNames )        [ function, total ]
                | #accumItems ( Map, MonoItems )           [ function, total ]
 
-  rule #mkFunctionMap(Functions, Items) => #accumFunctions(.Map, #accumItems(.Map, Items), Functions)
+  rule #mkFunctionMap(Functions, Items)
+    =>
+       #accumFunctions(#mainIsMinusOne(Items), #accumItems(.Map, Items), Functions)
+                    // ^^^^^^^^^^^^^^^^^^^^^^ Adds "main" as function with ty(-1)
+
+  syntax Map ::= #mainIsMinusOne(MonoItems) [function]
+
+  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> #findMainItem(ITEMS)
 
   // accumulate map of symbol_name -> function (MonoItemFn), discarding duplicate IDs
   rule #accumItems(Acc, .MonoItems) => Acc
