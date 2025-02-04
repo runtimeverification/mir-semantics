@@ -8,7 +8,7 @@ requires "kmir-ast.md"
 
 The MIR syntax is largely defined in [KMIR-AST](./kmir-ast.md) and its
 submodules. The execution is initialised based on a loaded `Pgm` read
-from a json format of stable-MIR.
+from a json format of stable-MIR, and the name of the function to execute.
 
 ```k
 module KMIR-SYNTAX
@@ -16,7 +16,7 @@ module KMIR-SYNTAX
   imports INT-SYNTAX
   imports FLOAT-SYNTAX
 
-  syntax KItem ::= #init( Pgm )
+  syntax KItem ::= #init( Pgm, Symbol )
 
 ////////////////////////////////////////////
 // FIXME things below related to memory and
@@ -73,7 +73,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm) </k>
+                  <k> #init($PGM:Pgm, symbol("main")) </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
@@ -116,9 +116,9 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
+  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems, FuncName)
          =>
-           #execMain(#findMainItem(Items)) // TODO could execute a different function
+           #execFunction(#findItem(Items, FuncName), Functions)
        </k>
        <functions> _ => #mkFunctionMap(Functions, Items) </functions>
 ```
@@ -138,11 +138,10 @@ The function _names_ and _ids_ are not relevant for calls and therefore dropped.
   rule #mkFunctionMap(Functions, Items)
     =>
        #accumFunctions(#mainIsMinusOne(Items), #accumItems(.Map, Items), Functions)
-                    // ^^^^^^^^^^^^^^^^^^^^^^ Adds "main" as function with ty(-1)
-
+  //////////////////// ^^^^^^^^^^^^^^^^^^^^^^ HACK Adds "main" as function with ty(-1)
   syntax Map ::= #mainIsMinusOne(MonoItems) [function]
-
-  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> #findMainItem(ITEMS)
+  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> #findItem(ITEMS, symbol("main"))
+  ////////////////////////////////////////////////////////////////
 
   // accumulate map of symbol_name -> function (MonoItemFn), discarding duplicate IDs
   rule #accumItems(Acc, .MonoItems) => Acc
@@ -181,41 +180,56 @@ The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```
 
-Executing the `main` function means to create the `currentFrame` data
+Executing a given named function means to create the `currentFrame` data
 structure from its function body and then execute the first basic
-block of the body.
+block of the body. The function's `Ty` index in the `functions` map must
+be known to populate the `currentFunc` field.
 
 ```k
-  // `main` is found through its MonoItemFn.name
-  syntax MonoItemKind ::= #findMainItem ( MonoItems ) [ function ]
+  // find function through its MonoItemFn.name
+  syntax MonoItem ::= #findItem ( MonoItems, Symbol ) [ function ]
 
-  rule #findMainItem( monoItem(_, monoItemFn(NAME, ID, BODY)) _ )
+  rule #findItem( (monoItem(_, monoItemFn(N, _, _)) #as ITEM) _REST, NAME )
      =>
-       monoItemFn(NAME, ID, BODY)
-    requires NAME ==K symbol("main")
-  rule #findMainItem( _:MonoItem Rest:MonoItems )
+       ITEM
+    requires N ==K NAME
+  rule #findItem( _:MonoItem REST:MonoItems, NAME )
      =>
-       #findMainItem(Rest)
+       #findItem(REST, NAME)
     [owise]
-  // rule #findMainItem( .MonoItems ) => error!
+  // rule #findItem( .MonoItems, _NAME) => error!
 
-  syntax KItem ::= #execMain ( MonoItemKind )
+  syntax KItem ::= #execFunction ( MonoItem, FunctionNames )
 
-  // NB differs from arbitrary function execution only by not pushing a stack frame
-  rule <k> #execMain(monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS, LOCALS, _, _, _, _) .Bodies))
+  rule <k> #execFunction(
+              monoItem(
+                SYMNAME,
+                monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
+              ),
+              FUNCTIONNAMES
+            )
          =>
            #execBlock(FIRST)
          ...
        </k>
-       <currentFunc> _ => ty(-1) </currentFunc> // Index of main is not known
+       <currentFunc> _ => #tyFromName(SYMNAME, FUNCTIONNAMES) </currentFunc>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <caller> _ => ty(-1) </caller> // no caller of main
+         <caller> _ => ty(-1) </caller> // no caller
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
          <target> _ => noBasicBlockIdx </target>
-         <unwind> _ => unwindActionUnreachable </unwind> // FIXME
+         <unwind> _ => unwindActionUnreachable </unwind>
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
+
+  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function]
+
+  rule #tyFromName(NAME, ListItem(functionName(TY, FNAME)) _) => TY
+    requires NAME ==K FNAME
+  rule #tyFromName(NAME, ListItem(_) REST:List) => #tyFromName(NAME, REST)
+    [owise]
+
+  rule #tyFromName(_, .List) => ty(-1) // HACK see #mainIsMinusOne above
 
   syntax List ::= toKList(BasicBlocks) [function, total]
 
