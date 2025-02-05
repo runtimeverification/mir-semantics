@@ -48,6 +48,6 @@
     .Map
   </memory>
   <start-symbol>
-    "main"
+    symbol ( "main" )
   </start-symbol>
 </kmir>

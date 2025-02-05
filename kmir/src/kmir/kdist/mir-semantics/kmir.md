@@ -92,7 +92,7 @@ module KMIR-CONFIGURATION
                   // heap
                   <memory> .Map </memory> // FIXME unclear how to model
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
-                  <start-symbol> $STARTSYM:String </start-symbol>
+                  <start-symbol> symbol($STARTSYM:String) </start-symbol>
                 </kmir>
 endmodule
 ```
@@ -119,7 +119,7 @@ function map and the initial memory have to be set up.
   // #init step, assuming a singleton in the K cell
   rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
          =>
-           #execFunction(#findItem(Items, symbol(FuncName)), Functions)
+           #execFunction(#findItem(Items, FuncName), Functions)
        </k>
        <functions> _ => #mkFunctionMap(Functions, Items) </functions>
        <start-symbol> FuncName </start-symbol>
