@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.kast.inner import KApply, KLabel, KSort, KToken, collect
+from pyk.kast.inner import KApply, KSort, KToken
 
 from kmir.convert_from_definition.v2parser import Parser
 
@@ -188,22 +188,10 @@ def test_exec_smir(
     kmir_kast, _ = parsed
 
     result = tools.run_parsed(kmir_kast, depth=depth)
-    kast_result = tools.kprint.kore_to_kast(result)
-
-    kcell = None
-
-    def get_k_cell(term: KInner) -> None:
-        match term:
-            case KApply(label=KLabel('<k>')):
-                nonlocal kcell
-                kcell = term
-
-    collect(get_k_cell, kast_result)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
-    assert isinstance(kcell, KApply)
-    result_pretty = tools.kprint.pretty_print(kcell).rstrip()
+    result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
 
     assert result_pretty == expected
