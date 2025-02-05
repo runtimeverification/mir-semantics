@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -194,4 +195,8 @@ def test_exec_smir(
 
     result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
 
-    assert result_pretty == expected
+    if os.getenv('UPDATE_EXEC_SMIR') is None:
+        assert result_pretty == expected
+    else:
+        with output_kast.open('w') as f:
+            f.write(result_pretty)
