@@ -90,3 +90,9 @@ SRC_FILES := $(shell find src -type f -name '*.py')
 
 pyupgrade: poetry-install
 	$(POETRY_RUN) pyupgrade --py310-plus $(SRC_FILES)
+
+# Update smir exec tests
+
+.PHONY: update-exec-smir
+update-exec-smir: poetry-install
+	UPDATE_EXEC_SMIR=true $(POETRY_RUN) pytest -k test_exec_smir

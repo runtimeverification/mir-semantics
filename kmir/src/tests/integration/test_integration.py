@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.kast.inner import KApply, KSort, KToken, Subst
+from pyk.kast.inner import KApply, KSort, KToken
 
 from kmir.convert_from_definition.v2parser import Parser
 
@@ -187,14 +188,15 @@ def test_exec_smir(
     assert parsed is not None
     kmir_kast, _ = parsed
 
-    subst = Subst({'$PGM': kmir_kast})
-    init_config = subst.apply(tools.definition.init_config(KSort('GeneratedTopCell')))
-    init_kore = tools.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-    result = tools.krun.run_pattern(init_kore, depth=depth)
+    result = tools.run_parsed(kmir_kast, depth=depth)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
     result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
 
-    assert result_pretty == expected
+    if os.getenv('UPDATE_EXEC_SMIR') is None:
+        assert result_pretty == expected
+    else:
+        with output_kast.open('w') as f:
+            f.write(result_pretty)
