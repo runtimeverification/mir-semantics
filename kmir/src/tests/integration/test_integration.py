@@ -132,6 +132,42 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         KApply('FunctionKind::NoOpSym', (KApply('symbol(_)_LIB_Symbol_String', (KToken('""', KSort('String')))))),
         KSort('FunctionKind'),
     ),
+    (   
+        { 
+            'bytes': [72,101,108,108,111,32,87,111,114,108,100,33],
+            'provenance': {'ptrs': []},
+            'align': 42,
+            'mutability': 'Not'
+        },
+        KApply(
+            'allocation',
+            ( 
+                KToken("Hello World!", KSort('Bytes')),
+                KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
+                KApply('align', (KToken("42", KSort('Int')))),
+                KApply('Mutability::Not', ()),
+            )
+        ),
+        KSort('Allocation'),
+    ),
+    (   
+        { 
+            'bytes': [0, 0, 0, 42],
+            'provenance': {'ptrs': []},
+            'align': 42,
+            'mutability': 'Not'
+        },
+        KApply(
+            'allocation',
+            ( 
+                KToken("\\x00\\x00\\x00\\x2a", KSort('Bytes')),
+                KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
+                KApply('align', (KToken("42", KSort('Int')))),
+                KApply('Mutability::Not', ()),
+            )
+        ),
+        KSort('Allocation'),
+    ),
 ]
 
 
