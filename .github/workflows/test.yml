@@ -50,10 +50,17 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
-      - name: 'Install Poetry'
-        uses: Gr1N/setup-poetry@v8
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-semantics-ci-unit-${{ github.sha }}
+      - name: 'Build kmir'
+        run: docker exec --user user mir-semantics-ci-unit-${GITHUB_SHA} make build
       - name: 'Run unit tests'
-        run: make test-unit
+        run: docker exec --user user mir-semantics-ci-unit-${GITHUB_SHA} make test-unit
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-semantics-ci-unit-${GITHUB_SHA}
 
   integration-tests:
     needs: code-quality-checks
@@ -71,6 +78,8 @@ jobs:
           container-name: mir-semantics-ci-${{ github.sha }}
       - name: 'Build kmir'
         run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
+      - name: 'Run integration tests'
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make test-unit
       - name: 'Run integration tests'
         run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make test-integration
       - name: 'Tear down Docker'
