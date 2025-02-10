@@ -204,6 +204,9 @@ class Parser:
             case 'mir-bool':
                 assert len(prods) == 1
                 return self._parse_mir_bool_json(json, prod)
+            case 'mir-bytes':
+                assert len(prods) == 1
+                return self._parse_mir_bytes_json(json, prod)
             case _:
                 raise AssertionError()
 
@@ -414,6 +417,31 @@ class Parser:
             return KToken(str(json), KSort('Bool')), KSort('Bool')
         # Apply the production to the generated bool token
         return KApply(symbol, (KToken(str(json), KSort('Bool')))), sort
+
+    # parse a sequence of ints into a byte array
+    def _parse_mir_bytes_json(self, json: JSON, prod: KProduction) -> ParseResult:
+        assert isinstance(json, Sequence)
+
+        if not json:  # empty sequence, the assertion below would fail
+            bytes = ''
+        else:
+            for i in json:
+                # null values are allowed and taken to mean \x00
+                assert isinstance(i, int) or i is None
+            import string
+
+            if all(chr(int(i)) in string.printable for i in json):
+                # if all elements are ascii printable, use simple characters
+                bytes = ''.join([chr(int(i)) for i in json])
+            else:
+                # otherwise convert to hexadecimal representation \xCA\xFE
+                bytes = ''.join([f'\\x{i:02x}' if i is not None else '\\x00' for i in json])
+        symbol = _get_label(prod)
+        if symbol == 'MIRBytes::Bytes':
+            return KToken('b"' + str(bytes) + '"', KSort('Bytes')), KSort('Bytes')
+        else:
+            sort = prod.sort
+            return KApply(symbol, (KToken('b"' + str(bytes) + '"', KSort('Bytes')))), sort
 
     @cached_property
     def _mir_productions(self) -> tuple[KProduction, ...]:
