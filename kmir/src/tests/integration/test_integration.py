@@ -142,7 +142,7 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         KApply(
             'allocation',
             (
-                KToken("Hello World!", KSort('Bytes')),
+                KToken('b"Hello World!"', KSort('Bytes')),
                 KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
                 KApply('align', (KToken("42", KSort('Int')))),
                 KApply('Mutability::Not', ()),
@@ -152,7 +152,7 @@ SCHEMA_PARSE_KAPPLY_DATA = [
     ),
     (
         {
-            'bytes': [0, 0, 0, 42],
+            'bytes': [0, 0, 0, 42, None, None, None, None],
             'provenance': {'ptrs': []},
             'align': 42,
             'mutability': 'Not'
@@ -160,7 +160,7 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         KApply(
             'allocation',
             (
-                KToken("\\x00\\x00\\x00\\x2a", KSort('Bytes')),
+                KToken('b"\\x00\\x00\\x00\\x2a\\x00\\x00\\x00\\x00"', KSort('Bytes')),
                 KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
                 KApply('align', (KToken("42", KSort('Int')))),
                 KApply('Mutability::Not', ()),

@@ -1,0 +1,410 @@
+digraph {
+  label="defined_trait";
+  node [shape=rectangle];
+  X9d8f98d3704e8fd6_0 [label="_ZN73_$LT$$u5b$A$u5d$$u20\n$as$u20$core..slice..cmp.\n.SlicePartialEq$LT$B$GT$$\nGT$5equal17h9ee8f0d2588e1\n705E", color=red];
+  Xac08878333d72e42_0 [label="_ZN4core9panicking5panic1\n7h941160ead03e2d54E", color=red];
+  X8fc2060ad58510d8_0 [label="Intr: \ncold_path", color=red];
+  Xfc57b852937dec4e_0 [label="_ZN77_$LT$alloc..raw_vec.\n.RawVec$LT$T$C$A$GT$$u20$\nas$u20$core..ops..drop..D\nrop$GT$4drop17hac88cd3f00\n9e49fcE", color=red];
+  Xcfb99dd5dbeb355e_0 [label="_ZN4core9panicking14panic\n_nounwind17h3a5ca15c20002\n51eE", color=red];
+  X8b0ac2e54b9a91_0 [label="NoOp: ", color=red];
+  Xc987e5ecea6cc82b_0 [label="_ZN3std2rt19lang_start_in\nternal17h018b8394ba015d86\nE", color=red];
+  Xc312ae49c8321ef2_0 [label="_ZN70_$LT$alloc..vec..Vec\n$LT$T$C$A$GT$$u20$as$u20$\ncore..ops..drop..Drop$GT$\n4drop17h4759f9a0ef7b4c8eE", color=red];
+  Xfffaab11503b9894_0 [label="_ZN4core9panicking9panic_\nfmt17h3df1a4d3dd80ed56E", color=red];
+  X3c6542d96320ad67_0 [label="Intr: \nblack_box", color=red];
+  X639596b7ac3768b7_0 [label="_ZN5alloc7raw_vec20RawVec\nInner$LT$A$GT$15try_alloc\nate_in17hccd22e5375453023\nE", color=red];
+  Xc8be062610ad417d_0 [label="_ZN5alloc7raw_vec12handle\n_error17h858e9afa40be73e9\nE", color=red];
+  X5ea6c111b835a80f_0 [label="Intr: \nctpop", color=red];
+  subgraph cluster_0 {
+    label="<str \nas \nstd::string::ToString>::t\no_string";
+    style="filled";
+    color=lightgray;
+    X6a1355bb0a3980b0_0 -> X6a1355bb0a3980b0_1 [label="_2"];
+    X6a1355bb0a3980b0_0 [label="Storage Live _3\lStorage Live _2\l_3 <- Cast-Transmute _1\lCall\l"];
+    X6a1355bb0a3980b0_1 [label="_0 <- Adt (_2)\lStorage Dead _2\lStorage Dead _3\lReturn\l"];
+  }
+  X6a1355bb0a3980b0_0 -> Xf1a1f7981ef5893_0 [label="_3,const :: std::alloc::Global"];
+  subgraph cluster_1 {
+    label="std::rt::lang_start::<()>\n::{closure#0}";
+    style="filled";
+    color=lightgray;
+    X1d2400a6a8938653_0 -> X1d2400a6a8938653_1 [label="_3"];
+    X1d2400a6a8938653_0 [label="Storage Live _2\lStorage Live _3\lStorage Live _4\l_4 <- Use(_1(...))\lCall\l"];
+    X1d2400a6a8938653_1 -> X1d2400a6a8938653_2 [label="_2"];
+    X1d2400a6a8938653_1 [label="Storage Dead _4\lCall\l"];
+    X1d2400a6a8938653_2 [label="Storage Dead _3\lStorage Live _5\l_5 <- ReErased (Shared): _2(...)\lStorage Live _6\l_6 <- Use(_2(...))\l_0 <- Cast-IntToInt _6\lStorage Dead _6\lStorage Dead _5\lStorage Dead _2\lReturn\l"];
+  }
+  X1d2400a6a8938653_0 -> X683aa6085436bcd0_0 [label="_4"];
+  X1d2400a6a8938653_1 -> Xb0ce0e739b3c78a5_0 [label="_3"];
+  subgraph cluster_2 {
+    label="<u8 \nas \nstd::slice::hack::Convert\nVec>::to_vec::<std::alloc\n::Global>";
+    style="filled";
+    color=lightgray;
+    Xf1a1f7981ef5893_0 -> Xf1a1f7981ef5893_1 [label="_10"];
+    Xf1a1f7981ef5893_0 [label="Storage Live _3\l_4 <- PtrMetadata(_1)\lStorage Live _9\lStorage Live _10\lCall\l"];
+    Xf1a1f7981ef5893_1 -> Xf1a1f7981ef5893_4 [label="0"];
+    Xf1a1f7981ef5893_1 -> Xf1a1f7981ef5893_2 [label="other"];
+    Xf1a1f7981ef5893_1 [label="_9 <- Adt (_10, const :: std::marker::PhantomData<u8>)\lStorage Dead _10\l_3 <- Adt (_9, const :: usize)\lStorage Dead _9\lStorage Live _5\l_11 <- &Not _1(...)\l_5 <- Cast-PtrToPtr _11\lStorage Live _6\lStorage Live _7\l_7 <- ReErased (Mut { kind: TwoPhaseBorrow }): _3\lStorage Live _12\l_12 <- ReErased (Shared): _3(...)\lStorage Live _13\l_13 <- ReErased (Shared): _3(...)\lStorage Live _15\lStorage Live _14\lStorage Live _17\l_17 <- Use(_3(...))\l_16 <- Use(_17(...))\l_15 <- Cast-PtrToPtr _16\l_14 <- Adt (_15)\lStorage Dead _17\l_6 <- Cast-PtrToPtr _16\lStorage Dead _14\lStorage Dead _15\lStorage Dead _13\lStorage Dead _12\lStorage Dead _7\lStorage Live _18\l_18 <- UbChecks :: bool\lSwitchInt _18\l"];
+    Xf1a1f7981ef5893_2 -> Xf1a1f7981ef5893_3 [label="_19"];
+    Xf1a1f7981ef5893_2 [label="Storage Live _20\l_20 <- Cast-PtrToPtr _11\lStorage Live _21\l_21 <- Cast-PtrToPtr _16\lStorage Live _22\l_22 <- SizeOf :: u8\lStorage Live _23\l_23 <- AlignOf :: u8\lCall\l"];
+    Xf1a1f7981ef5893_3 -> Xf1a1f7981ef5893_4;
+    Xf1a1f7981ef5893_3 [label="Storage Dead _23\lStorage Dead _22\lStorage Dead _21\lStorage Dead _20\lGoto\l"];
+    Xf1a1f7981ef5893_4 [label="Storage Dead _18\lIntr: CopyNonOverlapping: _6 <- _5(_4))\lStorage Dead _6\lStorage Dead _5\lStorage Live _8\l_8 <- ReErased (Mut { kind: TwoPhaseBorrow }): _3\lStorage Live _24\lStorage Live _25\lStorage Live _26\l_3(...) <- Use(_4)\lStorage Dead _26\lStorage Dead _25\lStorage Dead _24\lStorage Dead _8\l_0 <- Use(_3)\lStorage Dead _3\lReturn\l"];
+  }
+  Xf1a1f7981ef5893_0 -> Xeb6c7bd2eb2abd34_0 [label="_4,_2,const :: std::alloc::Layout"];
+  Xf1a1f7981ef5893_2 -> X14e514b0c9cb515c_0 [label="_20,_21,_22,_23,_4"];
+  subgraph cluster_3 {
+    label="std::ptr::drop_in_place::\n<std::string::String>";
+    style="filled";
+    color=lightgray;
+    Xb4abd155375bb262_0 -> Xb4abd155375bb262_1;
+    Xb4abd155375bb262_0 [label="Drop _1(...)\l"];
+    Xb4abd155375bb262_1 [label="Return\l"];
+  }
+  subgraph cluster_4 {
+    label="std::rt::lang_start::<()>";
+    style="filled";
+    color=lightgray;
+    Xc3c9bfe1fec97c89_0 -> Xc3c9bfe1fec97c89_1 [label="_5"];
+    Xc3c9bfe1fec97c89_0 [label="Storage Live _5\lStorage Live _6\lStorage Live _8\l_8 <- Closure (_1)\l_7 <- ReErased (Shared): _8\l_6 <- Cast-PointerCoercion(Unsize) _7\lCall\l"];
+    Xc3c9bfe1fec97c89_1 [label="Storage Dead _6\l_0 <- Use(_5(...))\lStorage Dead _8\lStorage Dead _5\lReturn\l"];
+  }
+  Xc3c9bfe1fec97c89_0 -> Xc987e5ecea6cc82b_0 [label="_6,_2,_3,_4"];
+  subgraph cluster_5 {
+    label="<std::string::String \nas \nstd::cmp::PartialEq<&str>\n>::eq";
+    style="filled";
+    color=lightgray;
+    Xdace8a9bbae77920_0 -> Xdace8a9bbae77920_1 [label="_3"];
+    Xdace8a9bbae77920_0 [label="Call\l"];
+    Xdace8a9bbae77920_1 -> Xdace8a9bbae77920_2 [label="_0"];
+    Xdace8a9bbae77920_1 [label="_4 <- Use(_2(...))\lStorage Live _6\lStorage Live _8\lStorage Live _5\l_6 <- Cast-Transmute _3\l_5 <- ReErased (Shared): _6\lStorage Live _7\l_8 <- Cast-Transmute _4\l_7 <- ReErased (Shared): _8\lCall\l"];
+    Xdace8a9bbae77920_2 [label="Storage Dead _7\lStorage Dead _5\lStorage Dead _8\lStorage Dead _6\lReturn\l"];
+  }
+  Xdace8a9bbae77920_0 -> Xd98dd2ef09815b75_0 [label="_1,const :: std::ops::RangeFull"];
+  Xdace8a9bbae77920_1 -> X9d8f98d3704e8fd6_0 [label="_6,_8"];
+  subgraph cluster_6 {
+    label="std::sys::backtrace::__ru\nst_begin_short_backtrace:\n:<fn(), \n()>";
+    style="filled";
+    color=lightgray;
+    X683aa6085436bcd0_0 -> X683aa6085436bcd0_1 [label="_0"];
+    X683aa6085436bcd0_0 [label="Call\l"];
+    X683aa6085436bcd0_1 -> X683aa6085436bcd0_2 [label="_2"];
+    X683aa6085436bcd0_1 [label="Call\l"];
+    X683aa6085436bcd0_2 [label="Return\l"];
+  }
+  X683aa6085436bcd0_0 -> X8e1a4da7d05fa15e_0 [label="_1,const :: ()"];
+  X683aa6085436bcd0_1 -> X3c6542d96320ad67_0 [label="const :: ()"];
+  subgraph cluster_7 {
+    label="std::ptr::drop_in_place::\n<std::vec::Vec<u8>>";
+    style="filled";
+    color=lightgray;
+    X5e0cfcd1f2d1809e_0 -> X5e0cfcd1f2d1809e_3 [label="Cleanup"];
+    X5e0cfcd1f2d1809e_0 -> X5e0cfcd1f2d1809e_4 [label="_3"];
+    X5e0cfcd1f2d1809e_0 [label="_2 <- ReErased (Mut { kind: Default }): _1(...)\lCall\l"];
+    X5e0cfcd1f2d1809e_1 [label="Resume\l"];
+    X5e0cfcd1f2d1809e_2 [label="Return\l"];
+    X5e0cfcd1f2d1809e_3 -> X5e0cfcd1f2d1809e_1;
+    X5e0cfcd1f2d1809e_3 [label="Drop _1(...)\l"];
+    X5e0cfcd1f2d1809e_4 -> X5e0cfcd1f2d1809e_2;
+    X5e0cfcd1f2d1809e_4 [label="Drop _1(...)\l"];
+  }
+  X5e0cfcd1f2d1809e_0 -> Xc312ae49c8321ef2_0 [label="_2"];
+  subgraph cluster_8 {
+    label="<std::string::String \nas \nstd::ops::Index<std::ops:\n:RangeFull>>::index";
+    style="filled";
+    color=lightgray;
+    Xd98dd2ef09815b75_0 -> Xd98dd2ef09815b75_4 [label="0"];
+    Xd98dd2ef09815b75_0 -> Xd98dd2ef09815b75_2 [label="other"];
+    Xd98dd2ef09815b75_0 [label="Storage Live _4\lStorage Live _10\lStorage Live _5\l_5 <- ReErased (Shared): _1(...)\lStorage Live _7\l_7 <- ReErased (Shared): _1(...)\lStorage Live _8\l_8 <- ReErased (Shared): _1(...)\lStorage Live _9\lStorage Live _11\l_11 <- Use(_1(...))\l_10 <- Use(_11(...))\l_9 <- Adt (_10)\lStorage Dead _11\lStorage Dead _9\lStorage Dead _8\lStorage Dead _7\lStorage Live _6\l_6 <- Use(_1(...))\lStorage Live _12\l_12 <- UbChecks :: bool\lSwitchInt _12\l"];
+    Xd98dd2ef09815b75_1 [label="Return\l"];
+    Xd98dd2ef09815b75_2 -> Xd98dd2ef09815b75_3 [label="_13"];
+    Xd98dd2ef09815b75_2 [label="Storage Live _14\l_14 <- Cast-PtrToPtr _10\lCall\l"];
+    Xd98dd2ef09815b75_3 -> Xd98dd2ef09815b75_4;
+    Xd98dd2ef09815b75_3 [label="Storage Dead _14\lGoto\l"];
+    Xd98dd2ef09815b75_4 -> Xd98dd2ef09815b75_1 [label="_0"];
+    Xd98dd2ef09815b75_4 [label="Storage Dead _12\lStorage Live _15\l_15 <- *([u8]) (_10, _6)\l_4 <- ReErased (Shared): _15(...)\lStorage Dead _15\lStorage Dead _6\lStorage Dead _5\l_3 <- Cast-Transmute _4\lStorage Dead _10\lStorage Dead _4\lCall\l"];
+  }
+  Xd98dd2ef09815b75_2 -> Xd433a9ff0796352_0 [label="_14,const :: usize,const :: usize,_6"];
+  Xd98dd2ef09815b75_4 -> X46095524bc604d89_0 [label="_2,_3"];
+  subgraph cluster_9 {
+    label="std::intrinsics::cold_pat\nh";
+    style="filled";
+    color=lightgray;
+    X9b700fd7b37a15b9_0 [label="Return\l"];
+  }
+  subgraph cluster_10 {
+    label="core::ub_checks::maybe_is\n_nonoverlapping::runtime";
+    style="filled";
+    color=lightgray;
+    X6bcf066a9cdda6_0 -> X6bcf066a9cdda6_3 [label="0"];
+    X6bcf066a9cdda6_0 -> X6bcf066a9cdda6_1 [label="other"];
+    X6bcf066a9cdda6_0 [label="_5 <- Cast-Transmute _1\l_6 <- Cast-Transmute _2\lStorage Live _9\lStorage Live _13\lStorage Live _17\lStorage Live _12\lStorage Live _14\lStorage Live _15\l_15 <- Cast-IntToInt _3\lStorage Live _16\l_16 <- Cast-IntToInt _4\l_14 <- chkd-Mul(_15, _16)\lStorage Dead _16\lStorage Dead _15\l_12 <- Use(_14(...))\l_13 <- Use(_14(...))\lStorage Dead _14\l_17 <- Cast-IntToInt _12\lStorage Dead _12\lSwitchInt _13\l"];
+    X6bcf066a9cdda6_1 -> X6bcf066a9cdda6_2 [label="_18"];
+    X6bcf066a9cdda6_1 [label="Call\l"];
+    X6bcf066a9cdda6_2 [label="Storage Dead _17\lStorage Dead _13\lStorage Dead _9\lCall\l"];
+    X6bcf066a9cdda6_3 -> X6bcf066a9cdda6_5 [label="0"];
+    X6bcf066a9cdda6_3 -> X6bcf066a9cdda6_4 [label="other"];
+    X6bcf066a9cdda6_3 [label="_9 <- Adt (_17)\lStorage Dead _17\lStorage Dead _13\l_8 <- Use(_9(...))\lStorage Dead _9\lStorage Live _10\lStorage Live _19\lStorage Live _20\lStorage Live _21\lStorage Live _22\l_22 <- Lt(_5, _6)\lSwitchInt _22\l"];
+    X6bcf066a9cdda6_4 -> X6bcf066a9cdda6_6;
+    X6bcf066a9cdda6_4 [label="_10 <- Sub(_6, _5)\lGoto\l"];
+    X6bcf066a9cdda6_5 -> X6bcf066a9cdda6_6;
+    X6bcf066a9cdda6_5 [label="_10 <- Sub(_5, _6)\lGoto\l"];
+    X6bcf066a9cdda6_6 [label="Storage Dead _22\lStorage Dead _21\lStorage Dead _20\lStorage Dead _19\lStorage Live _11\l_11 <- Use(_10)\l_0 <- Ge(_11, _8)\lStorage Dead _11\lStorage Dead _10\lReturn\l"];
+  }
+  X6bcf066a9cdda6_1 -> X8fc2060ad58510d8_0 [label=""];
+  X6bcf066a9cdda6_2 -> Xcfb99dd5dbeb355e_0 [label="const :: &str"];
+  subgraph cluster_11 {
+    label="<() \nas \nstd::process::Termination\n>::report";
+    style="filled";
+    color=lightgray;
+    Xb0ce0e739b3c78a5_0 [label="_0 <- Use(const :: std::process::ExitCode)\lReturn\l"];
+  }
+  subgraph cluster_12 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X94b4ce89870ef2a_0 -> X94b4ce89870ef2a_3 [label="Cleanup"];
+    X94b4ce89870ef2a_0 -> X94b4ce89870ef2a_1 [label="_0"];
+    X94b4ce89870ef2a_0 [label="_3 <- ReErased (Mut { kind: Default }): _1\lCall\l"];
+    X94b4ce89870ef2a_1 -> X94b4ce89870ef2a_2;
+    X94b4ce89870ef2a_1 [label="Drop _1\l"];
+    X94b4ce89870ef2a_2 [label="Return\l"];
+    X94b4ce89870ef2a_3 -> X94b4ce89870ef2a_4;
+    X94b4ce89870ef2a_3 [label="Drop _1\l"];
+    X94b4ce89870ef2a_4 [label="Resume\l"];
+  }
+  X94b4ce89870ef2a_0 -> X1d2400a6a8938653_0 [label="_3,_2"];
+  subgraph cluster_13 {
+    label="std::ptr::drop_in_place::\n<{closure@std::rt::lang_s\ntart<()>::{closure#0}}>";
+    style="filled";
+    color=lightgray;
+    Xf5d6f8cedc9c6187_0 [label="Return\l"];
+  }
+  subgraph cluster_14 {
+    label="core::str::traits::<impl \nstd::slice::SliceIndex<st\nr> \nfor \nstd::ops::RangeFull>::ind\nex";
+    style="filled";
+    color=lightgray;
+    X46095524bc604d89_0 [label="_0 <- Use(_2)\lReturn\l"];
+  }
+  subgraph cluster_15 {
+    label="std::hint::assert_uncheck\ned::precondition_check";
+    style="filled";
+    color=lightgray;
+    X63ac6a28c96a53d8_0 -> X63ac6a28c96a53d8_1 [label="0"];
+    X63ac6a28c96a53d8_0 -> X63ac6a28c96a53d8_2 [label="other"];
+    X63ac6a28c96a53d8_0 [label="SwitchInt _1\l"];
+    X63ac6a28c96a53d8_1 [label="Call\l"];
+    X63ac6a28c96a53d8_2 [label="Return\l"];
+  }
+  X63ac6a28c96a53d8_1 -> Xcfb99dd5dbeb355e_0 [label="const :: &str"];
+  subgraph cluster_16 {
+    label="alloc::raw_vec::RawVecInn\ner::with_capacity_in";
+    style="filled";
+    color=lightgray;
+    Xeb6c7bd2eb2abd34_0 -> Xeb6c7bd2eb2abd34_1 [label="_4"];
+    Xeb6c7bd2eb2abd34_0 [label="Storage Live _4\lCall\l"];
+    Xeb6c7bd2eb2abd34_1 -> Xeb6c7bd2eb2abd34_4 [label="0"];
+    Xeb6c7bd2eb2abd34_1 -> Xeb6c7bd2eb2abd34_3 [label="1"];
+    Xeb6c7bd2eb2abd34_1 -> Xeb6c7bd2eb2abd34_2 [label="other"];
+    Xeb6c7bd2eb2abd34_1 [label="_5 <- Discriminant(_4)\lSwitchInt _5\l"];
+    Xeb6c7bd2eb2abd34_2 [label="Unreachable\l"];
+    Xeb6c7bd2eb2abd34_3 [label="_11 <- Use(_4(...))\lCall\l"];
+    Xeb6c7bd2eb2abd34_4 -> Xeb6c7bd2eb2abd34_6 [label="0"];
+    Xeb6c7bd2eb2abd34_4 -> Xeb6c7bd2eb2abd34_7 [label="other"];
+    Xeb6c7bd2eb2abd34_4 [label="Storage Live _6\l_6 <- Use(_4(...))\lStorage Live _7\lStorage Live _8\lStorage Live _9\l_9 <- ReErased (Shared): _6\lStorage Live _10\l_10 <- Use(_3)\lStorage Live _13\lStorage Live _14\lStorage Live _15\lStorage Live _16\l_16 <- ReErased (Shared): _10\l_15 <- Use(_3(...))\lStorage Dead _16\lSwitchInt _15\l"];
+    Xeb6c7bd2eb2abd34_5 -> Xeb6c7bd2eb2abd34_9 [label="0"];
+    Xeb6c7bd2eb2abd34_5 -> Xeb6c7bd2eb2abd34_8 [label="other"];
+    Xeb6c7bd2eb2abd34_5 [label="Storage Dead _15\l_13 <- Sub(_14, const :: usize)\lStorage Dead _14\l_8 <- Gt(_1, _13)\lStorage Dead _13\lStorage Dead _10\lStorage Dead _9\l_7 <- Not(_8)\lStorage Dead _8\lStorage Live _17\l_17 <- UbChecks :: bool\lSwitchInt _17\l"];
+    Xeb6c7bd2eb2abd34_6 -> Xeb6c7bd2eb2abd34_5;
+    Xeb6c7bd2eb2abd34_6 [label="_14 <- Use(const :: usize)\lGoto\l"];
+    Xeb6c7bd2eb2abd34_7 -> Xeb6c7bd2eb2abd34_5;
+    Xeb6c7bd2eb2abd34_7 [label="_14 <- Use(_6(...))\lGoto\l"];
+    Xeb6c7bd2eb2abd34_8 -> Xeb6c7bd2eb2abd34_9 [label="_18"];
+    Xeb6c7bd2eb2abd34_8 [label="Call\l"];
+    Xeb6c7bd2eb2abd34_9 [label="Storage Dead _17\lIntr: Assume _7\lStorage Dead _7\l_0 <- Use(_6)\lStorage Dead _6\lStorage Dead _4\lReturn\l"];
+  }
+  Xeb6c7bd2eb2abd34_0 -> X639596b7ac3768b7_0 [label="_1,const :: alloc::raw_vec::AllocInit,_2,_3"];
+  Xeb6c7bd2eb2abd34_3 -> Xc8be062610ad417d_0 [label="_11"];
+  Xeb6c7bd2eb2abd34_8 -> X63ac6a28c96a53d8_0 [label="_7"];
+  subgraph cluster_17 {
+    label="std::ptr::drop_in_place::\n<alloc::raw_vec::RawVec<u\n8>>";
+    style="filled";
+    color=lightgray;
+    X3ed965d856cf929c_0 -> X3ed965d856cf929c_1 [label="_3"];
+    X3ed965d856cf929c_0 [label="_2 <- ReErased (Mut { kind: Default }): _1(...)\lCall\l"];
+    X3ed965d856cf929c_1 [label="Return\l"];
+  }
+  X3ed965d856cf929c_0 -> Xfc57b852937dec4e_0 [label="_2"];
+  subgraph cluster_18 {
+    label="main";
+    style="filled";
+    color=palegreen;
+    subgraph cluster_19 {
+      X8243ae909090e3ee_0 -> X8243ae909090e3ee_1 [label="_4"];
+      X8243ae909090e3ee_0 [label="_1 <- Adt (const :: u32)\l_5 <- ReErased (Shared): _1\lCall\l"];
+      X8243ae909090e3ee_1 -> X8243ae909090e3ee_7 [label="Cleanup"];
+      X8243ae909090e3ee_1 -> X8243ae909090e3ee_2 [label="_2"];
+      X8243ae909090e3ee_1 [label="_3 <- ReErased (Shared): _4\l_6 <- Use(const :: &&str)\lCall\l"];
+      X8243ae909090e3ee_2 -> X8243ae909090e3ee_4 [label="0"];
+      X8243ae909090e3ee_2 -> X8243ae909090e3ee_3 [label="other"];
+      X8243ae909090e3ee_2 [label="SwitchInt _2\l"];
+      X8243ae909090e3ee_3 -> X8243ae909090e3ee_6;
+      X8243ae909090e3ee_3 [label="Drop _4\l"];
+      X8243ae909090e3ee_4 -> X8243ae909090e3ee_5;
+      X8243ae909090e3ee_4 [label="Drop _4\l"];
+      X8243ae909090e3ee_5 [label="Call\l"];
+      X8243ae909090e3ee_6 [label="Return\l"];
+      X8243ae909090e3ee_7 -> X8243ae909090e3ee_8;
+      X8243ae909090e3ee_7 [label="Drop _4\l"];
+      X8243ae909090e3ee_8 [label="Resume\l"];
+    }
+    subgraph cluster_20 {
+      X8243ae909090e3ee_9 [label="_1 <- Use(const :: &str)\l_0 <- ReErased (Shared): _1\lReturn\l"];
+    }
+  }
+  X8243ae909090e3ee_0 -> Xa239faf806f3af4c_0 [label="_5"];
+  X8243ae909090e3ee_1 -> Xdace8a9bbae77920_0 [label="_3,_6"];
+  X8243ae909090e3ee_5 -> Xac08878333d72e42_0 [label="const :: &str"];
+  subgraph cluster_21 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X8fbd299011a8670a_0 -> X8fbd299011a8670a_1 [label="_0"];
+    X8fbd299011a8670a_0 [label="Call\l"];
+    X8fbd299011a8670a_1 [label="Return\l"];
+  }
+  X8fbd299011a8670a_0 -> X94b4ce89870ef2a_0 [label="_1(...),_2"];
+  subgraph cluster_22 {
+    label="std::slice::from_raw_part\ns::precondition_check";
+    style="filled";
+    color=lightgray;
+    Xd433a9ff0796352_0 -> Xd433a9ff0796352_10 [label="_15"];
+    Xd433a9ff0796352_0 [label="Storage Live _5\lStorage Live _6\l_6 <- Cast-PtrToPtr _1\lStorage Live _13\lStorage Live _15\lCall\l"];
+    Xd433a9ff0796352_1 -> Xd433a9ff0796352_11 [label="0"];
+    Xd433a9ff0796352_1 -> Xd433a9ff0796352_12 [label="other"];
+    Xd433a9ff0796352_1 [label="Storage Dead _6\lStorage Live _7\lStorage Live _20\lStorage Live _19\l_20 <- Eq(_2, const :: usize)\lSwitchInt _2\l"];
+    Xd433a9ff0796352_2 [label="Storage Dead _7\lStorage Dead _5\lReturn\l"];
+    Xd433a9ff0796352_3 -> Xd433a9ff0796352_5;
+    Xd433a9ff0796352_3 [label="Goto\l"];
+    Xd433a9ff0796352_4 -> Xd433a9ff0796352_5;
+    Xd433a9ff0796352_4 [label="Storage Dead _6\lGoto\l"];
+    Xd433a9ff0796352_5 [label="Call\l"];
+    Xd433a9ff0796352_6 -> Xd433a9ff0796352_4 [label="0"];
+    Xd433a9ff0796352_6 -> Xd433a9ff0796352_1 [label="other"];
+    Xd433a9ff0796352_6 [label="Storage Dead _12\lStorage Live _9\lStorage Live _18\l_18 <- Cast-PtrToPtr _1\l_9 <- Eq(_13, const :: usize)\lStorage Dead _18\l_5 <- Not(_9)\lStorage Dead _9\lStorage Dead _13\lSwitchInt _5\l"];
+    Xd433a9ff0796352_7 -> Xd433a9ff0796352_4;
+    Xd433a9ff0796352_7 [label="Storage Dead _12\lStorage Dead _13\lGoto\l"];
+    Xd433a9ff0796352_8 -> Xd433a9ff0796352_6 [label="0"];
+    Xd433a9ff0796352_8 -> Xd433a9ff0796352_7 [label="other"];
+    Xd433a9ff0796352_8 [label="Storage Dead _15\lStorage Live _12\l_13 <- Cast-Transmute _1\lStorage Live _14\l_14 <- Sub(_3, const :: usize)\l_12 <- BitAnd(_13, _14)\lStorage Dead _14\lSwitchInt _12\l"];
+    Xd433a9ff0796352_9 [label="Storage Dead _15\lStorage Live _11\lStorage Live _16\l_16 <- Cast-PointerCoercion(Unsize) const :: &[&str; 1]\lStorage Live _17\l_17 <- Cast-PointerCoercion(Unsize) const :: &[core::fmt::rt::Argument<'_>; 0]\l_11 <- Adt (_16, const :: std::option::Option<&[core::fmt::rt::Placeholder]>, _17)\lStorage Dead _17\lStorage Dead _16\lCall\l"];
+    Xd433a9ff0796352_10 -> Xd433a9ff0796352_8 [label="1"];
+    Xd433a9ff0796352_10 -> Xd433a9ff0796352_9 [label="other"];
+    Xd433a9ff0796352_10 [label="SwitchInt _15\l"];
+    Xd433a9ff0796352_11 -> Xd433a9ff0796352_14;
+    Xd433a9ff0796352_11 [label="_19 <- Use(const :: usize)\lGoto\l"];
+    Xd433a9ff0796352_12 -> Xd433a9ff0796352_13;
+    Xd433a9ff0796352_12 [label="Assert _20 == false\l"];
+    Xd433a9ff0796352_13 -> Xd433a9ff0796352_14;
+    Xd433a9ff0796352_13 [label="_19 <- Div(const :: usize, _2)\lGoto\l"];
+    Xd433a9ff0796352_14 -> Xd433a9ff0796352_3 [label="0"];
+    Xd433a9ff0796352_14 -> Xd433a9ff0796352_2 [label="other"];
+    Xd433a9ff0796352_14 [label="Storage Live _21\l_21 <- Use(_19)\l_7 <- Le(_4, _21)\lStorage Dead _21\lStorage Dead _19\lStorage Dead _20\lSwitchInt _7\l"];
+  }
+  Xd433a9ff0796352_0 -> X5ea6c111b835a80f_0 [label="_3"];
+  Xd433a9ff0796352_5 -> Xcfb99dd5dbeb355e_0 [label="const :: &str"];
+  Xd433a9ff0796352_9 -> Xfffaab11503b9894_0 [label="_11"];
+  subgraph cluster_23 {
+    label="std::intrinsics::copy_non\noverlapping::precondition\n_check";
+    style="filled";
+    color=lightgray;
+    X14e514b0c9cb515c_0 -> X14e514b0c9cb515c_1 [label="0"];
+    X14e514b0c9cb515c_0 -> X14e514b0c9cb515c_2 [label="other"];
+    X14e514b0c9cb515c_0 [label="Storage Live _6\lStorage Live _7\lSwitchInt _5\l"];
+    X14e514b0c9cb515c_1 -> X14e514b0c9cb515c_25 [label="_21"];
+    X14e514b0c9cb515c_1 [label="_7 <- Use(const :: bool)\lStorage Live _8\lStorage Live _9\l_9 <- Use(_4)\lStorage Live _10\l_10 <- Use(_7)\lStorage Live _19\lStorage Live _21\lCall\l"];
+    X14e514b0c9cb515c_2 -> X14e514b0c9cb515c_16 [label="_21"];
+    X14e514b0c9cb515c_2 [label="_7 <- Eq(_3, const :: usize)\lStorage Live _8\lStorage Live _9\l_9 <- Use(_4)\lStorage Live _10\l_10 <- Use(_7)\lStorage Live _19\lStorage Live _21\lCall\l"];
+    X14e514b0c9cb515c_3 -> X14e514b0c9cb515c_23 [label="_30"];
+    X14e514b0c9cb515c_3 [label="Storage Dead _10\lStorage Dead _9\lStorage Live _11\l_12 <- Cast-PtrToPtr _2\lStorage Live _13\l_13 <- Use(_7)\lStorage Live _29\lStorage Live _30\lCall\l"];
+    X14e514b0c9cb515c_4 -> X14e514b0c9cb515c_24 [label="_6"];
+    X14e514b0c9cb515c_4 [label="Storage Dead _13\lCall\l"];
+    X14e514b0c9cb515c_5 -> X14e514b0c9cb515c_7;
+    X14e514b0c9cb515c_5 [label="Storage Dead _13\lGoto\l"];
+    X14e514b0c9cb515c_6 -> X14e514b0c9cb515c_7;
+    X14e514b0c9cb515c_6 [label="Storage Dead _10\lStorage Dead _9\lGoto\l"];
+    X14e514b0c9cb515c_7 -> X14e514b0c9cb515c_8;
+    X14e514b0c9cb515c_7 [label="Storage Dead _11\lStorage Dead _8\lStorage Dead _7\lGoto\l"];
+    X14e514b0c9cb515c_8 [label="Call\l"];
+    X14e514b0c9cb515c_9 [label="Storage Dead _6\lReturn\l"];
+    X14e514b0c9cb515c_10 -> X14e514b0c9cb515c_13 [label="0"];
+    X14e514b0c9cb515c_10 -> X14e514b0c9cb515c_12 [label="other"];
+    X14e514b0c9cb515c_10 [label="Storage Dead _18\lSwitchInt _10\l"];
+    X14e514b0c9cb515c_11 -> X14e514b0c9cb515c_6;
+    X14e514b0c9cb515c_11 [label="Storage Dead _18\lStorage Dead _19\lGoto\l"];
+    X14e514b0c9cb515c_12 -> X14e514b0c9cb515c_3;
+    X14e514b0c9cb515c_12 [label="Storage Dead _19\lGoto\l"];
+    X14e514b0c9cb515c_13 -> X14e514b0c9cb515c_6 [label="0"];
+    X14e514b0c9cb515c_13 -> X14e514b0c9cb515c_3 [label="other"];
+    X14e514b0c9cb515c_13 [label="Storage Live _15\lStorage Live _24\l_24 <- Cast-PtrToPtr _1\l_15 <- Eq(_19, const :: usize)\lStorage Dead _24\l_8 <- Not(_15)\lStorage Dead _15\lStorage Dead _19\lSwitchInt _8\l"];
+    X14e514b0c9cb515c_14 -> X14e514b0c9cb515c_10 [label="0"];
+    X14e514b0c9cb515c_14 -> X14e514b0c9cb515c_11 [label="other"];
+    X14e514b0c9cb515c_14 [label="Storage Dead _21\lStorage Live _18\l_19 <- Cast-Transmute _1\l_20 <- Sub(_4, const :: usize)\l_18 <- BitAnd(_19, _20)\lSwitchInt _18\l"];
+    X14e514b0c9cb515c_15 [label="Storage Dead _21\lStorage Live _17\lStorage Live _22\l_22 <- Cast-PointerCoercion(Unsize) const :: &[&str; 1]\lStorage Live _23\l_23 <- Cast-PointerCoercion(Unsize) const :: &[core::fmt::rt::Argument<'_>; 0]\l_17 <- Adt (_22, const :: std::option::Option<&[core::fmt::rt::Placeholder]>, _23)\lStorage Dead _23\lStorage Dead _22\lCall\l"];
+    X14e514b0c9cb515c_16 -> X14e514b0c9cb515c_14 [label="1"];
+    X14e514b0c9cb515c_16 -> X14e514b0c9cb515c_15 [label="other"];
+    X14e514b0c9cb515c_16 [label="SwitchInt _21\l"];
+    X14e514b0c9cb515c_17 -> X14e514b0c9cb515c_20 [label="0"];
+    X14e514b0c9cb515c_17 -> X14e514b0c9cb515c_19 [label="other"];
+    X14e514b0c9cb515c_17 [label="Storage Dead _28\lSwitchInt _13\l"];
+    X14e514b0c9cb515c_18 -> X14e514b0c9cb515c_5;
+    X14e514b0c9cb515c_18 [label="Storage Dead _28\lStorage Dead _29\lGoto\l"];
+    X14e514b0c9cb515c_19 -> X14e514b0c9cb515c_4;
+    X14e514b0c9cb515c_19 [label="Storage Dead _29\lGoto\l"];
+    X14e514b0c9cb515c_20 -> X14e514b0c9cb515c_5 [label="0"];
+    X14e514b0c9cb515c_20 -> X14e514b0c9cb515c_4 [label="other"];
+    X14e514b0c9cb515c_20 [label="Storage Live _25\lStorage Live _33\l_33 <- Cast-PtrToPtr _2\l_25 <- Eq(_29, const :: usize)\lStorage Dead _33\l_11 <- Not(_25)\lStorage Dead _25\lStorage Dead _29\lSwitchInt _11\l"];
+    X14e514b0c9cb515c_21 -> X14e514b0c9cb515c_17 [label="0"];
+    X14e514b0c9cb515c_21 -> X14e514b0c9cb515c_18 [label="other"];
+    X14e514b0c9cb515c_21 [label="Storage Dead _30\lStorage Live _28\l_29 <- Cast-Transmute _2\l_28 <- BitAnd(_29, _20)\lSwitchInt _28\l"];
+    X14e514b0c9cb515c_22 [label="Storage Dead _30\lStorage Live _27\lStorage Live _31\l_31 <- Cast-PointerCoercion(Unsize) const :: &[&str; 1]\lStorage Live _32\l_32 <- Cast-PointerCoercion(Unsize) const :: &[core::fmt::rt::Argument<'_>; 0]\l_27 <- Adt (_31, const :: std::option::Option<&[core::fmt::rt::Placeholder]>, _32)\lStorage Dead _32\lStorage Dead _31\lCall\l"];
+    X14e514b0c9cb515c_23 -> X14e514b0c9cb515c_21 [label="1"];
+    X14e514b0c9cb515c_23 -> X14e514b0c9cb515c_22 [label="other"];
+    X14e514b0c9cb515c_23 [label="SwitchInt _30\l"];
+    X14e514b0c9cb515c_24 -> X14e514b0c9cb515c_8 [label="0"];
+    X14e514b0c9cb515c_24 -> X14e514b0c9cb515c_9 [label="other"];
+    X14e514b0c9cb515c_24 [label="Storage Dead _11\lStorage Dead _8\lStorage Dead _7\lSwitchInt _6\l"];
+    X14e514b0c9cb515c_25 -> X14e514b0c9cb515c_26 [label="1"];
+    X14e514b0c9cb515c_25 -> X14e514b0c9cb515c_15 [label="other"];
+    X14e514b0c9cb515c_25 [label="SwitchInt _21\l"];
+    X14e514b0c9cb515c_26 -> X14e514b0c9cb515c_27 [label="0"];
+    X14e514b0c9cb515c_26 -> X14e514b0c9cb515c_11 [label="other"];
+    X14e514b0c9cb515c_26 [label="Storage Dead _21\lStorage Live _18\l_19 <- Cast-Transmute _1\l_20 <- Sub(_4, const :: usize)\l_18 <- BitAnd(_19, _20)\lSwitchInt _18\l"];
+    X14e514b0c9cb515c_27 -> X14e514b0c9cb515c_12;
+    X14e514b0c9cb515c_27 [label="Storage Dead _18\lGoto\l"];
+  }
+  X14e514b0c9cb515c_1 -> X5ea6c111b835a80f_0 [label="_4"];
+  X14e514b0c9cb515c_2 -> X5ea6c111b835a80f_0 [label="_4"];
+  X14e514b0c9cb515c_3 -> X5ea6c111b835a80f_0 [label="_4"];
+  X14e514b0c9cb515c_4 -> X6bcf066a9cdda6_0 [label="_1,_12,_3,_5"];
+  X14e514b0c9cb515c_8 -> Xcfb99dd5dbeb355e_0 [label="const :: &str"];
+  X14e514b0c9cb515c_15 -> Xfffaab11503b9894_0 [label="_17"];
+  X14e514b0c9cb515c_22 -> Xfffaab11503b9894_0 [label="_27"];
+  subgraph cluster_24 {
+    label="<fn() \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X8e1a4da7d05fa15e_0 -> X8e1a4da7d05fa15e_1 [label="_0"];
+    X8e1a4da7d05fa15e_0 [label="Call\l"];
+    X8e1a4da7d05fa15e_1 [label="Return\l"];
+  }
+  X8e1a4da7d05fa15e_0 -> X8e1a4da7d05fa15e_0: _1 [label=""];
+  subgraph cluster_25 {
+    label="<Container \nas \nSummary>::summarise";
+    style="filled";
+    color=lightgray;
+    Xa239faf806f3af4c_0 -> Xa239faf806f3af4c_1 [label="_0"];
+    Xa239faf806f3af4c_0 [label="_2 <- Use(const :: &str)\lCall\l"];
+    Xa239faf806f3af4c_1 [label="Return\l"];
+  }
+  Xa239faf806f3af4c_0 -> X6a1355bb0a3980b0_0 [label="_2"];
+}
