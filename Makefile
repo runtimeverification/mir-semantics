@@ -43,7 +43,7 @@ smir-parse-tests: # build # commented out for CI's sake
 poetry-install:
 	$(POETRY) install
 
-test-unit: build
+test-unit: # build # commented out for CI's sake
 	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration: build
