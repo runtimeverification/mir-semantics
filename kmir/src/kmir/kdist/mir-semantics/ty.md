@@ -258,9 +258,8 @@ syntax MaybePromoted ::= promoted(Int) [group(mir-option-int)]
 
 syntax Align ::= align(Int) [group(mir-int), symbol(align)]
 
-// FIXME provSize and allocId are in a _list_ in json
-syntax ProvenanceMapEntry ::= // provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [group(mir), symbol(provenanceMapEntry)]
-                              List [group(mir-klist-MIRInt)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: MIRInt, allocId: AllocId)
+                              [group(mir), symbol(provenanceMapEntry)]
 
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
                                 [group(mir-list), symbol(ProvenanceMapEntries::append), terminator-symbol(ProvenanceMapEntries::empty)]

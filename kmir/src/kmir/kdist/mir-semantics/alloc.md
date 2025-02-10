@@ -36,7 +36,7 @@ syntax GlobalAlloc ::= globalAllocEntry(MIRInt, GlobalAllocKind)
 syntax GlobalAllocs ::= List {GlobalAlloc, ""}
          [symbol(GlobalAllocs::append), terminator-symbol(GlobalAllocs::empty), group(mir-list)]
 
-syntax AllocId ::= allocId(Int) [symbol(allocId)]
+syntax AllocId ::= allocId(Int) [group(mir-int), symbol(allocId)]
 
 endmodule
 ```
