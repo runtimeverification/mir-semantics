@@ -362,8 +362,8 @@ syntax ClauseKind ::= clauseKindTrait(TraitPredicate)                   [group(m
                     | clauseKindConstEvaluatable(TyConst)               [group(mir-enum), symbol(ClauseKind::ConstEvaluatable)]
 
 syntax TraitPredicate ::= traitPredicate(traitDef: TraitDef, polarity: PredicatePolarity) [group(mir---traitDef--polarity)]
-syntax RegionOutlivesPredicate ::= regionOutlivesPredicate(Region, Region)                [group(mir)] // FIXME field names??
-syntax TypeOutlivesPredicate ::= typeOutlivesPredicate(Ty, Region)                        [group(mir)] // FIXME field names??
+syntax RegionOutlivesPredicate ::= regionOutlivesPredicate(Region, Region)                [group(mir)]
+syntax TypeOutlivesPredicate ::= typeOutlivesPredicate(Ty, Region)                        [group(mir)]
 syntax ProjectionPredicate ::= projectionPredicate(projectionTy: AliasTy, term: TermKind) [group(mir---projectionTy--term)]
 
 syntax SubtypePredicate ::= subtypePredicate(a: Ty, b: Ty) [group(mir---a--b)]
