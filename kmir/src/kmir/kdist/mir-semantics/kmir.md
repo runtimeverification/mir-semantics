@@ -63,6 +63,7 @@ The entire program's return value (`retVal`) is held in a separate cell.
 module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports INT-SYNTAX
+  imports BOOL-SYNTAX
 
   syntax RetVal ::= MaybeValue
 
@@ -71,6 +72,24 @@ module KMIR-CONFIGURATION
                                    target:MaybeBasicBlockIdx, // basic block to return to
                                    UnwindAction,              // action to perform on panic
                                    locals:List)               // return val, args, local variables
+
+  // local storage of the stack frame
+  // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
+
+  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
+  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
+  // This limits the Ty that can be used here.
+
+  // accessors
+  syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
+  rule valueOfLocal(typedLocal(V, _, _)) => V
+
+  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
+  rule tyOfLocal(typedLocal(_, TY, _)) => TY
+
+  syntax Bool ::= isMutable ( TypedLocal ) [function, total]
+  rule isMutable(typedLocal(_, _, mutabilityMut)) => true
+  rule isMutable(typedLocal(_, _, mutabilityNot)) => false
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
@@ -239,12 +258,12 @@ be known to populate the `currentFunc` field.
   rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
 
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
-                  // basically `replicate (length LOCALS) Any`.
-                  // FIXME what about function arguments and return?
 
   rule #reserveFor(.LocalDecls) => .List
 
-  rule #reserveFor(_:LocalDecl REST:LocalDecls) => ListItem(NoValue) #reserveFor(REST)
+  rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
+      =>
+       ListItem(typedLocal(NoValue, TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -397,14 +416,14 @@ stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => #setLocal(NEWLOCALS, DEST, {LOCALS[0]}:>MaybeValue ) </locals>
+         <locals> LOCALS => #setLocal(NEWLOCALS, DEST, {LOCALS[0]}:>TypedLocal ) </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
       andBool 0 <Int size(LOCALS)
-      andBool isMaybeValue(LOCALS[0])
+      andBool isTypedLocal(LOCALS[0])
       // andBool #withinLocals(DEST, LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
@@ -423,17 +442,21 @@ stack frame, at the _target_.
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 
   // set a local to a new value. Assumes the place is valid
-  syntax List ::= #setLocal(List, Place, MaybeValue) [function]
+  syntax List ::= #setLocal(List, Place, TypedLocal) [function]
 
-  rule #setLocal(LOCALS, _, NoValue)
+  rule #setLocal(LOCALS, _, typedLocal(NoValue, _, _))
      =>
        LOCALS
 
-  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), V:Value)
+  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), typedLocal(V:Value, TY, _))
      =>
        LOCALS[I <- V]
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
+     andBool (isMutable({LOCALS[I]}:>TypedLocal)  // either mutable
+             orBool
+              valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue) // or not set before
     [preserves-definedness] // valid list indexing checked
 
   // rule #setLocal(LOCALS, place(local(I), PROJECTION), VALUE)
@@ -447,7 +470,7 @@ stack frame, at the _target_.
 
 When a `terminatorKindReturn` is executed but the optional target is empty
 (`noBasicBlockIdx`), the program is ended, using the returned value from `_0`
-as the program's `retVal`.  
+as the program's `retVal`.
 The call stack is not necessarily empty at this point so it is left untouched.
 
 ```k
@@ -458,7 +481,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
          =>
            #EndProgram
        </k>
-       <retVal> _ => {LOCALS[0]}:>MaybeValue </retVal>
+       <retVal> _ => valueOfLocal({LOCALS[0]}:>TypedLocal) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
          <locals> LOCALS </locals>
@@ -510,7 +533,7 @@ The local data has to be set up for the call, which requires information about t
               ARGS
               )
          =>
-           #execBlock(FIRST) 
+           #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
@@ -525,11 +548,11 @@ The local data has to be set up for the call, which requires information about t
          ...
        </currentFrame>
 
-  syntax List ::= #setArgs ( List, Int, Operands, List) [function]
+  syntax List ::= #setArgs ( List, Int, Operands, List ) [function]
 
   rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
   rule #setArgs(PRIOR_LOCALS, IDX, ARG:Operand ARGS:Operands, ACC)
-       => 
+       =>
        #setArgs(
           PRIOR_LOCALS,
           IDX +Int 1,
@@ -537,9 +560,9 @@ The local data has to be set up for the call, which requires information about t
           #setLocal(ACC, place(local(IDX), .ProjectionElems), #readValue(PRIOR_LOCALS, ARG))
         )
 
-  syntax Value ::= #readValue ( List, Operand )
+  syntax TypedLocal ::= #readValue ( List, Operand ) [function]
 
-  rule #readValue(_, _) => Any // FIXME! Not reading anything
+  rule #readValue(_, _) => typedLocal(Any, ty(-2), mutabilityNot) // FIXME! Not reading anything
 ```
 
 
