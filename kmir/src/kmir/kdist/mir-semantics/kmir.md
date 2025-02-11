@@ -73,24 +73,6 @@ module KMIR-CONFIGURATION
                                    UnwindAction,              // action to perform on panic
                                    locals:List)               // return val, args, local variables
 
-  // local storage of the stack frame
-  // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
-
-  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
-  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
-  // This limits the Ty that can be used here.
-
-  // accessors
-  syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
-  rule valueOfLocal(typedLocal(V, _, _)) => V
-
-  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
-  rule tyOfLocal(typedLocal(_, TY, _)) => TY
-
-  syntax Bool ::= isMutable ( TypedLocal ) [function, total]
-  rule isMutable(typedLocal(_, _, mutabilityMut)) => true
-  rule isMutable(typedLocal(_, _, mutabilityNot)) => false
-
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
                   <retVal> NoValue </retVal>
@@ -113,8 +95,38 @@ module KMIR-CONFIGURATION
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                 </kmir>
+```
+
+### Local variables
+
+A list `locals` of local variables of a stack frame is stored as values together
+with their type information (to enable type-checking assignments). Also, the
+`Mutability` is remembered to prevent mutation of immutable values.
+
+Each function's code will only access local values, or heap data referenced by them.
+
+```k
+  // local storage of the stack frame
+  // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
+
+  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
+  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
+  // This limits the Ty that can be used here.
+
+  // accessors
+  syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
+  rule valueOfLocal(typedLocal(V, _, _)) => V
+
+  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
+  rule tyOfLocal(typedLocal(_, TY, _)) => TY
+
+  syntax Bool ::= isMutable ( TypedLocal ) [function, total]
+  rule isMutable(typedLocal(_, _, mutabilityMut)) => true
+  rule isMutable(typedLocal(_, _, mutabilityNot)) => false
+
 endmodule
 ```
+
 
 ### Execution Control Flow
 
