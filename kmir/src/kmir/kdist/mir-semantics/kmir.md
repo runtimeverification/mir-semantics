@@ -562,7 +562,22 @@ The local data has to be set up for the call, which requires information about t
 
   syntax TypedLocal ::= #readValue ( List, Operand ) [function]
 
-  rule #readValue(_, _) => typedLocal(Any, ty(-2), mutabilityNot) // FIXME! Not reading anything
+  rule #readValue(LOCALS, operandCopy(place(local(I), .ProjectionElems)))
+      =>
+        {LOCALS[I]}:>TypedLocal
+  rule #readValue(LOCALS, operandMove(place(local(I), .ProjectionElems)))
+      =>
+        {LOCALS[I]}:>TypedLocal
+        // TODO the source local should be made inaccessible. This will require writing the stack frame
+        // _after_ setting the local arguments and therefore as a rewrite step, not a function.
+
+  rule #readValue(_, operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+      =>
+        typedLocal(#decodeConstant(KIND, TY), TY, mutabilityNot)
+
+  syntax Value ::= #decodeConstant ( ConstantKind, Ty ) [function] // FIXME type information required
+  rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
+
 ```
 
 
