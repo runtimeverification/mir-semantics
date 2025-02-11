@@ -1,6 +1,8 @@
 POETRY     := poetry -C kmir
 POETRY_RUN := $(POETRY) run
 
+TOP_DIR    := $(shell pwd)
+
 default: build
 
 build: poetry-install
@@ -17,7 +19,7 @@ stable-mir-json:
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
 smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
-smir-parse-tests: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run -- 
+smir-parse-tests: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run --
 smir-parse-tests: # build # commented out for CI's sake
 	errors=""; \
 	report() { echo $$2; errors="$$errors $$1"; }; \
@@ -44,10 +46,10 @@ poetry-install:
 	$(POETRY) install
 
 test-unit: # build # commented out for CI's sake
-	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
+	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration: build
-	$(POETRY_RUN) pytest src/tests/integration --maxfail=1 --verbose \
+	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Checks and formatting
