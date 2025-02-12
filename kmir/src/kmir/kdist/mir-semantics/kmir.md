@@ -14,7 +14,6 @@ from a json format of stable-MIR, and the name of the function to execute.
 ```k
 module KMIR-SYNTAX
   imports KMIR-AST
-  imports RT-DATA
 
   syntax KItem ::= #init( Pgm )
 
@@ -37,13 +36,14 @@ Essential parts of the configuration:
 
 The entire program's return value (`retVal`) is held in a separate cell.
 
-Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes information about the `locals` of the currently-executing function/item. Each function's code will only access local values (or heap data referenced by them). Local variables carry type information (see `RT-DATA`). 
+Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes information about the `locals` of the currently-executing function/item. Each function's code will only access local values (or heap data referenced by them). Local variables carry type information (see `RT-DATA`).
 
 ```k
 module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports INT-SYNTAX
   imports BOOL-SYNTAX
+  imports RT-DATA-SYNTAX
 
   syntax RetVal ::= MaybeValue
 

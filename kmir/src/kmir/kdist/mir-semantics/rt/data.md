@@ -4,13 +4,15 @@ This module addresses all aspects of handling "values"i.e., data), at runtime du
 
 
 ```k
-module RT-DATA
-  imports INT
-  imports FLOAT
-  imports BOOL
-  imports BYTES
+requires "../ty.md"
+requires "../body.md"
+
+module RT-DATA-SYNTAX
+  imports INT-SYNTAX
+  imports FLOAT-SYNTAX
+  imports LIST
   imports MAP
-  imports K-EQUAL
+  imports BOOL-SYNTAX
 
   imports TYPES
   imports BODY
@@ -20,7 +22,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 
 ```k
   syntax LowLevelValue ::= value ( Bytes, Ty, RigidTy ) // TODO redundant information (Ty <-- -> RigidTy)
-                         | "Moved"
+                         | "MovedValue"
                          | "Uninitialized" // do we need this? Or can we use zero bytes?
 
   syntax LowLevelValue ::= #newValue ( Ty , Map ) [ function ] // TODO not total
@@ -76,43 +78,117 @@ with their type information (to enable type-checking assignments). Also, the
   rule isMutable(typedLocal(_, _, mutabilityNot)) => false
 ```
 
-### Setting local variables (including error cases)
-
 Access to a `TypedLocal` (whether reading or writing( may fail for a number of reasons.
 Every access is modelled as a _function_ whose result needs to be checked by the caller.
 
 ```k
-  syntax LocalAccessError ::= LocalMoved( Int )
-                            | TypeMismatch( Int, Ty, Ty )
-                            | LocalNotMutable ( Int )
-                            | "NoValueToWrite" 
+  syntax LocalAccessError ::= InvalidLocal ( Local )
+                            | TypeMismatch( Local, Ty, TypedLocal )
+                            | LocalMoved( Local )
+                            | LocalNotMutable ( Local )
+                            | "Uninitialised"
+                            | "NoValueToWrite"
+                            | Unsupported ( String ) // draft code
+
+  syntax KItem ::= #LocalError ( LocalAccessError )
+
+endmodule
 ```
 
-The `#setLocal` function writes a `TypedLocal` value to a given `Place` within the `List` of local variables.
-This may fail because a local may not be accessible, moved away, or not mutable.
-
+## Operations on local variables
 
 ```k
-  // set a local to a new value. Assumes the place is valid
-  syntax List ::= #setLocalValue(List, Place, TypedLocal) [function]
+module RT-DATA
+  imports INT
+  imports FLOAT
+  imports BOOL
+  imports BYTES
+  imports MAP
+  imports K-EQUAL
 
-  rule #setLocalValue(LOCALS, _, typedLocal(NoValue, _, _))
-     =>
-       LOCALS // FIXME NoValueToWrite ?
+  imports RT-DATA-SYNTAX
+  imports KMIR-CONFIGURATION
+```
 
-  rule #setLocalValue(LOCALS, place(local(I), .ProjectionElems), typedLocal(V:Value, TY, _))
-     =>
-       LOCALS[I <- V]
+### Setting local variables (including error cases)
+
+The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+
+```k
+  syntax KItem ::= #setLocalValue( Place, TypedLocal )
+
+  // error cases first
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
+       <locals> LOCALS </locals>
+    requires size(LOCALS) <Int I orBool I <=Int 0
+
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, TY, _) #as VAL)
+          =>
+           #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
+          ...
+        </k>
+       <locals> LOCALS </locals>
+    requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
+
+  rule <k> #setLocalValue( place(local(I), _), _)
+          =>
+           #LocalError(LocalMoved(local(I)))
+          ...
+        </k>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), _)
+          =>
+           #LocalError(LocalNotMutable(LOCAL))
+          ...
+        </k>
+       <locals> LOCALS </locals>
+    requires notBool isMutable({LOCALS[I]}:>TypedLocal)         // not mutable
+     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) =/=K NoValue // and already written to
+
+
+  // writing no value is a no-op
+  rule <k> #setLocalValue( _, typedLocal(NoValue, _, _)) => .K ... </k>
+   // FIXME or should this be NoValueToWrite ? But some zero-sized values are not initialised
+
+  // if all is well, write the value
+  // mutable case
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ )) ~> CONT
+          =>
+           CONT
+          ...
+       </k>
+       <locals> LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool VAL =/=K NoValue
      andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
-     andBool (isMutable({LOCALS[I]}:>TypedLocal)  // either mutable
-             orBool
-              valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue) // or not set before
+     andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
     [preserves-definedness] // valid list indexing checked
 
-    // TODO error cases
+  // uninitialised case
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ )) ~> CONT
+          =>
+           CONT
+          ...
+       </k>
+       <locals> LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool VAL =/=K NoValue
+     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY         // matching type
+     andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
+     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
+    [preserves-definedness] // valid list indexing checked
 
+  // projections not supported yet
+  rule <k> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems), _ )
+          =>
+           #LocalError(Unsupported(""))
+          ...
+       </k>
+    requires PROJECTION =/=K .ProjectionElems
 ```
 
 
