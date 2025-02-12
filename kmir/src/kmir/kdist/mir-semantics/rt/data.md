@@ -152,6 +152,9 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
   rule <k> #setLocalValue( _, typedLocal(NoValue, _, _)) => .K ... </k>
    // FIXME or should this be NoValueToWrite ? But some zero-sized values are not initialised
 
+  // writing a moved value is an error
+  rule <k> #setLocalValue( _, typedLocal(NoValue, _, _)) => .K ... </k>
+
   // if all is well, write the value
   // mutable case
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ )) ~> CONT
@@ -162,7 +165,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
        <locals> LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool VAL =/=K NoValue
+     andBool isValue(VAL)
      andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
      andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
     [preserves-definedness] // valid list indexing checked

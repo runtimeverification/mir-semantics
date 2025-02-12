@@ -366,13 +366,13 @@ depending on the value of a _discriminant_.
 `Return` simply returns from a function call, using the information
 stored in the top stack frame to pass the returned value. The return
 value is the value in local `_0`, and will go to the _destination_ in
-the stack frame. Execution continues with the context of the enclosing
-stack frame, at the _target_.
+the `LOCALS` of the caller's stack frame. Execution continues with the
+context of the enclosing stack frame, at the _target_.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #execBlockIdx(TARGET) ~> .K
+           #setLocalValue(DEST, {LOCALS[0]}:>TypedLocal) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -381,7 +381,7 @@ stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => #setLocal(NEWLOCALS, DEST, {LOCALS[0]}:>TypedLocal ) </locals>
+         <locals> LOCALS => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
@@ -405,34 +405,6 @@ stack frame, at the _target_.
   // other item kinds are not expected or supported
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
-
-  /////////////////////////// legacy code, no errors //////////////////////////
-  // set a local to a new value. Assumes the place is valid
-  syntax List ::= #setLocal(List, Place, TypedLocal) [function]
-
-  rule #setLocal(LOCALS, _, typedLocal(NoValue, _, _))
-     =>
-       LOCALS
-
-  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), typedLocal(V:Value, TY, _))
-     =>
-       LOCALS[I <- V]
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
-     andBool (isMutable({LOCALS[I]}:>TypedLocal)  // either mutable
-             orBool
-              valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue) // or not set before
-    [preserves-definedness] // valid list indexing checked
-
-  // rule #setLocal(LOCALS, place(local(I), PROJECTION), VALUE)
-  //    =>
-  //      LOCALS[I <- #updateProjection(LOCALS[I], PROJECTION, VALUE)]
-  //   requires 0 <=Int I
-  //    andBool I <Int size(LOCALS)
-  //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
-  //   [preserves-definedness] // valid list indexing and projection checked
-  /////////////////////////////////////////////////////
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
@@ -494,13 +466,13 @@ The local data has to be set up for the call, which requires information about t
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
 
-  // reserve space for local variables and copy arguments from old locals into their place
+  // reserve space for local variables and copy/move arguments from old locals into their place
   rule <k> #setUpCalleeData(
               monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
               ARGS
               )
          =>
-           #execBlock(FIRST)
+           #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
@@ -510,42 +482,68 @@ The local data has to be set up for the call, which requires information about t
         //  <dest> DEST </dest>
         //  <target> TARGET </target>
         //  <unwind> UNWIND </unwind>
-         <locals> OLDLOCALS => #setArgs(OLDLOCALS, 1, ARGS, #reserveFor(NEWLOCALS)) </locals>
+         <locals> _ => #reserveFor(NEWLOCALS) </locals>
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
 
-  /////////////////////////// legacy code, no errors //////////////////////////
-  syntax List ::= #setArgs ( List, Int, Operands, List ) [function]
+  syntax KItem ::= #setArgsFromStack ( Int, Operands)
+                 | #setArgFromStack ( Int, Operand)
 
-  rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
-  rule #setArgs(PRIOR_LOCALS, IDX, ARG:Operand ARGS:Operands, ACC)
-       =>
-       #setArgs(
-          PRIOR_LOCALS,
-          IDX +Int 1,
-          ARGS,
-          #setLocal(ACC, place(local(IDX), .ProjectionElems), #readValue(PRIOR_LOCALS, ARG))
-        )
+  // once all arguments have been retrieved, write caller's modified CALLERLOCALS to stack frame and execute
+  rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
 
-  syntax TypedLocal ::= #readValue ( List, Operand ) [function]
+  // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
+  rule <k> #setArgsFromStack(IDX, OP:Operand MORE:Operands) ~> CONT
+        => 
+           #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
+       </k>
 
-  rule #readValue(LOCALS, operandCopy(place(local(I), .ProjectionElems)))
-      =>
-        {LOCALS[I]}:>TypedLocal
-  rule #readValue(LOCALS, operandMove(place(local(I), .ProjectionElems)))
-      =>
-        {LOCALS[I]}:>TypedLocal
-        // TODO the source local should be made inaccessible. This will require writing the stack frame
-        // _after_ setting the local arguments and therefore as a rewrite step, not a function.
+  rule <k> #setArgFromStack(IDX, operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))) 
+        => 
+           #setLocalValue(
+              place(local(IDX), .ProjectionElems),
+              typedLocal(#decodeConstant(KIND, TY), TY, mutabilityNot)
+            )
+        ... 
+       </k>
 
-  rule #readValue(_, operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
-      =>
-        typedLocal(#decodeConstant(KIND, TY), TY, mutabilityNot)
+  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
+        => 
+           #setLocalValue(
+              place(local(IDX), .ProjectionElems),
+              {CALLERLOCALS[I]}:>TypedLocal
+            )
+        ... 
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+    requires 0 <=Int I
+     andBool I <Int size(CALLERLOCALS)
+     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
 
-  syntax Value ::= #decodeConstant ( ConstantKind, Ty ) [function] // FIXME type information required
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
+        => 
+           #setLocalValue(
+              place(local(IDX), .ProjectionElems),
+              {CALLERLOCALS[I]}:>TypedLocal
+            )
+        ... 
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _,
+                 CALLERLOCALS 
+                => 
+                 CALLERLOCALS[I <- typedLocal(Moved, tyOfLocal({CALLERLOCALS[I]}:>TypedLocal), mutabilityNot)])
+                )
+              _:List 
+        </stack>
+    requires 0 <=Int I
+     andBool I <Int size(CALLERLOCALS)
+     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  // value decoding, not implemented yet. Requires Ty -> TyKind information and codec.
+  syntax Value ::= #decodeConstant ( ConstantKind, Ty ) [function]
   rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
-  ///////////////////////////////////////////////////////////////////////////////
 ```
 
 
