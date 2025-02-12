@@ -2,6 +2,7 @@
 
 ```k
 requires "kmir-ast.md"
+requires "rt/data.md"
 ```
 
 ## Syntax of MIR in K
@@ -13,32 +14,9 @@ from a json format of stable-MIR, and the name of the function to execute.
 ```k
 module KMIR-SYNTAX
   imports KMIR-AST
-  imports INT-SYNTAX
-  imports FLOAT-SYNTAX
+  imports RT-DATA
 
   syntax KItem ::= #init( Pgm )
-
-////////////////////////////////////////////
-// FIXME things below related to memory and
-// should maybe move to their own module.
-
-  syntax Value ::= Scalar( Int, Int, Bool )
-                   // value, bit-width, signedness   for bool, un/signed int
-                 | Float( Float, Int )
-                   // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
-                   // address, metadata              for ref/ptr
-                 | Range( List )
-                   // homogenous values              for array/slice
-                 | Struct( Int, List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | "Any"
-                   // arbitrary value                for transmute/invalid ptr lookup
-
-  syntax MaybeValue ::= Value
-                      | "NoValue"
-
-  syntax Address // FIXME essential to the memory model, leaving it unspecified for now
 
 endmodule
 ```
@@ -58,6 +36,8 @@ Essential parts of the configuration:
 * the `memory` cell which abstracts allocated heap data
 
 The entire program's return value (`retVal`) is held in a separate cell.
+
+Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes information about the `locals` of the currently-executing function/item. Each function's code will only access local values (or heap data referenced by them). Local variables carry type information (see `RT-DATA`). 
 
 ```k
 module KMIR-CONFIGURATION
@@ -95,34 +75,6 @@ module KMIR-CONFIGURATION
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                 </kmir>
-```
-
-### Local variables
-
-A list `locals` of local variables of a stack frame is stored as values together
-with their type information (to enable type-checking assignments). Also, the
-`Mutability` is remembered to prevent mutation of immutable values.
-
-Each function's code will only access local values, or heap data referenced by them.
-
-```k
-  // local storage of the stack frame
-  // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
-
-  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
-  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
-  // This limits the Ty that can be used here.
-
-  // accessors
-  syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
-  rule valueOfLocal(typedLocal(V, _, _)) => V
-
-  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
-  rule tyOfLocal(typedLocal(_, TY, _)) => TY
-
-  syntax Bool ::= isMutable ( TypedLocal ) [function, total]
-  rule isMutable(typedLocal(_, _, mutabilityMut)) => true
-  rule isMutable(typedLocal(_, _, mutabilityNot)) => false
 
 endmodule
 ```
@@ -135,6 +87,7 @@ module KMIR
   imports KMIR-SYNTAX
   imports KMIR-CONFIGURATION
   imports MONO
+  imports RT-DATA
 
   imports BOOL
   imports LIST
@@ -436,7 +389,7 @@ stack frame, at the _target_.
      requires CALLER in_keys(FUNCS)
       andBool 0 <Int size(LOCALS)
       andBool isTypedLocal(LOCALS[0])
-      // andBool #withinLocals(DEST, LOCALS)
+      // andBool DEST #within(LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
   syntax List ::= #getBlocks(Map, Ty) [function]
@@ -453,6 +406,7 @@ stack frame, at the _target_.
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 
+  /////////////////////////// legacy code, no errors //////////////////////////
   // set a local to a new value. Assumes the place is valid
   syntax List ::= #setLocal(List, Place, TypedLocal) [function]
 
@@ -478,6 +432,7 @@ stack frame, at the _target_.
   //    andBool I <Int size(LOCALS)
   //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
   //   [preserves-definedness] // valid list indexing and projection checked
+  /////////////////////////////////////////////////////
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
@@ -560,6 +515,7 @@ The local data has to be set up for the call, which requires information about t
          ...
        </currentFrame>
 
+  /////////////////////////// legacy code, no errors //////////////////////////
   syntax List ::= #setArgs ( List, Int, Operands, List ) [function]
 
   rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
@@ -589,7 +545,7 @@ The local data has to be set up for the call, which requires information about t
 
   syntax Value ::= #decodeConstant ( ConstantKind, Ty ) [function] // FIXME type information required
   rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
-
+  ///////////////////////////////////////////////////////////////////////////////
 ```
 
 
