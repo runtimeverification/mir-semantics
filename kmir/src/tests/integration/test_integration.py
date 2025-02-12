@@ -191,10 +191,10 @@ EXEC_DATA = [
         None,
     ),
     (
-        'main-a-b-c --depth 15',
+        'main-a-b-c --depth 19',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.15.state',
-        15,
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.19.state',
+        19,
     ),
 ]
 

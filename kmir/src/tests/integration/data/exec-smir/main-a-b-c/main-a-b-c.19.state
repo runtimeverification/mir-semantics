@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
   </k>
   <retVal>
     NoValue
@@ -51,3 +51,4 @@
     symbol ( "main" )
   </start-symbol>
 </kmir>
+

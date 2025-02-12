@@ -120,7 +120,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
   // error cases first
   rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
-    requires size(LOCALS) <Int I orBool I <=Int 0
+    requires size(LOCALS) <Int I orBool I <Int 0
 
   rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, TY, _) #as VAL)
           =>
