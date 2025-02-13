@@ -120,12 +120,16 @@ module RT-DATA
       => // bytes should be one or zero, but all non-zero is taken as true
        Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
        // TODO should we insist on known alignment and size of BYTES?
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar) 
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
   //     => // bytes should be one or zero, but all non-zero is taken as true
   //      Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false) // FIXME Char and str types
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar) 
-      => // bytes should be one or zero, but all non-zero is taken as true
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false) // FIXME Char and str types
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
+      => // FIXME Char and str types
+       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
+      => // should be one byte
+       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false)
+    requires lengthBytes(BYTES) ==Int 1
 
 
   rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
