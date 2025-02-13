@@ -16,8 +16,8 @@ module KMIR-AST
   imports TARGET
   imports TYPES
 
-  syntax Pgm ::= Symbol GlobalAllocs FunctionNames MonoItems
-                 [symbol(pgm), group(mir---name--allocs--functions--items)]
+  syntax Pgm ::= Symbol GlobalAllocs FunctionNames MonoItems BaseTypes
+                 [symbol(pgm), group(mir---name--allocs--functions--items--types)]
 
   syntax FunctionKind ::= functionNormalSym(Symbol) [symbol(FunctionKind::NormalSym), group(mir-enum)]
                         | functionIntrinsic(Symbol) [symbol(FunctionKind::IntrinsicSym), group(mir-enum)]
@@ -27,6 +27,10 @@ module KMIR-AST
                           [symbol(functionName), group(mir)]
 
   syntax FunctionNames ::= List [group(mir-klist-FunctionName)]
+
+  syntax BaseType ::= baseType( Ty, TyKind ) [group(mir)]
+
+  syntax BaseTypes ::= List{BaseType, ""} [group(mir-list), symbol(BaseTypes::append), terminator-symbol(BaseTypes::empty)]
 
 endmodule
 ```

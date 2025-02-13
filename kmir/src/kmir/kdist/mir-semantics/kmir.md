@@ -93,6 +93,8 @@ module KMIR-CONFIGURATION
                   <memory> .Map </memory> // FIXME unclear how to model
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
+                  // static information about the base type interning in the MIR
+                  <basetypes> .Map </basetypes>
                 </kmir>
 endmodule
 ```
@@ -117,13 +119,37 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
          =>
-           #execFunction(#findItem(Items, FuncName), Functions)
+           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
-       <functions> _ => #mkFunctionMap(Functions, Items) </functions>
-       <start-symbol> FuncName </start-symbol>
+       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+       <start-symbol> FUNCNAME </start-symbol>
+       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
 ```
+
+The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
+It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
+
+```k
+  syntax Map ::= #mkTypeMap ( Map, BaseTypes ) [function, total]
+
+  rule #mkTypeMap(ACC, .BaseTypes) => ACC
+
+  // build map of Ty -> RigidTy from suitable pairs
+  rule #mkTypeMap(ACC, baseType(TY, tyKindRigidTy(RIGID)) MORE:BaseTypes)
+      =>
+       #mkTypeMap(ACC[TY <- RIGID], MORE)
+    requires notBool TY in_keys(ACC)
+    [preserves-definedness] // key collision checked
+
+  // skip anything that is not a RigidTy or causes a key collision
+  rule #mkTypeMap(ACC, baseType(_TY, _OTHERTYKIND) MORE:BaseTypes)
+      =>
+       #mkTypeMap(ACC, MORE)
+    [owise]
+```
+
 
 The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
 composed with a secondary lookup of `Item`s via `symbolName`. This composed map will
@@ -447,7 +473,7 @@ stack frame, at the _target_.
 
 When a `terminatorKindReturn` is executed but the optional target is empty
 (`noBasicBlockIdx`), the program is ended, using the returned value from `_0`
-as the program's `retVal`.  
+as the program's `retVal`.
 The call stack is not necessarily empty at this point so it is left untouched.
 
 ```k
@@ -510,7 +536,7 @@ The local data has to be set up for the call, which requires information about t
               ARGS
               )
          =>
-           #execBlock(FIRST) 
+           #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
@@ -529,7 +555,7 @@ The local data has to be set up for the call, which requires information about t
 
   rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
   rule #setArgs(PRIOR_LOCALS, IDX, ARG:Operand ARGS:Operands, ACC)
-       => 
+       =>
        #setArgs(
           PRIOR_LOCALS,
           IDX +Int 1,
