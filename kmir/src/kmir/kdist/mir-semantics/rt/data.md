@@ -157,25 +157,25 @@ module RT-DATA
     requires lengthBytes(BYTES) ==Int 8
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Int decoding
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))  
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)    
+        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)
     requires lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16)) 
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)   
+        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)
     requires lengthBytes(BYTES) ==Int 2
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32)) 
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)   
+        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)
     requires lengthBytes(BYTES) ==Int 4
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64)) 
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)   
+        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)
     requires lengthBytes(BYTES) ==Int 8
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128)) 
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true) 
+        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true)
     requires lengthBytes(BYTES) ==Int 16
   // Isize for 64bit platforms
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
