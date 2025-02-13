@@ -196,6 +196,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.19.state',
         19,
     ),
+    (
+        'call-with-args',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.21.state',
+        21,
+    ),
 ]
 
 
