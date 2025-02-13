@@ -120,19 +120,69 @@ module RT-DATA
       => // bytes should be one or zero, but all non-zero is taken as true
        Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
        // TODO should we insist on known alignment and size of BYTES?
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // FIXME Char and str types
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
-  //     => // bytes should be one or zero, but all non-zero is taken as true
-  //      Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false) // FIXME Char and str types
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
-      => // FIXME Char and str types
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false)
+  //     =>
+  //      Str(...)
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyStr)
+  //     =>
+  //      Str(...)
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // UInt decoding
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
-      => // should be one byte
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false)
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 8, false)
     requires lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 16, false)
+    requires lengthBytes(BYTES) ==Int 2
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 32, false)
+    requires lengthBytes(BYTES) ==Int 4
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+    requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 128, false)
+    requires lengthBytes(BYTES) ==Int 16
+  // Usize for 64bit platforms
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+    requires lengthBytes(BYTES) ==Int 8
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Int decoding
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))  
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)    
+    requires lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16)) 
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)   
+    requires lengthBytes(BYTES) ==Int 2
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32)) 
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)   
+    requires lengthBytes(BYTES) ==Int 4
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64)) 
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)   
+    requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128)) 
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true) 
+    requires lengthBytes(BYTES) ==Int 16
+  // Isize for 64bit platforms
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO Float decoding: not supported natively in K
 
-
-  rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
+  rule #decodeConstant(_, _) => Any [owise]
 ```
 
 ### Setting local variables (including error cases)
