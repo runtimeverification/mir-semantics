@@ -111,6 +111,26 @@ module RT-DATA
   imports KMIR-CONFIGURATION
 ```
 
+```k
+  //////////////////////////////////////////////////////////////////////////////////////
+  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
+  // decoding the correct amount of bytes depending on base type size
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
+      => // bytes should be one or zero, but all non-zero is taken as true
+       Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
+       // TODO should we insist on known alignment and size of BYTES?
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar) 
+  //     => // bytes should be one or zero, but all non-zero is taken as true
+  //      Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false) // FIXME Char and str types
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar) 
+      => // bytes should be one or zero, but all non-zero is taken as true
+       Scalar(Bytes2Int(BYTES, LE, Unsigned), 1, false) // FIXME Char and str types
+
+
+  rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
+```
+
 ### Setting local variables (including error cases)
 
 The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.

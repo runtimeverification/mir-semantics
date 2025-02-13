@@ -90,6 +90,7 @@ module KMIR
   imports KMIR-CONFIGURATION
   imports MONO
   imports RT-DATA
+  imports TYPES
 
   imports BOOL
   imports LIST
@@ -529,10 +530,12 @@ The local data has to be set up for the call, which requires information about t
         => 
            #setLocalValue(
               place(local(IDX), .ProjectionElems),
-              typedLocal(#decodeConstant(KIND, TY), TY, mutabilityNot)
+              typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
             )
         ... 
        </k>
+       <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
         => 
@@ -565,11 +568,6 @@ The local data has to be set up for the call, which requires information about t
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  // value decoding, not implemented yet. Requires Ty -> TyKind information and codec.
-  syntax Value ::= #decodeConstant ( ConstantKind, Ty ) [function]
-  rule #decodeConstant(_, _) => Any [owise] // FIXME must decode depending on Ty/RigidTy
 ```
 
 
