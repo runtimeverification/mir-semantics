@@ -232,12 +232,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 
   // if all is well, write the value
   // mutable case
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ )) ~> CONT
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ ))
           =>
-           CONT
+           .K
           ...
        </k>
-       <locals> LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool isValue(VAL)
@@ -246,15 +246,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ )) ~> CONT
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ ))
           =>
-           CONT
+           .K
           ...
        </k>
-       <locals> LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool VAL =/=K NoValue
+     andBool isValue(VAL)
      andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY         // matching type
      andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
      andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
@@ -263,7 +263,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
   // projections not supported yet
   rule <k> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems), _ )
           =>
-           #LocalError(Unsupported(""))
+           #LocalError(Unsupported("Projections"))
           ...
        </k>
     requires PROJECTION =/=K .ProjectionElems
