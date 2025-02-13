@@ -29,7 +29,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 
 ```
 
-**TODO** We might step away from this byte-oriented representation for values to a higher-level representation outlined below. This would assume that a `#decode` function `(Ty, Bytes( -> HiLevelValue` is available.
+**TODO** We might step away from this byte-oriented representation for values to a higher-level representation outlined below. This would assume that a `#decode` function `(Ty, Bytes) -> Value` is available.
 
 ```k
   syntax Value ::= Scalar( Int, Int, Bool )
@@ -88,6 +88,7 @@ Every access is modelled as a _function_ whose result needs to be checked by the
                             | LocalNotMutable ( Local )
                             | "Uninitialised"
                             | "NoValueToWrite"
+                            | ValueMoved( TypedLocal )
                             | Unsupported ( String ) // draft code
 
   syntax KItem ::= #LocalError ( LocalAccessError )
@@ -153,7 +154,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
    // FIXME or should this be NoValueToWrite ? But some zero-sized values are not initialised
 
   // writing a moved value is an error
-  rule <k> #setLocalValue( _, typedLocal(NoValue, _, _)) => .K ... </k>
+  rule <k> #setLocalValue( _, typedLocal(Moved, _, _) #as VALUE) => ValueMoved(VALUE) ... </k>
 
   // if all is well, write the value
   // mutable case
