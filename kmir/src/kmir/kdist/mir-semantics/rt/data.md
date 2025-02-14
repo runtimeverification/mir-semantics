@@ -404,17 +404,127 @@ References and de-referencing is another family of `RValue`s.
 // Ref, AddressOf, CopyForDeref: not implemented yet
 ```
 
-## Type cases
+## Type casts
 
-**FIXME** not implemented yet: According to CastKind,
+Type casts between a number of different types exist in MIR. We implement a type
+cast from a `TypedLocal` to another when it is followed by a `#cast` item,
+rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
   syntax KITEM ::= #cast( CastKind, Ty )
+```
 
+Casts between signed and unsigned integral numbers of different width exist, with a
+truncating semantics **TODO: reference**.
+These casts can only operate on the `Scalar` variant of the `Value` type, adjusting
+bit width, signedness, and possibly truncating or 2s-complementing the value.
+
+```k
+  // int casts
+  rule <k> typedLocal(Scalar(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
+          =>
+            typedLocal(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT) ~> CONT
+        </k>
+        <basetypes> TYPEMAP </basetypes>
+//      requires #isIntType({TYPEMAP[TY]}:>RigidTy)
+
+  // helpers
+  syntax NumTy ::= IntTy | UintTy | FloatTy
+
+  syntax Int ::= #bitWidth( NumTy ) [function, total]
+  // ------------------------------
+  rule #bitWidth(intTyIsize) => 64 // on 64-bit systems
+  rule #bitWidth(intTyI8   ) => 8
+  rule #bitWidth(intTyI16  ) => 16
+  rule #bitWidth(intTyI32  ) => 32
+  rule #bitWidth(intTyI64  ) => 64
+  rule #bitWidth(intTyI128 ) => 128
+  rule #bitWidth(uintTyUsize) => 64 // on 64-bit systems
+  rule #bitWidth(uintTyU8   ) => 8
+  rule #bitWidth(uintTyU16  ) => 16
+  rule #bitWidth(uintTyU32  ) => 32
+  rule #bitWidth(uintTyU64  ) => 64
+  rule #bitWidth(uintTyU128 ) => 128
+  rule #bitWidth(floatTyF16 ) => 16
+  rule #bitWidth(floatTyF32 ) => 32
+  rule #bitWidth(floatTyF64 ) => 64
+  rule #bitWidth(floatTyF128) => 128
+
+  syntax NumTy ::= #numTypeOf( RigidTy ) [function]
+  // ----------------------------------------------
+  rule #numTypeOf(rigidTyInt(INTTY)) => INTTY
+  rule #numTypeOf(rigidTyUint(UINTTY)) => UINTTY
+  rule #numTypeOf(rigidTyFloat(FLOATTY)) => FLOATTY
+
+  syntax Bool ::= #isIntType ( RigidTy ) [function, total]
+  // -----------------------------------------------------
+  rule #isIntType(rigidTyInt(_))  => true
+  rule #isIntType(rigidTyUint(_)) => true
+  rule #isIntType(_)              => false
+
+  syntax Bool ::= #isSigned ( NumTy ) [function, total]
+  // --------------------------------------------------
+  rule #isSigned (_:FloatTy) => true
+  rule #isSigned (_:IntTy) => true
+  rule #isSigned (_:UintTy) => false
+
+  syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
+  // ------------------------------------------------------
+  // converting to signed int types:
+  // narrowing: truncate using bit operations
+  rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
+      =>
+        Scalar(
+          VAL &Int (1 <<Int #bitWidth(INTTYPE) -Int 1),
+          #bitWidth(INTTYPE),
+          true
+        )
+    requires #bitWidth(INTTYPE) <Int WIDTH
+    [preserves-definedness] // positive shift, divisor non-zero
+
+  // widening: use arithmetic shift for sign extension
+  rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
+      =>
+        Scalar(
+          (VAL <<Int (#bitWidth(INTTYPE) -Int WIDTH) >>Int (#bitWidth(INTTYPE) -Int WIDTH))
+             %Int (1 <<Int #bitWidth(INTTYPE)),
+          #bitWidth(INTTYPE),
+          true
+        )
+    requires WIDTH <=Int #bitWidth(INTTYPE)
+    [preserves-definedness] // positive shift, divisor non-zero
+
+  // converting to unsigned int types
+  // narrowing: truncate using bit operations
+  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
+      =>
+        Scalar(
+          VAL &Int (1 <<Int #bitWidth(UINTTYPE) -Int 1),
+          #bitWidth(UINTTYPE),
+          true
+        )
+    requires #bitWidth(UINTTYPE) <Int WIDTH
+    [preserves-definedness] // positive shift, divisor non-zero
+  // widening: use arithmetic shift for sign extension
+  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
+      =>
+        Scalar(
+          VAL <<Int (#bitWidth(UINTTYPE) -Int WIDTH) >>Int (#bitWidth(UINTTYPE) -Int WIDTH),
+          #bitWidth(UINTTYPE),
+          true
+        )
+    requires WIDTH <=Int #bitWidth(UINTTYPE)
+    [preserves-definedness] // positive shift, divisor non-zero
+
+```
+
+**TODO** Other type casts are not implemented.
+
+```k
   rule <k> _:TypedLocal ~> #cast(_CASTKIND, _TY) ~> CONT
           =>
             #LocalError(Unsupported("Type casts not implemented")) ~> CONT
-          </k>
+        </k>
     [owise]
 ```
 
