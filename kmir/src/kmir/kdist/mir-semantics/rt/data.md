@@ -269,6 +269,155 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
     requires PROJECTION =/=K .ProjectionElems
 ```
 
+### Reading local variables
+
+_Read_ access to local variables as `Operand`s may have similar errors as write access.
+
+The code which copies/moves function arguments into the locals of a stack frame works
+in a similar way, but accesses the locals of the _caller_ instead of the locals of the
+current function.
+
+Constant operands are simply decoded according to their type.
+
+```k
+  syntax KItem ::= #readLocalValue ( Operand )
+
+  rule <k> #readLocalValue(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+        =>
+           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+        ...
+      </k>
+      <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
+```
+
+Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
+local value cannot be read, though, and the value should be initialised.
+
+```k
+  rule <k> #readLocalValue(operandCopy(place(local(I), .ProjectionElems)))
+        =>
+           LOCALS[I]
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+
+  rule <k> #readLocalValue(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
+        =>
+           #LocalError(LocalMoved(LOCAL))
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+
+  rule <k> #readLocalValue(operandCopy(place(local(I), .ProjectionElems)))
+        =>
+           #LocalError(Uninitialised)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+    // TODO how about zero-sized types
+
+  rule <k> #readLocalValue(operandCopy(place(_, PROJECTIONS)))
+        =>
+           #LocalError(Unsupported("Projections(read)"))
+        ...
+        </k>
+    requires PROJECTIONS =/=K .ProjectionElems
+    // TODO how about zero-sized types
+```
+
+Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
+further access. Apart from that, the same caveats apply as for operands that are _copied_.
+
+```k
+  rule <k> #readLocalValue(operandMove(place(local(I), .ProjectionElems)))
+        =>
+           LOCALS[I]
+        ...
+        </k>
+        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+
+  rule <k> #readLocalValue(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
+        =>
+           #LocalError(LocalMoved(LOCAL))
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+
+  rule <k> #readLocalValue(operandMove(place(local(I), .ProjectionElems)))
+        =>
+           #LocalError(Uninitialised)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+    // TODO how about zero-sized types
+
+  rule <k> #readLocalValue(operandMove(place(_, PROJECTIONS)))
+        =>
+           #LocalError(Unsupported("Projections(read)"))
+        ...
+        </k>
+    requires PROJECTIONS =/=K .ProjectionElems
+    // TODO how about zero-sized types
+```
+
+## Evaluation of RValues
+
+The `RValue` sort in MIR represents various operations that produce a value which can be assigned to a `Place`.
+
+The most basic ones are simply accessing an operand, either directly or by way of a type cast.
+
+```k
+  rule  <k> rvalueUse(OPERAND) => #readLocalValue(OPERAND) ... </k>
+
+  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readLocalValue(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
+```
+
+A number of unary and binary operations exist, (which are dependent on the operand types).
+
+```k
+// BiarnyOp, UnaryOp. NullaryOp: not implemented yet.
+```
+
+Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
+
+```k
+// Repeat, Len: not implemented yet
+```
+
+Likewise built into the language are aggregates (`struct`s) and variants (`enum`s).
+
+```k
+// Discriminant, Aggregate, ShallowIntBox: not implemented yet
+```
+
+
+References and de-referencing is another family of `RValue`s.
+
+```k
+// Ref, AddressOf, CopyForDeref: not implemented yet
+```
+
+## Type cases
+
+**FIXME** not implemented yet: According to CastKind,
+
+```k
+  syntax KITEM ::= #cast( CastKind, Ty )
+
+  rule <k> _:TypedLocal ~> #cast(_CASTKIND, _TY) ~> CONT
+          =>
+            #LocalError(Unsupported("Type casts not implemented")) ~> CONT
+          </k>
+    [owise]
+```
+
 
 ```k
 endmodule

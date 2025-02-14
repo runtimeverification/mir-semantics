@@ -305,11 +305,21 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule <k> #execStmt(statement(statementKindAssign(_PLACE, _RVAL), _SPAN))
+  rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-           .K // FIXME! evaluate RVAL and write to PLACE
+           RVAL ~> #assign(PLACE)
          ...
        </k>
+
+  // RVAL evaluation is implemented in rt/data.md
+
+  syntax KItem ::= #assign ( Place )
+
+  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
+        =>
+           #setLocalValue(PLACE, VAL) ~> CONT
+        </k>
+    // requires isTypedLocal(VAL)
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
