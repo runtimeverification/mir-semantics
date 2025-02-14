@@ -69,27 +69,30 @@ def test_schema_parse(test_dir: Path, tools: Tools) -> None:
     assert converted_ast == parsed_ast
 
 
-SCHEMA_PARSE_KAPPLY_DATA = [
-    #    ({'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
-    #    ({'Int': 'I8'}, KApply('IntTy::I8'), KSort('IntTy')),
-    #    ({'Int': 'I16'}, KApply('IntTy::I16'), KSort('IntTy')),
-    #    ({'Int': 'I32'}, KApply('IntTy::I32'), KSort('IntTy')),
-    #    ({'Int': 'I64'}, KApply('IntTy::I64'), KSort('IntTy')),
-    #    ({'Int': 'I128'}, KApply('IntTy::I128'), KSort('IntTy')),
-    #    ({'Uint': 'Usize'}, KApply('UintTy::Usize'), KSort('UintTy')),
-    #    ({'Uint': 'U8'}, KApply('UintTy::U8'), KSort('UintTy')),
-    #    ({'Uint': 'U16'}, KApply('UintTy::U16'), KSort('UintTy')),
-    #    ({'Uint': 'U32'}, KApply('UintTy::U32'), KSort('UintTy')),
-    #    ({'Uint': 'U64'}, KApply('UintTy::U64'), KSort('UintTy')),
-    #    ({'Uint': 'U128'}, KApply('UintTy::U128'), KSort('UintTy')),
-    #    ({'Float': 'F16'}, KApply('FloatTy::F16'), KSort('FloatTy')),
-    #    ({'Float': 'F32'}, KApply('FloatTy::F32'), KSort('FloatTy')),
-    #    ({'Float': 'F64'}, KApply('FloatTy::F64'), KSort('FloatTy')),
-    #    ({'Float': 'F128'}, KApply('FloatTy::F128'), KSort('FloatTy')),
-    #    ({'RigidTy': 'Bool'}, KApply('RigidTy::Bool'), KSort('RigidTy')),
-    #    ({'RigidTy': {'Int': 'I8'}}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
-    #    ({'RigidTy': {'Uint': 'Usize'}}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
-    #    ({'RigidTy': {'Float': 'F128'}}, KApply('RigidTy::Float', (KApply('FloatTy::F128'))), KSort('RigidTy')),
+RIGID_TY_TESTS = [
+        ({'Int': 'Isize'}, KApply('RigidTy::Int', (KApply('IntTy::Isize'))), KSort('RigidTy')),
+    ({'Int': 'I8'}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
+    ({'Int': 'I16'}, KApply('RigidTy::Int', (KApply('IntTy::I16'))), KSort('RigidTy')),
+    ({'Int': 'I32'}, KApply('RigidTy::Int', (KApply('IntTy::I32'))), KSort('RigidTy')),
+    ({'Int': 'I64'}, KApply('RigidTy::Int', (KApply('IntTy::I64'))), KSort('RigidTy')),
+    ({'Int': 'I128'}, KApply('RigidTy::Int', (KApply('IntTy::I128'))), KSort('RigidTy')),
+    ({'Uint': 'Usize'}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
+    ({'Uint': 'U8'}, KApply('RigidTy::Uint', (KApply('UintTy::U8'))), KSort('RigidTy')),
+    ({'Uint': 'U16'}, KApply('RigidTy::Uint', (KApply('UintTy::U16'))), KSort('RigidTy')),
+    ({'Uint': 'U32'}, KApply('RigidTy::Uint', (KApply('UintTy::U32'))), KSort('RigidTy')),
+    ({'Uint': 'U64'}, KApply('RigidTy::Uint', (KApply('UintTy::U64'))), KSort('RigidTy')),
+    ({'Uint': 'U128'}, KApply('RigidTy::Uint', (KApply('UintTy::U128'))), KSort('RigidTy')),
+    ({'Float': 'F16'}, KApply('RigidTy::Float', KApply('FloatTy::F16')), KSort('RigidTy')),
+    ({'Float': 'F32'}, KApply('RigidTy::Float', KApply('FloatTy::F32')), KSort('RigidTy')),
+    ({'Float': 'F64'}, KApply('RigidTy::Float', KApply('FloatTy::F64')), KSort('RigidTy')),
+    ({'Float': 'F128'}, KApply('RigidTy::Float', KApply('FloatTy::F128')), KSort('RigidTy')),
+    ({'RigidTy': 'Bool'}, KApply("TyKind::RigidTy",(KApply('RigidTy::Bool'))), KSort('TyKind')),
+    ({'RigidTy': {'Int': 'I8'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Int', (KApply('IntTy::I8'))))), KSort('TyKind')),
+    ({'RigidTy': {'Uint': 'Usize'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Uint', (KApply('UintTy::Usize'))))), KSort('TyKind')),
+    ({'RigidTy': {'Float': 'F128'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Float', (KApply('FloatTy::F128'))))), KSort('TyKind')),
+]
+
+LOCAL_DECL_TESTS = [
     (2, KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
     (
         {'StorageLive': 2},
@@ -111,6 +114,9 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         ),
         KSort('LocalDecl'),
     ),
+]
+
+FUNCTION_SYMBOL_TESTS = [
     (
         {'NormalSym': 'very normal'},
         KApply(
@@ -132,6 +138,8 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         KApply('FunctionKind::NoOpSym', (KApply('symbol(_)_LIB_Symbol_String', (KToken('""', KSort('String')))))),
         KSort('FunctionKind'),
     ),
+]
+BYTES_TESTS = [
     (
         {
             'bytes': [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33],
@@ -165,6 +173,8 @@ SCHEMA_PARSE_KAPPLY_DATA = [
     ),
 ]
 
+SCHEMA_PARSE_KAPPLY_DATA = \
+    RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
 
 @pytest.mark.parametrize(
     'test_case',
