@@ -70,7 +70,7 @@ def test_schema_parse(test_dir: Path, tools: Tools) -> None:
 
 
 RIGID_TY_TESTS = [
-        ({'Int': 'Isize'}, KApply('RigidTy::Int', (KApply('IntTy::Isize'))), KSort('RigidTy')),
+    ({'Int': 'Isize'}, KApply('RigidTy::Int', (KApply('IntTy::Isize'))), KSort('RigidTy')),
     ({'Int': 'I8'}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
     ({'Int': 'I16'}, KApply('RigidTy::Int', (KApply('IntTy::I16'))), KSort('RigidTy')),
     ({'Int': 'I32'}, KApply('RigidTy::Int', (KApply('IntTy::I32'))), KSort('RigidTy')),
@@ -86,10 +86,22 @@ RIGID_TY_TESTS = [
     ({'Float': 'F32'}, KApply('RigidTy::Float', KApply('FloatTy::F32')), KSort('RigidTy')),
     ({'Float': 'F64'}, KApply('RigidTy::Float', KApply('FloatTy::F64')), KSort('RigidTy')),
     ({'Float': 'F128'}, KApply('RigidTy::Float', KApply('FloatTy::F128')), KSort('RigidTy')),
-    ({'RigidTy': 'Bool'}, KApply("TyKind::RigidTy",(KApply('RigidTy::Bool'))), KSort('TyKind')),
-    ({'RigidTy': {'Int': 'I8'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Int', (KApply('IntTy::I8'))))), KSort('TyKind')),
-    ({'RigidTy': {'Uint': 'Usize'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Uint', (KApply('UintTy::Usize'))))), KSort('TyKind')),
-    ({'RigidTy': {'Float': 'F128'}}, KApply("TyKind::RigidTy",(KApply('RigidTy::Float', (KApply('FloatTy::F128'))))), KSort('TyKind')),
+    ({'RigidTy': 'Bool'}, KApply('TyKind::RigidTy', (KApply('RigidTy::Bool'))), KSort('TyKind')),
+    (
+        {'RigidTy': {'Int': 'I8'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Int', (KApply('IntTy::I8'))))),
+        KSort('TyKind'),
+    ),
+    (
+        {'RigidTy': {'Uint': 'Usize'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Uint', (KApply('UintTy::Usize'))))),
+        KSort('TyKind'),
+    ),
+    (
+        {'RigidTy': {'Float': 'F128'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Float', (KApply('FloatTy::F128'))))),
+        KSort('TyKind'),
+    ),
 ]
 
 LOCAL_DECL_TESTS = [
@@ -173,8 +185,8 @@ BYTES_TESTS = [
     ),
 ]
 
-SCHEMA_PARSE_KAPPLY_DATA = \
-    RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
+SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
+
 
 @pytest.mark.parametrize(
     'test_case',
