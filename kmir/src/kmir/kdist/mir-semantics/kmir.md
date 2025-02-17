@@ -317,7 +317,7 @@ will effectively be no-ops at this level).
 
   rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
         =>
-           #setLocalValue(PLACE, VAL) ~> CONT
+           VAL ~> #setLocalValue(PLACE) ~> CONT
         </k>
     // requires isTypedLocal(VAL)
 
@@ -409,7 +409,7 @@ context of the enclosing stack frame, at the _target_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, {LOCALS[0]}:>TypedLocal) ~> #execBlockIdx(TARGET) ~> .K
+           {LOCALS[0]}:>TypedLocal ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -536,23 +536,15 @@ The local data has to be set up for the call, which requires information about t
            #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))) 
-        => 
-           #setLocalValue(
-              place(local(IDX), .ProjectionElems),
-              typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
-            )
+  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND) 
+        =>
+           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ... 
        </k>
-       <basetypes> TYPEMAP </basetypes>
-    requires TY in_keys(TYPEMAP)
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
         => 
-           #setLocalValue(
-              place(local(IDX), .ProjectionElems),
-              {CALLERLOCALS[I]}:>TypedLocal
-            )
+           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ... 
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -562,10 +554,7 @@ The local data has to be set up for the call, which requires information about t
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
         => 
-           #setLocalValue(
-              place(local(IDX), .ProjectionElems),
-              {CALLERLOCALS[I]}:>TypedLocal
-            )
+           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ... 
        </k>
        <stack> ListItem(StackFrame(_, _, _, _,

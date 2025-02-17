@@ -111,6 +111,10 @@ module RT-DATA
   imports KMIR-CONFIGURATION
 ```
 
+### Decoding constants from their bytes representation to values
+
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `RigidTy` to produce the higher-level value.
+
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
   syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
@@ -185,19 +189,117 @@ module RT-DATA
   rule #decodeConstant(_, _) => Any [owise]
 ```
 
-### Setting local variables (including error cases)
+### Reading operands (local variables and constants)
 
-The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+_Read_ access to `Operand`s (which may be local values) may have similar errors as write access.
+
+The code which copies/moves function arguments into the locals of a stack frame works
+in a similar way, but accesses the locals of the _caller_ instead of the locals of the
+current function.
+
+Constant operands are simply decoded according to their type.
 
 ```k
-  syntax KItem ::= #setLocalValue( Place, TypedLocal )
+  syntax KItem ::= #readOperand ( Operand )
+
+  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+        =>
+           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+        ...
+      </k>
+      <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
+```
+
+Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
+local value cannot be read, though, and the value should be initialised.
+
+```k
+  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
+        =>
+           LOCALS[I]
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+
+  rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
+        =>
+           #LocalError(LocalMoved(LOCAL))
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+
+  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
+        =>
+           #LocalError(Uninitialised)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+    // TODO how about zero-sized types
+
+  rule <k> #readOperand(operandCopy(place(_, PROJECTIONS)))
+        =>
+           #LocalError(Unsupported("Projections(read)"))
+        ...
+        </k>
+    requires PROJECTIONS =/=K .ProjectionElems
+    // TODO how about zero-sized types
+```
+
+Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
+further access. Apart from that, the same caveats apply as for operands that are _copied_.
+
+```k
+  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
+        =>
+           LOCALS[I]
+        ...
+        </k>
+        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+
+  rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
+        =>
+           #LocalError(LocalMoved(LOCAL))
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+
+  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
+        =>
+           #LocalError(Uninitialised)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+    // TODO how about zero-sized types
+
+  rule <k> #readOperand(operandMove(place(_, PROJECTIONS)))
+        =>
+           #LocalError(Unsupported("Projections(read)"))
+        ...
+        </k>
+    requires PROJECTIONS =/=K .ProjectionElems
+    // TODO how about zero-sized types
+```
+
+### Setting local variables (including error cases)
+
+The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the K sequence  to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+
+```k
+  syntax KItem ::= #setLocalValue( Place )
 
   // error cases first
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <Int I orBool I <Int 0
 
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, TY, _) #as VAL)
+  rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
            #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
           ...
@@ -205,7 +307,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
        <locals> LOCALS </locals>
     requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
 
-  rule <k> #setLocalValue( place(local(I), _), _)
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
            #LocalError(LocalMoved(local(I)))
           ...
@@ -213,7 +315,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
        <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), _)
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
@@ -224,15 +326,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 
 
   // writing no value is a no-op
-  rule <k> #setLocalValue( _, typedLocal(NoValue, _, _)) => .K ... </k>
+  rule <k> typedLocal(NoValue, _, _) ~> #setLocalValue( _) => .K ... </k>
    // FIXME or should this be NoValueToWrite ? But some zero-sized values are not initialised
 
   // writing a moved value is an error
-  rule <k> #setLocalValue( _, typedLocal(Moved, _, _) #as VALUE) => ValueMoved(VALUE) ... </k>
+  rule <k> typedLocal(Moved, _, _) #as VALUE ~> #setLocalValue( _) => #LocalError(ValueMoved(VALUE)) ... </k>
 
   // if all is well, write the value
   // mutable case
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ ))
+  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
@@ -246,7 +348,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL, TY, _ ))
+  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
@@ -261,110 +363,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
-  rule <k> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems), _ )
+  rule <k> _:TypedLocal ~> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems))
           =>
            #LocalError(Unsupported("Projections"))
           ...
        </k>
     requires PROJECTION =/=K .ProjectionElems
-```
-
-### Reading local variables
-
-_Read_ access to local variables as `Operand`s may have similar errors as write access.
-
-The code which copies/moves function arguments into the locals of a stack frame works
-in a similar way, but accesses the locals of the _caller_ instead of the locals of the
-current function.
-
-Constant operands are simply decoded according to their type.
-
-```k
-  syntax KItem ::= #readLocalValue ( Operand )
-
-  rule <k> #readLocalValue(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
-        =>
-           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
-        ...
-      </k>
-      <basetypes> TYPEMAP </basetypes>
-    requires TY in_keys(TYPEMAP)
-```
-
-Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
-local value cannot be read, though, and the value should be initialised.
-
-```k
-  rule <k> #readLocalValue(operandCopy(place(local(I), .ProjectionElems)))
-        =>
-           LOCALS[I]
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
-
-  rule <k> #readLocalValue(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
-        =>
-           #LocalError(LocalMoved(LOCAL))
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
-
-  rule <k> #readLocalValue(operandCopy(place(local(I), .ProjectionElems)))
-        =>
-           #LocalError(Uninitialised)
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
-    // TODO how about zero-sized types
-
-  rule <k> #readLocalValue(operandCopy(place(_, PROJECTIONS)))
-        =>
-           #LocalError(Unsupported("Projections(read)"))
-        ...
-        </k>
-    requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
-```
-
-Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
-further access. Apart from that, the same caveats apply as for operands that are _copied_.
-
-```k
-  rule <k> #readLocalValue(operandMove(place(local(I), .ProjectionElems)))
-        =>
-           LOCALS[I]
-        ...
-        </k>
-        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
-    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
-
-  rule <k> #readLocalValue(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
-        =>
-           #LocalError(LocalMoved(LOCAL))
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
-
-  rule <k> #readLocalValue(operandMove(place(local(I), .ProjectionElems)))
-        =>
-           #LocalError(Uninitialised)
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
-    // TODO how about zero-sized types
-
-  rule <k> #readLocalValue(operandMove(place(_, PROJECTIONS)))
-        =>
-           #LocalError(Unsupported("Projections(read)"))
-        ...
-        </k>
-    requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
 ```
 
 ## Evaluation of RValues
@@ -374,9 +378,9 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
 
 ```k
-  rule  <k> rvalueUse(OPERAND) => #readLocalValue(OPERAND) ... </k>
+  rule  <k> rvalueUse(OPERAND) => #readOperand(OPERAND) ... </k>
 
-  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readLocalValue(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
+  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readOperand(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
 ```
 
 A number of unary and binary operations exist, (which are dependent on the operand types).

@@ -221,8 +221,8 @@ EXEC_DATA = [
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.21.state',
-        21,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.23.state',
+        23,
     ),
 ]
 
