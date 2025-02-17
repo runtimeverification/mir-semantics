@@ -426,7 +426,8 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
             typedLocal(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT) ~> CONT
         </k>
         <basetypes> TYPEMAP </basetypes>
-//      requires #isIntType({TYPEMAP[TY]}:>RigidTy)
+      requires #isIntType({TYPEMAP[TY]}:>RigidTy)
+      [preserves-definedness] // ensures #numTypeOf is defined
 
   // helpers
   syntax NumTy ::= IntTy | UintTy | FloatTy
@@ -460,13 +461,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // -----------------------------------------------------
   rule #isIntType(rigidTyInt(_))  => true
   rule #isIntType(rigidTyUint(_)) => true
-  rule #isIntType(_)              => false
-
-  syntax Bool ::= #isSigned ( NumTy ) [function, total]
-  // --------------------------------------------------
-  rule #isSigned (_:FloatTy) => true
-  rule #isSigned (_:IntTy) => true
-  rule #isSigned (_:UintTy) => false
+  rule #isIntType(_)              => false [owise]
 
   syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
   // ------------------------------------------------------
@@ -518,13 +513,43 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```
 
+Error cases for `castKindIntToInt`
+* unknown target type (not in `basetypes`)
+* target type is not an `Int` type
+* value is not a `Scalar`
+
+```k
+  rule <k> (_:TypedLocal ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
+          =>
+            #LocalError(Unsupported("Int-to-Int type cast to unknown type")) ~> STUFF
+        </k>
+        <basetypes> TYPEMAP </basetypes>
+
+    requires notBool isRigidTy(TYPEMAP[TY])
+
+  rule <k> (_:TypedLocal ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
+          =>
+            #LocalError(Unsupported("Int-to-Int type cast to unexpected non-int type")) ~> STUFF
+        </k>
+        <basetypes> TYPEMAP </basetypes>
+    requires notBool (#isIntType({TYPEMAP[TY]}:>RigidTy))
+
+  rule <k> (_:TypedLocal ~> #cast(castKindIntToInt, _TY) ~> _CONT) #as STUFF
+          =>
+            #LocalError(Unsupported("Int-to-Int type cast of non-int value")) ~> STUFF
+        </k>
+    [owise]
+```
+
+
 **TODO** Other type casts are not implemented.
 
 ```k
-  rule <k> _:TypedLocal ~> #cast(_CASTKIND, _TY) ~> CONT
+  rule <k> (_:TypedLocal ~> #cast(CASTKIND, _TY) ~> _CONT) #as STUFF
           =>
-            #LocalError(Unsupported("Type casts not implemented")) ~> CONT
+            #LocalError(Unsupported("Type casts not implemented")) ~> STUFF
         </k>
+    requires CASTKIND =/=K castKindIntToInt
     [owise]
 ```
 
