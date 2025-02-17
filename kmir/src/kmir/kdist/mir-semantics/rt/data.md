@@ -470,15 +470,18 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
   // ------------------------------------------------------
   // converting to signed int types:
-  // narrowing: truncate using bit operations
+  // narrowing: truncate using t-mod, then subtract bias, then truncate again
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
         Scalar(
-          VAL &Int (1 <<Int #bitWidth(INTTYPE) -Int 1),
+          (VAL %Int (1 <<Int #bitWidth(INTTYPE) )
+            -Int (1 <<Int #bitWidth(INTTYPE)))
+          %Int (1 <<Int #bitWidth(INTTYPE) )
+          ,
           #bitWidth(INTTYPE),
           true
         )
-    requires #bitWidth(INTTYPE) <Int WIDTH
+    requires #bitWidth(INTTYPE) <=Int WIDTH
     [preserves-definedness] // positive shift, divisor non-zero
 
   // widening: use arithmetic shift for sign extension
@@ -490,31 +493,22 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
           #bitWidth(INTTYPE),
           true
         )
-    requires WIDTH <=Int #bitWidth(INTTYPE)
+    requires WIDTH <Int #bitWidth(INTTYPE)
     [preserves-definedness] // positive shift, divisor non-zero
 
   // converting to unsigned int types
-  // narrowing: truncate using bit operations
-  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
+  // truncate (if necessary), then add bias to make non-negative, then truncate again
+  rule #intAsType(VAL, _, UINTTYPE:UintTy)
       =>
         Scalar(
-          VAL &Int (1 <<Int #bitWidth(UINTTYPE) -Int 1),
+          (VAL %Int (1 <<Int #bitWidth(UINTTYPE) )
+            +Int (1 <<Int #bitWidth(UINTTYPE)))
+          %Int (1 <<Int #bitWidth(UINTTYPE) )
+          ,
           #bitWidth(UINTTYPE),
-          true
+          false
         )
-    requires #bitWidth(UINTTYPE) <Int WIDTH
     [preserves-definedness] // positive shift, divisor non-zero
-  // widening: use arithmetic shift for sign extension
-  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
-      =>
-        Scalar(
-          VAL <<Int (#bitWidth(UINTTYPE) -Int WIDTH) >>Int (#bitWidth(UINTTYPE) -Int WIDTH),
-          #bitWidth(UINTTYPE),
-          true
-        )
-    requires WIDTH <=Int #bitWidth(UINTTYPE)
-    [preserves-definedness] // positive shift, divisor non-zero
-
 ```
 
 Error cases for `castKindIntToInt`
