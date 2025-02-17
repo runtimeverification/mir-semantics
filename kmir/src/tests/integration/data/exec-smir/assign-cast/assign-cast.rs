@@ -31,8 +31,9 @@ fn main() {
     // narrowing with sign
     let m = c as u8;  // 255 again
     let n = d as u8;  // 255 again
+    let o = f as u32; // 33023
 
-    // println!("i: {i} = c as u16\nj: {j} = d as u32\nk: {k} = b as u16\nl: {l} = d as u64\nm: {m} = c as u8\nn: {n} = d as u8\n");
+    // println!("i: {i} = c as u16\nj: {j} = d as u32\nk: {k} = b as u16\nl: {l} = d as u64\nm: {m} = c as u8\nn: {n} = d as u8\no: {o} = f as u32\n");
 
     /* OUTPUT:
     a: 33023
@@ -51,5 +52,6 @@ fn main() {
     l: 33023 = d as u64
     m: 255 = c as u8
     n: 255 = d as u8
+    o: 33023 = f as u32
     */
 }
