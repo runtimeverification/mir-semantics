@@ -224,6 +224,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.23.state',
         23,
     ),
+    (
+        'assign-cast',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.smir.json',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
+        None,
+    ),
 ]
 
 
