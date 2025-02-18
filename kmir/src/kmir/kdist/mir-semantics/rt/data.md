@@ -300,7 +300,7 @@ cast from a `TypedLocal` to another when it is followed by a `#cast` item,
 rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
-  syntax KITEM ::= #cast( CastKind, Ty )
+  syntax KItem ::= #cast( CastKind, Ty )
 
 endmodule
 ```
