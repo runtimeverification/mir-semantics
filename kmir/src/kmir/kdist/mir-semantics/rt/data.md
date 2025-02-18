@@ -315,11 +315,9 @@ module RT-DATA-LOW-SYNTAX
 Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
 
 ```k
-  syntax LowLevelValue ::= value ( Bytes, Ty, RigidTy ) // TODO redundant information (Ty <-- -> RigidTy)
-                         | "MovedValue"
-                         | "Uninitialized" // do we need this? Or can we use zero bytes?
+  syntax Value ::= value ( Bytes, Ty ) // TODO redundant information? Is Ty tracked elsewhere (typedLocal)?
 
-  syntax LowLevelValue ::= #newValue ( Ty , Map ) [ function ] // TODO not total
+  syntax Value ::= #newValue ( Ty , Map ) [ function ] // TODO not total
 ```
 
 ```k
