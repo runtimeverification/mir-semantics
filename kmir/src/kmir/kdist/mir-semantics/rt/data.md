@@ -220,26 +220,24 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
   // if all is well, write the value
   // mutable case
-  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
        </k>
        <locals> _LOCALS[I <- typedLocal(_ => VAL, LOCALTY, mutabilityMut)] </locals>
-    requires isValue(VAL)
-     andBool LOCALTY ==K TY // matching type
+    requires LOCALTY ==K TY // matching type
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
-  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
        </k>
        <locals> _LOCALS[I <- typedLocal(NoValue => VAL, LOCALTY, mutabilityNot)] </locals>
        // value is not initialised yet  ^^^^^^^ but not mutable ^^^^^^^^^^
-    requires isValue(VAL)
-     andBool LOCALTY ==K TY         // matching type
+    requires LOCALTY ==K TY         // matching type
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
