@@ -198,6 +198,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
        </k>
        <locals> _LOCALS[I <- typedLocal(_, LOCALTY, _)] </locals>
     requires LOCALTY =/=K TY
+     andBool TY =/=K TyUnknown
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _))
           =>
@@ -231,7 +232,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
        </k>
        <locals> _LOCALS[I <- typedLocal(_ => VAL, LOCALTY, mutabilityMut)] </locals>
     requires isValue(VAL)
-     andBool LOCALTY ==K TY // matching type
+     andBool (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
@@ -243,7 +244,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
        <locals> _LOCALS[I <- typedLocal(NoValue => VAL, LOCALTY, mutabilityNot)] </locals>
        // value is not initialised yet  ^^^^^^^ but not mutable ^^^^^^^^^^
     requires isValue(VAL)
-     andBool LOCALTY ==K TY         // matching type
+     andBool (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
@@ -308,16 +309,13 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax KItem ::= #mkAggregate ( AggregateKind )
 
-  rule <k> ARGS:List ~> #mkAggregate(KIND) ~> CONT
+  rule <k> ARGS:List ~> #mkAggregate(_)
         =>
-            typedLocal(Aggregate(ARGS), #tyOfAggregate(KIND), mutabilityNot) ~> CONT
-            // FIXME where to get the mutability of the value?^^^^^^^^^^^^^
-            // FIXME ty not determined  ^^^^^^^^^^^^^^^^^^^^
+            typedLocal(Aggregate(ARGS), TyUnknown, mutabilityNot)
+            // FIXME ty not determined  ^^^^^^^^^
+            // FIXME which mutability to use here? ^^^^^^^^^^^^^
+        ...
        </k>
-
-  syntax Ty ::= #tyOfAggregate( AggregateKind ) [function, total]
-
-  rule #tyOfAggregate(_) => ty(-2) // FIXME!
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -329,14 +327,16 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 
   rule <k> #readOperandsAux(ACC, .Operands ) => ACC ... </k>
 
-  rule <k> #readOperandsAux(ACC, OP:Operand REST) ~> CONT
+  rule <k> #readOperandsAux(ACC, OP:Operand REST)
         =>
-           #readOperand(OP) ~> #readOn(ACC, REST) ~> CONT
+           #readOperand(OP) ~> #readOn(ACC, REST)
+        ...
        </k>
 
-  rule <k> VAL:TypedLocal ~> #readOn(ACC, REST) ~> CONT
+  rule <k> VAL:TypedLocal ~> #readOn(ACC, REST)
         =>
-           #readOperandsAux(ACC ListItem(VAL), REST) ~> CONT
+           #readOperandsAux(ACC ListItem(VAL), REST)
+        ...
        </k>
 
 // Discriminant, ShallowIntBox: not implemented yet
