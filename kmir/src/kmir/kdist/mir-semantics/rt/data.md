@@ -21,8 +21,6 @@ module RT-DATA-SYNTAX
   syntax MaybeValue ::= Value
                       | "NoValue" // not initialized
                       | "Moved"   // inaccessible
-
-  syntax Address // FIXME essential to the memory model, leaving it unspecified for now
 ```
 
 ### Local variables
@@ -35,15 +33,18 @@ with their type information (to enable type-checking assignments). Also, the
   // local storage of the stack frame
   // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
 
-  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
-  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
-  // This limits the Ty that can be used here.
+  syntax TypedLocal ::= typedLocal ( MaybeValue, MaybeTy, Mutability )
+
+  // the type of aggregates cannot be determined from the data provided when they
+  // occur as `RValue`, therefore we have to make the `Ty` field optional here.
+  syntax MaybeTy ::= Ty
+                   | "TyUnknown"
 
   // accessors
   syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
   rule valueOfLocal(typedLocal(V, _, _)) => V
 
-  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
+  syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
   rule tyOfLocal(typedLocal(_, TY, _)) => TY
 
   syntax Bool ::= isMutable ( TypedLocal ) [function, total]
@@ -56,7 +57,7 @@ Every access is modelled as a _function_ whose result needs to be checked by the
 
 ```k
   syntax LocalAccessError ::= InvalidLocal ( Local )
-                            | TypeMismatch( Local, Ty, TypedLocal )
+                            | TypeMismatch( Local, MaybeTy, TypedLocal )
                             | LocalMoved( Local )
                             | LocalNotMutable ( Local )
                             | "Uninitialised"
@@ -191,6 +192,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
         </k>
        <locals> LOCALS </locals>
     requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
+     andBool isTy(TY)
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
@@ -260,6 +262,25 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
 The `RValue` sort in MIR represents various operations that produce a value which can be assigned to a `Place`.
 
+| RValue         | Arguments                                       | Action                               |
+|----------------|-------------------------------------------------|--------------------------------------|
+| Use            | Operand                                         | use (i.e., copy) operand unmodified  |
+| Repeat         | Operand, Const                                  | create array [Operand;Const]         |
+| Ref            | Region, BorrowKind, Place                       | create reference to place            |
+| ThreadLocalRef | DefId                                           | thread-local reference (?)           |
+| AddressOf      | Mutability, Place                               | creates pointer to place             |
+| Len            | Place                                           | array or slice size                  |
+| Cast           | CastKind, Operand, Ty                           | different kinds of type casts        |
+|----------------|-------------------------------------------------|--------------------------------------|
+| BinaryOp       | BinOp, Box<(Operand, Operand)>                  | different fixed operations           |
+| NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
+| UnaryOp        | UnOp, Operand                                   | (see below)                          |
+|----------------|-------------------------------------------------|--------------------------------------|
+| Discriminant   | Place                                           | discriminant (of sums types) (?)     |
+| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | disallowed after lowering. DF helper |
+| ShallowInitBox | Operand, Ty                                     | ?                                    |
+| CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
+
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
 
 ```k
@@ -271,7 +292,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 A number of unary and binary operations exist, (which are dependent on the operand types).
 
 ```k
-// BiarnyOp, UnaryOp. NullaryOp: not implemented yet.
+// BinaryOp, UnaryOp. NullaryOp: not implemented yet.
 ```
 
 Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
@@ -280,10 +301,48 @@ Other `RValue`s exist in order to construct or operate on arrays and slices, whi
 // Repeat, Len: not implemented yet
 ```
 
-Likewise built into the language are aggregates (`struct`s) and variants (`enum`s).
+Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
+
+Tuples and structs are built as `Aggregate` values with a list of argument values.
 
 ```k
-// Discriminant, Aggregate, ShallowIntBox: not implemented yet
+  rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
+
+  // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
+  syntax KItem ::= #mkAggregate ( AggregateKind )
+
+  rule <k> ARGS:List ~> #mkAggregate(KIND) ~> CONT
+        =>
+            typedLocal(Aggregate(ARGS), #tyOfAggregate(KIND), mutabilityNot) ~> CONT
+            // FIXME where to get the mutability of the value?^^^^^^^^^^^^^
+            // FIXME ty not determined  ^^^^^^^^^^^^^^^^^^^^
+       </k>
+
+  syntax Ty ::= #tyOfAggregate( AggregateKind ) [function, total]
+
+  rule #tyOfAggregate(_) => ty(-2) // FIXME!
+
+
+  // #readOperands accumulates a list of `TypedLocal` values from operands
+  syntax KItem ::= #readOperands ( Operands )
+                 | #readOperandsAux( List , Operands )
+                 | #readOn( List, Operands )
+
+  rule <k> #readOperands(ARGS) => #readOperandsAux(.List, ARGS) ... </k>
+
+  rule <k> #readOperandsAux(ACC, .Operands ) => ACC ... </k>
+
+  rule <k> #readOperandsAux(ACC, OP:Operand REST) ~> CONT
+        =>
+           #readOperand(OP) ~> #readOn(ACC, REST) ~> CONT
+       </k>
+
+  rule <k> VAL:TypedLocal ~> #readOn(ACC, REST) ~> CONT
+        =>
+           #readOperandsAux(ACC ListItem(VAL), REST) ~> CONT
+       </k>
+
+// Discriminant, ShallowIntBox: not implemented yet
 ```
 
 
@@ -331,20 +390,29 @@ endmodule
 
 ## High level representation
 
+Values in MIR can also be represented at a certain abstraction level, interpreting the given `Bytes` of a constant according to the desired type. This allows for implementing operations on values using the higher-level type and improves readability of the program data in the K configuration.
+
+High-level values can be 
+- a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
+- built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
+- arrays and slices (with homogenous element types)
+
+**This sort is work in progress and will be extended and modified as we go**
+
 ```k
 module RT-DATA-HIGH-SYNTAX
   imports RT-DATA-SYNTAX
 
   syntax Value ::= Scalar( Int, Int, Bool )
                    // value, bit-width, signedness   for bool, un/signed int
+                 | Aggregate( List )
+                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
+                //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
                    // address, metadata              for ref/ptr
-                 | Range( List )
+                //  | Range( List )
                    // homogenous values              for array/slice
-                 | Struct( Int, List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
 
