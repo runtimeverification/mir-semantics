@@ -115,8 +115,7 @@ local value cannot be read, though, and the value should be initialised.
 
 ```k
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(VAL, _, _) #as LOCAL] </locals>
-    requires isValue(VAL)
+       <locals> _LOCALS[I <- typedLocal(_:Value, _, _) #as LOCAL] </locals>
 
   // error cases
 
@@ -149,8 +148,7 @@ further access. Apart from that, the same caveats apply as for operands that are
 
 ```k
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(VAL, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
-    requires isValue(VAL)
+       <locals> _LOCALS[I <- typedLocal(_:Value, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
