@@ -274,13 +274,10 @@ blocks, or call another function).
 
   rule <k> #execBlockIdx(basicBlockIdx(I))
          =>
-           #execBlock( {BLOCKS[I]}:>BasicBlock )
+           #execBlock( BLOCK_I )
          ...
        </k>
-       <currentBody> BLOCKS </currentBody>
-    requires 0 <=Int I
-     andBool I <Int size(BLOCKS)
-     andBool isBasicBlock(BLOCKS[I])
+       <currentBody> _BLOCKS[I <- BLOCK_I:BasicBlock] </currentBody>
 
   rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
          =>
@@ -409,7 +406,7 @@ context of the enclosing stack frame, at the _target_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           {LOCALS[0]}:>TypedLocal ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           LOCAL_0 ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -418,14 +415,12 @@ context of the enclosing stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => NEWLOCALS </locals>
+         <locals> _LOCALS[0 <- LOCAL_0:TypedLocal] => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      andBool 0 <Int size(LOCALS)
-      andBool isTypedLocal(LOCALS[0])
       // andBool DEST #within(LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
@@ -457,10 +452,10 @@ The call stack is not necessarily empty at this point so it is left untouched.
          =>
            #EndProgram
        </k>
-       <retVal> _ => valueOfLocal({LOCALS[0]}:>TypedLocal) </retVal>
+       <retVal> _ => VALUE </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> LOCALS </locals>
+         <locals> _LOCALS[0 <- typedLocal(VALUE, _, _)] </locals>
          ...
        </currentFrame>
 ```
@@ -473,7 +468,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData( {FUNCS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(NEWFUNC, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -486,8 +481,7 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCS </functions>
-     requires #tyOfCall(FUNC) in_keys(FUNCS)
+       <functions> #tyOfCall(FUNC) |-> NEWFUNC:MonoItemKind _ </functions>
      [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
@@ -544,29 +538,24 @@ The local data has to be set up for the call, which requires information about t
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
         => 
-           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           LOCAL_I ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ... 
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
-    requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+       <stack> ListItem(StackFrame(_, _, _, _, _CALLERLOCALS[I <- typedLocal(VALUE, _, _) #as LOCAL_I])) _:List </stack>
+    requires VALUE =/=K Moved
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
         => 
-           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           LOCAL_I ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ... 
        </k>
        <stack> ListItem(StackFrame(_, _, _, _,
-                 CALLERLOCALS 
-                => 
-                 CALLERLOCALS[I <- typedLocal(Moved, tyOfLocal({CALLERLOCALS[I]}:>TypedLocal), mutabilityNot)])
-                )
+                 _CALLERLOCALS[I <- typedLocal(VALUE, TY, _) #as LOCAL_I
+                                 => typedLocal(Moved, TY, mutabilityNot)])
+              )
               _:List 
         </stack>
-    requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+    requires VALUE =/=K Moved
 ```
 
 
