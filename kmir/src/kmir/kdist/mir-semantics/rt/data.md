@@ -16,35 +16,8 @@ module RT-DATA-SYNTAX
 
   imports TYPES
   imports BODY
-```
 
-Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
-
-```k
-  syntax LowLevelValue ::= value ( Bytes, Ty, RigidTy ) // TODO redundant information (Ty <-- -> RigidTy)
-                         | "MovedValue"
-                         | "Uninitialized" // do we need this? Or can we use zero bytes?
-
-  syntax LowLevelValue ::= #newValue ( Ty , Map ) [ function ] // TODO not total
-
-```
-
-**TODO** We might step away from this byte-oriented representation for values to a higher-level representation outlined below. This would assume that a `#decode` function `(Ty, Bytes) -> Value` is available.
-
-```k
-  syntax Value ::= Scalar( Int, Int, Bool )
-                   // value, bit-width, signedness   for bool, un/signed int
-                 | Float( Float, Int )
-                   // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
-                   // address, metadata              for ref/ptr
-                 | Range( List )
-                   // homogenous values              for array/slice
-                 | Struct( Int, List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | "Any"
-                   // arbitrary value                for transmute/invalid ptr lookup
-
+  syntax Value
   syntax MaybeValue ::= Value
                       | "NoValue" // not initialized
                       | "Moved"   // inaccessible
@@ -111,105 +84,17 @@ module RT-DATA
   imports KMIR-CONFIGURATION
 ```
 
-### Decoding constants from their bytes representation to values
-
-The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `RigidTy` to produce the higher-level value.
+### Reading operands (local variables and constants)
 
 ```k
-  //////////////////////////////////////////////////////////////////////////////////////
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
-
-  // decoding the correct amount of bytes depending on base type size
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
-      => // bytes should be one or zero, but all non-zero is taken as true
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
-       // TODO should we insist on known alignment and size of BYTES?
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME Char and str types
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
-  //     =>
-  //      Str(...)
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyStr)
-  //     =>
-  //      Str(...)
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // UInt decoding
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 8, false)
-    requires lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 16, false)
-    requires lengthBytes(BYTES) ==Int 2
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 32, false)
-    requires lengthBytes(BYTES) ==Int 4
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
-    requires lengthBytes(BYTES) ==Int 8
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 128, false)
-    requires lengthBytes(BYTES) ==Int 16
-  // Usize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
-    requires lengthBytes(BYTES) ==Int 8
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // Int decoding
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)
-    requires lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)
-    requires lengthBytes(BYTES) ==Int 2
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)
-    requires lengthBytes(BYTES) ==Int 4
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)
-    requires lengthBytes(BYTES) ==Int 8
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
-      =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true)
-    requires lengthBytes(BYTES) ==Int 16
-  // Isize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO Float decoding: not supported natively in K
-
-  rule #decodeConstant(_, _) => Any [owise]
+  syntax KItem ::= #readOperand ( Operand )
 ```
-
-### Reading operands (local variables and constants)
 
 _Read_ access to `Operand`s (which may be local values) may have similar errors as write access.
 
 The code which copies/moves function arguments into the locals of a stack frame works
 in a similar way, but accesses the locals of the _caller_ instead of the locals of the
 current function.
-
-Constant operands are simply decoded according to their type.
-
-```k
-  syntax KItem ::= #readOperand ( Operand )
-
-  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
-        =>
-           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
-        ...
-      </k>
-      <basetypes> TYPEMAP </basetypes>
-    requires TY in_keys(TYPEMAP)
-```
 
 Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
 local value cannot be read, though, and the value should be initialised.
@@ -415,7 +300,149 @@ cast from a `TypedLocal` to another when it is followed by a `#cast` item,
 rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
-  syntax KITEM ::= #cast( CastKind, Ty )
+  syntax KItem ::= #cast( CastKind, Ty )
+
+endmodule
+```
+
+## Low level representation
+
+```k
+module RT-DATA-LOW-SYNTAX
+  imports RT-DATA-SYNTAX
+```
+
+Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
+
+```k
+  syntax Value ::= value ( Bytes, Ty ) // TODO redundant information? Is Ty tracked elsewhere (typedLocal)?
+
+  syntax Value ::= #newValue ( Ty , Map ) [ function ] // TODO not total
+```
+
+```k
+endmodule
+
+module RT-DATA-LOW
+  imports RT-DATA-LOW-SYNTAX
+  imports RT-DATA
+endmodule
+```
+
+## High level representation
+
+```k
+module RT-DATA-HIGH-SYNTAX
+  imports RT-DATA-SYNTAX
+
+  syntax Value ::= Scalar( Int, Int, Bool )
+                   // value, bit-width, signedness   for bool, un/signed int
+                 | Float( Float, Int )
+                   // value, bit-width               for f16-f128
+                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
+                   // address, metadata              for ref/ptr
+                 | Range( List )
+                   // homogenous values              for array/slice
+                 | Struct( Int, List )
+                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
+                 | "Any"
+                   // arbitrary value                for transmute/invalid ptr lookup
+
+endmodule
+
+module RT-DATA-HIGH
+  imports RT-DATA-HIGH-SYNTAX
+  imports RT-DATA
+```
+
+### Decoding constants from their bytes representation to values
+
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `RigidTy` to produce the higher-level value.
+
+```k
+  //////////////////////////////////////////////////////////////////////////////////////
+  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
+  // decoding the correct amount of bytes depending on base type size
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
+      => // bytes should be one or zero, but all non-zero is taken as true
+       Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
+       // TODO should we insist on known alignment and size of BYTES?
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // FIXME Char and str types
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
+  //     =>
+  //      Str(...)
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyStr)
+  //     =>
+  //      Str(...)
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // UInt decoding
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 8, false)
+    requires lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 16, false)
+    requires lengthBytes(BYTES) ==Int 2
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 32, false)
+    requires lengthBytes(BYTES) ==Int 4
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+    requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 128, false)
+    requires lengthBytes(BYTES) ==Int 16
+  // Usize for 64bit platforms
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+    requires lengthBytes(BYTES) ==Int 8
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Int decoding
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)
+    requires lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)
+    requires lengthBytes(BYTES) ==Int 2
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)
+    requires lengthBytes(BYTES) ==Int 4
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)
+    requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
+      =>
+        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true)
+    requires lengthBytes(BYTES) ==Int 16
+  // Isize for 64bit platforms
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO Float decoding: not supported natively in K
+
+  rule #decodeConstant(_, _) => Any [owise]
+```
+
+Constant operands are simply decoded according to their type.
+
+```k
+  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+        =>
+           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+        ...
+      </k>
+      <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
 ```
 
 Casts between signed and unsigned integral numbers of different width exist, with a
@@ -549,9 +576,6 @@ Error cases for `castKindIntToInt`
         </k>
     requires CASTKIND =/=K castKindIntToInt
     [owise]
-```
 
-
-```k
 endmodule
 ```

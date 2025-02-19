@@ -43,7 +43,7 @@ module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports INT-SYNTAX
   imports BOOL-SYNTAX
-  imports RT-DATA-SYNTAX
+  imports RT-DATA-HIGH-SYNTAX
 
   syntax RetVal ::= MaybeValue
 
@@ -89,7 +89,7 @@ module KMIR
   imports KMIR-SYNTAX
   imports KMIR-CONFIGURATION
   imports MONO
-  imports RT-DATA
+  imports RT-DATA-HIGH
   imports TYPES
 
   imports BOOL
@@ -217,7 +217,7 @@ be known to populate the `currentFunc` field.
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
-                monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
+                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
               ),
               FUNCTIONNAMES
             )
