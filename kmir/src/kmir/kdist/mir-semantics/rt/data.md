@@ -22,6 +22,8 @@ module RT-DATA-SYNTAX
                       | "NoValue" // not initialized
                       | "Moved"   // inaccessible
 
+  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
   syntax Address // FIXME essential to the memory model, leaving it unspecified for now
 ```
 
@@ -91,6 +93,18 @@ module RT-DATA
 ```
 
 _Read_ access to `Operand`s (which may be local values) may have similar errors as write access.
+
+Constant operands are simply decoded according to their type.
+
+```k
+  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+        =>
+           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+        ...
+      </k>
+      <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
+```
 
 The code which copies/moves function arguments into the locals of a stack frame works
 in a similar way, but accesses the locals of the _caller_ instead of the locals of the
@@ -298,9 +312,7 @@ module RT-DATA-LOW-SYNTAX
 Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
 
 ```k
-  syntax Value ::= value ( Bytes, Ty ) // TODO redundant information? Is Ty tracked elsewhere (typedLocal)?
-
-  syntax Value ::= #newValue ( Ty , Map ) [ function ] // TODO not total
+  syntax Value ::= value ( Bytes , RigidTy )
 ```
 
 ```k
@@ -309,6 +321,11 @@ endmodule
 module RT-DATA-LOW
   imports RT-DATA-LOW-SYNTAX
   imports RT-DATA
+
+  // for low-level representations, decoding bytes is trivial
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
+      => value(BYTES, RIGIDTY)
+
 endmodule
 ```
 
@@ -344,8 +361,6 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
-
   // decoding the correct amount of bytes depending on base type size
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
       => // bytes should be one or zero, but all non-zero is taken as true
@@ -416,17 +431,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
   rule #decodeConstant(_, _) => Any [owise]
 ```
 
-Constant operands are simply decoded according to their type.
-
-```k
-  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
-        =>
-           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
-        ...
-      </k>
-      <basetypes> TYPEMAP </basetypes>
-    requires TY in_keys(TYPEMAP)
-```
+### Type casts
 
 Casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics **TODO: reference**.
