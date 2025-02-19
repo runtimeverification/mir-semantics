@@ -24,6 +24,7 @@ module RT-DATA-SYNTAX
 
   syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
 
+  syntax Address // FIXME essential to the memory model, leaving it unspecified for now
 ```
 
 ### Local variables
@@ -117,8 +118,7 @@ local value cannot be read, though, and the value should be initialised.
 
 ```k
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(VAL, _, _) #as LOCAL] </locals>
-    requires isValue(VAL)
+       <locals> _LOCALS[I <- typedLocal(_:Value, _, _) #as LOCAL] </locals>
 
   // error cases
 
@@ -151,8 +151,7 @@ further access. Apart from that, the same caveats apply as for operands that are
 
 ```k
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(VAL, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
-    requires isValue(VAL)
+       <locals> _LOCALS[I <- typedLocal(_:Value, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
@@ -225,26 +224,24 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
   // if all is well, write the value
   // mutable case
-  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
        </k>
        <locals> _LOCALS[I <- typedLocal(_ => VAL, LOCALTY, mutabilityMut)] </locals>
-    requires isValue(VAL)
-     andBool (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
+    requires (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
-  rule <k> typedLocal(VAL, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
           =>
            .K
           ...
        </k>
        <locals> _LOCALS[I <- typedLocal(NoValue => VAL, LOCALTY, mutabilityNot)] </locals>
        // value is not initialised yet  ^^^^^^^ but not mutable ^^^^^^^^^^
-    requires isValue(VAL)
-     andBool (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
+    requires (LOCALTY ==K TY orBool TY ==K TyUnknown) // matching or unknown type
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
