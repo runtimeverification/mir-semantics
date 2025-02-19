@@ -1,6 +1,6 @@
 # Handling Data for MIR Execution
 
-This module addresses all aspects of handling "values"i.e., data), at runtime during MIR execution.
+This module addresses all aspects of handling "values" i.e., data, at runtime during MIR execution.
 
 
 ```k
@@ -21,6 +21,9 @@ module RT-DATA-SYNTAX
   syntax MaybeValue ::= Value
                       | "NoValue" // not initialized
                       | "Moved"   // inaccessible
+
+  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
 ```
 
 ### Local variables
@@ -93,6 +96,18 @@ module RT-DATA
 
 _Read_ access to `Operand`s (which may be local values) may have similar errors as write access.
 
+Constant operands are simply decoded according to their type.
+
+```k
+  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+        =>
+           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+        ...
+      </k>
+      <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
+```
+
 The code which copies/moves function arguments into the locals of a stack frame works
 in a similar way, but accesses the locals of the _caller_ instead of the locals of the
 current function.
@@ -101,29 +116,25 @@ Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, 
 local value cannot be read, though, and the value should be initialised.
 
 ```k
-  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
-        =>
-           LOCALS[I]
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems))) => LOCAL ... </k>
+       <locals> _LOCALS[I <- typedLocal(VAL, _, _) #as LOCAL] </locals>
+    requires isValue(VAL)
 
-  rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
+  // error cases
+
+  rule <k> #readOperand(operandCopy(place(local(I) #as IDX, .ProjectionElems)))
         =>
-           #LocalError(LocalMoved(LOCAL))
+           #LocalError(LocalMoved(IDX))
         ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+       </k>
+       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
 
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+       </k>
+       <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
     // TODO how about zero-sized types
 
   rule <k> #readOperand(operandCopy(place(_, PROJECTIONS)))
@@ -139,38 +150,31 @@ Reading an `Operand` using `operandMove` has to invalidate the respective local,
 further access. Apart from that, the same caveats apply as for operands that are _copied_.
 
 ```k
-  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
-        =>
-           LOCALS[I]
-        ...
-        </k>
-        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
-    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems))) => LOCAL ... </k>
+       <locals> _LOCALS[I <- typedLocal(VAL, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
+    requires isValue(VAL)
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
            #LocalError(LocalMoved(LOCAL))
         ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+       </k>
+       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
 
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
-        </k>
-        <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
+       </k>
+       <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
     // TODO how about zero-sized types
 
   rule <k> #readOperand(operandMove(place(_, PROJECTIONS)))
         =>
            #LocalError(Unsupported("Projections(read)"))
         ...
-        </k>
+       </k>
     requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
 ```
 
 ### Setting local variables (including error cases)
@@ -181,35 +185,34 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
   syntax KItem ::= #setLocalValue( Place )
 
   // error cases first
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _))
+          =>
+            #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <Int I orBool I <Int 0
 
   rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
-           #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
+           #LocalError(TypeMismatch(LOCAL, LOCALTY, VAL))
           ...
-        </k>
-       <locals> LOCALS </locals>
-    requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
-     andBool isTy(TY)
+       </k>
+       <locals> _LOCALS[I <- typedLocal(_, LOCALTY, _)] </locals>
+    requires LOCALTY =/=K TY
 
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _))
           =>
-           #LocalError(LocalMoved(local(I)))
+           #LocalError(LocalMoved(LOCAL))
           ...
-        </k>
-       <locals> LOCALS </locals>
-    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
+       </k>
+       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
-        </k>
-       <locals> LOCALS </locals>
-    requires notBool isMutable({LOCALS[I]}:>TypedLocal)         // not mutable
-     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) =/=K NoValue // and already written to
+       </k>
+       <locals> _LOCALS[I <- typedLocal(VAL, _, mutabilityNot)] </locals> // not mutable
+    requires VAL =/=K NoValue // and already written to
 
 
   // writing no value is a no-op
@@ -226,12 +229,9 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isValue(VAL)
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
-     andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
+       <locals> _LOCALS[I <- typedLocal(_ => VAL, LOCALTY, mutabilityMut)] </locals>
+    requires isValue(VAL)
+     andBool LOCALTY ==K TY // matching type
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
@@ -240,13 +240,10 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isValue(VAL)
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY         // matching type
-     andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
-     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
+       <locals> _LOCALS[I <- typedLocal(NoValue => VAL, LOCALTY, mutabilityNot)] </locals>
+       // value is not initialised yet  ^^^^^^^ but not mutable ^^^^^^^^^^
+    requires isValue(VAL)
+     andBool LOCALTY ==K TY         // matching type
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
@@ -374,9 +371,7 @@ module RT-DATA-LOW-SYNTAX
 Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
 
 ```k
-  syntax Value ::= value ( Bytes, Ty ) // TODO redundant information? Is Ty tracked elsewhere (typedLocal)?
-
-  syntax Value ::= #newValue ( Ty , Map ) [ function ] // TODO not total
+  syntax Value ::= value ( Bytes , RigidTy )
 ```
 
 ```k
@@ -385,6 +380,11 @@ endmodule
 module RT-DATA-LOW
   imports RT-DATA-LOW-SYNTAX
   imports RT-DATA
+
+  // for low-level representations, decoding bytes is trivial
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
+      => value(BYTES, RIGIDTY)
+
 endmodule
 ```
 
@@ -429,8 +429,6 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
-
   // decoding the correct amount of bytes depending on base type size
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
       => // bytes should be one or zero, but all non-zero is taken as true
@@ -501,17 +499,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
   rule #decodeConstant(_, _) => Any [owise]
 ```
 
-Constant operands are simply decoded according to their type.
-
-```k
-  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
-        =>
-           typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
-        ...
-      </k>
-      <basetypes> TYPEMAP </basetypes>
-    requires TY in_keys(TYPEMAP)
-```
+### Type casts
 
 Casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics **TODO: reference**.
