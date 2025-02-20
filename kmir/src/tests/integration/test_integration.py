@@ -230,6 +230,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
         None,
     ),
+    (
+        'structs-tuples',
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.84.state',
+        84,
+    ),
 ]
 
 
