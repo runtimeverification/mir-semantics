@@ -137,13 +137,7 @@ local value cannot be read, though, and the value should be initialised.
        <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
     // TODO how about zero-sized types
 
-  rule <k> #readOperand(operandCopy(place(_, PROJECTIONS)))
-        =>
-           #LocalError(Unsupported("Projections(read)"))
-        ...
-        </k>
-    requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
+
 ```
 
 Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
@@ -167,14 +161,32 @@ further access. Apart from that, the same caveats apply as for operands that are
        </k>
        <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
     // TODO how about zero-sized types
+```
 
-  rule <k> #readOperand(operandMove(place(_, PROJECTIONS)))
+### Reading places with projections
+
+`#readOperand` above is only implemented for reading a `Local`, without any projecting modifications.
+Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
+
+```k
+  syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+
+  rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
-           #LocalError(Unsupported("Projections(read)"))
+           #readProjection(LOCAL, PROJECTIONS)
         ...
        </k>
+       <locals> _LOCALS[I <- LOCAL:TypedLocal] </locals>
+    requires PROJECTIONS =/=K .ProjectionElems
+
+  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS))) ~> CONT
+        =>
+           #LocalError(Unsupported("Moving operand with projection")) ~> LOCAL ~> PROJECTIONS ~>CONT
+       </k>
+       <locals> _LOCALS[I <- LOCAL:TypedLocal] </locals>
     requires PROJECTIONS =/=K .ProjectionElems
 ```
+
 
 ### Setting local variables (including error cases)
 
@@ -309,7 +321,8 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   rule <k> ARGS:List ~> #mkAggregate(_)
         =>
             typedLocal(Aggregate(ARGS), TyUnknown, mutabilityNot)
-            // FIXME ty not determined  ^^^^^^^^^
+            // NB ty not determined     ^^^^^^^^^
+            // FIXME   ^^^^^^^^^^^^^^^ this is a RT-DATA-HIGH value constructo
             // FIXME which mutability to use here? ^^^^^^^^^^^^^
         ...
        </k>
@@ -389,7 +402,7 @@ endmodule
 
 Values in MIR can also be represented at a certain abstraction level, interpreting the given `Bytes` of a constant according to the desired type. This allows for implementing operations on values using the higher-level type and improves readability of the program data in the K configuration.
 
-High-level values can be 
+High-level values can be
 - a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
 - built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
 - arrays and slices (with homogenous element types)
@@ -629,6 +642,33 @@ Error cases for `castKindIntToInt`
         </k>
     requires CASTKIND =/=K castKindIntToInt
     [owise]
+```
 
+### Projections on `TypedLocal` values
+
+The implementation of projections (a list `ProjectionElems`) accesses the structure of a stored value and therefore depends on the value representation. Function `#readProjection ( TypedLocal , Projectionelems) -> TypedLocal` is therefore implemented in the more specific module that provides a `Value` implementation.
+
+The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
+
+```k
+  // syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+  rule <k> #readProjection(TL, .ProjectionElems) => TL ... </k>
+```
+
+A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values. The field is numbered from zero (in source order), and the field type is provided (not checked here).
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Aggregate(_ARGS[I <- ARG]), _, _),
+              projectionElemField(fieldIdx(I), _TY) PROJS
+            )
+         =>
+           #readProjection(ARG, PROJS)
+       ...
+       </k>
+```
+
+
+```k
 endmodule
 ```
