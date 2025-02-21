@@ -236,6 +236,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.84.state',
         84,
     ),
+    (
+        'struct-field-update',
+        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.smir.json',
+        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
+        None,
+    ),
 ]
 
 
