@@ -167,7 +167,6 @@ syntax AggregateKind ::= aggregateKindArray(Ty)                                 
                        | aggregateKindCoroutine(CoroutineDef, GenericArgs, Movability)                                  [group(mir-enum), symbol(AggregateKind::Coroutine)]
                        | aggregateKindRawPtr(Ty, Mutability)                                                            [group(mir-enum), symbol(AggregateKind::RawPtr)]
 
- // FIXME the arguments for some of these are _heterogenous lists_ in stable-mir-json
 syntax Rvalue ::= rvalueAddressOf(Mutability, Place)                     [group(mir-enum), symbol(Rvalue::AddressOf)]
                 | rvalueAggregate(AggregateKind, Operands)               [group(mir-enum), symbol(Rvalue::Aggregate)]
                 | rvalueBinaryOp(BinOp, Operand, Operand)                [group(mir-enum), symbol(Rvalue::BinaryOp)]

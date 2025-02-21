@@ -2,6 +2,7 @@
 
 ```k
 requires "kmir-ast.md"
+requires "rt/data.md"
 ```
 
 ## Syntax of MIR in K
@@ -13,32 +14,8 @@ from a json format of stable-MIR, and the name of the function to execute.
 ```k
 module KMIR-SYNTAX
   imports KMIR-AST
-  imports INT-SYNTAX
-  imports FLOAT-SYNTAX
 
-  syntax KItem ::= #init( Pgm, Symbol )
-
-////////////////////////////////////////////
-// FIXME things below related to memory and
-// should maybe move to their own module.
-
-  syntax Value ::= Scalar( Int, Int, Bool )
-                   // value, bit-width, signedness   for bool, un/signed int
-                 | Float( Float, Int )
-                   // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
-                   // address, metadata              for ref/ptr
-                 | Range( List )
-                   // homogenous values              for array/slice
-                 | Struct( Int, List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | "Any"
-                   // arbitrary value                for transmute/invalid ptr lookup
-
-  syntax MaybeValue ::= Value
-                      | "NoValue"
-
-  syntax Address // FIXME essential to the memory model, leaving it unspecified for now
+  syntax KItem ::= #init( Pgm )
 
 endmodule
 ```
@@ -59,10 +36,14 @@ Essential parts of the configuration:
 
 The entire program's return value (`retVal`) is held in a separate cell.
 
+Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes information about the `locals` of the currently-executing function/item. Each function's code will only access local values (or heap data referenced by them). Local variables carry type information (see `RT-DATA`).
+
 ```k
 module KMIR-CONFIGURATION
   imports KMIR-SYNTAX
   imports INT-SYNTAX
+  imports BOOL-SYNTAX
+  imports RT-DATA-HIGH-SYNTAX
 
   syntax RetVal ::= MaybeValue
 
@@ -73,7 +54,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm, symbol("main")) </k>
+                  <k> #init($PGM:Pgm) </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
@@ -92,9 +73,14 @@ module KMIR-CONFIGURATION
                   // heap
                   <memory> .Map </memory> // FIXME unclear how to model
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
+                  <start-symbol> symbol($STARTSYM:String) </start-symbol>
+                  // static information about the base type interning in the MIR
+                  <basetypes> .Map </basetypes>
                 </kmir>
+
 endmodule
 ```
+
 
 ### Execution Control Flow
 
@@ -103,6 +89,8 @@ module KMIR
   imports KMIR-SYNTAX
   imports KMIR-CONFIGURATION
   imports MONO
+  imports RT-DATA-HIGH
+  imports TYPES
 
   imports BOOL
   imports LIST
@@ -116,12 +104,37 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_Name:Symbol _Allocs:GlobalAllocs Functions:FunctionNames Items:MonoItems, FuncName)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
          =>
-           #execFunction(#findItem(Items, FuncName), Functions)
+           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
-       <functions> _ => #mkFunctionMap(Functions, Items) </functions>
+       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+       <start-symbol> FUNCNAME </start-symbol>
+       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
 ```
+
+The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
+It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
+
+```k
+  syntax Map ::= #mkTypeMap ( Map, BaseTypes ) [function, total]
+
+  rule #mkTypeMap(ACC, .BaseTypes) => ACC
+
+  // build map of Ty -> RigidTy from suitable pairs
+  rule #mkTypeMap(ACC, baseType(TY, tyKindRigidTy(RIGID)) MORE:BaseTypes)
+      =>
+       #mkTypeMap(ACC[TY <- RIGID], MORE)
+    requires notBool TY in_keys(ACC)
+    [preserves-definedness] // key collision checked
+
+  // skip anything that is not a RigidTy or causes a key collision
+  rule #mkTypeMap(ACC, baseType(_TY, _OTHERTYKIND) MORE:BaseTypes)
+      =>
+       #mkTypeMap(ACC, MORE)
+    [owise]
+```
+
 
 The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
 composed with a secondary lookup of `Item`s via `symbolName`. This composed map will
@@ -204,7 +217,7 @@ be known to populate the `currentFunc` field.
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
-                monoItemFn(_, _, body(FIRST:BasicBlock _ #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
+                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
               ),
               FUNCTIONNAMES
             )
@@ -237,12 +250,12 @@ be known to populate the `currentFunc` field.
   rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
 
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
-                  // basically `replicate (length LOCALS) Any`.
-                  // FIXME what about function arguments and return?
 
   rule #reserveFor(.LocalDecls) => .List
 
-  rule #reserveFor(_:LocalDecl REST:LocalDecls) => ListItem(NoValue) #reserveFor(REST)
+  rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
+      =>
+       ListItem(typedLocal(NoValue, TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -261,13 +274,10 @@ blocks, or call another function).
 
   rule <k> #execBlockIdx(basicBlockIdx(I))
          =>
-           #execBlock( {BLOCKS[I]}:>BasicBlock )
+           #execBlock( BLOCK_I )
          ...
        </k>
-       <currentBody> BLOCKS </currentBody>
-    requires 0 <=Int I
-     andBool I <Int size(BLOCKS)
-     andBool isBasicBlock(BLOCKS[I])
+       <currentBody> _BLOCKS[I <- BLOCK_I:BasicBlock] </currentBody>
 
   rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
          =>
@@ -292,11 +302,21 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule <k> #execStmt(statement(statementKindAssign(_PLACE, _RVAL), _SPAN))
+  rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-           .K // FIXME! evaluate RVAL and write to PLACE
+           RVAL ~> #assign(PLACE)
          ...
        </k>
+
+  // RVAL evaluation is implemented in rt/data.md
+
+  syntax KItem ::= #assign ( Place )
+
+  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
+        =>
+           VAL ~> #setLocalValue(PLACE) ~> CONT
+        </k>
+    // requires isTypedLocal(VAL)
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -380,13 +400,13 @@ depending on the value of a _discriminant_.
 `Return` simply returns from a function call, using the information
 stored in the top stack frame to pass the returned value. The return
 value is the value in local `_0`, and will go to the _destination_ in
-the stack frame. Execution continues with the context of the enclosing
-stack frame, at the _target_.
+the `LOCALS` of the caller's stack frame. Execution continues with the
+context of the enclosing stack frame, at the _target_.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #execBlockIdx(TARGET) ~> .K
+           LOCAL_0 ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -395,15 +415,13 @@ stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => #setLocal(NEWLOCALS, DEST, {LOCALS[0]}:>MaybeValue ) </locals>
+         <locals> _LOCALS[0 <- LOCAL_0:TypedLocal] => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      andBool 0 <Int size(LOCALS)
-      andBool isMaybeValue(LOCALS[0])
-      // andBool #withinLocals(DEST, LOCALS)
+      // andBool DEST #within(LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
   syntax List ::= #getBlocks(Map, Ty) [function]
@@ -419,33 +437,11 @@ stack frame, at the _target_.
   // other item kinds are not expected or supported
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
-
-  // set a local to a new value. Assumes the place is valid
-  syntax List ::= #setLocal(List, Place, MaybeValue) [function]
-
-  rule #setLocal(LOCALS, _, NoValue)
-     =>
-       LOCALS
-
-  rule #setLocal(LOCALS, place(local(I), .ProjectionElems), V:Value)
-     =>
-       LOCALS[I <- V]
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness] // valid list indexing checked
-
-  // rule #setLocal(LOCALS, place(local(I), PROJECTION), VALUE)
-  //    =>
-  //      LOCALS[I <- #updateProjection(LOCALS[I], PROJECTION, VALUE)]
-  //   requires 0 <=Int I
-  //    andBool I <Int size(LOCALS)
-  //    andBool #projectionIsValid(LOCALS[I], PROJECTION)
-  //   [preserves-definedness] // valid list indexing and projection checked
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
 (`noBasicBlockIdx`), the program is ended, using the returned value from `_0`
-as the program's `retVal`.  
+as the program's `retVal`.
 The call stack is not necessarily empty at this point so it is left untouched.
 
 ```k
@@ -456,10 +452,10 @@ The call stack is not necessarily empty at this point so it is left untouched.
          =>
            #EndProgram
        </k>
-       <retVal> _ => {LOCALS[0]}:>MaybeValue </retVal>
+       <retVal> _ => VALUE </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> LOCALS </locals>
+         <locals> _LOCALS[0 <- typedLocal(VALUE, _, _)] </locals>
          ...
        </currentFrame>
 ```
@@ -472,7 +468,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData( {FUNCS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(NEWFUNC, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -485,8 +481,7 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCS </functions>
-     requires #tyOfCall(FUNC) in_keys(FUNCS)
+       <functions> #tyOfCall(FUNC) |-> NEWFUNC:MonoItemKind _ </functions>
      [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
@@ -502,13 +497,13 @@ The local data has to be set up for the call, which requires information about t
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
 
-  // reserve space for local variables and copy arguments from old locals into their place
+  // reserve space for local variables and copy/move arguments from old locals into their place
   rule <k> #setUpCalleeData(
               monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
               ARGS
               )
          =>
-           #execBlock(FIRST) 
+           #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
@@ -518,26 +513,49 @@ The local data has to be set up for the call, which requires information about t
         //  <dest> DEST </dest>
         //  <target> TARGET </target>
         //  <unwind> UNWIND </unwind>
-         <locals> OLDLOCALS => #setArgs(OLDLOCALS, 1, ARGS, #reserveFor(NEWLOCALS)) </locals>
+         <locals> _ => #reserveFor(NEWLOCALS) </locals>
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
 
-  syntax List ::= #setArgs ( List, Int, Operands, List) [function]
+  syntax KItem ::= #setArgsFromStack ( Int, Operands)
+                 | #setArgFromStack ( Int, Operand)
 
-  rule #setArgs(_, _, .Operands, LOCALS) => LOCALS
-  rule #setArgs(PRIOR_LOCALS, IDX, ARG:Operand ARGS:Operands, ACC)
-       => 
-       #setArgs(
-          PRIOR_LOCALS,
-          IDX +Int 1,
-          ARGS,
-          #setLocal(ACC, place(local(IDX), .ProjectionElems), #readValue(PRIOR_LOCALS, ARG))
-        )
+  // once all arguments have been retrieved, write caller's modified CALLERLOCALS to stack frame and execute
+  rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
 
-  syntax Value ::= #readValue ( List, Operand )
+  // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
+  rule <k> #setArgsFromStack(IDX, OP:Operand MORE:Operands) ~> CONT
+        => 
+           #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
+       </k>
 
-  rule #readValue(_, _) => Any // FIXME! Not reading anything
+  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND) 
+        =>
+           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+        ... 
+       </k>
+
+  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
+        => 
+           LOCAL_I ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+        ... 
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _, _CALLERLOCALS[I <- typedLocal(VALUE, _, _) #as LOCAL_I])) _:List </stack>
+    requires VALUE =/=K Moved
+
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
+        => 
+           LOCAL_I ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+        ... 
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _,
+                 _CALLERLOCALS[I <- typedLocal(VALUE, TY, _) #as LOCAL_I
+                                 => typedLocal(Moved, TY, mutabilityNot)])
+              )
+              _:List 
+        </stack>
+    requires VALUE =/=K Moved
 ```
 
 

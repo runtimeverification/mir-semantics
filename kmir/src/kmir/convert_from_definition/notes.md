@@ -25,6 +25,12 @@ syntax A ::= a(Bool) [group(mir-bool), ...]
 ```
 json: a boolean value, e.g., `true`
 
+#### mir-bytes
+```
+syntax A ::= a(Bytes) [group(mir-bytes), ...]
+```
+json: an array of integer values between 0 and 255
+
 #### mir-list
 ```
 syntax Elems ::= List {Elem, ""} [group(mir-list), ...]
@@ -71,13 +77,13 @@ Any remaining production describing MIR syntax.
 
 
 ### Conventions for productions
-- Syntax productions with more than one non terminals should not include sorts `Int`, `Bool`, `String`, but should instead use the sorts `MIRInt`, `MIRBool`, `MIRString`. These are intended to be semantically equivalent, i.e.
+- Syntax productions with more than one non terminals should not include sorts `Int`, `Bool`, `String`, and `Bytes`, but should instead use the sorts `MIRInt`, `MIRBool`, `MIRString`, and `MIRBytes`. These are intended to be semantically equivalent, i.e.
 ```
 mirInt(I) => I
 mirBool(B) => B
 mirString(S) => S
+mirBytes(B) => B
 ```
-Note: This transformation should have happened already. If a place has been missed, where a `Sort` has not been replaced with `MIRsort`, this should be trasformed. Also, this should happen for any other primitive sorts.
 
 - Similarly, productions should not directly include the List sort. They should instead use a different sort in its place, and then annotate the corresponding production with mir-klist-{ElementSort of the List}, e.g.,
 ```

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.kast.inner import KApply, KSort, KToken, Subst
+from pyk.kast.inner import KApply, KSort, KToken
 
 from kmir.convert_from_definition.v2parser import Parser
 
@@ -68,27 +69,42 @@ def test_schema_parse(test_dir: Path, tools: Tools) -> None:
     assert converted_ast == parsed_ast
 
 
-SCHEMA_PARSE_KAPPLY_DATA = [
-    #    ({'Int': 'Isize'}, KApply('IntTy::Isize'), KSort('IntTy')),
-    #    ({'Int': 'I8'}, KApply('IntTy::I8'), KSort('IntTy')),
-    #    ({'Int': 'I16'}, KApply('IntTy::I16'), KSort('IntTy')),
-    #    ({'Int': 'I32'}, KApply('IntTy::I32'), KSort('IntTy')),
-    #    ({'Int': 'I64'}, KApply('IntTy::I64'), KSort('IntTy')),
-    #    ({'Int': 'I128'}, KApply('IntTy::I128'), KSort('IntTy')),
-    #    ({'Uint': 'Usize'}, KApply('UintTy::Usize'), KSort('UintTy')),
-    #    ({'Uint': 'U8'}, KApply('UintTy::U8'), KSort('UintTy')),
-    #    ({'Uint': 'U16'}, KApply('UintTy::U16'), KSort('UintTy')),
-    #    ({'Uint': 'U32'}, KApply('UintTy::U32'), KSort('UintTy')),
-    #    ({'Uint': 'U64'}, KApply('UintTy::U64'), KSort('UintTy')),
-    #    ({'Uint': 'U128'}, KApply('UintTy::U128'), KSort('UintTy')),
-    #    ({'Float': 'F16'}, KApply('FloatTy::F16'), KSort('FloatTy')),
-    #    ({'Float': 'F32'}, KApply('FloatTy::F32'), KSort('FloatTy')),
-    #    ({'Float': 'F64'}, KApply('FloatTy::F64'), KSort('FloatTy')),
-    #    ({'Float': 'F128'}, KApply('FloatTy::F128'), KSort('FloatTy')),
-    #    ({'RigidTy': 'Bool'}, KApply('RigidTy::Bool'), KSort('RigidTy')),
-    #    ({'RigidTy': {'Int': 'I8'}}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
-    #    ({'RigidTy': {'Uint': 'Usize'}}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
-    #    ({'RigidTy': {'Float': 'F128'}}, KApply('RigidTy::Float', (KApply('FloatTy::F128'))), KSort('RigidTy')),
+RIGID_TY_TESTS = [
+    ({'Int': 'Isize'}, KApply('RigidTy::Int', (KApply('IntTy::Isize'))), KSort('RigidTy')),
+    ({'Int': 'I8'}, KApply('RigidTy::Int', (KApply('IntTy::I8'))), KSort('RigidTy')),
+    ({'Int': 'I16'}, KApply('RigidTy::Int', (KApply('IntTy::I16'))), KSort('RigidTy')),
+    ({'Int': 'I32'}, KApply('RigidTy::Int', (KApply('IntTy::I32'))), KSort('RigidTy')),
+    ({'Int': 'I64'}, KApply('RigidTy::Int', (KApply('IntTy::I64'))), KSort('RigidTy')),
+    ({'Int': 'I128'}, KApply('RigidTy::Int', (KApply('IntTy::I128'))), KSort('RigidTy')),
+    ({'Uint': 'Usize'}, KApply('RigidTy::Uint', (KApply('UintTy::Usize'))), KSort('RigidTy')),
+    ({'Uint': 'U8'}, KApply('RigidTy::Uint', (KApply('UintTy::U8'))), KSort('RigidTy')),
+    ({'Uint': 'U16'}, KApply('RigidTy::Uint', (KApply('UintTy::U16'))), KSort('RigidTy')),
+    ({'Uint': 'U32'}, KApply('RigidTy::Uint', (KApply('UintTy::U32'))), KSort('RigidTy')),
+    ({'Uint': 'U64'}, KApply('RigidTy::Uint', (KApply('UintTy::U64'))), KSort('RigidTy')),
+    ({'Uint': 'U128'}, KApply('RigidTy::Uint', (KApply('UintTy::U128'))), KSort('RigidTy')),
+    ({'Float': 'F16'}, KApply('RigidTy::Float', KApply('FloatTy::F16')), KSort('RigidTy')),
+    ({'Float': 'F32'}, KApply('RigidTy::Float', KApply('FloatTy::F32')), KSort('RigidTy')),
+    ({'Float': 'F64'}, KApply('RigidTy::Float', KApply('FloatTy::F64')), KSort('RigidTy')),
+    ({'Float': 'F128'}, KApply('RigidTy::Float', KApply('FloatTy::F128')), KSort('RigidTy')),
+    ({'RigidTy': 'Bool'}, KApply('TyKind::RigidTy', (KApply('RigidTy::Bool'))), KSort('TyKind')),
+    (
+        {'RigidTy': {'Int': 'I8'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Int', (KApply('IntTy::I8'))))),
+        KSort('TyKind'),
+    ),
+    (
+        {'RigidTy': {'Uint': 'Usize'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Uint', (KApply('UintTy::Usize'))))),
+        KSort('TyKind'),
+    ),
+    (
+        {'RigidTy': {'Float': 'F128'}},
+        KApply('TyKind::RigidTy', (KApply('RigidTy::Float', (KApply('FloatTy::F128'))))),
+        KSort('TyKind'),
+    ),
+]
+
+LOCAL_DECL_TESTS = [
     (2, KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
     (
         {'StorageLive': 2},
@@ -110,6 +126,9 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         ),
         KSort('LocalDecl'),
     ),
+]
+
+FUNCTION_SYMBOL_TESTS = [
     (
         {'NormalSym': 'very normal'},
         KApply(
@@ -132,6 +151,41 @@ SCHEMA_PARSE_KAPPLY_DATA = [
         KSort('FunctionKind'),
     ),
 ]
+BYTES_TESTS = [
+    (
+        {
+            'bytes': [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33],
+            'provenance': {'ptrs': []},
+            'align': 42,
+            'mutability': 'Not',
+        },
+        KApply(
+            'allocation',
+            (
+                KToken('b"Hello World!"', KSort('Bytes')),
+                KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
+                KApply('align', (KToken('42', KSort('Int')))),
+                KApply('Mutability::Not', ()),
+            ),
+        ),
+        KSort('Allocation'),
+    ),
+    (
+        {'bytes': [0, 0, 0, 42, None, None, None, None], 'provenance': {'ptrs': []}, 'align': 42, 'mutability': 'Not'},
+        KApply(
+            'allocation',
+            (
+                KToken('b"\\x00\\x00\\x00\\x2a\\x00\\x00\\x00\\x00"', KSort('Bytes')),
+                KApply('provenanceMap', (KApply('ProvenanceMapEntries::empty', ()))),
+                KApply('align', (KToken('42', KSort('Int')))),
+                KApply('Mutability::Not', ()),
+            ),
+        ),
+        KSort('Allocation'),
+    ),
+]
+
+SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
 
 
 @pytest.mark.parametrize(
@@ -159,10 +213,22 @@ EXEC_DATA = [
         None,
     ),
     (
-        'main-a-b-c --depth 15',
+        'main-a-b-c --depth 19',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.15.state',
-        15,
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.19.state',
+        19,
+    ),
+    (
+        'call-with-args',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.23.state',
+        23,
+    ),
+    (
+        'assign-cast',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.smir.json',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
+        None,
     ),
 ]
 
@@ -187,14 +253,15 @@ def test_exec_smir(
     assert parsed is not None
     kmir_kast, _ = parsed
 
-    subst = Subst({'$PGM': kmir_kast})
-    init_config = subst.apply(tools.definition.init_config(KSort('GeneratedTopCell')))
-    init_kore = tools.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-    result = tools.krun.run_pattern(init_kore, depth=depth)
+    result = tools.run_parsed(kmir_kast, depth=depth)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
     result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
 
-    assert result_pretty == expected
+    if os.getenv('UPDATE_EXEC_SMIR') is None:
+        assert result_pretty == expected
+    else:
+        with output_kast.open('w') as f:
+            f.write(result_pretty)

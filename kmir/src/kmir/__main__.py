@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KSort, Subst
-
 from kmir.build import semantics
 from kmir.convert_from_definition.v2parser import parse_json
 
@@ -23,6 +21,7 @@ class KMirOpts: ...
 class RunOpts(KMirOpts):
     input_file: Path
     depth: int
+    start_symbol: str
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -35,10 +34,7 @@ def _kmir_run(opts: RunOpts) -> None:
 
     kmir_kast, _ = parse_result
 
-    subst = Subst({'$PGM': kmir_kast})
-    init_config = subst.apply(tools.definition.init_config(KSort('GeneratedTopCell')))
-    init_kore = tools.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-    result = tools.krun.run_pattern(init_kore, depth=opts.depth)
+    result = tools.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
 
     print(tools.kprint.kore_to_pretty(result))
 
@@ -60,6 +56,9 @@ def _arg_parser() -> ArgumentParser:
     run_parser = command_parser.add_parser('run', help='run stable MIR programs')
     run_parser.add_argument('input_file', metavar='FILE', help='MIR program to run')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
+    run_parser.add_argument(
+        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+    )
 
     return parser
 
@@ -69,7 +68,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
 
     match ns.command:
         case 'run':
-            return RunOpts(input_file=Path(ns.input_file).resolve(), depth=ns.depth)
+            return RunOpts(input_file=Path(ns.input_file).resolve(), depth=ns.depth, start_symbol=ns.start_symbol)
         case _:
             raise AssertionError()
 

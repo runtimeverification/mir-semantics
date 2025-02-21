@@ -40,8 +40,10 @@ jobs:
         uses: actions/checkout@v4
       - name: 'Install Poetry'
         uses: Gr1N/setup-poetry@v8
+        with:
+          poetry-version: 2.0.1
       - name: 'Run code quality checks'
-        run: make -C kmir check
+        run: make check
 
   unit-tests:
     needs: code-quality-checks
@@ -52,8 +54,10 @@ jobs:
         uses: actions/checkout@v4
       - name: 'Install Poetry'
         uses: Gr1N/setup-poetry@v8
+        with:
+          poetry-version: 2.0.1
       - name: 'Run unit tests'
-        run: make -C kmir test-unit
+        run: make test-unit
 
   integration-tests:
     needs: code-quality-checks
@@ -72,7 +76,7 @@ jobs:
       - name: 'Build kmir'
         run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make build
       - name: 'Run integration tests'
-        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make -C kmir test-integration
+        run: docker exec --user user mir-semantics-ci-${GITHUB_SHA} make test-integration
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}

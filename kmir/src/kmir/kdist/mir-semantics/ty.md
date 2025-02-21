@@ -37,6 +37,7 @@ module TYPES
   imports TYPES-SORTS
   imports INT
   imports STRING
+  imports BYTES
   imports LIST
 
 syntax TestSort2 ::= testSort2(MIRInt, MyList)     [group(mir), symbol(testSort2)]
@@ -48,6 +49,8 @@ syntax MIRBool ::= mirBool(Bool)       [group(mir-bool), symbol(MIRBool::Bool)]
                  | Bool
 syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::String)]
                    | String
+syntax MIRBytes ::= mirBytes(Bytes)    [group(mir-bytes), symbol(MIRBytes::Bytes)]
+                  | Bytes
 
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
@@ -255,21 +258,16 @@ syntax MaybePromoted ::= promoted(Int) [group(mir-option-int)]
 
 syntax Align ::= align(Int) [group(mir-int), symbol(align)]
 
-// FIXME provSize and allocId are in a _list_ in json
-syntax ProvenanceMapEntry ::= // provenanceMapEntry(provSize: MIRInt, allocId: AllocId) [group(mir), symbol(provenanceMapEntry)]
-                              List [group(mir-klist-MIRInt)]
+syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: MIRInt, allocId: AllocId)
+                              [group(mir), symbol(provenanceMapEntry)]
 
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}
                                 [group(mir-list), symbol(ProvenanceMapEntries::append), terminator-symbol(ProvenanceMapEntries::empty)]
 
 syntax ProvenanceMap ::= provenanceMap(ptrs: ProvenanceMapEntries) [group(mir---ptrs), symbol(provenanceMap)]
 
-// FIXME why are the bytes optional? What does it mean???
-syntax AllocByte ::= someByte(Int) [group(mir-option-int), symbol(someByte)]
-                   | "noByte"      [group(mir-option), symbol(noByte)]
-syntax AllocBytes ::= List {AllocByte, ""} [group(mir-list), symbol(AllocBytes::append), terminator-symbol(AllocBytes::empty)]
 syntax Allocation ::= allocation(
-                        bytes: AllocBytes,
+                        bytes: MIRBytes,
                         provenance: ProvenanceMap,
                         align: Align,
                         mutability: Mutability)
@@ -363,8 +361,8 @@ syntax ClauseKind ::= clauseKindTrait(TraitPredicate)                   [group(m
                     | clauseKindConstEvaluatable(TyConst)               [group(mir-enum), symbol(ClauseKind::ConstEvaluatable)]
 
 syntax TraitPredicate ::= traitPredicate(traitDef: TraitDef, polarity: PredicatePolarity) [group(mir---traitDef--polarity)]
-syntax RegionOutlivesPredicate ::= regionOutlivesPredicate(Region, Region)                [group(mir)] // FIXME field names??
-syntax TypeOutlivesPredicate ::= typeOutlivesPredicate(Ty, Region)                        [group(mir)] // FIXME field names??
+syntax RegionOutlivesPredicate ::= regionOutlivesPredicate(Region, Region)                [group(mir)]
+syntax TypeOutlivesPredicate ::= typeOutlivesPredicate(Ty, Region)                        [group(mir)]
 syntax ProjectionPredicate ::= projectionPredicate(projectionTy: AliasTy, term: TermKind) [group(mir---projectionTy--term)]
 
 syntax SubtypePredicate ::= subtypePredicate(a: Ty, b: Ty) [group(mir---a--b)]
