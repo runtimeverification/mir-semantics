@@ -648,6 +648,8 @@ Error cases for `castKindIntToInt`
 
 The implementation of projections (a list `ProjectionElems`) accesses the structure of a stored value and therefore depends on the value representation. Function `#readProjection ( TypedLocal , Projectionelems) -> TypedLocal` is therefore implemented in the more specific module that provides a `Value` implementation.
 
+#### Reading data from places with projections
+
 The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
 
 ```k
@@ -666,6 +668,36 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
            #readProjection(ARG, PROJS)
        ...
        </k>
+```
+
+#### Writing data to places with projections
+
+When writing data to a place with projections, the updated value gets constructed recursively by a function over the projections.
+
+```k
+  syntax TypedLocal ::= #updateProjected( TypedLocal, ProjectionElems, TypedLocal) [function]
+
+  rule #updateProjected(_, .ProjectionElems, NEW) => NEW
+
+  rule #updateProjected(
+          typedLocal(Aggregate(ARGS), TY, mutabilityMut),
+          projectionElemField(fieldIdx(I), _TY) PROJS,
+          NEW)
+      =>
+       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, mutabilityMut)
+```
+
+Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
+We first read the original value using `#readProjection` (this will uncover invalid projections) and compare the types.
+
+```k
+  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ)) 
+         => 
+           // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
+           #updateProjected(LOCAL, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
+       ...
+       </k>
+       <locals> _LOCALS[I <- LOCAL] </locals>
 ```
 
 
