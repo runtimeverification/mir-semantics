@@ -409,7 +409,7 @@ context of the enclosing stack frame, at the _target_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           {LOCALS[0]}:>TypedLocal ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           LOCAL0 ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -418,14 +418,12 @@ context of the enclosing stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => NEWLOCALS </locals>
+         <locals> ListItem(typedLocal(_, _, _) #as LOCAL0) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      andBool 0 <Int size(LOCALS)
-      andBool isTypedLocal(LOCALS[0])
       // andBool DEST #within(LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
@@ -457,10 +455,10 @@ The call stack is not necessarily empty at this point so it is left untouched.
          =>
            #EndProgram
        </k>
-       <retVal> _ => valueOfLocal({LOCALS[0]}:>TypedLocal) </retVal>
+       <retVal> _ => VAL </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> LOCALS </locals>
+         <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -473,7 +471,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData( {FUNCS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(NEWFUNC, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -486,8 +484,7 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCS </functions>
-     requires #tyOfCall(FUNC) in_keys(FUNCS)
+       <functions> ... #tyOfCall(FUNC) |-> NEWFUNC:MonoItemKind ... </functions>
      [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
