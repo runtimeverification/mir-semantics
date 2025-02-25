@@ -136,11 +136,30 @@ and then written to a `Place`.
 ### `Place`s
 A `Place` is a `Local` variable (actually just its index), and
 potentially a vector of `ProjectionElem`ents.
-- `Deref`erencing references or pointers (or `Box`es allocated in the
-  heap)
+
+There are different kinds of `ProjectionElem`s:
+- `Deref`erencing references or pointers (or `Box`es allocated in the heap)
+  - read data at the address given in the local
+  - operates on a value that is a pointer or reference to another
 - `Field` access in struct.s and tuples
-- `Index`ing into arrays (from front or back)
-- Casting values (`OpaqueCast` or `Downcast` - variant narrowing)
+  - fields are numbered from zero (in source order). The field type is also given.
+  - operates on structs and tuples
+- `Index`ing into arrays or slices
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+  - indexes zero-based from the front
+  - the index is provided in another local
+- `ConstantIndex`ing with a constant offset
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+  - the index was statically known and is therefore a `u64`
+  - the `min_length` of the object to index into is provided as another `u64`
+  - when `from_end` is true, this is  taken to be exact, and indexing happens from the end
+- `Subslice`
+  - a slice from `from` to `to` (the latter either from start or `from_end`)
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+- Casting values (`OpaqueCast` or `Downcast` - variant narrowing) and `Subtype`ing
+
+A _vector_ of `ProjectionElem`s may be applied in sequence to the local, e.g., first dereferencing a pointer to an array, then indexing into it, then projecting to a field of the indexed value.
+
 
 
 ### `RValue`s
@@ -161,8 +180,8 @@ An `RValue` is an operation that produces a value which can then be assigned to 
 | NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
 | UnaryOp        | UnOp, Operand                                   | (see below)                          |
 |----------------|-------------------------------------------------|--------------------------------------|
+| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array            |
 | Discriminant   | Place                                           | discriminant (of sums types) (?)     |
-| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | disallowed after lowering. DF helper |
 | ShallowInitBox | Operand, Ty                                     | ?                                    |
 | CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
