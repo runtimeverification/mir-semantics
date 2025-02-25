@@ -114,31 +114,36 @@ Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, 
 local value cannot be read, though, and the value should be initialised.
 
 ```k
-  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(_:Value, _, _) #as LOCAL] </locals>
-
-  // error cases
-
-  rule <k> #readOperand(operandCopy(place(local(I) #as IDX, .ProjectionElems)))
+  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #LocalError(LocalMoved(IDX))
+           LOCALS[I]
         ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
+       <locals> LOCALS </locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+
+  rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
+        =>
+           #LocalError(LocalMoved(LOCAL))
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
 
   rule <k> #readOperand(operandCopy(place(_, PROJECTIONS)))
         =>
            #LocalError(Unsupported("Projections(read)"))
         ...
-        </k>
+       </k>
     requires PROJECTIONS =/=K .ProjectionElems
     // TODO how about zero-sized types
 ```
@@ -147,22 +152,29 @@ Reading an `Operand` using `operandMove` has to invalidate the respective local,
 further access. Apart from that, the same caveats apply as for operands that are _copied_.
 
 ```k
-  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems))) => LOCAL ... </k>
-       <locals> _LOCALS[I <- typedLocal(_:Value, TY, MUT) #as LOCAL => typedLocal(Moved, TY, MUT)] </locals>
+  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
+        =>
+           LOCALS[I]
+        ...
+       </k>
+       <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
+    requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
            #LocalError(LocalMoved(LOCAL))
         ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(NoValue, _, _)] </locals>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
 
   rule <k> #readOperand(operandMove(place(_, PROJECTIONS)))
@@ -171,6 +183,7 @@ further access. Apart from that, the same caveats apply as for operands that are
         ...
        </k>
     requires PROJECTIONS =/=K .ProjectionElems
+    // TODO how about zero-sized types
 ```
 
 ### Setting local variables (including error cases)
@@ -181,34 +194,34 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
   syntax KItem ::= #setLocalValue( Place )
 
   // error cases first
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _))
-          =>
-            #LocalError(InvalidLocal(LOCAL)) ... </k>
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <Int I orBool I <Int 0
 
   rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
-           #LocalError(TypeMismatch(LOCAL, LOCALTY, VAL))
+           #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
           ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(_, LOCALTY, _)] </locals>
-    requires LOCALTY =/=K TY
+       <locals> LOCALS </locals>
+    requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
 
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _))
+  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
-           #LocalError(LocalMoved(LOCAL))
+           #LocalError(LocalMoved(local(I)))
           ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(Moved, _, _)] </locals>
+       <locals> LOCALS </locals>
+    requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(VAL, _, mutabilityNot)] </locals> // not mutable
-    requires VAL =/=K NoValue // and already written to
+       <locals> LOCALS </locals>
+    requires notBool isMutable({LOCALS[I]}:>TypedLocal)         // not mutable
+     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) =/=K NoValue // and already written to
 
 
   // writing no value is a no-op
@@ -225,8 +238,11 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(_ => VAL, LOCALTY, mutabilityMut)] </locals>
-    requires LOCALTY ==K TY // matching type
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
+     andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
     [preserves-definedness] // valid list indexing checked
 
   // uninitialised case
@@ -235,9 +251,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> _LOCALS[I <- typedLocal(NoValue => VAL, LOCALTY, mutabilityNot)] </locals>
-       // value is not initialised yet  ^^^^^^^ but not mutable ^^^^^^^^^^
-    requires LOCALTY ==K TY         // matching type
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY         // matching type
+     andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
+     andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
     [preserves-definedness] // valid list indexing checked
 
   // projections not supported yet
