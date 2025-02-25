@@ -272,20 +272,20 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 | RValue         | Arguments                                       | Action                               |
 |----------------|-------------------------------------------------|--------------------------------------|
 | Use            | Operand                                         | use (i.e., copy) operand unmodified  |
+| Cast           | CastKind, Operand, Ty                           | different kinds of type casts        |
+| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array            |
 | Repeat         | Operand, Const                                  | create array [Operand;Const]         |
+| Len            | Place                                           | array or slice size                  |
 | Ref            | Region, BorrowKind, Place                       | create reference to place            |
 | ThreadLocalRef | DefId                                           | thread-local reference (?)           |
 | AddressOf      | Mutability, Place                               | creates pointer to place             |
-| Len            | Place                                           | array or slice size                  |
-| Cast           | CastKind, Operand, Ty                           | different kinds of type casts        |
 |----------------|-------------------------------------------------|--------------------------------------|
 | BinaryOp       | BinOp, Box<(Operand, Operand)>                  | different fixed operations           |
 | NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
 | UnaryOp        | UnOp, Operand                                   | (see below)                          |
 |----------------|-------------------------------------------------|--------------------------------------|
 | Discriminant   | Place                                           | discriminant (of sums types) (?)     |
-| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | disallowed after lowering. DF helper |
-| ShallowInitBox | Operand, Ty                                     | ?                                    |
+| ShallowInitBox | Operand, Ty                                     |                                      |
 | CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.

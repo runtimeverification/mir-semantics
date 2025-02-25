@@ -180,8 +180,8 @@ An `RValue` is an operation that produces a value which can then be assigned to 
 | NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
 | UnaryOp        | UnOp, Operand                                   | (see below)                          |
 |----------------|-------------------------------------------------|--------------------------------------|
+| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array            |
 | Discriminant   | Place                                           | discriminant (of sums types) (?)     |
-| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | disallowed after lowering. DF helper |
 | ShallowInitBox | Operand, Ty                                     | ?                                    |
 | CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
