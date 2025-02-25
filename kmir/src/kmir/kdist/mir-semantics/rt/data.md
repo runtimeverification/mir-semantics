@@ -173,18 +173,22 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
 
   rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
-           #readProjection(LOCAL, PROJECTIONS)
+           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS)
         ...
        </k>
-       <locals> _LOCALS[I <- LOCAL:TypedLocal] </locals>
+       <locals> LOCALS </locals>
     requires PROJECTIONS =/=K .ProjectionElems
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
 
-  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS))) ~> CONT
+  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS) #as PLACE)) ~> CONT
         =>
-           #LocalError(Unsupported("Moving operand with projection")) ~> LOCAL ~> PROJECTIONS ~>CONT
+           #LocalError(Unsupported("Moving operand with projection")) ~> PLACE ~> CONT
        </k>
-       <locals> _LOCALS[I <- LOCAL:TypedLocal] </locals>
+       <locals> LOCALS </locals>
     requires PROJECTIONS =/=K .ProjectionElems
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
 ```
 
 
@@ -660,11 +664,11 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
 
 ```k
   rule <k> #readProjection(
-              typedLocal(Aggregate(_ARGS[I <- ARG]), _, _),
+              typedLocal(Aggregate(ARGS), _, _),
               projectionElemField(fieldIdx(I), _TY) PROJS
             )
          =>
-           #readProjection(ARG, PROJS)
+           #readProjection({ARGS[I]}:>TypedLocal, PROJS)
        ...
        </k>
 ```
@@ -687,16 +691,18 @@ When writing data to a place with projections, the updated value gets constructe
 ```
 
 Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
-We first read the original value using `#readProjection` (this will uncover invalid projections) and compare the types.
+We could first read the original value using `#readProjection` and compare the types to uncover these errors.
 
 ```k
   rule <k> VAL ~> #setLocalValue(place(local(I), PROJ)) 
          => 
            // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
-           #updateProjected(LOCAL, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
+           #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
        ...
        </k>
-       <locals> _LOCALS[I <- LOCAL] </locals>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
 ```
 
 
