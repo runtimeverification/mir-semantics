@@ -418,7 +418,7 @@ context of the enclosing stack frame, at the _target_.
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(typedLocal(_, _, _) #as LOCAL0) _ => NEWLOCALS </locals>
+         <locals> ListItem(LOCAL0:TypedLocal) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>

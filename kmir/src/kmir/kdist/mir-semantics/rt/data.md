@@ -118,24 +118,24 @@ local value cannot be read, though, and the value should be initialised.
         =>
            LOCALS[I]
         ...
-        </k>
-        <locals> LOCALS </locals>
+       </k>
+       <locals> LOCALS </locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
 
   rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
            #LocalError(LocalMoved(LOCAL))
         ...
-        </k>
-        <locals> LOCALS </locals>
+       </k>
+       <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
-        </k>
-        <locals> LOCALS </locals>
+       </k>
+       <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
 
@@ -143,7 +143,7 @@ local value cannot be read, though, and the value should be initialised.
         =>
            #LocalError(Unsupported("Projections(read)"))
         ...
-        </k>
+       </k>
     requires PROJECTIONS =/=K .ProjectionElems
     // TODO how about zero-sized types
 ```
@@ -156,24 +156,24 @@ further access. Apart from that, the same caveats apply as for operands that are
         =>
            LOCALS[I]
         ...
-        </k>
-        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
+       </k>
+       <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
            #LocalError(LocalMoved(LOCAL))
         ...
-        </k>
-        <locals> LOCALS </locals>
+       </k>
+       <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
         =>
            #LocalError(Uninitialised)
         ...
-        </k>
-        <locals> LOCALS </locals>
+       </k>
+       <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
 
@@ -181,7 +181,7 @@ further access. Apart from that, the same caveats apply as for operands that are
         =>
            #LocalError(Unsupported("Projections(read)"))
         ...
-        </k>
+       </k>
     requires PROJECTIONS =/=K .ProjectionElems
     // TODO how about zero-sized types
 ```
@@ -202,7 +202,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           =>
            #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
           ...
-        </k>
+       </k>
        <locals> LOCALS </locals>
     requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
 
@@ -210,7 +210,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           =>
            #LocalError(LocalMoved(local(I)))
           ...
-        </k>
+       </k>
        <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K Moved
 
@@ -218,7 +218,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
-        </k>
+       </k>
        <locals> LOCALS </locals>
     requires notBool isMutable({LOCALS[I]}:>TypedLocal)         // not mutable
      andBool valueOfLocal({LOCALS[I]}:>TypedLocal) =/=K NoValue // and already written to
