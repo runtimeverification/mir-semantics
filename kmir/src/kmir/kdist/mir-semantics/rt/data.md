@@ -322,8 +322,6 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
         =>
             typedLocal(Aggregate(ARGS), TyUnknown, mutabilityNot)
             // NB ty not determined     ^^^^^^^^^
-            // FIXME   ^^^^^^^^^^^^^^^ this is a RT-DATA-HIGH value constructo
-            // FIXME which mutability to use here? ^^^^^^^^^^^^^
         ...
        </k>
 
@@ -382,6 +380,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 
 ```k
   syntax Value ::= value ( Bytes , RigidTy )
+                 | Aggregate( List ) // retaining field structure of struct or tuple types
 ```
 
 ```k
