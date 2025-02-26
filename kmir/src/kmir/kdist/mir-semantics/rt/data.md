@@ -212,7 +212,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
   // error cases first
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
-    requires size(LOCALS) <Int I orBool I <Int 0
+    requires size(LOCALS) <=Int I orBool I <Int 0
 
   rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
@@ -275,14 +275,6 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
      andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
      andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
     [preserves-definedness] // valid list indexing checked
-
-  // projections not supported yet
-  rule <k> _:TypedLocal ~> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems))
-          =>
-           #LocalError(Unsupported("Projections"))
-          ...
-       </k>
-    requires PROJECTION =/=K .ProjectionElems
 ```
 
 ## Evaluation of RValues
@@ -719,6 +711,7 @@ We could first read the original value using `#readProjection` and compare the t
        <locals> LOCALS </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool PROJ =/=K .ProjectionElems
 ```
 
 
