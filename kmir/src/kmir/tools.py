@@ -50,16 +50,24 @@ class Tools:
         return self.__kmir
 
     @property
+    def kmir(self) -> KMIR:
+        return self.__kmir
+
+    @property
     def definition(self) -> KDefinition:
         return self.__definition
 
     def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
+        init_config = self.make_init_config(parsed_smir, start_symbol)
+        init_kore = self.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+        result = self.krun.run_pattern(init_kore, depth=depth)
+
+        return result
+
+    def make_init_config(self, parsed_smir: KInner, start_symbol: KInner | str = 'main') -> KInner:
         if isinstance(start_symbol, str):
             start_symbol = stringToken(start_symbol)
 
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
         init_config = subst.apply(self.definition.init_config(KSort('GeneratedTopCell')))
-        init_kore = self.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-        result = self.krun.run_pattern(init_kore, depth=depth)
-
-        return result
+        return init_config
