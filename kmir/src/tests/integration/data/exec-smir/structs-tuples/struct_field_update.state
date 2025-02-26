@@ -31,9 +31,9 @@
       ListItem ( typedLocal ( Any , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Scalar ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Moved , ty ( 27 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Moved , ty ( 27 ) , mutabilityNot ) )
+      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
@@ -62,4 +62,3 @@
     ty ( 26 ) |-> rigidTyFloat ( floatTyF64 )
   </basetypes>
 </kmir>
-

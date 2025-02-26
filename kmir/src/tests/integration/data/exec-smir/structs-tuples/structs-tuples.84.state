@@ -39,7 +39,7 @@
     ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 11 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
     ListItem ( typedLocal ( Scalar ( 1 , 1 , false ) , ty ( 26 ) , mutabilityNot ) )
     ListItem ( typedLocal ( Any , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 29 ) , mutabilityNot ) )
-    ListItem ( typedLocal ( Moved , ty ( 27 ) , mutabilityMut ) )
+    ListItem ( typedLocal ( Moved , ty ( 27 ) , mutabilityNot ) )
     ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityNot ) )
     ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityNot ) )
     ListItem ( typedLocal ( Moved , ty ( 26 ) , mutabilityNot ) )
@@ -73,4 +73,3 @@
     ty ( 27 ) |-> rigidTyFloat ( floatTyF64 )
   </basetypes>
 </kmir>
-
