@@ -69,12 +69,11 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
     kmir_kast, _ = parse_result
     config = tools.make_init_config(kmir_kast, opts.start_symbol)
-    config_with_cell_vars, subst = split_config_from(config)
+    config_with_cell_vars, _ = split_config_from(config)
 
     lhs = CTerm(config)
     new_k_cell = tools.kmir.Symbols.END_PROGRAM
-    subst['K_CELL'] = new_k_cell
-    rhs = CTerm(Subst(subst)(config_with_cell_vars))
+    rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
     claim, _ = cterm_build_claim(opts.input_file.stem, lhs, rhs)
 
     output_file = opts.output_file
