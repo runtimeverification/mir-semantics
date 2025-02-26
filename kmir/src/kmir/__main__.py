@@ -44,6 +44,10 @@ class GenSpecOpts(KMirOpts):
         self.start_symbol = start_symbol
 
 
+@dataclass
+class ProveOpts(KMirOpts): ...
+
+
 def _kmir_run(opts: RunOpts) -> None:
     tools = semantics()
 
@@ -87,6 +91,10 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file.write_text(spec_module.to_json())
 
 
+def _kmir_prove(opts: ProveOpts) -> None:
+    print('prove!')
+
+
 def kmir(args: Sequence[str]) -> None:
     opts = _parse_args(args)
     match opts:
@@ -94,6 +102,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_spec(opts)
+        case ProveOpts():
+            _kmir_prove(opts)
         case _:
             raise AssertionError()
 
@@ -117,6 +127,8 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    command_parser.add_parser('prove', help='Run the prover on a spec')
+
     return parser
 
 
@@ -130,6 +142,8 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
             return GenSpecOpts(
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
+        case 'prove':
+            return ProveOpts()
         case _:
             raise AssertionError()
 
