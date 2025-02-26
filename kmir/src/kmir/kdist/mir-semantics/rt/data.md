@@ -1,6 +1,6 @@
 # Handling Data for MIR Execution
 
-This module addresses all aspects of handling "values"i.e., data), at runtime during MIR execution.
+This module addresses all aspects of handling "values" i.e., data, at runtime during MIR execution.
 
 
 ```k
@@ -37,15 +37,18 @@ with their type information (to enable type-checking assignments). Also, the
   // local storage of the stack frame
   // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
 
-  syntax TypedLocal ::= typedLocal ( MaybeValue, Ty, Mutability )
-  // QUESTION: what can and what cannot be stored as a local? (i.e., live on the stack)
-  // This limits the Ty that can be used here.
+  syntax TypedLocal ::= typedLocal ( MaybeValue, MaybeTy, Mutability )
+
+  // the type of aggregates cannot be determined from the data provided when they
+  // occur as `RValue`, therefore we have to make the `Ty` field optional here.
+  syntax MaybeTy ::= Ty
+                   | "TyUnknown"
 
   // accessors
   syntax MaybeValue ::= valueOfLocal ( TypedLocal ) [function, total]
   rule valueOfLocal(typedLocal(V, _, _)) => V
 
-  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
+  syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
   rule tyOfLocal(typedLocal(_, TY, _)) => TY
 
   syntax Bool ::= isMutable ( TypedLocal ) [function, total]
@@ -58,7 +61,7 @@ Every access is modelled as a _function_ whose result needs to be checked by the
 
 ```k
   syntax LocalAccessError ::= InvalidLocal ( Local )
-                            | TypeMismatch( Local, Ty, TypedLocal )
+                            | TypeMismatch( Local, MaybeTy, TypedLocal )
                             | LocalMoved( Local )
                             | LocalNotMutable ( Local )
                             | "Uninitialised"
@@ -138,14 +141,6 @@ local value cannot be read, though, and the value should be initialised.
        <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
-
-  rule <k> #readOperand(operandCopy(place(_, PROJECTIONS)))
-        =>
-           #LocalError(Unsupported("Projections(read)"))
-        ...
-       </k>
-    requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
 ```
 
 Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
@@ -176,15 +171,36 @@ further access. Apart from that, the same caveats apply as for operands that are
        <locals> LOCALS </locals>
     requires valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue
     // TODO how about zero-sized types
+```
 
-  rule <k> #readOperand(operandMove(place(_, PROJECTIONS)))
+### Reading places with projections
+
+`#readOperand` above is only implemented for reading a `Local`, without any projecting modifications.
+Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
+
+```k
+  syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+
+  rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
-           #LocalError(Unsupported("Projections(read)"))
+           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS)
         ...
        </k>
+       <locals> LOCALS </locals>
     requires PROJECTIONS =/=K .ProjectionElems
-    // TODO how about zero-sized types
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+
+  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS) #as PLACE)) ~> CONT
+        =>
+           #LocalError(Unsupported("Moving operand with projection")) ~> PLACE ~> CONT
+       </k>
+       <locals> LOCALS </locals>
+    requires PROJECTIONS =/=K .ProjectionElems
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
 ```
+
 
 ### Setting local variables (including error cases)
 
@@ -196,7 +212,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
   // error cases first
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
-    requires size(LOCALS) <Int I orBool I <Int 0
+    requires size(LOCALS) <=Int I orBool I <Int 0
 
   rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
@@ -204,7 +220,8 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           ...
        </k>
        <locals> LOCALS </locals>
-    requires tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
+    requires TY =/=K TyUnknown
+     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
@@ -238,10 +255,10 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityMut)] </locals>
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY // matching type
+     andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
      andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
     [preserves-definedness] // valid list indexing checked
 
@@ -251,26 +268,37 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, TY, mutabilityNot)] </locals>
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY         // matching type
+     andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
      andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
      andBool valueOfLocal({LOCALS[I]}:>TypedLocal) ==K NoValue // not initialised yet
     [preserves-definedness] // valid list indexing checked
-
-  // projections not supported yet
-  rule <k> _:TypedLocal ~> #setLocalValue(place(local(_:Int), PROJECTION:ProjectionElems))
-          =>
-           #LocalError(Unsupported("Projections"))
-          ...
-       </k>
-    requires PROJECTION =/=K .ProjectionElems
 ```
 
 ## Evaluation of RValues
 
 The `RValue` sort in MIR represents various operations that produce a value which can be assigned to a `Place`.
+
+| RValue         | Arguments                                       | Action                               |
+|----------------|-------------------------------------------------|--------------------------------------|
+| Use            | Operand                                         | use (i.e., copy) operand unmodified  |
+| Cast           | CastKind, Operand, Ty                           | different kinds of type casts        |
+| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array            |
+| Repeat         | Operand, Const                                  | create array [Operand;Const]         |
+| Len            | Place                                           | array or slice size                  |
+| Ref            | Region, BorrowKind, Place                       | create reference to place            |
+| ThreadLocalRef | DefId                                           | thread-local reference (?)           |
+| AddressOf      | Mutability, Place                               | creates pointer to place             |
+|----------------|-------------------------------------------------|--------------------------------------|
+| BinaryOp       | BinOp, Box<(Operand, Operand)>                  | different fixed operations           |
+| NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
+| UnaryOp        | UnOp, Operand                                   | (see below)                          |
+|----------------|-------------------------------------------------|--------------------------------------|
+| Discriminant   | Place                                           | discriminant (of sums types) (?)     |
+| ShallowInitBox | Operand, Ty                                     |                                      |
+| CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
 
@@ -283,7 +311,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 A number of unary and binary operations exist, (which are dependent on the operand types).
 
 ```k
-// BiarnyOp, UnaryOp. NullaryOp: not implemented yet.
+// BinaryOp, UnaryOp. NullaryOp: not implemented yet.
 ```
 
 Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
@@ -292,10 +320,46 @@ Other `RValue`s exist in order to construct or operate on arrays and slices, whi
 // Repeat, Len: not implemented yet
 ```
 
-Likewise built into the language are aggregates (`struct`s) and variants (`enum`s).
+Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
+
+Tuples and structs are built as `Aggregate` values with a list of argument values.
 
 ```k
-// Discriminant, Aggregate, ShallowIntBox: not implemented yet
+  rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
+
+  // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
+  syntax KItem ::= #mkAggregate ( AggregateKind )
+
+  rule <k> ARGS:List ~> #mkAggregate(_)
+        =>
+            typedLocal(Aggregate(ARGS), TyUnknown, mutabilityNot)
+            // NB ty not determined     ^^^^^^^^^
+        ...
+       </k>
+
+
+  // #readOperands accumulates a list of `TypedLocal` values from operands
+  syntax KItem ::= #readOperands ( Operands )
+                 | #readOperandsAux( List , Operands )
+                 | #readOn( List, Operands )
+
+  rule <k> #readOperands(ARGS) => #readOperandsAux(.List, ARGS) ... </k>
+
+  rule <k> #readOperandsAux(ACC, .Operands ) => ACC ... </k>
+
+  rule <k> #readOperandsAux(ACC, OP:Operand REST)
+        =>
+           #readOperand(OP) ~> #readOn(ACC, REST)
+        ...
+       </k>
+
+  rule <k> VAL:TypedLocal ~> #readOn(ACC, REST)
+        =>
+           #readOperandsAux(ACC ListItem(VAL), REST)
+        ...
+       </k>
+
+// Discriminant, ShallowIntBox: not implemented yet
 ```
 
 
@@ -328,6 +392,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 
 ```k
   syntax Value ::= value ( Bytes , RigidTy )
+                 | Aggregate( List ) // retaining field structure of struct or tuple types
 ```
 
 ```k
@@ -346,20 +411,29 @@ endmodule
 
 ## High level representation
 
+Values in MIR can also be represented at a certain abstraction level, interpreting the given `Bytes` of a constant according to the desired type. This allows for implementing operations on values using the higher-level type and improves readability of the program data in the K configuration.
+
+High-level values can be
+- a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
+- built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
+- arrays and slices (with homogenous element types)
+
+**This sort is work in progress and will be extended and modified as we go**
+
 ```k
 module RT-DATA-HIGH-SYNTAX
   imports RT-DATA-SYNTAX
 
   syntax Value ::= Scalar( Int, Int, Bool )
                    // value, bit-width, signedness   for bool, un/signed int
+                 | Aggregate( List )
+                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
-                 | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
+                //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
                    // address, metadata              for ref/ptr
-                 | Range( List )
+                //  | Range( List )
                    // homogenous values              for array/slice
-                 | Struct( Int, List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
 
@@ -579,6 +653,68 @@ Error cases for `castKindIntToInt`
         </k>
     requires CASTKIND =/=K castKindIntToInt
     [owise]
+```
 
+### Projections on `TypedLocal` values
+
+The implementation of projections (a list `ProjectionElems`) accesses the structure of a stored value and therefore depends on the value representation. Function `#readProjection ( TypedLocal , Projectionelems) -> TypedLocal` is therefore implemented in the more specific module that provides a `Value` implementation.
+
+#### Reading data from places with projections
+
+The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
+
+```k
+  // syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+  rule <k> #readProjection(TL, .ProjectionElems) => TL ... </k>
+```
+
+A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values. The field is numbered from zero (in source order), and the field type is provided (not checked here).
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Aggregate(ARGS), _, _),
+              projectionElemField(fieldIdx(I), _TY) PROJS
+            )
+         =>
+           #readProjection({ARGS[I]}:>TypedLocal, PROJS)
+       ...
+       </k>
+```
+
+#### Writing data to places with projections
+
+When writing data to a place with projections, the updated value gets constructed recursively by a function over the projections.
+
+```k
+  syntax TypedLocal ::= #updateProjected( TypedLocal, ProjectionElems, TypedLocal) [function]
+
+  rule #updateProjected(_, .ProjectionElems, NEW) => NEW
+
+  rule #updateProjected(
+          typedLocal(Aggregate(ARGS), TY, mutabilityMut),
+          projectionElemField(fieldIdx(I), _TY) PROJS,
+          NEW)
+      =>
+       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, mutabilityMut)
+```
+
+Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
+We could first read the original value using `#readProjection` and compare the types to uncover these errors.
+
+```k
+  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ)) 
+         => 
+           // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
+           #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool PROJ =/=K .ProjectionElems
+```
+
+
+```k
 endmodule
 ```
