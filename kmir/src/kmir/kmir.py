@@ -33,7 +33,7 @@ class KMIR(KProve, KRun):
         END_PROGRAM: Final = KApply('#EndProgram_KMIR_KItem')
 
     @contextmanager
-    def _explore(self) -> Iterator[KCFGExplore]:
+    def kcfg_explore(self) -> Iterator[KCFGExplore]:
         with cterm_symbolic(self.definition, self.definition_dir, llvm_definition_dir=self.llvm_library_dir) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
