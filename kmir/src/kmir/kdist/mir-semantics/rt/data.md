@@ -425,7 +425,9 @@ module RT-DATA-HIGH-SYNTAX
   imports RT-DATA-SYNTAX
 
   syntax Value ::= Scalar( Int, Int, Bool )
-                   // value, bit-width, signedness   for bool, un/signed int
+                   // value, bit-width, signedness   for un/signed int
+                 | BoolVal( Bool )
+                   // boolean
                  | Aggregate( List )
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
@@ -451,9 +453,9 @@ The `Value` sort above operates at a higher level than the bytes representation 
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool)
       => // bytes should be one or zero, but all non-zero is taken as true
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
+       BoolVal(0 =/=Int Bytes2Int(BYTES, LE, Unsigned))
        // TODO should we insist on known alignment and size of BYTES?
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char and str types
@@ -577,7 +579,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // narrowing: truncate using t-mod, then subtract bias, then truncate again
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(
+        Scalar( // FIXME buggy for minInt value
           (VAL %Int (1 <<Int #bitWidth(INTTYPE) )
             -Int (1 <<Int #bitWidth(INTTYPE)))
           %Int (1 <<Int #bitWidth(INTTYPE) )
@@ -702,8 +704,8 @@ Potential errors caused by invalid projections or type mismatch will materialise
 We could first read the original value using `#readProjection` and compare the types to uncover these errors.
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ)) 
-         => 
+  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+         =>
            // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
            #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
        ...
@@ -714,6 +716,205 @@ We could first read the original value using `#readProjection` and compare the t
      andBool PROJ =/=K .ProjectionElems
 ```
 
+### Primitive operations on numeric data
+
+The `RValue:BinaryOp` performs built-in binary operations on two operands. As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types). Certain operation-dependent types apply to the arguments and determine the result type.
+Likewise, `RValue:UnaryOp` only operates on certain operand types, notably `bool` and numeric types for arithmetic and bitwise negation.
+
+Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`. Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition. For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
+This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST). Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
+
+[^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
+
+Generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error.
+A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+
+```k
+  syntax KItem ::= #suspend ( BinOp, Operand, Bool)
+                |  #ready ( BinOp, TypedLocal, Bool )
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function]
+
+  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
+        =>
+           #readOperand(OP1) ~> #suspend(BINOP, OP2, false)
+       ...
+       </k>
+
+  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2)
+        =>
+           #readOperand(OP1) ~> #suspend(BINOP, OP2, true)
+       ...
+       </k>
+
+  rule <k> ARG1:TypedLocal ~> #suspend(BINOP, OP2, CHECKFLAG)
+        =>
+           #readOperand(OP2) ~> #ready(BINOP, ARG1, CHECKFLAG)
+       ...
+       </k>
+
+  rule <k> ARG2:TypedLocal ~> #ready(BINOP, ARG1,CHECKFLAG)
+        =>
+           #compute(BINOP, ARG1, ARG2, CHECKFLAG)
+       ...
+       </k>
+```
+#### Potential errors
+
+```k
+  syntax KItem ::= #OperationError( OperationError )
+
+  syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
+                          | OperandMismatch ( BinOp, Value, Value )
+                          // | Overflow_U_B( BinOp, TypedLocal, TypedLocal ) but just get stuck instead
+```
+
+#### Arithmetic
+
+The arithmetic operations require operands of the same numeric type.
+
+| `BinOp`           |                                        | Operands can be |
+|-------------------|--------------------------------------- |-----------------|-------------------------------------- |
+| `Add`             | (A + B truncated, bool overflow flag)  | int, float      | Context: `CheckedBinaryOp`            |
+| `AddUnchecked`    | A + B                                  | int, float      | undefined behaviour on overflow       |
+| `Sub`             | (A - B truncated, bool underflow flag) | int, float      | Context: `CheckedBinaryOp`            |
+| `SubUnchecked`    | A - B                                  | int, float      | undefined behaviour on overflow       |
+| `Mul`             | (A * B truncated, bool overflow flag)  | int, float      | Context: `CheckedBinaryOp`            |
+| `MulUnchecked`    | A * B                                  | int, float      | undefined behaviour on overflow       |
+| `Div`             | A / B or A `div` B                     | int, float      | undefined behaviour when divisor zero |
+| `Rem`             | A `mod` B, rounding towards zero       | int             | undefined behaviour when divisor zero |
+
+```k
+  syntax Bool ::= isArithmetic ( BinOp ) [function, total]
+  // -----------------------------------------------
+  rule isArithmetic(binOpAdd)          => true
+  rule isArithmetic(binOpAddUnchecked) => true
+  rule isArithmetic(binOpSub)          => true
+  rule isArithmetic(binOpSubUnchecked) => true
+  rule isArithmetic(binOpMul)          => true
+  rule isArithmetic(binOpMulUnchecked) => true
+  rule isArithmetic(binOpDiv)          => true
+  rule isArithmetic(binOpRem)          => true
+  rule isArithmetic(_)                 => false [owise]
+
+  // performs the given operation on infinite precision integers
+  syntax Int ::= onInt( BinOp, Int, Int ) [function]
+  // -----------------------------------------------
+  rule onInt(binOpAdd, X, Y)          => X +Int Y
+  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y
+  rule onInt(binOpSub, X, Y)          => X -Int Y
+  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y
+  rule onInt(binOpMul, X, Y)          => X *Int Y
+  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y
+  rule onInt(binOpDiv, X, Y)          => X /Int Y
+    requires Y =/=Int 0
+  rule onInt(binOpRem, X, Y)          => X %Int Y
+    requires Y =/=Int 0
+  // operation undefined otherwise
+
+  rule #compute(
+          BOP,
+          typedLocal(Scalar(ARG1, WIDTH, SIGNEDNESS), TY, _),
+          typedLocal(Scalar(ARG2, WIDTH, SIGNEDNESS), TY, _),
+          CHK)
+    =>
+      #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+  // error cases:
+    // non-scalar arguments
+  rule #compute(BOP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
+    =>
+       #OperationError(OperandMismatch(BOP, ARG1, ARG2))
+    requires isArithmetic(BOP)
+    [owise]
+
+    // different argument types
+  rule #compute(BOP, typedLocal(_, TY1, _), typedLocal(_, TY2, _), _)
+    =>
+       #OperationError(TypeMismatch(BOP, TY1, TY2))
+    requires TY1 =/=K TY2
+     andBool isArithmetic(BOP)
+    [owise]
+
+  syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
+  //                                       arg1  arg2 width signedness result overflowcheck
+
+  // signed numbers: must check for wrap-around (operation specific)
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
+    =>
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) , WIDTH, true), TY, mutabilityNot))
+            ListItem(
+              // overflow: Result must be in valid range
+              onInt(BOP, ARG1, ARG2) <Int (1 <<Int (WIDTH -Int 1))
+                andBool
+              0 -Int (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+            )
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, true)
+    =>
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1), WIDTH, false), TY, mutabilityNot))
+            // overflow flag: true if infinite precision result is not equal to truncated result
+            // NB if the result is negative (underflow), the truncation will yield a positive number
+            ListItem( (onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1)) =/=Int onInt(BOP, ARG1, ARG2))
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+  // TODO high priority rules to determine divbyzero and div/rem overflow (for signed Ints: minInt / -1, minInt % -1)
+
+```
+
+#### Bit-oriented operations
+
+`binOpBitXor`
+`binOpBitAnd`
+`binOpBitOr`
+`binOpShl`
+`binOpShlUnchecked`
+`binOpShr`
+`binOpShrUnchecked`
+
+`unOpNot`
+`unOpNeg`
+
+#### Comparison operations
+
+`binOpEq`
+`binOpLt`
+`binOpLe`
+`binOpNe`
+`binOpGe`
+`binOpGt`
+`binOpCmp`
+
+#### "Nullary" operations (reifying type information)
+
+`nullOpSizeOf`
+`nullOpAlignOf`
+`nullOpOffsetOf(VariantAndFieldIndices)`
+`nullOpUbChecks`
+
+#### Other operations
+
+`binOpOffset`
+
+`unOpPtrMetadata`
 
 ```k
 endmodule
