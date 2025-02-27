@@ -27,7 +27,7 @@
     <locals>
       ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Scalar ( 1 , 1 , false ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedLocal ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Any , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Scalar ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
