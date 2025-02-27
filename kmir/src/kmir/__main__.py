@@ -45,7 +45,8 @@ class GenSpecOpts(KMirOpts):
 
 
 @dataclass
-class ProveOpts(KMirOpts): ...
+class ProveOpts(KMirOpts):
+    spec_file: Path
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -92,7 +93,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    print('prove!')
+    print(f'proving {opts.spec_file}')
 
 
 def kmir(args: Sequence[str]) -> None:
@@ -127,7 +128,8 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
-    command_parser.add_parser('prove', help='Run the prover on a spec')
+    prove_parser = command_parser.add_parser('prove', help='Run the prover on a spec')
+    prove_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
 
     return parser
 
@@ -143,7 +145,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
-            return ProveOpts()
+            return ProveOpts(spec_file=Path(ns.input_file).resolve())
         case _:
             raise AssertionError()
 
