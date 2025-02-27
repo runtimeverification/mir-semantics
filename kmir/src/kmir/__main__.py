@@ -13,6 +13,7 @@ from pyk.kast.outer import KFlatModule, KImport
 
 from kmir.build import semantics
 from kmir.convert_from_definition.v2parser import parse_json
+from kmir.kmir import KMIR
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -77,7 +78,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     config_with_cell_vars, _ = split_config_from(config)
 
     lhs = CTerm(config)
-    new_k_cell = tools.kmir.Symbols.END_PROGRAM
+    new_k_cell = KMIR.Symbols.END_PROGRAM
     rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
     claim, _ = cterm_build_claim(opts.input_file.stem, lhs, rhs)
 
