@@ -847,10 +847,16 @@ The arithmetic operations require operands of the same numeric type.
           Aggregate(
             ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) , WIDTH, true), TY, mutabilityNot))
             ListItem(
-              // overflow: Result must be in valid range
-              onInt(BOP, ARG1, ARG2) <Int (1 <<Int (WIDTH -Int 1))
-                andBool
-              0 -Int (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+              typedLocal(
+                BoolVal(
+                  // overflow: Result must be in valid range
+                  onInt(BOP, ARG1, ARG2) <Int (1 <<Int (WIDTH -Int 1))
+                    andBool
+                  0 -Int (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
             )
           ),
           TyUnknown,
@@ -866,9 +872,17 @@ The arithmetic operations require operands of the same numeric type.
        typedLocal(
           Aggregate(
             ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1), WIDTH, false), TY, mutabilityNot))
-            // overflow flag: true if infinite precision result is not equal to truncated result
-            // NB if the result is negative (underflow), the truncation will yield a positive number
-            ListItem( (onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1)) =/=Int onInt(BOP, ARG1, ARG2))
+            ListItem(
+              typedLocal(
+                BoolVal(
+                  // overflow flag: true if infinite precision result is not equal to truncated result
+                  // NB if the result is negative (underflow), the truncation will yield a positive number
+                  onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1) =/=Int onInt(BOP, ARG1, ARG2)
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
+            )
           ),
           TyUnknown,
           mutabilityNot
