@@ -840,15 +840,41 @@ The arithmetic operations require operands of the same numeric type.
      andBool isArithmetic(BOP)
     [owise]
 
+  // helper function to truncate int values
+  syntax Int ::= truncate(Int, Int, Signedness) [function, total]
+  // -------------------------------------------------------------
+  // unsigned values can be truncated using a simple bitmask
+  // NB if VAL is negative (underflow), the truncation will yield a positive number
+  rule truncate(VAL, WIDTH, Unsigned)
+      => // mask with relevant bits
+        VAL &Int ((1 <<Int WIDTH) -Int 1)
+    requires 0 <Int WIDTH
+    [preserves-definedness]
+  rule truncate(VAL, WIDTH, Unsigned)
+      => VAL // shortcut when there is nothing to do
+    requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
+    [simplification, preserves-definedness]
+  // for signed values we want to preserve/restore the sign by subtracting a bias
+  rule truncate(VAL, WIDTH, Signed)
+      => // bit-based truncation when positive
+        VAL &Int ((1 <<Int (WIDTH -Int 1) -Int 1))
+    requires 0 <Int WIDTH andBool 0 <=Int VAL
+    [preserves-definedness]
+  rule truncate(VAL, WIDTH, Signed)
+      => // subtract bias from bit-based truncation when negative
+        (VAL &Int ((1 <<Int (WIDTH -Int 1) -Int 1))) -Int (1 <<Int (WIDTH -Int 1))
+    requires 0 <Int WIDTH andBool VAL <Int 0
+    [preserves-definedness]
+
+  // perform arithmetic operations on integral types of given width
   syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
   //                                       arg1  arg2 width signedness result overflowcheck
-
   // signed numbers: must check for wrap-around (operation specific)
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
     =>
        typedLocal(
           Aggregate(
-            ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) , WIDTH, true), TY, mutabilityNot))
+            ListItem(typedLocal(Scalar(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
             ListItem(
               typedLocal(
                 BoolVal(
@@ -856,6 +882,8 @@ The arithmetic operations require operands of the same numeric type.
                   onInt(BOP, ARG1, ARG2) <Int (1 <<Int (WIDTH -Int 1))
                     andBool
                   0 -Int (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+                  // alternatively: compare with and without truncation
+                  // truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt BOP, ARG1, ARG2
                 ),
                 TyUnknown,
                 mutabilityNot
@@ -874,13 +902,12 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedLocal(
           Aggregate(
-            ListItem(typedLocal(Scalar(onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1), WIDTH, false), TY, mutabilityNot))
+            ListItem(typedLocal(Scalar(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
             ListItem(
               typedLocal(
                 BoolVal(
                   // overflow flag: true if infinite precision result is not equal to truncated result
-                  // NB if the result is negative (underflow), the truncation will yield a positive number
-                  onInt(BOP, ARG1, ARG2) &Int ((1 <<Int WIDTH) -Int 1) =/=Int onInt(BOP, ARG1, ARG2)
+                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
                 ),
                 TyUnknown,
                 mutabilityNot
