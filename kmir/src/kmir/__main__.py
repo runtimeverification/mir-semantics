@@ -50,6 +50,14 @@ class GenSpecOpts(KMirOpts):
 @dataclass
 class ProveOpts(KMirOpts):
     spec_file: Path
+    proof_dir: Path | None
+
+    def __init__(self, spec_file: Path, proof_dir: str | None) -> None:
+        self.spec_file = spec_file
+        if proof_dir is None:
+            self.proof_dir = None
+        else:
+            self.proof_dir = Path(proof_dir).resolve()
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -101,7 +109,7 @@ def _kmir_prove(opts: ProveOpts) -> None:
     claim_module = KFlatModule.from_dict(json.loads(opts.spec_file.read_text()))
     claim = claim_module.sentences[0]
     assert isinstance(claim, KClaim)  # TODO: More clarity around what spec_file should be
-    proof = APRProof.from_claim(kmir.definition, claim, {})
+    proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
     with kmir.kcfg_explore() as kcfg_explore:
         prover = APRProver(kcfg_explore)
         prover.advance_proof(proof)
@@ -143,6 +151,7 @@ def _arg_parser() -> ArgumentParser:
 
     prove_parser = command_parser.add_parser('prove', help='Run the prover on a spec')
     prove_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
+    prove_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
 
     return parser
 
@@ -158,7 +167,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
-            return ProveOpts(spec_file=Path(ns.input_file).resolve())
+            return ProveOpts(spec_file=Path(ns.input_file).resolve(), proof_dir=ns.proof_dir)
         case _:
             raise AssertionError()
 
