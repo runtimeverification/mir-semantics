@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
@@ -9,9 +10,10 @@ from typing import TYPE_CHECKING
 from pyk.cterm import CTerm, cterm_build_claim
 from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
-from pyk.kast.outer import KFlatModule, KImport
+from pyk.kast.outer import KClaim, KFlatModule, KImport
+from pyk.proof.reachability import APRProof, APRProver
 
-from kmir.build import semantics
+from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, semantics
 from kmir.convert_from_definition.v2parser import parse_json
 from kmir.kmir import KMIR
 
@@ -95,6 +97,16 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
 def _kmir_prove(opts: ProveOpts) -> None:
     print(f'proving {opts.spec_file}')
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    claim_module = KFlatModule.from_dict(json.loads(opts.spec_file.read_text()))
+    claim = claim_module.sentences[0]
+    assert isinstance(claim, KClaim)  # TODO: More clarity around what spec_file should be
+    proof = APRProof.from_claim(kmir.definition, claim, {})
+    with kmir.kcfg_explore() as kcfg_explore:
+        prover = APRProver(kcfg_explore)
+        prover.advance_proof(proof)
+    summary = proof.summary
+    print(f'{summary}')
 
 
 def kmir(args: Sequence[str]) -> None:
