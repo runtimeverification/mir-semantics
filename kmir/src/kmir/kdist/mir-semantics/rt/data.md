@@ -765,7 +765,10 @@ A flag carries the information whether to perform an overflow check through to t
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
-                          // | Overflow_U_B( BinOp, TypedLocal, TypedLocal ) but just get stuck instead
+                          // errors above are compiler bugs or invalid MIR
+                          // errors below are program errors
+                          | "DivisionByZero"
+                          | "Overflow_U_B" // better than getting stuck
 ```
 
 #### Arithmetic
@@ -890,8 +893,31 @@ The arithmetic operations require operands of the same numeric type.
     requires isArithmetic(BOP)
     [preserves-definedness]
 
-  // TODO high priority rules to determine divbyzero and div/rem overflow (for signed Ints: minInt / -1, minInt % -1)
+  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
+  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
+  rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
+  rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
 
+  rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
+  rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
 ```
 
 #### Bit-oriented operations
