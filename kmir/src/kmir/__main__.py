@@ -94,13 +94,16 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
     output_file = opts.output_file
     if output_file is None:
-        output_file = opts.input_file.with_suffix('.spec.json')
+        suffixes = ''.join(opts.input_file.suffixes)
+        base = opts.input_file.name.removesuffix(suffixes)
+        output_file = Path(f'{base}-spec.k')
 
+    module_name = output_file.stem.upper().replace("_", "-")
     spec_module = KFlatModule(
-        opts.input_file.stem.upper().replace('.', '-').replace('_', '-'), (claim,), (KImport('KMIR'),)
+        module_name, (claim,), (KImport('KMIR'),)
     )
 
-    output_file.write_text(spec_module.to_json())
+    output_file.write_text(tools.kprint.pretty_print(spec_module))
 
 
 def _kmir_prove(opts: ProveOpts) -> None:

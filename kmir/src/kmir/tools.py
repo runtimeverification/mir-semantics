@@ -59,5 +59,5 @@ class Tools:
             start_symbol = stringToken(start_symbol)
 
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
-        init_config = subst.apply(self.definition.init_config(KSort('GeneratedTopCell')))
+        init_config = subst.apply(self.definition.init_config(KSort('KmirCell')))
         return init_config
