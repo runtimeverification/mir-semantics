@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from kmir.build import semantics
+from kmir.build import llvm_semantics
 
 if TYPE_CHECKING:
     from kmir.tools import Tools
@@ -12,4 +12,4 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def tools() -> Tools:
-    return semantics()
+    return llvm_semantics()

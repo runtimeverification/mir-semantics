@@ -11,7 +11,7 @@ from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 
-from kmir.build import semantics
+from kmir.build import haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import parse_json
 
 if TYPE_CHECKING:
@@ -27,6 +27,7 @@ class RunOpts(KMirOpts):
     input_file: Path
     depth: int
     start_symbol: str
+    haskell_backend: bool
 
 
 @dataclass
@@ -45,7 +46,8 @@ class GenSpecOpts(KMirOpts):
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    tools = semantics()
+    print(f'haskell_backend: {opts.haskell_backend}')
+    tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
     parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
     if parse_result is None:
@@ -60,7 +62,7 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_gen_spec(opts: GenSpecOpts) -> None:
-    tools = semantics()
+    tools = haskell_semantics()
 
     parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
     if parse_result is None:
@@ -109,6 +111,7 @@ def _arg_parser() -> ArgumentParser:
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
+    run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
 
     gen_spec_parser = command_parser.add_parser('gen-spec', help='Generate a k spec from a SMIR json')
     gen_spec_parser.add_argument('input_file', metavar='FILE', help='MIR program to generate a spec for')
@@ -125,7 +128,12 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
 
     match ns.command:
         case 'run':
-            return RunOpts(input_file=Path(ns.input_file).resolve(), depth=ns.depth, start_symbol=ns.start_symbol)
+            return RunOpts(
+                input_file=Path(ns.input_file).resolve(),
+                depth=ns.depth,
+                start_symbol=ns.start_symbol,
+                haskell_backend=ns.haskell_backend,
+            )
         case 'gen-spec':
             return GenSpecOpts(
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
