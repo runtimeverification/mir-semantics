@@ -903,10 +903,10 @@ The arithmetic operations require operands of the same numeric type.
             ListItem(
               typedLocal(
                 BoolVal(
-                  // overflow: Result must be in valid range
-                  onInt(BOP, ARG1, ARG2) <Int (1 <<Int (WIDTH -Int 1))
-                    andBool
-                  0 -Int (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+                  // overflow: Result outside valid range
+                  (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+                    orBool
+                  onInt(BOP, ARG1, ARG2) <Int 0 -Int (1 <<Int (WIDTH -Int 1))
                   // alternatively: compare with and without truncation
                   // truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt BOP, ARG1, ARG2
                 ),
