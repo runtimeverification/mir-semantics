@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
@@ -10,7 +9,7 @@ from typing import TYPE_CHECKING
 from pyk.cterm import CTerm, cterm_build_claim
 from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
-from pyk.kast.outer import KClaim, KFlatModule, KImport
+from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, semantics
@@ -51,13 +50,17 @@ class GenSpecOpts(KMirOpts):
 class ProveOpts(KMirOpts):
     spec_file: Path
     proof_dir: Path | None
+    include_labels: tuple[str, ...] | None
+    exclude_labels: tuple[str, ...] | None
 
-    def __init__(self, spec_file: Path, proof_dir: str | None) -> None:
+    def __init__(self, spec_file: Path, proof_dir: str | None, include_labels: str, exclude_labels: str) -> None:
         self.spec_file = spec_file
         if proof_dir is None:
             self.proof_dir = None
         else:
             self.proof_dir = Path(proof_dir).resolve()
+        self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
+        self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -98,26 +101,25 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         base = opts.input_file.name.removesuffix(suffixes)
         output_file = Path(f'{base}-spec.k')
 
-    module_name = output_file.stem.upper().replace("_", "-")
-    spec_module = KFlatModule(
-        module_name, (claim,), (KImport('KMIR'),)
-    )
+    module_name = output_file.stem.upper().replace('_', '-')
+    spec_module = KFlatModule(module_name, (claim,), (KImport('KMIR'),))
 
     output_file.write_text(tools.kprint.pretty_print(spec_module))
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    print(f'proving {opts.spec_file}')
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
-    claim_module = KFlatModule.from_dict(json.loads(opts.spec_file.read_text()))
-    claim = claim_module.sentences[0]
-    assert isinstance(claim, KClaim)  # TODO: More clarity around what spec_file should be
-    proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
-    with kmir.kcfg_explore() as kcfg_explore:
-        prover = APRProver(kcfg_explore)
-        prover.advance_proof(proof)
-    summary = proof.summary
-    print(f'{summary}')
+    claim_index = kmir.get_claim_index(opts.spec_file)
+    labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
+    for label in labels:
+        print(f'Proving {label}')
+        claim = claim_index[label]
+        proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+        with kmir.kcfg_explore() as kcfg_explore:
+            prover = APRProver(kcfg_explore)
+            prover.advance_proof(proof)
+        summary = proof.summary
+        print(f'{summary}')
 
 
 def kmir(args: Sequence[str]) -> None:
@@ -155,6 +157,12 @@ def _arg_parser() -> ArgumentParser:
     prove_parser = command_parser.add_parser('prove', help='Run the prover on a spec')
     prove_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
     prove_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_parser.add_argument(
+        '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
+    )
+    prove_parser.add_argument(
+        '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
+    )
 
     return parser
 
@@ -170,7 +178,12 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
-            return ProveOpts(spec_file=Path(ns.input_file).resolve(), proof_dir=ns.proof_dir)
+            return ProveOpts(
+                spec_file=Path(ns.input_file).resolve(),
+                proof_dir=ns.proof_dir,
+                include_labels=ns.include_labels,
+                exclude_labels=ns.exclude_labels,
+            )
         case _:
             raise AssertionError()
 
