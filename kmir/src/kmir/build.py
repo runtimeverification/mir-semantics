@@ -9,9 +9,9 @@ from .tools import Tools
 if TYPE_CHECKING:
     from typing import Final
 
-LLVM_DEF_DIR: Final = kdist.get('mir-semantics.llvm')
-LLVM_LIB_DIR: Final = kdist.get('mir-semantics.llvm-library')
-HASKELL_DEF_DIR: Final = kdist.get('mir-semantics.haskell')
+LLVM_DEF_DIR: Final = kdist.which('mir-semantics.llvm')
+LLVM_LIB_DIR: Final = kdist.which('mir-semantics.llvm-library')
+HASKELL_DEF_DIR: Final = kdist.which('mir-semantics.haskell')
 
 
 def llvm_semantics() -> Tools:

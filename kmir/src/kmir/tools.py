@@ -54,10 +54,12 @@ class Tools:
 
         return result
 
-    def make_init_config(self, parsed_smir: KInner, start_symbol: KInner | str = 'main') -> KInner:
+    def make_init_config(
+        self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
+    ) -> KInner:
         if isinstance(start_symbol, str):
             start_symbol = stringToken(start_symbol)
 
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
-        init_config = subst.apply(self.definition.init_config(KSort('KmirCell')))
+        init_config = subst.apply(self.definition.init_config(KSort(sort)))
         return init_config

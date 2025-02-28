@@ -88,7 +88,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    config = tools.make_init_config(kmir_kast, opts.start_symbol)
+    config = tools.make_init_config(kmir_kast, opts.start_symbol, 'KmirCell')
     config_with_cell_vars, _ = split_config_from(config)
 
     lhs = CTerm(config)
