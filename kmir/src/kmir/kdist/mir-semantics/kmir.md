@@ -577,10 +577,10 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   syntax KItem ::= #expect ( Bool, AssertMessage )
 
-  rule <k> BoolVal(COND) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> BoolVal(COND) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
 ```
 
