@@ -46,7 +46,6 @@ class GenSpecOpts(KMirOpts):
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    print(f'haskell_backend: {opts.haskell_backend}')
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
     parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
