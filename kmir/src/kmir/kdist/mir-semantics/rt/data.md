@@ -576,31 +576,22 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
   // ------------------------------------------------------
   // converting to signed int types:
-  // narrowing: truncate using t-mod, then subtract bias, then truncate again
+  // narrowing or converting unsigned->signed: use truncation for signed numbers
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar( // FIXME buggy for minInt value
-          (VAL %Int (1 <<Int #bitWidth(INTTYPE) )
-            -Int (1 <<Int #bitWidth(INTTYPE)))
-          %Int (1 <<Int #bitWidth(INTTYPE) )
-          ,
+        Scalar(
+          truncate(VAL, #bitWidth(INTTYPE), Signed),
           #bitWidth(INTTYPE),
           true
         )
     requires #bitWidth(INTTYPE) <=Int WIDTH
     [preserves-definedness] // positive shift, divisor non-zero
 
-  // widening: use arithmetic shift for sign extension
+  // widening: nothing to do: VAL does change (enough bits to represent, no sign change possible)
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(
-          (VAL <<Int (#bitWidth(INTTYPE) -Int WIDTH) >>Int (#bitWidth(INTTYPE) -Int WIDTH))
-             %Int (1 <<Int #bitWidth(INTTYPE)),
-          #bitWidth(INTTYPE),
-          true
-        )
+        Scalar(VAL, #bitWidth(INTTYPE), true)
     requires WIDTH <Int #bitWidth(INTTYPE)
-    [preserves-definedness] // positive shift, divisor non-zero
 
   // converting to unsigned int types
   // truncate (if necessary), then add bias to make non-negative, then truncate again
@@ -854,16 +845,15 @@ The arithmetic operations require operands of the same numeric type.
       => VAL // shortcut when there is nothing to do
     requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
     [simplification, preserves-definedness]
-  // for signed values we want to preserve/restore the sign by subtracting a bias
+  // for signed values we need to preserve/restore the sign
   rule truncate(VAL, WIDTH, Signed)
-      => // bit-based truncation when positive
-        VAL &Int ((1 <<Int (WIDTH -Int 1) -Int 1))
-    requires 0 <Int WIDTH andBool 0 <=Int VAL
-    [preserves-definedness]
-  rule truncate(VAL, WIDTH, Signed)
-      => // subtract bias from bit-based truncation when negative
-        (VAL &Int ((1 <<Int (WIDTH -Int 1) -Int 1))) -Int (1 <<Int (WIDTH -Int 1))
-    requires 0 <Int WIDTH andBool VAL <Int 0
+      => // bit-based truncation, then establishing the sign by subtracting a bias
+          (VAL &Int ((1 <<Int WIDTH) -Int 1))
+            -Int #if VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
+                #then 1 <<Int WIDTH
+                #else 0
+                #fi
+    requires 0 <Int WIDTH
     [preserves-definedness]
 
   // perform arithmetic operations on integral types of given width
