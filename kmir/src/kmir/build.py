@@ -14,5 +14,9 @@ LLVM_LIB_DIR: Final = kdist.get('mir-semantics.llvm-library')
 HASKELL_DEF_DIR: Final = kdist.get('mir-semantics.haskell')
 
 
-def semantics() -> Tools:
-    return Tools(definition_dir=LLVM_DEF_DIR)
+def llvm_semantics() -> Tools:
+    return Tools(LLVM_DEF_DIR)
+
+
+def haskell_semantics() -> Tools:
+    return Tools(HASKELL_DEF_DIR)
