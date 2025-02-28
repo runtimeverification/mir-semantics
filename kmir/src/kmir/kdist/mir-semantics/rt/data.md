@@ -190,17 +190,13 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-
-  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS) #as PLACE)) ~> CONT
-        =>
-           #LocalError(Unsupported("Moving operand with projection")) ~> PLACE ~> CONT
-       </k>
-       <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
 ```
 
+When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read.
+In contrast to regular write operations, the value does not have to be _mutable_ in order to get moved,
+so we need to copy the respective code for writing, or make it generic.
+
+Related code currently resides in the value-implementing module.
 
 ### Setting local variables (including error cases)
 
@@ -684,14 +680,15 @@ When writing data to a place with projections, the updated value gets constructe
   rule #updateProjected(_, .ProjectionElems, NEW) => NEW
 
   rule #updateProjected(
-          typedLocal(Aggregate(ARGS), TY, mutabilityMut),
+          typedLocal(Aggregate(ARGS), TY, MUT),
           projectionElemField(fieldIdx(I), _TY) PROJS,
           NEW)
       =>
-       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, mutabilityMut)
+       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, MUT)
 ```
 
 Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
+Mutability of the nested components is not checked (but also not modified) while computing the value.
 We could first read the original value using `#readProjection` and compare the types to uncover these errors.
 
 ```k
@@ -705,6 +702,44 @@ We could first read the original value using `#readProjection` and compare the t
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
+```
+
+Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
+Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error in `#setLocalValue`.
+
+```k
+  rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, PROJECTIONS)))
+        => // read first, then write moved marker (use type from before)
+           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS) ~>
+           #markMoved({LOCALS[I]}:>TypedLocal, LOCAL, PROJECTIONS)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires PROJECTIONS =/=K .ProjectionElems
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+
+  syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
+                |  #forceSetLocal ( Local )
+
+  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, LOCAL, PROJECTIONS) ~> CONT
+        =>
+           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot)) 
+           ~> #forceSetLocal(LOCAL)
+           ~> VAL
+           ~> CONT
+       </k>
+
+  // #forceSetLocal sets the given value unconditionally
+  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+          =>
+           .K
+          ...
+       </k>
+       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
 ```
 
 ### Primitive operations on numeric data
