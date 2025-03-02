@@ -420,7 +420,7 @@ High-level values can be
 module RT-DATA-HIGH-SYNTAX
   imports RT-DATA-SYNTAX
 
-  syntax Value ::= Scalar( Int, Int, Bool )
+  syntax Value ::= Integer( Int, Int, Bool )
                    // value, bit-width, signedness   for un/signed int
                  | BoolVal( Bool )
                    // boolean
@@ -465,53 +465,53 @@ The `Value` sort above operates at a higher level than the bytes representation 
   // UInt decoding
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 8, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 8, false)
     requires lengthBytes(BYTES) ==Int 1
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 16, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 16, false)
     requires lengthBytes(BYTES) ==Int 2
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 32, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 32, false)
     requires lengthBytes(BYTES) ==Int 4
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
     requires lengthBytes(BYTES) ==Int 8
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 128, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 128, false)
     requires lengthBytes(BYTES) ==Int 16
   // Usize for 64bit platforms
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
     requires lengthBytes(BYTES) ==Int 8
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Int decoding
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 8, true)
     requires lengthBytes(BYTES) ==Int 1
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 16, true)
     requires lengthBytes(BYTES) ==Int 2
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 32, true)
     requires lengthBytes(BYTES) ==Int 4
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 64, true)
     requires lengthBytes(BYTES) ==Int 8
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 128, true)
     requires lengthBytes(BYTES) ==Int 16
   // Isize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Integer(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
@@ -522,12 +522,12 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
 Casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics **TODO: reference**.
-These casts can only operate on the `Scalar` variant of the `Value` type, adjusting
+These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
-  rule <k> typedLocal(Scalar(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
+  rule <k> typedLocal(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
           =>
             typedLocal(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT) ~> CONT
         </k>
@@ -575,7 +575,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // narrowing or converting unsigned->signed: use truncation for signed numbers
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(
+        Integer(
           truncate(VAL, #bitWidth(INTTYPE), Signed),
           #bitWidth(INTTYPE),
           true
@@ -586,14 +586,14 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // widening: nothing to do: VAL does change (enough bits to represent, no sign change possible)
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(VAL, #bitWidth(INTTYPE), true)
+        Integer(VAL, #bitWidth(INTTYPE), true)
     requires WIDTH <Int #bitWidth(INTTYPE)
 
   // converting to unsigned int types
   // truncate (if necessary), then add bias to make non-negative, then truncate again
   rule #intAsType(VAL, _, UINTTYPE:UintTy)
       =>
-        Scalar(
+        Integer(
           (VAL %Int (1 <<Int #bitWidth(UINTTYPE) )
             +Int (1 <<Int #bitWidth(UINTTYPE)))
           %Int (1 <<Int #bitWidth(UINTTYPE) )
@@ -607,7 +607,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 Error cases for `castKindIntToInt`
 * unknown target type (not in `basetypes`)
 * target type is not an `Int` type
-* value is not a `Scalar`
+* value is not a `Integer`
 
 ```k
   rule <k> (_:TypedLocal ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
@@ -842,8 +842,8 @@ The arithmetic operations require operands of the same numeric type.
 
   rule #compute(
           BOP,
-          typedLocal(Scalar(ARG1, WIDTH, SIGNEDNESS), TY, _),
-          typedLocal(Scalar(ARG2, WIDTH, SIGNEDNESS), TY, _),
+          typedLocal(Integer(ARG1, WIDTH, SIGNEDNESS), TY, _),
+          typedLocal(Integer(ARG2, WIDTH, SIGNEDNESS), TY, _),
           CHK)
     =>
       #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
@@ -899,7 +899,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedLocal(
           Aggregate(
-            ListItem(typedLocal(Scalar(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
             ListItem(
               typedLocal(
                 BoolVal(
@@ -927,7 +927,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedLocal(
           Aggregate(
-            ListItem(typedLocal(Scalar(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
             ListItem(
               typedLocal(
                 BoolVal(
