@@ -38,7 +38,7 @@ class GenSpecOpts(KMirOpts):
     output_file: Path | None
     start_symbol: str
 
-    def __init__(self, input_file: Path, output_file: str | None, start_symbol: str) -> None:
+    def __init__(self, input_file: Path, output_file: Path | str | None, start_symbol: str) -> None:
         self.input_file = input_file
         if output_file is None:
             self.output_file = None
@@ -54,7 +54,9 @@ class ProveOpts(KMirOpts):
     include_labels: tuple[str, ...] | None
     exclude_labels: tuple[str, ...] | None
 
-    def __init__(self, spec_file: Path, proof_dir: str | None, include_labels: str, exclude_labels: str) -> None:
+    def __init__(
+        self, spec_file: Path, proof_dir: Path | str | None, include_labels: str | None, exclude_labels: str | None
+    ) -> None:
         self.spec_file = spec_file
         if proof_dir is None:
             self.proof_dir = None
@@ -94,7 +96,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     lhs = CTerm(config)
     new_k_cell = KMIR.Symbols.END_PROGRAM
     rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
-    claim, _ = cterm_build_claim(opts.input_file.stem, lhs, rhs)
+    claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
 
     output_file = opts.output_file
     if output_file is None:
