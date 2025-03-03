@@ -412,11 +412,16 @@ class Parser:
         assert isinstance(json, bool)
         sort = prod.sort
         symbol = _get_label(prod)
+        # token values need to be lower-cased
+        if json:
+            value = "true"
+        else:
+            value = "false"
         # Special handling of MIRBool: return the bool token instead.
         if symbol == 'MIRBool::Bool':
-            return KToken(str(json), KSort('Bool')), KSort('Bool')
+            return KToken(value, KSort('Bool')), KSort('Bool')
         # Apply the production to the generated bool token
-        return KApply(symbol, (KToken(str(json), KSort('Bool')))), sort
+        return KApply(symbol, (KToken(value, KSort('Bool')))), sort
 
     # parse a sequence of ints into a byte array
     def _parse_mir_bytes_json(self, json: JSON, prod: KProduction) -> ParseResult:
