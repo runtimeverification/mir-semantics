@@ -449,10 +449,13 @@ The `Value` sort above operates at a higher level than the bytes representation 
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool)
-      => // bytes should be one or zero, but all non-zero is taken as true
-       BoolVal(0 =/=Int Bytes2Int(BYTES, LE, Unsigned))
-       // TODO should we insist on known alignment and size of BYTES?
+
+  // Boolean: should be one byte with value one or zero
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(false)
+    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(true)
+    requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char and str types
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
