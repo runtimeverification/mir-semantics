@@ -246,6 +246,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
         None,
     ),
+    (
+        'arithmetic',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
+        None,
+    ),
 ]
 
 

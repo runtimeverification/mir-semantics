@@ -190,17 +190,13 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-
-  rule <k> #readOperand(operandMove(place(local(I), PROJECTIONS) #as PLACE)) ~> CONT
-        =>
-           #LocalError(Unsupported("Moving operand with projection")) ~> PLACE ~> CONT
-       </k>
-       <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
 ```
 
+When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read.
+In contrast to regular write operations, the value does not have to be _mutable_ in order to get moved,
+so we need to copy the respective code for writing, or make it generic.
+
+Related code currently resides in the value-implementing module.
 
 ### Setting local variables (including error cases)
 
@@ -424,8 +420,10 @@ High-level values can be
 module RT-DATA-HIGH-SYNTAX
   imports RT-DATA-SYNTAX
 
-  syntax Value ::= Scalar( Int, Int, Bool )
-                   // value, bit-width, signedness   for bool, un/signed int
+  syntax Value ::= Integer( Int, Int, Bool )
+                   // value, bit-width, signedness   for un/signed int
+                 | BoolVal( Bool )
+                   // boolean
                  | Aggregate( List )
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
@@ -451,10 +449,13 @@ The `Value` sort above operates at a higher level than the bytes representation 
 ```k
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, align(ALIGN), _)), rigidTyBool)
-      => // bytes should be one or zero, but all non-zero is taken as true
-       Scalar(Bytes2Int(BYTES, LE, Unsigned), ALIGN, false)
-       // TODO should we insist on known alignment and size of BYTES?
+
+  // Boolean: should be one byte with value one or zero
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(false)
+    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(true)
+    requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char and str types
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
@@ -467,53 +468,53 @@ The `Value` sort above operates at a higher level than the bytes representation 
   // UInt decoding
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 8, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 8, false)
     requires lengthBytes(BYTES) ==Int 1
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 16, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 16, false)
     requires lengthBytes(BYTES) ==Int 2
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 32, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 32, false)
     requires lengthBytes(BYTES) ==Int 4
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
     requires lengthBytes(BYTES) ==Int 8
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 128, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 128, false)
     requires lengthBytes(BYTES) ==Int 16
   // Usize for 64bit platforms
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Unsigned), 64, false)
+        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
     requires lengthBytes(BYTES) ==Int 8
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Int decoding
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 8, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 8, true)
     requires lengthBytes(BYTES) ==Int 1
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 16, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 16, true)
     requires lengthBytes(BYTES) ==Int 2
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 32, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 32, true)
     requires lengthBytes(BYTES) ==Int 4
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 64, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 64, true)
     requires lengthBytes(BYTES) ==Int 8
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
       =>
-        Scalar(Bytes2Int(BYTES, LE, Signed), 128, true)
+        Integer(Bytes2Int(BYTES, LE, Signed), 128, true)
     requires lengthBytes(BYTES) ==Int 16
   // Isize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Scalar(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Integer(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
@@ -524,12 +525,12 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
 Casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics **TODO: reference**.
-These casts can only operate on the `Scalar` variant of the `Value` type, adjusting
+These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
-  rule <k> typedLocal(Scalar(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
+  rule <k> typedLocal(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
           =>
             typedLocal(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT) ~> CONT
         </k>
@@ -574,37 +575,28 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
   // ------------------------------------------------------
   // converting to signed int types:
-  // narrowing: truncate using t-mod, then subtract bias, then truncate again
+  // narrowing or converting unsigned->signed: use truncation for signed numbers
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(
-          (VAL %Int (1 <<Int #bitWidth(INTTYPE) )
-            -Int (1 <<Int #bitWidth(INTTYPE)))
-          %Int (1 <<Int #bitWidth(INTTYPE) )
-          ,
+        Integer(
+          truncate(VAL, #bitWidth(INTTYPE), Signed),
           #bitWidth(INTTYPE),
           true
         )
     requires #bitWidth(INTTYPE) <=Int WIDTH
     [preserves-definedness] // positive shift, divisor non-zero
 
-  // widening: use arithmetic shift for sign extension
+  // widening: nothing to do: VAL does change (enough bits to represent, no sign change possible)
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
       =>
-        Scalar(
-          (VAL <<Int (#bitWidth(INTTYPE) -Int WIDTH) >>Int (#bitWidth(INTTYPE) -Int WIDTH))
-             %Int (1 <<Int #bitWidth(INTTYPE)),
-          #bitWidth(INTTYPE),
-          true
-        )
+        Integer(VAL, #bitWidth(INTTYPE), true)
     requires WIDTH <Int #bitWidth(INTTYPE)
-    [preserves-definedness] // positive shift, divisor non-zero
 
   // converting to unsigned int types
   // truncate (if necessary), then add bias to make non-negative, then truncate again
   rule #intAsType(VAL, _, UINTTYPE:UintTy)
       =>
-        Scalar(
+        Integer(
           (VAL %Int (1 <<Int #bitWidth(UINTTYPE) )
             +Int (1 <<Int #bitWidth(UINTTYPE)))
           %Int (1 <<Int #bitWidth(UINTTYPE) )
@@ -618,7 +610,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 Error cases for `castKindIntToInt`
 * unknown target type (not in `basetypes`)
 * target type is not an `Int` type
-* value is not a `Scalar`
+* value is not a `Integer`
 
 ```k
   rule <k> (_:TypedLocal ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
@@ -691,19 +683,20 @@ When writing data to a place with projections, the updated value gets constructe
   rule #updateProjected(_, .ProjectionElems, NEW) => NEW
 
   rule #updateProjected(
-          typedLocal(Aggregate(ARGS), TY, mutabilityMut),
+          typedLocal(Aggregate(ARGS), TY, MUT),
           projectionElemField(fieldIdx(I), _TY) PROJS,
           NEW)
       =>
-       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, mutabilityMut)
+       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, MUT)
 ```
 
 Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
+Mutability of the nested components is not checked (but also not modified) while computing the value.
 We could first read the original value using `#readProjection` and compare the types to uncover these errors.
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ)) 
-         => 
+  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+         =>
            // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
            #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
        ...
@@ -714,6 +707,309 @@ We could first read the original value using `#readProjection` and compare the t
      andBool PROJ =/=K .ProjectionElems
 ```
 
+Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
+Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error in `#setLocalValue`.
+
+```k
+  rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, PROJECTIONS)))
+        => // read first, then write moved marker (use type from before)
+           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS) ~>
+           #markMoved({LOCALS[I]}:>TypedLocal, LOCAL, PROJECTIONS)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires PROJECTIONS =/=K .ProjectionElems
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+
+  syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
+                |  #forceSetLocal ( Local )
+
+  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, LOCAL, PROJECTIONS) ~> CONT
+        =>
+           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot)) 
+           ~> #forceSetLocal(LOCAL)
+           ~> VAL
+           ~> CONT
+       </k>
+
+  // #forceSetLocal sets the given value unconditionally
+  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+          =>
+           .K
+          ...
+       </k>
+       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
+```
+
+### Primitive operations on numeric data
+
+The `RValue:BinaryOp` performs built-in binary operations on two operands. As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types). Certain operation-dependent types apply to the arguments and determine the result type.
+Likewise, `RValue:UnaryOp` only operates on certain operand types, notably `bool` and numeric types for arithmetic and bitwise negation.
+
+Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`. Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition. For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
+This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST). Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
+
+[^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
+
+Generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error.
+A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+
+```k
+  syntax KItem ::= #suspend ( BinOp, Operand, Bool)
+                |  #ready ( BinOp, TypedLocal, Bool )
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function]
+
+  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
+        =>
+           #readOperand(OP1) ~> #suspend(BINOP, OP2, false)
+       ...
+       </k>
+
+  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2)
+        =>
+           #readOperand(OP1) ~> #suspend(BINOP, OP2, true)
+       ...
+       </k>
+
+  rule <k> ARG1:TypedLocal ~> #suspend(BINOP, OP2, CHECKFLAG)
+        =>
+           #readOperand(OP2) ~> #ready(BINOP, ARG1, CHECKFLAG)
+       ...
+       </k>
+
+  rule <k> ARG2:TypedLocal ~> #ready(BINOP, ARG1,CHECKFLAG)
+        =>
+           #compute(BINOP, ARG1, ARG2, CHECKFLAG)
+       ...
+       </k>
+```
+#### Potential errors
+
+```k
+  syntax KItem ::= #OperationError( OperationError )
+
+  syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
+                          | OperandMismatch ( BinOp, Value, Value )
+                          // errors above are compiler bugs or invalid MIR
+                          // errors below are program errors
+                          | "DivisionByZero"
+                          | "Overflow_U_B" // better than getting stuck
+```
+
+#### Arithmetic
+
+The arithmetic operations require operands of the same numeric type.
+
+| `BinOp`           |                                        | Operands can be |
+|-------------------|--------------------------------------- |-----------------|-------------------------------------- |
+| `Add`             | (A + B truncated, bool overflow flag)  | int, float      | Context: `CheckedBinaryOp`            |
+| `AddUnchecked`    | A + B                                  | int, float      | undefined behaviour on overflow       |
+| `Sub`             | (A - B truncated, bool underflow flag) | int, float      | Context: `CheckedBinaryOp`            |
+| `SubUnchecked`    | A - B                                  | int, float      | undefined behaviour on overflow       |
+| `Mul`             | (A * B truncated, bool overflow flag)  | int, float      | Context: `CheckedBinaryOp`            |
+| `MulUnchecked`    | A * B                                  | int, float      | undefined behaviour on overflow       |
+| `Div`             | A / B or A `div` B                     | int, float      | undefined behaviour when divisor zero |
+| `Rem`             | A `mod` B, rounding towards zero       | int             | undefined behaviour when divisor zero |
+
+```k
+  syntax Bool ::= isArithmetic ( BinOp ) [function, total]
+  // -----------------------------------------------
+  rule isArithmetic(binOpAdd)          => true
+  rule isArithmetic(binOpAddUnchecked) => true
+  rule isArithmetic(binOpSub)          => true
+  rule isArithmetic(binOpSubUnchecked) => true
+  rule isArithmetic(binOpMul)          => true
+  rule isArithmetic(binOpMulUnchecked) => true
+  rule isArithmetic(binOpDiv)          => true
+  rule isArithmetic(binOpRem)          => true
+  rule isArithmetic(_)                 => false [owise]
+
+  // performs the given operation on infinite precision integers
+  syntax Int ::= onInt( BinOp, Int, Int ) [function]
+  // -----------------------------------------------
+  rule onInt(binOpAdd, X, Y)          => X +Int Y
+  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y
+  rule onInt(binOpSub, X, Y)          => X -Int Y
+  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y
+  rule onInt(binOpMul, X, Y)          => X *Int Y
+  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y
+  rule onInt(binOpDiv, X, Y)          => X /Int Y
+    requires Y =/=Int 0
+  rule onInt(binOpRem, X, Y)          => X %Int Y
+    requires Y =/=Int 0
+  // operation undefined otherwise
+
+  rule #compute(
+          BOP,
+          typedLocal(Integer(ARG1, WIDTH, SIGNEDNESS), TY, _),
+          typedLocal(Integer(ARG2, WIDTH, SIGNEDNESS), TY, _),
+          CHK)
+    =>
+      #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+  // error cases:
+    // non-scalar arguments
+  rule #compute(BOP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
+    =>
+       #OperationError(OperandMismatch(BOP, ARG1, ARG2))
+    requires isArithmetic(BOP)
+    [owise]
+
+    // different argument types
+  rule #compute(BOP, typedLocal(_, TY1, _), typedLocal(_, TY2, _), _)
+    =>
+       #OperationError(TypeMismatch(BOP, TY1, TY2))
+    requires TY1 =/=K TY2
+     andBool isArithmetic(BOP)
+    [owise]
+
+  // helper function to truncate int values
+  syntax Int ::= truncate(Int, Int, Signedness) [function, total]
+  // -------------------------------------------------------------
+  // unsigned values can be truncated using a simple bitmask
+  // NB if VAL is negative (underflow), the truncation will yield a positive number
+  rule truncate(VAL, WIDTH, Unsigned)
+      => // mask with relevant bits
+        VAL &Int ((1 <<Int WIDTH) -Int 1)
+    requires 0 <Int WIDTH
+    [preserves-definedness]
+  rule truncate(VAL, WIDTH, Unsigned)
+      => VAL // shortcut when there is nothing to do
+    requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
+    [simplification, preserves-definedness]
+  // for signed values we need to preserve/restore the sign
+  rule truncate(VAL, WIDTH, Signed)
+      => // bit-based truncation, then establishing the sign by subtracting a bias
+          (VAL &Int ((1 <<Int WIDTH) -Int 1))
+            -Int #if VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
+                #then 1 <<Int WIDTH
+                #else 0
+                #fi
+    requires 0 <Int WIDTH
+    [preserves-definedness]
+
+  // perform arithmetic operations on integral types of given width
+  syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
+  //                                       arg1  arg2 width signedness result overflowcheck
+  // signed numbers: must check for wrap-around (operation specific)
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
+    =>
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
+            ListItem(
+              typedLocal(
+                BoolVal(
+                  // overflow: Result outside valid range
+                  (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
+                    orBool
+                  onInt(BOP, ARG1, ARG2) <Int 0 -Int (1 <<Int (WIDTH -Int 1))
+                  // alternatively: compare with and without truncation
+                  // truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt BOP, ARG1, ARG2
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
+            )
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, true)
+    =>
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
+            ListItem(
+              typedLocal(
+                BoolVal(
+                  // overflow flag: true if infinite precision result is not equal to truncated result
+                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
+            )
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
+  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
+  rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
+  rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
+
+  rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
+  rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
+```
+
+#### Bit-oriented operations
+
+`binOpBitXor`
+`binOpBitAnd`
+`binOpBitOr`
+`binOpShl`
+`binOpShlUnchecked`
+`binOpShr`
+`binOpShrUnchecked`
+
+`unOpNot`
+`unOpNeg`
+
+#### Comparison operations
+
+`binOpEq`
+`binOpLt`
+`binOpLe`
+`binOpNe`
+`binOpGe`
+`binOpGt`
+`binOpCmp`
+
+#### "Nullary" operations (reifying type information)
+
+`nullOpSizeOf`
+`nullOpAlignOf`
+`nullOpOffsetOf(VariantAndFieldIndices)`
+`nullOpUbChecks`
+
+#### Other operations
+
+`binOpOffset`
+
+`unOpPtrMetadata`
 
 ```k
 endmodule
