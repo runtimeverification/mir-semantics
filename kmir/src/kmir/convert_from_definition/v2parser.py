@@ -414,9 +414,9 @@ class Parser:
         symbol = _get_label(prod)
         # token values need to be lower-cased
         if json:
-            value = "true"
+            value = 'true'
         else:
-            value = "false"
+            value = 'false'
         # Special handling of MIRBool: return the bool token instead.
         if symbol == 'MIRBool::Bool':
             return KToken(value, KSort('Bool')), KSort('Bool')
