@@ -948,6 +948,28 @@ The arithmetic operations require operands of the same numeric type.
     requires isArithmetic(BOP)
     [preserves-definedness]
 
+  // performing unchecked operations may result in undefined behaviour, which we signal.
+  // The check it the same as the one for the overflow flag above
+
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, false)
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, false)
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #OperationError(Overflow_U_B)
+    requires isArithmetic(BOP)
+    [owise]
+
   // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
   // (the latter can only happen for signed Ints with dividend minInt and divisor -1
   rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
