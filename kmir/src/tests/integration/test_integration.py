@@ -249,6 +249,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
         None,
     ),
+    (
+        'arithmetic-unchecked',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.state',
+        None,
+    ),
 ]
 
 
