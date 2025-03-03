@@ -1012,13 +1012,65 @@ The arithmetic operations require operands of the same numeric type.
 
 #### Comparison operations
 
-`binOpEq`
-`binOpLt`
-`binOpLe`
-`binOpNe`
-`binOpGe`
-`binOpGt`
+Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
+All operations except `binOpCmp` return a `BoolVal`, `Cmp` returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`).
+The argument types must be the same for all comparison operations.
+
+```k
+  syntax Bool ::= isComparison(BinOp) [function, total]
+
+  rule isComparison(binOpEq) => true
+  rule isComparison(binOpLt) => true
+  rule isComparison(binOpLe) => true
+  rule isComparison(binOpNe) => true
+  rule isComparison(binOpGe) => true
+  rule isComparison(binOpGt) => true
+  rule isComparison(_) => false [owise]
+
+  syntax Bool ::= cmpInt ( BinOp, Int, Int )    [function]
+                | cmpBool ( BinOp, Bool, Bool ) [function]
+
+  rule cmpInt(binOpEq,  X, Y) => X  ==Int Y
+  rule cmpInt(binOpLt,  X, Y) => X   <Int Y
+  rule cmpInt(binOpLe,  X, Y) => X  <=Int Y
+  rule cmpInt(binOpNe,  X, Y) => X =/=Int Y
+  rule cmpInt(binOpGe,  X, Y) => X  >=Int Y
+  rule cmpInt(binOpGt,  X, Y) => X   >Int Y
+
+  rule cmpBool(binOpEq,  X, Y) => X  ==Bool Y
+  rule cmpBool(binOpLt,  X, Y) => notBool X andBool Y
+  rule cmpBool(binOpLe,  X, Y) => notBool X orBool (X andBool Y)
+  rule cmpBool(binOpNe,  X, Y) => X =/=Bool Y
+  rule cmpBool(binOpGe,  X, Y) => cmpBool(binOpLe, Y, X)
+  rule cmpBool(binOpGt,  X, Y) => cmpBool(binOpLt, Y, X)
+
+  rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #OperationError(TypeMismatch(OP, TY, TY2))
+    requires isComparison(OP)
+     andBool TY =/=K TY2
+
+  rule #compute(OP, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+      =>
+        typedLocal(BoolVal(cmpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+    requires isComparison(OP)
+
+  rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+      =>
+        typedLocal(BoolVal(cmpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+    requires isComparison(OP)
+
+  rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
+      =>
+        #OperationError(OperandMismatch(OP, ARG1, ARG2))
+    [owise]
+```
+
+
 `binOpCmp`
+
+
+
+
+
 
 #### Nullary operations for activating certain checks
 
