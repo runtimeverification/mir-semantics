@@ -727,7 +727,7 @@ Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error i
 
   rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, LOCAL, PROJECTIONS) ~> CONT
         =>
-           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot)) 
+           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot))
            ~> #forceSetLocal(LOCAL)
            ~> VAL
            ~> CONT
@@ -1013,8 +1013,7 @@ The arithmetic operations require operands of the same numeric type.
 #### Comparison operations
 
 Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
-All operations except `binOpCmp` return a `BoolVal`, `Cmp` returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`).
-The argument types must be the same for all comparison operations.
+All operations except `binOpCmp` return a `BoolVal`. The argument types must be the same for all comparison operations.
 
 ```k
   syntax Bool ::= isComparison(BinOp) [function, total]
@@ -1064,13 +1063,28 @@ The argument types must be the same for all comparison operations.
     [owise]
 ```
 
+The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
 
-`binOpCmp`
+```k
+  syntax Int ::= cmpInt  ( Int , Int )  [function , total]
+               | cmpBool ( Bool, Bool ) [function , total]
+  rule cmpInt(VAL1, VAL2) => -1 requires VAL1 <Int VAL2
+  rule cmpInt(VAL1, VAL2) => 0  requires VAL1 ==Int VAL2
+  rule cmpInt(VAL1, VAL2) => 1  requires VAL1 >Int VAL2
 
+  rule cmpBool(X, Y) => -1 requires notBool X andBool Y
+  rule cmpBool(X, Y) => 0  requires X ==Bool Y
+  rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
+  rule #compute(binOpCmp, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+      =>
+        typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
+  rule #compute(binOpCmp, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+      =>
+        typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
-
+```
 
 #### Nullary operations for activating certain checks
 
