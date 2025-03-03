@@ -623,14 +623,14 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "hypothesis"
-version = "6.127.3"
+version = "6.127.4"
 description = "A library for property-based testing"
 category = "main"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "hypothesis-6.127.3-py3-none-any.whl", hash = "sha256:8246ae8530b64af60f821d845bf7b12aafc28e49ef9096abf9238d48f13fc3dd"},
-    {file = "hypothesis-6.127.3.tar.gz", hash = "sha256:be7946a8ba3da4964a5b8623bd8e95f019daca0618f5d0450fb17fe19272a108"},
+    {file = "hypothesis-6.127.4-py3-none-any.whl", hash = "sha256:11c02b78c2639c285bdf242e821d0844affe421b07c030bee34547dcb8e22f09"},
+    {file = "hypothesis-6.127.4.tar.gz", hash = "sha256:3ab8dd0e2d985ea90169b0b0e5b77ef3a7bcaf3fc6bb038927a4e977e3477908"},
 ]
 
 [package.dependencies]
@@ -639,10 +639,10 @@ exceptiongroup = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
-all = ["black (>=19.10b0)", "click (>=7.0)", "crosshair-tool (>=0.0.82)", "django (>=4.2)", "dpcontracts (>=0.4)", "hypothesis-crosshair (>=0.0.19)", "lark (>=0.10.1)", "libcst (>=0.3.16)", "numpy (>=1.19.3)", "pandas (>=1.1)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2025.1)", "watchdog (>=4.0.0)"]
+all = ["black (>=19.10b0)", "click (>=7.0)", "crosshair-tool (>=0.0.82)", "django (>=4.2)", "dpcontracts (>=0.4)", "hypothesis-crosshair (>=0.0.20)", "lark (>=0.10.1)", "libcst (>=0.3.16)", "numpy (>=1.19.3)", "pandas (>=1.1)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2025.1)", "watchdog (>=4.0.0)"]
 cli = ["black (>=19.10b0)", "click (>=7.0)", "rich (>=9.0.0)"]
 codemods = ["libcst (>=0.3.16)"]
-crosshair = ["crosshair-tool (>=0.0.82)", "hypothesis-crosshair (>=0.0.19)"]
+crosshair = ["crosshair-tool (>=0.0.82)", "hypothesis-crosshair (>=0.0.20)"]
 dateutil = ["python-dateutil (>=1.4)"]
 django = ["django (>=4.2)"]
 dpcontracts = ["dpcontracts (>=0.4)"]
@@ -743,14 +743,14 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kframework"
-version = "7.1.216"
+version = "7.1.217"
 description = ""
 category = "main"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "kframework-7.1.216-py3-none-any.whl", hash = "sha256:e9985f43f937cfe5d25b509aac0d1e802235fc4c2212d2f1debf28bac1421464"},
-    {file = "kframework-7.1.216.tar.gz", hash = "sha256:a374ccef9467947725c6905bfb53d5b64a6f2d7649d8d2b8396c4123ea732cb7"},
+    {file = "kframework-7.1.217-py3-none-any.whl", hash = "sha256:53e6c3e684ebb415c529f7a2568d78dbb15e706cde5035881a74e3a42989bd6b"},
+    {file = "kframework-7.1.217.tar.gz", hash = "sha256:da39ec863e415a7f99472ba45e2bc64a38786ac4d6e878187e10b5876c8fa2b1"},
 ]
 
 [package.dependencies]
@@ -1179,14 +1179,14 @@ dev = ["build", "flake8", "mypy", "pytest", "twine"]
 
 [[package]]
 name = "pytest"
-version = "8.3.4"
+version = "8.3.5"
 description = "pytest: simple powerful testing with Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6"},
-    {file = "pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761"},
+    {file = "pytest-8.3.5-py3-none-any.whl", hash = "sha256:c69214aa47deac29fad6c2a4f590b9c4a9fdb16a403176fe154b79c0b4d4d820"},
+    {file = "pytest-8.3.5.tar.gz", hash = "sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845"},
 ]
 
 [package.dependencies]
@@ -1647,4 +1647,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "30d8bdfc00ca64bb19746675de317b302ada503c435cf4627af0d4121a421adf"
+content-hash = "016589ca251e25275623a44f5639785461c60c304e74351fd7a2daddb05cef39"
