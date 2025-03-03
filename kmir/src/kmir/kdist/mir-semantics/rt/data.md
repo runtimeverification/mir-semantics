@@ -1020,12 +1020,21 @@ The arithmetic operations require operands of the same numeric type.
 `binOpGt`
 `binOpCmp`
 
-#### "Nullary" operations (reifying type information)
+#### Nullary operations for activating certain checks
+
+`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation. For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
+
+One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations. Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
+
+```k
+  rule <k> rvalueNullaryOp(nullOpUbChecks, _) => typedLocal(BoolVal(false), TyUnknown, mutabilityNot) ... </k>
+```
+
+#### "Nullary" operations reifying type information
 
 `nullOpSizeOf`
 `nullOpAlignOf`
 `nullOpOffsetOf(VariantAndFieldIndices)`
-`nullOpUbChecks`
 
 #### Other operations
 
