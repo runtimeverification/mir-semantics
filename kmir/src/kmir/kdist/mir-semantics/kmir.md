@@ -367,17 +367,28 @@ depending on the value of a _discriminant_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #readInt(DISCR) ~> #selectBlock(TARGETS)
+           #readOperand(DISCR) ~> #selectBlock(TARGETS)
        </k>
 
-  rule <k> I:Int ~> #selectBlock(TARGETS)
+  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
+  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(0, TARGETS))
+       ...
+       </k>
+
+  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(1, TARGETS))
+       ...
+       </k>
+
   syntax KItem ::= #selectBlock ( SwitchTargets )
-                 | #readInt ( Operand ) // FIXME not implemented, accesses a place
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
