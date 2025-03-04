@@ -48,7 +48,7 @@ class GenSpecOpts(KMirOpts):
 
 
 @dataclass
-class ProveOpts(KMirOpts):
+class ProveRunOpts(KMirOpts):
     spec_file: Path
     proof_dir: Path | None
     include_labels: tuple[str, ...] | None
@@ -107,7 +107,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file.write_text(tools.kprint.pretty_print(spec_module))
 
 
-def _kmir_prove(opts: ProveOpts) -> None:
+def _kmir_prove_run(opts: ProveRunOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
@@ -129,8 +129,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_spec(opts)
-        case ProveOpts():
-            _kmir_prove(opts)
+        case ProveRunOpts():
+            _kmir_prove_run(opts)
         case _:
             raise AssertionError()
 
@@ -155,13 +155,16 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
-    prove_parser = command_parser.add_parser('prove', help='Run the prover on a spec')
-    prove_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
-    prove_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
-    prove_parser.add_argument(
+    prove_parser = command_parser.add_parser('prove', help='Utilities for working with proofs over SMIR')
+    prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
+
+    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
+    prove_run_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
+    prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_run_parser.add_argument(
         '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
     )
-    prove_parser.add_argument(
+    prove_run_parser.add_argument(
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
 
@@ -184,12 +187,16 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
-            return ProveOpts(
-                spec_file=Path(ns.input_file).resolve(),
-                proof_dir=ns.proof_dir,
-                include_labels=ns.include_labels,
-                exclude_labels=ns.exclude_labels,
-            )
+            match ns.prove_command:
+                case 'run':
+                    return ProveRunOpts(
+                        spec_file=Path(ns.input_file).resolve(),
+                        proof_dir=ns.proof_dir,
+                        include_labels=ns.include_labels,
+                        exclude_labels=ns.exclude_labels,
+                    )
+                case _:
+                    raise AssertionError()
         case _:
             raise AssertionError()
 
