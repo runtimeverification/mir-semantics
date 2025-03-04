@@ -63,6 +63,12 @@ class ProveRunOpts(KMirOpts):
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
 
 
+@dataclass
+class ProveViewOpts(KMirOpts):
+    proof_dir: Path
+    id: str
+
+
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
@@ -168,6 +174,10 @@ def _arg_parser() -> ArgumentParser:
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
 
+    prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
+    prove_view_parser.add_argument('proof_dir', metavar='PROOF_DIR', help='Folder containing the proof')
+    prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+
     return parser
 
 
@@ -195,6 +205,8 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                         include_labels=ns.include_labels,
                         exclude_labels=ns.exclude_labels,
                     )
+                case 'view':
+                    return ProveViewOpts(Path(ns.proof_dir).resolve(), ns.id)
                 case _:
                     raise AssertionError()
         case _:
