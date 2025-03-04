@@ -755,8 +755,7 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
-Generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error.
-A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
@@ -787,6 +786,19 @@ A flag carries the information whether to perform an overflow check through to t
        ...
        </k>
 ```
+
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
+
+```k
+  syntax KItem ::= #applyUnOp ( UnOp )
+
+  rule <k> rvalueUnaryOp(UNOP, OP1)
+        =>
+           #readOperand(OP1) ~> #applyUnOp(UNOP)
+       ...
+       </k>
+```
+
 #### Potential errors
 
 ```k
@@ -794,6 +806,7 @@ A flag carries the information whether to perform an overflow check through to t
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
+                          | OperandMismatch ( UnOp, Value )
                           // errors above are compiler bugs or invalid MIR
                           // errors below are program errors
                           | "DivisionByZero"
@@ -997,19 +1010,6 @@ The arithmetic operations require operands of the same numeric type.
     [priority(40)]
 ```
 
-#### Bit-oriented operations
-
-`binOpBitXor`
-`binOpBitAnd`
-`binOpBitOr`
-`binOpShl`
-`binOpShlUnchecked`
-`binOpShr`
-`binOpShrUnchecked`
-
-`unOpNot`
-`unOpNeg`
-
 #### Comparison operations
 
 Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
@@ -1085,6 +1085,59 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
         typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
 ```
+
+#### Unary operations on Boolean and integral values
+
+The `unOpNeg` operation only works signed integral (and floating point) numbers.
+An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`). The semantics of the operation in this case is to wrap around (with the given bit width).
+
+```k
+  rule <k> typedLocal(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNeg)
+          =>
+            typedLocal(Integer(truncate(0 -Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+        ...
+        </k>
+
+  // TODO add rule for Floats once they are supported.
+```
+
+The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
+
+```k
+  rule <k> typedLocal(BoolVal(VAL), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(BoolVal(notBool VAL), TY, mutabilityNot)
+        ...
+        </k>
+
+  rule <k> typedLocal(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(Integer(truncate(~Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+        ...
+        </k>
+
+  rule <k> typedLocal(Integer(VAL, WIDTH, false), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+        ...
+        </k>
+```
+
+```k
+  rule <k> typedLocal(VAL, _, _) ~> #applyUnOp(OP) => #OperationError(OperandMismatch(OP, VAL)) ... </k>
+    [owise]
+```
+
+#### Bit-oriented operations
+
+`binOpBitXor`
+`binOpBitAnd`
+`binOpBitOr`
+`binOpShl`
+`binOpShlUnchecked`
+`binOpShr`
+`binOpShrUnchecked`
+
 
 #### Nullary operations for activating certain checks
 
