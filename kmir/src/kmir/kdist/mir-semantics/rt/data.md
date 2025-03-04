@@ -1026,22 +1026,22 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   rule isComparison(binOpGt) => true
   rule isComparison(_) => false [owise]
 
-  syntax Bool ::= cmpInt ( BinOp, Int, Int )    [function]
-                | cmpBool ( BinOp, Bool, Bool ) [function]
+  syntax Bool ::= cmpOpInt ( BinOp, Int, Int )    [function]
+                | cmpOpBool ( BinOp, Bool, Bool ) [function]
 
-  rule cmpInt(binOpEq,  X, Y) => X  ==Int Y
-  rule cmpInt(binOpLt,  X, Y) => X   <Int Y
-  rule cmpInt(binOpLe,  X, Y) => X  <=Int Y
-  rule cmpInt(binOpNe,  X, Y) => X =/=Int Y
-  rule cmpInt(binOpGe,  X, Y) => X  >=Int Y
-  rule cmpInt(binOpGt,  X, Y) => X   >Int Y
+  rule cmpOpInt(binOpEq,  X, Y) => X  ==Int Y
+  rule cmpOpInt(binOpLt,  X, Y) => X   <Int Y
+  rule cmpOpInt(binOpLe,  X, Y) => X  <=Int Y
+  rule cmpOpInt(binOpNe,  X, Y) => X =/=Int Y
+  rule cmpOpInt(binOpGe,  X, Y) => X  >=Int Y
+  rule cmpOpInt(binOpGt,  X, Y) => X   >Int Y
 
-  rule cmpBool(binOpEq,  X, Y) => X  ==Bool Y
-  rule cmpBool(binOpLt,  X, Y) => notBool X andBool Y
-  rule cmpBool(binOpLe,  X, Y) => notBool X orBool (X andBool Y)
-  rule cmpBool(binOpNe,  X, Y) => X =/=Bool Y
-  rule cmpBool(binOpGe,  X, Y) => cmpBool(binOpLe, Y, X)
-  rule cmpBool(binOpGt,  X, Y) => cmpBool(binOpLt, Y, X)
+  rule cmpOpBool(binOpEq,  X, Y) => X  ==Bool Y
+  rule cmpOpBool(binOpLt,  X, Y) => notBool X andBool Y
+  rule cmpOpBool(binOpLe,  X, Y) => notBool X orBool (X andBool Y)
+  rule cmpOpBool(binOpNe,  X, Y) => X =/=Bool Y
+  rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
+  rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
   rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #OperationError(TypeMismatch(OP, TY, TY2))
     requires isComparison(OP)
@@ -1049,12 +1049,12 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
 
   rule #compute(OP, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
-        typedLocal(BoolVal(cmpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
   rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
       =>
-        typedLocal(BoolVal(cmpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
   rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
