@@ -637,7 +637,7 @@ def from_dict(js: Mapping[str, object]) -> KInner:
             CRATE_ID = id
             functions_map_from_dict(functions)
             return KApply(
-                'pgm',
+                'crate',
                 (
                     string_from_dict(name),
                     global_allocs_from_dict(allocs),

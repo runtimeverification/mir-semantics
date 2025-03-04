@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 
+from kmir.build import haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import Parser
 
 if TYPE_CHECKING:
@@ -242,9 +243,16 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
         None,
     ),
+    (
+        'arithmetic',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
+        None,
+    ),
 ]
 
 
+@pytest.mark.parametrize('tools', [llvm_semantics(), haskell_semantics()], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,

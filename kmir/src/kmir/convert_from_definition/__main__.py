@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from kmir.build import semantics
+from kmir.build import llvm_semantics
 
 from .v2parser import parse_json
 
@@ -10,13 +10,13 @@ from .v2parser import parse_json
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('json', metavar='JSON', help='JSON data to convert')
-    parser.add_argument('sort', metavar='SORT', help='Expected Sort name for the parsed term', default='Crate')
+    parser.add_argument('sort', metavar='SORT', help='Expected Sort name for the parsed term', default='crate')
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    tools = semantics()
+    tools = llvm_semantics()
 
     result = parse_json(tools.definition, Path(args.json), args.sort)
 

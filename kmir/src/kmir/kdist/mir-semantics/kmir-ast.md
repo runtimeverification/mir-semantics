@@ -20,7 +20,7 @@ module KMIR-AST
 `Crate` deviates from the Stable MIR definition of crate (which is a struct containing `id: CrateNum`, `name: Symbol`, `is_local: bool`) since this is not rich enough in information for our purposes. 
 ```k 
   syntax Crate ::= Symbol GlobalAllocs FunctionNames MonoItems BaseTypes
-                 [symbol(pgm), group(mir---name--allocs--functions--items--types)]
+                 [symbol(crate), group(mir---name--allocs--functions--items--types)]
 
   syntax FunctionKind ::= functionNormalSym(Symbol) [symbol(FunctionKind::NormalSym), group(mir-enum)]
                         | functionIntrinsic(Symbol) [symbol(FunctionKind::IntrinsicSym), group(mir-enum)]

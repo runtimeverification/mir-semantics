@@ -319,7 +319,6 @@ will effectively be no-ops at this level).
         =>
            VAL ~> #setLocalValue(PLACE) ~> CONT
         </k>
-    // requires isTypedLocal(VAL)
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -366,10 +365,9 @@ A `SwitchInt` terminator selects one of the blocks given as _targets_,
 depending on the value of a _discriminant_.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
            #readInt(DISCR) ~> #selectBlock(TARGETS)
-         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
        </k>
 
   rule <k> I:Int ~> #selectBlock(TARGETS)
@@ -565,7 +563,26 @@ The local data has to be set up for the call, which requires information about t
      andBool I <Int size(CALLERLOCALS)
      andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
 ```
+The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
+If the condition value is as expected, the program proceeds with the given `target` block. 
+Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
 
+```k
+  syntax KItem ::= #AssertError ( AssertMessage )
+
+  rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
+         =>
+           #readOperand(COND) ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+       </k>
+
+  syntax KItem ::= #expect ( Bool, AssertMessage )
+
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+    requires COND ==Bool EXPECTED
+
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
+    requires COND =/=Bool EXPECTED
+```
 
 ```k
 endmodule
