@@ -165,7 +165,7 @@ def _arg_parser() -> ArgumentParser:
     prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
 
     prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
-    prove_run_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
+    prove_run_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
     prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_run_parser.add_argument(
         '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
