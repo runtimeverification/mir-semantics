@@ -8,14 +8,14 @@ requires "rt/data.md"
 ## Syntax of MIR in K
 
 The MIR syntax is largely defined in [KMIR-AST](./kmir-ast.md) and its
-submodules. The execution is initialised based on a loaded `Pgm` read
+submodules. The execution is initialised based on a loaded `Crate` read
 from a json format of stable-MIR, and the name of the function to execute.
 
 ```k
 module KMIR-SYNTAX
   imports KMIR-AST
 
-  syntax KItem ::= #init( Pgm )
+  syntax KItem ::= #init( Crate )
 
 endmodule
 ```
@@ -54,7 +54,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm) </k>
+                  <k> #init($PGM:Crate) </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations

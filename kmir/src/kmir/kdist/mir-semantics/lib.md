@@ -26,7 +26,6 @@ syntax ImplTraitDecls ::= List {ImplDef, ""}
 
 syntax CrateItem ::= crateItem(Int) // imported from crate
 syntax CrateNum ::= crateNum(Int)
-syntax Crate ::= crate(id: CrateNum, name: Symbol, isLocal: MIRBool)
 
 syntax ItemKind ::= "itemKindFn" [symbol(itemKindFn)]
                   | "itemKindStatic" [symbol(itemKindStatic)]

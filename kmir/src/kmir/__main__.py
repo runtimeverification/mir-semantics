@@ -47,7 +47,7 @@ class GenSpecOpts(KMirOpts):
 def _kmir_run(opts: RunOpts) -> None:
     tools = semantics()
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+    parse_result = parse_json(tools.definition, opts.input_file, 'Crate')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
@@ -62,7 +62,7 @@ def _kmir_run(opts: RunOpts) -> None:
 def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     tools = semantics()
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+    parse_result = parse_json(tools.definition, opts.input_file, 'Crate')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)

@@ -31,7 +31,7 @@ smir-parse-tests: # build # commented out for CI's sake
 		&& echo -n "smir-ed " \
 		|| report "$$source" "SMIR ERROR!"; \
 	    if [ -s $${target} ]; then \
-		${POETRY_RUN} convert-from-definition $$(realpath $${target}) Pgm > /dev/null \
+		${POETRY_RUN} convert-from-definition $$(realpath $${target}) Crate > /dev/null \
 			&& (echo "and parsed!"; rm $${target}) \
 			|| report "$$source" "PARSE ERROR!"; \
 		fi; \

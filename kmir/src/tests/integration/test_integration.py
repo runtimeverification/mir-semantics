@@ -261,7 +261,7 @@ def test_exec_smir(
 
     with input_json.open('r') as f:
         json_data = json.load(f)
-    parsed = parser.parse_mir_json(json_data, 'Pgm')
+    parsed = parser.parse_mir_json(json_data, 'Crate')
     assert parsed is not None
     kmir_kast, _ = parsed
 

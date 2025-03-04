@@ -10,7 +10,7 @@ from .v2parser import parse_json
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('json', metavar='JSON', help='JSON data to convert')
-    parser.add_argument('sort', metavar='SORT', help='Expected Sort name for the parsed term', default='pgm')
+    parser.add_argument('sort', metavar='SORT', help='Expected Sort name for the parsed term', default='Crate')
     return parser.parse_args()
 
 
