@@ -58,10 +58,7 @@ class ProveOpts(KMirOpts):
         self, spec_file: Path, proof_dir: Path | str | None, include_labels: str | None, exclude_labels: str | None
     ) -> None:
         self.spec_file = spec_file
-        if proof_dir is None:
-            self.proof_dir = None
-        else:
-            self.proof_dir = Path(proof_dir).resolve()
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
 
