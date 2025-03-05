@@ -45,7 +45,7 @@ class KMIR(KProve, KRun):
             self.definition_dir,
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
-            id=label,
+            id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
