@@ -107,6 +107,8 @@ Constant operands are simply decoded according to their type.
       </k>
       <basetypes> TYPEMAP </basetypes>
     requires TY in_keys(TYPEMAP)
+     andBool isRigidTy(TYPEMAP[TY])
+    [preserves-definedness] // valid Map lookup checked
 ```
 
 The code which copies/moves function arguments into the locals of a stack frame works
@@ -124,6 +126,10 @@ local value cannot be read, though, and the value should be initialised.
        </k>
        <locals> LOCALS </locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
@@ -154,6 +160,10 @@ further access. Apart from that, the same caveats apply as for operands that are
        </k>
        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
@@ -190,6 +200,8 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 ```
 
 When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read.
@@ -216,8 +228,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           ...
        </k>
        <locals> LOCALS </locals>
-    requires TY =/=K TyUnknown
+    requires I <Int size(LOCALS)
+     andBool 0 <=Int I
+     andBool isTypedLocal(LOCALS[I])
+     andBool TY =/=K TyUnknown
      andBool tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
+    [preserves-definedness] // list index checked before lookup
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
@@ -671,6 +687,10 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
            #readProjection({ARGS[I]}:>TypedLocal, PROJS)
        ...
        </k>
+    requires 0 <=Int I
+     andBool I <Int size(ARGS)
+     andBool isTypedLocal(ARGS[I])
+    [preserves-definedness] // valid list indexing checked
 ```
 
 #### Writing data to places with projections
@@ -705,6 +725,8 @@ We could first read the original value using `#readProjection` and compare the t
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
 ```
 
 Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
@@ -721,6 +743,8 @@ Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error i
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
                 |  #forceSetLocal ( Local )
@@ -732,6 +756,7 @@ Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error i
            ~> VAL
            ~> CONT
        </k>
+    [preserves-definedness] // projections already used when reading, updateProjected should succeed
 
   // #forceSetLocal sets the given value unconditionally
   rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
@@ -760,7 +785,7 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function]
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -808,9 +833,16 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | OperandMismatch ( BinOp, Value, Value )
                           | OperandMismatch ( UnOp, Value )
                           // errors above are compiler bugs or invalid MIR
+                          | Unimplemented ( BinOp, TypedLocal, TypedLocal)
                           // errors below are program errors
                           | "DivisionByZero"
                           | "Overflow_U_B" // better than getting stuck
+
+  // catch-all rule to make `#compute` total
+  rule #compute(OP, ARG1, ARG2, _FLAG)
+      =>
+        #OperationError(Unimplemented(OP, ARG1, ARG2))
+    [owise]
 ```
 
 #### Arithmetic
