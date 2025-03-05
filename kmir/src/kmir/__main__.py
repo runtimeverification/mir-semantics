@@ -11,10 +11,11 @@ from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
+from pyk.proof.tui import APRProofViewer
 
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import parse_json
-from kmir.kmir import KMIR
+from kmir.kmir import KMIR, KMIRAPRNodePrinter
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -65,6 +66,7 @@ class ProveRunOpts(KMirOpts):
 
 @dataclass
 class ProveViewOpts(KMirOpts):
+    spec_file: Path
     proof_dir: Path
     id: str
 
@@ -128,6 +130,25 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
         print(f'{summary}')
 
 
+def _kmir_prove_view(opts: ProveViewOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+
+    claim_index = kmir.get_claim_index(opts.spec_file)
+    labels = claim_index.labels(include=[opts.id])
+    print(f'{labels}')
+
+    claim = claim_index[labels[0]]
+    print(f'{claim}')
+
+    proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+
+    node_printer = KMIRAPRNodePrinter(kmir, proof)
+
+    viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
+
+    viewer.run()
+
+
 def kmir(args: Sequence[str]) -> None:
     opts = _parse_args(args)
     match opts:
@@ -137,6 +158,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_gen_spec(opts)
         case ProveRunOpts():
             _kmir_prove_run(opts)
+        case ProveViewOpts():
+            _kmir_prove_view(opts)
         case _:
             raise AssertionError()
 
@@ -175,6 +198,7 @@ def _arg_parser() -> ArgumentParser:
     )
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
+    prove_view_parser.add_argument('input_file', metavar='SPEC_FILE', help='K File with the spec module')
     prove_view_parser.add_argument('proof_dir', metavar='PROOF_DIR', help='Folder containing the proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
 
@@ -206,7 +230,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                         exclude_labels=ns.exclude_labels,
                     )
                 case 'view':
-                    return ProveViewOpts(Path(ns.proof_dir).resolve(), ns.id)
+                    return ProveViewOpts(Path(ns.input_file).resolve(), Path(ns.proof_dir).resolve(), ns.id)
                 case _:
                     raise AssertionError()
         case _:
