@@ -53,8 +53,10 @@ module KMIR-CONFIGURATION
                                    UnwindAction,              // action to perform on panic
                                    locals:List)               // return val, args, local variables
 
+  syntax CrateList ::= List
+
   configuration <kmir>
-                  <k> #init($PGM:Crate) </k>
+                  <k> $PGM:CrateList  </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
