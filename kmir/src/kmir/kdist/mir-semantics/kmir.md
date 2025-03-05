@@ -144,9 +144,9 @@ they are callee in a `Call` terminator within an `Item`).
 The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
-  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems )   [ function, total ]
-               | #accumFunctions ( Map, Map, FunctionNames )        [ function, total ]
-               | #accumItems ( Map, MonoItems )           [ function, total ]
+  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total ]
+               | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
+               | #accumItems ( Map, MonoItems )              [ function, total ]
 
   rule #mkFunctionMap(Functions, Items)
     =>
@@ -235,7 +235,9 @@ be known to populate the `currentFunc` field.
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
 
-  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function]
+  // This function performs a reverse lookup in the functions table (looks up a `Ty` by name)
+  // It defaults to `Ty(-1)` which is currently what `main` gets (`main` is not in the functions table)
+  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function, total]
 
   rule #tyFromName(NAME, ListItem(functionName(TY, FNAME)) _) => TY
     requires NAME ==K FNAME
@@ -281,6 +283,7 @@ blocks, or call another function).
     requires 0 <=Int I
      andBool I <Int size(BLOCKS)
      andBool isBasicBlock(BLOCKS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
          =>
@@ -367,17 +370,28 @@ depending on the value of a _discriminant_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #readInt(DISCR) ~> #selectBlock(TARGETS)
+           #readOperand(DISCR) ~> #selectBlock(TARGETS)
        </k>
 
-  rule <k> I:Int ~> #selectBlock(TARGETS)
+  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
+  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(0, TARGETS))
+       ...
+       </k>
+
+  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(1, TARGETS))
+       ...
+       </k>
+
   syntax KItem ::= #selectBlock ( SwitchTargets )
-                 | #readInt ( Operand ) // FIXME not implemented, accesses a place
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
@@ -469,7 +483,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData(NEWFUNC, ARGS)
+           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -482,8 +496,10 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> ... #tyOfCall(FUNC) |-> NEWFUNC:MonoItemKind ... </functions>
-     [preserves-definedness] // callee lookup defined
+       <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+    [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
@@ -545,7 +561,9 @@ The local data has to be set up for the call, which requires information about t
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
+     andBool isTypedLocal(CALLERLOCALS[I])
      andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
         => 
@@ -561,7 +579,9 @@ The local data has to be set up for the call, which requires information about t
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
+     andBool isTypedLocal(CALLERLOCALS[I])
      andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+    [preserves-definedness] // valid list indexing checked
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
 If the condition value is as expected, the program proceeds with the given `target` block. 

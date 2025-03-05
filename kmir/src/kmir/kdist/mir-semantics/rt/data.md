@@ -107,6 +107,8 @@ Constant operands are simply decoded according to their type.
       </k>
       <basetypes> TYPEMAP </basetypes>
     requires TY in_keys(TYPEMAP)
+     andBool isRigidTy(TYPEMAP[TY])
+    [preserves-definedness] // valid Map lookup checked
 ```
 
 The code which copies/moves function arguments into the locals of a stack frame works
@@ -124,6 +126,10 @@ local value cannot be read, though, and the value should be initialised.
        </k>
        <locals> LOCALS </locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
@@ -154,6 +160,10 @@ further access. Apart from that, the same caveats apply as for operands that are
        </k>
        <locals> LOCALS => LOCALS[I <- typedLocal(Moved, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)]</locals>
     requires isValue(valueOfLocal({LOCALS[I]}:>TypedLocal))
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
         =>
@@ -190,6 +200,8 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 ```
 
 When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read.
@@ -216,8 +228,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           ...
        </k>
        <locals> LOCALS </locals>
-    requires TY =/=K TyUnknown
+    requires I <Int size(LOCALS)
+     andBool 0 <=Int I
+     andBool isTypedLocal(LOCALS[I])
+     andBool TY =/=K TyUnknown
      andBool tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
+    [preserves-definedness] // list index checked before lookup
 
   rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
           =>
@@ -671,6 +687,10 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
            #readProjection({ARGS[I]}:>TypedLocal, PROJS)
        ...
        </k>
+    requires 0 <=Int I
+     andBool I <Int size(ARGS)
+     andBool isTypedLocal(ARGS[I])
+    [preserves-definedness] // valid list indexing checked
 ```
 
 #### Writing data to places with projections
@@ -705,6 +725,8 @@ We could first read the original value using `#readProjection` and compare the t
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
 ```
 
 Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
@@ -721,17 +743,20 @@ Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error i
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
                 |  #forceSetLocal ( Local )
 
   rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, LOCAL, PROJECTIONS) ~> CONT
         =>
-           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot)) 
+           #updateProjected(OLDLOCAL, PROJECTIONS, typedLocal(Moved, tyOfLocal(VAL), mutabilityNot))
            ~> #forceSetLocal(LOCAL)
            ~> VAL
            ~> CONT
        </k>
+    [preserves-definedness] // projections already used when reading, updateProjected should succeed
 
   // #forceSetLocal sets the given value unconditionally
   rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
@@ -755,13 +780,12 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
-Generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error.
-A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function]
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -787,6 +811,19 @@ A flag carries the information whether to perform an overflow check through to t
        ...
        </k>
 ```
+
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
+
+```k
+  syntax KItem ::= #applyUnOp ( UnOp )
+
+  rule <k> rvalueUnaryOp(UNOP, OP1)
+        =>
+           #readOperand(OP1) ~> #applyUnOp(UNOP)
+       ...
+       </k>
+```
+
 #### Potential errors
 
 ```k
@@ -794,10 +831,18 @@ A flag carries the information whether to perform an overflow check through to t
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
+                          | OperandMismatch ( UnOp, Value )
                           // errors above are compiler bugs or invalid MIR
+                          | Unimplemented ( BinOp, TypedLocal, TypedLocal)
                           // errors below are program errors
                           | "DivisionByZero"
                           | "Overflow_U_B" // better than getting stuck
+
+  // catch-all rule to make `#compute` total
+  rule #compute(OP, ARG1, ARG2, _FLAG)
+      =>
+        #OperationError(Unimplemented(OP, ARG1, ARG2))
+    [owise]
 ```
 
 #### Arithmetic
@@ -948,6 +993,28 @@ The arithmetic operations require operands of the same numeric type.
     requires isArithmetic(BOP)
     [preserves-definedness]
 
+  // performing unchecked operations may result in undefined behaviour, which we signal.
+  // The check it the same as the one for the overflow flag above
+
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, false)
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, false)
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #OperationError(Overflow_U_B)
+    requires isArithmetic(BOP)
+    [owise]
+
   // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
   // (the latter can only happen for signed Ints with dividend minInt and divisor -1
   rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
@@ -975,6 +1042,124 @@ The arithmetic operations require operands of the same numeric type.
     [priority(40)]
 ```
 
+#### Comparison operations
+
+Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
+All operations except `binOpCmp` return a `BoolVal`. The argument types must be the same for all comparison operations.
+
+```k
+  syntax Bool ::= isComparison(BinOp) [function, total]
+
+  rule isComparison(binOpEq) => true
+  rule isComparison(binOpLt) => true
+  rule isComparison(binOpLe) => true
+  rule isComparison(binOpNe) => true
+  rule isComparison(binOpGe) => true
+  rule isComparison(binOpGt) => true
+  rule isComparison(_) => false [owise]
+
+  syntax Bool ::= cmpOpInt ( BinOp, Int, Int )    [function]
+                | cmpOpBool ( BinOp, Bool, Bool ) [function]
+
+  rule cmpOpInt(binOpEq,  X, Y) => X  ==Int Y
+  rule cmpOpInt(binOpLt,  X, Y) => X   <Int Y
+  rule cmpOpInt(binOpLe,  X, Y) => X  <=Int Y
+  rule cmpOpInt(binOpNe,  X, Y) => X =/=Int Y
+  rule cmpOpInt(binOpGe,  X, Y) => X  >=Int Y
+  rule cmpOpInt(binOpGt,  X, Y) => X   >Int Y
+
+  rule cmpOpBool(binOpEq,  X, Y) => X  ==Bool Y
+  rule cmpOpBool(binOpLt,  X, Y) => notBool X andBool Y
+  rule cmpOpBool(binOpLe,  X, Y) => notBool X orBool (X andBool Y)
+  rule cmpOpBool(binOpNe,  X, Y) => X =/=Bool Y
+  rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
+  rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
+
+  rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #OperationError(TypeMismatch(OP, TY, TY2))
+    requires isComparison(OP)
+     andBool TY =/=K TY2
+
+  rule #compute(OP, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+      =>
+        typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+    requires isComparison(OP)
+
+  rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+      =>
+        typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+    requires isComparison(OP)
+
+  rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
+      =>
+        #OperationError(OperandMismatch(OP, ARG1, ARG2))
+    [owise]
+```
+
+The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
+
+```k
+  syntax Int ::= cmpInt  ( Int , Int )  [function , total]
+               | cmpBool ( Bool, Bool ) [function , total]
+  rule cmpInt(VAL1, VAL2) => -1 requires VAL1 <Int VAL2
+  rule cmpInt(VAL1, VAL2) => 0  requires VAL1 ==Int VAL2
+  rule cmpInt(VAL1, VAL2) => 1  requires VAL1 >Int VAL2
+
+  rule cmpBool(X, Y) => -1 requires notBool X andBool Y
+  rule cmpBool(X, Y) => 0  requires X ==Bool Y
+  rule cmpBool(X, Y) => 1  requires X andBool notBool Y
+
+  rule #compute(binOpCmp, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+      =>
+        typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+
+  rule #compute(binOpCmp, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+      =>
+        typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+
+```
+
+#### Unary operations on Boolean and integral values
+
+The `unOpNeg` operation only works signed integral (and floating point) numbers.
+An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`). The semantics of the operation in this case is to wrap around (with the given bit width).
+
+```k
+  rule <k> typedLocal(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNeg)
+          =>
+            typedLocal(Integer(truncate(0 -Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+        ...
+        </k>
+
+  // TODO add rule for Floats once they are supported.
+```
+
+The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
+
+```k
+  rule <k> typedLocal(BoolVal(VAL), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(BoolVal(notBool VAL), TY, mutabilityNot)
+        ...
+        </k>
+
+  rule <k> typedLocal(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(Integer(truncate(~Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+        ...
+        </k>
+
+  rule <k> typedLocal(Integer(VAL, WIDTH, false), TY, _) ~> #applyUnOp(unOpNot)
+          =>
+            typedLocal(Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+        ...
+        </k>
+```
+
+```k
+  rule <k> typedLocal(VAL, _, _) ~> #applyUnOp(OP) => #OperationError(OperandMismatch(OP, VAL)) ... </k>
+    [owise]
+```
+
 #### Bit-oriented operations
 
 `binOpBitXor`
@@ -985,25 +1170,22 @@ The arithmetic operations require operands of the same numeric type.
 `binOpShr`
 `binOpShrUnchecked`
 
-`unOpNot`
-`unOpNeg`
 
-#### Comparison operations
+#### Nullary operations for activating certain checks
 
-`binOpEq`
-`binOpLt`
-`binOpLe`
-`binOpNe`
-`binOpGe`
-`binOpGt`
-`binOpCmp`
+`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation. For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
 
-#### "Nullary" operations (reifying type information)
+One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations. Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
+
+```k
+  rule <k> rvalueNullaryOp(nullOpUbChecks, _) => typedLocal(BoolVal(false), TyUnknown, mutabilityNot) ... </k>
+```
+
+#### "Nullary" operations reifying type information
 
 `nullOpSizeOf`
 `nullOpAlignOf`
 `nullOpOffsetOf(VariantAndFieldIndices)`
-`nullOpUbChecks`
 
 #### Other operations
 
