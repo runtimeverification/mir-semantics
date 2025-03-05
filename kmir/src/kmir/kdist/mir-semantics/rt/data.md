@@ -687,7 +687,8 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
            #readProjection({ARGS[I]}:>TypedLocal, PROJS)
        ...
        </k>
-    requires I <Int size(ARGS)
+    requires 0 <=Int I
+     andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
     [preserves-definedness] // valid list indexing checked
 ```
