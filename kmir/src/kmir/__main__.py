@@ -7,15 +7,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm, cterm_build_claim
-from pyk.kast.inner import Subst
+from pyk.kast.inner import KApply, KSort, Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 
 from kmir.build import haskell_semantics, llvm_semantics
+from kmir.convert_from_definition.__main__ import parse_mir_klist_json
 from kmir.convert_from_definition.v2parser import parse_json
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    from pyk.kast.inner import KToken
 
 
 @dataclass
@@ -24,7 +27,7 @@ class KMirOpts: ...
 
 @dataclass
 class RunOpts(KMirOpts):
-    input_file: Path
+    input_files: list[Path]
     depth: int
     start_symbol: str
     haskell_backend: bool
@@ -48,16 +51,28 @@ class GenSpecOpts(KMirOpts):
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Crate')
-    if parse_result is None:
-        print('Parse error!', file=sys.stderr)
+    # TODO: Same as comment in convert_from_definition::__main__.py - args.sort might not be right
+    results = [parse_json(tools.definition, input_file, 'Crate') for input_file in opts.input_files]
+
+    failed = []
+    passed: list[tuple[KApply | KToken, KSort]] = []
+
+    for index, result in enumerate(results):
+        if result is None:
+            failed.append(opts.input_files[index])
+        else:
+            passed.append(result)
+
+    if failed:
+        for failure in failed:
+            print(f'Parse error! In {failure}', file=sys.stderr)
         sys.exit(1)
 
-    kmir_kast, _ = parse_result
+    terms, _sort = parse_mir_klist_json(passed, KSort('Crate'))
 
-    result = tools.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
+    run_result = tools.run_parsed(terms, opts.start_symbol, opts.depth)
 
-    print(tools.kprint.kore_to_pretty(result))
+    print(tools.kprint.kore_to_pretty(run_result))
 
 
 def _kmir_gen_spec(opts: GenSpecOpts) -> None:
@@ -105,7 +120,7 @@ def _arg_parser() -> ArgumentParser:
     command_parser = parser.add_subparsers(dest='command', required=True)
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs')
-    run_parser.add_argument('input_file', metavar='FILE', help='MIR program to run')
+    run_parser.add_argument('input_file', metavar='FILE', nargs='+', help='MIR program to run')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
@@ -128,7 +143,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
     match ns.command:
         case 'run':
             return RunOpts(
-                input_file=Path(ns.input_file).resolve(),
+                input_files=[Path(file).resolve() for file in ns.input_file],
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
