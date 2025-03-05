@@ -67,7 +67,7 @@ class ProveRunOpts(KMirOpts):
 @dataclass
 class ProveViewOpts(KMirOpts):
     spec_file: Path
-    proof_dir: Path
+    proof_dir: Path | None
     id: str
 
 
@@ -135,10 +135,7 @@ def _kmir_prove_view(opts: ProveViewOpts) -> None:
 
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=[opts.id])
-    print(f'{labels}')
-
     claim = claim_index[labels[0]]
-    print(f'{claim}')
 
     proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
 
@@ -199,8 +196,8 @@ def _arg_parser() -> ArgumentParser:
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('input_file', metavar='SPEC_FILE', help='K File with the spec module')
-    prove_view_parser.add_argument('proof_dir', metavar='PROOF_DIR', help='Folder containing the proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    prove_view_parser.add_argument('--proof-dir', metavar='PROOF_DIR', help='Proofs folder that can contain the proof')
 
     return parser
 
@@ -230,7 +227,8 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                         exclude_labels=ns.exclude_labels,
                     )
                 case 'view':
-                    return ProveViewOpts(Path(ns.input_file).resolve(), Path(ns.proof_dir).resolve(), ns.id)
+                    proof_dir = Path(ns.proof_dir).resolve() if ns.proof_dir is not None else None
+                    return ProveViewOpts(Path(ns.input_file).resolve(), proof_dir, ns.id)
                 case _:
                     raise AssertionError()
         case _:
