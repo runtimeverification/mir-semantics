@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING
 import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 
+from kmir.__main__ import extract_crate_name
 from kmir.build import haskell_semantics, llvm_semantics
+from kmir.convert_from_definition.__main__ import parse_mir_klist_json
 from kmir.convert_from_definition.v2parser import Parser
 
 if TYPE_CHECKING:
@@ -271,9 +273,12 @@ def test_exec_smir(
         json_data = json.load(f)
     parsed = parser.parse_mir_json(json_data, 'Crate')
     assert parsed is not None
-    kmir_kast, _ = parsed
 
-    result = tools.run_parsed(kmir_kast, depth=depth)
+    kmir_kast, _ = parse_mir_klist_json([parsed], KSort('Crate'))  # Still would need more for multi-crate test
+
+    start_crate = extract_crate_name(input_json).replace('-', '_')
+
+    result = tools.run_parsed(kmir_kast, start_crate=start_crate, depth=depth)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
