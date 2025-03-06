@@ -57,17 +57,27 @@ class Tools:
     def definition(self) -> KDefinition:
         return self.__definition
 
-    def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
-        init_config = self.make_init_config(parsed_smir, start_symbol)
+    def run_parsed(
+        self,
+        parsed_smir: KInner,
+        start_symbol: KInner | str = 'main',
+        start_crate: KInner | str = 'main',
+        depth: int | None = None,
+    ) -> Pattern:
+        init_config = self.make_init_config(parsed_smir, start_symbol, start_crate)
         init_kore = self.krun.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.krun.run_pattern(init_kore, depth=depth)
 
         return result
 
-    def make_init_config(self, parsed_smir: KInner, start_symbol: KInner | str = 'main') -> KInner:
+    def make_init_config(
+        self, parsed_smir: KInner, start_symbol: KInner | str = 'main', start_crate: KInner | str = 'main'
+    ) -> KInner:
         if isinstance(start_symbol, str):
             start_symbol = stringToken(start_symbol)
+        if isinstance(start_crate, str):
+            start_crate = stringToken(start_crate)
 
-        subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
+        subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol, '$STARTCRATE': start_crate})
         init_config = subst.apply(self.definition.init_config(KSort('GeneratedTopCell')))
         return init_config

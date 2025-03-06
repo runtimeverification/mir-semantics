@@ -77,6 +77,7 @@ module KMIR-CONFIGURATION
                   <memory> .Map </memory> // FIXME unclear how to model
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
+                  <start-crate> symbol($STARTCRATE:String) </start-crate>
                   // static information about the base type interning in the MIR
                   <basetypes> .Map </basetypes>
                   <crates>

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
@@ -30,6 +31,7 @@ class RunOpts(KMirOpts):
     input_files: list[Path]
     depth: int
     start_symbol: str
+    start_crate: str
     haskell_backend: bool
 
 
@@ -70,9 +72,16 @@ def _kmir_run(opts: RunOpts) -> None:
 
     terms, _sort = parse_mir_klist_json(passed, KSort('Crate'))
 
-    run_result = tools.run_parsed(terms, opts.start_symbol, opts.depth)
+    start_crate = extract_crate_name(opts.input_files[0]) if len(opts.input_files) == 1 else opts.start_crate
+
+    run_result = tools.run_parsed(terms, opts.start_symbol, start_crate, opts.depth)
 
     print(tools.kprint.kore_to_pretty(run_result))
+
+
+def extract_crate_name(file_path: Path) -> str:
+    filename = os.path.basename(file_path)
+    return filename.removesuffix('.smir.json')
 
 
 def _kmir_gen_spec(opts: GenSpecOpts) -> None:
@@ -125,6 +134,9 @@ def _arg_parser() -> ArgumentParser:
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
+    run_parser.add_argument(
+        '--start-crate', type=str, metavar='START_CRATE', default='main', help='Crate name to begin execution from'
+    )
     run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
 
     gen_spec_parser = command_parser.add_parser('gen-spec', help='Generate a k spec from a SMIR json')
@@ -146,6 +158,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_files=[Path(file).resolve() for file in ns.input_file],
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
+                start_crate=ns.start_crate,
                 haskell_backend=ns.haskell_backend,
             )
         case 'gen-spec':
