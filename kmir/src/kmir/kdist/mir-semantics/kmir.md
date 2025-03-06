@@ -45,7 +45,8 @@ module KMIR-CONFIGURATION
   imports BOOL-SYNTAX
   imports RT-DATA-HIGH-SYNTAX
 
-  syntax RetVal ::= MaybeValue
+  syntax RetVal ::= return( Value )
+                  | "noReturn"
 
   syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
                                    dest:Place,                // place to store return value
@@ -55,7 +56,7 @@ module KMIR-CONFIGURATION
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
-                  <retVal> NoValue </retVal>
+                  <retVal> noReturn </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
@@ -257,7 +258,7 @@ be known to populate the `currentFunc` field.
 
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
-       ListItem(typedLocal(NoValue, TY, MUT)) #reserveFor(REST)
+       ListItem(noValue(TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -462,15 +463,26 @@ The call stack is not necessarily empty at this point so it is left untouched.
 ```k
   syntax KItem ::= "#EndProgram"
 
-  rule [endprogram]:
+  rule [endprogram-return]:
        <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #EndProgram
        </k>
-       <retVal> _ => VAL </retVal>
+       <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
          <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
+         ...
+       </currentFrame>
+
+  rule [endprogram-no-return]:
+       <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #EndProgram
+       </k>
+       <currentFrame>
+         <target> noBasicBlockIdx </target>
+         <locals> ListItem(noValue(_, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -543,48 +555,43 @@ The local data has to be set up for the call, which requires information about t
 
   // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
   rule <k> #setArgsFromStack(IDX, OP:Operand MORE:Operands) ~> CONT
-        => 
+        =>
            #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND) 
+  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
            #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
-        => 
+  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
+        =>
            {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedLocal(CALLERLOCALS[I])
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+     andBool CALLERLOCALS[I] =/=K Moved
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
-        => 
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
+        =>
            {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _,
-                 CALLERLOCALS 
-                => 
-                 CALLERLOCALS[I <- typedLocal(Moved, tyOfLocal({CALLERLOCALS[I]}:>TypedLocal), mutabilityNot)])
-                )
-              _:List 
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedLocal(CALLERLOCALS[I])
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+     andBool CALLERLOCALS[I] =/=K Moved
     [preserves-definedness] // valid list indexing checked
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
-If the condition value is as expected, the program proceeds with the given `target` block. 
+If the condition value is as expected, the program proceeds with the given `target` block.
 Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
 
 ```k
