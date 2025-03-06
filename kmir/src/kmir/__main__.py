@@ -11,10 +11,11 @@ from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
+from pyk.proof.tui import APRProofViewer
 
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import parse_json
-from kmir.kmir import KMIR
+from kmir.kmir import KMIR, KMIRAPRNodePrinter
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -48,7 +49,7 @@ class GenSpecOpts(KMirOpts):
 
 
 @dataclass
-class ProveOpts(KMirOpts):
+class ProveRunOpts(KMirOpts):
     spec_file: Path
     proof_dir: Path | None
     include_labels: tuple[str, ...] | None
@@ -68,6 +69,13 @@ class ProveOpts(KMirOpts):
         self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
         self.bug_report = bug_report
+
+
+@dataclass
+class ProveViewOpts(KMirOpts):
+    spec_file: Path
+    proof_dir: Path | None
+    id: str
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -114,7 +122,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file.write_text(tools.kprint.pretty_print(spec_module))
 
 
-def _kmir_prove(opts: ProveOpts) -> None:
+def _kmir_prove_run(opts: ProveRunOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
@@ -129,6 +137,22 @@ def _kmir_prove(opts: ProveOpts) -> None:
         print(f'{summary}')
 
 
+def _kmir_prove_view(opts: ProveViewOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+
+    claim_index = kmir.get_claim_index(opts.spec_file)
+    labels = claim_index.labels(include=[opts.id])
+    claim = claim_index[labels[0]]
+
+    proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+
+    node_printer = KMIRAPRNodePrinter(kmir, proof)
+
+    viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
+
+    viewer.run()
+
+
 def kmir(args: Sequence[str]) -> None:
     opts = _parse_args(args)
     match opts:
@@ -136,8 +160,10 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_spec(opts)
-        case ProveOpts():
-            _kmir_prove(opts)
+        case ProveRunOpts():
+            _kmir_prove_run(opts)
+        case ProveViewOpts():
+            _kmir_prove_view(opts)
         case _:
             raise AssertionError()
 
@@ -162,16 +188,24 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
-    prove_parser = command_parser.add_parser('prove', help='Run the prover on a spec')
-    prove_parser.add_argument('input_file', metavar='FILE', help='File with the json spec module')
-    prove_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
-    prove_parser.add_argument(
+    prove_parser = command_parser.add_parser('prove', help='Utilities for working with proofs over SMIR')
+    prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
+
+    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
+    prove_run_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
+    prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_run_parser.add_argument(
         '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
     )
-    prove_parser.add_argument(
+    prove_run_parser.add_argument(
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
-    prove_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+    prove_run_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+
+    prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
+    prove_view_parser.add_argument('input_file', metavar='SPEC_FILE', help='K File with the spec module')
+    prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    prove_view_parser.add_argument('--proof-dir', metavar='PROOF_DIR', help='Proofs folder that can contain the proof')
 
     return parser
 
@@ -192,13 +226,20 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
-            return ProveOpts(
-                spec_file=Path(ns.input_file).resolve(),
-                proof_dir=ns.proof_dir,
-                include_labels=ns.include_labels,
-                exclude_labels=ns.exclude_labels,
-                bug_report=ns.bug_report,
-            )
+            match ns.prove_command:
+                case 'run':
+                    return ProveRunOpts(
+                        spec_file=Path(ns.input_file).resolve(),
+                        proof_dir=ns.proof_dir,
+                        include_labels=ns.include_labels,
+                        exclude_labels=ns.exclude_labels,
+                        bug_report=ns.bug_report,
+                    )
+                case 'view':
+                    proof_dir = Path(ns.proof_dir).resolve() if ns.proof_dir is not None else None
+                    return ProveViewOpts(Path(ns.input_file).resolve(), proof_dir, ns.id)
+                case _:
+                    raise AssertionError()
         case _:
             raise AssertionError()
 
