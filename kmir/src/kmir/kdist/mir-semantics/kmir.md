@@ -15,7 +15,8 @@ from a json format of stable-MIR, and the name of the function to execute.
 module KMIR-SYNTAX
   imports KMIR-AST
 
-  syntax KItem ::= #init( Crate )
+  syntax CrateList ::= List
+  syntax KItem ::= #init( CrateList )
 
 endmodule
 ```
@@ -45,6 +46,8 @@ module KMIR-CONFIGURATION
   imports BOOL-SYNTAX
   imports RT-DATA-HIGH-SYNTAX
 
+  syntax KItem ::= "#populate_crate_map" "(" CrateList ")"
+
   syntax RetVal ::= MaybeValue
 
   syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
@@ -53,10 +56,8 @@ module KMIR-CONFIGURATION
                                    UnwindAction,              // action to perform on panic
                                    locals:List)               // return val, args, local variables
 
-  syntax CrateList ::= List
-
   configuration <kmir>
-                  <k> $PGM:CrateList  </k>
+                  <k> #populate_crate_map($PGM:CrateList) </k>
                   <retVal> NoValue </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
@@ -78,6 +79,12 @@ module KMIR-CONFIGURATION
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <basetypes> .Map </basetypes>
+                  <crates>
+                    <crate multiplicity="*" type="Map" initial="">
+                      <name> symbol(""):Symbol </name>
+                      <contents> .Crate:Crate </contents>
+                    </crate>
+                  </crates>
                 </kmir>
 
 endmodule
@@ -105,14 +112,28 @@ function and executing its function body. Before execution begins, the
 function map and the initial memory have to be set up.
 
 ```k
-  // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
-         =>
-           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
-       </k>
-       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
-       <start-symbol> FUNCNAME </start-symbol>
-       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
+  // TODO: This leave the dummy configuration in the cell map, need to remove it or better yet never add it at all 
+  rule <k> #populate_crate_map( ListItem(NAME:Symbol ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes) LIST)
+    => #populate_crate_map(LIST) ...</k>
+      <crates>
+        ( .Bag => <crate>
+                    <name> NAME </name>
+                    <contents> NAME ALLOCS FUNCTIONS ITEMS TYPES </contents>
+                  </crate>
+        )
+        ...
+      </crates>
+
+  rule <k> #populate_crate_map( .List ) => .K ...</k> // TODO: Change to => #init(...) with correct crate
+
+//  // #init step, assuming a singleton in the K cell
+//  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
+//         =>
+//           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
+//       </k>
+//       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+//       <start-symbol> FUNCNAME </start-symbol>
+//       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
 ```
 
 The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
