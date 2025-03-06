@@ -45,7 +45,8 @@ module KMIR-CONFIGURATION
   imports BOOL-SYNTAX
   imports RT-DATA-HIGH-SYNTAX
 
-  syntax RetVal ::= MaybeValue
+  syntax RetVal ::= return( Value )
+                  | "noReturn"
 
   syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
                                    dest:Place,                // place to store return value
@@ -55,7 +56,7 @@ module KMIR-CONFIGURATION
 
   configuration <kmir>
                   <k> #init($PGM:Pgm) </k>
-                  <retVal> NoValue </retVal>
+                  <retVal> noReturn </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
@@ -144,9 +145,9 @@ they are callee in a `Call` terminator within an `Item`).
 The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
-  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems )   [ function, total ]
-               | #accumFunctions ( Map, Map, FunctionNames )        [ function, total ]
-               | #accumItems ( Map, MonoItems )           [ function, total ]
+  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total ]
+               | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
+               | #accumItems ( Map, MonoItems )              [ function, total ]
 
   rule #mkFunctionMap(Functions, Items)
     =>
@@ -235,7 +236,9 @@ be known to populate the `currentFunc` field.
          <locals> _ => #reserveFor(LOCALS)  </locals>
        </currentFrame>
 
-  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function]
+  // This function performs a reverse lookup in the functions table (looks up a `Ty` by name)
+  // It defaults to `Ty(-1)` which is currently what `main` gets (`main` is not in the functions table)
+  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function, total]
 
   rule #tyFromName(NAME, ListItem(functionName(TY, FNAME)) _) => TY
     requires NAME ==K FNAME
@@ -255,7 +258,7 @@ be known to populate the `currentFunc` field.
 
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
-       ListItem(typedLocal(NoValue, TY, MUT)) #reserveFor(REST)
+       ListItem(noValue(TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -281,6 +284,7 @@ blocks, or call another function).
     requires 0 <=Int I
      andBool I <Int size(BLOCKS)
      andBool isBasicBlock(BLOCKS[I])
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
          =>
@@ -319,7 +323,6 @@ will effectively be no-ops at this level).
         =>
            VAL ~> #setLocalValue(PLACE) ~> CONT
         </k>
-    // requires isTypedLocal(VAL)
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -366,20 +369,30 @@ A `SwitchInt` terminator selects one of the blocks given as _targets_,
 depending on the value of a _discriminant_.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #readInt(DISCR) ~> #selectBlock(TARGETS)
-         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
+           #readOperand(DISCR) ~> #selectBlock(TARGETS)
        </k>
 
-  rule <k> I:Int ~> #selectBlock(TARGETS)
+  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
+  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(0, TARGETS))
+       ...
+       </k>
+
+  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+         =>
+           #execBlockIdx(#selectBlock(1, TARGETS))
+       ...
+       </k>
+
   syntax KItem ::= #selectBlock ( SwitchTargets )
-                 | #readInt ( Operand ) // FIXME not implemented, accesses a place
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
@@ -450,15 +463,26 @@ The call stack is not necessarily empty at this point so it is left untouched.
 ```k
   syntax KItem ::= "#EndProgram"
 
-  rule [endprogram]:
+  rule [endprogram-return]:
        <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #EndProgram
        </k>
-       <retVal> _ => VAL </retVal>
+       <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
          <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
+         ...
+       </currentFrame>
+
+  rule [endprogram-no-return]:
+       <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #EndProgram
+       </k>
+       <currentFrame>
+         <target> noBasicBlockIdx </target>
+         <locals> ListItem(noValue(_, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -471,7 +495,7 @@ where the returned result should go.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
-           #setUpCalleeData(NEWFUNC, ARGS)
+           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
          ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
@@ -484,8 +508,10 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> ... #tyOfCall(FUNC) |-> NEWFUNC:MonoItemKind ... </functions>
-     [preserves-definedness] // callee lookup defined
+       <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+    [preserves-definedness] // callee lookup defined
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
@@ -529,43 +555,61 @@ The local data has to be set up for the call, which requires information about t
 
   // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
   rule <k> #setArgsFromStack(IDX, OP:Operand MORE:Operands) ~> CONT
-        => 
+        =>
            #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND) 
+  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
            #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems))) 
-        => 
+  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
+        =>
            {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+     andBool isTypedLocal(CALLERLOCALS[I])
+     andBool CALLERLOCALS[I] =/=K Moved
+    [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems))) 
-        => 
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
+        =>
            {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
-        ... 
+        ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _,
-                 CALLERLOCALS 
-                => 
-                 CALLERLOCALS[I <- typedLocal(Moved, tyOfLocal({CALLERLOCALS[I]}:>TypedLocal), mutabilityNot)])
-                )
-              _:List 
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool valueOfLocal({CALLERLOCALS[I]}:>TypedLocal) =/=K Moved
+     andBool isTypedLocal(CALLERLOCALS[I])
+     andBool CALLERLOCALS[I] =/=K Moved
+    [preserves-definedness] // valid list indexing checked
 ```
+The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
+If the condition value is as expected, the program proceeds with the given `target` block.
+Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
 
+```k
+  syntax KItem ::= #AssertError ( AssertMessage )
+
+  rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
+         =>
+           #readOperand(COND) ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+       </k>
+
+  syntax KItem ::= #expect ( Bool, AssertMessage )
+
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+    requires COND ==Bool EXPECTED
+
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
+    requires COND =/=Bool EXPECTED
+```
 
 ```k
 endmodule

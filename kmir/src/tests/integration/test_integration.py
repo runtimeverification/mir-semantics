@@ -7,7 +7,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 from pyk.kast.inner import KApply, KSort, KToken
+from pyk.proof import Proof
 
+from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
 from kmir.build import haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import Parser
 
@@ -15,6 +17,7 @@ if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
     from kmir.convert_from_definition.v2parser import JSON
+    from kmir.kmir import KMIR
     from kmir.tools import Tools
 
 
@@ -243,6 +246,24 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
         None,
     ),
+    (
+        'arithmetic',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
+        None,
+    ),
+    (
+        'arithmetic-unchecked',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.state',
+        None,
+    ),
+    (
+        'unary',
+        EXEC_DATA_DIR / 'arithmetic' / 'unary.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'unary.state',
+        None,
+    ),
 ]
 
 
@@ -279,3 +300,25 @@ def test_exec_smir(
     else:
         with output_kast.open('w') as f:
             f.write(result_pretty)
+
+
+@pytest.mark.parametrize(
+    'test_data',
+    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
+    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
+)
+def test_prove(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
+    testname, smir_json = test_data
+    spec_file = tmp_path / f'{testname}.k'
+    gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
+
+    proof_dir = tmp_path / 'proof'
+    prove_opts = ProveRunOpts(spec_file, proof_dir, None, None)
+
+    _kmir_gen_spec(gen_opts)
+    _kmir_prove_run(prove_opts)
+
+    claim_labels = kmir.get_claim_index(spec_file).labels()
+    for label in claim_labels:
+        proof = Proof.read_proof_data(proof_dir, label)
+        assert proof.passed

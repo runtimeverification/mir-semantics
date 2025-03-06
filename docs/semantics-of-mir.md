@@ -166,24 +166,25 @@ A _vector_ of `ProjectionElem`s may be applied in sequence to the local, e.g., f
 
 An `RValue` is an operation that produces a value which can then be assigned to a `Place`.
 
-| RValue         | Arguments                                       | Action                               |
-|----------------|-------------------------------------------------|--------------------------------------|
-| Use            | Operand                                         | use (i.e., copy) operand unmodified  |
-| Repeat         | Operand, Const                                  | create array [Operand;Const]         |
-| Ref            | Region, BorrowKind, Place                       | create reference to place            |
-| ThreadLocalRef | DefId                                           | thread-local reference (?)           |
-| AddressOf      | Mutability, Place                               | creates pointer to place             |
-| Len            | Place                                           | array or slice size                  |
-| Cast           | CastKind, Operand, Ty                           | different kinds of type casts        |
-|----------------|-------------------------------------------------|--------------------------------------|
-| BinaryOp       | BinOp, Box<(Operand, Operand)>                  | different fixed operations           |
-| NullaryOp      | NullOp, Ty                                      | on ints, bool, floats                |
-| UnaryOp        | UnOp, Operand                                   | (see below)                          |
-|----------------|-------------------------------------------------|--------------------------------------|
-| Aggregate      | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array            |
-| Discriminant   | Place                                           | discriminant (of sums types) (?)     |
-| ShallowInitBox | Operand, Ty                                     | ?                                    |
-| CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
+| RValue          | Arguments                                       | Action                                    |
+|-----------------|-------------------------------------------------|-------------------------------------------|
+| Use             | Operand                                         | use (i.e., copy) operand unmodified       |
+| Repeat          | Operand, Const                                  | create array [Operand;Const]              |
+| Ref             | Region, BorrowKind, Place                       | create reference to place                 |
+| ThreadLocalRef  | DefId                                           | thread-local reference (?)                |
+| AddressOf       | Mutability, Place                               | creates pointer to place                  |
+| Len             | Place                                           | array or slice size                       |
+| Cast            | CastKind, Operand, Ty                           | different kinds of type casts             |
+|-----------------|-------------------------------------------------|-------------------------------------------|
+| BinaryOp        | BinOp, Box<(Operand, Operand)>                  | different fixed operations                |
+| CheckedBinaryOp | BinOp, Operand, Operand                         | same operations but error flag StableMir  |
+| NullaryOp       | NullOp, Ty                                      | on ints, bool, floats                     |
+| UnaryOp         | UnOp, Operand                                   | (see below)                               |
+|-----------------|-------------------------------------------------|-------------------------------------------|
+| Aggregate       | Box<AggregateKind>, IndexVec<FieldIdx, Operand> | `struct`, tuple, or array                 |
+| Discriminant    | Place                                           | discriminant (of sums types) (?)          |
+| ShallowInitBox  | Operand, Ty                                     | ?                                         |
+| CopyForDeref    | Place                                           | use (copy) contents of `Place`            |
 
 See https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_const_eval/src/interpret/step.rs#L139-L291
 

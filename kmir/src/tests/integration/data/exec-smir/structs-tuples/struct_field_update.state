@@ -3,7 +3,7 @@
     #EndProgram ~> .K
   </k>
   <retVal>
-    NoValue
+    noReturn
   </retVal>
   <currentFunc>
     ty ( -1 )
@@ -25,15 +25,15 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Scalar ( 1 , 1 , false ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Any , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Scalar ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Scalar ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Moved , ty ( 27 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedLocal ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
+      ListItem ( Moved )
+      ListItem ( Moved )
+      ListItem ( Moved )
     </locals>
   </currentFrame>
   <stack>

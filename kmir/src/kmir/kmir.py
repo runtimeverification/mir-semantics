@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
+from pyk.cli.utils import bug_report_arg
+from pyk.cterm import cterm_symbolic
 from pyk.kast.inner import KApply, KSequence
+from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
 from pyk.ktool.kprove import KProve
@@ -10,20 +14,40 @@ from pyk.ktool.krun import KRun
 from pyk.proof.show import APRProofNodePrinter
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
     from typing import Final
 
     from pyk.cterm import CTerm
     from pyk.proof.reachability import APRProof
+    from pyk.utils import BugReport
 
 
 class KMIR(KProve, KRun):
-    def __init__(self, definition_dir: Path) -> None:
-        KProve.__init__(self, definition_dir)
-        KRun.__init__(self, definition_dir)
+    llvm_library_dir: Path | None
+    bug_report: BugReport | None
+
+    def __init__(
+        self, definition_dir: Path, llvm_library_dir: Path | None = None, bug_report: Path | None = None
+    ) -> None:
+        self.bug_report = bug_report_arg(bug_report) if bug_report is not None else None
+        KProve.__init__(self, definition_dir, bug_report=self.bug_report)
+        KRun.__init__(self, definition_dir, bug_report=self.bug_report)
+        self.llvm_library_dir = llvm_library_dir
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR_KItem')
+
+    @contextmanager
+    def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
+        with cterm_symbolic(
+            self.definition,
+            self.definition_dir,
+            llvm_definition_dir=self.llvm_library_dir,
+            bug_report=self.bug_report,
+            id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
+        ) as cts:
+            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
 
 class KMIRSemantics(DefaultSemantics):
