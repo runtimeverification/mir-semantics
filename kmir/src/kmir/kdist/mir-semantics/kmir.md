@@ -16,7 +16,7 @@ module KMIR-SYNTAX
   imports KMIR-AST
 
   syntax CrateList ::= List
-  syntax KItem ::= #init( CrateList )
+  syntax KItem ::= #init( Crate )
 
 endmodule
 ```
@@ -125,16 +125,28 @@ function map and the initial memory have to be set up.
         ...
       </crates>
 
-  rule <k> #populate_crate_map( .List ) => .K ...</k> // TODO: Change to => #init(...) with correct crate
+  rule <k> #populate_crate_map( .List ) => #init( #lookup_crate(START_CRATE) ) ...</k>
+        <start-crate> START_CRATE </start-crate>
 
-//  // #init step, assuming a singleton in the K cell
-//  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
-//         =>
-//           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
-//       </k>
-//       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
-//       <start-symbol> FUNCNAME </start-symbol>
-//       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
+  syntax Crate ::= "#lookup_crate" "(" Symbol ")" [function]
+
+  rule [[ #lookup_crate( NAME ) => CONTENTS ]]
+    <crates>
+      <crate>
+        <name> NAME </name>
+        <contents> CONTENTS </contents>
+      </crate>
+      ...
+    </crates>
+
+  // #init step, assuming a singleton in the K cell
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
+         =>
+           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
+       </k>
+       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+       <start-symbol> FUNCNAME </start-symbol>
+       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
 ```
 
 The `Map` of types is static information used for decoding constants and allocated data into `Value`s.

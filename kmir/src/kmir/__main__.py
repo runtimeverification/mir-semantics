@@ -72,7 +72,9 @@ def _kmir_run(opts: RunOpts) -> None:
 
     terms, _sort = parse_mir_klist_json(passed, KSort('Crate'))
 
-    start_crate = extract_crate_name(opts.input_files[0]) if len(opts.input_files) == 1 else opts.start_crate
+    start_crate = (
+        extract_crate_name(opts.input_files[0]).replace('-', '_') if len(opts.input_files) == 1 else opts.start_crate
+    )
 
     run_result = tools.run_parsed(terms, opts.start_symbol, start_crate, opts.depth)
 
