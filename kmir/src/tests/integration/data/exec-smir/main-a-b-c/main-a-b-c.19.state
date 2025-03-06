@@ -3,7 +3,7 @@
     #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
   </k>
   <retVal>
-    NoValue
+    noReturn
   </retVal>
   <currentFunc>
     ty ( 27 )
@@ -25,13 +25,13 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) )
+      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) ) ) )
   </stack>
   <functions>
     ty ( 13 ) |-> monoItemFn (... name: symbol ( "std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>" ) , id: defId ( 2 ) , body: body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 31 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 19 ) , id: mirConstId ( 3 ) ) ) ) , args: operandMove ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandConstant ( constOperand (... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 1 ) , id: mirConstId ( 4 ) ) ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 33 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 34 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 20 ) , id: mirConstId ( 5 ) ) ) ) , args: operandConstant ( constOperand (... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 1 ) , id: mirConstId ( 4 ) ) ) )  .Operands , destination: place (... local: local ( 2 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 2 ) ) , unwind: unwindActionUnreachable ) , span: span ( 35 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 36 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 37 ) , mut: mutabilityMut )  localDecl (... ty: ty ( 7 ) , span: span ( 38 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 1 ) , span: span ( 39 ) , mut: mutabilityNot )  .LocalDecls , argCount: 1 , varDebugInfo: varDebugInfo (... name: symbol ( "f" ) , sourceInfo: sourceInfo (... span: span ( 38 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 1 ) )  varDebugInfo (... name: symbol ( "result" ) , sourceInfo: sourceInfo (... span: span ( 40 ) , scope: sourceScope ( 1 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 0 ) , projection: .ProjectionElems ) ) , argumentIndex: noInt )  varDebugInfo (... name: symbol ( "dummy" ) , sourceInfo: sourceInfo (... span: span ( 41 ) , scope: sourceScope ( 2 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsConst ( constOperand (... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 1 ) , id: mirConstId ( 4 ) ) ) ) , argumentIndex: someInt ( 1 ) )  .VarDebugInfos , spreadArg: noLocal , span: span ( 42 ) )  .Bodies )

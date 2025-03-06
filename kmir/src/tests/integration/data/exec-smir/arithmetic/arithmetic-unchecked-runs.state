@@ -3,7 +3,7 @@
     #EndProgram ~> .K
   </k>
   <retVal>
-    NoValue
+    noReturn
   </retVal>
   <currentFunc>
     ty ( -1 )
@@ -31,24 +31,24 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) )
+      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( 254 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Moved , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , TyUnknown , mutabilityNot ) ) ) , ty ( 28 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( Moved )
+      ListItem ( Moved ) ) , ty ( 28 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( 255 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( -100 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Moved , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , TyUnknown , mutabilityNot ) ) ) , ty ( 26 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( Moved )
+      ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( -32640 , 16 , true ) , ty ( 35 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( 255 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Moved , ty ( 35 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , TyUnknown , mutabilityNot ) ) ) , ty ( 36 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( Moved )
+      ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( -32768 , 16 , true ) , ty ( 35 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Moved , ty ( 35 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Moved , TyUnknown , mutabilityNot ) ) ) , ty ( 36 ) , mutabilityMut ) )
+      ListItem ( typedLocal ( Aggregate ( ListItem ( Moved )
+      ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
@@ -81,4 +81,3 @@
     ty ( 35 ) |-> rigidTyInt ( intTyI16 )
   </basetypes>
 </kmir>
-

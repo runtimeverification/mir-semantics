@@ -3,7 +3,7 @@
     #EndProgram ~> .K
   </k>
   <retVal>
-    NoValue
+    noReturn
   </retVal>
   <currentFunc>
     ty ( -1 )
@@ -25,7 +25,7 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( typedLocal ( NoValue , ty ( 1 ) , mutabilityMut ) )
+      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedLocal ( Integer ( 32896 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
       ListItem ( typedLocal ( Integer ( -32640 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
