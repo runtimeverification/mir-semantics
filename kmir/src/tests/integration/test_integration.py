@@ -15,8 +15,9 @@ from kmir.build import haskell_semantics, llvm_semantics
 from kmir.convert_from_definition.v2parser import Parser
 
 if TYPE_CHECKING:
-    from pyk.kast.inner import KInner
     from collections.abc import Iterable
+
+    from pyk.kast.inner import KInner
 
     from kmir.convert_from_definition.v2parser import JSON
     from kmir.kmir import KMIR
@@ -326,29 +327,26 @@ def test_prove(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
         assert proof.passed
 
 
+# FIXME these functions are somehow not in scope to make the test data.
+def number(n: int, bits: int = 8, signed: str = "true") -> KInner:
+    KApply(
+        'Integer(_,_,_)_RT-DATA-HIGH-SYNTAX_Value_Int_Int_Bool',
+        (KToken(str(n), KSort('Int')), KToken(str(bits), KSort('Int')), KToken(signed, KSort('Bool'))),
+    )
+
+def typedLocal(
+    val: KInner,
+    ty: KInner = KVariable('?_TY', KSort('MaybeTy')),
+    mut: KInner = KVariable('?_MUT', KSort('Mutability')),):
+    KApply('typedLocal(_,_,_)_RT-DATA-SYNTAX_TypedLocal_Value_MaybeTy_Mutability', (val, ty, mut))
+
 def test_prove_binops(kmir: KMIR):
     # creates a claim index from a template by inserting requires clauses
     # from test parameters and runs proofs for all claims in the index
 
     from pyk.proof.reachability import APRProof, APRProver
 
-    def number(n: int, bits: int = 8, signed: str = "true") -> KInner:
-        KApply(
-            'Integer(_,_,_)_RT-DATA-HIGH-SYNTAX_Value_Int_Int_Bool',
-            ( KToken(str(n), KSort('Int')), KToken(str(bits), KSort('Int')), KToken(signed, KSort('Bool')))
-        )
-
-    def typedLocal(val: KInner, ty: KInner = KVariable('?_TY', KSort('MaybeTy')), mut: KInner = KVariable('?_MUT', KSort('Mutability'))):
-        KApply('typedLocal(_,_,_)_RT-DATA-SYNTAX_TypedLocal_Value_MaybeTy_Mutability', (val, ty, mut))
-
-    test_data = [
-        (
-            'addition',
-            number(42),
-            number(43),
-            typedLocal(number(85))
-        )
-    ]
+    test_data = [('addition', number(42), number(43), typedLocal(number(85)))]
 
     from tempfile import NamedTemporaryFile
 
@@ -376,18 +374,22 @@ endmodule'''
         claim_file.close()
         claim_template = kmir.get_claims(Path(claim_file.name))[0]
 
-
     def anded(monoms: Iterable[KInner]) -> KInner:
         from functools import reduce
-        reduce(lambda x,y: KApply("_andBool_", (x, y)), monoms)
+
+        reduce(lambda x, y: KApply("_andBool_", (x, y)), monoms)
 
     for name, arg1, arg2, result in test_data:
         claim = claim_template.let(
-            requires = anded((KApply("_==K_", (KVariable("ARG1"), arg1)), KApply("_==K_", (KVariable("ARG2"), arg2)))),
-            ensures = KApply("_==K_", (KVariable("?RESULT"), result)),
+            requires=anded((KApply("_==K_", (KVariable("ARG1"), arg1)), KApply("_==K_", (KVariable("ARG2"), arg2)))),
+            ensures=KApply("_==K_", (KVariable("?RESULT"), result)),
         )
 
-        print(claim)
+        # FIXME debugging output
+        print(number(32))
+        print(typedLocal(number(33)))
+        print(claim.ensures)
+        print(claim.requires)
 
         proof = APRProof.from_claim(kmir.definition, claim, {})
         with kmir.kcfg_explore(name) as kcfg_explore:
