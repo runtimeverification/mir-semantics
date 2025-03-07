@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from pyk.kast.inner import KApply, KSort, KToken
+from pyk.kast.inner import KApply, KSort, KToken, KVariable
+from pyk.kast.outer import KClaim
 from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
@@ -15,6 +16,7 @@ from kmir.convert_from_definition.v2parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
+    from collections.abc import Iterable
 
     from kmir.convert_from_definition.v2parser import JSON
     from kmir.kmir import KMIR
@@ -322,3 +324,72 @@ def test_prove(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
+
+
+def test_prove_binops(kmir: KMIR):
+    # creates a claim index from a template by inserting requires clauses
+    # from test parameters and runs proofs for all claims in the index
+
+    from pyk.proof.reachability import APRProof, APRProver
+
+    def number(n: int, bits: int = 8, signed: str = "true") -> KInner:
+        KApply(
+            'Integer(_,_,_)_RT-DATA-HIGH-SYNTAX_Value_Int_Int_Bool',
+            ( KToken(str(n), KSort('Int')), KToken(str(bits), KSort('Int')), KToken(signed, KSort('Bool')))
+        )
+
+    def typedLocal(val: KInner, ty: KInner = KVariable('?_TY', KSort('MaybeTy')), mut: KInner = KVariable('?_MUT', KSort('Mutability'))):
+        KApply('typedLocal(_,_,_)_RT-DATA-SYNTAX_TypedLocal_Value_MaybeTy_Mutability', (val, ty, mut))
+
+    test_data = [
+        (
+            'addition',
+            number(42),
+            number(43),
+            typedLocal(number(85))
+        )
+    ]
+
+    from tempfile import NamedTemporaryFile
+
+    with NamedTemporaryFile(mode='w', delete_on_close=False, prefix='claim-template.k') as claim_file:
+        claim_file.write(
+            '''
+module CLAIM-TEMPLATE
+  imports KMIR
+
+  claim [binop]:
+        <k> rvalueBinaryOp(
+                OP,
+                operandCopy(place(local(1), .ProjectionElems)),
+                operandCopy(place(local(2), .ProjectionElems))
+            ) => ?RESULT
+        ...
+        </k>
+        <locals>
+          ListItem(noValue( _TY, mutabilityMut))
+          ListItem(typedLocal(ARG1, TY:Ty, _MUT1)) // important for the #compute rule to fire!
+          ListItem(typedLocal(ARG2, TY, _MUT2))
+        </locals>
+endmodule'''
+        )
+        claim_file.close()
+        claim_template = kmir.get_claims(Path(claim_file.name))[0]
+
+
+    def anded(monoms: Iterable[KInner]) -> KInner:
+        from functools import reduce
+        reduce(lambda x,y: KApply("_andBool_", (x, y)), monoms)
+
+    for name, arg1, arg2, result in test_data:
+        claim = claim_template.let(
+            requires = anded((KApply("_==K_", (KVariable("ARG1"), arg1)), KApply("_==K_", (KVariable("ARG2"), arg2)))),
+            ensures = KApply("_==K_", (KVariable("?RESULT"), result)),
+        )
+
+        print(claim)
+
+        proof = APRProof.from_claim(kmir.definition, claim, {})
+        with kmir.kcfg_explore(name) as kcfg_explore:
+            APRProver(kcfg_explore).advance_proof(proof)
+            assert proof.passed, f"Proof binop-{name} failed."
