@@ -329,7 +329,7 @@ def test_prove(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
 
 # FIXME these functions are somehow not in scope to make the test data.
 def number(n: int, bits: int = 8, signed: str = "true") -> KInner:
-    KApply(
+    return KApply(
         'Integer(_,_,_)_RT-DATA-HIGH-SYNTAX_Value_Int_Int_Bool',
         (KToken(str(n), KSort('Int')), KToken(str(bits), KSort('Int')), KToken(signed, KSort('Bool'))),
     )
@@ -337,8 +337,8 @@ def number(n: int, bits: int = 8, signed: str = "true") -> KInner:
 def typedLocal(
     val: KInner,
     ty: KInner = KVariable('?_TY', KSort('MaybeTy')),
-    mut: KInner = KVariable('?_MUT', KSort('Mutability')),):
-    KApply('typedLocal(_,_,_)_RT-DATA-SYNTAX_TypedLocal_Value_MaybeTy_Mutability', (val, ty, mut))
+    mut: KInner = KVariable('?_MUT', KSort('Mutability')),) -> KInner:
+    return KApply('typedLocal(_,_,_)_RT-DATA-SYNTAX_TypedLocal_Value_MaybeTy_Mutability', (val, ty, mut))
 
 def test_prove_binops(kmir: KMIR):
     # creates a claim index from a template by inserting requires clauses
@@ -377,7 +377,7 @@ endmodule'''
     def anded(monoms: Iterable[KInner]) -> KInner:
         from functools import reduce
 
-        reduce(lambda x, y: KApply("_andBool_", (x, y)), monoms)
+        return reduce(lambda x, y: KApply("_andBool_", (x, y)), monoms)
 
     for name, arg1, arg2, result in test_data:
         claim = claim_template.let(
