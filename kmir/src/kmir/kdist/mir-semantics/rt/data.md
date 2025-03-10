@@ -810,12 +810,30 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
+#### Potential errors
+
+```k
+  syntax KItem ::= #OperationError( OperationError )
+
+  syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
+                          | OperandMismatch ( BinOp, Value, Value )
+                          | OperandError( BinOp, TypedLocal, TypedLocal)
+                          | OperandMismatch ( UnOp, Value )
+                          | OperandError( UnOp, TypedLocal)
+                          // errors above are compiler bugs or invalid MIR
+                          | Unimplemented ( BinOp, TypedLocal, TypedLocal)
+                          // errors below are program errors
+                          | "DivisionByZero"
+                          | "Overflow_U_B" // better than getting stuck
+```
+
+#### Computing results
+
 For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -835,7 +853,8 @@ For binary operations generally, both arguments have to be read from the provide
        ...
        </k>
 
-  rule <k> ARG2:TypedLocal ~> #ready(BINOP, ARG1,CHECKFLAG)
+  rule [compute-binop]:
+       <k> ARG2:TypedLocal ~> #ready(BINOP, ARG1,CHECKFLAG)
         =>
            #compute(BINOP, ARG1, ARG2, CHECKFLAG)
        ...
@@ -854,30 +873,26 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
        </k>
 ```
 
-#### Potential errors
+For technical reasons within K Framework, a dedicated result type is used which holds either the resulting `TypedLocal` or the `OperationError`. The result is then added to the sequence in the `k` cell for consumption, likewise for errors (which stop execution).
 
 ```k
-  syntax KItem ::= #OperationError( OperationError )
+  syntax OpResult ::= #opResult ( TypedLocal )
+                    | #opError ( OperationError )
 
-  syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
-                          | OperandMismatch ( BinOp, Value, Value )
-                          | OperandError( BinOp, TypedLocal, TypedLocal)
-                          | OperandMismatch ( UnOp, Value )
-                          | OperandError( UnOp, TypedLocal)
-                          // errors above are compiler bugs or invalid MIR
-                          | Unimplemented ( BinOp, TypedLocal, TypedLocal)
-                          // errors below are program errors
-                          | "DivisionByZero"
-                          | "Overflow_U_B" // better than getting stuck
+  rule <k> #opResult(VALUE) => VALUE ... </k>
+
+  rule <k> #opError(ERR) => #OperationError(ERR) ... </k>
+
+  syntax OpResult ::= #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
 
   // catch pathological cases where ARG1 or ARG2, or both, are Moved or NoValue.
-  rule #compute(OP, ARG1, ARG2, _FLAG) => #OperationError(OperandError(OP, ARG1, ARG2))
+  rule #compute(OP, ARG1, ARG2, _FLAG) => #opError(OperandError(OP, ARG1, ARG2))
     requires notBool (hasValue(ARG1) andBool hasValue(ARG2))
 
   // catch-all rule to make `#compute` total
   rule #compute(OP, ARG1, ARG2, _FLAG)
       =>
-        #OperationError(Unimplemented(OP, ARG1, ARG2))
+        #opError(Unimplemented(OP, ARG1, ARG2))
     [owise]
 ```
 
@@ -938,14 +953,14 @@ The arithmetic operations require operands of the same numeric type.
     // non-scalar arguments
   rule #compute(BOP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
     =>
-       #OperationError(OperandMismatch(BOP, ARG1, ARG2))
+       #opError(OperandMismatch(BOP, ARG1, ARG2))
     requires isArithmetic(BOP)
     [owise]
 
     // different argument types
   rule #compute(BOP, typedLocal(_, TY1, _), typedLocal(_, TY2, _), _)
     =>
-       #OperationError(TypeMismatch(BOP, TY1, TY2))
+       #opError(TypeMismatch(BOP, TY1, TY2))
     requires TY1 =/=K TY2
      andBool isArithmetic(BOP)
     [owise]
@@ -976,11 +991,12 @@ The arithmetic operations require operands of the same numeric type.
     [preserves-definedness]
 
   // perform arithmetic operations on integral types of given width
-  syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
+  syntax OpResult ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
   //                                       arg1  arg2 width signedness result overflowcheck
   // signed numbers: must check for wrap-around (operation specific)
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
     =>
+      #opResult(
        typedLocal(
           Aggregate(
             ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
@@ -1002,6 +1018,7 @@ The arithmetic operations require operands of the same numeric type.
           TyUnknown,
           mutabilityNot
         )
+      )
     requires isArithmetic(BOP)
     [preserves-definedness]
 
@@ -1009,6 +1026,7 @@ The arithmetic operations require operands of the same numeric type.
   // unsigned numbers: simple overflow check using a bit mask
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, true)
     =>
+      #opResult(
        typedLocal(
           Aggregate(
             ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
@@ -1026,6 +1044,7 @@ The arithmetic operations require operands of the same numeric type.
           TyUnknown,
           mutabilityNot
         )
+      )
     requires isArithmetic(BOP)
     [preserves-definedness]
 
@@ -1033,7 +1052,7 @@ The arithmetic operations require operands of the same numeric type.
   // The check it the same as the one for the overflow flag above
 
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, false)
-    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+    => #opResult(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
@@ -1041,13 +1060,13 @@ The arithmetic operations require operands of the same numeric type.
 
   // unsigned numbers: simple overflow check using a bit mask
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, false)
-    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+    => #opResult(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
 
-  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #OperationError(Overflow_U_B)
+  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #opError(Overflow_U_B)
     requires isArithmetic(BOP)
     [owise]
 
@@ -1055,24 +1074,24 @@ The arithmetic operations require operands of the same numeric type.
   // (the latter can only happen for signed Ints with dividend minInt and divisor -1
   rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
       =>
-        #OperationError(DivisionByZero)
+        #opError(DivisionByZero)
     requires DIVISOR ==Int 0
     [priority(40)]
   rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _)
       =>
-        #OperationError(DivisionByZero)
+        #opError(DivisionByZero)
     requires DIVISOR ==Int 0
     [priority(40)]
 
   rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _)
       =>
-        #OperationError(Overflow_U_B)
+        #opError(Overflow_U_B)
     requires DIVISOR ==Int -1
      andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
     [priority(40)]
   rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _)
       =>
-        #OperationError(Overflow_U_B)
+        #opError(Overflow_U_B)
     requires DIVISOR ==Int -1
      andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
     [priority(40)]
@@ -1111,23 +1130,23 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
-  rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #OperationError(TypeMismatch(OP, TY, TY2))
+  rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #opError(TypeMismatch(OP, TY, TY2))
     requires isComparison(OP)
      andBool TY =/=K TY2
 
   rule #compute(OP, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
-        typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        #opResult(typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot))
     requires isComparison(OP)
 
   rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
       =>
-        typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        #opResult(typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot))
     requires isComparison(OP)
 
   rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
       =>
-        #OperationError(OperandMismatch(OP, ARG1, ARG2))
+        #opError(OperandMismatch(OP, ARG1, ARG2))
     [owise]
 ```
 
@@ -1146,11 +1165,11 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
 
   rule #compute(binOpCmp, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
-        typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+        #opResult(typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot))
 
   rule #compute(binOpCmp, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
       =>
-        typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+        #opResult(typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot))
 
 ```
 
