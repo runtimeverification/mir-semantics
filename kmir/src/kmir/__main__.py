@@ -73,7 +73,7 @@ class ProveRunOpts(KMirOpts):
 
 @dataclass
 class ProveViewOpts(KMirOpts):
-    proof_dir: Path | None
+    proof_dir: Path
     id: str
 
 
@@ -199,7 +199,9 @@ def _arg_parser() -> ArgumentParser:
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
-    prove_view_parser.add_argument('--proof-dir', metavar='PROOF_DIR', help='Proofs folder that can contain the proof')
+    prove_view_parser.add_argument(
+        '--proof-dir', required=True, metavar='PROOF_DIR', help='Proofs folder that can contain the proof'
+    )
 
     return parser
 
@@ -230,7 +232,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                         bug_report=ns.bug_report,
                     )
                 case 'view':
-                    proof_dir = Path(ns.proof_dir).resolve() if ns.proof_dir is not None else None
+                    proof_dir = Path(ns.proof_dir).resolve()
                     return ProveViewOpts(proof_dir, ns.id)
                 case _:
                     raise AssertionError()
