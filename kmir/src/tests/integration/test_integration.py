@@ -11,12 +11,12 @@ from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
 from kmir.build import haskell_semantics, llvm_semantics
-from kmir.convert_from_definition.v2parser import Parser
+from kmir.convert_from_definition.parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
-    from kmir.convert_from_definition.v2parser import JSON
+    from kmir.convert_from_definition.parser import JSON
     from kmir.kmir import KMIR
     from kmir.tools import Tools
 
