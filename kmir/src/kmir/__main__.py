@@ -14,8 +14,8 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
-from kmir.convert_from_definition.parser import parse_json
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
+from kmir.parse.parser import parse_json
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
