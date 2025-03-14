@@ -4,7 +4,7 @@ from pathlib import Path
 
 from kmir.build import llvm_semantics
 
-from .v2parser import parse_json
+from .parser import parse_json
 
 
 def parse_args() -> argparse.Namespace:
