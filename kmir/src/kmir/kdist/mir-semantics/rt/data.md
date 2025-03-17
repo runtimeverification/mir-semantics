@@ -770,6 +770,45 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
 ```
 
+For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
+An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Reference(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
+              projectionElemDeref PROJS
+            )
+         =>
+           #readProjection(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL), appendP(PLACEPROJS, PROJS))
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int FRAME
+     andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+    [preserves-definedness] // valid list indexing checked
+
+    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local ) [function]
+
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int)) => {LOCALS[I]}:>TypedLocal
+      requires 0 <=Int I
+       andBool I <Int size(LOCALS)
+       andBool isTypedLocal(LOCALS[I])
+      [preserves-definedness] // valid list indexing checked
+
+  syntax TypedLocal ::= #incrementRef ( TypedLocal ) [function, total]
+                      | #decrementRef ( TypedLocal ) [function]
+
+  rule #incrementRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT))
+    => typedLocal(Reference(HEIGHT +Int 1, PLACE, REFMUT), TY, MUT)
+  rule #incrementRef(TL) => TL [owise]
+
+  rule #decrementRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT))
+    => typedLocal(Reference(HEIGHT -Int 1, PLACE, REFMUT), TY, MUT)
+    // requires 0 <Int HEIGHT
+  rule #decrementRef(TL) => TL [owise]
+
+```
 
 
 #### Writing data to places with projections
