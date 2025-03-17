@@ -353,7 +353,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 A number of unary and binary operations exist, (which are dependent on the operand types).
 
 ```k
-// BinaryOp, UnaryOp. NullaryOp: not implemented yet.
+// BinaryOp, UnaryOp. NullaryOp: dependent on value representation. See below
 ```
 
 Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
@@ -407,8 +407,25 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 
 References and de-referencing is another family of `RValue`s.
 
+References can be created using a particular region kind (not used here) and `BorrowKind`.
+The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references. These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind]. Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
+
+[^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
+
 ```k
-// Ref, AddressOf, CopyForDeref: not implemented yet
+  rule <k> rvalueRef(_REGION, KIND, PLACE)
+         =>
+           typedLocal(Reference(0, PLACE, #mutabilityOf(KIND)), TyUnknown, #mutabilityOf(KIND))
+       ...
+       </k>
+
+  syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
+
+  rule #mutabilityOf(borrowKindShared)  => mutabilityNot
+  rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
+  rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
+
+// AddressOf, CopyForDeref: not implemented yet
 ```
 
 ## Type casts
@@ -435,6 +452,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 ```k
   syntax Value ::= value ( Bytes , RigidTy )
                  | Aggregate( List ) // retaining field structure of struct or tuple types
+                 | Reference( Int , Place , Mutability ) // stack depth (initially 0), place, borrow kind
 ```
 
 ```k
@@ -458,6 +476,7 @@ Values in MIR can also be represented at a certain abstraction level, interpreti
 High-level values can be
 - a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
 - built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
+- references to a place in the current or an enclosing stack frame
 - arrays and slices (with homogenous element types)
 
 **This sort is work in progress and will be extended and modified as we go**
@@ -474,6 +493,8 @@ module RT-DATA-HIGH-SYNTAX
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
+                 | Reference( Int , Place , Mutability )
+                   // stack depth (initially 0), place, borrow kind
                 //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
                    // address, metadata              for ref/ptr
                 //  | Range( List )
