@@ -264,6 +264,36 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'arithmetic' / 'unary.state',
         None,
     ),
+    (
+        'Ref-simple',
+        EXEC_DATA_DIR / 'references' / 'simple.smir.json',
+        EXEC_DATA_DIR / 'references' / 'simple.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg2',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
+        None,
+    ),
+    (
+        'Ref-refReturned',
+        EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refReturned.state',
+        None,
+    ),
+    (
+        'Ref-doubleRef',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.state',
+        None,
+    ),
 ]
 
 
