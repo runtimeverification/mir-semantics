@@ -404,8 +404,9 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 // Discriminant, ShallowIntBox: not implemented yet
 ```
 
+### References and Dereferencing
 
-References and de-referencing is another family of `RValue`s.
+References and de-referencing give rise to another family of `RValue`s.
 
 References can be created using a particular region kind (not used here) and `BorrowKind`.
 The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references. These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind]. Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
@@ -424,8 +425,14 @@ The `BorrowKind` indicates mutability of the value through the reference, but al
   rule #mutabilityOf(borrowKindShared)  => mutabilityNot
   rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
+```
 
-// AddressOf, CopyForDeref: not implemented yet
+A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`, except that the compiler guarantees the only use of the copied value will be for dereferencing, which enables optimisations in the borrow checker and in code generation.
+
+```k
+  rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
+
+// AddressOf: not implemented yet
 ```
 
 ## Type casts
