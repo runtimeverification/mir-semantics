@@ -786,7 +786,7 @@ An important prerequisite of this rule is that when passing references to a call
               projectionElemDeref PROJS
             )
          =>
-           #readProjection(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL), appendP(PLACEPROJS, PROJS))
+           #readProjection(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME), appendP(PLACEPROJS, PROJS))
        ...
        </k>
        <stack> STACK </stack>
@@ -795,26 +795,24 @@ An important prerequisite of this rule is that when passing references to a call
      andBool isStackFrame(STACK[FRAME -Int 1])
     [preserves-definedness] // valid list indexing checked
 
-    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local ) [function]
+    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int)) => {LOCALS[I]}:>TypedLocal
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
       requires 0 <=Int I
        andBool I <Int size(LOCALS)
        andBool isTypedLocal(LOCALS[I])
       [preserves-definedness] // valid list indexing checked
 
-  syntax TypedLocal ::= #incrementRef ( TypedLocal ) [function, total]
-                      | #decrementRef ( TypedLocal ) [function]
+  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
+                      | #decrementRef ( TypedLocal )  [function, total]
+                      | #adjustRef (TypedLocal, Int ) [function, total]
 
-  rule #incrementRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT))
-    => typedLocal(Reference(HEIGHT +Int 1, PLACE, REFMUT), TY, MUT)
-  rule #incrementRef(TL) => TL [owise]
+  rule #adjustRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedLocal(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(TL, _) => TL [owise]
 
-  rule #decrementRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT))
-    => typedLocal(Reference(HEIGHT -Int 1, PLACE, REFMUT), TY, MUT)
-    // requires 0 <Int HEIGHT
-  rule #decrementRef(TL) => TL [owise]
-
+  rule #incrementRef(TL) => #adjustRef(TL, 1)
+  rule #decrementRef(TL) => #adjustRef(TL, -1)
 ```
 
 
