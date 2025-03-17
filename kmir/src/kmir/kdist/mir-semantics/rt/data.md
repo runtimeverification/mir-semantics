@@ -744,6 +744,34 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
     [preserves-definedness] // valid list indexing checked
 ```
 
+A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
+
+In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Reference(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
+              projectionElemDeref PROJS:ProjectionElems
+            )
+         =>
+           #readProjection({LOCALS[I]}:>TypedLocal, appendP(PLACEPROJS, PROJS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  // why do we not have this automatically for user-defined lists?
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  rule appendP(.ProjectionElems, TAIL) => TAIL
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+
+```
+
+
+
 #### Writing data to places with projections
 
 When writing data to a place with projections, the updated value gets constructed recursively by a function over the projections.
