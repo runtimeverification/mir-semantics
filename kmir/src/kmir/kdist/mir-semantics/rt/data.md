@@ -353,7 +353,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 A number of unary and binary operations exist, (which are dependent on the operand types).
 
 ```k
-// BinaryOp, UnaryOp. NullaryOp: not implemented yet.
+// BinaryOp, UnaryOp. NullaryOp: dependent on value representation. See below
 ```
 
 Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
@@ -404,11 +404,35 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 // Discriminant, ShallowIntBox: not implemented yet
 ```
 
+### References and Dereferencing
 
-References and de-referencing is another family of `RValue`s.
+References and de-referencing give rise to another family of `RValue`s.
+
+References can be created using a particular region kind (not used here) and `BorrowKind`.
+The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references. These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind]. Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
+
+[^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
 ```k
-// Ref, AddressOf, CopyForDeref: not implemented yet
+  rule <k> rvalueRef(_REGION, KIND, PLACE)
+         =>
+           typedLocal(Reference(0, PLACE, #mutabilityOf(KIND)), TyUnknown, #mutabilityOf(KIND))
+       ...
+       </k>
+
+  syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
+
+  rule #mutabilityOf(borrowKindShared)  => mutabilityNot
+  rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
+  rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
+```
+
+A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`, except that the compiler guarantees the only use of the copied value will be for dereferencing, which enables optimisations in the borrow checker and in code generation.
+
+```k
+  rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
+
+// AddressOf: not implemented yet
 ```
 
 ## Type casts
@@ -435,6 +459,7 @@ Values in MIR are allocated arrays of `Bytes` that are interpreted according to 
 ```k
   syntax Value ::= value ( Bytes , RigidTy )
                  | Aggregate( List ) // retaining field structure of struct or tuple types
+                 | Reference( Int , Place , Mutability ) // stack depth (initially 0), place, borrow kind
 ```
 
 ```k
@@ -458,6 +483,7 @@ Values in MIR can also be represented at a certain abstraction level, interpreti
 High-level values can be
 - a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
 - built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
+- references to a place in the current or an enclosing stack frame
 - arrays and slices (with homogenous element types)
 
 **This sort is work in progress and will be extended and modified as we go**
@@ -474,6 +500,8 @@ module RT-DATA-HIGH-SYNTAX
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
+                 | Reference( Int , Place , Mutability )
+                   // stack depth (initially 0), place, borrow kind
                 //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
                    // address, metadata              for ref/ptr
                 //  | Range( List )
@@ -722,6 +750,71 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
      andBool isTypedLocal(ARGS[I])
     [preserves-definedness] // valid list indexing checked
 ```
+
+A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
+
+In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Reference(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
+              projectionElemDeref PROJS:ProjectionElems
+            )
+         =>
+           #readProjection({LOCALS[I]}:>TypedLocal, appendP(PLACEPROJS, PROJS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  // why do we not have this automatically for user-defined lists?
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  rule appendP(.ProjectionElems, TAIL) => TAIL
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+
+```
+
+For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
+An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
+
+```k
+  rule <k> #readProjection(
+              typedLocal(Reference(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
+              projectionElemDeref PROJS
+            )
+         =>
+           #readProjection(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME), appendP(PLACEPROJS, PROJS))
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int FRAME
+     andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+    [preserves-definedness] // valid list indexing checked
+
+    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
+      requires 0 <=Int I
+       andBool I <Int size(LOCALS)
+       andBool isTypedLocal(LOCALS[I])
+      [preserves-definedness] // valid list indexing checked
+
+  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
+                      | #decrementRef ( TypedLocal )  [function, total]
+                      | #adjustRef (TypedLocal, Int ) [function, total]
+
+  rule #adjustRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedLocal(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(TL, _) => TL [owise]
+
+  rule #incrementRef(TL) => #adjustRef(TL, 1)
+  rule #decrementRef(TL) => #adjustRef(TL, -1)
+```
+
 
 #### Writing data to places with projections
 
