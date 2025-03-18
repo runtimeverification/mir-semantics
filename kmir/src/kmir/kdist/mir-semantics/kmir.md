@@ -419,10 +419,13 @@ value is the value in local `_0`, and will go to the _destination_ in
 the `LOCALS` of the caller's stack frame. Execution continues with the
 context of the enclosing stack frame, at the _target_.
 
+If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
+NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
+
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           LOCAL0 ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           #decrementRef(LOCAL0) ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -520,8 +523,9 @@ where the returned result should go.
   rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
 ```
 
-The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references into the heap, i.e., the reference needs to be copied
-(NB: A function won't ever access any other function call's `local` variables).
+The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
+
+An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
 
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
@@ -550,7 +554,7 @@ The local data has to be set up for the call, which requires information about t
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
 
-  // once all arguments have been retrieved, write caller's modified CALLERLOCALS to stack frame and execute
+  // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
 
   // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
@@ -567,7 +571,7 @@ The local data has to be set up for the call, which requires information about t
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -579,7 +583,7 @@ The local data has to be set up for the call, which requires information about t
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           {CALLERLOCALS[I]}:>TypedLocal ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
