@@ -815,6 +815,112 @@ An important prerequisite of this rule is that when passing references to a call
   rule #decrementRef(TL) => #adjustRef(TL, -1)
 ```
 
+### Writing data to places with projections
+
+**TODO delete old version below once new version is fully operational.**
+
+A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it, recursively). `Index`ing operations may have to read an index from another local, which is another rewrite. Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
+
+The solution is to use rewrite operations in a downward pass through the projections, and build the resulting updated value in an upward pass with information collected in the downward one.
+
+```k
+  syntax WriteTo ::= toLocal ( Int )
+                   | toStack ( Int , Local )
+
+  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts )
+                |  #write ( WriteTo, TypedLocal )
+
+  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
+
+  // retains information about the value that was deconstructed by a projection
+  syntax Context ::= CtxField( Ty, List, Int )
+                // | array context will be added here
+
+  syntax Contexts ::= List{Context, ""}
+
+  rule #buildUpdate(VAL, .Contexts) => VAL
+
+  rule #buildUpdate(VAL, CtxField(TY, ARGS, I) CTXS)
+      => #buildUpdate(typedLocal(Aggregate(ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedLocal(Aggregate(ARGS), TY, _MUT),
+              projectionElemField(fieldIdx(I), _) PROJS,
+              UPDATE,
+              CTXTS
+            ) =>
+            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, ARGS, I) CTXTS)
+          ...
+          </k>
+    requires 0 <=Int I
+     andBool I <Int size(ARGS)
+     andBool isTypedLocal(ARGS[I])
+
+
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedLocal(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS
+            )
+         =>
+          #projectedUpdate(
+              toStack(OFFSET, LOCAL),
+              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+              UPDATE,
+              .Contexts // previous contexts obsolete
+            )
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule #projectedUpdate(WRITE_TO, _ORIGINAL, .ProjectionElems, NEW, CONTEXTS)
+      => #write(WRITE_TO, #buildUpdate(NEW, CONTEXTS))
+    [preserves-definedness]
+
+  rule <k> #write(toLocal(I), VAL) => .K ... </k>
+       <locals> LOCALS => LOCALS[I <- VAL] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+
+  rule <k> #write(toStack(FRAME, local(I)), VAL) => .K ... </k>
+       <stack> STACK => STACK[(FRAME -Int 1) <- #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, VAL)] </stack>
+    requires 0 <Int FRAME
+     andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+
+  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
+
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VALUE)
+      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- VALUE])
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness]
+```
+
+
+
+```k
+  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+         =>
+           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool PROJ =/=K .ProjectionElems
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+```
 
 #### Writing data to places with projections
 
@@ -838,18 +944,18 @@ Mutability of the nested components is not checked (but also not modified) while
 We could first read the original value using `#readProjection` and compare the types to uncover these errors.
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
-         =>
-           // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
-           #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool PROJ =/=K .ProjectionElems
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
+  // rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+  //        =>
+  //          // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
+  //          #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  //      ...
+  //      </k>
+  //      <locals> LOCALS </locals>
+  //   requires 0 <=Int I
+  //    andBool I <Int size(LOCALS)
+  //    andBool PROJ =/=K .ProjectionElems
+  //    andBool isTypedLocal(LOCALS[I])
+  //   [preserves-definedness]
 ```
 
 Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
