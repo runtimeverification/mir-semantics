@@ -831,7 +831,7 @@ The solution is to use rewrite operations in a downward pass through the project
   syntax WriteTo ::= toLocal ( Int )
                    | toStack ( Int , Local )
 
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts )
+  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
                 |  #write ( WriteTo, TypedLocal )
 
   syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
@@ -849,25 +849,28 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
               DEST,
-              typedLocal(Aggregate(ARGS), TY, mutabilityMut),
+              typedLocal(Aggregate(ARGS), TY, MUT),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
-              CTXTS
+              CTXTS,
+              FORCE
             ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, ARGS, I) CTXTS)
+            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, ARGS, I) CTXTS, FORCE)
           ...
           </k>
     requires 0 <=Int I
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
 
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedLocal(Reference(OFFSET, place(LOCAL, PLACEPROJ), mutabilityMut), _, _),
+            typedLocal(Reference(OFFSET, place(LOCAL, PLACEPROJ), MUT), _, _),
             projectionElemDeref PROJS,
             UPDATE,
-            _CTXTS
+            _CTXTS,
+            FORCE
             )
          =>
           #projectedUpdate(
@@ -875,7 +878,8 @@ The solution is to use rewrite operations in a downward pass through the project
               #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
               appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
               UPDATE,
-              .Contexts // previous contexts obsolete
+              .Contexts, // previous contexts obsolete
+              FORCE
             )
         ...
         </k>
@@ -883,9 +887,36 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <Int OFFSET
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
-  rule #projectedUpdate(WRITE_TO, _ORIGINAL, .ProjectionElems, NEW, CONTEXTS)
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedLocal(Reference(OFFSET, place(local(I), PLACEPROJ), MUT), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS,
+            FORCE
+            )
+         =>
+          #projectedUpdate(
+              toLocal(I),
+              {LOCALS[I]}:>TypedLocal,
+              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+              UPDATE,
+              .Contexts, // previous contexts obsolete
+              FORCE
+            )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness]
+
+  rule #projectedUpdate(WRITE_TO, _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _)
       => #write(WRITE_TO, #buildUpdate(NEW, CONTEXTS))
     [preserves-definedness]
 
@@ -910,11 +941,15 @@ The solution is to use rewrite operations in a downward pass through the project
 ```
 
 
+Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
+Mutability of the nested components is not checked (but also not modified) while computing the value.
+We could first read the original value using `#readProjection` and compare the types to uncover these errors.
+
 
 ```k
   rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
          =>
-           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts)
+           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -926,44 +961,9 @@ The solution is to use rewrite operations in a downward pass through the project
 
 ```
 
-#### Writing data to places with projections
+#### Moving operands under projections
 
-When writing data to a place with projections, the updated value gets constructed recursively by a function over the projections.
-
-```k
-  syntax TypedLocal ::= #updateProjected( TypedLocal, ProjectionElems, TypedLocal) [function]
-
-  rule #updateProjected(_, .ProjectionElems, NEW) => NEW
-
-  rule #updateProjected(
-          typedLocal(Aggregate(ARGS), TY, MUT),
-          projectionElemField(fieldIdx(I), _TY) PROJS,
-          NEW)
-      =>
-       typedLocal(Aggregate(ARGS[I <- #updateProjected({ARGS[I]}:>TypedLocal, PROJS, NEW)]), TY, MUT)
-```
-
-Potential errors caused by invalid projections or type mismatch will materialise as unevaluted function calls.
-Mutability of the nested components is not checked (but also not modified) while computing the value.
-We could first read the original value using `#readProjection` and compare the types to uncover these errors.
-
-```k
-  // rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
-  //        =>
-  //          // #readProjection(LOCAL, PROJ) ~> #checkTypeMatch(VAL) ~> // optional, type-check and projection check
-  //          #updateProjected({LOCALS[I]}:>TypedLocal, PROJ, VAL) ~> #setLocalValue(place(local(I), .ProjectionElems))
-  //      ...
-  //      </k>
-  //      <locals> LOCALS </locals>
-  //   requires 0 <=Int I
-  //    andBool I <Int size(LOCALS)
-  //    andBool PROJ =/=K .ProjectionElems
-  //    andBool isTypedLocal(LOCALS[I])
-  //   [preserves-definedness]
-```
-
-Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored.
-Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error in `#setLocalValue`.
+Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored while computing the update.
 
 ```k
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, PROJECTIONS)))
@@ -980,27 +980,14 @@ Therefore a wrapper `#forceSetLocal` is used to side-step the mutability error i
     [preserves-definedness] // valid list indexing checked
 
   syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
-                |  #forceSetLocal ( Local )
 
-  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, LOCAL, PROJECTIONS) ~> CONT
+  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, local(I), PROJECTIONS) ~> CONT
         =>
-           #updateProjected(OLDLOCAL, PROJECTIONS, Moved)
-           ~> #forceSetLocal(LOCAL)
+           #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, Moved, .Contexts, true)
            ~> VAL
            ~> CONT
        </k>
-    [preserves-definedness] // projections already used when reading, updateProjected should succeed
-
-  // #forceSetLocal sets the given value unconditionally
-  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
-          =>
-           .K
-          ...
-       </k>
-       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness] // valid list indexing checked
+    [preserves-definedness] // projections already used when reading
 ```
 
 ### Primitive operations on numeric data
