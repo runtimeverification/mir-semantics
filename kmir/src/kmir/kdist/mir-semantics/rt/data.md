@@ -821,8 +821,6 @@ An important prerequisite of this rule is that when passing references to a call
 
 ### Writing data to places with projections
 
-**TODO delete old version below once new version is fully operational.**
-
 A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it, recursively). `Index`ing operations may have to read an index from another local, which is another rewrite. Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
 
 The solution is to use rewrite operations in a downward pass through the projections, and build the resulting updated value in an upward pass with information collected in the downward one.
@@ -832,7 +830,6 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
-                |  #write ( WriteTo, TypedLocal )
 
   syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
 
@@ -916,25 +913,52 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
-  rule #projectedUpdate(WRITE_TO, _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _)
-      => #write(WRITE_TO, #buildUpdate(NEW, CONTEXTS))
-    [preserves-definedness]
+  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
+          =>
+            #buildUpdate(NEW, CONTEXTS) ~> #setLocalValue(place(local(I), .ProjectionElems))
+        ...
+        </k>
 
-  rule <k> #write(toLocal(I), VAL) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- VAL] </locals>
+  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
+          =>
+            #buildUpdate(NEW, CONTEXTS) ~> #forceSetLocal(local(I))
+        ...
+        </k>
+
+  syntax KItem ::= #forceSetLocal ( Local )
+
+  // #forceSetLocal sets the given value unconditionally (to write Moved values)
+  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+          =>
+           .K
+          ...
+       </k>
+       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
 
-  rule <k> #write(toStack(FRAME, local(I)), VAL) => .K ... </k>
-       <stack> STACK => STACK[(FRAME -Int 1) <- #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, VAL)] </stack>
+  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _) => .K ... </k>
+        <stack> STACK
+              =>
+                STACK[(FRAME -Int 1) <-
+                        #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
+                      ]
+        </stack>
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
 
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VALUE)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- VALUE])
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, Moved)
+      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- Moved])
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness]
+
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, typedLocal(VAL, _, _))
+      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)])
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
     [preserves-definedness]
