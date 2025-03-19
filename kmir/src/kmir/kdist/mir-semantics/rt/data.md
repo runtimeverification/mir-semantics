@@ -588,7 +588,11 @@ The `Value` sort above operates at a higher level than the bytes representation 
         Integer(Bytes2Int(BYTES, LE, Signed), 128, true)
     requires lengthBytes(BYTES) ==Int 16
   // Isize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize)) => Integer(Bytes2Int(BYTES, LE, Signed), 64, false) requires lengthBytes(BYTES) ==Int 8
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize))
+      =>
+        Integer(Bytes2Int(BYTES, LE, Signed), 64, true)
+    requires lengthBytes(BYTES) ==Int 8
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
