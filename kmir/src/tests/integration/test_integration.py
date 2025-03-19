@@ -294,6 +294,18 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'doubleRef.state',
         None,
     ),
+    (
+        'Ref-mutableRef',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.state',
+        None,
+    ),
+    (
+        'Ref-weirdRefs',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.smir.json',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
+        None,
+    ),
 ]
 
 
