@@ -845,7 +845,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
               DEST,
-              typedLocal(Aggregate(ARGS), TY, _MUT),
+              typedLocal(Aggregate(ARGS), TY, mutabilityMut),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
               CTXTS
@@ -860,7 +860,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedLocal(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+            typedLocal(Reference(OFFSET, place(LOCAL, PLACEPROJ), mutabilityMut), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS
