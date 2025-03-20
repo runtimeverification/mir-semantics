@@ -24,11 +24,13 @@ Rewrite rules that look up locals or stack frames require that an index into the
 The lists used in the semantics are cons-lists, so only rules with a head element match are required.
 
 ```k
-  // rule N <Int size(LIST:List) => true [simplification, symbolic(LIST)]
-  //   requires N <Int 0
+  rule N <Int size(_LIST:List) => true
+    requires N <Int 0
+    [simplification, symbolic(_LIST)]
 
-  // rule N <Int size(ListItem(_) REST:List) => N -Int 1 <Int size(REST) [simplification, symbolic(REST)]
-  //   requires 0 <Int N
+  rule N <Int size(ListItem(_) REST:List) => N -Int 1 <Int size(REST)
+    requires 0 <Int N
+    [simplification, symbolic(REST)]
 ```
 
 ## Simplifications related to the `truncate` function
