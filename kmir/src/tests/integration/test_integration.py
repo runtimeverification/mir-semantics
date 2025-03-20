@@ -280,18 +280,30 @@ EXEC_DATA = [
         'Ref-refAsArg2',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
-        None,
+        999,
     ),
     (
         'Ref-refReturned',
         EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
         EXEC_DATA_DIR / 'references' / 'refReturned.state',
-        None,
+        999,
     ),
     (
         'Ref-doubleRef',
         EXEC_DATA_DIR / 'references' / 'doubleRef.smir.json',
         EXEC_DATA_DIR / 'references' / 'doubleRef.state',
+        None,
+    ),
+    (
+        'Ref-mutableRef',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.state',
+        999,
+    ),
+    (
+        'Ref-weirdRefs',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.smir.json',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
 ]
