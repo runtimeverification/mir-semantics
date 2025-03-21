@@ -1041,9 +1041,9 @@ For binary operations generally, both arguments have to be read from the provide
 
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
-                |  #ready ( BinOp, Value, Bool )
+                |  #ready ( BinOp, Value, Ty, Bool )
 
-  syntax Evaluation ::= #compute ( BinOp, Value, Value, Bool ) [function, total]
+  syntax Evaluation ::= #compute ( BinOp, Value, Ty, Value, Ty, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -1057,15 +1057,15 @@ For binary operations generally, both arguments have to be read from the provide
        ...
        </k>
 
-  rule <k> typedLocal(VAL1, _, _) ~> #suspend(BINOP, OP2, CHECKFLAG)
+  rule <k> typedLocal(VAL1, TY1, _) ~> #suspend(BINOP, OP2, CHECKFLAG)
         =>
-           #readOperand(OP2) ~> #ready(BINOP, VAL1, CHECKFLAG)
+           #readOperand(OP2) ~> #ready(BINOP, VAL1, TY1, CHECKFLAG)
        ...
        </k>
 
-  rule <k> typedLocal(VAL2, _, _) ~> #ready(BINOP, VAL1, CHECKFLAG)
+  rule <k> typedLocal(VAL2, TY2, _) ~> #ready(BINOP, VAL1, TY1, CHECKFLAG)
         =>
-           #compute(BINOP, VAL1, VAL2, CHECKFLAG)
+           #compute(BINOP, VAL1, TY1, VAL2, TY2, CHECKFLAG)
        ...
        </k>
 ```
@@ -1101,7 +1101,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | "Overflow_U_B" // better than getting stuck
 
   // catch-all rule to make `#compute` total
-  rule #compute(OP, ARG1, ARG2, _FLAG) => Unimplemented(OP, ARG1, ARG2)
+  rule #compute(OP, ARG1, _TY1, ARG2, _TY2, _FLAG) => Unimplemented(OP, ARG1, ARG2)
     [owise]
 ```
 
@@ -1148,14 +1148,20 @@ The arithmetic operations require operands of the same numeric type.
     requires Y =/=Int 0
   // operation undefined otherwise
 
-  rule #compute(BOP, Integer(ARG1, WIDTH, SIGNEDNESS), Integer(ARG2, WIDTH, SIGNEDNESS), CHK)
+  rule #compute(BOP, Integer(ARG1, WIDTH, SIGNEDNESS), TY, Integer(ARG2, WIDTH, SIGNEDNESS), TY, CHK)
       =>
         #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
     requires isArithmetic(BOP)
     [preserves-definedness]
 
-  // error case: non-numeric arguments
-  rule #compute(BOP, ARG1, ARG2, _)
+  // error cases:
+  rule #compute(BOP, _, TY1, _, TY2, _)
+    =>
+       TypeMismatch(BOP, TY1, TY2)
+    requires isArithmetic(BOP)
+     andBool TY1 =/=K TY2
+
+  rule #compute(BOP, ARG1, _, ARG2, _, _)
     =>
        OperandMismatch(BOP, ARG1, ARG2)
     requires isArithmetic(BOP)
@@ -1314,17 +1320,21 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
-  rule #compute(OP, Integer(VAL1, WIDTH, SIGN), Integer(VAL2, WIDTH, SIGN), _)
+  rule #compute(OP, Integer(VAL1, WIDTH, SIGN), TY, Integer(VAL2, WIDTH, SIGN), TY, _)
       =>
         typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
-  rule #compute(OP, BoolVal(VAL1), BoolVal(VAL2), _)
+  rule #compute(OP, BoolVal(VAL1), TY, BoolVal(VAL2), TY, _)
       =>
         typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
-  rule #compute(OP, ARG1, ARG2, _) => OperandMismatch(OP, ARG1, ARG2)
+  rule #compute(OP, _, TY1, _, TY2, _) => TypeMismatch(OP, TY1, TY2)
+    requires (isComparison(OP) orBool OP ==K binOpCmp)
+     andBool TY1 =/=K TY2
+
+  rule #compute(OP, ARG1, _, ARG2, _, _) => OperandMismatch(OP, ARG1, ARG2)
     [owise]
 ```
 
@@ -1342,14 +1352,13 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  rule #compute(binOpCmp, Integer(VAL1, WIDTH, SIGN), Integer(VAL2, WIDTH, SIGN), _)
+  rule #compute(binOpCmp, Integer(VAL1, WIDTH, SIGN), TY, Integer(VAL2, WIDTH, SIGN), TY, _)
       =>
         typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
-  rule #compute(binOpCmp, BoolVal(VAL1), BoolVal(VAL2), _)
+  rule #compute(binOpCmp, BoolVal(VAL1), TY, BoolVal(VAL2), TY, _)
       =>
         typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
-
 ```
 
 #### Unary operations on Boolean and integral values
