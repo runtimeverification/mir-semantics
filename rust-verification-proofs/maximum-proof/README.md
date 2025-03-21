@@ -36,12 +36,12 @@ In a future version, we will be able to start directly with the `maximum` functi
 Before we can run the program using the MIR semantics, we have to compile it with a special compiler to extract Stable MIR from it. This step differs a bit depending on whether the program has multiple crates, in our case it is just a simple `rustc` invocation. This creates `main-max-with-lt.smir.json`.
 
 ```shell
-maximum-proof$ cargo -Z unstable-options -C ../../deps/stable-mir-json/ run -- -Zno-codegen --out-dir $PWD $PWD/main-max-with-lt.rs
+cargo -Z unstable-options -C ../../deps/stable-mir-json/ run -- -Zno-codegen --out-dir $PWD $PWD/main-max-with-lt.rs
 ```
 The Stable MIR for the program can also be rendered as a graph, using the `--dot` option. This creates `main-max-with-lt.smir.dot`.
 
 ```shell
-maximum-proof$ cargo -Z unstable-options -C ../../deps/stable-mir-json/ run -- --dot -Zno-codegen --out-dir $PWD $PWD/main-max-with-lt.rs
+cargo -Z unstable-options -C ../../deps/stable-mir-json/ run -- --dot -Zno-codegen --out-dir $PWD $PWD/main-max-with-lt.rs
 ```
 ## Constructing the claim by executing `main` to certain points
 
@@ -86,11 +86,11 @@ Alternatively, it is possible to construct a claim that the entire rest of the p
 
 ## Running the prover on the claim and viewing the proof
 ```shell
-maximum-proof$ poetry -C ../../kmir/ run -- kmir prove run  $PWD/maximum-spec.k --proof-dir $PWD/proof
+poetry -C ../../kmir/ run -- kmir prove run  $PWD/maximum-spec.k --proof-dir $PWD/proof
 ```
 
 The proof steps are saved in the `$PWD/proof` directory for later inspection using `kmir prove view`. This is especially important when the proof does _not_ succeed immediately.
 
 ```shell
-maximum-proof$ poetry -C ../../kmir/ run -- kmir prove view MAXIMUM-SPEC.maximum-spec --proof-dir $PWD/proof
+poetry -C ../../kmir/ run -- kmir prove view MAXIMUM-SPEC.maximum-spec --proof-dir $PWD/proof
 ```
