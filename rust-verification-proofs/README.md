@@ -1,6 +1,6 @@
 # Formal Rust Code Verification Using KMIR  
 
-This subrepository contains a collection of programs and specifications that aim to illustrate how KMIR can be used to validate the properties of Rust programs and the Rust language itself. The code made available in this repository was developed taking as references the challenges present on the [Verify Rust Std Library Effort](https://model-checking.github.io/verify-rust-std/intro.html).
+This subrepository contains a collection of programs and specifications that aim to illustrate how KMIR can be used to validate the properties of Rust programs and the Rust language itself. The code made available in this repository was developed taking as references the challenges present on the [Verify Rust Standard Library Effort](https://model-checking.github.io/verify-rust-std/intro.html).
 
 ## Table of Contents
 
@@ -54,7 +54,7 @@ fn maximum(a: usize, b: usize, c: usize) -> usize {
 }
 ```
 
-Notice in this case that `a`, `b`, and `c` are concrete, fixed values. To turn the parameters of `maximum` into symbolic variables, we can obtain the representation of the function call to `maximum` executed using KMIR and then replace the concrete values of these variables with symbolic values. Furthermore, the assertion specified in the code can be implemented as a requirement which should be met by the symbolic variables, meaning that any value that they can assume must respect the conditions contained in the specification. Following this approach, we can utilize KMIR to give us a formal proof that, for any valid `isize` input, the maximum value among the three parameters will be returned.
+Notice in this case that `a`, `b`, and `c` are concrete, fixed values. To turn the parameters of `maximum` into symbolic variables, we can obtain the representation of the function call to `maximum` executed using KMIR and then replace the concrete values of these variables with symbolic values. Furthermore, the assertion specified in the code can be manually translated as a requirement that should be met by the symbolic variables, meaning that any value that they can assume must respect the conditions contained in the specification. Following this approach, we can utilize KMIR to give us formal proof that, for any valid `isize` input, the maximum value among the three parameters will be returned.
 
 Information on how the specification was created can be found in the [here](https://github.com/runtimeverification/mir-semantics/tree/sample-challenge-11-proofs/rust-verification-proofs/maximum-proof).
 
@@ -67,13 +67,13 @@ poetry -C ../../kmir/ run -- kmir prove run  $PWD/maximum-spec.k --proof-dir $PW
 
 ## Proof 2: Proving Unsafe Arithmetic Operations
 
-The proofs in this section concern a section of the challenge of securing [Safety of Methods for Numeric Primitive Types](https://model-checking.github.io/verify-rust-std/challenges/0011-floats-ints.html#challenge-11-safety-of-methods-for-numeric-primitive-types) of the Verify Rust Std Library Effort. Here, we implement proof of concepts of how KMIR can be used to prove the following unsafe methods according to their undefined behaviors: `unchecked_add`, `unchecked_sub`, `unchecked_mul`, `unchecked_shl`, `unchecked_shr`, and `unchecked_neg`.
+The proofs in this section concern a section of the challenge of securing [Safety of Methods for Numeric Primitive Types](https://model-checking.github.io/verify-rust-std/challenges/0011-floats-ints.html#challenge-11-safety-of-methods-for-numeric-primitive-types) of the Verify Rust Standard Library Effort. Here, we implement proof of concepts of how KMIR can be used to prove the following unsafe methods according to their undefined behaviors: `unchecked_add`, `unchecked_sub`, `unchecked_mul`, `unchecked_shl`, `unchecked_shr`, and `unchecked_neg`.
 
-For these functions, the proofs were carried out using variables of the `i16` integer type, and the undefined behaviors for these functions were obtained in the [i16 type documentation page](https://doc.rust-lang.org/std/primitive.i16.html).
+For these functions, the proofs were carried out using variables of the `i16` integer type, and the criteria for triggering undefined behaviors for these methods were obtained in the [i16 type documentation page](https://doc.rust-lang.org/std/primitive.i16.html).
 
-To obtain the specifications that prove the absence/absence of arithmetic overflow/underflow and undefined behavior for these functions, analogous processes to the ones discussed in [Proof 1](#proof-1-proving-a-maximum-finding-function-that-only-uses-lower-than) were performed.
+To obtain the specifications that prove the presence/absence of undefined behavior for these functions, analogous processes to the ones discussed in [Proof 1](#proof-1-proving-a-maximum-finding-function-that-only-uses-lower-than) were performed.
 
-To run the proofs for these functions, run the commands below replacing `$METHOD_NAME` with the desired unsafe method name:
+To run the proofs for these functions, run the commands below, replacing `$METHOD_NAME` with the desired unsafe method name:
 
 ```Bash
 cd $METHOD_NAME
