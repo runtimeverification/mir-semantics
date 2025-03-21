@@ -831,7 +831,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
-  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
+  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function, total]
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( Ty, List, Int )
@@ -859,7 +859,7 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
      andBool (FORCE orBool MUT ==K mutabilityMut)
-
+    [preserves-definedness] // valid indexing checked
 
   rule <k> #projectedUpdate(
             _DEST,
