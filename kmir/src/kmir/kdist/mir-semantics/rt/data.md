@@ -20,6 +20,8 @@ module RT-DATA-SYNTAX
   syntax Value
 
   syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
+  syntax MIRError
 ```
 
 ### Local variables
@@ -44,6 +46,7 @@ with their type information (to enable type-checking assignments). Also, the
   // accessors
   syntax Bool ::= hasValue ( TypedLocal )  [function, total]
                 | isNoValue ( TypedLocal ) [function, total]
+
   rule hasValue(typedLocal(_, _, _)) => true
   rule hasValue(Moved)               => false
   rule hasValue(noValue(_, _))       => false
@@ -52,7 +55,12 @@ with their type information (to enable type-checking assignments). Also, the
   rule isNoValue(Moved)               => false
   rule isNoValue(noValue(_, _))       => true
 
+  syntax Value ::= valueOf ( TypedLocal ) [function] // partial, requires hasValue(T)
+
+  rule valueOf(typedLocal(V, _, _)) => V
+
   syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
+
   rule tyOfLocal(typedLocal(_, TY, _)) => TY
   rule tyOfLocal(Moved)                => TyUnknown
   rule tyOfLocal(noValue(TY, _))       => TY
@@ -78,7 +86,7 @@ Every access is modelled as a _function_ whose result needs to be checked by the
                             | "ValueMoved"
                             | Unsupported ( String ) // draft code
 
-  syntax KItem ::= #LocalError ( LocalAccessError )
+  syntax MIRError ::= #LocalError ( LocalAccessError )
 
 endmodule
 ```
@@ -212,7 +220,7 @@ further access. Apart from that, the same caveats apply as for operands that are
 Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
 
 ```k
-  syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+  syntax Projected ::= #readProjection ( TypedLocal , ProjectionElems )
 
   rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
@@ -239,14 +247,20 @@ Related code currently resides in the value-implementing module.
 The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the K sequence  to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
 
 ```k
-  syntax KItem ::= #setLocalValue( Place )
+  syntax KItem ::= #setLocalValue( Place , Evaluation) [strict(2)]
+
+  syntax Evaluation ::= Rvalue
+                      | Projected
+                      | TypedLocal
+
+  syntax KResult ::= TypedLocal
 
   // error cases first
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <=Int I orBool I <Int 0
 
-  rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, TY, _) #as VAL)
           =>
            #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
           ...
@@ -260,7 +274,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // list index checked before lookup
 
   // setting a local to Moved is an error
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
+  rule <k> #setLocalValue( place(local(I), _), _)
           =>
            #LocalError(LocalMoved(local(I)))
           ...
@@ -269,7 +283,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     requires LOCALS[I] ==K Moved
 
   // setting a non-mutable local that is initialised is an error
-  rule <k> typedLocal(_, _, _) ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, _, _))
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
@@ -282,15 +296,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
      andBool notBool isNoValue({LOCALS[I]}:>TypedLocal) // noValue(_, mutabilityNot) is mutable once
 
   // writing no value is a no-op
-  rule <k> noValue(_, _) ~> #setLocalValue( _) => .K ... </k>
+  rule <k> #setLocalValue( _, noValue(_, _)) => .K ... </k>
    // FIXME some zero-sized values are not initialised. Otherwise we could use a special value `ZeroSized` here
 
   // writing a moved value is an error
-  rule <k> Moved ~> #setLocalValue( _) => #LocalError(ValueMoved) ... </k>
+  rule <k> #setLocalValue( _, Moved) => #LocalError(ValueMoved) ... </k>
 
   // if all is well, write the value
   //
-  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL:Value, TY, _ ) )
           =>
            .K
           ...
@@ -304,7 +318,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // valid list indexing checked
 
   // special case for non-mutable uninitialised values: mutable once
-  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL:Value, TY, _ ))
           =>
            .K
           ...
@@ -343,8 +357,11 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 | CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
+Type casts between a number of different types exist in MIR.
 
 ```k
+  syntax KItem ::= #cast( CastKind, Ty ) // TODO make this an Evaluation subsort
+
   rule  <k> rvalueUse(OPERAND) => #readOperand(OPERAND) ... </k>
 
   rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readOperand(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
@@ -435,15 +452,7 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 // AddressOf: not implemented yet
 ```
 
-## Type casts
-
-Type casts between a number of different types exist in MIR. We implement a type
-cast from a `TypedLocal` to another when it is followed by a `#cast` item,
-rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
-
 ```k
-  syntax KItem ::= #cast( CastKind, Ty )
-
 endmodule
 ```
 
@@ -731,10 +740,11 @@ The implementation of projections (a list `ProjectionElems`) accesses the struct
 
 #### Reading data from places with projections
 
-The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
+The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. This is a subsort of `Evaluation` and will ultimately produce a `TypedValue`.
+The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
 
 ```k
-  // syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+  // syntax Projected ::= #readProjection ( TypedLocal , ProjectionElems )
   rule <k> #readProjection(TL, .ProjectionElems) => TL ... </k>
 ```
 
@@ -782,7 +792,8 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 ```
 
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
-An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
+An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted
+(NB this is done automatically in the `#localFromFrame` function using its 3rd argument).
 
 ```k
   rule <k> #readProjection(
@@ -815,6 +826,7 @@ An important prerequisite of this rule is that when passing references to a call
     => typedLocal(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
   rule #adjustRef(TL, _) => TL [owise]
 
+  // for the common case of passing references as function arguments and return values
   rule #incrementRef(TL) => #adjustRef(TL, 1)
   rule #decrementRef(TL) => #adjustRef(TL, -1)
 ```
@@ -831,7 +843,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
-  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
+  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function, total]
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( Ty, List, Int )
@@ -859,7 +871,7 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
      andBool (FORCE orBool MUT ==K mutabilityMut)
-
+    [preserves-definedness] // valid indexing checked
 
   rule <k> #projectedUpdate(
             _DEST,
@@ -915,20 +927,20 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #setLocalValue(place(local(I), .ProjectionElems))
+            #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #forceSetLocal(local(I))
+            #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
-  syntax KItem ::= #forceSetLocal ( Local )
+  syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
   // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+  rule <k> #forceSetLocal(local(I), VALUE)
           =>
            .K
           ...
@@ -948,6 +960,7 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
+    [preserves-definedness] // valid list indexing checked
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
 
@@ -971,7 +984,7 @@ We could first read the original value using `#readProjection` and compare the t
 
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+  rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
            #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
        ...
@@ -1028,8 +1041,9 @@ For binary operations generally, both arguments have to be read from the provide
 
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
-                |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
+                |  #ready ( BinOp, Value, Ty, Bool )
+
+  syntax Evaluation ::= #compute ( BinOp, Value, Ty, Value, Ty, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -1043,15 +1057,15 @@ For binary operations generally, both arguments have to be read from the provide
        ...
        </k>
 
-  rule <k> ARG1:TypedLocal ~> #suspend(BINOP, OP2, CHECKFLAG)
+  rule <k> typedLocal(VAL1, TY1, _) ~> #suspend(BINOP, OP2, CHECKFLAG)
         =>
-           #readOperand(OP2) ~> #ready(BINOP, ARG1, CHECKFLAG)
+           #readOperand(OP2) ~> #ready(BINOP, VAL1, TY1, CHECKFLAG)
        ...
        </k>
 
-  rule <k> ARG2:TypedLocal ~> #ready(BINOP, ARG1,CHECKFLAG)
+  rule <k> typedLocal(VAL2, TY2, _) ~> #ready(BINOP, VAL1, TY1, CHECKFLAG)
         =>
-           #compute(BINOP, ARG1, ARG2, CHECKFLAG)
+           #compute(BINOP, VAL1, TY1, VAL2, TY2, CHECKFLAG)
        ...
        </k>
 ```
@@ -1059,7 +1073,7 @@ For binary operations generally, both arguments have to be read from the provide
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax KItem ::= #applyUnOp ( UnOp )
+  syntax Evaluation ::= #applyUnOp ( UnOp )
 
   rule <k> rvalueUnaryOp(UNOP, OP1)
         =>
@@ -1071,7 +1085,9 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 #### Potential errors
 
 ```k
-  syntax KItem ::= #OperationError( OperationError )
+  syntax MIRError ::= #OperationError( OperationError )
+
+  syntax Evaluation ::= OperationError
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
@@ -1079,19 +1095,13 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | OperandMismatch ( UnOp, Value )
                           | OperandError( UnOp, TypedLocal)
                           // errors above are compiler bugs or invalid MIR
-                          | Unimplemented ( BinOp, TypedLocal, TypedLocal)
+                          | Unimplemented ( BinOp, Value, Value)
                           // errors below are program errors
                           | "DivisionByZero"
                           | "Overflow_U_B" // better than getting stuck
 
-  // catch pathological cases where ARG1 or ARG2, or both, are Moved or NoValue.
-  rule #compute(OP, ARG1, ARG2, _FLAG) => #OperationError(OperandError(OP, ARG1, ARG2))
-    requires notBool (hasValue(ARG1) andBool hasValue(ARG2))
-
   // catch-all rule to make `#compute` total
-  rule #compute(OP, ARG1, ARG2, _FLAG)
-      =>
-        #OperationError(Unimplemented(OP, ARG1, ARG2))
+  rule #compute(OP, ARG1, _TY1, ARG2, _TY2, _FLAG) => Unimplemented(OP, ARG1, ARG2)
     [owise]
 ```
 
@@ -1138,30 +1148,23 @@ The arithmetic operations require operands of the same numeric type.
     requires Y =/=Int 0
   // operation undefined otherwise
 
-  rule #compute(
-          BOP,
-          typedLocal(Integer(ARG1, WIDTH, SIGNEDNESS), TY, _),
-          typedLocal(Integer(ARG2, WIDTH, SIGNEDNESS), TY, _),
-          CHK)
-    =>
-      #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
+  rule #compute(BOP, Integer(ARG1, WIDTH, SIGNEDNESS), TY, Integer(ARG2, WIDTH, SIGNEDNESS), TY, CHK)
+      =>
+        #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
     requires isArithmetic(BOP)
     [preserves-definedness]
 
   // error cases:
-    // non-scalar arguments
-  rule #compute(BOP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
+  rule #compute(BOP, _, TY1, _, TY2, _)
     =>
-       #OperationError(OperandMismatch(BOP, ARG1, ARG2))
+       TypeMismatch(BOP, TY1, TY2)
     requires isArithmetic(BOP)
-    [owise]
+     andBool TY1 =/=K TY2
 
-    // different argument types
-  rule #compute(BOP, typedLocal(_, TY1, _), typedLocal(_, TY2, _), _)
+  rule #compute(BOP, ARG1, _, ARG2, _, _)
     =>
-       #OperationError(TypeMismatch(BOP, TY1, TY2))
-    requires TY1 =/=K TY2
-     andBool isArithmetic(BOP)
+       OperandMismatch(BOP, ARG1, ARG2)
+    requires isArithmetic(BOP)
     [owise]
 
   // helper function to truncate int values
@@ -1190,8 +1193,8 @@ The arithmetic operations require operands of the same numeric type.
     [preserves-definedness]
 
   // perform arithmetic operations on integral types of given width
-  syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
-  //                                       arg1  arg2 width signedness result overflowcheck
+  syntax Evaluation ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
+       //                                       arg1  arg2 width signedness result overflowcheck
   // signed numbers: must check for wrap-around (operation specific)
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
     =>
@@ -1261,32 +1264,24 @@ The arithmetic operations require operands of the same numeric type.
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
 
-  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #OperationError(Overflow_U_B)
+  rule #arithmeticInt(BOP, _, _, _, _, _, false) => Overflow_U_B
     requires isArithmetic(BOP)
     [owise]
 
   // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
   // (the latter can only happen for signed Ints with dividend minInt and divisor -1
-  rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
-      =>
-        #OperationError(DivisionByZero)
+  rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _) => DivisionByZero
     requires DIVISOR ==Int 0
     [priority(40)]
-  rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _)
-      =>
-        #OperationError(DivisionByZero)
+  rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _) => DivisionByZero
     requires DIVISOR ==Int 0
     [priority(40)]
 
-  rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _)
-      =>
-        #OperationError(Overflow_U_B)
+  rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _) => Overflow_U_B
     requires DIVISOR ==Int -1
      andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
     [priority(40)]
-  rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _)
-      =>
-        #OperationError(Overflow_U_B)
+  rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _) => Overflow_U_B
     requires DIVISOR ==Int -1
      andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
     [priority(40)]
@@ -1325,29 +1320,28 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
-  rule #compute(OP, typedLocal(_, TY, _), typedLocal(_, TY2, _), _) => #OperationError(TypeMismatch(OP, TY, TY2))
-    requires isComparison(OP)
-     andBool TY =/=K TY2
-
-  rule #compute(OP, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #compute(OP, Integer(VAL1, WIDTH, SIGN), TY, Integer(VAL2, WIDTH, SIGN), TY, _)
       =>
         typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
-  rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+  rule #compute(OP, BoolVal(VAL1), TY, BoolVal(VAL2), TY, _)
       =>
         typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
 
-  rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
-      =>
-        #OperationError(OperandMismatch(OP, ARG1, ARG2))
+  rule #compute(OP, _, TY1, _, TY2, _) => TypeMismatch(OP, TY1, TY2)
+    requires (isComparison(OP) orBool OP ==K binOpCmp)
+     andBool TY1 =/=K TY2
+
+  rule #compute(OP, ARG1, _, ARG2, _, _) => OperandMismatch(OP, ARG1, ARG2)
     [owise]
 ```
 
 The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
 
 ```k
+  // FIXME this should be a custom `Ordering` type instead (must be hard-wired)
   syntax Int ::= cmpInt  ( Int , Int )  [function , total]
                | cmpBool ( Bool, Bool ) [function , total]
   rule cmpInt(VAL1, VAL2) => -1 requires VAL1 <Int VAL2
@@ -1358,14 +1352,13 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  rule #compute(binOpCmp, typedLocal(Integer(VAL1, WIDTH, SIGN), TY, _), typedLocal(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #compute(binOpCmp, Integer(VAL1, WIDTH, SIGN), TY, Integer(VAL2, WIDTH, SIGN), TY, _)
       =>
         typedLocal(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
-  rule #compute(binOpCmp, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
+  rule #compute(binOpCmp, BoolVal(VAL1), TY, BoolVal(VAL2), TY, _)
       =>
         typedLocal(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
-
 ```
 
 #### Unary operations on Boolean and integral values

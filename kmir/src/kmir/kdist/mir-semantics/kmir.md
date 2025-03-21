@@ -307,22 +307,11 @@ these are irrelevant at the MIR level that this semantics is modeling
 will effectively be no-ops at this level).
 
 ```k
-
-  // all memory accesses relegated to another module (to be added)
   rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-           RVAL ~> #assign(PLACE)
+          #setLocalValue(PLACE, RVAL) // RVAL evaluation is implemented in rt/data.md
          ...
        </k>
-
-  // RVAL evaluation is implemented in rt/data.md
-
-  syntax KItem ::= #assign ( Place )
-
-  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
-        =>
-           VAL ~> #setLocalValue(PLACE) ~> CONT
-        </k>
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -425,7 +414,7 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #decrementRef(LOCAL0) ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -563,15 +552,22 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
+  rule <k> #setArgFromStack(IDX, operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
         =>
-           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(
+              place(local(IDX), .ProjectionElems),
+              typedLocal(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+            )
         ...
        </k>
+       <basetypes> TYPEMAP </basetypes>
+    requires TY in_keys(TYPEMAP)
+     andBool isRigidTy(TYPEMAP[TY])
+    [preserves-definedness] // valid Map lookup checked
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -583,7 +579,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
