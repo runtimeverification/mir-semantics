@@ -7,7 +7,7 @@ This subrepository contains a collection of programs and specifications that aim
 
 - [Project Setup](#project-setup)
 - [Proof 1: Proving a Maximum Finding Function That only Uses `lower-than (<)`](#proof-1-proving-a-maximum-finding-function-that-only-uses-lower-than)
-- [Proof 2: Proving Unsafe Arithmetic Operations](#project-2-project-two-name)
+- [Proof 2: Proving Unsafe Arithmetic Operations](#proof-2-proving-unsafe-arithmetic-operations)
 
 ## Project Setup
 
@@ -64,4 +64,25 @@ To run this proof in your terminal from this folder, execute:
 cd maximum-proof
 poetry -C ../../kmir/ run -- kmir prove run  $PWD/maximum-spec.k --proof-dir $PWD/proof
 ```
+
+## Proof 2: Proving Unsafe Arithmetic Operations
+
+The proofs in this section concern a section of the challenge of securing [Safety of Methods for Numeric Primitive Types](https://model-checking.github.io/verify-rust-std/challenges/0011-floats-ints.html#challenge-11-safety-of-methods-for-numeric-primitive-types) of the Verify Rust Std Library Effort. Here, we implement proof of concepts of how KMIR can be used to prove the following unsafe methods according to their undefined behaviors: `unchecked_add`, `unchecked_sub`, `unchecked_mul`, `unchecked_shl`, `unchecked_shr`, and `unchecked_neg`.
+
+For these functions, the proofs were carried out using variables of the `i16` integer type, and the undefined behaviors for these functions were obtained in the [i16 type documentation page](https://doc.rust-lang.org/std/primitive.i16.html).
+
+To obtain the specifications that prove the absence/absence of arithmetic overflow/underflow and undefined behavior for these functions, analogous processes to the ones discussed in [Proof 1](#proof-1-proving-a-maximum-finding-function-that-only-uses-lower-than) were performed.
+
+To run the proofs for these functions, run the commands below replacing `$METHOD_NAME` with the desired unsafe method name:
+
+```Bash
+cd $METHOD_NAME
+poetry -C ../../kmir/ run -- kmir prove run  $PWD/unchecked-op-spec.k --proof-dir $PWD/proof 
+```
+
+
+
+
+
+
 
