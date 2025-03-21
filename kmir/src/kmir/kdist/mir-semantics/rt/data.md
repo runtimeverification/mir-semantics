@@ -20,6 +20,8 @@ module RT-DATA-SYNTAX
   syntax Value
 
   syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+
+  syntax MIRError
 ```
 
 ### Local variables
@@ -44,6 +46,7 @@ with their type information (to enable type-checking assignments). Also, the
   // accessors
   syntax Bool ::= hasValue ( TypedLocal )  [function, total]
                 | isNoValue ( TypedLocal ) [function, total]
+
   rule hasValue(typedLocal(_, _, _)) => true
   rule hasValue(Moved)               => false
   rule hasValue(noValue(_, _))       => false
@@ -52,7 +55,12 @@ with their type information (to enable type-checking assignments). Also, the
   rule isNoValue(Moved)               => false
   rule isNoValue(noValue(_, _))       => true
 
+  syntax Value ::= valueOf ( TypedLocal ) [function] // partial, requires hasValue(T)
+
+  rule valueOf(typedLocal(V, _, _)) => V
+
   syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
+
   rule tyOfLocal(typedLocal(_, TY, _)) => TY
   rule tyOfLocal(Moved)                => TyUnknown
   rule tyOfLocal(noValue(TY, _))       => TY
@@ -78,7 +86,7 @@ Every access is modelled as a _function_ whose result needs to be checked by the
                             | "ValueMoved"
                             | Unsupported ( String ) // draft code
 
-  syntax KItem ::= #LocalError ( LocalAccessError )
+  syntax MIRError ::= #LocalError ( LocalAccessError )
 
 endmodule
 ```
@@ -212,7 +220,7 @@ further access. Apart from that, the same caveats apply as for operands that are
 Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
 
 ```k
-  syntax KItem ::= #readProjection ( TypedLocal , ProjectionElems )
+  syntax Projected ::= #readProjection ( TypedLocal , ProjectionElems )
 
   rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
@@ -242,6 +250,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
   syntax KItem ::= #setLocalValue( Place , Evaluation) [strict(2)]
 
   syntax Evaluation ::= Rvalue
+                      | Projected
                       | TypedLocal
 
   syntax KResult ::= TypedLocal
@@ -348,8 +357,11 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 | CopyForDeref   | Place                                           | use (copy) contents of `Place`       |
 
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
+Type casts between a number of different types exist in MIR.
 
 ```k
+  syntax KItem ::= #cast( CastKind, Ty ) // TODO make this an Evaluation subsort
+
   rule  <k> rvalueUse(OPERAND) => #readOperand(OPERAND) ... </k>
 
   rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readOperand(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
@@ -440,15 +452,7 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 // AddressOf: not implemented yet
 ```
 
-## Type casts
-
-Type casts between a number of different types exist in MIR. We implement a type
-cast from a `TypedLocal` to another when it is followed by a `#cast` item,
-rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
-
 ```k
-  syntax KItem ::= #cast( CastKind, Ty )
-
 endmodule
 ```
 
@@ -1076,7 +1080,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 #### Potential errors
 
 ```k
-  syntax KItem ::= #OperationError( OperationError )
+  syntax MIRError ::= #OperationError( OperationError )
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
