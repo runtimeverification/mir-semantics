@@ -239,14 +239,19 @@ Related code currently resides in the value-implementing module.
 The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the K sequence  to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
 
 ```k
-  syntax KItem ::= #setLocalValue( Place )
+  syntax KItem ::= #setLocalValue( Place , Evaluation) [strict(2)]
+
+  syntax Evaluation ::= Rvalue
+                      | TypedLocal
+
+  syntax KResult ::= TypedLocal
 
   // error cases first
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => #LocalError(InvalidLocal(LOCAL)) ... </k>
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <=Int I orBool I <Int 0
 
-  rule <k> typedLocal(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, TY, _) #as VAL)
           =>
            #LocalError(TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL))
           ...
@@ -260,7 +265,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // list index checked before lookup
 
   // setting a local to Moved is an error
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I), _))
+  rule <k> #setLocalValue( place(local(I), _), _)
           =>
            #LocalError(LocalMoved(local(I)))
           ...
@@ -269,7 +274,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     requires LOCALS[I] ==K Moved
 
   // setting a non-mutable local that is initialised is an error
-  rule <k> typedLocal(_, _, _) ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, _, _))
           =>
            #LocalError(LocalNotMutable(LOCAL))
           ...
@@ -282,15 +287,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
      andBool notBool isNoValue({LOCALS[I]}:>TypedLocal) // noValue(_, mutabilityNot) is mutable once
 
   // writing no value is a no-op
-  rule <k> noValue(_, _) ~> #setLocalValue( _) => .K ... </k>
+  rule <k> #setLocalValue( _, noValue(_, _)) => .K ... </k>
    // FIXME some zero-sized values are not initialised. Otherwise we could use a special value `ZeroSized` here
 
   // writing a moved value is an error
-  rule <k> Moved ~> #setLocalValue( _) => #LocalError(ValueMoved) ... </k>
+  rule <k> #setLocalValue( _, Moved) => #LocalError(ValueMoved) ... </k>
 
   // if all is well, write the value
   //
-  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL:Value, TY, _ ) )
           =>
            .K
           ...
@@ -304,7 +309,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // valid list indexing checked
 
   // special case for non-mutable uninitialised values: mutable once
-  rule <k> typedLocal(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedLocal(VAL:Value, TY, _ ))
           =>
            .K
           ...
@@ -915,20 +920,20 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #setLocalValue(place(local(I), .ProjectionElems))
+            #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #forceSetLocal(local(I))
+            #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
-  syntax KItem ::= #forceSetLocal ( Local )
+  syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
   // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+  rule <k> #forceSetLocal(local(I), VALUE)
           =>
            .K
           ...
@@ -971,7 +976,7 @@ We could first read the original value using `#readProjection` and compare the t
 
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+  rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
            #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
        ...
