@@ -63,9 +63,9 @@ module UNCHECKED-OP-SPEC
     )
   </functions>
   requires // i16 invariants
-             0 - (1 <<Int 15) <=Int A
+             0 -Int (1 <<Int 15) <=Int A
      andBool A <Int (1 <<Int 15)
-     andBool 0 - (1 <<Int 15) <=Int B
+     andBool 0 -Int (1 <<Int 15) <=Int B
      andBool A <Int (1 <<Int 15)
      // invariant of the `unchecked_sub` operation
      ensures 
