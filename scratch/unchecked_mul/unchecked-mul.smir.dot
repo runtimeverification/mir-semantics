@@ -1,0 +1,140 @@
+digraph {
+  label="unchecked_mul";
+  node [shape=rectangle];
+  X3c6542d96320ad67_0 [label="Intr: \nblack_box", color=red];
+  X5eb86185c1cf8f06_0 [label="_ZN3std2rt19lang_start_in\nternal17h035df9ff6960926a\nE", color=red];
+  Xa1fae2d2bbfd50ae_0 [label="_ZN4core9panicking14panic\n_nounwind17h29bb45bec7ac5\nee0E", color=red];
+  X210a8e5fe9313c81_0 [label="_ZN4core9panicking5panic1\n7h37379bf3ce79a0d7E", color=red];
+  X8b0ac2e54b9a91_0 [label="NoOp: ", color=red];
+  subgraph cluster_0 {
+    label="<fn() \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X8f01db0e36395c71_0 -> X8f01db0e36395c71_1 [label="_0"];
+    X8f01db0e36395c71_0 [label="Call\l"];
+    X8f01db0e36395c71_1 [label="Return\l"];
+  }
+  X8f01db0e36395c71_0 -> X8f01db0e36395c71_0: _1 [label=""];
+  subgraph cluster_1 {
+    label="std::ptr::drop_in_place::\n<{closure@std::rt::lang_s\ntart<()>::{closure#0}}>";
+    style="filled";
+    color=lightgray;
+    X9e222efa6b726605_0 [label="Return\l"];
+  }
+  subgraph cluster_2 {
+    label="core::num::<impl \ni16>::unchecked_mul";
+    style="filled";
+    color=lightgray;
+    Xeba6f5d5a379e29a_0 -> Xeba6f5d5a379e29a_2 [label="0"];
+    Xeba6f5d5a379e29a_0 -> Xeba6f5d5a379e29a_1 [label="other"];
+    Xeba6f5d5a379e29a_0 [label="Storage Live _3\l_3 <- UbChecks :: bool\lSwitchInt _3\l"];
+    Xeba6f5d5a379e29a_1 -> Xeba6f5d5a379e29a_2 [label="_4"];
+    Xeba6f5d5a379e29a_1 [label="Call\l"];
+    Xeba6f5d5a379e29a_2 [label="Storage Dead _3\l_0 <- MulUnchecked(_1, _2)\lReturn\l"];
+  }
+  Xeba6f5d5a379e29a_1 -> X9b97bece994ebb51_0 [label="_1,_2"];
+  subgraph cluster_3 {
+    label="<() \nas \nstd::process::Termination\n>::report";
+    style="filled";
+    color=lightgray;
+    X62f87ed0bcd6b426_0 [label="_0 <- Use(const :: std::process::ExitCode)\lReturn\l"];
+  }
+  subgraph cluster_4 {
+    label="std::rt::lang_start::<()>\n::{closure#0}";
+    style="filled";
+    color=lightgray;
+    X69af4523a03742d5_0 -> X69af4523a03742d5_1 [label="_3"];
+    X69af4523a03742d5_0 [label="Storage Live _2\lStorage Live _3\lStorage Live _4\l_4 <- Use(_1*.0)\lCall\l"];
+    X69af4523a03742d5_1 -> X69af4523a03742d5_2 [label="_2"];
+    X69af4523a03742d5_1 [label="Storage Dead _4\lCall\l"];
+    X69af4523a03742d5_2 [label="Storage Dead _3\lStorage Live _5\l_5 <- ReErased (Shared): _2.0\lStorage Live _6\l_6 <- Use(_2.0.0)\l_0 <- Cast-IntToInt _6\lStorage Dead _6\lStorage Dead _5\lStorage Dead _2\lReturn\l"];
+  }
+  X69af4523a03742d5_0 -> Xcb8fb0027af607b6_0 [label="_4"];
+  X69af4523a03742d5_1 -> X62f87ed0bcd6b426_0 [label="_3"];
+  subgraph cluster_5 {
+    label="core::num::<impl \ni16>::unchecked_mul::prec\nondition_check";
+    style="filled";
+    color=lightgray;
+    X9b97bece994ebb51_0 -> X9b97bece994ebb51_2 [label="0"];
+    X9b97bece994ebb51_0 -> X9b97bece994ebb51_1 [label="other"];
+    X9b97bece994ebb51_0 [label="Storage Live _4\lStorage Live _6\l_6 <- chkd-Mul(_1, _2)\l_4 <- Use(_6.0)\l_5 <- Use(_6.1)\lStorage Dead _6\lStorage Dead _4\lSwitchInt _5\l"];
+    X9b97bece994ebb51_1 [label="Call\l"];
+    X9b97bece994ebb51_2 [label="Return\l"];
+  }
+  X9b97bece994ebb51_1 -> Xa1fae2d2bbfd50ae_0 [label="const :: &str"];
+  subgraph cluster_6 {
+    label="std::rt::lang_start::<()>";
+    style="filled";
+    color=lightgray;
+    X797ddd37b7ea3b5e_0 -> X797ddd37b7ea3b5e_1 [label="_5"];
+    X797ddd37b7ea3b5e_0 [label="Storage Live _5\lStorage Live _6\lStorage Live _8\l_8 <- Closure (_1)\l_7 <- ReErased (Shared): _8\l_6 <- Cast-PointerCoercion(Unsize) _7\lCall\l"];
+    X797ddd37b7ea3b5e_1 [label="Storage Dead _6\l_0 <- Use(_5 as VariantIdx(0).0)\lStorage Dead _8\lStorage Dead _5\lReturn\l"];
+  }
+  X797ddd37b7ea3b5e_0 -> X5eb86185c1cf8f06_0 [label="_6,_2,_3,_4"];
+  subgraph cluster_7 {
+    label="std::sys::backtrace::__ru\nst_begin_short_backtrace:\n:<fn(), \n()>";
+    style="filled";
+    color=lightgray;
+    Xcb8fb0027af607b6_0 -> Xcb8fb0027af607b6_1 [label="_0"];
+    Xcb8fb0027af607b6_0 [label="Call\l"];
+    Xcb8fb0027af607b6_1 -> Xcb8fb0027af607b6_2 [label="_2"];
+    Xcb8fb0027af607b6_1 [label="Call\l"];
+    Xcb8fb0027af607b6_2 [label="Return\l"];
+  }
+  Xcb8fb0027af607b6_0 -> X8f01db0e36395c71_0 [label="_1,const :: ()"];
+  Xcb8fb0027af607b6_1 -> X3c6542d96320ad67_0 [label="const :: ()"];
+  subgraph cluster_8 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X201617fc87c04742_0 -> X201617fc87c04742_1 [label="_0"];
+    X201617fc87c04742_0 [label="Call\l"];
+    X201617fc87c04742_1 [label="Return\l"];
+  }
+  X201617fc87c04742_0 -> X86afcabc1ac42f91_0 [label="_1*,_2"];
+  subgraph cluster_9 {
+    label="main";
+    style="filled";
+    color=palegreen;
+    Xe63d82c3b46f3acf_0 -> Xe63d82c3b46f3acf_1 [label="_3"];
+    Xe63d82c3b46f3acf_0 [label="_1 <- Use(const :: i16)\l_2 <- Use(const :: i16)\lCall\l"];
+    Xe63d82c3b46f3acf_1 -> Xe63d82c3b46f3acf_2;
+    Xe63d82c3b46f3acf_1 [label="_6 <- chkd-Mul(_1, _2)\lAssert _6.1 == false\l"];
+    Xe63d82c3b46f3acf_2 -> Xe63d82c3b46f3acf_6 [label="0"];
+    Xe63d82c3b46f3acf_2 -> Xe63d82c3b46f3acf_3 [label="other"];
+    Xe63d82c3b46f3acf_2 [label="_5 <- Use(_6.0)\l_4 <- Gt(_5, const :: i16)\lSwitchInt _4\l"];
+    Xe63d82c3b46f3acf_3 -> Xe63d82c3b46f3acf_4;
+    Xe63d82c3b46f3acf_3 [label="_9 <- chkd-Mul(_1, _2)\lAssert _9.1 == false\l"];
+    Xe63d82c3b46f3acf_4 -> Xe63d82c3b46f3acf_6 [label="0"];
+    Xe63d82c3b46f3acf_4 -> Xe63d82c3b46f3acf_5 [label="other"];
+    Xe63d82c3b46f3acf_4 [label="_8 <- Use(_9.0)\l_7 <- Lt(_8, const :: i16)\lSwitchInt _7\l"];
+    Xe63d82c3b46f3acf_5 [label="Return\l"];
+    Xe63d82c3b46f3acf_6 [label="Call\l"];
+  }
+  Xe63d82c3b46f3acf_0 -> Xbe62f93610b866bf_0 [label="_1,_2"];
+  Xe63d82c3b46f3acf_6 -> X210a8e5fe9313c81_0 [label="const :: &str"];
+  subgraph cluster_10 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    X86afcabc1ac42f91_0 -> X86afcabc1ac42f91_3 [label="Cleanup"];
+    X86afcabc1ac42f91_0 -> X86afcabc1ac42f91_1 [label="_0"];
+    X86afcabc1ac42f91_0 [label="_3 <- ReErased (Mut { kind: Default }): _1\lCall\l"];
+    X86afcabc1ac42f91_1 -> X86afcabc1ac42f91_2;
+    X86afcabc1ac42f91_1 [label="Drop _1\l"];
+    X86afcabc1ac42f91_2 [label="Return\l"];
+    X86afcabc1ac42f91_3 -> X86afcabc1ac42f91_4;
+    X86afcabc1ac42f91_3 [label="Drop _1\l"];
+    X86afcabc1ac42f91_4 [label="Resume\l"];
+  }
+  X86afcabc1ac42f91_0 -> X69af4523a03742d5_0 [label="_3,_2"];
+  subgraph cluster_11 {
+    label="unchecked_op";
+    style="filled";
+    color=palegreen;
+    Xbe62f93610b866bf_0 -> Xbe62f93610b866bf_1 [label="_0"];
+    Xbe62f93610b866bf_0 [label="Call\l"];
+    Xbe62f93610b866bf_1 [label="Return\l"];
+  }
+  Xbe62f93610b866bf_0 -> Xeba6f5d5a379e29a_0 [label="_1,_2"];
+}
