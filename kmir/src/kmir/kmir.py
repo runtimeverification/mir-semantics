@@ -36,7 +36,7 @@ class KMIR(KProve, KRun):
         self.llvm_library_dir = llvm_library_dir
 
     class Symbols:
-        END_PROGRAM: Final = KApply('#EndProgram_KMIR_KItem')
+        END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
 
     @contextmanager
     def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
