@@ -73,12 +73,26 @@ For these functions, the proofs were carried out using variables of the `i16` in
 
 To obtain the specifications that prove the presence/absence of undefined behavior for these functions, analogous processes to the ones discussed in [Proof 1](#proof-1-proving-a-maximum-finding-function-that-only-uses-lower-than) were performed.
 
+For an illustration of how we specify the requirements of the proof, which, in this case, are the assertions that would help us detect the presence/absence of undefined behavior in the unsafe methods, let's explore how we can prove safety conditions for the `unchecked_add` operation. Consider the following function:
+
+https://github.com/runtimeverification/mir-semantics/blob/e2de329d009cde25f505819d7c8c9815571db9e7/rust-verification-proofs/unchecked_add/unchecked-add.rs#L11-L14
+
+`unchecked_op` is a function that receives two `i16` arguments and executes an `unchecked_add` of the first parameter by the second, returning an `i16` value resulting from this operation. According to the [documentation of the unchecked_add function for the i16 primitive type](https://doc.rust-lang.org/std/primitive.i16.html#method.unchecked_add), considering the safety of this function "This results in undefined behavior when `self + rhs > i16::MAX or self + rhs < i16::MIN`, i.e. when `checked_add` would return `None`". By the process further disclosed in Proof 1, we can obtain a valid representation of a function call for `unchecked_op` and modify the variable values to be symbolic. The next step is to define the conditions these values should meet to verify safety conditions elaborated for `unchecked_add`. To this goal, see the following code snippet:
+
+https://github.com/runtimeverification/mir-semantics/blob/e2de329d009cde25f505819d7c8c9815571db9e7/rust-verification-proofs/unchecked_add/unchecked-op-spec.k#L66-L73
+
+The parameters for `unchecked_add` in this specification for KMIR are represented as A and B, which now are symbolic values. To specify the goal of our verification process, we implemented the above code snippet into the specification, which adds a requirement to the execution of our symbolic execution engine. In other words, our proof will only be successful if the specified requirements above are respected. 
+
+In this `requires` clause, first, we use the semantics of K to specify A and B's boundaries, as `i16`s: `0 -Int (1 <<Int 15) <=Int A andBool A <Int (1 <<Int 15) andBool 0 -Int (1 <<Int 15) <=Int B andBool B <Int (1 <<Int 15)`. The next section of this `requires` clause specifies the safety conditions for the `unchecked_add` method: `andBool A +Int B <Int (1 <<Int 15) andBool 0 -Int (1 <<Int 15) <=Int A +Int B`.
+
 To run the proofs for these functions, run the commands below, replacing `$METHOD_NAME` with the desired unsafe method name:
 
 ```Bash
 cd $METHOD_NAME
 poetry -C ../../kmir/ run -- kmir prove run  $PWD/unchecked-op-spec.k --proof-dir $PWD/proof 
 ```
+
+Currently, we expect the execution of the unsafe arithmetic proofs to manifest an unpredicted behavior and end its execution prior to providing the proof's result. This behavior is being investigated and should be addressed soon.
 
 
 
