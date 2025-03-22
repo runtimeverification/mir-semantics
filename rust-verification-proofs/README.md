@@ -13,7 +13,7 @@ This subrepository contains a collection of programs and specifications that aim
 
 In order to run and explore the proofs elaborated here, make sure that KMIR can be locally executed in your machine following the instructions available in [this repository's README file](https://github.com/runtimeverification/mir-semantics/tree/sample-challenge-11-proofs).
 
-([Be sure to have Rust installed](https://www.rust-lang.org/tools/install)) in your machine, have the specific components and toolchain necessary to run KMIR. To guarantee it, with `rustup` installed, run the following commands: 
+[Be sure to have Rust installed](https://www.rust-lang.org/tools/install) in your machine, have the specific components and toolchain necessary to run KMIR. To guarantee it, with `rustup` installed, run the following commands: 
 
 ```bash
 rustup component add rust-src rustc-dev llvm-tools-preview
