@@ -68,7 +68,6 @@ module UNCHECKED-OP-SPEC
      andBool A <Int (1 <<Int 15)
      andBool 0 -Int (1 <<Int 15) <=Int B
      andBool B <Int (1 <<Int 15)
-     // invariant of the `unchecked_sub` operation
-     ensures 
-            B <Int 16
+     // invariant of the `unchecked_shr` operation (Worst case)
+     andBool B <Int 16
 endmodule
