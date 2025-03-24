@@ -60,7 +60,7 @@ module KMIR-CONFIGURATION
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
-                    <currentBody> .List </currentBody>
+                    <currentBody> .BasicBlocks </currentBody>
                     <caller> ty(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
                     <target> noBasicBlockIdx </target>
@@ -218,7 +218,7 @@ be known to populate the `currentFunc` field.
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
-                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
+                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _))
               ),
               FUNCTIONNAMES
             )
@@ -228,7 +228,7 @@ be known to populate the `currentFunc` field.
        </k>
        <currentFunc> _ => #tyFromName(SYMNAME, FUNCTIONNAMES) </currentFunc>
        <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <currentBody> _ => BLOCKS </currentBody>
          <caller> _ => ty(-1) </caller> // no caller
          <dest> _ => place(local(-1), .ProjectionElems)</dest>
          <target> _ => noBasicBlockIdx </target>
@@ -277,13 +277,13 @@ blocks, or call another function).
 
   rule <k> #execBlockIdx(basicBlockIdx(I))
          =>
-           #execBlock( {BLOCKS[I]}:>BasicBlock )
+           #execBlock( {toKList(BLOCKS)[I]}:>BasicBlock )
          ...
        </k>
        <currentBody> BLOCKS </currentBody>
     requires 0 <=Int I
-     andBool I <Int size(BLOCKS)
-     andBool isBasicBlock(BLOCKS[I])
+     andBool I <Int size(toKList(BLOCKS))
+     andBool isBasicBlock(toKList(BLOCKS)[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
@@ -443,19 +443,17 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
       // andBool DEST #within(LOCALS)
      [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
-  syntax List ::= #getBlocks(Map, Ty) [function]
-                | #getBlocksAux(MonoItemKind)  [function, total]
+  syntax BasicBlocks ::= #getBlocks(Map, Ty) [function]
+                | #getBlocksAux(MonoItemKind)  [function] // FIXME: Not total
 
   rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>MonoItemKind)
     requires ID in_keys(FUNCS)
 
-  // returns blocks from the _first_ body if there are several
-  // TODO handle cases with several blocks
-  rule #getBlocksAux(monoItemFn(_, _, .Bodies)) => .List
-  rule #getBlocksAux(monoItemFn(_, _, body(BLOCKS, _, _, _, _, _) _)) => toKList(BLOCKS)
-  // other item kinds are not expected or supported
-  rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
-  rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
+  // returns blocks from the body
+  rule #getBlocksAux(monoItemFn(_, _, body(BLOCKS, _, _, _, _, _))) => BLOCKS
+  // other item kinds are not expected or supported FIXME: Just getting stuck for now
+  // rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
+  // rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
@@ -532,7 +530,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule <k> #setUpCalleeData(
-              monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
+              monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _)),
               ARGS
               )
          =>
@@ -541,7 +539,7 @@ An operand may be a `Reference` (the only way a function could access another fu
        </k>
        //<currentFunc> CALLEE </currentFunc>
        <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <currentBody> _ => BLOCKS </currentBody>
         //  <caller> CALLER </caller>
         //  <dest> DEST </dest>
         //  <target> TARGET </target>

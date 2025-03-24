@@ -113,7 +113,7 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 # Given a list Sort, return the element sort.
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
-    if name.endswith('ies'):  # Bodies, Entries, ...
+    if name.endswith('ies'):  # Entries, ...
         return KSort(name[:-3] + 'y')
     elif (  # -es for words ending in 's', 'ch', 'sh', 'ss', 'x' or 'z'
         name.endswith('ses')
@@ -178,6 +178,7 @@ class Parser:
         # production's type, call the appropriate underlying method.
         group = _get_group(prod)
         kind, _ = _extract_mir_group_info(group)
+        print(f'  {sort}:{kind}')
         match kind:
             case 'mir':
                 assert len(prods) == 1

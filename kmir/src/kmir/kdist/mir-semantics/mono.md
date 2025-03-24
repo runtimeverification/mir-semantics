@@ -22,7 +22,7 @@ syntax StaticDef ::= staticDef(Int) [group(mir-int)] // imported from crate
 syntax MaybeAllocation ::= someAllocation(Allocation) [group(mir-option)]
                          | "noAllocation"             [group(mir-option)]
 
-syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: Bodies)
+syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: Body)
                           [ group(mir-enum---name--id--body)
                           , symbol(MonoItemKind::MonoItemFn)
                           ]
