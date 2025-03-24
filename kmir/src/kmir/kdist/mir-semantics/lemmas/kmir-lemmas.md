@@ -26,11 +26,11 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
 ```k
   rule N <Int size(_LIST:List) => true
     requires N <Int 0
-    [simplification, symbolic(_LIST)]
+    [simplification]
 
   rule N <Int size(ListItem(_) REST:List) => N -Int 1 <Int size(REST)
-    requires 0 <Int N
-    [simplification, symbolic(REST)]
+    requires 0 <=Int N
+    [simplification]
 ```
 
 ## Simplifications related to the `truncate` function
