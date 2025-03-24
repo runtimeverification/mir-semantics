@@ -6,7 +6,7 @@
 fn main() {
 
     let a:usize = 42;
-    let b:usize = -43;
+    let b:usize = 22;
     let c:usize = 0;
 
     let result = maximum(a, b, c);
