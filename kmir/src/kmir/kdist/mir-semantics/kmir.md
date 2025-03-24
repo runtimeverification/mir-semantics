@@ -416,7 +416,7 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #if isLocalValue(LOCAL0) #then #setLocalValue(DEST, #decrementRef(LOCAL0)) #else .K #fi
+           #if isLocalValue(LOCAL0) #then #setLocalValue(DEST, #decrementRef({LOCAL0}:>LocalValue)) #else .K #fi
               ~> #execBlockIdx(TARGET)
               ~> .K
        </k>
@@ -570,27 +570,25 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>LocalValue))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool isTypedLocal(CALLERLOCALS[I])
-     andBool CALLERLOCALS[I] =/=K Moved
+     andBool isLocalValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>LocalValue))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool isTypedLocal(CALLERLOCALS[I])
-     andBool CALLERLOCALS[I] =/=K Moved
+     andBool isLocalValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).

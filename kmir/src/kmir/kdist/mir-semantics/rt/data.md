@@ -792,15 +792,15 @@ An important prerequisite of this rule is that when passing references to a call
 
     syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>LocalValue, OFFSET)
       requires 0 <=Int I
        andBool I <Int size(LOCALS)
-       andBool isTypedLocal(LOCALS[I])
+       andBool isLocalValue(LOCALS[I])
       [preserves-definedness] // valid list indexing checked
 
-  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
-                      | #decrementRef ( TypedLocal )  [function, total]
-                      | #adjustRef (TypedLocal, Int ) [function, total]
+  syntax LocalValue ::= #incrementRef ( LocalValue )  [function, total]
+                      | #decrementRef ( LocalValue )  [function, total]
+                      | #adjustRef (LocalValue, Int ) [function, total]
 
   rule #adjustRef(typedLocal(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
     => typedLocal(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
