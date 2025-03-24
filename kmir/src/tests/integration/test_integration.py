@@ -11,13 +11,13 @@ from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
 from kmir.build import haskell_semantics, llvm_semantics
-from kmir.convert_from_definition.v2parser import Parser
+from kmir.parse.parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
-    from kmir.convert_from_definition.v2parser import JSON
     from kmir.kmir import KMIR
+    from kmir.parse.parser import JSON
     from kmir.tools import Tools
 
 
@@ -262,6 +262,48 @@ EXEC_DATA = [
         'unary',
         EXEC_DATA_DIR / 'arithmetic' / 'unary.smir.json',
         EXEC_DATA_DIR / 'arithmetic' / 'unary.state',
+        None,
+    ),
+    (
+        'Ref-simple',
+        EXEC_DATA_DIR / 'references' / 'simple.smir.json',
+        EXEC_DATA_DIR / 'references' / 'simple.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg2',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
+        999,
+    ),
+    (
+        'Ref-refReturned',
+        EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refReturned.state',
+        999,
+    ),
+    (
+        'Ref-doubleRef',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.state',
+        None,
+    ),
+    (
+        'Ref-mutableRef',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.state',
+        999,
+    ),
+    (
+        'Ref-weirdRefs',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.smir.json',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
 ]
