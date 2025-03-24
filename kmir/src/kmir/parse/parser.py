@@ -178,7 +178,6 @@ class Parser:
         # production's type, call the appropriate underlying method.
         group = _get_group(prod)
         kind, _ = _extract_mir_group_info(group)
-        print(f'  {sort}:{kind}')
         match kind:
             case 'mir':
                 assert len(prods) == 1
