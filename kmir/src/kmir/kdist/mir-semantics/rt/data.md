@@ -1348,11 +1348,13 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
       =>
         typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 
   rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
       =>
         typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 
   rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
       =>
