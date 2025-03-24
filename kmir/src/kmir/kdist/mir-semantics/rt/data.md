@@ -208,7 +208,7 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
 
   rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
         =>
-           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS)
+           #readProjection({LOCALS[I]}:>TypedLocal, PROJECTIONS) // FIXME should operate on LocalValue
         ...
        </k>
        <locals> LOCALS </locals>
