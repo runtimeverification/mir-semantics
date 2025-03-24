@@ -3,6 +3,7 @@
 ```k
 requires "kmir-ast.md"
 requires "rt/data.md"
+requires "lemmas/kmir-lemmas.md"
 ```
 
 ## Syntax of MIR in K
@@ -86,7 +87,7 @@ endmodule
 ### Execution Control Flow
 
 ```k
-module KMIR
+module KMIR-CONTROL-FLOW
   imports KMIR-SYNTAX
   imports KMIR-CONFIGURATION
   imports MONO
@@ -618,3 +619,14 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 ```k
 endmodule
 ```
+
+## Top-level Module
+
+The top-level module `KMIR` includes both the control flow constructs (and transitively all modules related to runtime operations and AST) and a collection of simplification lemmas required for symbolic execution of MIR programs.
+
+```k
+module KMIR
+  imports KMIR-CONTROL-FLOW
+  imports KMIR-LEMMAS
+
+endmodule
