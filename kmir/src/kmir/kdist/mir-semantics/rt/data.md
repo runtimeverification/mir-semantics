@@ -1029,7 +1029,7 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool )
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -1226,7 +1226,7 @@ The arithmetic operations require operands of the same numeric type.
           false) // unchecked
     => #OperationError(Overflow_U_B)
     requires isArithmetic(BOP)
-    [owise]
+    [priority(60)]
 
   // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
   // (the latter can only happen for signed Ints with dividend minInt and divisor -1
