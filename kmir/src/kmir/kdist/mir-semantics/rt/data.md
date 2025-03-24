@@ -251,9 +251,11 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
   syntax Evaluation ::= Rvalue
                       | Projected
-                      | TypedLocal
+                      | EvalResult
 
-  syntax KResult ::= TypedLocal
+  syntax KResult ::= EvalResult
+
+  syntax EvalResult ::= TypedLocal
 
   // error cases first
   rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
@@ -1043,7 +1045,7 @@ For binary operations generally, both arguments have to be read from the provide
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, Value, Ty, Bool )
 
-  syntax Evaluation ::= #compute ( BinOp, Value, Ty, Value, Ty, Bool ) [function, total]
+  syntax EvalResult ::= #compute ( BinOp, Value, Ty, Value, Ty, Bool ) [function, total]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -1073,7 +1075,7 @@ For binary operations generally, both arguments have to be read from the provide
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax Evaluation ::= #applyUnOp ( UnOp )
+  syntax EvalResult ::= #applyUnOp ( UnOp )
 
   rule <k> rvalueUnaryOp(UNOP, OP1)
         =>
@@ -1087,7 +1089,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 ```k
   syntax MIRError ::= #OperationError( OperationError )
 
-  syntax Evaluation ::= OperationError
+  syntax EvalResult ::= OperationError
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
@@ -1193,7 +1195,7 @@ The arithmetic operations require operands of the same numeric type.
     [preserves-definedness]
 
   // perform arithmetic operations on integral types of given width
-  syntax Evaluation ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
+  syntax EvalResult ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
        //                                       arg1  arg2 width signedness result overflowcheck
   // signed numbers: must check for wrap-around (operation specific)
   rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
