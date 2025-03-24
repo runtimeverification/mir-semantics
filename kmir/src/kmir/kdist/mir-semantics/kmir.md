@@ -408,13 +408,16 @@ value is the value in local `_0`, and will go to the _destination_ in
 the `LOCALS` of the caller's stack frame. Execution continues with the
 context of the enclosing stack frame, at the _target_.
 
+If the returned value is not initialised ( `NewValue`), the write is skipped.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET) ~> .K
+           #if isLocalValue(LOCAL0) #then #setLocalValue(DEST, #decrementRef(LOCAL0)) #else .K #fi
+              ~> #execBlockIdx(TARGET)
+              ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -429,8 +432,7 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      // andBool DEST #within(LOCALS)
-     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+     [preserves-definedness] // CALLER lookup defined, DEST within locals checked by write
 
   syntax List ::= #getBlocks(Map, Ty) [function]
                 | #getBlocksAux(MonoItemKind)  [function, total]

@@ -34,9 +34,13 @@ with their type information (to enable type-checking assignments). Also, the
   // local storage of the stack frame
   // syntax TypedLocals ::= List {TypedLocal, ","} but then we lose size, update, indexing
 
-  syntax TypedLocal ::= typedLocal ( Value, MaybeTy, Mutability ) // regular value
-                      | "Moved"                                   // inaccessible
-                      | noValue ( Ty, Mutability )                // not initialised
+  syntax TypedLocal ::= MovedLocal | NewLocal | LocalValue
+
+  syntax LocalValue ::= typedLocal ( Value, MaybeTy, Mutability ) // regular value
+
+  syntax MovedLocal ::= "Moved" // inaccessible local
+
+  syntax NewLocal ::= noValue ( Ty, Mutability) // not initialised
 
   // the type of aggregates cannot be determined from the data provided when they
   // occur as `RValue`, therefore we have to make the `Ty` field optional here.
@@ -44,33 +48,17 @@ with their type information (to enable type-checking assignments). Also, the
                    | "TyUnknown"
 
   // accessors
-  syntax Bool ::= hasValue ( TypedLocal )  [function, total]
-                | isNoValue ( TypedLocal ) [function, total]
-
-  rule hasValue(typedLocal(_, _, _)) => true
-  rule hasValue(Moved)               => false
-  rule hasValue(noValue(_, _))       => false
-
-  rule isNoValue(typedLocal(_, _, _)) => false
-  rule isNoValue(Moved)               => false
-  rule isNoValue(noValue(_, _))       => true
-
-  syntax Value ::= valueOf ( TypedLocal ) [function] // partial, requires hasValue(T)
-
-  rule valueOf(typedLocal(V, _, _)) => V
-
   syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
-
+  // -------------------------------------------------------
   rule tyOfLocal(typedLocal(_, TY, _)) => TY
   rule tyOfLocal(Moved)                => TyUnknown
   rule tyOfLocal(noValue(TY, _))       => TY
 
-  syntax Bool ::= isMutable ( TypedLocal ) [function, total]
-  rule isMutable(typedLocal(_, _, mutabilityMut)) => true
-  rule isMutable(typedLocal(_, _, mutabilityNot)) => false
-  rule isMutable(Moved)                           => false
-  rule isMutable(noValue(_, mutabilityMut))       => true
-  rule isMutable(noValue(_, mutabilityNot))       => false
+  syntax Mutability ::= mutability ( TypedLocal ) [function, total]
+  // -------------------------------------------------------
+  rule mutability(typedLocal(_, _, MUT)) => MUT
+  rule mutability(Moved)                 => mutabilityNot
+  rule mutability(noValue(_, MUT))       => MUT
 ```
 
 Access to a `TypedLocal` (whether reading or writing( may fail for a number of reasons.
@@ -144,8 +132,7 @@ local value cannot be read, though, and the value should be initialised.
        <locals> LOCALS </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-     andBool hasValue({LOCALS[I]}:>TypedLocal)
+     andBool isLocalValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, .ProjectionElems)))
@@ -154,9 +141,9 @@ local value cannot be read, though, and the value should be initialised.
         ...
        </k>
        <locals> LOCALS </locals>
-    requires LOCALS[I] ==K Moved
-     andBool 0 <=Int I
+    requires 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
@@ -165,10 +152,9 @@ local value cannot be read, though, and the value should be initialised.
         ...
        </k>
        <locals> LOCALS </locals>
-    requires isNoValue({LOCALS[I]}:>TypedLocal)
+    requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool 0 <=Int I
-     andBool isTypedLocal(LOCALS[I])
+     andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
     // TODO how about zero-sized types
 ```
@@ -183,10 +169,9 @@ further access. Apart from that, the same caveats apply as for operands that are
         ...
        </k>
        <locals> LOCALS => LOCALS[I <- Moved]</locals>
-    requires hasValue({LOCALS[I]}:>TypedLocal)
-     andBool 0 <=Int I
+    requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isLocalValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, .ProjectionElems)))
@@ -195,9 +180,9 @@ further access. Apart from that, the same caveats apply as for operands that are
         ...
        </k>
        <locals> LOCALS </locals>
-    requires LOCALS[I] ==K Moved
-     andBool 0 <=Int I
+    requires 0 <=Int I
      andBool I <Int size(LOCALS)
+     andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
@@ -206,10 +191,9 @@ further access. Apart from that, the same caveats apply as for operands that are
         ...
        </k>
        <locals> LOCALS </locals>
-    requires isNoValue({LOCALS[I]}:>TypedLocal)
-     andBool 0 <=Int I
+    requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
     // TODO how about zero-sized types
 ```
@@ -231,8 +215,7 @@ Projections operate on the data stored in the `TypedLocal` and are therefore spe
     requires PROJECTIONS =/=K .ProjectionElems
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-     andBool hasValue({LOCALS[I]}:>TypedLocal)
+     andBool isLocalValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -251,11 +234,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
   syntax Evaluation ::= Rvalue
                       | Projected
+                      | TypedLocal
                       | EvalResult
 
   syntax KResult ::= EvalResult
 
-  syntax EvalResult ::= TypedLocal
+  syntax EvalResult ::= LocalValue
 
   // error cases first
   rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => #LocalError(InvalidLocal(LOCAL)) ... </k>
@@ -282,7 +266,10 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
           ...
        </k>
        <locals> LOCALS </locals>
-    requires LOCALS[I] ==K Moved
+    requires I <Int size(LOCALS)
+     andBool 0 <=Int I
+     andBool isMovedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 
   // setting a non-mutable local that is initialised is an error
   rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedLocal(_, _, _))
@@ -293,16 +280,9 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
        <locals> LOCALS </locals>
     requires I <Int size(LOCALS)
      andBool 0 <=Int I
-     andBool isTypedLocal(LOCALS[I])
-     andBool notBool isMutable({LOCALS[I]}:>TypedLocal) // not mutable
-     andBool notBool isNoValue({LOCALS[I]}:>TypedLocal) // noValue(_, mutabilityNot) is mutable once
-
-  // writing no value is a no-op
-  rule <k> #setLocalValue( _, noValue(_, _)) => .K ... </k>
-   // FIXME some zero-sized values are not initialised. Otherwise we could use a special value `ZeroSized` here
-
-  // writing a moved value is an error
-  rule <k> #setLocalValue( _, Moved) => #LocalError(ValueMoved) ... </k>
+     andBool isLocalValue(LOCALS[I])
+     andBool mutability({LOCALS[I]}:>TypedLocal) ==K mutabilityNot
+    [preserves-definedness] // valid list indexing checked
 
   // if all is well, write the value
   //
@@ -314,9 +294,9 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
        <locals> LOCALS => LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isLocalValue(LOCALS[I])
      andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
-     andBool isMutable({LOCALS[I]}:>TypedLocal)        // mutable
+     andBool mutability({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
   // special case for non-mutable uninitialised values: mutable once
@@ -325,13 +305,11 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
            .K
           ...
        </k>
-       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityNot)] </locals>
+       <locals> LOCALS => LOCALS[I <- typedLocal(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutability({LOCALS[I]}:>TypedLocal))] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isNewLocal(LOCALS[I])
      andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
-     andBool notBool isMutable({LOCALS[I]}:>TypedLocal)        // not mutable but
-     andBool isNoValue({LOCALS[I]}:>TypedLocal)                // not initialised yet
     [preserves-definedness] // valid list indexing checked
 ```
 
