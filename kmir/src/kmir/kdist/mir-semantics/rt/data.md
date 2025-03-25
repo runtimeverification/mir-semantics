@@ -1306,7 +1306,7 @@ The arithmetic operations require operands of the same numeric type.
 
   rule truncate(VAL, WIDTH, Signed)
       => // subtract a bias when the truncation result too large
-          (VAL &Int ((1 <<Int WIDTH) -Int 1)) -Int 1 <<Int WIDTH
+          (VAL &Int ((1 <<Int WIDTH) -Int 1)) -Int (1 <<Int WIDTH)
     requires 0 <Int WIDTH
      andBool VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
     [preserves-definedness]
