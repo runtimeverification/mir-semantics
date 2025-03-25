@@ -372,7 +372,7 @@ PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
 
 @pytest.mark.parametrize(
     'spec',
-    [spec for spec in PROVING_FILES],
+    PROVING_FILES,
     ids=[spec.stem for spec in PROVING_FILES],
 )
 def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
