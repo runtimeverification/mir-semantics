@@ -72,10 +72,6 @@ When `WIDTH` and `SIGNEDNESS` are known in a `truncate(VAL, WIDTH, SIGNEDNESS)` 
     requires 0 -Int (1 <<Int 127) <Int VAL
      andBool VAL <Int (1 <<Int 127)
     [simplification, preserves-definedness]
-
-  rule A >=Int B => B <=Int A [simplification]
-
-  rule A <=Int B => A <Int B orBool A ==Int B [simplification]
 ```
 
 ```k
