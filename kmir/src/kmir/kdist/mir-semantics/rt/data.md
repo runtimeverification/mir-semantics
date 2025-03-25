@@ -1295,16 +1295,23 @@ The arithmetic operations require operands of the same numeric type.
       => VAL // shortcut when there is nothing to do
     requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
     [simplification, preserves-definedness]
+
   // for signed values we need to preserve/restore the sign
   rule truncate(VAL, WIDTH, Signed)
-      => // bit-based truncation, then establishing the sign by subtracting a bias
+      => // if truncated value small enough and positive, all is done
           (VAL &Int ((1 <<Int WIDTH) -Int 1))
-            -Int #if VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
-                #then 1 <<Int WIDTH
-                #else 0
-                #fi
     requires 0 <Int WIDTH
+     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) <Int (1 <<Int (WIDTH -Int 1))
     [preserves-definedness]
+
+  rule truncate(VAL, WIDTH, Signed)
+      => // subtract a bias when the truncation result too large
+          (VAL &Int ((1 <<Int WIDTH) -Int 1)) -Int 1 <<Int WIDTH
+    requires 0 <Int WIDTH
+     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
+    [preserves-definedness]
+
+
 ```
 
 #### Comparison operations

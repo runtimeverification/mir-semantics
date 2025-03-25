@@ -48,9 +48,18 @@ Therefore, its value range should be simplified for symbolic input asserted to b
     requires VAL <Int (1 <<Int (WIDTH -Int 1))
      andBool 0 -Int (1 <<Int (WIDTH -Int 1)) <=Int VAL
      [simplification]
-
 ```
+When `WIDTH` and `SIGNEDNESS` are known in a `truncate(VAL, WIDTH, SIGNEDNESS)` call, it will result in an expression using a bitmask (`&Int`) which can be simplified if `VAL` has known limits.
 
+```k
+  rule VAL &Int ((1 <<Int 16) -Int 1) <Int (1 <<Int 15) => true
+    requires 0 -Int (1 <<Int 15) <Int VAL andBool VAL <Int (1 <<Int 15)
+    [simplification, preserves-definedness]
+
+  rule A >=Int B => B <=Int A [simplification]
+
+  rule A <=Int B => A <Int B orBool A ==Int B [simplification]
+```
 
 ```k
 endmodule
