@@ -219,7 +219,7 @@ be known to populate the `currentFunc` field.
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
-                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
+                monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _)))
               ),
               FUNCTIONNAMES
             )
@@ -450,11 +450,10 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
   rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>MonoItemKind)
     requires ID in_keys(FUNCS)
 
-  // returns blocks from the _first_ body if there are several
-  // TODO handle cases with several blocks
-  rule #getBlocksAux(monoItemFn(_, _, .Bodies)) => .List
-  rule #getBlocksAux(monoItemFn(_, _, body(BLOCKS, _, _, _, _, _) _)) => toKList(BLOCKS)
-  // other item kinds are not expected or supported
+  // returns blocks from the body
+  rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List
+  rule #getBlocksAux(monoItemFn(_, _, someBody(body(BLOCKS, _, _, _, _, _)))) => toKList(BLOCKS)
+  // other item kinds are not expected or supported FIXME: Just getting stuck for now
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 ```
@@ -533,7 +532,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule <k> #setUpCalleeData(
-              monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
               ARGS
               )
          =>
@@ -551,6 +550,7 @@ An operand may be a `Reference` (the only way a function could access another fu
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
+  // TODO: Haven't handled "noBody" case
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
