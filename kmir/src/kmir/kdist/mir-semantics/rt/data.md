@@ -760,6 +760,8 @@ In the simplest case, the reference refers to a local in the same stack frame (h
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
+  // TODO case of MovedLocal and NewLocal
+
   // why do we not have this automatically for user-defined lists?
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   rule appendP(.ProjectionElems, TAIL) => TAIL
@@ -789,8 +791,7 @@ An important prerequisite of this rule is that when passing references to a call
      andBool isTypedValue(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME))
     [preserves-definedness] // valid list indexing checked
 
-    // TODO case of MovedLocal and NewLocal?
-
+    // TODO case of MovedLocal and NewLocal
 
     syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
