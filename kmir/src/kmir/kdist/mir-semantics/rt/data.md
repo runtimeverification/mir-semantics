@@ -251,7 +251,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // list index checked before lookup
 
   // setting a local which was Moved is an error
-  rule <k> _:TypedValue ~> #setLocalValue( place(local(I), _))
+  rule <k> _:TypedValue ~> #setLocalValue( place(local(I), .ProjectionElems))
           =>
            LocalMoved(local(I))
           ...
@@ -263,7 +263,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [priority(60), preserves-definedness] // list index checked before lookup
 
   // setting a non-mutable local that is initialised is an error
-  rule <k> _:TypedValue ~> #setLocalValue( place(local(I) #as LOCAL, _))
+  rule <k> _:TypedValue ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
           =>
            LocalNotMutable(LOCAL)
           ...
