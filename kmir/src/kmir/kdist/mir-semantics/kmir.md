@@ -637,6 +637,20 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
     requires COND =/=Bool EXPECTED
 ```
 
+### Stopping on Program Errors
+
+The semantics has a dedicated error sort to stop execution when flawed input or undefined behaviour is detected.
+This includes cases of invalid MIR (e.g., accessing non-existing locals in a block or jumping to non-existing blocks), mutation of immutable values, or accessing uninitialised locals, but also user errors such as division by zero or overflowing unchecked arithmetic operations.
+
+The execution will stop with the respective error information as soon as an error condition is detected.
+
+```k
+  syntax KItem ::= #ProgramError ( MIRError )
+
+  rule [program-error]:
+    <k> ERR:MIRError => #ProgramError(ERR) ...</k>
+```
+
 ```k
 endmodule
 ```
