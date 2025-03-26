@@ -13,7 +13,7 @@ If you would like to try a legacy version of the project, [this blog post](https
 
 ### KMIR Setup
 
-Pre-requisites: `python >= 3.10`, `pip >= 20.0.2`, `poetry >= 1.3.2`, `cargo == nightly-2024-11-29`, `k >= v7.1.205`. To install K, follow the steps available in [K's Quick Start instructions](https://github.com/runtimeverification/k?tab=readme-ov-file#quick-start). 
+Pre-requisites: `python >= 3.10`, `pip >= 20.0.2`, `poetry >= 1.3.2`, `gcc >= 11.4.0`, `cargo == nightly-2024-11-29`, `k >= v7.1.205`. To install K, follow the steps available in [K's Quick Start instructions](https://github.com/runtimeverification/k?tab=readme-ov-file#quick-start). 
 
 ```bash
 make build
