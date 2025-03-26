@@ -259,7 +259,7 @@ be known to populate the `currentFunc` field.
 
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
-       ListItem(noValue(TY, MUT)) #reserveFor(REST)
+       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -320,7 +320,7 @@ will effectively be no-ops at this level).
 
   syntax KItem ::= #assign ( Place )
 
-  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
+  rule <k> VAL:TypedValue ~> #assign(PLACE) ~> CONT
         =>
            VAL ~> #setLocalValue(PLACE) ~> CONT
         </k>
@@ -375,19 +375,19 @@ depending on the value of a _discriminant_.
            #readOperand(DISCR) ~> #selectBlock(TARGETS)
        </k>
 
-  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
+  rule <k> typedValue(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
-  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+  rule <k> typedValue(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(0, TARGETS))
        ...
        </k>
 
-  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+  rule <k> typedValue(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(1, TARGETS))
        ...
@@ -423,6 +423,8 @@ context of the enclosing stack frame, at the _target_.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
+If the loval `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
+
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
@@ -435,14 +437,33 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(LOCAL0:TypedLocal) _ => NEWLOCALS </locals>
+         <locals> ListItem(LOCAL0:TypedValue) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      // andBool DEST #within(LOCALS)
-     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+     [preserves-definedness] // CALLER lookup defined
+
+  // no value to return, skip writing
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #execBlockIdx(TARGET) ~> .K
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller> CALLER => NEWCALLER </caller>
+         <dest> _ => NEWDEST </dest>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+     [preserves-definedness] // CALLER lookup defined
 
   syntax List ::= #getBlocks(Map, Ty) [function]
                 | #getBlocksAux(MonoItemKind)  [function, total]
@@ -474,7 +495,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
+         <locals> ListItem(typedValue(VAL, _, _)) ... </locals>
          ...
        </currentFrame>
 
@@ -485,7 +506,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        </k>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(noValue(_, _)) ... </locals>
+         <locals> ListItem(newLocal(_, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -597,10 +618,10 @@ An operand may be a `Reference` (the only way a function could access another fu
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
 If the condition value is as expected, the program proceeds with the given `target` block.
-Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
+Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `AssertError` in the semantics.
 
 ```k
-  syntax KItem ::= #AssertError ( AssertMessage )
+  syntax MIRError ::= AssertError ( AssertMessage )
 
   rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
@@ -609,10 +630,10 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   syntax KItem ::= #expect ( Bool, AssertMessage )
 
-  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+  rule <k> typedValue(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
+  rule <k> typedValue(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
 ```
 

@@ -25,12 +25,12 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Any , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( typedLocal ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( ListItem ( typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Any , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( ListItem ( typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
       ListItem ( Moved )
       ListItem ( Moved )
       ListItem ( Moved )

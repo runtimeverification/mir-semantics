@@ -30,20 +30,20 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( Moved )
       ListItem ( Moved )
-      ListItem ( noValue ( ty ( 34 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 34 ) , mutabilityMut ) )
       ListItem ( Moved )
       ListItem ( Moved )
       ListItem ( Moved )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 11 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityNot ) )
-      ListItem ( noValue ( ty ( 34 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 11 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 34 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 22 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
