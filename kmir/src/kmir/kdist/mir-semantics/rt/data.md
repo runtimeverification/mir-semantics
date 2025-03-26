@@ -94,10 +94,22 @@ module RT-DATA
   imports KMIR-CONFIGURATION
 ```
 
+### Evaluating Items to `TypedValue` or `TypedLocal`
+
+Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
+The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
+Other uses of heating and cooling are to _read_ local variables as operands. This may include `Moved` locals or uninitialised `NewLocal`s (as error cases). Therefore we use the suprtsort `TypedLocal` of `TypedValue` as the `Result` sort.
+
+```k
+  syntax Evaluation ::= TypedValue // other sorts are added at the first use site
+
+  syntax KResult ::= TypedValue
+```
+
 ### Reading operands (local variables and constants)
 
 ```k
-  syntax KItem ::= #readOperand ( Operand )
+  syntax Evaluation ::= Operand
 ```
 
 _Read_ access to `Operand`s (which may be local values) may have similar errors as write access.
@@ -105,7 +117,7 @@ _Read_ access to `Operand`s (which may be local values) may have similar errors 
 Constant operands are simply decoded according to their type.
 
 ```k
-  rule <k> #readOperand(operandConstant(constOperand(_, _, mirConst(KIND, TY, _))))
+  rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
         =>
            typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
         ...
@@ -124,7 +136,7 @@ Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, 
 local value cannot be read, though, and the value should be initialised.
 
 ```k
-  rule <k> #readOperand(operandCopy(place(local(I), .ProjectionElems)))
+  rule <k> operandCopy(place(local(I), .ProjectionElems))
         =>
            LOCALS[I]
         ...
@@ -135,7 +147,7 @@ local value cannot be read, though, and the value should be initialised.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #readOperand(operandCopy(place(local(I) #as LOCAL, _)))
+  rule <k> operandCopy(place(local(I) #as LOCAL, _))
         =>
            LocalMoved(LOCAL)
         ...
@@ -146,7 +158,7 @@ local value cannot be read, though, and the value should be initialised.
      andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #readOperand(operandCopy(place(local(I), _)))
+  rule <k> operandCopy(place(local(I), _))
         =>
            LocalUninitialised(local(I))
         ...
@@ -163,7 +175,7 @@ Reading an `Operand` using `operandMove` has to invalidate the respective local,
 further access. Apart from that, the same caveats apply as for operands that are _copied_.
 
 ```k
-  rule <k> #readOperand(operandMove(place(local(I), .ProjectionElems)))
+  rule <k> operandMove(place(local(I), .ProjectionElems))
         =>
            LOCALS[I]
         ...
@@ -174,7 +186,7 @@ further access. Apart from that, the same caveats apply as for operands that are
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, _)))
+  rule <k> operandMove(place(local(I) #as LOCAL, _))
         =>
            LocalMoved(LOCAL)
         ...
@@ -185,7 +197,7 @@ further access. Apart from that, the same caveats apply as for operands that are
      andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #readOperand(operandMove(place(local(I), _)))
+  rule <k> operandMove(place(local(I), _))
         =>
            LocalUninitialised(local(I))
         ...
@@ -199,14 +211,14 @@ further access. Apart from that, the same caveats apply as for operands that are
 
 ### Reading places with projections
 
-`#readOperand` above is only implemented for reading a `Local`, without any projecting modifications.
+Reading an `Operand` above is only implemented for reading a `Local`, without any projecting modifications.
 Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
 A projection can only be applied to an initialised value, so this operation requires `TypedValue`.
 
 ```k
   syntax KItem ::= #readProjection ( TypedValue , ProjectionElems )
 
-  rule <k> #readOperand(operandCopy(place(local(I), PROJECTIONS)))
+  rule <k> operandCopy(place(local(I), PROJECTIONS))
         =>
            #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS)
         ...
@@ -333,9 +345,9 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
 
 ```k
-  rule  <k> rvalueUse(OPERAND) => #readOperand(OPERAND) ... </k>
+  rule  <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
-  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #readOperand(OPERAND) ~> #cast(CASTKIND, TY) ... </k>
+  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => OPERAND ~> #cast(CASTKIND, TY) ... </k>
 ```
 
 A number of unary and binary operations exist, (which are dependent on the operand types).
@@ -379,7 +391,7 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 
   rule <k> #readOperandsAux(ACC, OP:Operand REST)
         =>
-           #readOperand(OP) ~> #readOn(ACC, REST)
+           OP ~> #readOn(ACC, REST)
         ...
        </k>
 
@@ -985,7 +997,7 @@ We could first read the original value using `#readProjection` and compare the t
 Reading `Moved` operands requires a write operation to the read place, too, however the mutability should be ignored while computing the update.
 
 ```k
-  rule <k> #readOperand(operandMove(place(local(I) #as LOCAL, PROJECTIONS)))
+  rule <k> operandMove(place(local(I) #as LOCAL, PROJECTIONS))
         => // read first, then write moved marker (use type from before)
            #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS) ~>
            #markMoved({LOCALS[I]}:>TypedLocal, LOCAL, PROJECTIONS)
@@ -1030,19 +1042,19 @@ For binary operations generally, both arguments have to be read from the provide
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
-           #readOperand(OP1) ~> #suspend(BINOP, OP2, false)
+           OP1 ~> #suspend(BINOP, OP2, false)
        ...
        </k>
 
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2)
         =>
-           #readOperand(OP1) ~> #suspend(BINOP, OP2, true)
+           OP1 ~> #suspend(BINOP, OP2, true)
        ...
        </k>
 
   rule <k> ARG1:TypedValue ~> #suspend(BINOP, OP2, CHECKFLAG)
         =>
-           #readOperand(OP2) ~> #ready(BINOP, ARG1, CHECKFLAG)
+           OP2 ~> #ready(BINOP, ARG1, CHECKFLAG)
        ...
        </k>
 
@@ -1060,7 +1072,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 
   rule <k> rvalueUnaryOp(UNOP, OP1)
         =>
-           #readOperand(OP1) ~> #applyUnOp(UNOP)
+           OP1 ~> #applyUnOp(UNOP)
        ...
        </k>
 ```

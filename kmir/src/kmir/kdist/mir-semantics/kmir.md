@@ -372,7 +372,7 @@ depending on the value of a _discriminant_.
 ```k
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #readOperand(DISCR) ~> #selectBlock(TARGETS)
+           DISCR ~> #selectBlock(TARGETS)
        </k>
 
   rule <k> typedValue(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
@@ -587,7 +587,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
-           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           CONSTOPERAND ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
 
@@ -625,7 +625,7 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
-           #readOperand(COND) ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+           COND ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
 
   syntax KItem ::= #expect ( Bool, AssertMessage )
