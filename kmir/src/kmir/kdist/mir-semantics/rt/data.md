@@ -1029,7 +1029,7 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax KItem ::= #suspend ( BinOp, Operand, Bool)
                 |  #ready ( BinOp, TypedLocal, Bool )
-                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool ) [function, total]
+                |  #compute ( BinOp, TypedLocal, TypedLocal, Bool )
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
         =>
@@ -1138,18 +1138,134 @@ The arithmetic operations require operands of the same numeric type.
     requires Y =/=Int 0
   // operation undefined otherwise
 
+  // Checked operations return a pair of the truncated value and an overflow flag
+  // signed numbers: must check for wrap-around (operation specific)
   rule #compute(
           BOP,
-          typedLocal(Integer(ARG1, WIDTH, SIGNEDNESS), TY, _),
-          typedLocal(Integer(ARG2, WIDTH, SIGNEDNESS), TY, _),
-          CHK)
+          typedLocal(Integer(ARG1, WIDTH, true), TY, _), //signed
+          typedLocal(Integer(ARG2, WIDTH, true), TY, _),
+          true) // checked
     =>
-      #arithmeticInt(BOP, ARG1, ARG2, WIDTH, SIGNEDNESS, TY, CHK)
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
+            ListItem(
+              typedLocal(
+                BoolVal(
+                  // overflow: compare with and without truncation
+                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt(BOP, ARG1, ARG2)
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
+            )
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
     requires isArithmetic(BOP)
     [preserves-definedness]
 
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #compute(
+          BOP,
+          typedLocal(Integer(ARG1, WIDTH, false), TY, _), // unsigned
+          typedLocal(Integer(ARG2, WIDTH, false), TY, _),
+          true) // checked
+    =>
+       typedLocal(
+          Aggregate(
+            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
+            ListItem(
+              typedLocal(
+                BoolVal(
+                  // overflow flag: compare to truncated result
+                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
+                ),
+                TyUnknown,
+                mutabilityNot
+              )
+            )
+          ),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isArithmetic(BOP)
+    [preserves-definedness]
+
+  // Unchecked operations signal undefined behaviour on overflow. The checks are the same as for the flags above.
+
+  rule #compute(
+          BOP,
+          typedLocal(Integer(ARG1, WIDTH, true), TY, _), // signed
+          typedLocal(Integer(ARG2, WIDTH, true), TY, _),
+          false) // unchecked
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  // unsigned numbers: simple overflow check using a bit mask
+  rule #compute(
+          BOP,
+          typedLocal(Integer(ARG1, WIDTH, false), TY, _), // unsigned
+          typedLocal(Integer(ARG2, WIDTH, false), TY, _),
+          false) // unchecked
+    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+    requires isArithmetic(BOP)
+    // infinite precision result must equal truncated result
+     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
+    [preserves-definedness]
+
+  // lower-priority rule to catch undefined behaviour
+  rule #compute(
+          BOP,
+          typedLocal(Integer(_, WIDTH, SIGNEDNESS), TY, _),
+          typedLocal(Integer(_, WIDTH, SIGNEDNESS), TY, _),
+          false) // unchecked
+    => #OperationError(Overflow_U_B)
+    requires isArithmetic(BOP)
+    [priority(60)]
+
+  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
+  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
+  rule #compute(binOpDiv, _, typedLocal(Integer(DIVISOR, _, _), _, _), _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
+
+  rule #compute(binOpRem, _, typedLocal(Integer(DIVISOR, _, _), _, _), _)
+      =>
+        #OperationError(DivisionByZero)
+    requires DIVISOR ==Int 0
+    [priority(40)]
+
+  rule #compute(
+          binOpDiv,
+          typedLocal(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
+          typedLocal(Integer(DIVISOR,  WIDTH, true), TY, _),
+          _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
+
+  rule #compute(
+          binOpRem,
+          typedLocal(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
+          typedLocal(Integer(DIVISOR,  WIDTH, true), TY, _),
+          _)
+      =>
+        #OperationError(Overflow_U_B)
+    requires DIVISOR ==Int -1
+     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
+    [priority(40)]
+
   // error cases:
-    // non-scalar arguments
+    // non-integer arguments
   rule #compute(BOP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
     =>
        #OperationError(OperandMismatch(BOP, ARG1, ARG2))
@@ -1163,6 +1279,7 @@ The arithmetic operations require operands of the same numeric type.
     requires TY1 =/=K TY2
      andBool isArithmetic(BOP)
     [owise]
+
 
   // helper function to truncate int values
   syntax Int ::= truncate(Int, Int, Signedness) [function, total]
@@ -1178,118 +1295,23 @@ The arithmetic operations require operands of the same numeric type.
       => VAL // shortcut when there is nothing to do
     requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
     [simplification, preserves-definedness]
+
   // for signed values we need to preserve/restore the sign
   rule truncate(VAL, WIDTH, Signed)
-      => // bit-based truncation, then establishing the sign by subtracting a bias
+      => // if truncated value small enough and positive, all is done
           (VAL &Int ((1 <<Int WIDTH) -Int 1))
-            -Int #if VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
-                #then 1 <<Int WIDTH
-                #else 0
-                #fi
     requires 0 <Int WIDTH
+     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) <Int (1 <<Int (WIDTH -Int 1))
     [preserves-definedness]
 
-  // perform arithmetic operations on integral types of given width
-  syntax KItem ::= #arithmeticInt ( BinOp, Int , Int, Int,  Bool,      Ty,    Bool         ) [function]
-  //                                       arg1  arg2 width signedness result overflowcheck
-  // signed numbers: must check for wrap-around (operation specific)
-  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, true)
-    =>
-       typedLocal(
-          Aggregate(
-            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
-            ListItem(
-              typedLocal(
-                BoolVal(
-                  // overflow: Result outside valid range
-                  (1 <<Int (WIDTH -Int 1)) <=Int onInt(BOP, ARG1, ARG2)
-                    orBool
-                  onInt(BOP, ARG1, ARG2) <Int 0 -Int (1 <<Int (WIDTH -Int 1))
-                  // alternatively: compare with and without truncation
-                  // truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt BOP, ARG1, ARG2
-                ),
-                TyUnknown,
-                mutabilityNot
-              )
-            )
-          ),
-          TyUnknown,
-          mutabilityNot
-        )
-    requires isArithmetic(BOP)
+  rule truncate(VAL, WIDTH, Signed)
+      => // subtract a bias when the truncation result too large
+          (VAL &Int ((1 <<Int WIDTH) -Int 1)) -Int (1 <<Int WIDTH)
+    requires 0 <Int WIDTH
+     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
     [preserves-definedness]
 
 
-  // unsigned numbers: simple overflow check using a bit mask
-  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, true)
-    =>
-       typedLocal(
-          Aggregate(
-            ListItem(typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
-            ListItem(
-              typedLocal(
-                BoolVal(
-                  // overflow flag: true if infinite precision result is not equal to truncated result
-                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
-                ),
-                TyUnknown,
-                mutabilityNot
-              )
-            )
-          ),
-          TyUnknown,
-          mutabilityNot
-        )
-    requires isArithmetic(BOP)
-    [preserves-definedness]
-
-  // performing unchecked operations may result in undefined behaviour, which we signal.
-  // The check it the same as the one for the overflow flag above
-
-  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, true, TY, false)
-    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
-    requires isArithmetic(BOP)
-    // infinite precision result must equal truncated result
-     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
-    [preserves-definedness]
-
-  // unsigned numbers: simple overflow check using a bit mask
-  rule #arithmeticInt(BOP, ARG1, ARG2, WIDTH, false, TY, false)
-    => typedLocal(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
-    requires isArithmetic(BOP)
-    // infinite precision result must equal truncated result
-     andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
-    [preserves-definedness]
-
-  rule #arithmeticInt(BOP, _, _, _, _, _, false) => #OperationError(Overflow_U_B)
-    requires isArithmetic(BOP)
-    [owise]
-
-  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
-  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
-  rule #arithmeticInt(binOpDiv, _, DIVISOR, _, _, _, _)
-      =>
-        #OperationError(DivisionByZero)
-    requires DIVISOR ==Int 0
-    [priority(40)]
-  rule #arithmeticInt(binOpRem, _, DIVISOR, _, _, _, _)
-      =>
-        #OperationError(DivisionByZero)
-    requires DIVISOR ==Int 0
-    [priority(40)]
-
-  rule #arithmeticInt(binOpDiv, DIVIDEND, DIVISOR, WIDTH, true, _, _)
-      =>
-        #OperationError(Overflow_U_B)
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
-  rule #arithmeticInt(binOpRem, DIVIDEND, DIVISOR, WIDTH, true, _, _)
-      =>
-        #OperationError(Overflow_U_B)
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
 ```
 
 #### Comparison operations
@@ -1333,11 +1355,13 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
       =>
         typedLocal(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 
   rule #compute(OP, typedLocal(BoolVal(VAL1), TY, _), typedLocal(BoolVal(VAL2), TY, _), _)
       =>
         typedLocal(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 
   rule #compute(OP, typedLocal(ARG1, TY, _), typedLocal(ARG2, TY, _), _)
       =>
