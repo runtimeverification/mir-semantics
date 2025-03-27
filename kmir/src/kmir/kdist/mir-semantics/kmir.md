@@ -352,10 +352,9 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
          =>
            #execBlockIdx(I)
-         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
        </k>
 ```
 
@@ -363,30 +362,30 @@ A `SwitchInt` terminator selects one of the blocks given as _targets_,
 depending on the value of a _discriminant_.
 
 ```k
+  syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
+
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           DISCR ~> #selectBlock(TARGETS)
+           #selectBlock(TARGETS, DISCR)
        </k>
 
-  rule <k> typedValue(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, _, _), _, _))
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
-  rule <k> typedValue(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(false), _, _))
          =>
            #execBlockIdx(#selectBlock(0, TARGETS))
        ...
        </k>
 
-  rule <k> typedValue(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(true), _, _))
          =>
            #execBlockIdx(#selectBlock(1, TARGETS))
        ...
        </k>
-
-  syntax KItem ::= #selectBlock ( SwitchTargets )
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
@@ -618,15 +617,15 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
-           COND ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+           #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
 
-  syntax KItem ::= #expect ( Bool, AssertMessage )
+  syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
 
-  rule <k> typedValue(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> typedValue(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => AssertError(MSG) ... </k>
+  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, MSG) => AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
 ```
 
