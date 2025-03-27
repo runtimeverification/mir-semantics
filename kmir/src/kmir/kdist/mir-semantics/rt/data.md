@@ -841,6 +841,7 @@ The solution is to use rewrite operations in a downward pass through the project
   syntax Contexts ::= List{Context, ""}
 
   rule #buildUpdate(VAL, .Contexts) => VAL
+     [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxField(TY, ARGS, I) CTXS)
       => #buildUpdate(typedValue(Aggregate(ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
@@ -920,12 +921,14 @@ The solution is to use rewrite operations in a downward pass through the project
             #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
           =>
             #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
 
   syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
