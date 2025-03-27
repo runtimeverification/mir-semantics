@@ -1038,7 +1038,7 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
-  syntax KItem ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [strict(2,3)]
+  syntax KItem ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
@@ -1062,7 +1062,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | OperandMismatch ( BinOp, Value, Value )
                           | OperandError( BinOp, TypedLocal, TypedLocal)
                           | OperandMismatch ( UnOp, Value )
-                          | OperandError( UnOp, TypedValue)
+                          | OperandError( UnOp, TypedLocal)
                           // errors above are compiler bugs or invalid MIR
                           | Unimplemented ( BinOp, TypedValue, TypedValue)
                           // errors below are program errors
