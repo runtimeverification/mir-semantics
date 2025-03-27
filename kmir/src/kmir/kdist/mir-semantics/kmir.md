@@ -420,7 +420,7 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET) ~> .K
+           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -440,7 +440,7 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
   // no value to return, skip writing
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #execBlockIdx(TARGET) ~> .K
+           #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -509,10 +509,9 @@ where the returned result should go.
 
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
            #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
-         ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
