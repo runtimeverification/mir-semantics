@@ -30,15 +30,15 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 22 , 8 , true ) , ty ( 2 ) , mutabilityMut ) )
-      ListItem ( noValue ( ty ( 1 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 22 , 8 , true ) , ty ( 2 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityMut ) )
       ListItem ( Moved )
-      ListItem ( noValue ( ty ( 29 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityNot ) )
       ListItem ( Moved )
-      ListItem ( noValue ( ty ( 29 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
