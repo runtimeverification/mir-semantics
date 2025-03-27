@@ -48,7 +48,9 @@ Therefore, its value range should be simplified for symbolic input asserted to b
     requires VAL <Int (1 <<Int (WIDTH -Int 1))
      andBool 0 -Int (1 <<Int (WIDTH -Int 1)) <=Int VAL
      [simplification]
+
 ```
+
 
 ```k
 endmodule

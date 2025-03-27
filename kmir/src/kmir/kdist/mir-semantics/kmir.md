@@ -219,7 +219,7 @@ be known to populate the `currentFunc` field.
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
-                monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _)))
+                monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _) .Bodies)
               ),
               FUNCTIONNAMES
             )
@@ -259,7 +259,7 @@ be known to populate the `currentFunc` field.
 
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
-       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
+       ListItem(noValue(TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -312,11 +312,18 @@ will effectively be no-ops at this level).
   // all memory accesses relegated to another module (to be added)
   rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-            #setLocalValue(PLACE, RVAL)
+           RVAL ~> #assign(PLACE)
          ...
        </k>
 
   // RVAL evaluation is implemented in rt/data.md
+
+  syntax KItem ::= #assign ( Place )
+
+  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
+        =>
+           VAL ~> #setLocalValue(PLACE) ~> CONT
+        </k>
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -352,9 +359,10 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
+  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN))
          =>
            #execBlockIdx(I)
+         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
        </k>
 ```
 
@@ -362,30 +370,30 @@ A `SwitchInt` terminator selects one of the blocks given as _targets_,
 depending on the value of a _discriminant_.
 
 ```k
-  syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
-
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #selectBlock(TARGETS, DISCR)
+           #readOperand(DISCR) ~> #selectBlock(TARGETS)
        </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, _, _), _, _))
+  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(false), _, _))
+  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(0, TARGETS))
        ...
        </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(true), _, _))
+  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
          =>
            #execBlockIdx(#selectBlock(1, TARGETS))
        ...
        </k>
+
+  syntax KItem ::= #selectBlock ( SwitchTargets )
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
@@ -415,12 +423,10 @@ context of the enclosing stack frame, at the _target_.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
-If the loval `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
-
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET)
+           #decrementRef(LOCAL0) ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -429,33 +435,14 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(LOCAL0:TypedValue) _ => NEWLOCALS </locals>
+         <locals> ListItem(LOCAL0:TypedLocal) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-     [preserves-definedness] // CALLER lookup defined
-
-  // no value to return, skip writing
-  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
-         =>
-           #execBlockIdx(TARGET)
-       </k>
-       <currentFunc> _ => CALLER </currentFunc>
-       //<currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
-         <caller> CALLER => NEWCALLER </caller>
-         <dest> _ => NEWDEST </dest>
-         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
-         <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
-       //</currentFrame>
-       // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
-       <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
-     [preserves-definedness] // CALLER lookup defined
+      // andBool DEST #within(LOCALS)
+     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
 
   syntax List ::= #getBlocks(Map, Ty) [function]
                 | #getBlocksAux(MonoItemKind)  [function, total]
@@ -463,10 +450,11 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
   rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>MonoItemKind)
     requires ID in_keys(FUNCS)
 
-  // returns blocks from the body
-  rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List
-  rule #getBlocksAux(monoItemFn(_, _, someBody(body(BLOCKS, _, _, _, _, _)))) => toKList(BLOCKS)
-  // other item kinds are not expected or supported FIXME: Just getting stuck for now
+  // returns blocks from the _first_ body if there are several
+  // TODO handle cases with several blocks
+  rule #getBlocksAux(monoItemFn(_, _, .Bodies)) => .List
+  rule #getBlocksAux(monoItemFn(_, _, body(BLOCKS, _, _, _, _, _) _)) => toKList(BLOCKS)
+  // other item kinds are not expected or supported
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
 ```
@@ -487,7 +475,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(typedValue(VAL, _, _)) ... </locals>
+         <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
          ...
        </currentFrame>
 
@@ -498,7 +486,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        </k>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(newLocal(_, _)) ... </locals>
+         <locals> ListItem(noValue(_, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -509,9 +497,10 @@ where the returned result should go.
 
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
          =>
            #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+         ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -544,7 +533,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule <k> #setUpCalleeData(
-              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+              monoItemFn(_, _, body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _) _:Bodies),
               ARGS
               )
          =>
@@ -562,7 +551,6 @@ An operand may be a `Reference` (the only way a function could access another fu
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
-  // TODO: Haven't handled "noBody" case
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
@@ -578,13 +566,13 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
+           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -596,7 +584,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
@@ -609,37 +597,23 @@ An operand may be a `Reference` (the only way a function could access another fu
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
 If the condition value is as expected, the program proceeds with the given `target` block.
-Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `AssertError` in the semantics.
+Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
 
 ```k
-  syntax MIRError ::= AssertError ( AssertMessage )
+  syntax KItem ::= #AssertError ( AssertMessage )
 
   rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
-           #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+           #readOperand(COND) ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
 
-  syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
+  syntax KItem ::= #expect ( Bool, AssertMessage )
 
-  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, _MSG) => .K ... </k>
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, MSG) => AssertError(MSG) ... </k>
+  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
-```
-
-### Stopping on Program Errors
-
-The semantics has a dedicated error sort to stop execution when flawed input or undefined behaviour is detected.
-This includes cases of invalid MIR (e.g., accessing non-existing locals in a block or jumping to non-existing blocks), mutation of immutable values, or accessing uninitialised locals, but also user errors such as division by zero or overflowing unchecked arithmetic operations.
-
-The execution will stop with the respective error information as soon as an error condition is detected.
-
-```k
-  syntax KItem ::= #ProgramError ( MIRError )
-
-  rule [program-error]:
-    <k> ERR:MIRError => #ProgramError(ERR) ...</k>
 ```
 
 ```k
