@@ -98,12 +98,12 @@ module RT-DATA
 
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
-Other uses of heating and cooling are to _read_ local variables as operands. This may include `Moved` locals or uninitialised `NewLocal`s (as error cases). Therefore we use the suprtsort `TypedLocal` of `TypedValue` as the `Result` sort.
+Other uses of heating and cooling are to _read_ local variables as operands. This may include `Moved` locals or uninitialised `NewLocal`s (as error cases). Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
 
 ```k
-  syntax Evaluation ::= TypedValue // other sorts are added at the first use site
+  syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
 
-  syntax KResult ::= TypedValue
+  syntax KResult ::= TypedLocal
 ```
 
 ### Reading operands (local variables and constants)
@@ -239,17 +239,17 @@ Related code currently resides in the value-implementing module.
 
 ### Setting local variables (including error cases)
 
-The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the K sequence  to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
 
 ```k
-  syntax KItem ::= #setLocalValue( Place )
+  syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
   // error cases first
-  rule <k> _:TypedLocal ~> #setLocalValue( place(local(I) #as LOCAL, _)) => InvalidLocal(LOCAL) ... </k>
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => InvalidLocal(LOCAL) ... </k>
        <locals> LOCALS </locals>
     requires size(LOCALS) <=Int I orBool I <Int 0
 
-  rule <k> typedValue(_, TY, _) #as VAL ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedValue(_, TY, _) #as VAL)
           =>
            TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL)
           ...
@@ -263,7 +263,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // list index checked before lookup
 
   // setting a local which was Moved is an error
-  rule <k> _:TypedValue ~> #setLocalValue( place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I), .ProjectionElems), _)
           =>
            LocalMoved(local(I))
           ...
@@ -275,7 +275,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [priority(60), preserves-definedness] // list index checked before lookup
 
   // setting a non-mutable local that is initialised is an error
-  rule <k> _:TypedValue ~> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems))
+  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), _)
           =>
            LocalNotMutable(LOCAL)
           ...
@@ -288,7 +288,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
   // if all is well, write the value
   // mutable local
-  rule <k> typedValue(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, TY, _ ))
           =>
            .K
           ...
@@ -304,7 +304,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
     [preserves-definedness] // valid list indexing checked
 
   // special case for non-mutable uninitialised values: mutable once
-  rule <k> typedValue(VAL:Value, TY, _ ) ~> #setLocalValue(place(local(I), .ProjectionElems))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, TY, _ ))
           =>
            .K
           ...
@@ -321,7 +321,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value preceeding it in the 
 
 ## Evaluation of RValues
 
-The `RValue` sort in MIR represents various operations that produce a value which can be assigned to a `Place`.
+The `Rvalue` sort in MIR represents various operations that produce a value which can be assigned to a `Place`.
 
 | RValue         | Arguments                                       | Action                               |
 |----------------|-------------------------------------------------|--------------------------------------|
@@ -345,6 +345,8 @@ The `RValue` sort in MIR represents various operations that produce a value whic
 The most basic ones are simply accessing an operand, either directly or by way of a type cast.
 
 ```k
+  syntax Evaluation ::= Rvalue
+
   rule  <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
   rule <k> rvalueCast(CASTKIND, OPERAND, TY) => OPERAND ~> #cast(CASTKIND, TY) ... </k>
@@ -922,20 +924,20 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #setLocalValue(place(local(I), .ProjectionElems))
+            #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
           =>
-            #buildUpdate(NEW, CONTEXTS) ~> #forceSetLocal(local(I))
+            #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
 
-  syntax KItem ::= #forceSetLocal ( Local )
+  syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
   // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> VALUE:TypedLocal ~> #forceSetLocal(local(I))
+  rule <k> #forceSetLocal(local(I), VALUE)
           =>
            .K
           ...
@@ -978,7 +980,7 @@ We could first read the original value using `#readProjection` and compare the t
 
 
 ```k
-  rule <k> VAL ~> #setLocalValue(place(local(I), PROJ))
+  rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
            #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
        ...

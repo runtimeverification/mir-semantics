@@ -312,18 +312,11 @@ will effectively be no-ops at this level).
   // all memory accesses relegated to another module (to be added)
   rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-           RVAL ~> #assign(PLACE)
+            #setLocalValue(PLACE, RVAL)
          ...
        </k>
 
   // RVAL evaluation is implemented in rt/data.md
-
-  syntax KItem ::= #assign ( Place )
-
-  rule <k> VAL:TypedValue ~> #assign(PLACE) ~> CONT
-        =>
-           VAL ~> #setLocalValue(PLACE) ~> CONT
-        </k>
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -428,7 +421,7 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #decrementRef(LOCAL0) ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET) ~> .K
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -587,13 +580,13 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
-           CONSTOPERAND ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
         ...
        </k>
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -605,7 +598,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
