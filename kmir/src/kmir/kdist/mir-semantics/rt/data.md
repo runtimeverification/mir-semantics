@@ -349,7 +349,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 
   rule  <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
-  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => OPERAND ~> #cast(CASTKIND, TY) ... </k>
+  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #cast(OPERAND, CASTKIND, TY) ... </k>
 ```
 
 A number of unary and binary operations exist, (which are dependent on the operand types).
@@ -444,7 +444,7 @@ cast from a `TypedLocal` to another when it is followed by a `#cast` item,
 rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
-  syntax KItem ::= #cast( CastKind, Ty )
+  syntax KItem ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 
 endmodule
 ```
@@ -608,9 +608,10 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
-  rule <k> typedValue(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT) ~> #cast(castKindIntToInt, TY) ~> CONT
+  rule <k> #cast(typedValue(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT), castKindIntToInt, TY)
           =>
-            typedValue(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT) ~> CONT
+            typedValue(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT)
+          ...
         </k>
         <basetypes> TYPEMAP </basetypes>
       requires #isIntType({TYPEMAP[TY]}:>RigidTy)
@@ -691,22 +692,21 @@ Error cases for `castKindIntToInt`
 * value is not a `Integer`
 
 ```k
-  rule <k> (_:TypedValue ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
+  rule <k> (#cast(_, castKindIntToInt, TY) ~> _CONT) #as STUFF
           =>
             Unsupported("Int-to-Int type cast to unknown type") ~> STUFF
         </k>
         <basetypes> TYPEMAP </basetypes>
-
     requires notBool isRigidTy(TYPEMAP[TY])
 
-  rule <k> (_:TypedValue ~> #cast(castKindIntToInt, TY) ~> _CONT) #as STUFF
+  rule <k> (#cast(_, castKindIntToInt, TY) ~> _CONT) #as STUFF
           =>
             Unsupported("Int-to-Int type cast to unexpected non-int type") ~> STUFF
         </k>
         <basetypes> TYPEMAP </basetypes>
     requires notBool (#isIntType({TYPEMAP[TY]}:>RigidTy))
 
-  rule <k> (_:TypedValue ~> #cast(castKindIntToInt, _TY) ~> _CONT) #as STUFF
+  rule <k> (#cast(_, castKindIntToInt, _TY) ~> _CONT) #as STUFF
           =>
             Unsupported("Int-to-Int type cast of non-int value") ~> STUFF
         </k>
@@ -717,7 +717,7 @@ Error cases for `castKindIntToInt`
 **TODO** Other type casts are not implemented.
 
 ```k
-  rule <k> (_:TypedLocal ~> #cast(CASTKIND, _TY) ~> _CONT) #as STUFF
+  rule <k> (#cast(_, CASTKIND, _TY) ~> _CONT) #as STUFF
           =>
             Unsupported("Type casts not implemented") ~> STUFF
         </k>
