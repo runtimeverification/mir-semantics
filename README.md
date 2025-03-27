@@ -11,9 +11,9 @@ If you would like to try a legacy version of the project, [this blog post](https
 
 ## For Developers
 
-### Setup
+### KMIR Setup
 
-Pre-requisites: `python >= 3.10`, `pip >= 20.0.2`, `poetry >= 1.3.2`.
+Pre-requisites: `python >= 3.10`, `pip >= 20.0.2`, `poetry >= 1.3.2`, `gcc >= 11.4.0`, `cargo == nightly-2024-11-29`, `k >= v7.1.205`. To install K, follow the steps available in [K's Quick Start instructions](https://github.com/runtimeverification/k?tab=readme-ov-file#quick-start). 
 
 ```bash
 make build
@@ -22,6 +22,17 @@ make build
 Use `make` to run common tasks (see the [Makefile](Makefile) for a complete list of available targets).
 
 For interactive use, spawn a shell with `poetry -C kmir/ shell` (after `poetry -C kmir/ install`), then run an interpreter. Or directly run from `mir-semantics` root with `poetry run -C kmir kmir <COMMAND>`
+
+### Stable-MIR-JSON Setup
+
+At the moment, to interact with some of KMIR functionalities, it is necessary to provide the tool with a serialized JSON of a Rust program's Stable MIR. To be able to extract these serialized SMIR JSONs, you can use the `Stable-MIR-JSON` tool, setting it up with the following commands:
+
+```Rust
+git submodule update --init --recursive
+make stable-mir-json
+```
+
+For more information on testing, installation, and general usage of this tool, please check [Stable-MIR-JSON's repository](https://github.com/runtimeverification/stable-mir-json/).
 
 ## Usage
 
