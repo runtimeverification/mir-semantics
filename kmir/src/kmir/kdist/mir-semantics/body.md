@@ -5,7 +5,7 @@ requires "ty.md"
 module BODY-SORTS
 
 syntax Body
-syntax MaybeBody
+syntax Bodies
 syntax DefId
 syntax MaybeInt
 syntax MIRBool
@@ -355,10 +355,10 @@ syntax VarDebugInfo ::= varDebugInfo(name: Symbol, sourceInfo: SourceInfo, compo
 syntax VarDebugInfos ::= List {VarDebugInfo, ""}
                          [group(mir-list), symbol(VarDebugInfos::append), terminator-symbol(VarDebugInfos::empty)]
 
-syntax MaybeBody ::= someBody(Body) [group(mir-option)]
-                    | "noBody"      [group(mir-option)]
 syntax Body ::= body(blocks: BasicBlocks, locals: LocalDecls, argCount: MIRInt, varDebugInfo: VarDebugInfos, spreadArg: MaybeLocal, span: Span)
                 [group(mir---blocks--locals--arg-count--var-debug-info--spread-arg--span)]
+syntax Bodies ::= List {Body, ""}
+                  [group(mir-list), symbol(Bodies::append), terminator-symbol(Bodies::empty)]
 
 endmodule
 ```

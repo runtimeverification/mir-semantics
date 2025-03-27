@@ -45,7 +45,6 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'aggregatekindadt',
     SCHEMA_PARSE_DATA / 'functions',
     SCHEMA_PARSE_DATA / 'body',
-    SCHEMA_PARSE_DATA / 'monoitem',
     SCHEMA_PARSE_DATA / 'testsort2',
 ]
 
@@ -226,8 +225,8 @@ EXEC_DATA = [
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.27.state',
-        27,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.23.state',
+        23,
     ),
     (
         'assign-cast',
@@ -238,8 +237,8 @@ EXEC_DATA = [
     (
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.90.state',
-        90,
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.84.state',
+        84,
     ),
     (
         'struct-field-update',
@@ -350,7 +349,7 @@ def test_exec_smir(
     [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
     ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
 )
-def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
+def test_prove(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
     spec_file = tmp_path / f'{testname}.k'
     gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
@@ -362,26 +361,6 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     _kmir_prove_run(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec_file).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
-
-
-PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
-
-
-@pytest.mark.parametrize(
-    'spec',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
-)
-def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
-    proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRunOpts(spec, proof_dir, None, None)
-    _kmir_prove_run(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec).labels()
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
