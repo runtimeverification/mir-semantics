@@ -839,7 +839,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
-  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function, total]
+  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( Ty, List, Int )
@@ -1038,45 +1038,19 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
-  syntax KItem ::= #suspend ( BinOp, Operand, Bool)
-                |  #ready ( BinOp, TypedValue, Bool )
-                |  #compute ( BinOp, TypedValue, TypedValue, Bool )
+  syntax KItem ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [strict(2,3)]
 
-  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)
-        =>
-           OP1 ~> #suspend(BINOP, OP2, false)
-       ...
-       </k>
+  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
-  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2)
-        =>
-           OP1 ~> #suspend(BINOP, OP2, true)
-       ...
-       </k>
-
-  rule <k> ARG1:TypedValue ~> #suspend(BINOP, OP2, CHECKFLAG)
-        =>
-           OP2 ~> #ready(BINOP, ARG1, CHECKFLAG)
-       ...
-       </k>
-
-  rule <k> ARG2:TypedValue ~> #ready(BINOP, ARG1, CHECKFLAG)
-        =>
-           #compute(BINOP, ARG1, ARG2, CHECKFLAG)
-       ...
-       </k>
+  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #compute(BINOP, OP1, OP2, true)  ... </k>
 ```
 
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax KItem ::= #applyUnOp ( UnOp )
+  syntax KItem ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
 
-  rule <k> rvalueUnaryOp(UNOP, OP1)
-        =>
-           OP1 ~> #applyUnOp(UNOP)
-       ...
-       </k>
+  rule <k> rvalueUnaryOp(UNOP, OP1) => #applyUnOp(UNOP, OP1) ... </k>
 ```
 
 #### Potential errors
@@ -1086,7 +1060,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 
   syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
                           | OperandMismatch ( BinOp, Value, Value )
-                          | OperandError( BinOp, TypedValue, TypedValue)
+                          | OperandError( BinOp, TypedLocal, TypedLocal)
                           | OperandMismatch ( UnOp, Value )
                           | OperandError( UnOp, TypedValue)
                           // errors above are compiler bugs or invalid MIR
@@ -1095,10 +1069,17 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | "DivisionByZero"
                           | "Overflow_U_B"
 
+  // catch Moved or uninitialised operands
+  rule #compute(OP, ARG1, ARG2, _FLAG) => OperandError(OP, ARG1, ARG2)
+    requires notBool (isTypedValue(ARG1) andBool isTypedValue(ARG2))
+
+  rule #applyUnOp(OP, ARG) => OperandError(OP, ARG)
+    requires notBool isTypedValue(ARG)
+
   // catch-all rule to make `#compute` total
-  rule #compute(OP, ARG1, ARG2, _FLAG)
-      =>
-        Unimplemented(OP, ARG1, ARG2)
+  rule #compute(OP, ARG1, ARG2, _FLAG) => Unimplemented(OP, ARG1, ARG2)
+    requires isTypedValue(ARG1)
+     andBool isTypedValue(ARG2)
     [owise]
 ```
 
@@ -1405,7 +1386,7 @@ The `unOpNeg` operation only works signed integral (and floating point) numbers.
 An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`). The semantics of the operation in this case is to wrap around (with the given bit width).
 
 ```k
-  rule <k> typedValue(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNeg)
+  rule <k> #applyUnOp(unOpNeg, typedValue(Integer(VAL, WIDTH, true), TY, _))
           =>
             typedValue(Integer(truncate(0 -Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
         ...
@@ -1417,19 +1398,19 @@ An overflow can happen when negating the minimal representable integral value (i
 The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
 
 ```k
-  rule <k> typedValue(BoolVal(VAL), TY, _) ~> #applyUnOp(unOpNot)
+  rule <k> #applyUnOp(unOpNot, typedValue(BoolVal(VAL), TY, _))
           =>
             typedValue(BoolVal(notBool VAL), TY, mutabilityNot)
         ...
         </k>
 
-  rule <k> typedValue(Integer(VAL, WIDTH, true), TY, _) ~> #applyUnOp(unOpNot)
+  rule <k> #applyUnOp(unOpNot, typedValue(Integer(VAL, WIDTH, true), TY, _))
           =>
             typedValue(Integer(truncate(~Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
         ...
         </k>
 
-  rule <k> typedValue(Integer(VAL, WIDTH, false), TY, _) ~> #applyUnOp(unOpNot)
+  rule <k> #applyUnOp(unOpNot, typedValue(Integer(VAL, WIDTH, false), TY, _))
           =>
             typedValue(Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
         ...
@@ -1437,7 +1418,7 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 ```
 
 ```k
-  rule <k> typedValue(VAL, _, _) ~> #applyUnOp(OP) => OperandMismatch(OP, VAL) ... </k>
+  rule <k> #applyUnOp(OP, typedValue(VAL, _, _)) => OperandMismatch(OP, VAL) ... </k>
     [owise]
 ```
 
