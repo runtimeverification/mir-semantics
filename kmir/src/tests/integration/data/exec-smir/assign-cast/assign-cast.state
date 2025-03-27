@@ -25,22 +25,22 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -32640 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -128 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 64 , true ) , ty ( 27 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 32 , false ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 65408 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 64 , false ) , ty ( 29 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 128 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 128 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 32896 , 32 , false ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 32896 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -32640 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -128 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 64 , true ) , ty ( 27 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 32 , false ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 65408 , 16 , false ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 64 , false ) , ty ( 29 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 128 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 128 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 32896 , 32 , false ) , ty ( 28 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>

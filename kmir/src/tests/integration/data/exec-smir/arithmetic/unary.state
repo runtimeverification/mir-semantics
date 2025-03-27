@@ -27,14 +27,14 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 255 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Aggregate ( ListItem ( Moved )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 255 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( ListItem ( Moved )
       ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 0 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( -122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 0 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( -122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
       ListItem ( Moved )
     </locals>
   </currentFrame>
