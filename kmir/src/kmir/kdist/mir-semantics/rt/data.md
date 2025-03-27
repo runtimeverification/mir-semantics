@@ -72,7 +72,6 @@ Types are also checked, using the `Ty` (an opaque number assigned by the Stable 
                             | LocalMoved( Local )
                             | LocalNotMutable ( Local )
                             | LocalUninitialised( Local )
-                            | Unsupported ( String ) // draft code
 
   syntax MIRError ::= LocalAccessError
 
@@ -446,6 +445,13 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 ```k
   syntax KItem ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 
+  syntax MIRError ::= CastError
+
+  syntax CastError ::= UnknownCastTarget ( Ty , Map )
+                     | UnexpectedCastTarget ( CastKind, RigidTy )
+                     | UnexpectedCastArgument ( TypedLocal, CastKind )
+                     | CastNotimplemented ( CastKind )
+
 endmodule
 ```
 
@@ -692,35 +698,22 @@ Error cases for `castKindIntToInt`
 * value is not a `Integer`
 
 ```k
-  rule <k> (#cast(_, castKindIntToInt, TY) ~> _CONT) #as STUFF
-          =>
-            Unsupported("Int-to-Int type cast to unknown type") ~> STUFF
-        </k>
-        <basetypes> TYPEMAP </basetypes>
+  rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
+       <basetypes> TYPEMAP </basetypes>
     requires notBool isRigidTy(TYPEMAP[TY])
 
-  rule <k> (#cast(_, castKindIntToInt, TY) ~> _CONT) #as STUFF
-          =>
-            Unsupported("Int-to-Int type cast to unexpected non-int type") ~> STUFF
-        </k>
-        <basetypes> TYPEMAP </basetypes>
+  rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>RigidTy) ... </k>
+       <basetypes> TYPEMAP </basetypes>
     requires notBool (#isIntType({TYPEMAP[TY]}:>RigidTy))
 
-  rule <k> (#cast(_, castKindIntToInt, _TY) ~> _CONT) #as STUFF
-          =>
-            Unsupported("Int-to-Int type cast of non-int value") ~> STUFF
-        </k>
+  rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
     [owise]
 ```
 
-
-**TODO** Other type casts are not implemented.
+Other type casts are not implemented yet.
 
 ```k
-  rule <k> (#cast(_, CASTKIND, _TY) ~> _CONT) #as STUFF
-          =>
-            Unsupported("Type casts not implemented") ~> STUFF
-        </k>
+  rule <k> #cast(_, CASTKIND, _TY) => CastNotimplemented(CASTKIND)... </k>
     requires CASTKIND =/=K castKindIntToInt
     [owise]
 ```
@@ -1064,7 +1057,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
                           | OperandMismatch ( UnOp, Value )
                           | OperandError( UnOp, TypedLocal)
                           // errors above are compiler bugs or invalid MIR
-                          | Unimplemented ( BinOp, TypedValue, TypedValue)
+                          | OpNotimplemented ( BinOp, TypedValue, TypedValue)
                           // errors below are program errors
                           | "DivisionByZero"
                           | "Overflow_U_B"
@@ -1077,7 +1070,7 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
     requires notBool isTypedValue(ARG)
 
   // catch-all rule to make `#compute` total
-  rule #compute(OP, ARG1, ARG2, _FLAG) => Unimplemented(OP, ARG1, ARG2)
+  rule #compute(OP, ARG1, ARG2, _FLAG) => OpNotimplemented(OP, ARG1, ARG2)
     requires isTypedValue(ARG1)
      andBool isTypedValue(ARG2)
     [owise]
