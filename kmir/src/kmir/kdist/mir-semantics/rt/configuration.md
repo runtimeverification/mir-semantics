@@ -17,7 +17,7 @@ Besides the `caller` (to return to) and `dest` and `target` to specify where the
 requires "./value.md"
 
 module KMIR-CONFIGURATION
-  imports KMIR-SYNTAX
+  imports KMIR-AST
   imports INT-SYNTAX
   imports BOOL-SYNTAX
   imports RT-VALUE-SYNTAX
