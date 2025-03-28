@@ -77,13 +77,6 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   rule mutabilityOf(newLocal(_, MUT))      => MUT
 ```
 
-## Functions Operating on Values in General
-
-```k
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
-```
-TODO this declaration should move to the call site (dispatches into special functions for different kinds of values)
-
 ## A generic MIR Error sort
 
 ```k
