@@ -1,0 +1,23 @@
+name: Test Built Container
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/runtimeverification/mir-semantics/kmir:ubuntu-jammy-7.1.229
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ref: sample-challenge-11-proofs
+
+      - name: Kmir Prove
+        run: |
+          cd rust-verification-proofs/unchecked_add
+          kmir prove run  $PWD/unchecked-op-spec.k --proof-dir $PWD/proof 

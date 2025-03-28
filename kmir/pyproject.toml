@@ -9,20 +9,25 @@ description = ""
 authors = [
     "Runtime Verification, Inc. <contact@runtimeverification.com>",
 ]
+packages = [
+    { include = "kmir", from = "src" }
+]
 
-[tool.poetry.scripts]
-parse = "kmir.parse.__main__:main"
-kmir = "kmir.__main__:main"
+[tool.poetry.package-data]
+"kmir.kdist" = ["kdist-*
 
-[tool.poetry.plugins.kdist]
-mir-semantics = "kmir.kdist.plugin"
+include = [
+    "dist/semantics/mir-semantics/**/*"
+]
 
-[tool.poetry.plugins.pytest11]
-pytest-kmir = "kmir.testing.fixtures"
-
+# Core runtime dependencies
 [tool.poetry.dependencies]
 python = "^3.10"
 kframework = "7.1.229"
+
+# Development dependencies (not installed in production)
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
@@ -40,6 +45,25 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 pyupgrade = "*"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-xdist = "*"
+
+[tool.poetry.scripts]
+parse = "kmir.parse.__main__:main"
+kmir = "kmir.__main__:main"
+
+[tool.poetry.plugins.kdist]
+mir-semantics = "kmir.kdist.plugin"
+
+[tool.poetry.plugins.pytest11]
+pytest-kmir = "kmir.testing.fixtures"
 
 [tool.isort]
 profile = "black"
