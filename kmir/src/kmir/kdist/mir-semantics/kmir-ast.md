@@ -16,6 +16,7 @@ module KMIR-AST
   imports TARGET
   imports TYPES
 
+
   syntax Pgm ::= Symbol GlobalAllocs FunctionNames MonoItems BaseTypes
                  [symbol(pgm), group(mir---name--allocs--functions--items--types)]
 
@@ -31,6 +32,8 @@ module KMIR-AST
   syntax BaseType ::= baseType( Ty, TyKind ) [group(mir)]
 
   syntax BaseTypes ::= List{BaseType, ""} [group(mir-list), symbol(BaseTypes::append), terminator-symbol(BaseTypes::empty)]
+
+  syntax KItem ::= #init( Pgm )
 
 endmodule
 ```

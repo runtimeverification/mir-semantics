@@ -12,11 +12,11 @@ requires "../rt/data.md"
 requires "../kmir.md"
 
 module KMIR-LEMMAS
-  imports RT-DATA-HIGH
-
   imports LIST
   imports INT-SYMBOLIC
   imports BOOL
+
+  imports RT-DATA
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
 
