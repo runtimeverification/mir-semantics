@@ -56,7 +56,7 @@ fn maximum(a: usize, b: usize, c: usize) -> usize {
 
 Notice in this case that `a`, `b`, and `c` are concrete, fixed values. To turn the parameters of `maximum` into symbolic variables, we can obtain the representation of the function call to `maximum` executed using KMIR and then replace the concrete values of these variables with symbolic values. Furthermore, the assertion specified in the code can be manually translated as a requirement that should be met by the symbolic variables, meaning that any value that they can assume must respect the conditions contained in the specification. Following this approach, we can utilize KMIR to give us formal proof that, for any valid `isize` input, the maximum value among the three parameters will be returned.
 
-Information on how the specification was created can be found in the [here](https://github.com/runtimeverification/mir-semantics/tree/sample-challenge-11-proofs/rust-verification-proofs/maximum-proof).
+Information on how the specification was created can be found in the longer [description of `maximum-proof`](https://github.com/runtimeverification/mir-semantics/tree/sample-challenge-11-proofs/rust-verification-proofs/maximum-proof).
 
 To run this proof in your terminal from this folder, execute:
 
@@ -92,11 +92,4 @@ cd $METHOD_NAME
 poetry -C ../../kmir/ run -- kmir prove run  $PWD/unchecked-op-spec.k --proof-dir $PWD/proof 
 ```
 
-Currently, we expect the execution of the unsafe arithmetic proofs to manifest an unpredicted behavior and end its execution prior to providing the proof's result. This behavior is being investigated and should be addressed soon.
-
-
-
-
-
-
-
+The proof for `unchecked_add` is expected to work as described. Currently, we expect some of the other unsafe arithmetic proofs to manifest unpredicted behavior and end its execution prior to providing the proof's result. This behavior is due to an unfinished implementation of the operations under test and will be addressed in due course.
