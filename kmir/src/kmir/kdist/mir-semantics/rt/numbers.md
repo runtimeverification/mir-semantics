@@ -62,18 +62,6 @@ The `#bitWidth` is defined as a function so it can be called dynamically.
   rule #bitWidth(floatTyF32 ) => 32
   rule #bitWidth(floatTyF64 ) => 64
   rule #bitWidth(floatTyF128) => 128
-
-  syntax Int ::= #maxIntValue( InTy ) [macro]
-               | #minIntValue( InTy ) [macro]
-  // ---------------------------------------------------
-  rule #maxIntValue( INT:IntTy  ) => (1 <<Int (#bitWidth( INT) -Int 1)) -Int 1 [preserves-definedness]
-  rule #maxIntValue(UINT:UintTy ) => (1 <<Int  #bitWidth(UINT)        ) -Int 1 [preserves-definedness]
-
-  rule #minIntValue(INT:IntTy ) => 0 -Int (1 <<Int (#bitWidth(INT) -Int 1)) [preserves-definedness]
-  rule #minIntValue(  _:UintTy) => 0
-
-
-// use macros for bitWidth, max/min values, bit masking, and range
 ```
 
 This truncation function is instrumental in the implementation of Integer arithmetic and overflow checking.
@@ -82,6 +70,8 @@ This truncation function is instrumental in the implementation of Integer arithm
   // helper function to truncate int values
   syntax Int ::= truncate(Int, Int, Signedness) [function, total]
   // -------------------------------------------------------------
+  rule truncate(_, WIDTH, _) => 0
+    requires WIDTH <=Int 0
   // unsigned values can be truncated using a simple bitmask
   // NB if VAL is negative (underflow), the truncation will yield a positive number
   rule truncate(VAL, WIDTH, Unsigned)
