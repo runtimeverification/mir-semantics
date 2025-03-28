@@ -799,8 +799,8 @@ The `Value` sort above operates at a higher level than the bytes representation 
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
       => 
         #decodeInteger(BYTES, #intTypeOf(RIGIDTY))
-    requires isIntTy(RIGIDTY)
-     andBool lengthBytes(BYTES) ==K #bitWidth({RIGIDTY}:>InTy) /Int 8
+    requires #isIntType(RIGIDTY)
+     andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(RIGIDTY)) /Int 8
      [preserves-definedness]
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
