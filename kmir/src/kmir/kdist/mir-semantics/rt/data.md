@@ -6,76 +6,7 @@ This module addresses all aspects of handling "values" i.e., data, at runtime du
 ```k
 requires "../ty.md"
 requires "../body.md"
-
-module RT-DATA-SYNTAX
-  imports INT-SYNTAX
-  imports FLOAT-SYNTAX
-  imports LIST
-  imports MAP
-  imports BOOL-SYNTAX
-
-  imports TYPES
-  imports BODY
-
-  syntax Value
-
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
-
-  syntax MIRError
-```
-
-### Local variables
-
-A list `locals` of local variables of a stack frame is stored as values together
-with their type information (to enable type-checking assignments). Also, the
-`Mutability` is remembered to prevent mutation of immutable values.
-
-The local variables may be actual values (`typedValue`), uninitialised (`NewLocal`) or `Moved`.
-
-```k
-  // local storage of the stack frame
-  syntax TypedLocal ::= TypedValue | MovedLocal | NewLocal
-
-  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability )
-
-  syntax MovedLocal ::= "Moved"
-
-  syntax NewLocal ::= newLocal ( Ty , Mutability )
-
-  // the type of aggregates cannot be determined from the data provided when they
-  // occur as `RValue`, therefore we have to make the `Ty` field optional here.
-  syntax MaybeTy ::= Ty
-                   | "TyUnknown"
-
-  // accessors
-  syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
-  // ----------------------------------------------------------
-  rule tyOfLocal(typedValue(_, TY, _)) => TY
-  rule tyOfLocal(Moved)                => TyUnknown
-  rule tyOfLocal(newLocal(TY, _))      => TY
-
-  syntax Mutability ::= mutabilityOf ( TypedLocal ) [function, total]
-  // ----------------------------------------------------------------
-  rule mutabilityOf(typedValue(_, _, MUT)) => MUT
-  rule mutabilityOf(Moved)                 => mutabilityNot
-  rule mutabilityOf(newLocal(_, MUT))      => MUT
-```
-
-Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
-It is an error to use a `Moved` local in any way, or to read an uninitialised `NewLocal`.
-Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds.
-Types are also checked, using the `Ty` (an opaque number assigned by the Stable MIR extraction).
-
-```k
-  syntax LocalAccessError ::= InvalidLocal ( Local )
-                            | TypeMismatch( Local, MaybeTy, TypedValue )
-                            | LocalMoved( Local )
-                            | LocalNotMutable ( Local )
-                            | LocalUninitialised( Local )
-
-  syntax MIRError ::= LocalAccessError
-
-endmodule
+requires "./value.md"
 ```
 
 ## Operations on local variables
@@ -89,7 +20,10 @@ module RT-DATA
   imports MAP
   imports K-EQUAL
 
-  imports RT-DATA-SYNTAX
+  imports BODY
+  imports TYPES
+
+  imports RT-VALUE-SYNTAX
   imports KMIR-CONFIGURATION
 ```
 
@@ -103,6 +37,21 @@ Other uses of heating and cooling are to _read_ local variables as operands. Thi
   syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
 
   syntax KResult ::= TypedLocal
+```
+
+### Errors Related to Accessing Local Variables
+
+Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
+It is an error to use a `Moved` local in any way, or to read an uninitialised `NewLocal`.
+Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds.
+Types are also checked, using the `Ty` (an opaque number assigned by the Stable MIR extraction).
+
+```k
+  syntax LocalAccessError ::= InvalidLocal ( Local )
+                            | TypeMismatch( Local, MaybeTy, TypedValue )
+                            | LocalMoved( Local )
+                            | LocalNotMutable ( Local )
+                            | LocalUninitialised( Local )
 ```
 
 ### Reading operands (local variables and constants)
@@ -452,75 +401,9 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
                      | UnexpectedCastArgument ( TypedLocal, CastKind )
                      | CastNotimplemented ( CastKind )
 
-endmodule
 ```
+<!-- NOTE: Formerly the beginning of RT-DATA-HIGH -->
 
-## Low level representation
-
-```k
-module RT-DATA-LOW-SYNTAX
-  imports RT-DATA-SYNTAX
-```
-
-Values in MIR are allocated arrays of `Bytes` that are interpreted according to their intended type, encoded as a `Ty` (type ID consistent across the program), and representing a `RigidTy` (other `TyKind` variants are not values that we need to operate on).
-
-```k
-  syntax Value ::= value ( Bytes , RigidTy )
-                 | Aggregate( List ) // retaining field structure of struct or tuple types
-                 | Reference( Int , Place , Mutability ) // stack depth (initially 0), place, borrow kind
-```
-
-```k
-endmodule
-
-module RT-DATA-LOW
-  imports RT-DATA-LOW-SYNTAX
-  imports RT-DATA
-
-  // for low-level representations, decoding bytes is trivial
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
-      => value(BYTES, RIGIDTY)
-
-endmodule
-```
-
-## High level representation
-
-Values in MIR can also be represented at a certain abstraction level, interpreting the given `Bytes` of a constant according to the desired type. This allows for implementing operations on values using the higher-level type and improves readability of the program data in the K configuration.
-
-High-level values can be
-- a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
-- built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
-- references to a place in the current or an enclosing stack frame
-- arrays and slices (with homogenous element types)
-
-```k
-module RT-DATA-HIGH-SYNTAX
-  imports RT-DATA-SYNTAX
-
-  syntax Value ::= Integer( Int, Int, Bool )
-                   // value, bit-width, signedness   for un/signed int
-                 | BoolVal( Bool )
-                   // boolean
-                 | Aggregate( List )
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | Float( Float, Int )
-                   // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability )
-                   // stack depth (initially 0), place, borrow kind
-                //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
-                   // address, metadata              for ref/ptr
-                //  | Range( List )
-                   // homogenous values              for array/slice
-                 | "Any"
-                   // arbitrary value                for transmute/invalid ptr lookup
-
-endmodule
-
-module RT-DATA-HIGH
-  imports RT-DATA-HIGH-SYNTAX
-  imports RT-DATA
-```
 
 ### Decoding constants from their bytes representation to values
 
