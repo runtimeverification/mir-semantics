@@ -36,7 +36,7 @@ json: an array of integer values between 0 and 255
 syntax Elems ::= List {Elem, ""} [group(mir-list), ...]
 ```
 json: a homogeneous list, e.g. `[e1, e2, e3, ...]`, where all elements correspond to syntactic productions for the sort `Elem`.
-As per naming convention, the list sort `Elems` (plural) should contain elements of sort `Elem` (singular). Usual plural formation rules (`Body -> Bodies`, `Branch -> Branches`) are respected.
+As per naming convention, the list sort `Elems` (plural) should contain elements of sort `Elem` (singular). Usual plural formation rules (`Branch -> Branches`) are respected.
 
 #### mir-klist-ElementSort
 ```
