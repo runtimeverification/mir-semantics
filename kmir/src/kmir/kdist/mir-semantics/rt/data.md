@@ -7,11 +7,8 @@ This module addresses all aspects of handling "values" i.e., data, at runtime du
 requires "../ty.md"
 requires "../body.md"
 requires "./value.md"
-```
+requires "./numbers.md"
 
-## Operations on local variables
-
-```k
 module RT-DATA
   imports INT
   imports FLOAT
@@ -24,8 +21,11 @@ module RT-DATA
   imports TYPES
 
   imports RT-VALUE-SYNTAX
+  imports RT-NUMBERS
   imports KMIR-CONFIGURATION
 ```
+
+## Operations on local variables
 
 ### Evaluating Items to `TypedValue` or `TypedLocal`
 
@@ -711,39 +711,9 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       requires #isIntType({TYPEMAP[TY]}:>RigidTy)
       [preserves-definedness] // ensures #numTypeOf is defined
 
-  // helpers
-  syntax NumTy ::= IntTy | UintTy | FloatTy
 
-  syntax Int ::= #bitWidth( NumTy ) [function, total]
-  // ------------------------------
-  rule #bitWidth(intTyIsize) => 64 // on 64-bit systems
-  rule #bitWidth(intTyI8   ) => 8
-  rule #bitWidth(intTyI16  ) => 16
-  rule #bitWidth(intTyI32  ) => 32
-  rule #bitWidth(intTyI64  ) => 64
-  rule #bitWidth(intTyI128 ) => 128
-  rule #bitWidth(uintTyUsize) => 64 // on 64-bit systems
-  rule #bitWidth(uintTyU8   ) => 8
-  rule #bitWidth(uintTyU16  ) => 16
-  rule #bitWidth(uintTyU32  ) => 32
-  rule #bitWidth(uintTyU64  ) => 64
-  rule #bitWidth(uintTyU128 ) => 128
-  rule #bitWidth(floatTyF16 ) => 16
-  rule #bitWidth(floatTyF32 ) => 32
-  rule #bitWidth(floatTyF64 ) => 64
-  rule #bitWidth(floatTyF128) => 128
+//snip
 
-  syntax NumTy ::= #numTypeOf( RigidTy ) [function]
-  // ----------------------------------------------
-  rule #numTypeOf(rigidTyInt(INTTY)) => INTTY
-  rule #numTypeOf(rigidTyUint(UINTTY)) => UINTTY
-  rule #numTypeOf(rigidTyFloat(FLOATTY)) => FLOATTY
-
-  syntax Bool ::= #isIntType ( RigidTy ) [function, total]
-  // -----------------------------------------------------
-  rule #isIntType(rigidTyInt(_))  => true
-  rule #isIntType(rigidTyUint(_)) => true
-  rule #isIntType(_)              => false [owise]
 
   syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
   // ------------------------------------------------------
@@ -825,6 +795,14 @@ The `Value` sort above operates at a higher level than the bytes representation 
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
+  // Integer: handled in separate module for numeric operations
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
+      => 
+        #decodeInteger(BYTES, #intTypeOf(RIGIDTY))
+    requires isIntTy(RIGIDTY)
+     andBool lengthBytes(BYTES) ==K #bitWidth({RIGIDTY}:>InTy) /Int 8
+     [preserves-definedness]
+
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char and str types
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
@@ -834,59 +812,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
   //     =>
   //      Str(...)
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  // UInt decoding
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU8))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 8, false)
-    requires lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU16))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 16, false)
-    requires lengthBytes(BYTES) ==Int 2
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU32))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 32, false)
-    requires lengthBytes(BYTES) ==Int 4
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU64))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
-    requires lengthBytes(BYTES) ==Int 8
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyU128))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 128, false)
-    requires lengthBytes(BYTES) ==Int 16
-  // Usize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyUint(uintTyUsize))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Unsigned), 64, false)
-    requires lengthBytes(BYTES) ==Int 8
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // Int decoding
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI8))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 8, true)
-    requires lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI16))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 16, true)
-    requires lengthBytes(BYTES) ==Int 2
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI32))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 32, true)
-    requires lengthBytes(BYTES) ==Int 4
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI64))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 64, true)
-    requires lengthBytes(BYTES) ==Int 8
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyI128))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 128, true)
-    requires lengthBytes(BYTES) ==Int 16
-  // Isize for 64bit platforms
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyInt(intTyIsize))
-      =>
-        Integer(Bytes2Int(BYTES, LE, Signed), 64, true)
-    requires lengthBytes(BYTES) ==Int 8
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
@@ -1136,39 +1062,6 @@ The arithmetic operations require operands of the same numeric type.
     requires TY1 =/=K TY2
      andBool isArithmetic(BOP)
     [owise]
-
-
-  // helper function to truncate int values
-  syntax Int ::= truncate(Int, Int, Signedness) [function, total]
-  // -------------------------------------------------------------
-  // unsigned values can be truncated using a simple bitmask
-  // NB if VAL is negative (underflow), the truncation will yield a positive number
-  rule truncate(VAL, WIDTH, Unsigned)
-      => // mask with relevant bits
-        VAL &Int ((1 <<Int WIDTH) -Int 1)
-    requires 0 <Int WIDTH
-    [preserves-definedness]
-  rule truncate(VAL, WIDTH, Unsigned)
-      => VAL // shortcut when there is nothing to do
-    requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
-    [simplification, preserves-definedness]
-
-  // for signed values we need to preserve/restore the sign
-  rule truncate(VAL, WIDTH, Signed)
-      => // if truncated value small enough and positive, all is done
-          (VAL &Int ((1 <<Int WIDTH) -Int 1))
-    requires 0 <Int WIDTH
-     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) <Int (1 <<Int (WIDTH -Int 1))
-    [preserves-definedness]
-
-  rule truncate(VAL, WIDTH, Signed)
-      => // subtract a bias when the truncation result too large
-          (VAL &Int ((1 <<Int WIDTH) -Int 1)) -Int (1 <<Int WIDTH)
-    requires 0 <Int WIDTH
-     andBool VAL &Int ((1 <<Int WIDTH) -Int 1) >=Int (1 <<Int (WIDTH -Int 1))
-    [preserves-definedness]
-
-
 ```
 
 #### Comparison operations
