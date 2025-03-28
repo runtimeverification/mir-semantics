@@ -696,8 +696,7 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 ### Integer Type Casts 
 
 Casts between signed and unsigned integral numbers of different width exist, with a
-truncating semantics **TODO: reference**.
-These casts can only operate on the `Integer` variant of the `Value` type, adjusting
+truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
@@ -710,44 +709,6 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
         <basetypes> TYPEMAP </basetypes>
       requires #isIntType({TYPEMAP[TY]}:>RigidTy)
       [preserves-definedness] // ensures #numTypeOf is defined
-
-
-//snip
-
-
-  syntax Value ::= #intAsType( Int, Int, NumTy ) [function]
-  // ------------------------------------------------------
-  // converting to signed int types:
-  // narrowing or converting unsigned->signed: use truncation for signed numbers
-  rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
-      =>
-        Integer(
-          truncate(VAL, #bitWidth(INTTYPE), Signed),
-          #bitWidth(INTTYPE),
-          true
-        )
-    requires #bitWidth(INTTYPE) <=Int WIDTH
-    [preserves-definedness] // positive shift, divisor non-zero
-
-  // widening: nothing to do: VAL does not change (enough bits to represent, no sign change possible)
-  rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
-      =>
-        Integer(VAL, #bitWidth(INTTYPE), true)
-    requires WIDTH <Int #bitWidth(INTTYPE)
-
-  // converting to unsigned int types
-  // truncate (if necessary), then add bias to make non-negative, then truncate again
-  rule #intAsType(VAL, _, UINTTYPE:UintTy)
-      =>
-        Integer(
-          (VAL %Int (1 <<Int #bitWidth(UINTTYPE) )
-            +Int (1 <<Int #bitWidth(UINTTYPE)))
-          %Int (1 <<Int #bitWidth(UINTTYPE) )
-          ,
-          #bitWidth(UINTTYPE),
-          false
-        )
-    [preserves-definedness] // positive shift, divisor non-zero
 ```
 
 Error cases for `castKindIntToInt`
