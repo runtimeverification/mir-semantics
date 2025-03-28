@@ -720,10 +720,12 @@ Error cases for `castKindIntToInt`
   rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
        <basetypes> TYPEMAP </basetypes>
     requires notBool isRigidTy(TYPEMAP[TY])
+    [preserves-definedness]
 
   rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>RigidTy) ... </k>
        <basetypes> TYPEMAP </basetypes>
     requires notBool (#isIntType({TYPEMAP[TY]}:>RigidTy))
+    [preserves-definedness]
 
   rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
     [owise]
