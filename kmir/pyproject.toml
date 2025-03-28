@@ -13,9 +13,6 @@ packages = [
     { include = "kmir", from = "src" }
 ]
 
-[tool.poetry.package-data]
-"kmir.kdist" = ["kdist-*
-
 include = [
     "dist/semantics/mir-semantics/**/*"
 ]
