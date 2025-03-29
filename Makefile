@@ -45,12 +45,21 @@ smir-parse-tests: # build # commented out for CI's sake
 poetry-install:
 	$(POETRY) install
 
+lock:
+	$(POETRY) lock
+
 test-unit: poetry-install # build # commented out for CI's sake
 	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration: build
 	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+
+install: poetry-install
+	$(POETRY_RUN) pip install --user .
+
+dist: poetry-install
+	cd kmir && poetry build
 
 # Checks and formatting
 
@@ -103,7 +112,7 @@ cov-integration: test-integration
 
 .PHONY: clean
 clean:
-	rm -rf kmir/dist kmir/.coverage kmir/cov-* kmir/.mypy_cache kmir/.pytest_cache
+	rm -rf kmir/dist kmir/.coverage kmir/cov-* kmir/.mypy_cache kmir/.pytest_cache kmir/src/kmir/kdist/kdist-*
 	find kmir/ -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 pyupgrade: SRC_FILES := $(shell find kmir/src -type f -name '*.py')
