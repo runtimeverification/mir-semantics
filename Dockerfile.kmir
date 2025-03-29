@@ -1,0 +1,65 @@
+ARG K_VERSION
+
+FROM runtimeverificationinc/kframework-k:ubuntu-jammy-$K_VERSION
+
+ARG K_VERSION
+
+# create non-root user and adjust UID:GID on start-up
+# see https://github.com/boxboat/fixuid
+RUN addgroup --gid 1000 kmir && \
+    adduser -uid 1000 --ingroup kmir --home /home/kmir --shell /bin/bash --disabled-password --gecos "" kmir
+RUN apt-get install -y curl graphviz python-is-python3 && \
+    USER=kmir && \
+    GROUP=kmir && \
+    curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.6.0/fixuid-0.6.0-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
+    chown root:root /usr/local/bin/fixuid && \
+    chmod 4755 /usr/local/bin/fixuid && \
+    mkdir -p /etc/fixuid && \
+    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+
+COPY kmir /kmir
+COPY deps/stable-mir-json /deps/stable-mir-json
+RUN chown -R kmir:kmir deps/stable-mir-json/
+
+USER kmir:kmir
+WORKDIR /home/kmir
+ENV K_VERSION=${K_VERSION} \
+    PATH=/home/kmir/.local/bin:/home/kmir/.cargo/bin:$PATH \
+    force_color_prompt=yes
+
+# install rustup non-interactively and build
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
+
+# install kmir python parts and K definition/llvm library
+RUN cd /kmir && pip install . && kdist build mir-semantics.\*
+
+# build stable-mir-json and install into home
+# NB this will modify the default rust toolchain!
+# NB assumes submodule has been checked out!
+RUN cd /deps/stable-mir-json && \
+    cargo build && \
+    cargo build --release && \
+    cargo run --bin cargo_stable_mir_json -- $PWD && \
+    ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
+    cargo clean
+
+ENTRYPOINT ["fixuid", "-q"]
+
+CMD printf "%s\n" \
+    "Welcome to kmir, powered by K framework" \
+    "" \
+    "This docker image provides a K-framework installation with the following programs:" \
+    " * kompile" \
+    " * krun" \
+    " * kprove" \
+    " * kast" \
+    " * K backend tools (kore-*)" \
+    " * the pyk library to interact with K programmatically " \
+    "" \
+    "as well as a pre-installed kmir tool and stable-mir-json" \
+    "" \
+    "To use this docker image, start a container with an interactive shell and" \
+    "a working directory with your working directory mounted into it, like so:" \
+    "" \
+    'user@host$ docker run --rm -it -v "$PWD":/home/kmir/workspace -u $(id -u):$(id -g) <docker-image> /bin/bash' \
+    ""
