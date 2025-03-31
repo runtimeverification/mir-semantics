@@ -49,8 +49,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: publish-test-image
+    permissions:
+      packages: read
     container:
-      image: ${{ needs.publish-test-image.outputs.image-name }}
+      image: ${{ needs.publish-test-image.outputs.image-name }}:ubuntu-jammy-${{ needs.publish-test-image.outputs.kmir-version }}_${{ needs.publish-test-image.outputs.k-version }}-${{ needs.publish-test-image.outputs.short-sha }}
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
