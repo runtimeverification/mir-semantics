@@ -26,7 +26,7 @@ jobs:
         id: set-image-name
         run: |
           echo "image-name=runtimeverificationinc/kmir" >> $GITHUB_OUTPUT
-          echo "k-version=${K_VERSION}" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
           echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
           echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build Kmir Container
@@ -36,5 +36,7 @@ jobs:
           file: Dockerfile.kmir
           platforms: linux/amd64
           push: true
+          build-args: |
+            K_VERSION=${{ steps.set-image-name.outputs.k-version }}
           tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}
         

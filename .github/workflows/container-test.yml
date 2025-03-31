@@ -11,10 +11,10 @@ jobs:
   publish-test-image:
     runs-on: ubuntu-latest
     outputs:
-      container-image: ${{ steps.set-image-name .outputs.container-image }}
-      k-version: ${{ steps.set-image-name .outputs.k-version }}
-      kmir-version: ${{ steps.set-image-name .outputs.kmir-version }}
-      short-sha: ${{ steps.set-image-name .outputs.short-sha }}
+      image-name: ${{ steps.set-image-name.outputs.image-name }}
+      k-version: ${{ steps.set-image-name.outputs.k-version }}
+      kmir-version: ${{ steps.set-image-name.outputs.kmir-version }}
+      short-sha: ${{ steps.set-image-name.outputs.short-sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
