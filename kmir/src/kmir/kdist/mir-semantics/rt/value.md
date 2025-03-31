@@ -26,7 +26,7 @@ High-level values can be
                    // value, bit-width, signedness   for un/signed int
                  | BoolVal( Bool )
                    // boolean
-                 | Aggregate( List )
+                 | Aggregate( VariantIdx , List )
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
