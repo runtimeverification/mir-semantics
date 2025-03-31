@@ -32,7 +32,7 @@ jobs:
         id: set-image-name
         run: |
           echo "image-name=ghcr.io/runtimeverification/mir-semantics/kmir" >> $GITHUB_OUTPUT
-          echo "k-version=${K_VERSION}" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
           echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
           echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build Kmir Container
