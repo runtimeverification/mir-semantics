@@ -19,17 +19,21 @@ jobs:
       - name: 'Login to Docker Hub'
         uses: docker/login-action@v3.4.0
         with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set K_VERSION
-        id: k_version
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Set Image Name
+        id: set-image-name
         run: |
-          echo "K_VERSION=${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Build and push
+          echo "image-name=runtimeverificationinc/kmir" >> $GITHUB_OUTPUT
+          echo "k-version=${K_VERSION}" >> $GITHUB_OUTPUT
+          echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build Kmir Container
         uses: docker/build-push-action@v6
         with:
-          push: false
-          tags: ghcr.io/runtimeverification/mir-semantics/kmir:ubuntu-jammy-${{ steps.k_version.outputs.K_VERSION }}
-          
+          context: .
+          file: Dockerfile.kmir
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}
+        
