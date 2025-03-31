@@ -8,10 +8,13 @@ permissions:
   packages: write
 
 jobs:
-  publish-test-container:
+  publish-test-image:
     runs-on: ubuntu-latest
     outputs:
-      container-image: ${{ steps.set-container-name .outputs.container-image }}
+      container-image: ${{ steps.set-image-name .outputs.container-image }}
+      k-version: ${{ steps.set-image-name .outputs.k-version }}
+      kmir-version: ${{ steps.set-image-name .outputs.kmir-version }}
+      short-sha: ${{ steps.set-image-name .outputs.short-sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,26 +26,33 @@ jobs:
         run: |
           export K_VERSION=$(cat deps/k_release)
       - name: Set Container Name
-        id: set-container-name
+        id: set-image-name
         run: |
-          echo "container-name=ghcr.io/runtimeverification/mir-semantics/kmir:ubuntu-jammy-${K_VERSION}" >> $GITHUB_OUTPUT
+          echo "image-name=ghcr.io/runtimeverification/mir-semantics/kmir" >> $GITHUB_OUTPUT
+          echo "k-version=${K_VERSION}" >> $GITHUB_OUTPUT
+          echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build Kmir Container
-        id: build-container
-        run: |
-          docker buildx build --build-arg K_VERSION=${K_VERSION} -f Dockerfile.kmir --platform linux/amd64 -t ${{ steps.set-container-name.outputs.container-name }} --push .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.kmir
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
 
   test:
     runs-on: ubuntu-latest
-    needs: publish-test-container
+    needs: publish-test-image
     container:
-      image: ${{ needs.publish-test-container.outputs.container-image }}
+      image: ${{ needs.publish-test-image.outputs.image-name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
           ref: sample-challenge-11-proofs  
-      - name: Kmir Prove
+      - name: kmir Prove
         run: |
           cd rust-verification-proofs/unchecked_add
           kmir prove run  $PWD/unchecked-op-spec.k --proof-dir $PWD/proof 
