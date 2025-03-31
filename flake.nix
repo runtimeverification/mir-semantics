@@ -1,5 +1,5 @@
 {
-  description = "mir-semantics - ";
+  description = "kmir - ";
   inputs = {
     k-framework.url = "github:runtimeverification/k/v7.1.229";
     nixpkgs.follows = "k-framework/nixpkgs";
@@ -15,7 +15,7 @@
           poetry2nix =
             inputs.poetry2nix.lib.mkPoetry2Nix { pkgs = prev; };
           in {
-          mir-semantics = poetry2nix.mkPoetryApplication {
+          kmir = poetry2nix.mkPoetryApplication {
             python = prev.python310;
             projectDir = ./kmir;
             overrides = poetry2nix.overrides.withDefaults
@@ -41,8 +41,8 @@
         };
       in {
         packages = rec {
-          inherit (pkgs) mir-semantics;
-          default = mir-semantics;
+          inherit (pkgs) kmir;
+          default = kmir;
         };
       }) // {
         overlay = nixpkgs.lib.composeManyExtensions allOverlays;
