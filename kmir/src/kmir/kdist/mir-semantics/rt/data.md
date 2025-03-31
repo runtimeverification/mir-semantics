@@ -624,7 +624,8 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   rule #varIdxOf(aggregateKindArray(_))                => variantIdx(0)
   rule #varIdxOf(aggregateKindTuple)                   => variantIdx(0)
   rule #varIdxOf(aggregateKindAdt(_, VARIDX, _, _, _)) => VARIDX
-  rule #varIdxOf(_OTHER)                               => variantIdx(0) // Closure, Coroutine, RawPtr
+  // Closure, Coroutine, RawPtr
+  rule #varIdxOf(_OTHER)                               => variantIdx(0) [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -647,8 +648,27 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
            #readOperandsAux(ACC ListItem(VAL), REST)
         ...
        </k>
+```
 
-// Discriminant, ShallowIntBox: not implemented yet
+The `Aggregate` type carries a `VariantIdx` that discriminates the different variants for an `enum`.
+It is retrieved using the `rvalueDiscriminant`:
+
+```k
+  syntax Evaluation ::= Place
+
+  rule <k> P:Place => operandCopy(P) ... </k>
+
+  syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
+
+  rule <k> rvalueDiscriminant(PLACE) => #discriminant(PLACE) ... </k>
+
+  rule <k> #discriminant(typedValue(Aggregate(variantIdx(IDX), _), _, _))
+        =>
+           typedValue(Integer(IDX, 8, false), TyUnknown, mutabilityNot)
+        ...
+       </k>
+```
+// ShallowIntBox: not implemented yet
 ```
 
 ### References and Dereferencing
