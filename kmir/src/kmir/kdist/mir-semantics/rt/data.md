@@ -189,7 +189,7 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
 
 ```k
   rule <k> #readProjection(
-              typedValue(Aggregate(ARGS), _, _),
+              typedValue(Aggregate(_, ARGS), _, _),
               projectionElemField(fieldIdx(I), _TY) PROJS
             )
          =>
@@ -421,7 +421,7 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( Ty, List, Int )
+  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
                 // | array context will be added here
 
   syntax Contexts ::= List{Context, ""}
@@ -431,19 +431,19 @@ The solution is to use rewrite operations in a downward pass through the project
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
 
-  rule #buildUpdate(VAL, CtxField(TY, ARGS, I) CTXS)
-      => #buildUpdate(typedValue(Aggregate(ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I) CTXS)
+      => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Aggregate(ARGS), TY, MUT),
+              typedValue(Aggregate(IDX, ARGS), TY, MUT),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
               CTXTS,
               FORCE
             ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, ARGS, I) CTXTS, FORCE)
+            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, IDX, ARGS, I) CTXTS, FORCE)
           ...
           </k>
     requires 0 <=Int I
@@ -603,6 +603,7 @@ Other `RValue`s exist in order to construct or operate on arrays and slices, whi
 ```
 
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
+Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
 
 Tuples and structs are built as `Aggregate` values with a list of argument values.
 
@@ -612,12 +613,19 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax KItem ::= #mkAggregate ( AggregateKind )
 
-  rule <k> ARGS:List ~> #mkAggregate(_)
+  rule <k> ARGS:List ~> #mkAggregate( KIND)
         =>
-            typedValue(Aggregate(ARGS), TyUnknown, mutabilityNot)
-            // NB ty not determined     ^^^^^^^^^
+            typedValue(Aggregate(#varIdxOf(KIND), ARGS), TyUnknown, mutabilityNot)
         ...
        </k>
+
+  syntax VariantIdx ::= #varIdxOf ( AggregateKind ) [function, total]
+  // ----------------------------------------------------------------
+  rule #varIdxOf(aggregateKindArray(_))                => variantIdx(0)
+  rule #varIdxOf(aggregateKindTuple)                   => variantIdx(0)
+  rule #varIdxOf(aggregateKindAdt(_, VARIDX, _, _, _)) => VARIDX
+  // Closure, Coroutine, RawPtr
+  rule #varIdxOf(_OTHER)                               => variantIdx(0) [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -891,6 +899,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedValue(
           Aggregate(
+            variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
             ListItem(
               typedValue(
@@ -918,6 +927,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedValue(
           Aggregate(
+            variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
             ListItem(
               typedValue(
