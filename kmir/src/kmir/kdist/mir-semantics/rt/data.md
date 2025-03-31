@@ -664,7 +664,7 @@ It is retrieved using the `rvalueDiscriminant`:
 
   rule <k> #discriminant(typedValue(Aggregate(variantIdx(IDX), _), _, _))
         =>
-           typedValue(Integer(IDX, 8, false), TyUnknown, mutabilityNot)
+           typedValue(Integer(IDX, 64, true), TyUnknown, mutabilityNot) // returns isize
         ...
        </k>
 ```
