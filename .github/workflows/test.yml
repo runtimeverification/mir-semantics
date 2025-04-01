@@ -191,7 +191,7 @@ jobs:
 
       - name: kmir Prove 'unchecked_add'
         run: |
-          docker exec kmir /bin/bash -c 'cd /workspace/rust-verification-proofs/unchecked_add && \
+          docker exec kmir /bin/bash -l -c 'cd /workspace/rust-verification-proofs/unchecked_add && \
             for spec_file in *-spec.k; do \
               echo "Running ${spec_file}"; \
               kmir prove run "${spec_file}" --proof-dir "./proofs"; \
