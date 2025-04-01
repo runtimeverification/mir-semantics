@@ -176,7 +176,7 @@ jobs:
           path: rust-verification-proofs
       - name: Start KMIR Container
         run: |
-          docker run --detach --rm --name kmir --tty runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
+          docker run --detach --rm --interactive --name kmir runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
       - name: Stream files to Container
         run: |
           docker cp rust-verification-proofs kmir:/home/kmir/
