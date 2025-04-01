@@ -123,3 +123,23 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
+
+  testing-only:
+    name: Jost mocking about with docker containers
+    runs-on: ubuntu-latest
+    container:
+      image: runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158
+      options: -u runner:runner
+    steps:
+      - name: Hello world
+        run: echo "$(id -u) says hello from Docker."
+      - uses: actions/checkout@v4
+        with:
+          path: head
+      - name: Try the tools
+        run: |
+          which kmir
+          which stable-mir-json
+          stable-mir-json --version
+          stable-mir-json -Zno-codegen --out-dir $PWD kmir/src/tests/integration/data/run-rs/tuples/tuples-simple.rs
+          kmir run tuples-simple.smir.json
