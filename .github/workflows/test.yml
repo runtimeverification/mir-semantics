@@ -129,7 +129,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158
-      options: -u runner:runner
+      options: -u root:root
     steps:
       - name: Hello world
         run: echo "$(id -u) says hello from Docker."
