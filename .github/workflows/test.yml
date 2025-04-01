@@ -182,7 +182,7 @@ jobs:
           docker cp rust-verification-proofs kmir:/home/kmir/
       - name: kmir Prove
         run: |
-          docker exec -i kmir /bin/bash -l -C 'pushd rust-verification-proofs/; for k_file in */*-spec.k; do echo "Running ${k_file}"; kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs; done'
+          docker exec -i kmir /bin/bash -l -c 'pushd rust-verification-proofs/; for k_file in */*-spec.k; do echo "Running ${k_file}"; kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs; done'
       - name: Always stop container
         if: always()
         run: |
