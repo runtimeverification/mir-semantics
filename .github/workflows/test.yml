@@ -141,5 +141,8 @@ jobs:
           which kmir
           which stable-mir-json
           stable-mir-json --version
+          pwd
+          ls -l
+          cd head
           stable-mir-json -Zno-codegen --out-dir $PWD kmir/src/tests/integration/data/run-rs/tuples/tuples-simple.rs
           kmir run tuples-simple.smir.json
