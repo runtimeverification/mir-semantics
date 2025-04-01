@@ -189,13 +189,13 @@ jobs:
             -u $(id -u):$(id -g) \
             ${{needs.publish-kmir-image.outputs.image-name}}:ubuntu-jammy-${{needs.publish-kmir-image.outputs.kmir-version }}_${{needs.publish-kmir-image.outputs.k-version }}-${{ needs.publish-kmir-image.outputs.short-sha }} /bin/bash
 
-      - name: kmir Prove
+      - name: kmir Prove 'unchecked_add'
         run: |
-          # find rust-verification-proofs -name "*-spec.k" | while read -r k_file; do
-          #   echo "Running ${k_file}"
-          #   docker exec kmir kmir prove run "/workspace/${k_file}" --proof-dir "/workspace/$(dirname ${k_file})/proofs"
-          # done
-          docker exec kmir kmir prove run "/workspace/rust-verification-proofs/unchecked_add/unchecked_add-spec.k" --proof-dir "/workspace/rust-verification-proofs/unchecked_add/proofs"
+          docker exec kmir /bin/bash -c 'cd /workspace/rust-verification-proofs/unchecked_add && \
+            for spec_file in *-spec.k; do \
+              echo "Running ${spec_file}"; \
+              kmir prove run "${spec_file}" --proof-dir "./proofs"; \
+            done'
 
       - name: Always stop container
         if: always()
