@@ -123,3 +123,67 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
+
+
+  publish-test-image:
+    needs: version-bump
+    runs-on: ubuntu-latest
+    outputs:
+      image-name: ${{ steps.set-image-name.outputs.image-name }}
+      k-version: ${{ steps.set-image-name.outputs.k-version }}
+      kmir-version: ${{ steps.set-image-name.outputs.kmir-version }}
+      short-sha: ${{ steps.set-image-name.outputs.short-sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Docker ghcr.io Login
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3.10.0
+      - name: Set Image Name Parameters
+        id: set-image-name
+        run: |
+          echo "image-name=ghcr.io/runtimeverification/mir-semantics/kmir" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
+          echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build Kmir Container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.kmir
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            K_VERSION=${{ steps.set-image-name.outputs.k-version }}
+          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: runtimeverification/rust-verification-proofs
+          submodules: recursive
+          ref: main
+          path: rust-verification-proofs
+      - name: Start KMIR Container
+        run: |
+          docker run --detach --rm --name kmir --tty runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
+      - name: Stream files to Container
+        run: |
+          docker cp rust-verification-proofs kmir:/home/kmir/
+      - name: kmir Prove
+        run: |
+          docker exec -it kmir /bin/bash -l -C 'pushd rust-verification-proofs/; for k_file in */*-spec.k; do echo "Running ${k_file}"; kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs; done'
+      - name: Always stop container
+        if: always()
+        run: |
+          docker stop kmir

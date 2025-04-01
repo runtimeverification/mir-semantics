@@ -29,6 +29,7 @@ jobs:
           echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
           echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
           echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build Kmir Container
         uses: docker/build-push-action@v6
         with:
