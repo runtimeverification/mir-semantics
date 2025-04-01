@@ -126,6 +126,7 @@ jobs:
 
 
   publish-kmir-image:
+    name: Publish Kmir Image
     needs: version-bump
     runs-on: ubuntu-latest
     outputs:
@@ -165,6 +166,7 @@ jobs:
           tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
 
   container-test:
+    name: Conainer Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -183,9 +185,9 @@ jobs:
             runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
       - name: kmir Prove
         run: |
-          for k_file in kmir-proofs/*/*-spec.k; do
+          find rust-verification-proofs -name "*-spec.k" | while read -r k_file; do
             echo "Running ${k_file}"
-            docker exec kmir kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs
+            docker exec kmir kmir prove run "/workspace/${k_file}" --proof-dir "/workspace/$(dirname ${k_file})/proofs"
           done
       - name: Always stop container
         if: always()
