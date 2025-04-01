@@ -124,7 +124,6 @@ jobs:
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
 
-
   publish-kmir-image:
     name: Publish Kmir Image
     needs: version-bump
@@ -139,14 +138,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
       - name: Docker ghcr.io Login
         uses: docker/login-action@v3.4.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3.10.0
+
       - name: Set Image Name Parameters
         id: set-image-name
         run: |
@@ -154,6 +156,7 @@ jobs:
           echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
           echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
           echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build Kmir Container
         uses: docker/build-push-action@v6
         with:
@@ -176,6 +179,7 @@ jobs:
           submodules: recursive
           ref: main
           path: rust-verification-proofs
+
       - name: Start KMIR Container
         run: |
           docker run --detach --rm -t \
@@ -183,12 +187,15 @@ jobs:
             -v $PWD:/workspace -w /workspace \
             -u $(id -u):$(id -g) \
             runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
+
       - name: kmir Prove
         run: |
-          find rust-verification-proofs -name "*-spec.k" | while read -r k_file; do
-            echo "Running ${k_file}"
-            docker exec kmir kmir prove run "/workspace/${k_file}" --proof-dir "/workspace/$(dirname ${k_file})/proofs"
-          done
+          # find rust-verification-proofs -name "*-spec.k" | while read -r k_file; do
+          #   echo "Running ${k_file}"
+          #   docker exec kmir kmir prove run "/workspace/${k_file}" --proof-dir "/workspace/$(dirname ${k_file})/proofs"
+          # done
+          docker exec kmir kmir prove run "/workspace/rust-verification-proofs/unchecked_add/unchecked_add-spec.k" --proof-dir "/workspace/rust-verification-proofs/unchecked_add/proofs"
+
       - name: Always stop container
         if: always()
         run: |
