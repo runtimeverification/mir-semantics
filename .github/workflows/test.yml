@@ -169,35 +169,30 @@ jobs:
           tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
 
   container-test:
-    name: Conainer Test
     needs: publish-kmir-image
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          repository: runtimeverification/rust-verification-proofs
-          submodules: recursive
-          ref: main
-          path: rust-verification-proofs
+    env:
+      container_name: "kmir-${{ github.run_id }}"
 
-      - name: Start KMIR Container
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Start Tool Container
         run: |
           docker run --detach --rm -t \
-            --name kmir \
+            --name ${{ env.container_name }} \
             -v $PWD:/workspace -w /workspace \
             -u $(id -u):$(id -g) \
             ${{needs.publish-kmir-image.outputs.image-name}}:ubuntu-jammy-${{needs.publish-kmir-image.outputs.kmir-version }}_${{needs.publish-kmir-image.outputs.k-version }}-${{ needs.publish-kmir-image.outputs.short-sha }} /bin/bash
 
-      - name: kmir Prove 'unchecked_add'
+      - name: Run KMIR Verification for all proofs provided
         run: |
-          docker exec kmir /bin/bash -l -c 'cd /workspace/rust-verification-proofs/unchecked_add && \
-            for spec_file in *-spec.k; do \
-              echo "Running ${spec_file}"; \
-              kmir prove run "${spec_file}" --proof-dir "./proofs"; \
-            done'
+          for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
+            echo "Running ${k_file}"
+            docker exec ${{ env.container_name }} kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs
+          done
 
-      - name: Always stop container
+      - name: Stop Tool Container
         if: always()
-        run: |
-          docker stop kmir
+        run: docker stop ${{ env.container_name }}
