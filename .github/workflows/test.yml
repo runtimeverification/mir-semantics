@@ -125,7 +125,7 @@ jobs:
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
 
 
-  publish-test-image:
+  publish-kmir-image:
     needs: version-bump
     runs-on: ubuntu-latest
     outputs:
@@ -164,7 +164,7 @@ jobs:
             K_VERSION=${{ steps.set-image-name.outputs.k-version }}
           tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
 
-  test:
+  container-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -176,13 +176,17 @@ jobs:
           path: rust-verification-proofs
       - name: Start KMIR Container
         run: |
-          docker run --detach --rm --interactive --name kmir runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
-      - name: Stream files to Container
-        run: |
-          docker cp rust-verification-proofs kmir:/home/kmir/
+          docker run --detach --rm -t \
+            --name kmir \
+            -v $PWD:/workspace -w /workspace \
+            -u $(id -u):$(id -g) \
+            runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
       - name: kmir Prove
         run: |
-          docker exec -i kmir /bin/bash -l -c 'pushd rust-verification-proofs/; for k_file in */*-spec.k; do echo "Running ${k_file}"; kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs; done'
+          for k_file in kmir-proofs/*/*-spec.k; do
+            echo "Running ${k_file}"
+            docker exec kmir kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs
+          done
       - name: Always stop container
         if: always()
         run: |
