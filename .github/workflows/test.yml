@@ -170,6 +170,7 @@ jobs:
 
   container-test:
     name: Conainer Test
+    needs: publish-kmir-image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -186,7 +187,7 @@ jobs:
             --name kmir \
             -v $PWD:/workspace -w /workspace \
             -u $(id -u):$(id -g) \
-            runtimeverificationinc/kmir:ubuntu-jammy-0.3.112_7.1.229-daf5158 /bin/bash
+            ${{needs.publish-kmir-image.outputs.image-name}}:ubuntu-jammy-${{needs.publish-kmir-image.outputs.kmir-version }}_${{needs.publish-kmir-image.outputs.k-version }}-${{ needs.publish-kmir-image.outputs.short-sha }} /bin/bash
 
       - name: kmir Prove
         run: |
