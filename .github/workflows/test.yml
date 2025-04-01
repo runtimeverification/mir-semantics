@@ -150,5 +150,5 @@ jobs:
           done
 
       - name: Stop Tool Container
-        if: always
+        if: always()
         run: docker stop ${{ env.container_name }}
