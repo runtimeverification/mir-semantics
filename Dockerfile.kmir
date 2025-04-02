@@ -23,9 +23,15 @@ RUN chown -R kmir:kmir deps/stable-mir-json/
 
 USER kmir:kmir
 WORKDIR /home/kmir
+# Set Env variables for Building
 ENV K_VERSION=${K_VERSION} \
     PATH=/home/kmir/.local/bin:/home/kmir/.cargo/bin:$PATH \
     force_color_prompt=yes
+# Set Env Variables every time a new shell is opened (e.g. when using 'docker exec')
+RUN echo "export K_VERSION=${K_VERSION}" >> /home/kmir/.bash_profile && \
+    echo "export PATH=/home/kmir/.local/bin:/home/kmir/.cargo/bin:\$PATH" >> /home/kmir/.bash_profile && \
+    echo "export force_color_prompt=yes" >> /home/kmir/.bash_profile && \
+    echo "source /home/kmir/.bash_profile" >> /home/kmir/.bashrc
 
 # install rustup non-interactively and build
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
@@ -42,7 +48,7 @@ RUN cd /deps/stable-mir-json && \
     cargo run --bin cargo_stable_mir_json -- $PWD && \
     ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
     cargo clean
-
+# Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec` 
 ENTRYPOINT ["fixuid", "-q"]
 
 CMD printf "%s\n" \
