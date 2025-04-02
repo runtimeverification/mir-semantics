@@ -162,7 +162,7 @@ jobs:
           load: true
           build-args: |
             K_VERSION=${{ steps.set-image-name.outputs.k-version }}
-          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }}
+          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }}
 
       - name: Container Sanity Check
         run: |
@@ -171,7 +171,7 @@ jobs:
             --name ${{ env.container_name }} \
             -v $PWD:/home/kmir/workspace -w /home/kmir/workspace \
             -u $(id -u):$(id -g) \
-            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }} /bin/bash
+            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} /bin/bash
           
           # Copy files to workspace
           # docker cp . ${{ env.container_name }}:/home/kmir/workspace/
