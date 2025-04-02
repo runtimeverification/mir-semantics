@@ -166,13 +166,17 @@ jobs:
 
       - name: Container Sanity Check
         run: |
+          # Start Container
           docker run --detach --rm -t \
             --name ${{ env.container_name }} \
             -v $PWD:/workspace -w /workspace \
             -u $(id -u):$(id -g) \
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}_${{ steps.set-image-name.outputs.k-version }}-${{ steps.set-image-name.outputs.short-sha }} /bin/bash
-          # Copy files to workspace
+          
+            # Copy files to workspace
           docker cp . ${{ env.container_name }}:/home/kmir/workspace/
+          
+          # Run Tests
           for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
             echo "Running ${k_file}"
             docker exec  ${{ env.container_name }} /bin/bash -l -c "kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs"
