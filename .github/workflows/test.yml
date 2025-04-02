@@ -124,8 +124,8 @@ jobs:
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
 
-  publish-kmir-image:
-    name: Publish Kmir Image
+  test-kmir-image:
+    name: Test Kmir Image
     needs: [ unit-tests, version-bump ]
     runs-on: ubuntu-latest
     env:
