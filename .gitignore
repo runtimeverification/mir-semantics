@@ -1,5 +1,3 @@
 /dist/
 __pycache__/
 .coverage
-kmir/dist
-kmir/src/kmir/kdist/kdist-*
