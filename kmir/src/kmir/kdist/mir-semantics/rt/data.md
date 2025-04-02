@@ -651,7 +651,11 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
 ```
 
 The `Aggregate` type carries a `VariantIdx` that discriminates the different variants for an `enum`.
-It is retrieved using the `rvalueDiscriminant`:
+It is retrieved using the `rvalueDiscriminant`, and returned as an `isize`:
+
+For `enum` values stored as `Aggregate`s, the `VariantIdx` is returned. Other (non-aggregate) values get a discriminant value of 0.
+
+*FIXME This is the wrong behaviour.* An example using non-standard enum IDs shows that the value returned is said to be "not the same thing as the variant index". See [a related discussion in an unresolved github issue](https://github.com/rust-lang/rust/issues/91095).
 
 ```k
   syntax Evaluation ::= Place
@@ -667,9 +671,16 @@ It is retrieved using the `rvalueDiscriminant`:
            typedValue(Integer(IDX, 64, true), TyUnknown, mutabilityNot) // returns isize
         ...
        </k>
+
+  rule <k> #discriminant(typedValue(_OTHERVALUE, _, _))
+        =>
+           typedValue(Integer(0, 64, true), TyUnknown, mutabilityNot)
+        ...
+       </k>
 ```
-// ShallowIntBox: not implemented yet
-```
+
+
+*ShallowIntBox:* not implemented yet
 
 ### References and Dereferencing
 
