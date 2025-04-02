@@ -168,6 +168,7 @@ jobs:
         run: |
           # Start Container
           docker run --detach --rm -t \
+            -w /home/kmir/workspace \
             --name ${{ env.container_name }} \
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} /bin/bash
           
