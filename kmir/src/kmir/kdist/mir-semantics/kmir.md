@@ -44,7 +44,7 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
          =>
            #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
@@ -57,22 +57,32 @@ The `Map` of types is static information used for decoding constants and allocat
 It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
 
 ```k
-  syntax Map ::= #mkTypeMap ( Map, BaseTypes ) [function, total]
+  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total]
 
-  rule #mkTypeMap(ACC, .BaseTypes) => ACC
+  rule #mkTypeMap(ACC, .TypeMappings) => ACC
 
   // build map of Ty -> RigidTy from suitable pairs
-  rule #mkTypeMap(ACC, baseType(TY, tyKindRigidTy(RIGID)) MORE:BaseTypes)
+  rule #mkTypeMap(ACC, TypeMapping(TY, typeInfoBaseType(BASETYPE)) MORE:TypeMappings)
       =>
-       #mkTypeMap(ACC[TY <- RIGID], MORE)
+       #mkTypeMap(ACC[TY <- #mkRigid(BASETYPE)], MORE)
     requires notBool TY in_keys(ACC)
     [preserves-definedness] // key collision checked
 
   // skip anything that is not a RigidTy or causes a key collision
-  rule #mkTypeMap(ACC, baseType(_TY, _OTHERTYKIND) MORE:BaseTypes)
+  rule #mkTypeMap(ACC, _OTHERTYKIND:TypeMapping MORE:TypeMappings)
       =>
        #mkTypeMap(ACC, MORE)
     [owise]
+
+  // TODO maybe stick with Basetype sort in consumers of the table?
+  syntax RigidTy ::= #mkRigid ( Basetype ) [function, total]
+
+  rule #mkRigid(Int(T))    => rigidTyInt(T)
+  rule #mkRigid(Uint(T))   => rigidTyUint(T)
+  rule #mkRigid(Float(T))  => rigidTyFloat(T)
+  rule #mkRigid(Bool)      => rigidTyBool
+  rule #mkRigid(Char)      => rigidTyChar
+  rule #mkRigid(Str)       => rigidTyStr
 ```
 
 
