@@ -40,7 +40,7 @@
             100,
             58,
             32,
-            105,
+            117,
             56,
             58,
             58,
@@ -54,9 +54,9 @@
             101,
             100,
             95,
-            115,
-            117,
-            98,
+            97,
+            100,
+            100,
             32,
             99,
             97,
@@ -120,7 +120,7 @@
             100,
             58,
             32,
-            117,
+            105,
             56,
             58,
             58,
@@ -134,9 +134,9 @@
             101,
             100,
             95,
-            97,
-            100,
-            100,
+            115,
+            117,
+            98,
             32,
             99,
             97,
@@ -237,7 +237,7 @@
       }
     ],
     [
-      38,
+      37,
       {
         "NoOpSym": ""
       }
@@ -3630,6 +3630,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<T/#0, E/#1>",
+          "adt_def": 20,
           "discriminants": [
             [
               0,
@@ -3647,7 +3648,8 @@
       15,
       {
         "StructType": {
-          "name": "std::sys::pal::unix::process::process_common::ExitCode"
+          "name": "std::sys::pal::unix::process::process_common::ExitCode",
+          "adt_def": 13
         }
       }
     ],
@@ -3663,7 +3665,8 @@
       17,
       {
         "StructType": {
-          "name": "std::process::ExitCode"
+          "name": "std::process::ExitCode",
+          "adt_def": 15
         }
       }
     ],
