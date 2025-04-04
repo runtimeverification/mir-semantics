@@ -53,7 +53,7 @@ module KMIR-CONFIGURATION
                   // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
-                  <basetypes> .Map </basetypes>
+                  <types> .Map </types>
                 </kmir>
 
 endmodule

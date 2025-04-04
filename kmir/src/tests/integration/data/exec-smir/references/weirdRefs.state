@@ -81,13 +81,19 @@
   <start-symbol>
     symbol ( "main" )
   </start-symbol>
-  <basetypes>
-    ty ( 2 ) |-> rigidTyInt ( intTyI8 )
-    ty ( 6 ) |-> rigidTyInt ( intTyIsize )
-    ty ( 9 ) |-> rigidTyUint ( uintTyU8 )
-    ty ( 16 ) |-> rigidTyInt ( intTyI32 )
-    ty ( 25 ) |-> rigidTyBool
-    ty ( 26 ) |-> rigidTyUint ( uintTyUsize )
-    ty ( 41 ) |-> rigidTyUint ( uintTyU32 )
-  </basetypes>
+  <types>
+    ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
+    ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
+    ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<T/#0, E/#1>" , Discriminant ( ty ( 0 ) , 0 )  Discriminant ( ty ( 1 ) , 1 )  .Discriminants )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" )
+    ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" )
+    ty ( 25 ) |-> typeInfoPrimitiveType ( primTypeBool )
+    ty ( 26 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyUsize ) )
+    ty ( 30 ) |-> typeInfoStructType ( "MyStruct" )
+    ty ( 34 ) |-> typeInfoStructType ( "Enclosing<'a/#0>" )
+    ty ( 41 ) |-> typeInfoStructType ( "std::panic::Location<'a/#0>" )
+    ty ( 43 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
+  </types>
 </kmir>
