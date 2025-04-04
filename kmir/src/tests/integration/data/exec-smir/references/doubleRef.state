@@ -66,11 +66,14 @@
   <start-symbol>
     symbol ( "main" )
   </start-symbol>
-  <basetypes>
-    ty ( 2 ) |-> rigidTyInt ( intTyI8 )
-    ty ( 6 ) |-> rigidTyInt ( intTyIsize )
-    ty ( 9 ) |-> rigidTyUint ( uintTyU8 )
-    ty ( 16 ) |-> rigidTyInt ( intTyI32 )
-    ty ( 21 ) |-> rigidTyBool
-  </basetypes>
+  <types>
+    ty ( 2 ) |-> typeInfoBasetype ( baseTypeInt ( intTyI8 ) )
+    ty ( 6 ) |-> typeInfoBasetype ( baseTypeInt ( intTyIsize ) )
+    ty ( 9 ) |-> typeInfoBasetype ( baseTypeUint ( uintTyU8 ) )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<T/#0, E/#1>" , Discriminant ( ty ( 0 ) , 0 )  Discriminant ( ty ( 1 ) , 1 )  .Discriminants )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" )
+    ty ( 16 ) |-> typeInfoBasetype ( baseTypeInt ( intTyI32 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" )
+    ty ( 21 ) |-> typeInfoBasetype ( baseTypeBool )
+  </types>
 </kmir>
