@@ -219,7 +219,11 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
   syntax Movability ::= "movabilityStatic"  [group(mir-enum), symbol(Movability::Static)]
                       | "movabilityMovable" [group(mir-enum), symbol(Movability::Movable)]
 
-  // additional sort for all base types in RigidTy
+```
+
+`PrimitiveType`s are not present as an explicit type in MIR or Stable MIR AST, but are a conceptual sub-sort of  `RigidTy` for types that are "primitive".
+
+```k
   syntax Basetype ::= "baseTypeBool"         [group(mir-enum), symbol(Basetype::Bool)]
                     | "baseTypeChar"         [group(mir-enum), symbol(Basetype::Char)]
                     | baseTypeInt(IntTy)     [group(mir-enum), symbol(Basetype::Int)]
