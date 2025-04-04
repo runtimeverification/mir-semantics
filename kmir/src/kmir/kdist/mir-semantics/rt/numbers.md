@@ -22,22 +22,22 @@ module RT-NUMBERS
 
   syntax InTy  ::= IntTy | UintTy
 
-  syntax NumTy ::= #numTypeOf( RigidTy ) [function]
+  syntax NumTy ::= #numTypeOf( TypeInfo ) [function]
   // ----------------------------------------------
-  rule #numTypeOf(rigidTyInt(INTTY)) => INTTY
-  rule #numTypeOf(rigidTyUint(UINTTY)) => UINTTY
-  rule #numTypeOf(rigidTyFloat(FLOATTY)) => FLOATTY
+  rule #numTypeOf(typeInfoBasetype(baseTypeInt(INTTY))) => INTTY
+  rule #numTypeOf(typeInfoBasetype(baseTypeUint(UINTTY))) => UINTTY
+  rule #numTypeOf(typeInfoBasetype(baseTypeFloat(FLOATTY))) => FLOATTY
 
-  syntax InTy ::= #intTypeOf( RigidTy ) [function]
+  syntax InTy ::= #intTypeOf( TypeInfo ) [function]
   // ----------------------------------------------
-  rule #intTypeOf(rigidTyInt(INTTY)) => INTTY
-  rule #intTypeOf(rigidTyUint(UINTTY)) => UINTTY
+  rule #intTypeOf(typeInfoBasetype(baseTypeInt(INTTY))) => INTTY
+  rule #intTypeOf(typeInfoBasetype(baseTypeUint(UINTTY))) => UINTTY
 
-  syntax Bool ::= #isIntType ( RigidTy ) [function, total]
+  syntax Bool ::= #isIntType ( TypeInfo ) [function, total]
   // -----------------------------------------------------
-  rule #isIntType(rigidTyInt(_))  => true
-  rule #isIntType(rigidTyUint(_)) => true
-  rule #isIntType(_)              => false [owise]
+  rule #isIntType(typeInfoBasetype(baseTypeInt(_)))  => true
+  rule #isIntType(typeInfoBasetype(baseTypeUint(_))) => true
+  rule #isIntType(_)                                 => false [owise]
 ```
 
 Constants used for overflow-checking and truncation are defined here as macros.

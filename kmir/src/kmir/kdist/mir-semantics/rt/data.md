@@ -67,12 +67,12 @@ Constant operands are simply decoded according to their type.
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
         =>
-           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>RigidTy), TY, mutabilityNot)
+           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo), TY, mutabilityNot)
         ...
       </k>
-      <basetypes> TYPEMAP </basetypes>
+      <types> TYPEMAP </types>
     requires TY in_keys(TYPEMAP)
-     andBool isRigidTy(TYPEMAP[TY])
+     andBool isTypeInfo(TYPEMAP[TY])
     [preserves-definedness] // valid Map lookup checked
 ```
 
@@ -687,7 +687,7 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
   syntax MIRError ::= CastError
 
   syntax CastError ::= UnknownCastTarget ( Ty , Map )
-                     | UnexpectedCastTarget ( CastKind, RigidTy )
+                     | UnexpectedCastTarget ( CastKind, TypeInfo )
                      | UnexpectedCastArgument ( TypedLocal, CastKind )
                      | CastNotimplemented ( CastKind )
 
@@ -703,28 +703,28 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // int casts
   rule <k> #cast(typedValue(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT), castKindIntToInt, TY)
           =>
-            typedValue(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>RigidTy)), TY, MUT)
+            typedValue(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>TypeInfo)), TY, MUT)
           ...
         </k>
-        <basetypes> TYPEMAP </basetypes>
-      requires #isIntType({TYPEMAP[TY]}:>RigidTy)
+        <types> TYPEMAP </types>
+      requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
 Error cases for `castKindIntToInt`
-* unknown target type (not in `basetypes`)
+* unknown target type (not in `types`)
 * target type is not an `Int` type
 * value is not a `Integer`
 
 ```k
   rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
-       <basetypes> TYPEMAP </basetypes>
+       <types> TYPEMAP </types>
     requires notBool isRigidTy(TYPEMAP[TY])
     [preserves-definedness]
 
-  rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>RigidTy) ... </k>
-       <basetypes> TYPEMAP </basetypes>
-    requires notBool (#isIntType({TYPEMAP[TY]}:>RigidTy))
+  rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>TypeInfo) ... </k>
+       <types> TYPEMAP </types>
+    requires notBool (#isIntType({TYPEMAP[TY]}:>TypeInfo))
     [preserves-definedness]
 
   rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
@@ -744,34 +744,31 @@ Other type casts are not implemented yet.
 
 ## Decoding constants from their bytes representation to values
 
-The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `RigidTy` to produce the higher-level value.
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `Basetype`s (primitive types in MIR).
 
 ```k
-  syntax Value ::= #decodeConstant ( ConstantKind, RigidTy ) [function]
+  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
 
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeBool)) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyBool) => BoolVal(true)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeBool)) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), RIGIDTY)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
       => 
-        #decodeInteger(BYTES, #intTypeOf(RIGIDTY))
-    requires #isIntType(RIGIDTY)
-     andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(RIGIDTY)) /Int 8
+        #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO)
+     andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME Char and str types
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyChar)
-  //     =>
-  //      Str(...)
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), rigidTyStr)
+  // FIXME Char type
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeChar))
   //     =>
   //      Str(...)
   /////////////////////////////////////////////////////////////////////////////////////////////////
