@@ -54,6 +54,7 @@ module KMIR-CONFIGURATION
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <types> .Map </types>
+                  <adt-to-ty> .Map </adt-to-ty>
                 </kmir>
 
 endmodule
