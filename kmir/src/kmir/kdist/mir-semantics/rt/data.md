@@ -662,7 +662,11 @@ This variant index is used to look up the _discriminant_ from a table in the typ
 
   rule <k> #discriminant(typedValue(Aggregate(IDX, _), TY, _))
         =>
-           typedValue(Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 16, false), TyUnknown, mutabilityNot)
+           typedValue(
+              Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 16, false), // parameters for storead u128
+              TyUnknown,
+              mutabilityNot
+            )
         ...
        </k>
        <types> TYPEMAP </types>
