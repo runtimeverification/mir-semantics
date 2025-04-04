@@ -259,7 +259,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                     | typeInfoStructType(MIRString, AdtDef)              [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def)]
 
   // discriminant information for enum types
-  syntax Discriminant ::= Discriminant ( Ty , MIRInt ) [group(mir)]
+  syntax Discriminant ::= Discriminant ( VariantIdx , MIRInt ) [group(mir)]
 
   syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
 

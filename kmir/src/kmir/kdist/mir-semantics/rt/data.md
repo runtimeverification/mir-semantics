@@ -650,8 +650,35 @@ For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID
            #readOperandsAux(ACC ListItem(VAL), REST)
         ...
        </k>
+```
 
-// Discriminant, ShallowIntBox: not implemented yet
+The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
+This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`. Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
+
+```k
+  syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
+
+  rule <k> rvalueDiscriminant(PLACE) => #discriminant(operandCopy(PLACE)) ... </k>
+
+  rule <k> #discriminant(typedValue(Aggregate(IDX, _), TY, _))
+        =>
+           typedValue(Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 16, false), TyUnknown, mutabilityNot)
+        ...
+       </k>
+       <types> TYPEMAP </types>
+    requires isTypeInfo(TYPEMAP[TY])
+
+  syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
+               | #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
+  // --------------------------------------------------------------------
+  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS), IDX) => #lookupDiscrAux(DISCRIMINANTS, IDX)
+    requires isInt(#lookupDiscrAux(DISCRIMINANTS, IDX)) [preserves-definedness]
+  rule #lookupDiscriminant(_OTHER, _) => 0 [owise, preserves-definedness] // default 0. May be undefined behaviour, though.
+  // --------------------------------------------------------------------
+  rule #lookupDiscrAux( Discriminant(IDX, RESULT)    _        , IDX) => RESULT
+  rule #lookupDiscrAux( _OTHER:Discriminant MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX) [owise]
+
+// ShallowIntBox: not implemented yet
 ```
 
 ### References and Dereferencing
