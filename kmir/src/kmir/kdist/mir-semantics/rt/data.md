@@ -719,7 +719,7 @@ Error cases for `castKindIntToInt`
 ```k
   rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
        <types> TYPEMAP </types>
-    requires notBool isRigidTy(TYPEMAP[TY])
+    requires notBool isTypeInfo(TYPEMAP[TY])
     [preserves-definedness]
 
   rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>TypeInfo) ... </k>
