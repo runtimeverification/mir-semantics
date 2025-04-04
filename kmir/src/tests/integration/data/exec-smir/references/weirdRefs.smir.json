@@ -3148,6 +3148,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<T/#0, E/#1>",
+          "adt_def": 21,
           "discriminants": [
             [
               0,
@@ -3165,7 +3166,8 @@
       15,
       {
         "StructType": {
-          "name": "std::sys::pal::unix::process::process_common::ExitCode"
+          "name": "std::sys::pal::unix::process::process_common::ExitCode",
+          "adt_def": 11
         }
       }
     ],
@@ -3181,7 +3183,8 @@
       17,
       {
         "StructType": {
-          "name": "std::process::ExitCode"
+          "name": "std::process::ExitCode",
+          "adt_def": 9
         }
       }
     ],
@@ -3203,7 +3206,8 @@
       30,
       {
         "StructType": {
-          "name": "MyStruct"
+          "name": "MyStruct",
+          "adt_def": 7
         }
       }
     ],
@@ -3211,20 +3215,22 @@
       34,
       {
         "StructType": {
-          "name": "Enclosing<'a/#0>"
+          "name": "Enclosing<'a/#0>",
+          "adt_def": 8
+        }
+      }
+    ],
+    [
+      39,
+      {
+        "StructType": {
+          "name": "std::panic::Location<'a/#0>",
+          "adt_def": 16
         }
       }
     ],
     [
       41,
-      {
-        "StructType": {
-          "name": "std::panic::Location<'a/#0>"
-        }
-      }
-    ],
-    [
-      43,
       {
         "PrimitiveType": {
           "Uint": "U32"

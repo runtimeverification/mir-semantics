@@ -51,10 +51,11 @@ function map and the initial memory have to be set up.
        <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
        <start-symbol> FUNCNAME </start-symbol>
        <types> _ => #mkTypeMap(.Map, TYPES) </types>
+       <adt-to-ty> _ => #mkAdtMap(.Map, TYPES) </adt-to-ty>
 ```
 
 The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
-It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
+It maps `Ty` IDs to `TypeInfo` that can be supplied to decoding and casting functions as well as operations involving `Aggregate` values (related to `struct`s and `enum`s).
 
 ```k
   syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total]
@@ -75,6 +76,28 @@ It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
     [owise]
 ```
 
+Another type-related `Map` is required to associate an `AdtDef` ID with its corresponding `Ty` ID for `struct`s and `enum`s when creating or using `Aggregate` values.
+
+```k
+  syntax Map ::= #mkAdtMap ( Map , TypeMappings ) [function, total]
+  // --------------------------------------------------------------
+  rule #mkAdtMap(ACC, .TypeMappings) => ACC
+
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoStructType(_, ADTDEF)) MORE:TypeMappings)
+      =>
+       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
+    requires notBool TY in_keys(ACC)
+
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _)) MORE:TypeMappings)
+      =>
+       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
+    requires notBool TY in_keys(ACC)
+
+  rule #mkAdtMap(ACC, TypeMapping(_, _) MORE:TypeMappings)
+      =>
+       #mkAdtMap(ACC, MORE)
+    [owise]
+```
 
 The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
 composed with a secondary lookup of `Item`s via `symbolName`. This composed map will

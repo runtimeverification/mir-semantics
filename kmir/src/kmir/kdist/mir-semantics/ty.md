@@ -254,12 +254,12 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                    | "rigidTyUnimplemented"                                       [group(mir-enum), symbol(RigidTy::Unimplemented), deprecated] // TODO: remove
 
   // additional sort to provide type information in stable-mir-json
-  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)       [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
-                    | typeInfoEnumType(MIRString, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--discriminants)]
-                    | typeInfoStructType(MIRString)              [symbol(TypeInfo::StructType)   , group(mir-enum---name)]
+  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)               [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
+                    | typeInfoEnumType(MIRString, AdtDef, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
+                    | typeInfoStructType(MIRString, AdtDef)              [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def)]
 
   // discriminant information for enum types
-  syntax Discriminant ::= Discriminant ( Ty , MIRInt ) [group(mir)]
+  syntax Discriminant ::= Discriminant ( VariantIdx , MIRInt ) [group(mir)]
 
   syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
 

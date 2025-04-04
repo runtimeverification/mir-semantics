@@ -189,7 +189,7 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
 
 ```k
   rule <k> #readProjection(
-              typedValue(Aggregate(ARGS), _, _),
+              typedValue(Aggregate(_, ARGS), _, _),
               projectionElemField(fieldIdx(I), _TY) PROJS
             )
          =>
@@ -421,7 +421,7 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( Ty, List, Int )
+  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
                 // | array context will be added here
 
   syntax Contexts ::= List{Context, ""}
@@ -431,19 +431,19 @@ The solution is to use rewrite operations in a downward pass through the project
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
 
-  rule #buildUpdate(VAL, CtxField(TY, ARGS, I) CTXS)
-      => #buildUpdate(typedValue(Aggregate(ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I) CTXS)
+      => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Aggregate(ARGS), TY, MUT),
+              typedValue(Aggregate(IDX, ARGS), TY, MUT),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
               CTXTS,
               FORCE
             ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, ARGS, I) CTXTS, FORCE)
+            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, IDX, ARGS, I) CTXTS, FORCE)
           ...
           </k>
     requires 0 <=Int I
@@ -603,8 +603,10 @@ Other `RValue`s exist in order to construct or operate on arrays and slices, whi
 ```
 
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
+Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
 
-Tuples and structs are built as `Aggregate` values with a list of argument values.
+Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
+For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`. 
 
 ```k
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
@@ -612,12 +614,20 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax KItem ::= #mkAggregate ( AggregateKind )
 
-  rule <k> ARGS:List ~> #mkAggregate(_)
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(ADTDEF, VARIDX, _, _, _))
         =>
-            typedValue(Aggregate(ARGS), TyUnknown, mutabilityNot)
-            // NB ty not determined     ^^^^^^^^^
+            typedValue(Aggregate(VARIDX, ARGS), {ADTMAPPING[ADTDEF]}:>MaybeTy, mutabilityNot)
         ...
        </k>
+       <adt-to-ty> ADTMAPPING </adt-to-ty>
+    requires isTy(ADTMAPPING[ADTDEF])
+
+  rule <k> ARGS:List ~> #mkAggregate(_OTHERKIND)
+        =>
+            typedValue(Aggregate(variantIdx(0), ARGS), TyUnknown, mutabilityNot)
+        ...
+       </k>
+    [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -640,8 +650,39 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
            #readOperandsAux(ACC ListItem(VAL), REST)
         ...
        </k>
+```
 
-// Discriminant, ShallowIntBox: not implemented yet
+The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
+This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`. Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
+
+```k
+  syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
+
+  rule <k> rvalueDiscriminant(PLACE) => #discriminant(operandCopy(PLACE)) ... </k>
+
+  rule <k> #discriminant(typedValue(Aggregate(IDX, _), TY, _))
+        =>
+           typedValue(
+              Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 128, false), // parameters for storead u128
+              TyUnknown,
+              mutabilityNot
+            )
+        ...
+       </k>
+       <types> TYPEMAP </types>
+    requires isTypeInfo(TYPEMAP[TY])
+
+  syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
+               | #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
+  // --------------------------------------------------------------------
+  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS), IDX) => #lookupDiscrAux(DISCRIMINANTS, IDX)
+    requires isInt(#lookupDiscrAux(DISCRIMINANTS, IDX)) [preserves-definedness]
+  rule #lookupDiscriminant(_OTHER, _) => 0 [owise, preserves-definedness] // default 0. May be undefined behaviour, though.
+  // --------------------------------------------------------------------
+  rule #lookupDiscrAux( Discriminant(IDX, RESULT)    _        , IDX) => RESULT
+  rule #lookupDiscrAux( _OTHER:Discriminant MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX) [owise]
+
+// ShallowIntBox: not implemented yet
 ```
 
 ### References and Dereferencing
@@ -891,6 +932,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedValue(
           Aggregate(
+            variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
             ListItem(
               typedValue(
@@ -918,6 +960,7 @@ The arithmetic operations require operands of the same numeric type.
     =>
        typedValue(
           Aggregate(
+            variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
             ListItem(
               typedValue(
