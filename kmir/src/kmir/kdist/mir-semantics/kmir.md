@@ -44,32 +44,32 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
          =>
            #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
        <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
        <start-symbol> FUNCNAME </start-symbol>
-       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
+       <types> _ => #mkTypeMap(.Map, TYPES) </types>
 ```
 
 The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
 It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
 
 ```k
-  syntax Map ::= #mkTypeMap ( Map, BaseTypes ) [function, total]
+  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total]
 
-  rule #mkTypeMap(ACC, .BaseTypes) => ACC
+  rule #mkTypeMap(ACC, .TypeMappings) => ACC
 
   // build map of Ty -> RigidTy from suitable pairs
-  rule #mkTypeMap(ACC, baseType(TY, tyKindRigidTy(RIGID)) MORE:BaseTypes)
+  rule #mkTypeMap(ACC, TypeMapping(TY, TYPEINFO) MORE:TypeMappings)
       =>
-       #mkTypeMap(ACC[TY <- RIGID], MORE)
+       #mkTypeMap(ACC[TY <- TYPEINFO], MORE)
     requires notBool TY in_keys(ACC)
     [preserves-definedness] // key collision checked
 
-  // skip anything that is not a RigidTy or causes a key collision
-  rule #mkTypeMap(ACC, baseType(_TY, _OTHERTYKIND) MORE:BaseTypes)
+  // skip anything that causes a key collision
+  rule #mkTypeMap(ACC, _OTHERTYKIND:TypeMapping MORE:TypeMappings)
       =>
        #mkTypeMap(ACC, MORE)
     [owise]

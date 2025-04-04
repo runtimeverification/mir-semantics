@@ -219,6 +219,17 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
   syntax Movability ::= "movabilityStatic"  [group(mir-enum), symbol(Movability::Static)]
                       | "movabilityMovable" [group(mir-enum), symbol(Movability::Movable)]
 
+```
+
+`PrimitiveType`s are not present as an explicit type in MIR or Stable MIR AST, but are a conceptual sub-sort of  `RigidTy` for types that are "primitive".
+
+```k
+  syntax PrimitiveType ::= "primTypeBool"         [group(mir-enum), symbol(PrimitiveType::Bool)]
+                         | "primTypeChar"         [group(mir-enum), symbol(PrimitiveType::Char)]
+                         | primTypeInt(IntTy)     [group(mir-enum), symbol(PrimitiveType::Int)]
+                         | primTypeUint(UintTy)   [group(mir-enum), symbol(PrimitiveType::Uint)]
+                         | primTypeFloat(FloatTy) [group(mir-enum), symbol(PrimitiveType::Float)]
+
   syntax RigidTy ::= "rigidTyBool"                                                [group(mir-enum), symbol(RigidTy::Bool)]
                    | "rigidTyChar"                                                [group(mir-enum), symbol(RigidTy::Char)]
                    | rigidTyInt(IntTy)                                            [group(mir-enum), symbol(RigidTy::Int)]
@@ -241,6 +252,16 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                    | rigidTyTuple(Tys)                                            [group(mir-enum), symbol(RigidTy::Tuple)]
                    | rigidTyCoroutineWitness(CoroutineWitnessDef, GenericArgs)    [group(mir-enum), symbol(RigidTy::CoroutineWitness)]
                    | "rigidTyUnimplemented"                                       [group(mir-enum), symbol(RigidTy::Unimplemented), deprecated] // TODO: remove
+
+  // additional sort to provide type information in stable-mir-json
+  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)       [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
+                    | typeInfoEnumType(MIRString, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--discriminants)]
+                    | typeInfoStructType(MIRString)              [symbol(TypeInfo::StructType)   , group(mir-enum---name)]
+
+  // discriminant information for enum types
+  syntax Discriminant ::= Discriminant ( Ty , MIRInt ) [group(mir)]
+
+  syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
 
 syntax TyKind ::= tyKindRigidTy(RigidTy)          [group(mir-enum), symbol(TyKind::RigidTy)]
                 | tyKindAlias(AliasKind, AliasTy) [group(mir-enum), symbol(TyKind::Alias)]
