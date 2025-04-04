@@ -224,11 +224,11 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
 `PrimitiveType`s are not present as an explicit type in MIR or Stable MIR AST, but are a conceptual sub-sort of  `RigidTy` for types that are "primitive".
 
 ```k
-  syntax PrimitiveType ::= "baseTypeBool"         [group(mir-enum), symbol(PrimitiveType::Bool)]
-                         | "baseTypeChar"         [group(mir-enum), symbol(PrimitiveType::Char)]
-                         | baseTypeInt(IntTy)     [group(mir-enum), symbol(PrimitiveType::Int)]
-                         | baseTypeUint(UintTy)   [group(mir-enum), symbol(PrimitiveType::Uint)]
-                         | baseTypeFloat(FloatTy) [group(mir-enum), symbol(PrimitiveType::Float)]
+  syntax PrimitiveType ::= "primTypeBool"         [group(mir-enum), symbol(PrimitiveType::Bool)]
+                         | "primTypeChar"         [group(mir-enum), symbol(PrimitiveType::Char)]
+                         | primTypeInt(IntTy)     [group(mir-enum), symbol(PrimitiveType::Int)]
+                         | primTypeUint(UintTy)   [group(mir-enum), symbol(PrimitiveType::Uint)]
+                         | primTypeFloat(FloatTy) [group(mir-enum), symbol(PrimitiveType::Float)]
 
   syntax RigidTy ::= "rigidTyBool"                                                [group(mir-enum), symbol(RigidTy::Bool)]
                    | "rigidTyChar"                                                [group(mir-enum), symbol(RigidTy::Char)]

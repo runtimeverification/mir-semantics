@@ -53,13 +53,13 @@
     symbol ( "main" )
   </start-symbol>
   <types>
-    ty ( 2 ) |-> typeInfoPrimitiveType ( baseTypeInt ( intTyI8 ) )
-    ty ( 6 ) |-> typeInfoPrimitiveType ( baseTypeInt ( intTyIsize ) )
-    ty ( 9 ) |-> typeInfoPrimitiveType ( baseTypeUint ( uintTyU8 ) )
+    ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
+    ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
+    ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
     ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<T/#0, E/#1>" , Discriminant ( ty ( 0 ) , 0 )  Discriminant ( ty ( 1 ) , 1 )  .Discriminants )
     ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" )
-    ty ( 16 ) |-> typeInfoPrimitiveType ( baseTypeInt ( intTyI32 ) )
+    ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
     ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" )
-    ty ( 28 ) |-> typeInfoPrimitiveType ( baseTypeBool )
+    ty ( 28 ) |-> typeInfoPrimitiveType ( primTypeBool )
   </types>
 </kmir>
