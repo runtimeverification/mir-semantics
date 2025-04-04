@@ -6,8 +6,8 @@ ARG K_VERSION
 
 # create non-root user and adjust UID:GID on start-up
 # see https://github.com/boxboat/fixuid
-RUN addgroup --gid 1000 kmir && \
-    adduser -uid 1000 --ingroup kmir --home /home/kmir --shell /bin/bash --disabled-password --gecos "" kmir
+RUN addgroup --gid 1111 kmir && \
+    adduser -uid 1111 --ingroup kmir --home /home/kmir --shell /bin/bash --disabled-password --gecos "" kmir
 RUN apt-get install -y curl graphviz python-is-python3 && \
     USER=kmir && \
     GROUP=kmir && \
