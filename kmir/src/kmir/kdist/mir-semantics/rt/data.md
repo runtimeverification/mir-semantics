@@ -605,7 +605,8 @@ Other `RValue`s exist in order to construct or operate on arrays and slices, whi
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
 Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
 
-Tuples and structs are built as `Aggregate` values with a list of argument values.
+Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
+For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`. 
 
 ```k
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
@@ -613,19 +614,20 @@ Tuples and structs are built as `Aggregate` values with a list of argument value
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax KItem ::= #mkAggregate ( AggregateKind )
 
-  rule <k> ARGS:List ~> #mkAggregate( KIND)
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(ADTDEF, VARIDX, _, _, _))
         =>
-            typedValue(Aggregate(#varIdxOf(KIND), ARGS), TyUnknown, mutabilityNot)
+            typedValue(Aggregate(VARIDX, ARGS), {ADTMAPPING[ADTDEF]}:>MaybeTy, mutabilityNot)
         ...
        </k>
+       <adt-to-ty> ADTMAPPING </adt-to-ty>
+    requires isTy(ADTMAPPING[ADTDEF])
 
-  syntax VariantIdx ::= #varIdxOf ( AggregateKind ) [function, total]
-  // ----------------------------------------------------------------
-  rule #varIdxOf(aggregateKindArray(_))                => variantIdx(0)
-  rule #varIdxOf(aggregateKindTuple)                   => variantIdx(0)
-  rule #varIdxOf(aggregateKindAdt(_, VARIDX, _, _, _)) => VARIDX
-  // Closure, Coroutine, RawPtr
-  rule #varIdxOf(_OTHER)                               => variantIdx(0) [owise]
+  rule <k> ARGS:List ~> #mkAggregate(_OTHERKIND)
+        =>
+            typedValue(Aggregate(variantIdx(0), ARGS), TyUnknown, mutabilityNot)
+        ...
+       </k>
+    [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
