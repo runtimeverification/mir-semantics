@@ -1893,7 +1893,7 @@
     [
       2,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I8"
         }
       }
@@ -1901,7 +1901,7 @@
     [
       6,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "Isize"
         }
       }
@@ -1909,7 +1909,7 @@
     [
       9,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Uint": "U8"
         }
       }
@@ -1943,7 +1943,7 @@
     [
       16,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I32"
         }
       }
@@ -1959,7 +1959,7 @@
     [
       25,
       {
-        "Basetype": "Bool"
+        "PrimitiveType": "Bool"
       }
     ]
   ],

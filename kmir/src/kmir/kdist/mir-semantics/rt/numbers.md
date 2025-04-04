@@ -24,19 +24,19 @@ module RT-NUMBERS
 
   syntax NumTy ::= #numTypeOf( TypeInfo ) [function]
   // ----------------------------------------------
-  rule #numTypeOf(typeInfoBasetype(baseTypeInt(INTTY))) => INTTY
-  rule #numTypeOf(typeInfoBasetype(baseTypeUint(UINTTY))) => UINTTY
-  rule #numTypeOf(typeInfoBasetype(baseTypeFloat(FLOATTY))) => FLOATTY
+  rule #numTypeOf(typeInfoPrimitiveType(baseTypeInt(INTTY))) => INTTY
+  rule #numTypeOf(typeInfoPrimitiveType(baseTypeUint(UINTTY))) => UINTTY
+  rule #numTypeOf(typeInfoPrimitiveType(baseTypeFloat(FLOATTY))) => FLOATTY
 
   syntax InTy ::= #intTypeOf( TypeInfo ) [function]
   // ----------------------------------------------
-  rule #intTypeOf(typeInfoBasetype(baseTypeInt(INTTY))) => INTTY
-  rule #intTypeOf(typeInfoBasetype(baseTypeUint(UINTTY))) => UINTTY
+  rule #intTypeOf(typeInfoPrimitiveType(baseTypeInt(INTTY))) => INTTY
+  rule #intTypeOf(typeInfoPrimitiveType(baseTypeUint(UINTTY))) => UINTTY
 
   syntax Bool ::= #isIntType ( TypeInfo ) [function, total]
   // -----------------------------------------------------
-  rule #isIntType(typeInfoBasetype(baseTypeInt(_)))  => true
-  rule #isIntType(typeInfoBasetype(baseTypeUint(_))) => true
+  rule #isIntType(typeInfoPrimitiveType(baseTypeInt(_)))  => true
+  rule #isIntType(typeInfoPrimitiveType(baseTypeUint(_))) => true
   rule #isIntType(_)                                 => false [owise]
 ```
 

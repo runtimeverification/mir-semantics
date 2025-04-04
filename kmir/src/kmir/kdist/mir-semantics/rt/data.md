@@ -744,7 +744,7 @@ Other type casts are not implemented yet.
 
 ## Decoding constants from their bytes representation to values
 
-The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `Basetype`s (primitive types in MIR).
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
   syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
@@ -753,9 +753,9 @@ The `Value` sort above operates at a higher level than the bytes representation 
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeBool)) => BoolVal(false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(baseTypeBool)) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeBool)) => BoolVal(true)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(baseTypeBool)) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operations
@@ -768,7 +768,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoBasetype(baseTypeChar))
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(baseTypeChar))
   //     =>
   //      Str(...)
   /////////////////////////////////////////////////////////////////////////////////////////////////

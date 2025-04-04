@@ -224,11 +224,11 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
 `PrimitiveType`s are not present as an explicit type in MIR or Stable MIR AST, but are a conceptual sub-sort of  `RigidTy` for types that are "primitive".
 
 ```k
-  syntax Basetype ::= "baseTypeBool"         [group(mir-enum), symbol(Basetype::Bool)]
-                    | "baseTypeChar"         [group(mir-enum), symbol(Basetype::Char)]
-                    | baseTypeInt(IntTy)     [group(mir-enum), symbol(Basetype::Int)]
-                    | baseTypeUint(UintTy)   [group(mir-enum), symbol(Basetype::Uint)]
-                    | baseTypeFloat(FloatTy) [group(mir-enum), symbol(Basetype::Float)]
+  syntax PrimitiveType ::= "baseTypeBool"         [group(mir-enum), symbol(PrimitiveType::Bool)]
+                         | "baseTypeChar"         [group(mir-enum), symbol(PrimitiveType::Char)]
+                         | baseTypeInt(IntTy)     [group(mir-enum), symbol(PrimitiveType::Int)]
+                         | baseTypeUint(UintTy)   [group(mir-enum), symbol(PrimitiveType::Uint)]
+                         | baseTypeFloat(FloatTy) [group(mir-enum), symbol(PrimitiveType::Float)]
 
   syntax RigidTy ::= "rigidTyBool"                                                [group(mir-enum), symbol(RigidTy::Bool)]
                    | "rigidTyChar"                                                [group(mir-enum), symbol(RigidTy::Char)]
@@ -254,9 +254,9 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                    | "rigidTyUnimplemented"                                       [group(mir-enum), symbol(RigidTy::Unimplemented), deprecated] // TODO: remove
 
   // additional sort to provide type information in stable-mir-json
-  syntax TypeInfo ::= typeInfoBasetype(Basetype)                 [symbol(TypeInfo::Basetype)  , group(mir-enum)]
-                    | typeInfoEnumType(MIRString, Discriminants) [symbol(TypeInfo::EnumType)  , group(mir-enum---name--discriminants)]
-                    | typeInfoStructType(MIRString)              [symbol(TypeInfo::StructType), group(mir-enum---name)]
+  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)       [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
+                    | typeInfoEnumType(MIRString, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--discriminants)]
+                    | typeInfoStructType(MIRString)              [symbol(TypeInfo::StructType)   , group(mir-enum---name)]
 
   // discriminant information for enum types
   syntax Discriminant ::= Discriminant ( Ty , MIRInt ) [group(mir)]

@@ -2087,7 +2087,7 @@
     [
       2,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I8"
         }
       }
@@ -2095,7 +2095,7 @@
     [
       6,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "Isize"
         }
       }
@@ -2103,7 +2103,7 @@
     [
       9,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Uint": "U8"
         }
       }
@@ -2137,7 +2137,7 @@
     [
       16,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I32"
         }
       }
@@ -2153,7 +2153,7 @@
     [
       25,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Uint": "U16"
         }
       }
@@ -2161,7 +2161,7 @@
     [
       26,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I16"
         }
       }
@@ -2169,7 +2169,7 @@
     [
       27,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Int": "I64"
         }
       }
@@ -2177,7 +2177,7 @@
     [
       28,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Uint": "U32"
         }
       }
@@ -2185,7 +2185,7 @@
     [
       29,
       {
-        "Basetype": {
+        "PrimitiveType": {
           "Uint": "U64"
         }
       }
