@@ -74,9 +74,9 @@
     ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
     ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<T/#0, E/#1>" , adtDef ( 17 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 25 ) )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 11 ) )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 23 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 9 ) )
     ty ( 25 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI16 ) )
     ty ( 26 ) |-> typeInfoPrimitiveType ( primTypeBool )
     ty ( 27 ) |-> typeInfoEnumType ( "Letter" , adtDef ( 7 ) , Discriminant ( variantIdx ( 0 ) , 65 )  Discriminant ( variantIdx ( 1 ) , 66 )  Discriminant ( variantIdx ( 2 ) , 77 )  .Discriminants )
@@ -86,9 +86,8 @@
   <adt-to-ty>
     adtDef ( 7 ) |-> ty ( 27 )
     adtDef ( 8 ) |-> ty ( 28 )
+    adtDef ( 9 ) |-> ty ( 17 )
+    adtDef ( 11 ) |-> ty ( 15 )
     adtDef ( 17 ) |-> ty ( 10 )
-    adtDef ( 23 ) |-> ty ( 17 )
-    adtDef ( 25 ) |-> ty ( 15 )
   </adt-to-ty>
 </kmir>
-
