@@ -1,12 +1,8 @@
 # MIR Semantics
 
-In this repository, we provide a model of Rust MIR in K.
+In this repository, we provide a model of the semantics of Rust's Stable MIR in K to enable symbolic execution of Rust programs and proofs of program properties.
 
-NOTE: This project is currently under reconstruction with changes and work outlined in [Polkadot Referendum #749](https://polkadot.subsquare.io/referenda/749). Some features you may be familiar with (concrete execution and symbolic execution) are currently removed while project foundations are improved.
-
-Currently, the project is working to stabilize the serialized output of stable MIR (see our current [Rust PR](https://github.com/rust-lang/rust/pull/126963)) and develop the semantics for this output. 
-
-If you would like to try a legacy version of the project, [this blog post](https://runtimeverification.com/blog/introducing-kmir) has a tutorial on how to get started. However, it is important to install a legacy version for this to work, so when the tutorial prompts to install the latest version of KMIR with `kup install kmir`, this should be replaced instead with `kup install kmir --version v0.2.21`
+Also included is the `kmir` tool, a python script that acts as a front-end to the semantics.
 
 
 ## For Developers
@@ -25,7 +21,7 @@ For interactive use, spawn a shell with `poetry -C kmir/ shell` (after `poetry -
 
 ### Stable-MIR-JSON Setup
 
-At the moment, to interact with some of KMIR functionalities, it is necessary to provide the tool with a serialized JSON of a Rust program's Stable MIR. To be able to extract these serialized SMIR JSONs, you can use the `Stable-MIR-JSON` tool, setting it up with the following commands:
+To interact with some of KMIR functionalities, it is necessary to provide the tool with a serialized JSON of a Rust program's Stable MIR. To be able to extract these serialized SMIR JSONs, you can use the `Stable-MIR-JSON` tool, setting it up with the following commands:
 
 ```Rust
 git submodule update --init --recursive
