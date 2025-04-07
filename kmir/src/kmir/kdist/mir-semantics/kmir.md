@@ -3,6 +3,7 @@
 ```k
 requires "kmir-ast.md"
 requires "rt/data.md"
+requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
 ```
 
@@ -12,92 +13,29 @@ The MIR syntax is largely defined in [KMIR-AST](./kmir-ast.md) and its
 submodules. The execution is initialised based on a loaded `Pgm` read
 from a json format of stable-MIR, and the name of the function to execute.
 
-```k
-module KMIR-SYNTAX
-  imports KMIR-AST
-
-  syntax KItem ::= #init( Pgm )
-
-endmodule
-```
-
 ## (Dynamic) Semantics
 
 ### Execution Configuration
 
-The execution (dynamic) semantics of MIR in K is defined based on the
-configuration of the running program.
+The _configuration_ that this MIR semantics operates on carries the entire state of the running program, including local variables of the current function item, the whole call stack, as well as all code items that may potentially be executed.
 
-Essential parts of the configuration:
-* the `k` cell to control the execution
-* a `stack` of `StackFrame`s describing function calls and their data
-* `currentFrame`, an unpacked version of the top of `stack`
-* the `functions` map to look up function bodies when they are called
-* the `memory` cell which abstracts allocated heap data
-
-The entire program's return value (`retVal`) is held in a separate cell.
-
-Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes information about the `locals` of the currently-executing function/item. Each function's code will only access local values (or heap data referenced by them). Local variables carry type information (see `RT-DATA`).
-
-```k
-module KMIR-CONFIGURATION
-  imports KMIR-SYNTAX
-  imports INT-SYNTAX
-  imports BOOL-SYNTAX
-  imports RT-DATA-HIGH-SYNTAX
-
-  syntax RetVal ::= return( Value )
-                  | "noReturn"
-
-  syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
-                                   dest:Place,                // place to store return value
-                                   target:MaybeBasicBlockIdx, // basic block to return to
-                                   UnwindAction,              // action to perform on panic
-                                   locals:List)               // return val, args, local variables
-
-  configuration <kmir>
-                  <k> #init($PGM:Pgm) </k>
-                  <retVal> noReturn </retVal>
-                  <currentFunc> ty(-1) </currentFunc> // to retrieve caller
-                  // unpacking the top frame to avoid frequent stack read/write operations
-                  <currentFrame>
-                    <currentBody> .List </currentBody>
-                    <caller> ty(-1) </caller>
-                    <dest> place(local(-1), .ProjectionElems)</dest>
-                    <target> noBasicBlockIdx </target>
-                    <unwind> unwindActionUnreachable </unwind>
-                    <locals> .List </locals>
-                  </currentFrame>
-                  // remaining call stack (without top frame)
-                  <stack> .List </stack>
-                  // function store, Ty -> MonoItemFn
-                  <functions> .Map </functions>
-                  // heap
-                  <memory> .Map </memory> // FIXME unclear how to model
-                  // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
-                  <start-symbol> symbol($STARTSYM:String) </start-symbol>
-                  // static information about the base type interning in the MIR
-                  <basetypes> .Map </basetypes>
-                </kmir>
-
-endmodule
-```
-
+See [`rt/configuration.md`](./rt/configuration.md) for a detailed description of the configuration.
 
 ### Execution Control Flow
 
 ```k
 module KMIR-CONTROL-FLOW
-  imports KMIR-SYNTAX
-  imports KMIR-CONFIGURATION
-  imports MONO
-  imports RT-DATA-HIGH
-  imports TYPES
-
   imports BOOL
   imports LIST
   imports MAP
   imports K-EQUAL
+
+  imports KMIR-AST
+  imports MONO
+  imports TYPES
+
+  imports KMIR-CONFIGURATION
+  imports RT-DATA
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
@@ -106,32 +44,32 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:BaseTypes)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
          =>
            #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
        <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
        <start-symbol> FUNCNAME </start-symbol>
-       <basetypes> _ => #mkTypeMap(.Map, TYPES) </basetypes>
+       <types> _ => #mkTypeMap(.Map, TYPES) </types>
 ```
 
 The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
 It maps `Ty` IDs to `RigidTy` that can be supplied to decoding functions.
 
 ```k
-  syntax Map ::= #mkTypeMap ( Map, BaseTypes ) [function, total]
+  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total]
 
-  rule #mkTypeMap(ACC, .BaseTypes) => ACC
+  rule #mkTypeMap(ACC, .TypeMappings) => ACC
 
   // build map of Ty -> RigidTy from suitable pairs
-  rule #mkTypeMap(ACC, baseType(TY, tyKindRigidTy(RIGID)) MORE:BaseTypes)
+  rule #mkTypeMap(ACC, TypeMapping(TY, TYPEINFO) MORE:TypeMappings)
       =>
-       #mkTypeMap(ACC[TY <- RIGID], MORE)
+       #mkTypeMap(ACC[TY <- TYPEINFO], MORE)
     requires notBool TY in_keys(ACC)
     [preserves-definedness] // key collision checked
 
-  // skip anything that is not a RigidTy or causes a key collision
-  rule #mkTypeMap(ACC, baseType(_TY, _OTHERTYKIND) MORE:BaseTypes)
+  // skip anything that causes a key collision
+  rule #mkTypeMap(ACC, _OTHERTYKIND:TypeMapping MORE:TypeMappings)
       =>
        #mkTypeMap(ACC, MORE)
     [owise]
@@ -259,7 +197,7 @@ be known to populate the `currentFunc` field.
 
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
-       ListItem(noValue(TY, MUT)) #reserveFor(REST)
+       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 ```
 
 Executing a function body consists of repeated calls to `#execBlock`
@@ -312,18 +250,11 @@ will effectively be no-ops at this level).
   // all memory accesses relegated to another module (to be added)
   rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
-           RVAL ~> #assign(PLACE)
+            #setLocalValue(PLACE, RVAL)
          ...
        </k>
 
   // RVAL evaluation is implemented in rt/data.md
-
-  syntax KItem ::= #assign ( Place )
-
-  rule <k> VAL:TypedLocal ~> #assign(PLACE) ~> CONT
-        =>
-           VAL ~> #setLocalValue(PLACE) ~> CONT
-        </k>
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
@@ -359,10 +290,9 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
          =>
            #execBlockIdx(I)
-         ... // FIXME: We assume this is empty. Explicitly throw away or check that it is?
        </k>
 ```
 
@@ -370,30 +300,30 @@ A `SwitchInt` terminator selects one of the blocks given as _targets_,
 depending on the value of a _discriminant_.
 
 ```k
+  syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
+
   rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
-           #readOperand(DISCR) ~> #selectBlock(TARGETS)
+           #selectBlock(TARGETS, DISCR)
        </k>
 
-  rule <k> typedLocal(Integer(I, _, _), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, _, _), _, _))
          =>
            #execBlockIdx(#selectBlock(I, TARGETS))
        ...
        </k>
 
-  rule <k> typedLocal(BoolVal(false), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(false), _, _))
          =>
            #execBlockIdx(#selectBlock(0, TARGETS))
        ...
        </k>
 
-  rule <k> typedLocal(BoolVal(true), _, _) ~> #selectBlock(TARGETS)
+  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(true), _, _))
          =>
            #execBlockIdx(#selectBlock(1, TARGETS))
        ...
        </k>
-
-  syntax KItem ::= #selectBlock ( SwitchTargets )
 
   syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
                          | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
@@ -423,10 +353,12 @@ context of the enclosing stack frame, at the _target_.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
+If the loval `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
+
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #decrementRef(LOCAL0) ~> #setLocalValue(DEST) ~> #execBlockIdx(TARGET) ~> .K
+           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -435,14 +367,33 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(LOCAL0:TypedLocal) _ => NEWLOCALS </locals>
+         <locals> ListItem(LOCAL0:TypedValue) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
      requires CALLER in_keys(FUNCS)
-      // andBool DEST #within(LOCALS)
-     [preserves-definedness] // CALLER lookup defined, DEST within locals TODO
+     [preserves-definedness] // CALLER lookup defined
+
+  // no value to return, skip writing
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller> CALLER => NEWCALLER </caller>
+         <dest> _ => NEWDEST </dest>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+     [preserves-definedness] // CALLER lookup defined
 
   syntax List ::= #getBlocks(Map, Ty) [function]
                 | #getBlocksAux(MonoItemKind)  [function, total]
@@ -474,7 +425,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(typedLocal(VAL, _, _)) ... </locals>
+         <locals> ListItem(typedValue(VAL, _, _)) ... </locals>
          ...
        </currentFrame>
 
@@ -485,7 +436,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
        </k>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(noValue(_, _)) ... </locals>
+         <locals> ListItem(newLocal(_, _)) ... </locals>
          ...
        </currentFrame>
 ```
@@ -496,10 +447,9 @@ where the returned result should go.
 
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
            #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
-         ...
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -566,13 +516,13 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
-           #readOperand(CONSTOPERAND) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
         ...
        </k>
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -584,7 +534,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #incrementRef({CALLERLOCALS[I]}:>TypedLocal) ~> #setLocalValue(place(local(IDX), .ProjectionElems))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
@@ -597,23 +547,37 @@ An operand may be a `Reference` (the only way a function could access another fu
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
 If the condition value is as expected, the program proceeds with the given `target` block.
-Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `#AssertError` in the semantics.
+Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `AssertError` in the semantics.
 
 ```k
-  syntax KItem ::= #AssertError ( AssertMessage )
+  syntax MIRError ::= AssertError ( AssertMessage )
 
   rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
-           #readOperand(COND) ~> #expect(EXPECTED, MSG) ~> #execBlockIdx(TARGET)
+           #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
 
-  syntax KItem ::= #expect ( Bool, AssertMessage )
+  syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
 
-  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, _MSG) => .K ... </k>
+  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> typedLocal(BoolVal(COND), _, _) ~> #expect(EXPECTED, MSG) => #AssertError(MSG) ... </k>
+  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, MSG) => AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
+```
+
+### Stopping on Program Errors
+
+The semantics has a dedicated error sort to stop execution when flawed input or undefined behaviour is detected.
+This includes cases of invalid MIR (e.g., accessing non-existing locals in a block or jumping to non-existing blocks), mutation of immutable values, or accessing uninitialised locals, but also user errors such as division by zero or overflowing unchecked arithmetic operations.
+
+The execution will stop with the respective error information as soon as an error condition is detected.
+
+```k
+  syntax KItem ::= #ProgramError ( MIRError )
+
+  rule [program-error]:
+    <k> ERR:MIRError => #ProgramError(ERR) ...</k>
 ```
 
 ```k

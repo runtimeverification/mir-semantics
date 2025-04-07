@@ -28,12 +28,12 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( noValue ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedLocal ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedLocal ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 28 ) , mutabilityNot ) )
       ListItem ( Moved )
-      ListItem ( noValue ( ty ( 30 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
@@ -55,11 +55,14 @@
   <start-symbol>
     symbol ( "main" )
   </start-symbol>
-  <basetypes>
-    ty ( 2 ) |-> rigidTyInt ( intTyI8 )
-    ty ( 6 ) |-> rigidTyInt ( intTyIsize )
-    ty ( 9 ) |-> rigidTyUint ( uintTyU8 )
-    ty ( 16 ) |-> rigidTyInt ( intTyI32 )
-    ty ( 29 ) |-> rigidTyBool
-  </basetypes>
+  <types>
+    ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
+    ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
+    ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<T/#0, E/#1>" , Discriminant ( ty ( 0 ) , 0 )  Discriminant ( ty ( 1 ) , 1 )  .Discriminants )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" )
+    ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" )
+    ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeBool )
+  </types>
 </kmir>

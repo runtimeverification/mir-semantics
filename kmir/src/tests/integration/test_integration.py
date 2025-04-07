@@ -226,8 +226,8 @@ EXEC_DATA = [
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.23.state',
-        23,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.27.state',
+        27,
     ),
     (
         'assign-cast',
@@ -238,8 +238,8 @@ EXEC_DATA = [
     (
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.84.state',
-        84,
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.90.state',
+        90,
     ),
     (
         'struct-field-update',

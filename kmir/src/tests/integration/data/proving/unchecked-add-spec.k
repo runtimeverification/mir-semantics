@@ -46,11 +46,11 @@ module UNCHECKED-ADD-SPEC
     <unwind> _ => ?_ </unwind>
     <locals>
       ListItem ( _ )
-      ListItem ( typedLocal ( Integer ( A , 16 , true ) , ty ( 23 ) , _ ) )
-      ListItem ( typedLocal ( Integer ( B , 16 , true ) , ty ( 23 ) , _ ) )
+      ListItem ( typedValue ( Integer ( A , 16 , true ) , ty ( 23 ) , _ ) )
+      ListItem ( typedValue ( Integer ( B , 16 , true ) , ty ( 23 ) , _ ) )
       // _ // if we keep this we need a lemma for list size predicate simplification
       => 
-      ListItem ( typedLocal ( Integer ( ?RESULT, 16, true), ty ( 23 ) , ?_ ))
+      ListItem ( typedValue ( Integer ( ?RESULT, 16, true), ty ( 23 ) , ?_ ))
       ?_
     </locals>
   </currentFrame>
