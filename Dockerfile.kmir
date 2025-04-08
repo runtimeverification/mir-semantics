@@ -16,6 +16,7 @@ RUN apt-get install -y curl graphviz python-is-python3 && \
     chmod 4755 /usr/local/bin/fixuid && \
     mkdir -p /etc/fixuid && \
     printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+# TODO configure to only scan /home/kmir
 
 COPY kmir /kmir
 COPY deps/stable-mir-json /deps/stable-mir-json
@@ -34,6 +35,7 @@ RUN echo "export K_VERSION=${K_VERSION}" >> /home/kmir/.bash_profile && \
     echo "source /home/kmir/.bash_profile" >> /home/kmir/.bashrc
 
 # install rustup non-interactively and build
+# TODO set RUSTUP_HOME to some place outside of the home directory
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
 
 # install kmir python parts and K definition/llvm library
