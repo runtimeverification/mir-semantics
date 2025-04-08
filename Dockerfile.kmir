@@ -59,21 +59,21 @@ RUN cd /deps/stable-mir-json && \
 # Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec`
 ENTRYPOINT ["fixuid", "-q"]
 
-CMD printf "%s\n" \
-    "Welcome to kmir, powered by K framework" \
-    "" \
-    "This docker image provides a K-framework installation with the following programs:" \
-    " * kompile" \
-    " * krun" \
-    " * kprove" \
-    " * kast" \
-    " * K backend tools (kore-*)" \
-    " * the pyk library to interact with K programmatically " \
-    "" \
-    "as well as a pre-installed kmir tool and stable-mir-json" \
-    "" \
-    "To use this docker image, start a container with an interactive shell and" \
-    "a working directory with your working directory mounted into it, like so:" \
-    "" \
-    'user@host$ docker run --rm -it -v "$PWD":/home/kmir/workspace -u $(id -u):$(id -g) <docker-image> /bin/bash' \
-    ""
+CMD ["printf", "%s\n" \
+    , "Welcome to kmir, powered by K framework" \
+    , "" \
+    , "This docker image provides a K-framework installation with the following programs:" \
+    , " * kompile" \
+    , " * krun" \
+    , " * kprove" \
+    , " * kast" \
+    , " * K backend tools (kore-*)" \
+    , " * the pyk library to interact with K programmatically " \
+    , "" \
+    , "as well as a pre-installed kmir tool and stable-mir-json" \
+    , "" \
+    , "To use this docker image, start a container with an interactive shell and" \
+    , "a working directory with your working directory mounted into it, like so:" \
+    , "" \
+    , "user@host$ docker run --rm -it -v \"$PWD\":/home/kmir/workspace -u $(id -u):$(id -g) <docker-image> /bin/bash" \
+    , ""]
