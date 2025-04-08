@@ -1,0 +1,70 @@
+```k
+requires "../kmir.md"
+
+module KMIR-SYMBOLIC-LOCALS [symbolic]
+  imports KMIR-CONTROL-FLOW
+
+  syntax KItem ::= #initSymbolic( Pgm )
+                 | #execSymbolic ( MonoItem, FunctionNames )
+
+  rule <k> #initSymbolic(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
+         =>
+           #execSymbolic(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
+       </k>
+       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+       <start-symbol> FUNCNAME </start-symbol>
+       <types> _ => #mkTypeMap(.Map, TYPES) </types>
+
+  rule <k> #execSymbolic(
+              monoItem(
+                SYMNAME,
+                monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS,RETURNLOCAL:LocalDecl LOCALS:LocalDecls, ARGCOUNT, _, _, _)))
+              ),
+              FUNCTIONNAMES
+            )
+        =>
+           #reserveSymbolicsFor(LOCALS, ARGCOUNT)
+        ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFunc> _ => #tyFromName(SYMNAME, FUNCTIONNAMES) </currentFunc>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <caller> _ => ty(-1) </caller> // no caller
+         <dest> _ => place(local(-1), .ProjectionElems)</dest>
+         <target> _ => noBasicBlockIdx </target>
+         <unwind> _ => unwindActionUnreachable </unwind>
+         <locals> _ => #reserveFor(RETURNLOCAL) </locals>
+       </currentFrame>
+
+  syntax KItem ::= #reserveSymbolicsFor( LocalDecls, Int )
+
+  rule <k> #reserveSymbolicsFor( .LocalDecls, _ ) => .K ... </k>
+  rule <k> #reserveSymbolicsFor( LOCALS:LocalDecls, 0 ) => .K ... </k>
+       <locals> ... .List => #reserveFor(LOCALS) </locals>
+
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
+        => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( Integer(?INT:Int, #bitWidth(PRIMTY), false), TY, MUT )) </locals>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeUint( PRIMTY ) ) ... </types>
+    requires 0 <Int COUNT
+    ensures #intConstraints( ?INT, PRIMTY )
+
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
+        => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( Integer(?INT:Int, #bitWidth(PRIMTY), true), TY, MUT )) </locals>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeInt( PRIMTY ) ) ... </types>
+    requires 0 <Int COUNT
+    ensures #intConstraints( ?INT, PRIMTY )
+
+  syntax Bool ::= #intConstraints( Int, InTy ) [function, total]
+
+  rule #intConstraints( X, TY:IntTy  ) => 0 -Int (2 ^Int (#bitWidth(TY) -Int 1)) <=Int X andBool X <Int 2 ^Int (#bitWidth(TY) -Int 1)
+  rule #intConstraints( X, TY:UintTy ) => 0                                      <=Int X andBool X <Int 2 ^Int  #bitWidth(TY)
+
+endmodule
+```
