@@ -173,10 +173,19 @@ jobs:
             -w /home/kmir/workspace \
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} \
             /bin/bash
-                    
+
+          # Print Some Files
+          ls -l 
+          ls -l kmir/src/tests/integration/data/
+          ls -l kmir/src/tests/integration/data/*/*-spec.k
+
           # Run Tests
           for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
             echo "Running ${k_file}"
+            docker exec \
+              -w /home/kmir/workspace \
+              ${{ env.container_name }} \
+              /bin/bash -c "ls -l $(dirname ${k_file})"
             docker exec \
               -w /home/kmir/workspace \
               ${{ env.container_name }} \
