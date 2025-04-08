@@ -177,7 +177,11 @@ jobs:
           # Run Tests
           for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
             echo "Running ${k_file}"
-            docker exec -w /home/kmir/workspace ${{ env.container_name }} /bin/bash -l -c "kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs"
+            docker exec \
+              -w /home/kmir/workspace \
+              -u $(id -u):$(id -g) \
+              ${{ env.container_name }} \
+              /bin/bash -l -c "kmir prove run ${k_file} --proof-dir $(dirname ${k_file})/proofs"
           done
 
       - name: Tear Down Container
