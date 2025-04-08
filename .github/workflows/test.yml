@@ -123,3 +123,83 @@ jobs:
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
+
+  test-kmir-image:
+    name: Test Kmir Image
+    needs: [ unit-tests, version-bump ]
+    runs-on: ubuntu-latest
+    env:
+      container_name: "kmir-${{ github.run_id }}"
+    outputs:
+      image-name: ${{ steps.set-image-name.outputs.image-name }}
+      k-version: ${{ steps.set-image-name.outputs.k-version }}
+      kmir-version: ${{ steps.set-image-name.outputs.kmir-version }}
+      short-sha: ${{ steps.set-image-name.outputs.short-sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3.10.0
+
+      - name: Set Image Name Parameters
+        id: set-image-name
+        run: |
+          echo "image-name=ghcr.io/runtimeverification/mir-semantics/kmir" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
+          echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build Kmir Container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.kmir
+          platforms: linux/amd64
+          push: false
+          load: true
+          build-args: |
+            K_VERSION=${{ steps.set-image-name.outputs.k-version }}
+          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }}
+
+      - name: Container Sanity Check
+        run: |
+          # Create output directories for each test
+          for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
+            proof_dir="$(dirname ${k_file})/proofs"
+            mkdir -p "${proof_dir}"
+            chmod 777 "${proof_dir}"
+          done
+
+          # Start Container
+          docker run --detach --rm -t \
+            --name ${{ env.container_name }} \
+            -v $PWD:/home/kmir/workspace \
+            -w /home/kmir/workspace \
+            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} \
+            /bin/bash
+                    
+          # Run all tests in a single exec command to maintain fixuid context
+          docker exec \
+            -w /home/kmir/workspace \
+            ${{ env.container_name }} \
+            /bin/bash -c '
+              for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
+                echo "Running ${k_file}"
+                proof_dir="$(dirname ${k_file})/proofs"
+                if ! kmir prove run "${k_file}" --proof-dir "${proof_dir}" 2>&1; then
+                  echo "Proof failed for ${k_file}"
+                fi
+              done
+            '
+
+          # Print test results
+          echo "Test results:"
+          find kmir/src/tests/integration/data -name "proofs" -type d -exec echo {} >> GITHUB_STEP_SUMMARY \;
+          
+      - name: Tear Down Container
+        if: always()
+        run: docker stop ${{ env.container_name }}
+
