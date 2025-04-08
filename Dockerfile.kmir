@@ -37,7 +37,11 @@ RUN echo "export K_VERSION=${K_VERSION}" >> /home/kmir/.bash_profile && \
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
 
 # install kmir python parts and K definition/llvm library
-RUN cd /kmir && pip install . && kdist build mir-semantics.\*
+RUN cd /kmir && \
+    pip install . && \
+    kdist build mir-semantics.\* && \
+    rm -rf $(kdist which mir-semantics.llvm)/dt
+# NB cannot remove the `llvm-library` one
 
 # build stable-mir-json and install into home
 # NB this will modify the default rust toolchain!
@@ -47,8 +51,10 @@ RUN cd /deps/stable-mir-json && \
     cargo build --release && \
     cargo run --bin cargo_stable_mir_json -- $PWD && \
     ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
-    cargo clean
-# Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec` 
+    cargo clean && \
+    rm -rf ~/.rustup/toolchains/nightly*/share/doc ~/.rustup/toolchains/nightly*/lib/rustlib/rustc-src
+
+# Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec`
 ENTRYPOINT ["fixuid", "-q"]
 
 CMD printf "%s\n" \
