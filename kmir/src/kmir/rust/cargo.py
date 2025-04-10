@@ -6,7 +6,7 @@ from functools import cached_property
 from pathlib import Path
 
 
-class CargoPackage:
+class CargoProject:
     working_directory: Path
 
     def __init__(self, working_directory: Path) -> None:

@@ -16,7 +16,7 @@ from pyk.proof.tui import APRProofViewer
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.parse.parser import parse_json
-from kmir.rust import CargoPackage
+from kmir.rust import CargoProject
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -81,7 +81,7 @@ class ProveViewOpts(KMirOpts):
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
-    cargo = CargoPackage(Path.cwd())
+    cargo = CargoProject(Path.cwd())
 
     target = opts.bin if opts.bin else cargo.default_target
     smir_file = cargo.smir_for(target)

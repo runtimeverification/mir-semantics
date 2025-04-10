@@ -1,1 +1,1 @@
-from .cargo import CargoPackage
+from .cargo import CargoProject
