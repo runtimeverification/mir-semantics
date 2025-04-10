@@ -77,7 +77,7 @@ license.
 |`Vec`|Not supported|
 |`Option` / `Result`|Supported|
 |Floating point|Not supported|
-|Slices|Supported|
+|Slices|Not supported|
 |Arrays|Not supported|
 |Pointers|Not supported|
 |References (`&`)|Supported|
