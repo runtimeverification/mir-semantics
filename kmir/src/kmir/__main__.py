@@ -102,11 +102,16 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
     kmir_kast, _ = parse_result
     config = tools.make_init_config(kmir_kast, opts.start_symbol, 'KmirCell')
-    config_with_cell_vars, _ = split_config_from(config)
+    config_with_cell_vars, subst = split_config_from(config)
 
-    lhs = CTerm(config)
-    new_k_cell = KMIR.Symbols.END_PROGRAM
-    rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
+    k_cell = subst['K_CELL']
+
+    lhs_k_cell = k_cell.let(label='#initSymbolic(_)_KMIR-SYMBOLIC-LOCALS_KItem_Pgm')
+    lhs_subst = Subst(subst).compose(Subst({'K_CELL': lhs_k_cell}))
+    lhs = CTerm(lhs_subst(config_with_cell_vars))
+
+    rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
+    rhs = CTerm(rhs_subst(config_with_cell_vars))
     claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
 
     output_file = opts.output_file
