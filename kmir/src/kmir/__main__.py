@@ -105,7 +105,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     config_with_cell_vars, subst = split_config_from(config)
 
     k_cell = subst['K_CELL']
-    assert isinstance(k_cell, KApply) # Make the type checker happy
+    assert isinstance(k_cell, KApply)  # Make the type checker happy
 
     lhs_k_cell = k_cell.let(label='#initSymbolic(_)_KMIR-SYMBOLIC-LOCALS_KItem_Pgm')
     lhs_subst = Subst(subst).compose(Subst({'K_CELL': lhs_k_cell}))
