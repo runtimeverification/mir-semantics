@@ -16,7 +16,7 @@ from pyk.proof.tui import APRProofViewer
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.parse.parser import parse_json
-from kmir.smir import CargoPackage
+from kmir.rust import CargoPackage
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
