@@ -1,3 +1,7 @@
+# Symbolic locals for functions
+
+This module contains rules that follow the same structure as `#init` in the KMIR module, however it reads the arguments for the signature of the start symbol and generates symbolic values for them.
+
 ```k
 requires "../kmir.md"
 
@@ -36,13 +40,24 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
          <unwind> _ => unwindActionUnreachable </unwind>
          <locals> _ => #reserveFor(RETURNLOCAL) </locals>
        </currentFrame>
+```
 
+## Declare symbolic arguments based on their types
+
+```k
   syntax KItem ::= #reserveSymbolicsFor( LocalDecls, Int )
 
   rule <k> #reserveSymbolicsFor( .LocalDecls, _ ) => .K ... </k>
-  rule <k> #reserveSymbolicsFor( LOCALS:LocalDecls, 0 ) => .K ... </k>
-       <locals> ... .List => #reserveFor(LOCALS) </locals>
 
+  rule <k> #reserveSymbolicsFor( LOCALS:LocalDecls, 0 ) => .K ... </k>
+       <locals> ... .List => #reserveFor(LOCALS) </locals> // No more arguments, treat the rest of the Decls normally
+
+```
+
+## Integers
+
+```k
+  // Unsigned
   rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
         => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
            ...
@@ -52,6 +67,7 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
     requires 0 <Int COUNT
     ensures #intConstraints( ?INT, PRIMTY )
 
+  // Signed
   rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
         => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
            ...
@@ -65,7 +81,11 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
 
   rule #intConstraints( X, TY:IntTy  ) => 0 -Int (2 ^Int (#bitWidth(TY) -Int 1)) <=Int X andBool X <Int 2 ^Int (#bitWidth(TY) -Int 1)
   rule #intConstraints( X, TY:UintTy ) => 0                                      <=Int X andBool X <Int 2 ^Int  #bitWidth(TY)
+```
 
+## Boolean Values
+
+```k
   rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
         => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
            ...
