@@ -15,8 +15,8 @@ license.
 |Enums|Partially supported|
 |Const functions|Not supported|
 |Async functions|Not supported|
-|Macros|Not supported|
-|Type aliases|Not supported
+|Macros|N/A (MIR)|
+|Type aliases|Not supported|
 |Const items|Not supported|
 |Static items|Not supported|
 
