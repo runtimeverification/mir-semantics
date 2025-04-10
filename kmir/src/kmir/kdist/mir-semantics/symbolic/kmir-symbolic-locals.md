@@ -66,5 +66,13 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
   rule #intConstraints( X, TY:IntTy  ) => 0 -Int (2 ^Int (#bitWidth(TY) -Int 1)) <=Int X andBool X <Int 2 ^Int (#bitWidth(TY) -Int 1)
   rule #intConstraints( X, TY:UintTy ) => 0                                      <=Int X andBool X <Int 2 ^Int  #bitWidth(TY)
 
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
+        => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( BoolVal( ?_BOOL:Bool ), TY, MUT )) </locals>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeBool ) ... </types>
+    requires 0 <Int COUNT
+
 endmodule
 ```
