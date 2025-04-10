@@ -27,8 +27,8 @@ license.
 |Where clauses|Not supported|
 |Lifetime parameters|Not supported|
 |Const generics|Not supported|
-|Custom discriminants|Not supported|
-|Public / private fields|Not supported|
+|Custom discriminants| Supported|
+|Public / private fields|N/A (MIR)|
 
 ## Expressions and Statements
 |Feature|Status|
