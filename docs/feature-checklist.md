@@ -54,7 +54,7 @@ license.
 |Index expressions|Supported|
 |Tuple expressions|Supported|
 |Struct/enum constructors|Not supported|
-|Field access|Partially supported|
+|Field access|Supported|
 |Function and method calls|Supported|
 |Closures|Supported|
 |Labels, break, continue|Supported|
