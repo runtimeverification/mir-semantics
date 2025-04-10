@@ -51,7 +51,7 @@ license.
 |Compound assigments (`+=`, etc.)|Supported|
 |Array expressions|Not supported|
 |Range expressions|Not supported|
-|Index expressions|Supported|
+|Index expressions|Not supported (Arrays not supported)|
 |Tuple expressions|Supported|
 |Struct/enum constructors|Not supported|
 |Field access|Supported|
