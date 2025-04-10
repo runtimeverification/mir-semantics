@@ -1,7 +1,8 @@
-Instead of rewriting our own feature checklist from scratch, we make a derivative of the
+<!-- Instead of rewriting our own feature checklist from scratch, we make a derivative of the
 [Verus checklist](https://github.com/verus-lang/verus/blob/main/source/docs/guide/src/features.md)
 which is available for use under [MIT](https://github.com/verus-lang/verus/blob/main/LICENSE) 
 license.
+-->
 
 **Last Updated: 2025-04-07**
 
