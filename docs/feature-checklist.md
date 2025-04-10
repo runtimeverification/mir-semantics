@@ -66,7 +66,7 @@ license.
 |Arithmetic for unsigned|Supported|
 |Arithmetic for signed (`+`, `-`, `*`, `/`, `%`)|Supported|
 |Bitwise operations (`&`, `\|`, `!`, `>>`, `<<`)|Supported|
-|Arch-dependent types (`usize`, `isize`)|Supported|
+|Arch-dependent types (`usize`, `isize`)|Not supported (fixed width) |
 
 ## Types and standard library functionality
 |Feature|Status|
