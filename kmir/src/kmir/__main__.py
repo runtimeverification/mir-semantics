@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm, cterm_build_claim
-from pyk.kast.inner import Subst
+from pyk.kast.inner import KApply, Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
@@ -105,6 +105,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     config_with_cell_vars, subst = split_config_from(config)
 
     k_cell = subst['K_CELL']
+    assert isinstance(k_cell, KApply) # Make the type checker happy
 
     lhs_k_cell = k_cell.let(label='#initSymbolic(_)_KMIR-SYMBOLIC-LOCALS_KItem_Pgm')
     lhs_subst = Subst(subst).compose(Subst({'K_CELL': lhs_k_cell}))
