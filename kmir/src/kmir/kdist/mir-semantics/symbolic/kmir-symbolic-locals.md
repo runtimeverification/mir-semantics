@@ -29,7 +29,8 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
          <unwind> _ => unwindActionUnreachable </unwind>
          <locals> _ => #reserveFor(RETURNLOCAL) </locals>
        </currentFrame>
-  [priority(25)]
+    requires ARGCOUNT >Int 0
+    [priority(25)]
 ```
 
 ## Declare symbolic arguments based on their types
