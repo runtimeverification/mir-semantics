@@ -84,6 +84,19 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
        <locals> ... .List => ListItem(typedValue( BoolVal( ?_BOOL:Bool ), TY, MUT )) </locals>
        <types> ... TY |-> typeInfoPrimitiveType ( primTypeBool ) ... </types>
     requires 0 <Int COUNT
+```
+
+## Arbitrary Values
+
+```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
+        => #reserveSymbolicsFor(                       LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( ?_VAL:Value, TY, MUT )) </locals>
+       <types> ... TY |-> _:TypeInfo ... </types>
+    requires 0 <Int COUNT
+    [owise]
 
 endmodule
 ```
