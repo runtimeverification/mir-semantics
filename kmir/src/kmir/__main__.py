@@ -29,6 +29,7 @@ class KMirOpts: ...
 @dataclass
 class RunOpts(KMirOpts):
     bin: str | None
+    file: str | None
     depth: int
     start_symbol: str
     haskell_backend: bool
@@ -81,10 +82,13 @@ class ProveViewOpts(KMirOpts):
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
-    cargo = CargoProject(Path.cwd())
-
-    target = opts.bin if opts.bin else cargo.default_target
-    smir_file = cargo.smir_for(target)
+    smir_file: Path
+    if opts.file:
+        smir_file = Path(opts.file).resolve()
+    else:
+        cargo = CargoProject(Path.cwd())
+        target = opts.bin if opts.bin else cargo.default_target
+        smir_file = cargo.smir_for(target)
 
     parse_result = parse_json(tools.definition, smir_file, 'Pgm')
     if parse_result is None:
@@ -175,7 +179,9 @@ def _arg_parser() -> ArgumentParser:
     command_parser = parser.add_subparsers(dest='command', required=True)
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs')
-    run_parser.add_argument('--bin', metavar='TARGET', help='Target to run')
+    run_target_selection = run_parser.add_mutually_exclusive_group()
+    run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
+    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
@@ -219,6 +225,7 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
         case 'run':
             return RunOpts(
                 bin=ns.bin,
+                file=ns.file,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
