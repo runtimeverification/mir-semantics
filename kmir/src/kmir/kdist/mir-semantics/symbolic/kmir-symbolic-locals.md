@@ -8,18 +8,7 @@ requires "../kmir.md"
 module KMIR-SYMBOLIC-LOCALS [symbolic]
   imports KMIR-CONTROL-FLOW
 
-  syntax KItem ::= #initSymbolic( Pgm )
-                 | #execSymbolic ( MonoItem, FunctionNames )
-
-  rule <k> #initSymbolic(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
-         =>
-           #execSymbolic(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
-       </k>
-       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
-       <start-symbol> FUNCNAME </start-symbol>
-       <types> _ => #mkTypeMap(.Map, TYPES) </types>
-
-  rule <k> #execSymbolic(
+  rule <k> #execFunction(
               monoItem(
                 SYMNAME,
                 monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS,RETURNLOCAL:LocalDecl LOCALS:LocalDecls, ARGCOUNT, _, _, _)))
@@ -40,6 +29,7 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
          <unwind> _ => unwindActionUnreachable </unwind>
          <locals> _ => #reserveFor(RETURNLOCAL) </locals>
        </currentFrame>
+  [priority(25)]
 ```
 
 ## Declare symbolic arguments based on their types
