@@ -36,7 +36,7 @@ Use `--help` with each command for more details.
 
 `parse` to parse a Stable MIR JSON file (`*.smir.json`) file to a K AST
 
-`kmir run` to run a binary target in your cargo project. The SMIR JSON will need to have been already built with `stable-mir-json`, or you will need the `RUSTC` environment variable set to your installation of `stable-mir-json`.
+`kmir run` to run a binary target in your cargo project (or a specific smir json provided with --file). The SMIR JSON will need to have been already built with `stable-mir-json`, or you will need the `RUSTC` environment variable set to your installation of `stable-mir-json`.
 
 `kmir gen-spec` to take a SMIR JSON and create a K specification module that ensures termination of the program.
 
