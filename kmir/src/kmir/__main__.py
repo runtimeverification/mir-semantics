@@ -115,8 +115,9 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     config_with_cell_vars, _ = split_config_from(config)
 
     lhs = CTerm(config)
-    new_k_cell = KMIR.Symbols.END_PROGRAM
-    rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
+
+    rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
+    rhs = CTerm(rhs_subst(config_with_cell_vars))
     claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
 
     output_file = opts.output_file

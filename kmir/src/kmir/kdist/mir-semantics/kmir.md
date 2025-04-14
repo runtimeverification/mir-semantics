@@ -2,6 +2,7 @@
 
 ```k
 requires "kmir-ast.md"
+requires "symbolic/kmir-symbolic-locals.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
@@ -615,5 +616,6 @@ The top-level module `KMIR` includes both the control flow constructs (and trans
 module KMIR
   imports KMIR-CONTROL-FLOW
   imports KMIR-LEMMAS
+  imports KMIR-SYMBOLIC-LOCALS
 
 endmodule
