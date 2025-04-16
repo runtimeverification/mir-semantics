@@ -16,6 +16,7 @@ from pyk.proof.tui import APRProofViewer
 from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.parse.parser import parse_json
+from kmir.rust import CargoProject
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -27,7 +28,8 @@ class KMirOpts: ...
 
 @dataclass
 class RunOpts(KMirOpts):
-    input_file: Path
+    bin: str | None
+    file: str | None
     depth: int
     start_symbol: str
     haskell_backend: bool
@@ -80,7 +82,15 @@ class ProveViewOpts(KMirOpts):
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+    smir_file: Path
+    if opts.file:
+        smir_file = Path(opts.file).resolve()
+    else:
+        cargo = CargoProject(Path.cwd())
+        target = opts.bin if opts.bin else cargo.default_target
+        smir_file = cargo.smir_for(target)
+
+    parse_result = parse_json(tools.definition, smir_file, 'Pgm')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
@@ -105,8 +115,9 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     config_with_cell_vars, _ = split_config_from(config)
 
     lhs = CTerm(config)
-    new_k_cell = KMIR.Symbols.END_PROGRAM
-    rhs = CTerm(Subst({'K_CELL': new_k_cell})(config_with_cell_vars))
+
+    rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
+    rhs = CTerm(rhs_subst(config_with_cell_vars))
     claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
 
     output_file = opts.output_file
@@ -169,7 +180,9 @@ def _arg_parser() -> ArgumentParser:
     command_parser = parser.add_subparsers(dest='command', required=True)
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs')
-    run_parser.add_argument('input_file', metavar='FILE', help='MIR program to run')
+    run_target_selection = run_parser.add_mutually_exclusive_group()
+    run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
+    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
@@ -212,7 +225,8 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
     match ns.command:
         case 'run':
             return RunOpts(
-                input_file=Path(ns.input_file).resolve(),
+                bin=ns.bin,
+                file=ns.file,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
