@@ -129,7 +129,7 @@ syntax PointerCoercion ::= "pointerCoercionReifyFnPointer"          [group(mir-e
                          | "pointerCoercionArrayToPointer"          [group(mir-enum), symbol(PointerCoercion::CoercionArrayToPointer)]
                          | "pointerCoercionUnsize"                  [group(mir-enum), symbol(PointerCoercion::Unsize)]
 
-syntax CastKind ::= "castKindPointerExposeAddress"                  [group(mir-enum), symbol(CastKind::ExposeAddress)]
+syntax CastKind ::= "castKindPointerExposeAddress"                  [group(mir-enum), symbol(CastKind::PointerExposeAddress)]
                   | "castKindPointerWithExposedProvenance"          [group(mir-enum), symbol(CastKind::PointerWithExposedProvenance)]
                   | castKindPointerCoercion(PointerCoercion)        [group(mir-enum), symbol(CastKind::PointerCoercion)]
                   | "castKindDynStar"                               [group(mir-enum), symbol(CastKind::DynStar)]
