@@ -32,10 +32,10 @@ High-level values can be
                    // value, bit-width               for f16-f128
                  | Reference( Int , Place , Mutability )
                    // stack depth (initially 0), place, borrow kind
+                 | Range( List )
+                   // homogenous values              for array/slice
                 //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
                    // address, metadata              for ref/ptr
-                //  | Range( List )
-                   // homogenous values              for array/slice
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
 ```

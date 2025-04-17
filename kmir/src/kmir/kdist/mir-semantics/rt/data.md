@@ -14,6 +14,7 @@ module RT-DATA
   imports FLOAT
   imports BOOL
   imports BYTES
+  imports LIST
   imports MAP
   imports K-EQUAL
 
@@ -596,11 +597,52 @@ A number of unary and binary operations exist, (which are dependent on the opera
 // BinaryOp, UnaryOp. NullaryOp: dependent on value representation. See below
 ```
 
-Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the language.
+### Arrays
+
+Other `RValue`s exist in order to construct or operate on arrays and slices, which are built into the MIR language.
+The `RValue::Repeat` creates and array of (statically) fixed length by repeating a given element value.
+`RValue::Len` returns the length of an array or slice stored at a place.
 
 ```k
-// Repeat, Len: not implemented yet
+  syntax KItem ::= #mkArray ( Evaluation , Int ) [strict(1)]
+
+  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND, TYPES)) ... </k>
+       <types> TYPES </types>
+    requires isInt(readTyConstInt(KIND, TYPES))
+    [preserves-definedness]
+
+  rule <k> #mkArray(ELEMENT, N) => typedValue(Range(makeList(N, ELEMENT)), TyUnknown, mutabilityNot) ... </k>
+    requires 0 <=Int N
+    [preserves-definedness]
+
+  // reading Int-valued TyConsts from allocated bytes
+  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
+  // -----------------------------------------------------------
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
+
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
+
+
+  // length of arrays or slices
+  syntax KItem ::= #lengthU64 ( Evaluation ) [strict(1)]
+
+  rule <k> rvalueLen(PLACE) => #lengthU64(operandCopy(PLACE)) ... </k>
+
+  rule <k> #lengthU64(typedValue(Range(LIST), _, _))
+        => 
+            typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot)  // returns usize
+        ...
+       </k>
+
 ```
+
+### Aggregates
 
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
 Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
