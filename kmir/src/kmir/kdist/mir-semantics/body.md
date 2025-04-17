@@ -54,7 +54,7 @@ syntax ProjectionElem ::=  "projectionElemDeref"                                
                         |  projectionElemField(FieldIdx, Ty)                                                [group(mir-enum),                                symbol(ProjectionElem::Field)]
                         |  projectionElemIndex(Local)                                                       [group(mir-enum),                                symbol(ProjectionElem::Index)]
                         |  projectionElemConstantIndex(offset: MIRInt, minLength: MIRInt, fromEnd: MIRBool) [group(mir-enum---offset--min-length--from-end), symbol(ProjectionElem::ConstantIndex)]
-                        |  projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)               [group(mir-enum),                                symbol(ProjectionElem::Subslice)]
+                        |  projectionElemSubslice(from: MIRInt, to: MIRInt, fromEnd: MIRBool)               [group(mir-enum---from--to--from-end),           symbol(ProjectionElem::Subslice)]
                         |  projectionElemDowncast(VariantIdx)                                               [group(mir-enum),                                symbol(ProjectionElem::Downcast)]
                         |  projectionElemOpaqueCast(Ty)                                                     [group(mir-enum),                                symbol(ProjectionElem::OpaqueCast)]
                         |  projectionElemSubtype(Ty)                                                        [group(mir-enum),                                symbol(ProjectionElem::Subtype)]
