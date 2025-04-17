@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
-from functools import cached_property
+from functools import cache, cached_property
 from typing import TYPE_CHECKING
 
 from pyk.kast.att import Atts
@@ -69,6 +69,7 @@ def _get_group(prod: KProduction) -> str:
 
 # Parse a mir production's group information.
 # Return a tuple (mir production's type, list of field names)
+@cache
 def _extract_mir_group_info(group_info: str) -> tuple[str, Sequence[str]]:
     # --- separates the field names from the mir instruction kind
     # --  separates the individual field names
@@ -111,6 +112,7 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 
 
 # Given a list Sort, return the element sort.
+@cache
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
     if name.endswith('ies'):  # Entries, ...
@@ -142,6 +144,7 @@ class Parser:
         self.__definition = defn
 
     # Return all mir productions for Sort sort
+    @cache
     def _mir_productions_for_sort(self, sort: KSort) -> tuple[KProduction, ...]:
         return tuple(p for p in self._mir_productions if p.sort == sort)
 
@@ -150,6 +153,7 @@ class Parser:
     # uniquely identify the production. This functions is written this way to
     # limit the search only to relevant productions of the correct Sort,
     # aiming for optimization (cache?) in the future.
+    @cache
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
         prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
         assert len(prods) > 0, f"No production for `{symbol}' in sort `{sort.name}'"
