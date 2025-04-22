@@ -308,6 +308,12 @@ EXEC_DATA = [
         None,
     ),
     ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.118.state', 118),
+    (
+        'Array-indexing',
+        EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_indexing.state',
+        None,
+    ),
 ]
 
 
