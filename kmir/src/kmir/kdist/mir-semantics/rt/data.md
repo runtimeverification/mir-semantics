@@ -203,6 +203,72 @@ A `Field` access projection operates on `struct`s and tuples, which are represen
     [preserves-definedness] // valid list indexing checked
 ```
 
+An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array. The index can either be read from another operand, or it can be a constant (`ConstantIndex`).
+
+For a normal `Index` projection, the index is read from a given local which is expected to hold a `usize` value in the valid range between 0 and the array/slice length.
+
+```k
+  rule <k> #readProjection(
+              typedValue(Range(ELEMENTS), _, _),
+              projectionElemIndex(local(LOCAL)) PROJS
+           )
+          => #readProjection({ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue, PROJS)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires 0 <=Int LOCAL
+     andBool LOCAL <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[LOCAL])
+     andBool isInt(#expectUsize({LOCALS[LOCAL]}:>TypedValue))
+     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
+     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
+    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable
+
+  syntax Int ::= #expectUsize ( TypedValue ) [function]
+
+  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
+
+  syntax MIRError ::= MIRIndexError ( List, Local )
+
+  rule <k> #readProjection(
+              typedValue(Range(ELEMENTS), _, _),
+              projectionElemIndex(LOCAL) _PROJS
+           )
+          => MIRIndexError(ELEMENTS, LOCAL)
+        ...
+        </k>
+      [owise]
+```
+
+In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
+
+```k
+  rule <k> #readProjection(
+              typedValue(Range(ELEMENTS), _, _),
+              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS
+           )
+          => #readProjection({ELEMENTS[OFFSET]}:>TypedValue, PROJS)
+        ...
+        </k>
+    requires 0 <=Int OFFSET
+     andBool OFFSET <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[OFFSET])
+
+
+  rule <k> #readProjection(
+              typedValue(Range(ELEMENTS), _, _),
+              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS
+           )
+          => #readProjection({ELEMENTS[0 -Int OFFSET]}:>TypedValue, PROJS)
+        ...
+        </k>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(ELEMENTS)
+     andBool MINLEN ==Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
+```
+
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
 
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
@@ -611,7 +677,7 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
     requires isInt(readTyConstInt(KIND, TYPES))
     [preserves-definedness]
 
-  rule <k> #mkArray(ELEMENT, N) => typedValue(Range(makeList(N, ELEMENT)), TyUnknown, mutabilityNot) ... </k>
+  rule <k> #mkArray(ELEMENT:TypedValue, N) => typedValue(Range(makeList(N, ELEMENT)), TyUnknown, mutabilityNot) ... </k>
     requires 0 <=Int N
     [preserves-definedness]
 
