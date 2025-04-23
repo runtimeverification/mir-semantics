@@ -15,6 +15,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    sys.setrecursionlimit(10000000)
     args = parse_args()
     tools = llvm_semantics()
 

@@ -439,7 +439,7 @@ class Parser:
                 assert isinstance(i, int) or i is None
             import string
 
-            if all(chr(int(i)) in string.printable for i in json):
+            if all(chr(int(i)) if i else chr(0) in string.printable for i in json):
                 # if all elements are ascii printable, use simple characters
                 bytes = ''.join([chr(int(i)) for i in json])
             else:
