@@ -94,7 +94,6 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
            ...
        </k>
        <locals> ... .List => ListItem(typedValue( ?_VAL:Value, TY, MUT )) </locals>
-       <types> ... TY |-> _:TypeInfo ... </types>
     requires 0 <Int COUNT
     [owise]
 
