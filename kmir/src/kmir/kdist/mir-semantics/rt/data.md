@@ -831,7 +831,18 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
 
-// AddressOf: not implemented yet
+```
+
+### Raw Pointers
+TODO
+
+```k
+rule <k> rvalueAddressOf( MUTABILITY, PLACE)
+       =>
+         typedValue( Ptr( 0, PLACE, MUTABILITY), TyUnknown, MUTABILITY ) // TyUnknown and MUTABILITY will be overwritten to the Local's type
+     ...
+     </k>
+
 ```
 
 ## Type casts
@@ -888,6 +899,20 @@ Error cases for `castKindIntToInt`
 
   rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
     [owise]
+```
+
+### Pointer Casts
+
+Casting between two raw pointers. FIXME: No validity checks are currently performed
+
+```k
+  rule <k> #cast( typedValue(Ptr(DEPTH, PLACE, PTR_MUT), _TY_FROM, LOCAL_MUT), castKindPtrToPtr, TY_TO) => typedValue(Ptr(DEPTH, PLACE, PTR_MUT), TY_TO, LOCAL_MUT) ... </k>
+  //     <types> TYPEMAP </types>
+  //  requires TY_TO #in TYPEMAP
+  //  requires #is_valid_cast(TY_FROM.layout(), TY_TO.layout())
+  
+  rule <k> #cast( typedValue(VALUE, _TY_FROM, LOCAL_MUT), castKindTransmute, TY_TO) => typedValue(VALUE, TY_TO, LOCAL_MUT) ... </k>
+
 ```
 
 ### Other type casts
