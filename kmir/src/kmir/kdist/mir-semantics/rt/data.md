@@ -1340,6 +1340,62 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 `binOpShr`
 `binOpShrUnchecked`
 
+```k
+  syntax Bool ::= isBitwise ( BinOp ) [function, total]
+  // --------------------------------------------------
+  rule isBitwise(binOpBitXor) => true
+  rule isBitwise(binOpBitAnd) => true
+  rule isBitwise(binOpBitOr)  => true
+  rule isBitwise(_)           => false [owise]
+
+  syntax Bool ::= isShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isShift(binOpShl)          => true
+  rule isShift(binOpShlUnchecked) => true
+  rule isShift(binOpShr)          => true
+  rule isShift(binOpShrUnchecked) => true
+  rule isShift(_)                 => false [owise]
+
+  rule onInt(binOpBitXor, X, Y)       => X xorInt Y
+  rule onInt(binOpBitAnd, X, Y)       => X &Int Y
+  rule onInt(binOpBitOr, X, Y)        => X |Int Y
+
+  // Only permitting non-shift bitwise operations on same width integers, overflow check not required
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, _), _, _),
+          typedValue(Integer(ARG2, WIDTH, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(onInt(BOP, ARG1, ARG2), WIDTH, false),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(Ptr(_ARG1, _, _), _, _),
+          typedValue(Integer(_ARG2, WIDTH, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(4242, WIDTH, false),
+          TyUnknown,
+          mutabilityNot
+        )
+       // typedValue(
+       //    Integer(onInt(BOP, ARG1, ARG2), WIDTH, false),
+       //    TyUnknown,
+       //    mutabilityNot
+       //  )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+```
+
 
 #### Nullary operations for activating certain checks
 
@@ -1358,32 +1414,6 @@ One important use case of `UbChecks` is to determine overflows in unchecked arit
 `nullOpOffsetOf(VariantAndFieldIndices)`
 
 ```k
-
-// FIXME: Alignment is platform specific
-syntax Int ::= #alignOf( TypeInfo ) [function]
-
-rule #alignOf( typeInfoPrimitiveType(primTypeBool) )        => 1
-rule #alignOf( typeInfoPrimitiveType(primTypeChar) )        => 4
-
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyIsize)) )  => 8 // FIXME: Hard coded since usize not implemented
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyI8)) )     => 1
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyI16)) )    => 2
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyI32)) )    => 4
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyI64)) )    => 8
-rule #alignOf( typeInfoPrimitiveType(primTypeInt(intTyI128)) )   => 16
-
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyUsize)) ) => 8 // FIXME: Hard coded since usize not implemented
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyU8)) )    => 1
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyU16)) )   => 2
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyU32)) )   => 4
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyU64)) )   => 8
-rule #alignOf( typeInfoPrimitiveType(primTypeUint(uintTyU128)) )  => 16
-
-rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF16)) )  => 2
-rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF32)) )  => 4
-rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF64)) )  => 8
-rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF128)) ) => 16
-
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY) => typedValue( Integer(#alignOf({TYPEMAP[TY]}:>TypeInfo), 64, false), TyUnknown, mutabilityNot ) ... </k> // FIXME: 64 is hardcoded since usize not supported
      <types> TYPEMAP </types>
     requires TY in_keys(TYPEMAP)
