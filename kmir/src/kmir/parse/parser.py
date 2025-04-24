@@ -440,7 +440,7 @@ class Parser:
             import string
 
             # TODO: Handle uninitialized bytes instead of defaulting to 0
-            if all(chr(int(i)) if i else chr(0) in string.printable for i in json):
+            if all((chr(int(i)) if i is not None else chr(0)) in string.printable for i in json):
                 # if all elements are ascii printable, use simple characters
                 bytes = ''.join([chr(int(i)) for i in json])
             else:
