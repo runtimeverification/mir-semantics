@@ -34,8 +34,8 @@ High-level values can be
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )
                    // homogenous values              for array/slice
-                 | Ptr( Int, Place, Mutability ) // Same as ref for now until I understand how to handle better
-                   // address, metadata              for ref/ptr
+                 | Ptr( Int, Place, Mutability, Int, Int)
+                   // stack depth (initially zero), place, mutablility, address, offset NOTE: First 3 fields are the same as Reference, last are needed for low level instructions
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
 ```

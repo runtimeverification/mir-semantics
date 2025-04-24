@@ -581,6 +581,58 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedValue(Ptr(OFFSET, place(LOCAL, PLACEPROJ), MUT, _ADDRESS, _OFFSET2), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS,
+            FORCE
+            )
+         =>
+          #projectedUpdate(
+              toStack(OFFSET, LOCAL),
+              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+              appendP(PLACEPROJ, PROJS), // apply ptr (reference) projections first, then rest
+              UPDATE,
+              .Contexts, // previous contexts obsolete
+              FORCE
+            )
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness]
+
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedValue(Ptr(OFFSET, place(local(I), PLACEPROJ), MUT, _ADDRESS, _OFFSET2), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS,
+            FORCE
+            )
+         =>
+          #projectedUpdate(
+              toLocal(I),
+              {LOCALS[I]}:>TypedLocal,
+              appendP(PLACEPROJ, PROJS), // apply ptr (reference) projections first, then rest
+              UPDATE,
+              .Contexts, // previous contexts obsolete
+              FORCE
+            )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness]
+
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
           =>
             #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
@@ -837,9 +889,10 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 TODO
 
 ```k
+// FIXME: Address is currently hardcoded to 0 so that the alignment check passes everytime
 rule <k> rvalueAddressOf( MUTABILITY, PLACE)
        =>
-         typedValue( Ptr( 0, PLACE, MUTABILITY), TyUnknown, MUTABILITY ) // TyUnknown and MUTABILITY will be overwritten to the Local's type
+         typedValue( Ptr( 0, PLACE, MUTABILITY, 0, 0), TyUnknown, MUTABILITY ) // TyUnknown and MUTABILITY will be overwritten to the Local's type
      ...
      </k>
 
@@ -906,7 +959,12 @@ Error cases for `castKindIntToInt`
 Casting between two raw pointers. FIXME: No validity checks are currently performed
 
 ```k
-  rule <k> #cast( typedValue(Ptr(DEPTH, PLACE, PTR_MUT), _TY_FROM, LOCAL_MUT), castKindPtrToPtr, TY_TO) => typedValue(Ptr(DEPTH, PLACE, PTR_MUT), TY_TO, LOCAL_MUT) ... </k>
+  // FIXME: Address and Offset are blindly transferred through
+  rule <k> #cast( typedValue(Ptr(DEPTH, PLACE, PTR_MUT, ADDRESS, OFFSET), _TY_FROM, LOCAL_MUT), castKindPtrToPtr, TY_TO)
+          =>
+           typedValue(Ptr(DEPTH, PLACE, PTR_MUT, ADDRESS, OFFSET), TY_TO, LOCAL_MUT)
+          ...
+       </k>
   //     <types> TYPEMAP </types>
   //  requires TY_TO #in TYPEMAP
   //  requires #is_valid_cast(TY_FROM.layout(), TY_TO.layout())
@@ -1377,20 +1435,15 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 
   rule #compute(
           BOP,
-          typedValue(Ptr(_ARG1, _, _), _, _),
-          typedValue(Integer(_ARG2, WIDTH, _), _, _),
+          typedValue(Ptr(_, _, _, ADDRESS, _), _, _),
+          typedValue(Integer(VAL, WIDTH, _), _, _),
           false) // unchecked
     =>
        typedValue(
-          Integer(4242, WIDTH, false),
+          Integer(onInt(BOP, VAL, ADDRESS), WIDTH, false),
           TyUnknown,
           mutabilityNot
         )
-       // typedValue(
-       //    Integer(onInt(BOP, ARG1, ARG2), WIDTH, false),
-       //    TyUnknown,
-       //    mutabilityNot
-       //  )
     requires isBitwise(BOP)
     [preserves-definedness]
 
