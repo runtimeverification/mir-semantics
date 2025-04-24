@@ -257,6 +257,13 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
   syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)               [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
                     | typeInfoEnumType(MIRString, AdtDef, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
                     | typeInfoStructType(MIRString, AdtDef)              [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def)]
+                    | typeInfoUnionType(MIRString, AdtDef)               [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
+                    | typeInfoArrayType(Ty, MaybeTyConst)                [symbol(TypeInfo::ArrayType)    , group(mir-enum)]
+                    | typeInfoPtrType(Ty)                                [symbol(TypeInfo::PtrType)      , group(mir-enum)]
+                    | typeInfoRefType(Ty)                                [symbol(TypeInfo::RefType)      , group(mir-enum)]
+                    | typeInfoTupleType(Tys)                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
+                    | typeInfoFunType(MIRString)                         [symbol(TypeInfo::FunType)      , group(mir-enum)]
+
 
   // discriminant information for enum types
   syntax Discriminant ::= Discriminant ( VariantIdx , MIRInt ) [group(mir)]
