@@ -142,9 +142,10 @@ class Parser:
         defn: KDefinition,
     ):
         self.__definition = defn
+        object.__setattr__(self, '_mir_productions_for_sort', cache(self._mir_productions_for_sort))
+        object.__setattr__(self, '_mir_production_for_symbol', cache(self._mir_production_for_symbol))
 
     # Return all mir productions for Sort sort
-    @cache
     def _mir_productions_for_sort(self, sort: KSort) -> tuple[KProduction, ...]:
         return tuple(p for p in self._mir_productions if p.sort == sort)
 
@@ -153,7 +154,6 @@ class Parser:
     # uniquely identify the production. This functions is written this way to
     # limit the search only to relevant productions of the correct Sort,
     # aiming for optimization (cache?) in the future.
-    @cache
     def _mir_production_for_symbol(self, sort: KSort, symbol: str) -> KProduction:
         prods = [p for p in self._mir_productions_for_sort(sort) if _get_label(p) == symbol]
         assert len(prods) > 0, f"No production for `{symbol}' in sort `{sort.name}'"
