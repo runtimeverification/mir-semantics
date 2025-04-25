@@ -86,6 +86,28 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
     requires 0 <Int COUNT
 ```
 
+## References
+
+```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
+        => #reserveSymbolicsFor( localDecl(REFTY, span(-1), MUT) .LocalDecls, 1 ) // Reserve a symbolic value for the type referenced and put it onto the locals
+        ~> #reserveSymbolicReference(TY, MUT)                                     // Create a stack frame and move the value there. Make the reference for it and
+                                                                                  // put it onto the locals.
+        ~> #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )                // Reserve the rest of the locals
+           ...
+       </k>
+       <types> ... TY |-> typeInfoRefType ( REFTY ) ... </types>
+    requires 0 <Int COUNT
+
+  syntax KItem ::= #reserveSymbolicReference(Ty, Mutability)
+
+  rule <k> #reserveSymbolicReference(TY, MUT) => .K
+           ...
+       </k>
+       <locals> ... ListItem( VAL ) => ListItem( typedValue( Reference( size(STACK) +Int 1, place(local(0), .ProjectionElems), MUT ), TY, MUT ) ) </locals>
+       <stack> STACK => STACK ListItem( StackFrame( ty(-1), place(local(-1), .ProjectionElems), noBasicBlockIdx, unwindActionUnreachable, ListItem( VAL ) ) ) </stack>
+```
+
 ## Arbitrary Values
 
 ```k
