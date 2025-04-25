@@ -114,3 +114,23 @@ pyupgrade: poetry-install
 .PHONY: update-exec-smir
 update-exec-smir: poetry-install
 	UPDATE_EXEC_SMIR=true $(POETRY_RUN) pytest -k test_exec_smir
+
+# Update checked-in smir.json files (using stable-mir-json dependency and jq)
+.PHONY: update-smir-json
+update-smir-json: TARGETS = $(shell git ls-files | grep -e ".*\.smir\.json$$")
+update-smir-json: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run --
+update-smir-json: stable-mir-json
+	for file in ${TARGETS}; do \
+		dir=$$(realpath $$(dirname $$file)); \
+		rust=$$dir/$$(basename $${file%.smir.json}.rs); \
+		[ -f "$$rust" ] || (echo "Source file $$rust missing."; exit 1); \
+		${SMIR} -Zno-codegen --out-dir $$dir $$rust; \
+		jq . $$file > $$file.tmp; \
+		mv $$file.tmp $$file; \
+	done
+
+# run the above two targets in sequence and print a message to the user
+.PHONY: update-smir-tests
+update-smir-tests: update-smir-json update-exec-smir
+	@echo "smir.json files and execute expectations updated."
+	@echo "Proof tests might need manual updating"

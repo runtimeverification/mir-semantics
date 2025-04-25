@@ -40,7 +40,7 @@
             100,
             58,
             32,
-            117,
+            105,
             56,
             58,
             58,
@@ -54,9 +54,9 @@
             101,
             100,
             95,
-            97,
-            100,
-            100,
+            115,
+            117,
+            98,
             32,
             99,
             97,
@@ -120,7 +120,7 @@
             100,
             58,
             32,
-            105,
+            117,
             56,
             58,
             58,
@@ -134,9 +134,9 @@
             101,
             100,
             95,
-            115,
-            117,
-            98,
+            97,
+            100,
+            100,
             32,
             99,
             97,
@@ -237,7 +237,7 @@
       }
     ],
     [
-      37,
+      38,
       {
         "NoOpSym": ""
       }
@@ -3602,6 +3602,20 @@
   ],
   "types": [
     [
+      0,
+      {
+        "FunType": "for<'a> fn(&'a (dyn std::ops::Fn() -> i32 + std::marker::Sync + std::panic::RefUnwindSafe + 'a), isize, *const *const u8, u8) -> std::result::Result<isize, !> {std::rt::lang_start_internal}"
+      }
+    ],
+    [
+      1,
+      {
+        "TupleType": {
+          "types": []
+        }
+      }
+    ],
+    [
       2,
       {
         "PrimitiveType": {
@@ -3610,11 +3624,45 @@
       }
     ],
     [
+      3,
+      {
+        "FunType": "extern \"rust-call\" fn(()) -> i32"
+      }
+    ],
+    [
+      4,
+      {
+        "TupleType": {
+          "types": [
+            7
+          ]
+        }
+      }
+    ],
+    [
+      5,
+      {
+        "RefType": 39
+      }
+    ],
+    [
       6,
       {
         "PrimitiveType": {
           "Int": "Isize"
         }
+      }
+    ],
+    [
+      7,
+      {
+        "FunType": "fn()"
+      }
+    ],
+    [
+      8,
+      {
+        "PtrType": 40
       }
     ],
     [
@@ -3629,8 +3677,8 @@
       10,
       {
         "EnumType": {
-          "name": "std::result::Result<T/#0, E/#1>",
-          "adt_def": 20,
+          "name": "std::result::Result",
+          "adt_def": 18,
           "discriminants": [
             [
               0,
@@ -3645,11 +3693,35 @@
       }
     ],
     [
+      11,
+      {
+        "RefType": 12
+      }
+    ],
+    [
+      12,
+      {
+        "FunType": "{closure@std::rt::lang_start<()>::{closure#0}}"
+      }
+    ],
+    [
+      13,
+      {
+        "FunType": "fn(fn()) {std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>}"
+      }
+    ],
+    [
+      14,
+      {
+        "FunType": "fn(()) -> std::process::ExitCode {<() as std::process::Termination>::report}"
+      }
+    ],
+    [
       15,
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 13
+          "adt_def": 14
         }
       }
     ],
@@ -3666,8 +3738,26 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 15
+          "adt_def": 12
         }
+      }
+    ],
+    [
+      18,
+      {
+        "RefType": 15
+      }
+    ],
+    [
+      19,
+      {
+        "FunType": "extern \"rust-call\" fn(fn(), ()) -> <fn() as std::ops::FnOnce<()>>::Output {<fn() as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      20,
+      {
+        "FunType": "fn(()) {std::intrinsics::black_box::<()>}"
       }
     ],
     [
@@ -3677,11 +3767,110 @@
       }
     ],
     [
+      22,
+      {
+        "FunType": "fn(i8, i8) {core::num::<impl i8>::unchecked_sub::precondition_check}"
+      }
+    ],
+    [
+      23,
+      {
+        "FunType": "fn(&'static str) -> ! {core::panicking::panic_nounwind}"
+      }
+    ],
+    [
+      24,
+      {
+        "RefType": 37
+      }
+    ],
+    [
+      26,
+      {
+        "TupleType": {
+          "types": [
+            2,
+            21
+          ]
+        }
+      }
+    ],
+    [
+      27,
+      {
+        "FunType": "fn(u8, u8) {core::num::<impl u8>::unchecked_add::precondition_check}"
+      }
+    ],
+    [
+      28,
+      {
+        "TupleType": {
+          "types": [
+            9,
+            21
+          ]
+        }
+      }
+    ],
+    [
+      29,
+      {
+        "FunType": "extern \"rust-call\" fn({closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      30,
+      {
+        "PtrType": 12
+      }
+    ],
+    [
+      31,
+      {
+        "FunType": "for<'a> extern \"rust-call\" fn(&'a mut {closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnMut<()>>::call_mut}"
+      }
+    ],
+    [
+      32,
+      {
+        "RefType": 12
+      }
+    ],
+    [
+      33,
+      {
+        "FunType": "unsafe fn(u8, u8) -> u8 {core::num::<impl u8>::unchecked_add}"
+      }
+    ],
+    [
+      34,
+      {
+        "FunType": "unsafe fn(i8, i8) -> i8 {core::num::<impl i8>::unchecked_sub}"
+      }
+    ],
+    [
       35,
       {
         "PrimitiveType": {
           "Int": "I16"
         }
+      }
+    ],
+    [
+      36,
+      {
+        "TupleType": {
+          "types": [
+            35,
+            21
+          ]
+        }
+      }
+    ],
+    [
+      37,
+      {
+        "PrimitiveType": "Str"
       }
     ]
   ],
