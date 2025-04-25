@@ -45,11 +45,12 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
+  rule <k> #init(_NAME:Symbol ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
          =>
            #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
        <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
+       <memory> _ => #mkMemoryMap(ALLOCS) </memory>
        <start-symbol> FUNCNAME </start-symbol>
        <types> _ => #mkTypeMap(.Map, TYPES) </types>
        <adt-to-ty> _ => #mkAdtMap(.Map, TYPES) </adt-to-ty>
@@ -108,7 +109,16 @@ they are callee in a `Call` terminator within an `Item`).
 The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
+  syntax Address ::= "Address" "(" Int ")"
+
+  rule #mkMemoryMap(Globals) => #accumMemory(.Map, Address(1), Globals)
+
+  rule #accumMemory(Acc, _, .GlobalAllocs) => Acc
+  rule #accumMemory(Acc, Address(INDEX), Global REST) => #accumMemory(Acc (Address(INDEX) |-> Global), Address(INDEX +Int 1), REST)
+
   syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total ]
+               | #mkMemoryMap ( GlobalAllocs )               [ function, total ]
+               | #accumMemory ( Map, Address, GlobalAllocs ) [ function, total ]
                | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
                | #accumItems ( Map, MonoItems )              [ function, total ]
 

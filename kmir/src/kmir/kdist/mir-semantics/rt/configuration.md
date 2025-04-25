@@ -48,9 +48,8 @@ module KMIR-CONFIGURATION
                   <stack> .List </stack>
                   // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
-                  // heap
-                  <memory> .Map </memory> // FIXME unclear how to model
-                  // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
+                  // heap, Address(Int) -> ( GlobalAlloc | Data? ) 
+                  <memory> .Map </memory>
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <types> .Map </types>
