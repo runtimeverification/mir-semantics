@@ -581,6 +581,58 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedValue(Ptr(OFFSET, place(LOCAL, PLACEPROJ), MUT, _ADDRESS, _OFFSET2), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS,
+            FORCE
+            )
+         =>
+          #projectedUpdate(
+              toStack(OFFSET, LOCAL),
+              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+              appendP(PLACEPROJ, PROJS), // apply ptr (reference) projections first, then rest
+              UPDATE,
+              .Contexts, // previous contexts obsolete
+              FORCE
+            )
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness]
+
+  rule <k> #projectedUpdate(
+            _DEST,
+            typedValue(Ptr(OFFSET, place(local(I), PLACEPROJ), MUT, _ADDRESS, _OFFSET2), _, _),
+            projectionElemDeref PROJS,
+            UPDATE,
+            _CTXTS,
+            FORCE
+            )
+         =>
+          #projectedUpdate(
+              toLocal(I),
+              {LOCALS[I]}:>TypedLocal,
+              appendP(PLACEPROJ, PROJS), // apply ptr (reference) projections first, then rest
+              UPDATE,
+              .Contexts, // previous contexts obsolete
+              FORCE
+            )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness]
+
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
           =>
             #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
@@ -831,7 +883,19 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
 
-// AddressOf: not implemented yet
+```
+
+### Raw Pointers
+TODO
+
+```k
+// FIXME: Address is currently hardcoded to 0 so that the alignment check passes everytime
+rule <k> rvalueAddressOf( MUTABILITY, PLACE)
+       =>
+         typedValue( Ptr( 0, PLACE, MUTABILITY, 0, 0), TyUnknown, MUTABILITY ) // TyUnknown and MUTABILITY will be overwritten to the Local's type
+     ...
+     </k>
+
 ```
 
 ## Type casts
@@ -888,6 +952,25 @@ Error cases for `castKindIntToInt`
 
   rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
     [owise]
+```
+
+### Pointer Casts
+
+Casting between two raw pointers. FIXME: No validity checks are currently performed
+
+```k
+  // FIXME: Address and Offset are blindly transferred through
+  rule <k> #cast( typedValue(Ptr(DEPTH, PLACE, PTR_MUT, ADDRESS, OFFSET), _TY_FROM, LOCAL_MUT), castKindPtrToPtr, TY_TO)
+          =>
+           typedValue(Ptr(DEPTH, PLACE, PTR_MUT, ADDRESS, OFFSET), TY_TO, LOCAL_MUT)
+          ...
+       </k>
+  //     <types> TYPEMAP </types>
+  //  requires TY_TO #in TYPEMAP
+  //  requires #is_valid_cast(TY_FROM.layout(), TY_TO.layout())
+  
+  rule <k> #cast( typedValue(VALUE, _TY_FROM, LOCAL_MUT), castKindTransmute, TY_TO) => typedValue(VALUE, TY_TO, LOCAL_MUT) ... </k>
+
 ```
 
 ### Other type casts
@@ -1315,6 +1398,57 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 `binOpShr`
 `binOpShrUnchecked`
 
+```k
+  syntax Bool ::= isBitwise ( BinOp ) [function, total]
+  // --------------------------------------------------
+  rule isBitwise(binOpBitXor) => true
+  rule isBitwise(binOpBitAnd) => true
+  rule isBitwise(binOpBitOr)  => true
+  rule isBitwise(_)           => false [owise]
+
+  syntax Bool ::= isShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isShift(binOpShl)          => true
+  rule isShift(binOpShlUnchecked) => true
+  rule isShift(binOpShr)          => true
+  rule isShift(binOpShrUnchecked) => true
+  rule isShift(_)                 => false [owise]
+
+  rule onInt(binOpBitXor, X, Y)       => X xorInt Y
+  rule onInt(binOpBitAnd, X, Y)       => X &Int Y
+  rule onInt(binOpBitOr, X, Y)        => X |Int Y
+
+  // Only permitting non-shift bitwise operations on same width integers, overflow check not required
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, _), _, _),
+          typedValue(Integer(ARG2, WIDTH, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(onInt(BOP, ARG1, ARG2), WIDTH, false),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(Ptr(_, _, _, ADDRESS, _), _, _),
+          typedValue(Integer(VAL, WIDTH, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(onInt(BOP, VAL, ADDRESS), WIDTH, false),
+          TyUnknown,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+```
+
 
 #### Nullary operations for activating certain checks
 
@@ -1331,6 +1465,14 @@ One important use case of `UbChecks` is to determine overflows in unchecked arit
 `nullOpSizeOf`
 `nullOpAlignOf`
 `nullOpOffsetOf(VariantAndFieldIndices)`
+
+```k
+rule <k> rvalueNullaryOp(nullOpAlignOf, TY) => typedValue( Integer(#alignOf({TYPEMAP[TY]}:>TypeInfo), 64, false), TyUnknown, mutabilityNot ) ... </k> // FIXME: 64 is hardcoded since usize not supported
+     <types> TYPEMAP </types>
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+
+```
 
 #### Other operations
 
