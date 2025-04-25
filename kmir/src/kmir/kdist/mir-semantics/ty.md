@@ -229,6 +229,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                          | primTypeInt(IntTy)     [group(mir-enum), symbol(PrimitiveType::Int)]
                          | primTypeUint(UintTy)   [group(mir-enum), symbol(PrimitiveType::Uint)]
                          | primTypeFloat(FloatTy) [group(mir-enum), symbol(PrimitiveType::Float)]
+                         | "primTypeStr"          [group(mir-enum), symbol(PrimitiveType::Str)]
 
   syntax RigidTy ::= "rigidTyBool"                                                [group(mir-enum), symbol(RigidTy::Bool)]
                    | "rigidTyChar"                                                [group(mir-enum), symbol(RigidTy::Char)]
