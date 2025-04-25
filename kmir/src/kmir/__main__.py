@@ -255,4 +255,5 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
 
 
 def main() -> None:
+    sys.setrecursionlimit(10000000)
     kmir(sys.argv[1:])
