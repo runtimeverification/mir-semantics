@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.outer import KTerminal
+from pyk.prelude.utils import token
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -392,11 +393,12 @@ class Parser:
         assert isinstance(json, str)
         sort = prod.sort
         symbol = _get_label(prod)
+        tok = token(json)
         # Special handling of MIRString: return the string token instead.
         if symbol == 'MIRString::String':
-            return KToken('\"' + json + '\"', KSort('String')), KSort('String')
+            return tok, tok.sort
         # Apply the production to the generated string token
-        return KApply(symbol, (KToken('\"' + json + '\"', KSort('String')))), sort
+        return KApply(symbol, tok), sort
 
     # Parser's internal method,
     # Parse the provided json as an int using the provided production.
@@ -406,9 +408,9 @@ class Parser:
         symbol = _get_label(prod)
         # Special handling of MIRInt: return the int token instead.
         if symbol == 'MIRInt::Int':
-            return KToken(str(json), KSort('Int')), KSort('Int')
+            return token(json), KSort('Int')
         # Apply the production to the generated int token
-        return KApply(symbol, (KToken(str(json), KSort('Int')))), sort
+        return KApply(symbol, token(json)), sort
 
     # Parser's internal method,
     # Parse the provided json as a bool using the provided production.
@@ -416,16 +418,12 @@ class Parser:
         assert isinstance(json, bool)
         sort = prod.sort
         symbol = _get_label(prod)
-        # token values need to be lower-cased
-        if json:
-            value = 'true'
-        else:
-            value = 'false'
+        tok = token(json)
         # Special handling of MIRBool: return the bool token instead.
         if symbol == 'MIRBool::Bool':
-            return KToken(value, KSort('Bool')), KSort('Bool')
+            return tok, KSort('Bool')
         # Apply the production to the generated bool token
-        return KApply(symbol, (KToken(value, KSort('Bool')))), sort
+        return KApply(symbol, tok), sort
 
     # parse a sequence of ints into a byte array
     def _parse_mir_bytes_json(self, json: JSON, prod: KProduction) -> ParseResult:
