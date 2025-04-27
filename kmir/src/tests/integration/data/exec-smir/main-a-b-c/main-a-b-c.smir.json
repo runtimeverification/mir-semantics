@@ -64,7 +64,7 @@
       }
     ],
     [
-      28,
+      31,
       {
         "NoOpSym": ""
       }
@@ -1623,6 +1623,20 @@
   ],
   "types": [
     [
+      0,
+      {
+        "FunType": "for<'a> fn(&'a (dyn std::ops::Fn() -> i32 + std::marker::Sync + std::panic::RefUnwindSafe + 'a), isize, *const *const u8, u8) -> std::result::Result<isize, !> {std::rt::lang_start_internal}"
+      }
+    ],
+    [
+      1,
+      {
+        "TupleType": {
+          "types": []
+        }
+      }
+    ],
+    [
       2,
       {
         "PrimitiveType": {
@@ -1631,11 +1645,45 @@
       }
     ],
     [
+      3,
+      {
+        "FunType": "extern \"rust-call\" fn(()) -> i32"
+      }
+    ],
+    [
+      4,
+      {
+        "TupleType": {
+          "types": [
+            7
+          ]
+        }
+      }
+    ],
+    [
+      5,
+      {
+        "RefType": 28
+      }
+    ],
+    [
       6,
       {
         "PrimitiveType": {
           "Int": "Isize"
         }
+      }
+    ],
+    [
+      7,
+      {
+        "FunType": "fn()"
+      }
+    ],
+    [
+      8,
+      {
+        "PtrType": 29
       }
     ],
     [
@@ -1650,8 +1698,8 @@
       10,
       {
         "EnumType": {
-          "name": "std::result::Result<T/#0, E/#1>",
-          "adt_def": 12,
+          "name": "std::result::Result",
+          "adt_def": 14,
           "discriminants": [
             [
               0,
@@ -1666,11 +1714,35 @@
       }
     ],
     [
+      11,
+      {
+        "RefType": 12
+      }
+    ],
+    [
+      12,
+      {
+        "FunType": "{closure@std::rt::lang_start<()>::{closure#0}}"
+      }
+    ],
+    [
+      13,
+      {
+        "FunType": "fn(fn()) {std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>}"
+      }
+    ],
+    [
+      14,
+      {
+        "FunType": "fn(()) -> std::process::ExitCode {<() as std::process::Termination>::report}"
+      }
+    ],
+    [
       15,
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 18
+          "adt_def": 12
         }
       }
     ],
@@ -1687,8 +1759,68 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 20
+          "adt_def": 10
         }
+      }
+    ],
+    [
+      18,
+      {
+        "RefType": 15
+      }
+    ],
+    [
+      19,
+      {
+        "FunType": "extern \"rust-call\" fn(fn(), ()) -> <fn() as std::ops::FnOnce<()>>::Output {<fn() as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      20,
+      {
+        "FunType": "fn(()) {std::intrinsics::black_box::<()>}"
+      }
+    ],
+    [
+      21,
+      {
+        "FunType": "extern \"rust-call\" fn({closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      22,
+      {
+        "PtrType": 12
+      }
+    ],
+    [
+      23,
+      {
+        "FunType": "for<'a> extern \"rust-call\" fn(&'a mut {closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnMut<()>>::call_mut}"
+      }
+    ],
+    [
+      24,
+      {
+        "RefType": 12
+      }
+    ],
+    [
+      25,
+      {
+        "FunType": "fn() {a}"
+      }
+    ],
+    [
+      26,
+      {
+        "FunType": "fn() {b}"
+      }
+    ],
+    [
+      27,
+      {
+        "FunType": "fn() {c}"
       }
     ]
   ],

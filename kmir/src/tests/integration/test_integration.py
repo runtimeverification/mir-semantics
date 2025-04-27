@@ -190,7 +190,39 @@ BYTES_TESTS = [
     ),
 ]
 
-SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
+TOKEN_TESTS = [
+    (
+        {'FunType': 'extern \"rust-call\" fn(()) -> i32'},  # double quotes within string
+        KApply('TypeInfo::FunType', (KToken('"extern \\"rust-call\\" fn(()) -> i32"', KSort('String')))),
+        KSort('TypeInfo'),
+    ),
+    # MIRInt and MIRBool literals in context
+    (
+        {'ConstantIndex': {'offset': 1, 'min_length': 1, 'from_end': True}},
+        KApply(
+            'ProjectionElem::ConstantIndex',
+            (
+                KToken('1', KSort('Int')),
+                KToken('1', KSort('Int')),
+                KToken('true', KSort('Bool')),
+            ),
+        ),
+        KSort('ProjectionElem'),
+    ),
+    (
+        {'kind': {'StorageLive': 42}, 'span': 1},
+        KApply(
+            'statement(_,_)_BODY_Statement_StatementKind_Span',
+            (
+                KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
+                KApply('span(_)_TYPES_Span_Int', (KToken('1', KSort('Int')))),
+            ),
+        ),
+        KSort('Statement'),
+    ),
+]
+
+SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS + TOKEN_TESTS
 
 
 @pytest.mark.parametrize(

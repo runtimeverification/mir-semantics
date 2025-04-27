@@ -275,7 +275,7 @@
       }
     ],
     [
-      44,
+      39,
       {
         "NoOpSym": ""
       }
@@ -3120,6 +3120,20 @@
   ],
   "types": [
     [
+      0,
+      {
+        "FunType": "for<'a> fn(&'a (dyn std::ops::Fn() -> i32 + std::marker::Sync + std::panic::RefUnwindSafe + 'a), isize, *const *const u8, u8) -> std::result::Result<isize, !> {std::rt::lang_start_internal}"
+      }
+    ],
+    [
+      1,
+      {
+        "TupleType": {
+          "types": []
+        }
+      }
+    ],
+    [
       2,
       {
         "PrimitiveType": {
@@ -3128,11 +3142,45 @@
       }
     ],
     [
+      3,
+      {
+        "FunType": "extern \"rust-call\" fn(()) -> i32"
+      }
+    ],
+    [
+      4,
+      {
+        "TupleType": {
+          "types": [
+            7
+          ]
+        }
+      }
+    ],
+    [
+      5,
+      {
+        "RefType": 37
+      }
+    ],
+    [
       6,
       {
         "PrimitiveType": {
           "Int": "Isize"
         }
+      }
+    ],
+    [
+      7,
+      {
+        "FunType": "fn()"
+      }
+    ],
+    [
+      8,
+      {
+        "PtrType": 38
       }
     ],
     [
@@ -3147,8 +3195,8 @@
       10,
       {
         "EnumType": {
-          "name": "std::result::Result<T/#0, E/#1>",
-          "adt_def": 21,
+          "name": "std::result::Result",
+          "adt_def": 15,
           "discriminants": [
             [
               0,
@@ -3160,6 +3208,30 @@
             ]
           ]
         }
+      }
+    ],
+    [
+      11,
+      {
+        "RefType": 12
+      }
+    ],
+    [
+      12,
+      {
+        "FunType": "{closure@std::rt::lang_start<()>::{closure#0}}"
+      }
+    ],
+    [
+      13,
+      {
+        "FunType": "fn(fn()) {std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>}"
+      }
+    ],
+    [
+      14,
+      {
+        "FunType": "fn(()) -> std::process::ExitCode {<() as std::process::Termination>::report}"
       }
     ],
     [
@@ -3184,8 +3256,50 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 9
+          "adt_def": 13
         }
+      }
+    ],
+    [
+      18,
+      {
+        "RefType": 15
+      }
+    ],
+    [
+      19,
+      {
+        "FunType": "extern \"rust-call\" fn(fn(), ()) -> <fn() as std::ops::FnOnce<()>>::Output {<fn() as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      20,
+      {
+        "FunType": "fn(()) {std::intrinsics::black_box::<()>}"
+      }
+    ],
+    [
+      21,
+      {
+        "FunType": "extern \"rust-call\" fn({closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::call_once}"
+      }
+    ],
+    [
+      22,
+      {
+        "PtrType": 12
+      }
+    ],
+    [
+      23,
+      {
+        "FunType": "for<'a> extern \"rust-call\" fn(&'a mut {closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnMut<()>>::call_mut}"
+      }
+    ],
+    [
+      24,
+      {
+        "RefType": 12
       }
     ],
     [
@@ -3203,6 +3317,24 @@
       }
     ],
     [
+      27,
+      {
+        "FunType": "fn(&'static str) -> ! {core::panicking::panic}"
+      }
+    ],
+    [
+      28,
+      {
+        "RefType": 40
+      }
+    ],
+    [
+      29,
+      {
+        "RefType": 30
+      }
+    ],
+    [
       30,
       {
         "StructType": {
@@ -3212,25 +3344,67 @@
       }
     ],
     [
+      31,
+      {
+        "RefType": 2
+      }
+    ],
+    [
+      33,
+      {
+        "RefType": 31
+      }
+    ],
+    [
       34,
       {
         "StructType": {
-          "name": "Enclosing<'a/#0>",
+          "name": "Enclosing",
           "adt_def": 8
         }
       }
     ],
     [
-      39,
+      35,
       {
-        "StructType": {
-          "name": "std::panic::Location<'a/#0>",
-          "adt_def": 16
-        }
+        "RefType": 34
+      }
+    ],
+    [
+      36,
+      {
+        "RefType": 26
+      }
+    ],
+    [
+      40,
+      {
+        "PrimitiveType": "Str"
       }
     ],
     [
       41,
+      {
+        "RefType": 42
+      }
+    ],
+    [
+      42,
+      {
+        "StructType": {
+          "name": "std::panic::Location",
+          "adt_def": 25
+        }
+      }
+    ],
+    [
+      43,
+      {
+        "RefType": 40
+      }
+    ],
+    [
+      44,
       {
         "PrimitiveType": {
           "Uint": "U32"
