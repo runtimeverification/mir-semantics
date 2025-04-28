@@ -3,7 +3,10 @@ UV_RUN := $(UV) run
 
 TOP_DIR    := $(shell pwd)
 
-default: check
+default: check build
+
+build:
+	$(UV_RUN) kdist -v build mir-semantics\.* -j4
 
 .PHONY: test
 test: test-unit test-integration smir-parse-tests
