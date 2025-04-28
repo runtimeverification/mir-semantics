@@ -108,6 +108,69 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
        <stack> STACK => STACK ListItem( StackFrame( ty(-1), place(local(-1), .ProjectionElems), noBasicBlockIdx, unwindActionUnreachable, ListItem( VAL ) ) ) </stack>
 ```
 
+## Arrays and Slices
+
+Slices have an unknown size and need to be abstracted as variables.
+
+```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
+        => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( Range(?_SLICE), TY, MUT))</locals>
+       <types> ... TY |-> typeInfoArrayType ( _ELEMTY, noTyConst ) ... </types>
+    requires 0 <Int COUNT
+```
+
+ Arrays have statically known size and can be created with full list structure and symbolic array elements:
+
+```k
+  // rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
+  //       => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
+  //          ...
+  //      </k>
+  //       // FIXME must recursively create each element using reserveSymbolicsFor
+  //      <locals> ... .List => ListItem(typedValue( Range(#mkSymbolicList(ELEMTY, MUT, #readTyConstInt(LEN, TYPES))), TY, MUT))</locals>
+  //      <types> (... TY |-> typeInfoArrayType ( ELEMTY, someTyConst(LEN) ) ...) #as TYPES </types>
+  //   requires 0 <Int COUNT
+  //    andBool isInt(#readTyConstInt(LEN, TYPES))
+
+  // syntax List ::= #mkSymbolicList ( Ty , Mutability, Int ) [function, total]
+
+  // rule #mkSymbolicList(_, _, N) => .List
+  //   requires N <=Int 0
+  
+  // rule #mkSymbolicList(TY, MUT, N) => ListItem(typedValue(?ARRAY_ELEM, TY, MUT)) #mkSymbolicList(TY, MUT, N -Int 1)
+  //   requires 0 <Int N
+```
+
+## Enums and Structs
+
+For `enum` types, it cannot be determined which variant is used, therefore the argument list is a variable. 
+
+```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
+        => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( Aggregate(variantIdx(?_ENUM_IDX), ?_ENUM_ARGS), TY, MUT))</locals>
+       <types> ... TY |-> typeInfoEnumType ( _, _, _ ) ... </types>
+    requires 0 <Int COUNT
+```
+
+For structs, we could generate suitable arguments with more type information about the fields. At the time of writing this information is not available, though.
+
+```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
+        => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
+           ...
+       </k>
+       <locals> ... .List => ListItem(typedValue( Aggregate(variantIdx(0), ?_STRUCT_ARGS), TY, MUT))</locals>
+       <types> ... TY |-> typeInfoStructType ( _, _ ) ... </types>
+    requires 0 <Int COUNT
+```
+
+
 ## Arbitrary Values
 
 ```k
