@@ -8,6 +8,8 @@ requires "../kmir.md"
 module KMIR-SYMBOLIC-LOCALS [symbolic]
   imports KMIR-CONTROL-FLOW
 
+  imports LIST
+
   rule <k> #execFunction(
               monoItem(
                 SYMNAME,
@@ -125,47 +127,175 @@ Slices have an unknown size and need to be abstracted as variables.
  Arrays have statically known size and can be created with full list structure and symbolic array elements:
 
 ```k
+  rule <k> #reserveSymbolicsFor( localDecl(TY, SPAN, MUT) LOCALS:LocalDecls, COUNT )
+        => #mkArrayElems(ELEMTY, SPAN, MUT, LEN)
+        ~> #mkSymbolicArray(TY, MUT)
+        ~> #reserveSymbolicsFor( LOCALS, COUNT -Int 1)
+           ...
+       </k>
+       <types> ... TY |-> typeInfoArrayType ( ELEMTY, someTyConst(tyConst(LEN, _)) ) ...</types>
+    requires 0 <Int COUNT
+
+  syntax KITEM ::= #mkArrayElems ( Ty , Span , Mutability , TyConstKind )
+                 | #mkSymbolicArray ( Ty , Mutability )
+
+  rule <k> #mkArrayElems(TY, SPAN, MUT, LEN)
+        => #symbolicArgsAux( .List, asLocalDecls(makeList(readTyConstInt(LEN, TYPES), localDecl(TY, SPAN, MUT))))
+            ...
+       </k>
+       <types> TYPES </types>
+    requires isInt(readTyConstInt(LEN, TYPES))
+    [preserves-definedness]
+
+  syntax LocalDecls ::= asLocalDecls ( List ) [function]
+
+  rule asLocalDecls(.List) => .LocalDecls
+
+  rule asLocalDecls(ListItem(DECL:LocalDecl) REST) => DECL asLocalDecls(REST)
+
+  rule asLocalDecls(ListItem(_OTHER) REST) => asLocalDecls(REST) [owise]
+
+  rule <k> ELEMS:List ~> #mkSymbolicArray(TY, MUT) => .K
+            ...
+       </k>
+       <locals> LOCALS => LOCALS ListItem(typedValue(Range(ELEMS), TY, MUT)) </locals>
+```
+
+# New Code to generate symbolic references in a list
+
+DRAFT CODE. TODO: use wrappers with heating/cooling
+
+```k
   syntax KItem ::= #symbolicArgsFor ( LocalDecls )
                  | #symbolicArgsAux ( List , LocalDecls ) // with accumulator
                  | #symbolicArgsAux2 ( List , LocalDecls ) // with accumulator
-                 | #symbolicArg ( LocalDecl, Map )
+                 | #symbolicArg ( LocalDecl )
 
   rule <k> #symbolicArgsFor(LOCALS) => #symbolicArgsAux(.List, LOCALS) ... </k>
 
   rule <k> #symbolicArgsAux(ACC, .LocalDecls) => ACC ... </k>
 
   rule <k> #symbolicArgsAux(ACC, DECL:LocalDecl REST)
-        => #symbolicArg(DECL, TYPES) 
+        => #symbolicArg(DECL) 
         ~> #symbolicArgsAux2(ACC, REST)
            ...
        </k>
-       <types> TYPES </types>
 
   rule <k> TL:TypedLocal ~> #symbolicArgsAux2(ACC, REST) 
         => #symbolicArgsAux(ACC ListItem(TL), REST) 
           ... 
        </k>
-
-
-
-  // rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
-  //       => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
-  //          ...
-  //      </k>
-  //       // FIXME must recursively create each element using reserveSymbolicsFor
-  //      <locals> ... .List => ListItem(typedValue( Range(#mkSymbolicList(ELEMTY, MUT, #readTyConstInt(LEN, TYPES))), TY, MUT))</locals>
-  //      <types> (... TY |-> typeInfoArrayType ( ELEMTY, someTyConst(LEN) ) ...) #as TYPES </types>
-  //   requires 0 <Int COUNT
-  //    andBool isInt(#readTyConstInt(LEN, TYPES))
-
-  // syntax List ::= #mkSymbolicList ( Ty , Mutability, Int ) [function, total]
-
-  // rule #mkSymbolicList(_, _, N) => .List
-  //   requires N <=Int 0
-  
-  // rule #mkSymbolicList(TY, MUT, N) => ListItem(typedValue(?ARRAY_ELEM, TY, MUT)) #mkSymbolicList(TY, MUT, N -Int 1)
-  //   requires 0 <Int N
 ```
+
+## Integers
+
+```k
+  // Unsigned
+  rule <k> #symbolicArg(localDecl(TY, _, MUT))
+        => typedValue( Integer(?INT:Int, #bitWidth(PRIMTY), false), TY, MUT )
+           ...
+       </k>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeUint( PRIMTY ) ) ... </types>
+    ensures #intConstraints( ?INT, PRIMTY )
+
+  // Signed
+  rule <k> #symbolicArg(localDecl(TY, _, MUT))
+        => typedValue( Integer(?INT:Int, #bitWidth(PRIMTY), true), TY, MUT )
+           ...
+       </k>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeInt( PRIMTY ) ) ... </types>
+    ensures #intConstraints( ?INT, PRIMTY )
+
+  syntax Bool ::= #intConstraints( Int, InTy ) [function, total]
+
+  rule #intConstraints( X, TY:IntTy  ) => 0 -Int (2 ^Int (#bitWidth(TY) -Int 1)) <=Int X andBool X <Int 2 ^Int (#bitWidth(TY) -Int 1)
+  rule #intConstraints( X, TY:UintTy ) => 0                                      <=Int X andBool X <Int 2 ^Int  #bitWidth(TY)
+```
+
+## Boolean Values
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, _, MUT) )
+        => typedValue( BoolVal( ?_BOOL:Bool ), TY, MUT )
+           ...
+       </k>
+       <types> ... TY |-> typeInfoPrimitiveType ( primTypeBool ) ... </types>
+```
+
+## References
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, SPAN, MUT) )
+        => #symbolicArg( localDecl(REFTY, SPAN, MUT) ) // Create a symbolic value for the type
+        ~> #symbolicRef(TY, MUT)                       // Move created value to stack frame and create reference
+           ...
+       </k>
+       <types> ... TY |-> typeInfoRefType ( REFTY ) ... </types>
+
+  syntax KItem ::= #symbolicRef(Ty, Mutability)
+
+  rule <k> VAL:TypedValue ~> #symbolicRef(TY, MUT)
+        => typedValue( Reference( 1, place(local(size(LOCALS)), .ProjectionElems), MUT ), TY, MUT )
+           ...
+       </k>
+       <stack> ListItem( StackFrame( _, _, _, _, LOCALS => LOCALS ListItem( VAL ) ) ) ... </stack>
+      // FIXME assumes a stack frame exists on the stack
+```
+
+## Arrays and Slices
+
+Slices have an unknown length, so the list of elements is necessarily symbolic.
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, _, MUT) )
+        => typedValue( Range(?_SLICE), TY, MUT)
+           ...
+       </k>
+       <types> ... TY |-> typeInfoArrayType ( _ELEMTY, noTyConst ) ... </types>
+```
+
+ Arrays have statically known size and can be created with full list structure and symbolic array elements:
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, SPAN, MUT) )
+        => #mkArrayElems(ELEMTY, SPAN, MUT, LEN)
+        ~> #symbolicArray(TY, MUT)
+           ...
+       </k>
+       <types> ... TY |-> typeInfoArrayType ( ELEMTY, someTyConst(tyConst(LEN, _)) ) ...</types>
+
+  syntax KItem ::= #symbolicArray ( Ty , Mutability )
+
+  rule <k> ELEMS:List ~> #symbolicArray(TY, MUT)
+        => typedValue( Range(ELEMS), TY, MUT)
+            ...
+       </k>
+```
+
+## Enums and Structs
+
+For `enum` types, it cannot be determined which variant is used, therefore the argument list is a variable. 
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, _, MUT) )
+        => typedValue( Aggregate(variantIdx(?_ENUM_IDX), ?_ENUM_ARGS), TY, MUT)
+           ...
+       </k>
+       <types> ... TY |-> typeInfoEnumType ( _, _, _ ) ... </types>
+```
+
+For structs, we could generate suitable arguments with more type information about the fields. At the time of writing this information is not available, though.
+
+```k
+  rule <k> #symbolicArg( localDecl(TY, _, MUT) )
+        => typedValue( Aggregate(variantIdx(0), ?_STRUCT_ARGS), TY, MUT)
+           ...
+       </k>
+       <types> ... TY |-> typeInfoStructType ( _, _ ) ... </types>
+```
+
+
+# End of new code, old code follows
 
 ## Enums and Structs
 
@@ -192,7 +322,6 @@ For structs, we could generate suitable arguments with more type information abo
        <types> ... TY |-> typeInfoStructType ( _, _ ) ... </types>
     requires 0 <Int COUNT
 ```
-
 
 ## Arbitrary Values
 
