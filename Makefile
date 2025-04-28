@@ -1,12 +1,9 @@
-POETRY     := poetry -C kmir
-POETRY_RUN := $(POETRY) run
+UV     := uv --directory kmir
+UV_RUN := $(UV) run
 
 TOP_DIR    := $(shell pwd)
 
-default: build
-
-build: poetry-install
-	$(POETRY) run kdist -v build mir-semantics.\* -j4
+default: check
 
 .PHONY: test
 test: test-unit test-integration smir-parse-tests
@@ -31,7 +28,7 @@ smir-parse-tests: # build # commented out for CI's sake
 		&& echo -n "smir-ed " \
 		|| report "$$source" "SMIR ERROR!"; \
 	    if [ -s $${target} ]; then \
-		${POETRY_RUN} parse $$(realpath $${target}) Pgm > /dev/null \
+		${UV_RUN} parse $$(realpath $${target}) Pgm > /dev/null \
 			&& (echo "and parsed!"; rm $${target}) \
 			|| report "$$source" "PARSE ERROR!"; \
 		fi; \
@@ -41,15 +38,11 @@ smir-parse-tests: # build # commented out for CI's sake
 ##################################################
 # Targets operating in the `kmir` directory
 
-.PHONY: poetry-install
-poetry-install:
-	$(POETRY) install
-
-test-unit: poetry-install # build # commented out for CI's sake
-	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
+test-unit:
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration: build
-	$(POETRY_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Checks and formatting
@@ -57,29 +50,29 @@ test-integration: build
 format: autoflake isort black
 check: check-flake8 check-mypy check-autoflake check-isort check-black
 
-check-flake8: poetry-install
-	$(POETRY_RUN) flake8 src
+check-flake8:
+	$(UV_RUN) flake8 src
 
-check-mypy: poetry-install
-	$(POETRY_RUN) mypy src
+check-mypy:
+	$(UV_RUN) mypy src
 
-autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --in-place src
+autoflake:
+	$(UV_RUN) autoflake --quiet --in-place src
 
-check-autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --check src
+check-autoflake:
+	$(UV_RUN) autoflake --quiet --check src
 
-isort: poetry-install
-	$(POETRY_RUN) isort src
+isort:
+	$(UV_RUN) isort src
 
-check-isort: poetry-install
-	$(POETRY_RUN) isort --check src
+check-isort:
+	$(UV_RUN) isort --check src
 
-black: poetry-install
-	$(POETRY_RUN) black src
+black:
+	$(UV_RUN) black src
 
-check-black: poetry-install
-	$(POETRY_RUN) black --check src
+check-black:
+	$(UV_RUN) black --check src
 
 # Coverage
 
@@ -106,14 +99,15 @@ clean:
 	rm -rf kmir/dist kmir/.coverage kmir/cov-* kmir/.mypy_cache kmir/.pytest_cache
 	find kmir/ -type d -name __pycache__ -prune -exec rm -rf {} \;
 
+.PHONY: pyupgrade
 pyupgrade: SRC_FILES := $(shell find kmir/src -type f -name '*.py')
-pyupgrade: poetry-install
-	$(POETRY_RUN) pyupgrade --py310-plus $(SRC_FILES)
+pyupgrade:
+	$(UV_RUN) pyupgrade --py310-plus $(SRC_FILES)
 
 # Update smir exec tests expectations
 .PHONY: update-exec-smir
-update-exec-smir: poetry-install
-	UPDATE_EXEC_SMIR=true $(POETRY_RUN) pytest -k test_exec_smir
+update-exec-smir:
+	UPDATE_EXEC_SMIR=true $(UV_RUN) pytest -k test_exec_smir
 
 # Update checked-in smir.json files (using stable-mir-json dependency and jq)
 .PHONY: update-smir-json
