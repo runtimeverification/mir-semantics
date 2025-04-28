@@ -8,7 +8,7 @@ version = "0.3.124"
 description = ""
 requires-python = "~=3.10"
 dependencies = [
-    "kframework~=v7.1.241",
+    "kframework==v7.1.241",
 ]
 
 [[project.authors]]
@@ -34,17 +34,17 @@ dev = [
     "autoflake",
     "black",
     "flake8",
-    "flake8",
-    "flake8",
-    "flake8",
-    "flake8",
+    "flake8-bugbear",
+    "flake8-comprehensions",
+    "flake8-quotes",
+    "flake8-type-checking",
     "isort",
     "mypy",
     "pep8",
     "pytest",
-    "pytest",
-    "pytest",
-    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-xdist",
     "pyupgrade",
 ]
 
