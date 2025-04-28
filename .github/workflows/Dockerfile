@@ -5,6 +5,7 @@ RUN    apt-get update        \
     && apt-get upgrade --yes \
     && apt-get install --yes \
          curl
+ENV PATH=/home/user/.local/bin:${PATH}
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && uv --version
 ARG USER_ID=1000
 ARG GROUP_ID=1000
