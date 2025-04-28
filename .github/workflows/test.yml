@@ -38,10 +38,8 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
-      - name: 'Install Poetry'
-        uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: 2.0.1
+      - name: 'Install uv'
+        uses: astral-sh/setup-uv@v5
       - name: 'Run code quality checks'
         run: make check
 
@@ -52,10 +50,8 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
-      - name: 'Install Poetry'
-        uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: 2.0.1
+      - name: 'Install uv'
+        uses: astral-sh/setup-uv@v5
       - name: 'Run unit tests'
         run: make test-unit
 
@@ -118,7 +114,7 @@ jobs:
         run: docker exec --user user mir-smir-ci-${GITHUB_SHA} make build
 
       - name: 'Run parser tests (within docker)'
-        run: make smir-parse-tests POETRY_RUN='docker exec --user user mir-smir-ci-${GITHUB_SHA} poetry -C kmir run'
+        run: make smir-parse-tests UV_RUN='docker exec --user user mir-smir-ci-${GITHUB_SHA} uv --directory kmir run'
 
       - name: 'Tear down Docker'
         if: always()
