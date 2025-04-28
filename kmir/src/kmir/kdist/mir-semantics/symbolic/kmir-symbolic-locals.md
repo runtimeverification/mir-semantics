@@ -125,6 +125,29 @@ Slices have an unknown size and need to be abstracted as variables.
  Arrays have statically known size and can be created with full list structure and symbolic array elements:
 
 ```k
+  syntax KItem ::= #symbolicArgsFor ( LocalDecls )
+                 | #symbolicArgsAux ( List , LocalDecls ) // with accumulator
+                 | #symbolicArgsAux2 ( List , LocalDecls ) // with accumulator
+                 | #symbolicArg ( LocalDecl, Map )
+
+  rule <k> #symbolicArgsFor(LOCALS) => #symbolicArgsAux(.List, LOCALS) ... </k>
+
+  rule <k> #symbolicArgsAux(ACC, .LocalDecls) => ACC ... </k>
+
+  rule <k> #symbolicArgsAux(ACC, DECL:LocalDecl REST)
+        => #symbolicArg(DECL, TYPES) 
+        ~> #symbolicArgsAux2(ACC, REST)
+           ...
+       </k>
+       <types> TYPES </types>
+
+  rule <k> TL:TypedLocal ~> #symbolicArgsAux2(ACC, REST) 
+        => #symbolicArgsAux(ACC ListItem(TL), REST) 
+          ... 
+       </k>
+
+
+
   // rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT )
   //       => #reserveSymbolicsFor( LOCALS:LocalDecls, COUNT -Int 1 )
   //          ...
