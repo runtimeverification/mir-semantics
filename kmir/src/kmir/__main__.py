@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import logging
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyk.cli.args import KCLIArgs, LoggingOptions
 from pyk.cterm import CTerm, cterm_build_claim
 from pyk.kast.inner import Subst
 from pyk.kast.manip import split_config_from
@@ -19,11 +21,16 @@ from kmir.parse.parser import parse_json
 from kmir.rust import CargoProject
 
 if TYPE_CHECKING:
+    from argparse import Namespace
     from collections.abc import Sequence
+    from typing import Final
+
+_LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 @dataclass
-class KMirOpts: ...
+class KMirOpts(LoggingOptions): ...
 
 
 @dataclass
@@ -160,7 +167,9 @@ def _kmir_prove_view(opts: ProveViewOpts) -> None:
 
 
 def kmir(args: Sequence[str]) -> None:
-    opts = _parse_args(args)
+    ns = _arg_parser().parse_args(args)
+    opts = _parse_args(ns)
+    logging.basicConfig(level=_loglevel(ns), format=_LOG_FORMAT)
     match opts:
         case RunOpts():
             _kmir_run(opts)
@@ -178,8 +187,9 @@ def _arg_parser() -> ArgumentParser:
     parser = ArgumentParser(prog='kmir')
 
     command_parser = parser.add_subparsers(dest='command', required=True)
+    kcli_args = KCLIArgs()
 
-    run_parser = command_parser.add_parser('run', help='run stable MIR programs')
+    run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
     run_target_selection = run_parser.add_mutually_exclusive_group()
     run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
     run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
@@ -189,14 +199,18 @@ def _arg_parser() -> ArgumentParser:
     )
     run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
 
-    gen_spec_parser = command_parser.add_parser('gen-spec', help='Generate a k spec from a SMIR json')
+    gen_spec_parser = command_parser.add_parser(
+        'gen-spec', help='Generate a k spec from a SMIR json', parents=[kcli_args.logging_args]
+    )
     gen_spec_parser.add_argument('input_file', metavar='FILE', help='MIR program to generate a spec for')
     gen_spec_parser.add_argument('--output-file', metavar='FILE', help='Output file')
     gen_spec_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
-    prove_parser = command_parser.add_parser('prove', help='Utilities for working with proofs over SMIR')
+    prove_parser = command_parser.add_parser(
+        'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args]
+    )
     prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
 
     prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
@@ -219,9 +233,7 @@ def _arg_parser() -> ArgumentParser:
     return parser
 
 
-def _parse_args(args: Sequence[str]) -> KMirOpts:
-    ns = _arg_parser().parse_args(args)
-
+def _parse_args(ns: Namespace) -> KMirOpts:
     match ns.command:
         case 'run':
             return RunOpts(
@@ -252,6 +264,14 @@ def _parse_args(args: Sequence[str]) -> KMirOpts:
                     raise AssertionError()
         case _:
             raise AssertionError()
+
+
+def _loglevel(args: Namespace) -> int:
+    if args.debug:
+        return logging.DEBUG
+    if args.verbose:
+        return logging.INFO
+    return logging.WARNING
 
 
 def main() -> None:
