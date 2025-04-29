@@ -89,6 +89,13 @@ class ProveViewOpts(KMirOpts):
     id: str
 
 
+@dataclass
+class ProvePruneOpts(KMirOpts):
+    proof_dir: Path
+    id: str
+    node_id: int
+
+
 def _kmir_run(opts: RunOpts) -> None:
     tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
 
@@ -169,6 +176,16 @@ def _kmir_prove_view(opts: ProveViewOpts) -> None:
     viewer.run()
 
 
+def _kmir_prove_prune(opts: ProvePruneOpts) -> None:
+    proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+
+    pruned_nodes = proof.prune(opts.node_id)
+
+    print(f'Pruned nodes: {pruned_nodes}')
+
+    proof.write_proof_data()
+
+
 def kmir(args: Sequence[str]) -> None:
     ns = _arg_parser().parse_args(args)
     opts = _parse_args(ns)
@@ -182,6 +199,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prove_run(opts)
         case ProveViewOpts():
             _kmir_prove_view(opts)
+        case ProvePruneOpts():
+            _kmir_prove_prune(opts)
         case _:
             raise AssertionError()
 
@@ -236,6 +255,11 @@ def _arg_parser() -> ArgumentParser:
         '--proof-dir', required=True, metavar='PROOF_DIR', help='Proofs folder that can contain the proof'
     )
 
+    prove_prune_parser = prove_command_parser.add_parser('prune', help='Prune a proof from a given node')
+    prove_prune_parser.add_argument('--proof-dir', required=True, metavar='DIR', help='Proof directory')
+    prove_prune_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    prove_prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
+
     return parser
 
 
@@ -267,6 +291,9 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 case 'view':
                     proof_dir = Path(ns.proof_dir).resolve()
                     return ProveViewOpts(proof_dir, ns.id)
+                case 'prune':
+                    proof_dir = Path(ns.proof_dir).resolve()
+                    return ProvePruneOpts(proof_dir, ns.id, ns.node_id)
                 case _:
                     raise AssertionError()
         case _:
