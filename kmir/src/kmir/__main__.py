@@ -65,6 +65,7 @@ class ProveRunOpts(KMirOpts):
     exclude_labels: tuple[str, ...] | None
     bug_report: Path | None
     max_depth: int | None
+    reload: bool
 
     def __init__(
         self,
@@ -74,6 +75,7 @@ class ProveRunOpts(KMirOpts):
         exclude_labels: str | None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
+        reload: bool = False,
     ) -> None:
         self.spec_file = spec_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -81,6 +83,7 @@ class ProveRunOpts(KMirOpts):
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
+        self.reload = reload
 
 
 @dataclass
@@ -156,7 +159,12 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
     for label in labels:
         print(f'Proving {label}')
         claim = claim_index[label]
-        proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+            proof = APRProof.read_proof_data(opts.proof_dir, label)
+        else:
+            _LOGGER.info(f'Initialising proof: {label}')
+            proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
         with kmir.kcfg_explore(label) as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(proof)
@@ -248,6 +256,7 @@ def _arg_parser() -> ArgumentParser:
     prove_run_parser.add_argument(
         '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
     )
+    prove_run_parser.add_argument('--reload', action='store_true', help='Force restarting proof')
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -287,6 +296,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                         exclude_labels=ns.exclude_labels,
                         bug_report=ns.bug_report,
                         max_depth=ns.max_depth,
+                        reload=ns.reload,
                     )
                 case 'view':
                     proof_dir = Path(ns.proof_dir).resolve()
