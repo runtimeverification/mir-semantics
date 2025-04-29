@@ -27,7 +27,7 @@ jobs:
         run: |
           K_VERSION=$(cat ./deps/k_release)
           cd kmir
-          sed -i 's!    "kframework==v[0-9\.]*",!    "kframework==v'${K_VERSION}',"!' pyproject.toml
+          sed -i 's!    "kframework==v[0-9\.]*",!    "kframework==v'${K_VERSION}'",!' pyproject.toml
           uv lock --upgrade
           git add pyproject.toml uv.lock
           git commit -m 'kmir/{pyproject.toml,uv.lock}: sync uv files, K version '${K_VERSION} || true
