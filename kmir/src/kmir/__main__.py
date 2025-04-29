@@ -64,6 +64,7 @@ class ProveRunOpts(KMirOpts):
     include_labels: tuple[str, ...] | None
     exclude_labels: tuple[str, ...] | None
     bug_report: Path | None
+    max_depth: int | None
 
     def __init__(
         self,
@@ -72,12 +73,14 @@ class ProveRunOpts(KMirOpts):
         include_labels: str | None,
         exclude_labels: str | None,
         bug_report: Path | None = None,
+        max_depth: int | None = None,
     ) -> None:
         self.spec_file = spec_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
         self.bug_report = bug_report
+        self.max_depth = max_depth
 
 
 @dataclass
@@ -148,7 +151,7 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
         claim = claim_index[label]
         proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
         with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore)
+            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(proof)
         summary = proof.summary
         print(f'{summary}')
@@ -223,6 +226,9 @@ def _arg_parser() -> ArgumentParser:
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
     prove_run_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+    prove_run_parser.add_argument(
+        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
+    )
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -256,6 +262,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                         include_labels=ns.include_labels,
                         exclude_labels=ns.exclude_labels,
                         bug_report=ns.bug_report,
+                        max_depth=ns.max_depth,
                     )
                 case 'view':
                     proof_dir = Path(ns.proof_dir).resolve()
