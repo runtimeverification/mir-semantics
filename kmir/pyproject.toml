@@ -22,6 +22,9 @@ kmir = "kmir.__main__:main"
 [project.entry-points.kdist]
 mir-semantics = "kmir.kdist.plugin"
 
+[project.entry-points.pytest11]
+pytest-kmir = "kmir.testing.fixtures"
+
 [dependency-groups]
 dev = [
     "autoflake",
