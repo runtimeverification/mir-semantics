@@ -54,7 +54,10 @@ RUN cd /deps/stable-mir-json && \
     cargo run --bin cargo_stable_mir_json -- $PWD && \
     ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
     cargo clean && \
-    rm -rf ~/.rustup/toolchains/nightly*/share/doc ~/.rustup/toolchains/nightly*/lib/rustlib/rustc-src
+    rm -rf /home/kmir/.rustup/toolchains/nightly*/share/doc  \
+           /home/kmir/.rustup/toolchains/nightly*/share/man  \
+           /home/kmir/.rustup/toolchains/nightly*/lib/rustlib/rustc-src  \
+           /home/kmir/.rustup/toolchains/nightly*/lib/rustlib/src
 
 # Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec`
 ENTRYPOINT ["fixuid", "-q"]
