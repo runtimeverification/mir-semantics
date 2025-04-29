@@ -114,7 +114,7 @@ jobs:
         run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make build
 
       - name: 'Run parser tests (within docker)'
-        run: make smir-parse-tests UV_RUN='docker exec --user github-user mir-smir-ci-${GITHUB_SHA} uv --directory kmir run'
+        run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
 
       - name: 'Tear down Docker'
         if: always()
