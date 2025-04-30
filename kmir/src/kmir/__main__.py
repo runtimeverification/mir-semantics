@@ -8,17 +8,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs, LoggingOptions
-from pyk.cterm import CTerm, cterm_build_claim
-from pyk.kast.inner import Subst
-from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
-from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
-from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.parse.parser import parse_json
-from kmir.rust import CargoProject
+from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
+from .kmir import KMIR, KMIRAPRNodePrinter
+from .parse.parser import parse_json
+from .rust import CargoProject
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -55,6 +52,26 @@ class GenSpecOpts(KMirOpts):
         else:
             self.output_file = Path(output_file).resolve()
         self.start_symbol = start_symbol
+
+
+@dataclass
+class ProveRSOpts(KMirOpts):
+    rs_file: Path
+    bug_report: Path | None
+    max_depth: int | None
+    max_iterations: int | None
+
+    def __init__(
+        self,
+        rs_file: Path,
+        bug_report: Path | None = None,
+        max_depth: int | None = None,
+        max_iterations: int | None = None,
+    ) -> None:
+        self.rs_file = rs_file
+        self.bug_report = bug_report
+        self.max_depth = max_depth
+        self.max_iterations = max_iterations
 
 
 @dataclass
@@ -125,23 +142,27 @@ def _kmir_run(opts: RunOpts) -> None:
     print(tools.kprint.kore_to_pretty(result))
 
 
-def _kmir_gen_spec(opts: GenSpecOpts) -> None:
-    tools = haskell_semantics()
+def _kmir_prove_rs(opts: ProveRSOpts) -> None:
+    if not opts.rs_file.is_file():
+        raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
+    proof = kmir.prove_rs(opts.rs_file, max_depth=opts.max_depth, max_iterations=opts.max_iterations)
+    print(str(proof.summary))
+    if not proof.passed:
+        sys.exit(1)
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+
+def _kmir_gen_spec(opts: GenSpecOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+
+    parse_result = parse_json(kmir.definition, opts.input_file, 'Pgm')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    config = tools.make_init_config(kmir_kast, opts.start_symbol, 'KmirCell')
-    config_with_cell_vars, _ = split_config_from(config)
-
-    lhs = CTerm(config)
-
-    rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
-    rhs = CTerm(rhs_subst(config_with_cell_vars))
-    claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
+    apr_proof = kmir.apr_proof_from_kast(str(opts.input_file.stem.replace('_', '-')), kmir_kast, sort='KmirCell')
+    claim = apr_proof.as_claim()
 
     output_file = opts.output_file
     if output_file is None:
@@ -152,7 +173,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     module_name = output_file.stem.upper().replace('_', '-')
     spec_module = KFlatModule(module_name, (claim,), (KImport('KMIR'),))
 
-    output_file.write_text(tools.kprint.pretty_print(spec_module))
+    output_file.write_text(kmir.pretty_print(spec_module))
 
 
 def _kmir_prove_run(opts: ProveRunOpts) -> None:
@@ -212,6 +233,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prove_view(opts)
         case ProvePruneOpts():
             _kmir_prove_prune(opts)
+        case ProveRSOpts():
+            _kmir_prove_rs(opts)
         case _:
             raise AssertionError()
 
@@ -275,6 +298,20 @@ def _arg_parser() -> ArgumentParser:
     prove_prune_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     prove_prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
+    prove_rs_parser = command_parser.add_parser(
+        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args]
+    )
+    prove_rs_parser.add_argument(
+        'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
+    )
+    prove_rs_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+    prove_rs_parser.add_argument(
+        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
+    )
+    prove_rs_parser.add_argument(
+        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
+    )
+
     return parser
 
 
@@ -313,6 +350,13 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                     return ProvePruneOpts(proof_dir, ns.id, ns.node_id)
                 case _:
                     raise AssertionError()
+        case 'prove-rs':
+            return ProveRSOpts(
+                rs_file=Path(ns.rs_file).resolve(),
+                bug_report=ns.bug_report,
+                max_depth=ns.max_depth,
+                max_iterations=ns.max_iterations,
+            )
         case _:
             raise AssertionError()
 
