@@ -60,27 +60,21 @@ class GenSpecOpts(KMirOpts):
 @dataclass
 class ProveRSOpts(KMirOpts):
     rs_file: Path
-    proof_dir: Path | None
     bug_report: Path | None
     max_depth: int | None
     max_iterations: int | None
-    reload: bool
 
     def __init__(
         self,
         rs_file: Path,
-        proof_dir: Path | str | None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
-        reload: bool = False,
     ) -> None:
         self.rs_file = rs_file
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
-        self.reload = reload
 
 
 @dataclass
@@ -155,7 +149,7 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     if not opts.rs_file.is_file():
         raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rs(opts.rs_file)
+    proof = kmir.prove_rs(opts.rs_file, max_depth=opts.max_depth, max_iterations=opts.max_iterations)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
@@ -316,13 +310,13 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args]
     )
-    prove_rs_parser.add_argument('rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)')
-    prove_rs_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_rs_parser.add_argument(
+        'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
+    )
     prove_rs_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_rs_parser.add_argument(
         '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
     )
-    prove_rs_parser.add_argument('--reload', action='store_true', help='Force restarting proof')
     prove_rs_parser.add_argument(
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
@@ -368,10 +362,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),
-                proof_dir=ns.proof_dir,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
-                reload=ns.reload,
                 max_iterations=ns.max_iterations,
             )
         case _:

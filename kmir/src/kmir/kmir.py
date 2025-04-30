@@ -54,7 +54,12 @@ class KMIR(KProve, KRun):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def prove_rs(self, rs_file: Path) -> APRProof:
+    def prove_rs(
+        self,
+        rs_file: Path,
+        max_depth: int | None = None,
+        max_iterations: int | None = None,
+    ) -> APRProof:
         tools = Tools(self.definition_dir)
         smir_json = cargo_get_smir_json(rs_file)
 
@@ -76,8 +81,8 @@ class KMIR(KProve, KRun):
         target_node = kcfg.create_node(rhs)
         apr_proof = APRProof('PROOF', kcfg, [], init_node.id, target_node.id, {})
         with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
-            prover = APRProver(kcfg_explore)
-            prover.advance_proof(apr_proof)
+            prover = APRProver(kcfg_explore, execute_depth=max_depth)
+            prover.advance_proof(apr_proof, max_iterations=max_iterations)
             return apr_proof
 
 
