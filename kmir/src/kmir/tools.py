@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KSort, Subst
 from pyk.kast.outer import read_kast_definition
+from pyk.kast.prelude.string import stringToken
 from pyk.ktool.krun import KRun
-from pyk.prelude.string import stringToken
 
 from .kparse import KParse
 
