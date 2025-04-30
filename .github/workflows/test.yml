@@ -92,7 +92,7 @@ jobs:
         with:
           container-name: mir-smir-ci-${{ github.sha }}
       - name: 'Build stable-mir-json'
-        run: docker exec --user github-user mir-smir-ci-%{GITHUB_SHA} make stable-mir-json
+        run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make stable-mir-json
       - name: 'Build kmir (within docker)'
         run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make build
       - name: 'Run parser tests (within docker)'
