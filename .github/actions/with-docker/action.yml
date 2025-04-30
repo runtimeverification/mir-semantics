@@ -40,4 +40,4 @@ runs:
         ${TAG}
 
       docker cp . ${CONTAINER_NAME}:/home/${USER}/workspace
-      docker exec --user root ${CONTAINER_NAME} chown -R ${USER}:${GROUP} /home/${USER}
+      docker exec --user root ${CONTAINER_NAME} chown -R ${USER}:${GROUP} /home/${USER}/workspace
