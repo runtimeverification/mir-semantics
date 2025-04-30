@@ -4,22 +4,27 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
-from pyk.cterm import cterm_symbolic
-from pyk.kast.inner import KApply, KSequence
+from pyk.cterm import CTerm, cterm_symbolic
+from pyk.kast.inner import KApply, KInner, KSequence, Subst
+from pyk.kast.manip import split_config_from
+from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
+from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
+
+from .parse.parser import Parser
+from .rust.cargo import cargo_get_smir_json
+from .tools import Tools
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
     from typing import Final
 
-    from pyk.cterm import CTerm
-    from pyk.proof.reachability import APRProof
     from pyk.utils import BugReport
 
 
@@ -48,6 +53,40 @@ class KMIR(KProve, KRun):
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
+
+    def apr_proof_from_kast(self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell') -> APRProof:
+        tools = Tools(self.definition_dir)
+        config = tools.make_init_config(kmir_kast, 'main', sort=sort)
+        config_with_cell_vars, _ = split_config_from(config)
+
+        lhs = CTerm(config)
+
+        rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
+        rhs = CTerm(rhs_subst(config_with_cell_vars))
+        kcfg = KCFG()
+        init_node = kcfg.create_node(lhs)
+        target_node = kcfg.create_node(rhs)
+        return APRProof(id, kcfg, [], init_node.id, target_node.id, {})
+
+    def prove_rs(
+        self,
+        rs_file: Path,
+        max_depth: int | None = None,
+        max_iterations: int | None = None,
+    ) -> APRProof:
+        smir_json = cargo_get_smir_json(rs_file)
+
+        parser = Parser(self.definition)
+        parse_result = parser.parse_mir_json(smir_json, 'Pgm')
+        assert parse_result is not None
+        kmir_kast, _ = parse_result
+        assert isinstance(kmir_kast, KInner)
+
+        apr_proof = self.apr_proof_from_kast(str(rs_file.stem), kmir_kast)
+        with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
+            prover = APRProver(kcfg_explore, execute_depth=max_depth)
+            prover.advance_proof(apr_proof, max_iterations=max_iterations)
+            return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):
