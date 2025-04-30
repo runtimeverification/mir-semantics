@@ -54,9 +54,9 @@ class KMIR(KProve, KRun):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def apr_proof_from_kast(self, id: str, kmir_kast: KInner) -> APRProof:
+    def apr_proof_from_kast(self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell') -> APRProof:
         tools = Tools(self.definition_dir)
-        config = tools.make_init_config(kmir_kast, 'main')
+        config = tools.make_init_config(kmir_kast, 'main', sort=sort)
         config_with_cell_vars, _ = split_config_from(config)
 
         lhs = CTerm(config)
