@@ -425,6 +425,7 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
 
+
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
 
