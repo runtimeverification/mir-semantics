@@ -40,11 +40,11 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
 ```k
   syntax KItem ::= #reserveSymbolicsFor( LocalDecls, Int )
 
-  rule <k> #reserveSymbolicsFor( .LocalDecls, _ ) => .K ... </k>
+  rule <k> #reserveSymbolicsFor( .LocalDecls, _ ) => .K ... </k> [priority(40)]
 
-  rule <k> #reserveSymbolicsFor( LOCALS:LocalDecls, 0 ) => .K ... </k>
+  rule <k> #reserveSymbolicsFor( LOCALS:LocalDecls, N ) => .K ... </k>
        <locals> ... .List => #reserveFor(LOCALS) </locals> // No more arguments, treat the rest of the Decls normally
-
+     requires N ==Int 0
 ```
 
 ## Integers
