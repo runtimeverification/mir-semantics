@@ -8,17 +8,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs, LoggingOptions
-from pyk.cterm import CTerm, cterm_build_claim
-from pyk.kast.inner import Subst
-from pyk.kast.manip import split_config_from
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
-from kmir.build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
-from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.parse.parser import parse_json
-from kmir.rust import CargoProject
+from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
+from .kmir import KMIR, KMIRAPRNodePrinter
+from .parse.parser import parse_json
+from .rust import CargoProject
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -156,22 +153,16 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
 
 
 def _kmir_gen_spec(opts: GenSpecOpts) -> None:
-    tools = haskell_semantics()
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
 
-    parse_result = parse_json(tools.definition, opts.input_file, 'Pgm')
+    parse_result = parse_json(kmir.definition, opts.input_file, 'Pgm')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    config = tools.make_init_config(kmir_kast, opts.start_symbol, 'KmirCell')
-    config_with_cell_vars, _ = split_config_from(config)
-
-    lhs = CTerm(config)
-
-    rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
-    rhs = CTerm(rhs_subst(config_with_cell_vars))
-    claim, _ = cterm_build_claim(opts.input_file.stem.replace('_', '-'), lhs, rhs)
+    apr_proof = kmir.apr_proof_from_kast(str(opts.input_file), kmir_kast)
+    claim = apr_proof.as_claim()
 
     output_file = opts.output_file
     if output_file is None:
@@ -182,7 +173,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     module_name = output_file.stem.upper().replace('_', '-')
     spec_module = KFlatModule(module_name, (claim,), (KImport('KMIR'),))
 
-    output_file.write_text(tools.kprint.pretty_print(spec_module))
+    output_file.write_text(kmir.pretty_print(spec_module))
 
 
 def _kmir_prove_run(opts: ProveRunOpts) -> None:

@@ -54,21 +54,8 @@ class KMIR(KProve, KRun):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def prove_rs(
-        self,
-        rs_file: Path,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-    ) -> APRProof:
+    def apr_proof_from_kast(self, id: str, kmir_kast: KInner) -> APRProof:
         tools = Tools(self.definition_dir)
-        smir_json = cargo_get_smir_json(rs_file)
-
-        parser = Parser(self.definition)
-        parse_result = parser.parse_mir_json(smir_json, 'Pgm')
-        assert parse_result is not None
-        kmir_kast, _ = parse_result
-        assert isinstance(kmir_kast, KInner)
-
         config = tools.make_init_config(kmir_kast, 'main')
         config_with_cell_vars, _ = split_config_from(config)
 
@@ -79,7 +66,23 @@ class KMIR(KProve, KRun):
         kcfg = KCFG()
         init_node = kcfg.create_node(lhs)
         target_node = kcfg.create_node(rhs)
-        apr_proof = APRProof('PROOF', kcfg, [], init_node.id, target_node.id, {})
+        return APRProof(id, kcfg, [], init_node.id, target_node.id, {})
+
+    def prove_rs(
+        self,
+        rs_file: Path,
+        max_depth: int | None = None,
+        max_iterations: int | None = None,
+    ) -> APRProof:
+        smir_json = cargo_get_smir_json(rs_file)
+
+        parser = Parser(self.definition)
+        parse_result = parser.parse_mir_json(smir_json, 'Pgm')
+        assert parse_result is not None
+        kmir_kast, _ = parse_result
+        assert isinstance(kmir_kast, KInner)
+
+        apr_proof = self.apr_proof_from_kast(str(rs_file), kmir_kast)
         with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=max_depth)
             prover.advance_proof(apr_proof, max_iterations=max_iterations)
