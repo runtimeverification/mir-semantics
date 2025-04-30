@@ -59,6 +59,7 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
        <types> ... TY |-> typeInfoPrimitiveType ( primTypeUint( PRIMTY ) ) ... </types>
     requires 0 <Int COUNT
     ensures #intConstraints( ?INT, PRIMTY )
+    [preserves-definedness] // uint-type
 
   // Signed
   rule <k> #reserveSymbolicsFor( localDecl(TY, _, MUT) LOCALS:LocalDecls, COUNT        )
@@ -69,6 +70,7 @@ module KMIR-SYMBOLIC-LOCALS [symbolic]
        <types> ... TY |-> typeInfoPrimitiveType ( primTypeInt( PRIMTY ) ) ... </types>
     requires 0 <Int COUNT
     ensures #intConstraints( ?INT, PRIMTY )
+    [preserves-definedness] // int-type
 
   syntax Bool ::= #intConstraints( Int, InTy ) [function, total]
 
@@ -197,6 +199,7 @@ DRAFT CODE. TODO: use wrappers with heating/cooling
        </k>
        <types> ... TY |-> typeInfoPrimitiveType ( primTypeUint( PRIMTY ) ) ... </types>
     ensures #intConstraints( ?INT, PRIMTY )
+    [preserves-definedness] // uint-type
 
   // Signed
   rule <k> #symbolicArg(localDecl(TY, _, MUT))
@@ -205,6 +208,7 @@ DRAFT CODE. TODO: use wrappers with heating/cooling
        </k>
        <types> ... TY |-> typeInfoPrimitiveType ( primTypeInt( PRIMTY ) ) ... </types>
     ensures #intConstraints( ?INT, PRIMTY )
+    [preserves-definedness] // int-type
 
   syntax Bool ::= #intConstraints( Int, InTy ) [function, total]
 
