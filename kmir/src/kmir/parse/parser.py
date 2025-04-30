@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.outer import KTerminal
-from pyk.prelude.utils import token
+from pyk.kast.prelude.utils import token
 
 if TYPE_CHECKING:
     from pathlib import Path
