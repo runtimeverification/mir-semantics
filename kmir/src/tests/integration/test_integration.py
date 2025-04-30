@@ -11,6 +11,7 @@ from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
 from kmir.build import haskell_semantics, llvm_semantics
+from kmir.options import ProveRSOpts
 from kmir.parse.parser import Parser
 
 if TYPE_CHECKING:
@@ -437,7 +438,8 @@ PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
 )
 def test_prove_rs(rs_file: Path, kmir: KMIR) -> None:
     should_fail = rs_file.stem.endswith('fail')
-    apr_proof = kmir.prove_rs(rs_file)
+    prove_rs_opts = ProveRSOpts(rs_file)
+    apr_proof = kmir.prove_rs(prove_rs_opts)
     if not should_fail:
         assert apr_proof.passed
     else:

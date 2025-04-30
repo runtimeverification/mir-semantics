@@ -52,10 +52,8 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    if not opts.rs_file.is_file():
-        raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rs(opts.rs_file, max_depth=opts.max_depth, max_iterations=opts.max_iterations)
+    proof = kmir.prove_rs(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
