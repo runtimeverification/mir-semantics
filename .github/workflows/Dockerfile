@@ -13,6 +13,11 @@ ARG GROUP_ID=1000
 RUN groupadd -g ${GROUP_ID} ${GROUP} && useradd -m -u ${USER_ID} -s /bin/sh -g ${GROUP} ${USER}
 USER ${USER}:${GROUP}
 
+ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN rustup toolchain install nightly-2024-11-29 --component llvm-tools --component rustc-dev --component rust-src
+RUN rustup default nightly-2024-11-29-x86_64-unknown-linux-gnu
+
 RUN mkdir /home/${USER}/workspace
 WORKDIR /home/${USER}/workspace
 
