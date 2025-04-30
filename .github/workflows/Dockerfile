@@ -22,4 +22,4 @@ RUN mkdir /home/${USER}/workspace
 WORKDIR /home/${USER}/workspace
 
 ENV PATH=/home/${USER}/.local/bin:${PATH}
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh && uv --version
+RUN curl -LsSf https://astral.sh/uv/0.7.2/install.sh  | sh && uv --version
