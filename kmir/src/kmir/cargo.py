@@ -97,11 +97,11 @@ class CargoProject:
 def cargo_get_smir_json(rs_file: Path, save_smir: bool = False) -> dict[str, Any]:
     if Path(IN_TREE_SMIR_JSON_DIR).exists():
         # prefer local dependency if it exists (i.e., we are in a source/build tree)
-        command = ['cargo', 'run', '--', '-Zno-codegen', str(rs_file)]
+        command = ['cargo', 'run', '--', '-Zno-codegen', str(rs_file.resolve())]
         cwd = IN_TREE_SMIR_JSON_DIR
     else:
         # otherwise use 'stable-mir-json' from the path (fail if it does not exist)
-        command = ['stable-mir-json', '-Zno-codegen', str(rs_file)]
+        command = ['stable-mir-json', '-Zno-codegen', str(rs_file.resolve())]
         cwd = Path.cwd()
 
     smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
