@@ -12,6 +12,7 @@ from pyk.proof import Proof
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
 from kmir.options import ProveRSOpts
 from kmir.parse.parser import Parser
+from kmir.testing.fixtures import kmir_haskell, kmir_llvm
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
@@ -54,11 +55,11 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_INPUT_DIRS,
     ids=[str(test_file.relative_to(SCHEMA_PARSE_DATA)) for test_file in SCHEMA_PARSE_INPUT_DIRS],
 )
-def test_schema_parse(test_dir: Path, kmir: KMIR) -> None:
+def test_schema_parse(test_dir: Path, kmir_haskell: KMIR) -> None:
     input_json = test_dir / 'input.json'
     reference_sort = test_dir / 'reference.sort'
     reference_kmir = test_dir / 'reference.kmir'
-    parser = Parser(kmir.definition)
+    parser = Parser(kmir_haskell.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -68,7 +69,7 @@ def test_schema_parse(test_dir: Path, kmir: KMIR) -> None:
     assert parser_result is not None
     converted_ast, _ = parser_result
 
-    rc, parsed_ast = kmir.kparse(reference_kmir, sort=reference_sort_data)
+    rc, parsed_ast = kmir_haskell.kparse(reference_kmir, sort=reference_sort_data)
 
     assert converted_ast == parsed_ast
 
@@ -231,9 +232,9 @@ SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_T
 )
 def test_schema_kapply_parse(
     test_case: tuple[JSON, KInner, KSort],
-    kmir: KMIR,
+    kmir_haskell: KMIR,
 ) -> None:
-    parser = Parser(kmir.definition)
+    parser = Parser(kmir_haskell.definition)
 
     json_data, expected_term, expected_sort = test_case
 
@@ -348,6 +349,7 @@ EXEC_DATA = [
 ]
 
 
+@pytest.mark.parametrize('kmir', [kmir_llvm(), kmir_haskell()], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -387,7 +389,7 @@ def test_exec_smir(
     [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
     ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
 )
-def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
+def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir_haskell: KMIR) -> None:
     testname, smir_json = test_data
     spec_file = tmp_path / f'{testname}.k'
     gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
@@ -398,7 +400,7 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     _kmir_gen_spec(gen_opts)
     _kmir_prove_run(prove_opts)
 
-    claim_labels = kmir.get_claim_index(spec_file).labels()
+    claim_labels = kmir_haskell.get_claim_index(spec_file).labels()
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
@@ -413,12 +415,12 @@ PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
     PROVING_FILES,
     ids=[spec.stem for spec in PROVING_FILES],
 )
-def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
+def test_prove(spec: Path, tmp_path: Path, kmir_haskell: KMIR) -> None:
     proof_dir = tmp_path / (spec.stem + 'proofs')
     prove_opts = ProveRunOpts(spec, proof_dir, None, None)
     _kmir_prove_run(prove_opts)
 
-    claim_labels = kmir.get_claim_index(spec).labels()
+    claim_labels = kmir_haskell.get_claim_index(spec).labels()
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
@@ -433,10 +435,10 @@ PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
     PROVING_FILES,
     ids=[spec.stem for spec in PROVING_FILES],
 )
-def test_prove_rs(rs_file: Path, kmir: KMIR) -> None:
+def test_prove_rs(rs_file: Path, kmir_haskell: KMIR) -> None:
     should_fail = rs_file.stem.endswith('fail')
     prove_rs_opts = ProveRSOpts(rs_file)
-    apr_proof = kmir.prove_rs(prove_rs_opts)
+    apr_proof = kmir_haskell.prove_rs(prove_rs_opts)
     if not should_fail:
         assert apr_proof.passed
     else:
