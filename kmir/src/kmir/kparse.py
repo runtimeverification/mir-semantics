@@ -18,7 +18,7 @@ from pyk.utils import run_process
 
 
 class KParse(KPrint):
-    command: str
+    parser: str
 
     def __init__(
         self,
@@ -36,7 +36,7 @@ class KParse(KPrint):
             extra_unparsing_modules=extra_unparsing_modules,
             patch_symbol_table=patch_symbol_table,
         )
-        self.command = command
+        self.parser = command
 
     def parse_process(
         self,
@@ -49,7 +49,7 @@ class KParse(KPrint):
             ntf.flush()
 
             return _kparse(
-                command=self.command,
+                command=self.parser,
                 input_file=Path(ntf.name),
                 definition_dir=self.definition_dir,
                 sort=sort,
