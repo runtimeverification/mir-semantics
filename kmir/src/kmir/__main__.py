@@ -171,12 +171,19 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    prove_args = ArgumentParser(add_help=False)
+    prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+    prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
+    prove_args.add_argument(
+        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
+    )
+
     prove_parser = command_parser.add_parser(
         'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args]
     )
     prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
 
-    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
+    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec', parents=[prove_args])
     prove_run_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
     prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_run_parser.add_argument(
@@ -185,14 +192,7 @@ def _arg_parser() -> ArgumentParser:
     prove_run_parser.add_argument(
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
-    prove_run_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_run_parser.add_argument(
-        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
-    )
     prove_run_parser.add_argument('--reload', action='store_true', help='Force restarting proof')
-    prove_run_parser.add_argument(
-        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
-    )
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -206,17 +206,10 @@ def _arg_parser() -> ArgumentParser:
     prove_prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
     prove_rs_parser = command_parser.add_parser(
-        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args]
+        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
     prove_rs_parser.add_argument(
         'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
-    )
-    prove_rs_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_rs_parser.add_argument(
-        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
-    )
-    prove_rs_parser.add_argument(
-        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
 
     return parser
