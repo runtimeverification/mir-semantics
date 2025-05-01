@@ -111,6 +111,8 @@ class KMIR(KProve, KRun, KParse):
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
             apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
+        if apr_proof.passed:
+            return apr_proof
         with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
