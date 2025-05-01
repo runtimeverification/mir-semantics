@@ -427,7 +427,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
-                // | array context will be added here
+                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
@@ -438,6 +438,10 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I) CTXS)
       => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+     [preserves-definedness] // valid list indexing checked upon context construction
+
+  rule #buildUpdate(VAL, CtxIndex(TY, ELEMS, I) CTXS)
+      => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
   rule <k> #projectedUpdate(
@@ -456,6 +460,84 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedLocal(ARGS[I])
      andBool (FORCE orBool MUT ==K mutabilityMut)
      [preserves-definedness] // valid list indexing checked
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Range(ELEMENTS), TY, MUT),
+              projectionElemIndex(local(LOCAL)) PROJS,
+              UPDATE,
+              CTXTS,
+              FORCE
+           )
+          =>
+            #projectedUpdate(
+              DEST,
+              {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
+              PROJS,
+              UPDATE,
+              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS,
+              FORCE)
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires 0 <=Int LOCAL
+     andBool LOCAL <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[LOCAL])
+     andBool isInt(#expectUsize({LOCALS[LOCAL]}:>TypedValue))
+     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
+     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Range(ELEMENTS), TY, MUT),
+              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
+              UPDATE,
+              CTXTS,
+              FORCE
+           )
+          =>
+            #projectedUpdate(
+              DEST,
+              {ELEMENTS[OFFSET]}:>TypedValue,
+              PROJS,
+              UPDATE,
+              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS,
+              FORCE)
+        ...
+        </k>
+    requires 0 <=Int OFFSET
+     andBool OFFSET <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[OFFSET])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Range(ELEMENTS), TY, MUT),
+              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
+              UPDATE,
+              CTXTS,
+              FORCE
+           )
+          =>
+            #projectedUpdate(
+              DEST,
+              {ELEMENTS[OFFSET]}:>TypedValue,
+              PROJS,
+              UPDATE,
+              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS,
+              FORCE)
+        ...
+        </k>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int MINLEN
+     andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
+     andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
+     andBool (FORCE orBool MUT ==K mutabilityMut)
+    [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
             _DEST,
