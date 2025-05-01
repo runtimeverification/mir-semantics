@@ -104,7 +104,7 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
-            smir_json = cargo_get_smir_json(opts.rs_file)
+            smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
             parser = Parser(self.definition)
             parse_result = parser.parse_mir_json(smir_json, 'Pgm')
             assert parse_result is not None

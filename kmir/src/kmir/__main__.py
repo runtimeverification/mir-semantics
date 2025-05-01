@@ -213,6 +213,9 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
     )
+    prove_rs_parser.add_argument(
+        '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
+    )
 
     return parser
 
@@ -260,6 +263,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
+                save_smir=ns.save_smir,
             )
         case _:
             raise AssertionError()
