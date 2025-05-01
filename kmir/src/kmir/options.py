@@ -28,6 +28,23 @@ class RunOpts(KMirOpts):
 
 
 @dataclass
+class ProveOpts(KMirOpts):
+    bug_report: Path | None
+    max_depth: int | None
+    max_iterations: int | None
+
+    def __init__(
+        self,
+        bug_report: Path | None = None,
+        max_depth: int | None = None,
+        max_iterations: int | None = None,
+    ) -> None:
+        self.bug_report = bug_report
+        self.max_depth = max_depth
+        self.max_iterations = max_iterations
+
+
+@dataclass
 class GenSpecOpts(KMirOpts):
     input_file: Path
     output_file: Path | None
@@ -43,11 +60,8 @@ class GenSpecOpts(KMirOpts):
 
 
 @dataclass
-class ProveRSOpts(KMirOpts):
+class ProveRSOpts(ProveOpts):
     rs_file: Path
-    bug_report: Path | None
-    max_depth: int | None
-    max_iterations: int | None
 
     def __init__(
         self,
@@ -63,14 +77,11 @@ class ProveRSOpts(KMirOpts):
 
 
 @dataclass
-class ProveRunOpts(KMirOpts):
+class ProveRunOpts(ProveOpts):
     spec_file: Path
     proof_dir: Path | None
     include_labels: tuple[str, ...] | None
     exclude_labels: tuple[str, ...] | None
-    bug_report: Path | None
-    max_depth: int | None
-    max_iterations: int | None
     reload: bool
 
     def __init__(
