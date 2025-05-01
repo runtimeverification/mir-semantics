@@ -98,21 +98,22 @@ class KMIR(KProve, KRun, KParse):
         if not opts.rs_file.is_file():
             raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
 
-        smir_json = cargo_get_smir_json(opts.rs_file)
-        parser = Parser(self.definition)
-        parse_result = parser.parse_mir_json(smir_json, 'Pgm')
-        assert parse_result is not None
-        kmir_kast, _ = parse_result
-        assert isinstance(kmir_kast, KInner)
-
         label = str(opts.rs_file.stem)
         if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
             _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
-            _LOGGER.info(f'Initialising proof: {label}')
+            _LOGGER.info(f'Constructing initial proof: {label}')
+            smir_json = cargo_get_smir_json(opts.rs_file)
+            parser = Parser(self.definition)
+            parse_result = parser.parse_mir_json(smir_json, 'Pgm')
+            assert parse_result is not None
+            kmir_kast, _ = parse_result
+            assert isinstance(kmir_kast, KInner)
             apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
-        with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
+        if apr_proof.passed:
+            return apr_proof
+        with self.kcfg_explore(label) as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
             return apr_proof
