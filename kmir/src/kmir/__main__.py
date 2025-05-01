@@ -113,7 +113,7 @@ def _kmir_prove_view(opts: ViewOpts) -> None:
 def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, full_printer=True)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, full_printer=opts.full_printer)
     shower = APRProofShow(kmir, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))
@@ -205,7 +205,16 @@ def _arg_parser() -> ArgumentParser:
     )
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
-    command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
+    show_parser = command_parser.add_parser(
+        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args]
+    )
+    show_parser.add_argument(
+        '--no-full-printer',
+        dest='full_printer',
+        action='store_false',
+        default=True,
+        help='Do not display the full node in output.',
+    )
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
@@ -254,7 +263,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ShowOpts(proof_dir, ns.id)
+            return ShowOpts(proof_dir, ns.id, full_printer=ns.full_printer)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),

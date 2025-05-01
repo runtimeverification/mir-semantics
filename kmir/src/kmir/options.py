@@ -127,7 +127,18 @@ class ViewOpts(ProofOpts): ...
 
 
 @dataclass
-class ShowOpts(ProofOpts): ...
+class ShowOpts(ProofOpts):
+    full_printer: bool
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        full_printer: bool = True,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.full_printer = full_printer
 
 
 @dataclass
