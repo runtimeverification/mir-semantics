@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
@@ -30,6 +31,8 @@ if TYPE_CHECKING:
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 class KMIR(KProve, KRun, KParse):
@@ -76,7 +79,9 @@ class KMIR(KProve, KRun, KParse):
 
         return result
 
-    def apr_proof_from_kast(self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell') -> APRProof:
+    def apr_proof_from_kast(
+        self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell', proof_dir: Path | None = None
+    ) -> APRProof:
         config = self.make_init_config(kmir_kast, 'main', sort=sort)
         config_with_cell_vars, _ = split_config_from(config)
 
@@ -87,7 +92,7 @@ class KMIR(KProve, KRun, KParse):
         kcfg = KCFG()
         init_node = kcfg.create_node(lhs)
         target_node = kcfg.create_node(rhs)
-        return APRProof(id, kcfg, [], init_node.id, target_node.id, {})
+        return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
     def prove_rs(self, opts: ProveRSOpts) -> APRProof:
         if not opts.rs_file.is_file():
@@ -100,7 +105,13 @@ class KMIR(KProve, KRun, KParse):
         kmir_kast, _ = parse_result
         assert isinstance(kmir_kast, KInner)
 
-        apr_proof = self.apr_proof_from_kast(str(opts.rs_file.stem), kmir_kast)
+        label = str(opts.rs_file.stem)
+        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+            apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+        else:
+            _LOGGER.info(f'Initialising proof: {label}')
+            apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
         with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
