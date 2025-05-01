@@ -203,7 +203,6 @@ def _arg_parser() -> ArgumentParser:
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
-    prune_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
     command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
@@ -233,6 +232,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
             )
         case 'prove':
+            proof_dir = Path(ns.proof_dir).resolve()
             return ProveRawOpts(
                 spec_file=Path(ns.input_file).resolve(),
                 proof_dir=ns.proof_dir,
@@ -244,13 +244,13 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_iterations=ns.max_iterations,
             )
         case 'view':
-            proof_dir = Path(ns.proof_dir.resolve())
+            proof_dir = Path(ns.proof_dir).resolve()
             return ViewOpts(proof_dir, ns.id)
         case 'prune':
-            proof_dir = Path(ns.proof_dir.resolve())
+            proof_dir = Path(ns.proof_dir).resolve()
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
-            proof_dir = Path(ns.proof_dir)
+            proof_dir = Path(ns.proof_dir).resolve()
             return ShowOpts(proof_dir, ns.id)
         case 'prove-rs':
             return ProveRSOpts(
