@@ -198,27 +198,15 @@ def _arg_parser() -> ArgumentParser:
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
 
-    view_parser = command_parser.add_parser(
-        'view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args]
-    )
-    view_parser.add_argument(
-        '--proof-dir', required=True, metavar='PROOF_DIR', help='Proofs folder that can contain the proof'
-    )
+    command_parser.add_parser('view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args])
 
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
-    prune_parser.add_argument('--proof-dir', required=True, metavar='DIR', help='Proof directory')
     prune_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
-    show_parser = command_parser.add_parser(
-        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args]
-    )
-    show_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
-    show_parser.add_argument(
-        '--proof-dir', required=True, metavar='PROOF_DIR', help='Proofs folder that can contain the proof'
-    )
+    command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
