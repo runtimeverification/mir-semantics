@@ -28,6 +28,12 @@ class RunOpts(KMirOpts):
 
 
 @dataclass
+class ProofOpts(KMirOpts):
+    proof_dir: Path
+    id: str
+
+
+@dataclass
 class ProveOpts(KMirOpts):
     proof_dir: Path | None
     bug_report: Path | None
@@ -114,19 +120,13 @@ class ProveRawOpts(ProveOpts):
 
 
 @dataclass
-class ViewOpts(KMirOpts):
-    proof_dir: Path
-    id: str
+class ViewOpts(ProofOpts): ...
 
 
 @dataclass
-class ShowOpts(KMirOpts):
-    proof_dir: Path
-    id: str
+class ShowOpts(ProofOpts): ...
 
 
 @dataclass
-class PruneOpts(KMirOpts):
-    proof_dir: Path
-    id: str
+class PruneOpts(ProofOpts):
     node_id: int
