@@ -29,19 +29,25 @@ class RunOpts(KMirOpts):
 
 @dataclass
 class ProveOpts(KMirOpts):
+    proof_dir: Path | None
     bug_report: Path | None
     max_depth: int | None
     max_iterations: int | None
+    reload: bool
 
     def __init__(
         self,
+        proof_dir: Path | str | None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
+        reload: bool = False,
     ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
+        self.reload = reload
 
 
 @dataclass
@@ -66,23 +72,25 @@ class ProveRSOpts(ProveOpts):
     def __init__(
         self,
         rs_file: Path,
+        proof_dir: Path | str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
+        reload: bool = False,
     ) -> None:
         self.rs_file = rs_file
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
+        self.reload = reload
 
 
 @dataclass
 class ProveRunOpts(ProveOpts):
     spec_file: Path
-    proof_dir: Path | None
     include_labels: tuple[str, ...] | None
     exclude_labels: tuple[str, ...] | None
-    reload: bool
 
     def __init__(
         self,
