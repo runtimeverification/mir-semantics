@@ -11,7 +11,7 @@ from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts
 from .parse.parser import parse_json
@@ -29,7 +29,7 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    kmir = KMIR(LLVM_LIB_DIR)
+    kmir = KMIR(HASKELL_DEF_DIR) if opts.haskell_backend else KMIR(LLVM_DEF_DIR)
 
     smir_file: Path
     if opts.file:
