@@ -900,29 +900,15 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
 ```k
   syntax MIRError ::= OperationError
 
-  syntax OperationError ::= TypeMismatch ( BinOp, Ty, Ty )
-                          | OperandMismatch ( BinOp, Value, Value )
-                          | OperandError( BinOp, TypedLocal, TypedLocal)
-                          | OperandMismatch ( UnOp, Value )
-                          | OperandError( UnOp, TypedLocal)
-                          // errors above are compiler bugs or invalid MIR
-                          | OpNotimplemented ( BinOp, TypedValue, TypedValue)
-                          // errors below are program errors
-                          | "DivisionByZero"
+ // (dynamic) program errors causing undefined behaviour
+  syntax OperationError ::= "DivisionByZero"
                           | "Overflow_U_B"
 
-  // catch Moved or uninitialised operands
-  rule #compute(OP, ARG1, ARG2, _FLAG) => OperandError(OP, ARG1, ARG2)
-    requires notBool (isTypedValue(ARG1) andBool isTypedValue(ARG2))
+  // errors caused by invalid MIR code get stuck
 
-  rule #applyUnOp(OP, ARG) => OperandError(OP, ARG)
-    requires notBool isTypedValue(ARG)
+  // Moved or uninitialised operands
 
-  // catch-all rule to make `#compute` total
-  rule #compute(OP, ARG1, ARG2, _FLAG) => OpNotimplemented(OP, ARG1, ARG2)
-    requires isTypedValue(ARG1)
-     andBool isTypedValue(ARG2)
-    [owise]
+  // specific errors for the particular operation types (argument or type mismatches)
 ```
 
 #### Arithmetic
@@ -967,6 +953,10 @@ The arithmetic operations require operands of the same numeric type.
   rule onInt(binOpRem, X, Y)          => X %Int Y
     requires Y =/=Int 0
   // operation undefined otherwise
+
+  // error cases for isArithmetic(BOP):
+  // * arguments must have the same type (TY match)
+  // * arguments must be Numbers
 
   // Checked operations return a pair of the truncated value and an overflow flag
   // signed numbers: must check for wrap-around (operation specific)
@@ -1095,22 +1085,6 @@ The arithmetic operations require operands of the same numeric type.
     requires DIVISOR ==Int -1
      andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
     [priority(40)]
-
-  // error cases:
-    // non-integer arguments
-  rule #compute(BOP, typedValue(ARG1, TY, _), typedValue(ARG2, TY, _), _)
-    =>
-       OperandMismatch(BOP, ARG1, ARG2)
-    requires isArithmetic(BOP)
-    [owise]
-
-    // different argument types
-  rule #compute(BOP, typedValue(_, TY1, _), typedValue(_, TY2, _), _)
-    =>
-       TypeMismatch(BOP, TY1, TY2)
-    requires TY1 =/=K TY2
-     andBool isArithmetic(BOP)
-    [owise]
 ```
 
 #### Comparison operations
@@ -1146,9 +1120,9 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
-  rule #compute(OP, typedValue(_, TY, _), typedValue(_, TY2, _), _) => TypeMismatch(OP, TY, TY2)
-    requires isComparison(OP)
-     andBool TY =/=K TY2
+  // error cases for isComparison and binOpCmp:
+  // * arguments must have the same type
+  // * arguments must be numbers or Bool
 
   rule #compute(OP, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
@@ -1161,12 +1135,6 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
         typedValue(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
-
-  rule #compute(OP, typedValue(ARG1, TY, _), typedValue(ARG2, TY, _), _)
-      =>
-        OperandMismatch(OP, ARG1, ARG2)
-    requires isComparison(OP)
-    [owise]
 ```
 
 The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
@@ -1226,11 +1194,6 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
             typedValue(Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
         ...
         </k>
-```
-
-```k
-  rule <k> #applyUnOp(OP, typedValue(VAL, _, _)) => OperandMismatch(OP, VAL) ... </k>
-    [owise]
 ```
 
 #### Bit-oriented operations
