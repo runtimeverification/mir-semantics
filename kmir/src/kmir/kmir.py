@@ -27,6 +27,8 @@ if TYPE_CHECKING:
 
     from pyk.utils import BugReport
 
+    from .options import ProveRSOpts
+
 
 class KMIR(KProve, KRun):
     llvm_library_dir: Path | None
@@ -68,24 +70,21 @@ class KMIR(KProve, KRun):
         target_node = kcfg.create_node(rhs)
         return APRProof(id, kcfg, [], init_node.id, target_node.id, {})
 
-    def prove_rs(
-        self,
-        rs_file: Path,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-    ) -> APRProof:
-        smir_json = cargo_get_smir_json(rs_file)
+    def prove_rs(self, opts: ProveRSOpts) -> APRProof:
+        if not opts.rs_file.is_file():
+            raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
 
+        smir_json = cargo_get_smir_json(opts.rs_file)
         parser = Parser(self.definition)
         parse_result = parser.parse_mir_json(smir_json, 'Pgm')
         assert parse_result is not None
         kmir_kast, _ = parse_result
         assert isinstance(kmir_kast, KInner)
 
-        apr_proof = self.apr_proof_from_kast(str(rs_file.stem), kmir_kast)
+        apr_proof = self.apr_proof_from_kast(str(opts.rs_file.stem), kmir_kast)
         with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=max_depth)
-            prover.advance_proof(apr_proof, max_iterations=max_iterations)
+            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
             return apr_proof
 
 

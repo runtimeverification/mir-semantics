@@ -3,17 +3,17 @@ from __future__ import annotations
 import logging
 import sys
 from argparse import ArgumentParser
-from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.cli.args import KCLIArgs, LoggingOptions
+from pyk.cli.args import KCLIArgs
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
 from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
 from .kmir import KMIR, KMIRAPRNodePrinter
+from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts
 from .parse.parser import parse_json
 from .rust import CargoProject
 
@@ -22,101 +22,10 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Final
 
+    from .options import KMirOpts
+
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
-
-
-@dataclass
-class KMirOpts(LoggingOptions): ...
-
-
-@dataclass
-class RunOpts(KMirOpts):
-    bin: str | None
-    file: str | None
-    depth: int
-    start_symbol: str
-    haskell_backend: bool
-
-
-@dataclass
-class GenSpecOpts(KMirOpts):
-    input_file: Path
-    output_file: Path | None
-    start_symbol: str
-
-    def __init__(self, input_file: Path, output_file: Path | str | None, start_symbol: str) -> None:
-        self.input_file = input_file
-        if output_file is None:
-            self.output_file = None
-        else:
-            self.output_file = Path(output_file).resolve()
-        self.start_symbol = start_symbol
-
-
-@dataclass
-class ProveRSOpts(KMirOpts):
-    rs_file: Path
-    bug_report: Path | None
-    max_depth: int | None
-    max_iterations: int | None
-
-    def __init__(
-        self,
-        rs_file: Path,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-    ) -> None:
-        self.rs_file = rs_file
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-
-
-@dataclass
-class ProveRunOpts(KMirOpts):
-    spec_file: Path
-    proof_dir: Path | None
-    include_labels: tuple[str, ...] | None
-    exclude_labels: tuple[str, ...] | None
-    bug_report: Path | None
-    max_depth: int | None
-    max_iterations: int | None
-    reload: bool
-
-    def __init__(
-        self,
-        spec_file: Path,
-        proof_dir: Path | str | None,
-        include_labels: str | None,
-        exclude_labels: str | None,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-        reload: bool = False,
-    ) -> None:
-        self.spec_file = spec_file
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
-        self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-        self.reload = reload
-
-
-@dataclass
-class ProveViewOpts(KMirOpts):
-    proof_dir: Path
-    id: str
-
-
-@dataclass
-class ProvePruneOpts(KMirOpts):
-    proof_dir: Path
-    id: str
-    node_id: int
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -143,10 +52,8 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    if not opts.rs_file.is_file():
-        raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rs(opts.rs_file, max_depth=opts.max_depth, max_iterations=opts.max_iterations)
+    proof = kmir.prove_rs(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
@@ -264,12 +171,19 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    prove_args = ArgumentParser(add_help=False)
+    prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
+    prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
+    prove_args.add_argument(
+        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
+    )
+
     prove_parser = command_parser.add_parser(
         'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args]
     )
     prove_command_parser = prove_parser.add_subparsers(dest='prove_command', required=True)
 
-    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec')
+    prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec', parents=[prove_args])
     prove_run_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
     prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_run_parser.add_argument(
@@ -278,14 +192,7 @@ def _arg_parser() -> ArgumentParser:
     prove_run_parser.add_argument(
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
-    prove_run_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_run_parser.add_argument(
-        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
-    )
     prove_run_parser.add_argument('--reload', action='store_true', help='Force restarting proof')
-    prove_run_parser.add_argument(
-        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
-    )
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -299,17 +206,10 @@ def _arg_parser() -> ArgumentParser:
     prove_prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
     prove_rs_parser = command_parser.add_parser(
-        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args]
+        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
     prove_rs_parser.add_argument(
         'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
-    )
-    prove_rs_parser.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_rs_parser.add_argument(
-        '--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg'
-    )
-    prove_rs_parser.add_argument(
-        '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
 
     return parser
