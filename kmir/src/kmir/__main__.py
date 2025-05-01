@@ -11,7 +11,7 @@ from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR, haskell_semantics, llvm_semantics
+from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts
 from .parse.parser import parse_json
@@ -29,7 +29,7 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    tools = haskell_semantics() if opts.haskell_backend else llvm_semantics()
+    kmir = KMIR(HASKELL_DEF_DIR) if opts.haskell_backend else KMIR(LLVM_DEF_DIR)
 
     smir_file: Path
     if opts.file:
@@ -39,16 +39,16 @@ def _kmir_run(opts: RunOpts) -> None:
         target = opts.bin if opts.bin else cargo.default_target
         smir_file = cargo.smir_for(target)
 
-    parse_result = parse_json(tools.definition, smir_file, 'Pgm')
+    parse_result = parse_json(kmir.definition, smir_file, 'Pgm')
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
 
     kmir_kast, _ = parse_result
 
-    result = tools.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
+    result = kmir.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
 
-    print(tools.kprint.kore_to_pretty(result))
+    print(kmir.kore_to_pretty(result))
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
