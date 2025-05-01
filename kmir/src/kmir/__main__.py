@@ -92,7 +92,7 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
             _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
             proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
-            _LOGGER.info(f'Initialising proof: {label}')
+            _LOGGER.info(f'Constructing initial proof: {label}')
             proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
         with kmir.kcfg_explore(label) as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
