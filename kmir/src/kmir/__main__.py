@@ -172,11 +172,13 @@ def _arg_parser() -> ArgumentParser:
     )
 
     prove_args = ArgumentParser(add_help=False)
+    prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
     prove_args.add_argument(
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
+    prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
 
     prove_parser = command_parser.add_parser(
         'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args]
@@ -185,14 +187,12 @@ def _arg_parser() -> ArgumentParser:
 
     prove_run_parser = prove_command_parser.add_parser('run', help='Run the prover on a spec', parents=[prove_args])
     prove_run_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
-    prove_run_parser.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_run_parser.add_argument(
         '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
     )
     prove_run_parser.add_argument(
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
-    prove_run_parser.add_argument('--reload', action='store_true', help='Force restarting proof')
 
     prove_view_parser = prove_command_parser.add_parser('view', help='View a saved proof')
     prove_view_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -253,9 +253,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),
+                proof_dir=ns.proof_dir,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
+                reload=ns.reload,
             )
         case _:
             raise AssertionError()
