@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, Subst
+from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
 from pyk.kast.manip import split_config_from
+from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -16,21 +17,22 @@ from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
+from .kparse import KParse
 from .parse.parser import Parser
 from .rust.cargo import cargo_get_smir_json
-from .tools import Tools
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
     from typing import Final
 
+    from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
 
 
-class KMIR(KProve, KRun):
+class KMIR(KProve, KRun, KParse):
     llvm_library_dir: Path | None
     bug_report: BugReport | None
 
@@ -40,6 +42,7 @@ class KMIR(KProve, KRun):
         self.bug_report = bug_report_arg(bug_report) if bug_report is not None else None
         KProve.__init__(self, definition_dir, bug_report=self.bug_report)
         KRun.__init__(self, definition_dir, bug_report=self.bug_report)
+        KParse.__init__(self, definition_dir)
         self.llvm_library_dir = llvm_library_dir
 
     class Symbols:
@@ -56,9 +59,25 @@ class KMIR(KProve, KRun):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
+    def make_init_config(
+        self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
+    ) -> KInner:
+        if isinstance(start_symbol, str):
+            start_symbol = stringToken(start_symbol)
+
+        subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
+        init_config = subst.apply(self.definition.init_config(KSort(sort)))
+        return init_config
+
+    def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
+        init_config = self.make_init_config(parsed_smir, start_symbol)
+        init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+        result = self.run_pattern(init_kore, depth=depth)
+
+        return result
+
     def apr_proof_from_kast(self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell') -> APRProof:
-        tools = Tools(self.definition_dir)
-        config = tools.make_init_config(kmir_kast, 'main', sort=sort)
+        config = self.make_init_config(kmir_kast, 'main', sort=sort)
         config_with_cell_vars, _ = split_config_from(config)
 
         lhs = CTerm(config)
