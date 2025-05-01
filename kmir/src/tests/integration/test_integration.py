@@ -10,13 +10,14 @@ from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
+from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
+from kmir.kmir import KMIR
 from kmir.options import ProveRSOpts
 from kmir.parse.parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
-    from kmir.kmir import KMIR
     from kmir.parse.parser import JSON
 
 
@@ -348,6 +349,7 @@ EXEC_DATA = [
 ]
 
 
+@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -355,12 +357,12 @@ EXEC_DATA = [
 )
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
-    kmir: KMIR,
+    kmir_backend: KMIR,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
 
-    parser = Parser(kmir.definition)
+    parser = Parser(kmir_backend.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -368,12 +370,12 @@ def test_exec_smir(
     assert parsed is not None
     kmir_kast, _ = parsed
 
-    result = kmir.run_parsed(kmir_kast, depth=depth)
+    result = kmir_backend.run_parsed(kmir_kast, depth=depth)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
-    result_pretty = kmir.kore_to_pretty(result).rstrip()
+    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
 
     if os.getenv('UPDATE_EXEC_SMIR') is None:
         assert result_pretty == expected
