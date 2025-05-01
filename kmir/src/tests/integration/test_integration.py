@@ -10,16 +10,15 @@ from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
 
 from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
-from kmir.build import haskell_semantics, llvm_semantics
+from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
+from kmir.kmir import KMIR
 from kmir.options import ProveRSOpts
 from kmir.parse.parser import Parser
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
-    from kmir.kmir import KMIR
     from kmir.parse.parser import JSON
-    from kmir.tools import Tools
 
 
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
@@ -56,11 +55,11 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_INPUT_DIRS,
     ids=[str(test_file.relative_to(SCHEMA_PARSE_DATA)) for test_file in SCHEMA_PARSE_INPUT_DIRS],
 )
-def test_schema_parse(test_dir: Path, tools: Tools) -> None:
+def test_schema_parse(test_dir: Path, kmir: KMIR) -> None:
     input_json = test_dir / 'input.json'
     reference_sort = test_dir / 'reference.sort'
     reference_kmir = test_dir / 'reference.kmir'
-    parser = Parser(tools.definition)
+    parser = Parser(kmir.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -70,7 +69,7 @@ def test_schema_parse(test_dir: Path, tools: Tools) -> None:
     assert parser_result is not None
     converted_ast, _ = parser_result
 
-    rc, parsed_ast = tools.kparse.kparse(reference_kmir, sort=reference_sort_data)
+    rc, parsed_ast = kmir.kparse(reference_kmir, sort=reference_sort_data)
 
     assert converted_ast == parsed_ast
 
@@ -233,9 +232,9 @@ SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_T
 )
 def test_schema_kapply_parse(
     test_case: tuple[JSON, KInner, KSort],
-    tools: Tools,
+    kmir: KMIR,
 ) -> None:
-    parser = Parser(tools.definition)
+    parser = Parser(kmir.definition)
 
     json_data, expected_term, expected_sort = test_case
 
@@ -356,7 +355,7 @@ EXEC_DATA = [
 ]
 
 
-@pytest.mark.parametrize('tools', [llvm_semantics(), haskell_semantics()], ids=['llvm', 'haskell'])
+@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -364,12 +363,12 @@ EXEC_DATA = [
 )
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
-    tools: Tools,
+    kmir_backend: KMIR,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
 
-    parser = Parser(tools.definition)
+    parser = Parser(kmir_backend.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -377,12 +376,12 @@ def test_exec_smir(
     assert parsed is not None
     kmir_kast, _ = parsed
 
-    result = tools.run_parsed(kmir_kast, depth=depth)
+    result = kmir_backend.run_parsed(kmir_kast, depth=depth)
 
     with output_kast.open('r') as f:
         expected = f.read().rstrip()
 
-    result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
+    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
 
     if os.getenv('UPDATE_EXEC_SMIR') is None:
         assert result_pretty == expected

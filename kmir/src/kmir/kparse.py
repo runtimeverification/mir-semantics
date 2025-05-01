@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable
 
 if TYPE_CHECKING:
     from subprocess import CompletedProcess
     from pyk.kore.syntax import Pattern
     from pyk.kast.inner import KInner
+    from pyk.kast.outer import KFlatModule
+    from pyk.kast.pretty import SymbolTable
+    from pyk.utils import BugReport
 
 from pyk.kore.parser import KoreParser
 from pyk.ktool.kprint import KPrint
@@ -15,17 +18,25 @@ from pyk.utils import run_process
 
 
 class KParse(KPrint):
-    command: str
+    parser: str
 
     def __init__(
         self,
         definition_dir: Path,
+        use_directory: Path | None = None,
+        bug_report: BugReport | None = None,
+        extra_unparsing_modules: Iterable[KFlatModule] = (),
+        patch_symbol_table: Callable[[SymbolTable], None] | None = None,
         command: str = 'kparse',
     ):
         super().__init__(
             definition_dir,
+            use_directory=use_directory,
+            bug_report=bug_report,
+            extra_unparsing_modules=extra_unparsing_modules,
+            patch_symbol_table=patch_symbol_table,
         )
-        self.command = command
+        self.parser = command
 
     def parse_process(
         self,
@@ -38,7 +49,7 @@ class KParse(KPrint):
             ntf.flush()
 
             return _kparse(
-                command=self.command,
+                command=self.parser,
                 input_file=Path(ntf.name),
                 definition_dir=self.definition_dir,
                 sort=sort,

@@ -1,12 +1,14 @@
 UV     := uv --directory kmir
 UV_RUN := $(UV) run
 
+PARALLEL := 4
+
 TOP_DIR    := $(shell pwd)
 
 default: check build
 
 build:
-	$(UV_RUN) kdist -v build mir-semantics\.* -j4
+	$(UV_RUN) kdist -v build mir-semantics\.* -j$(PARALLEL)
 
 .PHONY: test
 test: test-unit test-integration smir-parse-tests
@@ -46,7 +48,7 @@ test-unit:
 
 test-integration: build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
-			--durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
 # Checks and formatting
 
