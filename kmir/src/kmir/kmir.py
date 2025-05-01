@@ -18,9 +18,9 @@ from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
+from .cargo import cargo_get_smir_json
 from .kparse import KParse
 from .parse.parser import Parser
-from .rust.cargo import cargo_get_smir_json
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

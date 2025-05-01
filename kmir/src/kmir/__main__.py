@@ -12,10 +12,10 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.tui import APRProofViewer
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
+from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts
 from .parse.parser import parse_json
-from .rust import CargoProject
 
 if TYPE_CHECKING:
     from argparse import Namespace
