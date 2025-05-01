@@ -43,11 +43,9 @@ def _kmir_run(opts: RunOpts) -> None:
     if parse_result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
-
     kmir_kast, _ = parse_result
 
     result = kmir.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
-
     print(kmir.kore_to_pretty(result))
 
 
@@ -94,7 +92,7 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
             _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
             proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
-            _LOGGER.info(f'Initialising proof: {label}')
+            _LOGGER.info(f'Constructing initial proof: {label}')
             proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
         with kmir.kcfg_explore(label) as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
@@ -105,23 +103,16 @@ def _kmir_prove_run(opts: ProveRunOpts) -> None:
 
 def _kmir_prove_view(opts: ProveViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
-
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-
     node_printer = KMIRAPRNodePrinter(kmir, proof)
-
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
-
     viewer.run()
 
 
 def _kmir_prove_prune(opts: ProvePruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-
     pruned_nodes = proof.prune(opts.node_id)
-
     print(f'Pruned nodes: {pruned_nodes}')
-
     proof.write_proof_data()
 
 
