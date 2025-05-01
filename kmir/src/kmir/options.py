@@ -87,7 +87,7 @@ class ProveRSOpts(ProveOpts):
 
 
 @dataclass
-class ProveRunOpts(ProveOpts):
+class ProveRawOpts(ProveOpts):
     spec_file: Path
     include_labels: tuple[str, ...] | None
     exclude_labels: tuple[str, ...] | None
@@ -96,8 +96,8 @@ class ProveRunOpts(ProveOpts):
         self,
         spec_file: Path,
         proof_dir: Path | str | None,
-        include_labels: str | None,
-        exclude_labels: str | None,
+        include_labels: str | None = None,
+        exclude_labels: str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
@@ -114,7 +114,7 @@ class ProveRunOpts(ProveOpts):
 
 
 @dataclass
-class ProveViewOpts(KMirOpts):
+class ViewOpts(KMirOpts):
     proof_dir: Path
     id: str
 
@@ -126,7 +126,7 @@ class ShowOpts(KMirOpts):
 
 
 @dataclass
-class ProvePruneOpts(KMirOpts):
+class PruneOpts(KMirOpts):
     proof_dir: Path
     id: str
     node_id: int
