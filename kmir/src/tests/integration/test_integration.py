@@ -347,6 +347,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.state',
         None,
     ),
+    (
+        'Array-index-writes',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.state',
+        None,
+    ),
 ]
 
 
