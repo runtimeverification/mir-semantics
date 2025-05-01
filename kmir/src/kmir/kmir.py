@@ -113,7 +113,7 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
         if apr_proof.passed:
             return apr_proof
-        with self.kcfg_explore('PROOF-TEST') as kcfg_explore:
+        with self.kcfg_explore(label) as kcfg_explore:
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
             return apr_proof
