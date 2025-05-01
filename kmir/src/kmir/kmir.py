@@ -18,9 +18,9 @@ from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
+from .cargo import cargo_get_smir_json
 from .kparse import KParse
 from .parse.parser import Parser
-from .rust.cargo import cargo_get_smir_json
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -135,12 +135,12 @@ class KMIRSemantics(DefaultSemantics):
 class KMIRNodePrinter(NodePrinter):
     kmir: KMIR
 
-    def __init__(self, kmir: KMIR) -> None:
-        NodePrinter.__init__(self, kmir)
+    def __init__(self, kmir: KMIR, full_printer: bool = False) -> None:
+        NodePrinter.__init__(self, kmir, full_printer=full_printer)
         self.kmir = kmir
 
 
 class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
-    def __init__(self, kmir: KMIR, proof: APRProof) -> None:
-        KMIRNodePrinter.__init__(self, kmir)
-        APRProofNodePrinter.__init__(self, proof, kmir)
+    def __init__(self, kmir: KMIR, proof: APRProof, full_printer: bool = False) -> None:
+        KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
+        APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)

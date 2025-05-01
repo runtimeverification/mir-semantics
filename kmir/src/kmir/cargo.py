@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
-SMIR_JSON_DIR: Final = Path(__file__).parents[4] / 'deps/stable-mir-json/'
+SMIR_JSON_DIR: Final = Path(__file__).parents[3] / 'deps/stable-mir-json/'
 
 
 class CargoProject:

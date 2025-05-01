@@ -9,10 +9,10 @@ import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
 
-from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
+from kmir.__main__ import _kmir_gen_spec, _kmir_prove_run
 from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.kmir import KMIR
-from kmir.options import ProveRSOpts
+from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts
 from kmir.parse.parser import Parser
 
 if TYPE_CHECKING:
@@ -401,7 +401,7 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
 
     proof_dir = tmp_path / 'proof'
-    prove_opts = ProveRunOpts(spec_file, proof_dir, None, None)
+    prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
 
     _kmir_gen_spec(gen_opts)
     _kmir_prove_run(prove_opts)
@@ -423,7 +423,7 @@ PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
 )
 def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
     proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRunOpts(spec, proof_dir, None, None)
+    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
     _kmir_prove_run(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec).labels()
