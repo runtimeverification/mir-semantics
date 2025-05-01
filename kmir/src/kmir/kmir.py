@@ -134,12 +134,12 @@ class KMIRSemantics(DefaultSemantics):
 class KMIRNodePrinter(NodePrinter):
     kmir: KMIR
 
-    def __init__(self, kmir: KMIR) -> None:
-        NodePrinter.__init__(self, kmir)
+    def __init__(self, kmir: KMIR, full_printer: bool = False) -> None:
+        NodePrinter.__init__(self, kmir, full_printer=full_printer)
         self.kmir = kmir
 
 
 class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
-    def __init__(self, kmir: KMIR, proof: APRProof) -> None:
-        KMIRNodePrinter.__init__(self, kmir)
-        APRProofNodePrinter.__init__(self, proof, kmir)
+    def __init__(self, kmir: KMIR, proof: APRProof, full_printer: bool = False) -> None:
+        KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
+        APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)

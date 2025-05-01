@@ -9,12 +9,13 @@ from typing import TYPE_CHECKING
 from pyk.cli.args import KCLIArgs
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
+from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
-from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts
+from .options import GenSpecOpts, ProvePruneOpts, ProveRSOpts, ProveRunOpts, ProveViewOpts, RunOpts, ShowOpts
 from .parse.parser import parse_json
 
 if TYPE_CHECKING:
@@ -115,6 +116,15 @@ def _kmir_prove_view(opts: ProveViewOpts) -> None:
     viewer.run()
 
 
+def _kmir_show(opts: ShowOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, full_printer=True)
+    shower = APRProofShow(kmir, node_printer=node_printer)
+    lines = shower.show(proof)
+    print('\n'.join(lines))
+
+
 def _kmir_prove_prune(opts: ProvePruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
@@ -138,6 +148,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prove_run(opts)
         case ProveViewOpts():
             _kmir_prove_view(opts)
+        case ShowOpts():
+            _kmir_show(opts)
         case ProvePruneOpts():
             _kmir_prove_prune(opts)
         case ProveRSOpts():
@@ -205,6 +217,12 @@ def _arg_parser() -> ArgumentParser:
     prove_prune_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     prove_prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
+    show_parser = command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args])
+    show_parser.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    show_parser.add_argument(
+        '--proof-dir', required=True, metavar='PROOF_DIR', help='Proofs folder that can contain the proof'
+    )
+
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
@@ -250,6 +268,9 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                     return ProvePruneOpts(proof_dir, ns.id, ns.node_id)
                 case _:
                     raise AssertionError()
+        case 'show':
+            proof_dir = Path(ns.proof_dir)
+            return ShowOpts(proof_dir, ns.id)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),

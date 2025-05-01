@@ -120,6 +120,12 @@ class ProveViewOpts(KMirOpts):
 
 
 @dataclass
+class ShowOpts(KMirOpts):
+    proof_dir: Path
+    id: str
+
+
+@dataclass
 class ProvePruneOpts(KMirOpts):
     proof_dir: Path
     id: str
