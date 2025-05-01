@@ -43,17 +43,10 @@ Other uses of heating and cooling are to _read_ local variables as operands. Thi
 ### Errors Related to Accessing Local Variables
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
-It is an error to use a `Moved` local in any way, or to read an uninitialised `NewLocal`.
-Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds.
-Types are also checked, using the `Ty` (an opaque number assigned by the Stable MIR extraction).
-
-```k
-  syntax LocalAccessError ::= InvalidLocal ( Local )
-                            | TypeMismatch( Local, MaybeTy, TypedValue )
-                            | LocalMoved( Local )
-                            | LocalNotMutable ( Local )
-                            | LocalUninitialised( Local )
-```
+It is an error to read a `Moved` local or an uninitialised `NewLocal`.
+Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds
+(but the compiler should guarantee that all local indexes are valid).
+Types (`Ty`, an opaque number assigned by the Stable MIR extraction) are not checked, the local's type is used.
 
 ### Reading Operands (Local Variables and Constants)
 
@@ -96,28 +89,7 @@ local value cannot be read, though, and the value should be initialised.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> operandCopy(place(local(I) #as LOCAL, _))
-        =>
-           LocalMoved(LOCAL)
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  rule <k> operandCopy(place(local(I), _))
-        =>
-           LocalUninitialised(local(I))
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires I <Int size(LOCALS)
-     andBool 0 <=Int I
-     andBool isNewLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-    // TODO how about zero-sized types
+    // error cases (NewLocal, Moved) get stuck
 ```
 
 Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
@@ -135,27 +107,7 @@ further access. Apart from that, the same caveats apply as for operands that are
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> operandMove(place(local(I) #as LOCAL, _))
-        =>
-           LocalMoved(LOCAL)
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  rule <k> operandMove(place(local(I), _))
-        =>
-           LocalUninitialised(local(I))
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isNewLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+    // error cases (NewLocal, Moved) get stuck
 ```
 
 #### Reading places with projections
@@ -298,7 +250,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  // TODO case of MovedLocal and NewLocal
+  // Moved and NewLocal get stuck
 
   // why do we not have this automatically for user-defined lists?
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
@@ -392,51 +344,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
-  // error cases first
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, _), _) => InvalidLocal(LOCAL) ... </k>
-       <locals> LOCALS </locals>
-    requires size(LOCALS) <=Int I orBool I <Int 0
+  // error cases (not checked, just matched below to prevent them)
 
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), typedValue(_, TY, _) #as VAL)
-          =>
-           TypeMismatch(LOCAL, tyOfLocal({LOCALS[I]}:>TypedLocal), VAL)
-          ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-     andBool TY =/=K TyUnknown
-     andBool tyOfLocal({LOCALS[I]}:>TypedLocal) =/=K TY
-    [preserves-definedness] // list index checked before lookup
-
-  // setting a local which was Moved is an error
-  rule <k> #setLocalValue( place(local(I), .ProjectionElems), _)
-          =>
-           LocalMoved(local(I))
-          ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [priority(60), preserves-definedness] // list index checked before lookup
+  // no type check, the local's type is used.
 
   // setting a non-mutable local that is initialised is an error
-  rule <k> #setLocalValue( place(local(I) #as LOCAL, .ProjectionElems), _)
-          =>
-           LocalNotMutable(LOCAL)
-          ...
-       </k>
-       <locals> LOCALS </locals>
-    requires I <Int size(LOCALS)
-     andBool 0 <=Int I
-     andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityNot
 
   // if all is well, write the value
   // mutable local
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, TY, _ ))
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
           =>
            .K
           ...
@@ -448,22 +364,34 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
      andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
-     andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
     [preserves-definedness] // valid list indexing checked
 
-  // special case for non-mutable uninitialised values: mutable once
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, TY, _ ))
+  // non-mutable uninitialised values are mutable once
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
           =>
            .K
           ...
        </k>
-       <locals> 
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))] 
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
        </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
-     andBool (tyOfLocal({LOCALS[I]}:>TypedLocal) ==K TY orBool TY ==K TyUnknown) // matching or unknown type
+    [preserves-definedness] // valid list indexing checked
+
+  // reusing a local which was Moved is allowed
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -711,7 +639,7 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
   rule <k> rvalueLen(PLACE) => #lengthU64(operandCopy(PLACE)) ... </k>
 
   rule <k> #lengthU64(typedValue(Range(LIST), _, _))
-        => 
+        =>
             typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot)  // returns usize
         ...
        </k>
@@ -724,7 +652,7 @@ Likewise built into the language are aggregates (tuples and `struct`s) and varia
 Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
 
 Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
-For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`. 
+For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`.
 
 ```k
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
@@ -852,7 +780,7 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```
 
-### Integer Type Casts 
+### Integer Type Casts
 
 Casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
@@ -919,7 +847,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
   // Integer: handled in separate module for numeric operations
   rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
-      => 
+      =>
         #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
