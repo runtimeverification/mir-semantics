@@ -41,6 +41,10 @@ class SMIRInfo:
         return res
 
     @cached_property
+    def items(self) -> dict[str, dict]:
+        return {_item['symbol_name']: _item for _item in self._smir['items']}
+
+    @cached_property
     def function_arguments(self) -> dict[str, dict]:
         res = {}
         for item in self._smir['items']:
