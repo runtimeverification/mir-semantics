@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
+from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
@@ -144,3 +144,25 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
     def __init__(self, kmir: KMIR, proof: APRProof, full_printer: bool = False) -> None:
         KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
         APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)
+
+    def print_node(self, kcfg: KCFG, node: KCFG.Node) -> list[str]:
+        ret_strs = super().print_node(kcfg, node)
+        curr_span: int | None = None
+        span_worklist: list[KInner] = [node.cterm.cell('K_CELL')]
+        while span_worklist:
+            next_item = span_worklist.pop(0)
+            if type(next_item) is KApply:
+                if (
+                    next_item.label.name == 'span'
+                    and type(next_item.args[0]) is KToken
+                    and next_item.args[0].sort.name == 'Int'
+                ):
+                    curr_span = int(next_item.args[0].token)
+                    break
+                span_worklist = list(next_item.args) + span_worklist
+            if type(next_item) is KSequence:
+                span_worklist = list(next_item.items) + span_worklist
+        ret_strs.append(self.kmir.pretty_print(node.cterm.cell('K_CELL'))[0:80])
+        if curr_span is not None:
+            ret_strs.append(f'span: {curr_span}')
+        return ret_strs
