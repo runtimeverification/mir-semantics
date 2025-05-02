@@ -148,7 +148,7 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig                                                         [group(mir)]
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int)            [group(mir-int)]
+syntax Ty ::= ty(Int)            [group(mir-int), symbol(ty)]
 
 syntax Tys ::= List {Ty, ""}     [group(mir-list), symbol(Tys::append), terminator-symbol(Tys::empty)]
 
