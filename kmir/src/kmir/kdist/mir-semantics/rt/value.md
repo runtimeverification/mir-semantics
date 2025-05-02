@@ -22,9 +22,9 @@ High-level values can be
 - arrays and slices (with homogenous element types)
 
 ```k
-  syntax Value ::= Integer( Int, Int, Bool )
+  syntax Value ::= Integer( Int, Int, Bool ) [symbol(Value::Integer)]
                    // value, bit-width, signedness   for un/signed int
-                 | BoolVal( Bool )
+                 | BoolVal( Bool )           [symbol(Value::Bool)]
                    // boolean
                  | Aggregate( VariantIdx , List )
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
