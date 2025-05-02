@@ -17,6 +17,7 @@ from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
 from .parse.parser import parse_json
+from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -113,7 +114,10 @@ def _kmir_prove_view(opts: ViewOpts) -> None:
 def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, full_printer=opts.full_printer)
+    smir_info = None
+    if opts.smir_info is not None:
+        smir_info = SMIRInfo(opts.smir_info)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
     shower = APRProofShow(kmir, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))
@@ -215,6 +219,13 @@ def _arg_parser() -> ArgumentParser:
         default=True,
         help='Do not display the full node in output.',
     )
+    show_parser.add_argument(
+        '--smir-info',
+        dest='smir_info',
+        type=Path,
+        default=None,
+        help='Path to SMIR JSON file to improve debug messaging.',
+    )
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
@@ -263,7 +274,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ShowOpts(proof_dir, ns.id, full_printer=ns.full_printer)
+            return ShowOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),
