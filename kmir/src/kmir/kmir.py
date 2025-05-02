@@ -53,6 +53,14 @@ class KMIR(KProve, KRun, KParse):
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
+        TYPEDVALUE: Final = 'typedValue'
+        INTEGER: Final = 'Integer'
+        BOOLVAL: Final = 'BoolVal'
+        AGGREGATE: Final = 'Aggregate'
+        REFERENCE: Final = 'Reference'
+        RANGE: Final = 'Range'
+        TY: Final = 'ty'
+        TUPLE: Final = 'Tuple'
 
     @contextmanager
     def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
@@ -255,6 +263,137 @@ class KMIR(KProve, KRun, KParse):
                     ),
                 ),
             ),
+        )
+
+
+class ArgGenerator:
+    # lookup table for type metadata
+    type_map: dict
+    # state-monadic :-P symbolic value generator
+    # State:
+    counter: int  # counter for fresh names. initially 1
+    constraints: list[KInner]  # collected constraints (list of Bool-sorted KInner). Write-only
+    ref_offset: int  # offset for reference creation (recursive calls). Initially arg_count + 1.
+    pointees: list[KInner]  # home of the values pointed to from arguments (and transitively)
+
+    def __init__(self, arg_count: int) -> None:
+        self.counter = 0
+        self.constraints = []
+        self.ref_offset = arg_count + 1
+        self.pointees = []
+
+    def fresh_var(self, prefix: str) -> KInner:
+        return KVariable(prefix + str(self.counter))
+
+    # generating a symbolic value (recursive for composites).
+    def generate_for_ty(self, ty: int) -> KInner:
+        meta = self.type_map.get(ty)
+
+        if meta is None:
+            return KApply(
+                'typedValue',
+                (self.fresh_var('ARG'), KApply(KMIR.Symbols.TY, (token(ty),)), KApply('Mutability::Not', ())),
+            )
+        meta = meta.get()
+
+        # if 'PrimitiveType' in meta:
+        #     # ... bool, int and uint, calling self.Integer and self.BoolVal
+        # elif 'StructType' in meta:
+        #     # ... self.Aggregate with zero discriminator
+        # elif 'EnumType' in meta:
+        #     # ... self.Aggregate
+        # # elif 'UnionType' in meta: opaque
+        # elif 'ArrayType' in meta:
+        #     # ... self.Range with length
+        # # elif 'PtrType' in meta: opaque
+        # elif 'RefType' in meta:
+        #     # ... self.Reference
+        # elif 'TupleType' in meta:
+        #     # ... self.Tuple, like Array but heterogenous list
+
+        return KApply(
+            'typedValue',
+            (self.fresh_var('ARG'), KApply(KMIR.Symbols.TY, (token(ty),)), KApply('Mutability::Not', ())),
+        )
+
+        # better like this (later):
+        # match self.type_map.get(ty, OPAQUE):
+        #     case ...
+        #     case _other:
+        #         return KApply('typedValue', (self.fresh_var('ARG'), KApply(KMIR.Symbols.TY, (token(ty),)), KApply('Mutability::Not', ())),)
+
+    def Integer(self, bitwidth: int, signed: bool, ty: int) -> KInner:
+        var = self.fresh_var('ARG_INT')
+        # FIXME create and push constraints, depending on ty (caller cannot know var)
+        return KApply(
+            'typedValue',
+            (
+                KApply(KMIR.Symbols.INTEGER, (var, token(bitwidth), token(signed))),
+                KApply(KMIR.Symbols.TY, (token(ty),)),
+                KApply('Mutability::Not', ()),
+            ),
+        )
+
+    def BoolVal(self, ty: int) -> KInner:
+        return KApply(
+            'typedValue',
+            (
+                KApply(KMIR.Symbols.BOOLVAL, (self.fresh_var('ARG_BOOL'),)),
+                KApply(KMIR.Symbols.TY, (token(ty),)),
+                KApply('Mutability::Not', ()),
+            ),
+        )
+
+    def Aggregate(self, ty: int) -> KInner:
+        return KApply(
+            'typedValue',
+            (
+                KApply(
+                    KMIR.Symbols.AGGREGATE,
+                    (
+                        self.fresh_var('ARG_DISCRIMINANT'),
+                        self.fresh_var('ARG_FIELDS'),
+                    ),
+                ),
+                KApply(KMIR.Symbols.TY, (token(ty),)),
+                KApply('Mutability::Not', ()),
+            ),
+        )
+
+    def Reference(self, ty: int, pointee_ty: int) -> KInner:
+        # recursively create a symbolic pointee value, but insert the projections (fields etc) _here_
+        pointee = KVariable('POINTEE TODO')  # recursion goes here
+        return KApply(
+            'typedValue',
+            (
+                KApply(KMIR.Symbols.REFERENCE, (token(0), pointee, KApply('Mutability::Not', ()))),
+                KApply(KMIR.Symbols.TY, (token(ty),)),
+                KApply('Mutability::Not', ()),
+            ),
+        )
+
+    def Range(self, ty: int, elem_ty: int, len: int | None = None) -> KInner:
+
+        if len is None:
+            arg = self.fresh_var('ARG_SLICE')  # recursion goes here, but has sort List{elem_ty}
+        else:
+            elems: list[KInner] = []
+            while len > 0:
+                elems += [KApply('LIST TODO', ())]  # recursion goes here, uses elem_ty for all
+            arg = KSequence(elems)
+        return KApply(
+            'typedValue',
+            (KApply(KMIR.Symbols.RANGE, [arg]), KApply(KMIR.Symbols.TY, (token(ty),)), KApply('Mutability::Not', ())),
+        )
+
+    def Tuple(self, ty: int, elem_tys: list[int]) -> KInner:
+
+        elems: list[KInner] = [self.generate_for_ty(t) for t in elem_tys]
+
+        arg = KSequence(elems)
+        return KApply(
+            'typedValue',
+            (KApply(KMIR.Symbols.TUPLE, [arg]), KApply(KMIR.Symbols.TY, (token(ty),)), KApply('Mutability::Not', ())),
         )
 
 
