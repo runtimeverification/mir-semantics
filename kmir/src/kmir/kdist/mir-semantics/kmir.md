@@ -59,7 +59,7 @@ The `Map` of types is static information used for decoding constants and allocat
 It maps `Ty` IDs to `TypeInfo` that can be supplied to decoding and casting functions as well as operations involving `Aggregate` values (related to `struct`s and `enum`s).
 
 ```k
-  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total]
+  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total, symbol("mkTypeMap")]
 
   rule #mkTypeMap(ACC, .TypeMappings) => ACC
 
@@ -80,7 +80,7 @@ It maps `Ty` IDs to `TypeInfo` that can be supplied to decoding and casting func
 Another type-related `Map` is required to associate an `AdtDef` ID with its corresponding `Ty` ID for `struct`s and `enum`s when creating or using `Aggregate` values.
 
 ```k
-  syntax Map ::= #mkAdtMap ( Map , TypeMappings ) [function, total]
+  syntax Map ::= #mkAdtMap ( Map , TypeMappings ) [function, total, symbol("mkAdtMap")]
   // --------------------------------------------------------------
   rule #mkAdtMap(ACC, .TypeMappings) => ACC
 
@@ -108,7 +108,7 @@ they are callee in a `Call` terminator within an `Item`).
 The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
-  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total ]
+  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total, symbol("mkFunctionMap") ]
                | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
                | #accumItems ( Map, MonoItems )              [ function, total ]
 

@@ -8,7 +8,9 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
 from pyk.kast.manip import split_config_from
+from pyk.kast.prelude.collections import map_empty
 from pyk.kast.prelude.string import stringToken
+from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -31,6 +33,7 @@ if TYPE_CHECKING:
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
+    from .smir import SMIRInfo
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -71,6 +74,48 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
         return init_config
+
+    def make_call_config(
+        self,
+        parsed_smir: KApply,
+        smir_info: SMIRInfo,
+        start_symbol: str = 'main',
+    ) -> KInner:
+
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
+
+        _sym, _allocs, functions, items, types = parsed_smir.args
+
+        subst = {
+            'K_CELL': KMIR._mk_call_terminator(smir_info.function_tys[start_symbol]),
+            'START_SYMBOL_CELL': stringToken(start_symbol),
+            'FUNCTIONS_CELL': KApply(
+                'mkFunctionMap',
+                (
+                    functions,
+                    items,
+                ),
+            ),
+            'TYPES_CELL': KApply(
+                'mkTypeMap',
+                (
+                    map_empty(),
+                    types,
+                ),
+            ),
+            'ADT_TO_TY_CELL': KApply(
+                'mkAdtMap',
+                (
+                    map_empty(),
+                    types,
+                ),
+            ),
+        }
+
+        config = self.definition.empty_config(KSort('GeneratedTopCell'))
+
+        return Subst(subst).apply(config)
 
     def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
         init_config = self.make_init_config(parsed_smir, start_symbol)
@@ -117,6 +162,57 @@ class KMIR(KProve, KRun, KParse):
             prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
             prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
             return apr_proof
+
+    @staticmethod
+    def _mk_call_terminator(target: int) -> KInner:
+        zero_span = KApply('span(_)_TYPES_Span_Int', token(0))
+        return KApply(
+            'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
+            (
+                KApply(
+                    'TerminatorKind::Call',
+                    (
+                        KApply(
+                            'Operand::Constant',
+                            (
+                                KApply(
+                                    'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
+                                    (
+                                        zero_span,
+                                        KApply(
+                                            'noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex',
+                                            (),
+                                        ),
+                                        KApply(
+                                            'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                                            (
+                                                KApply('ConstantKind::ZeroSized', ()),
+                                                KApply(
+                                                    'ty(_)_TYPES_Ty_Int',
+                                                    (token(target),),
+                                                ),
+                                                KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                        KApply('Operands::empty', ()),
+                        KApply(
+                            'place(_,_)_BODY_Place_Local_ProjectionElems',
+                            (
+                                KApply('local(_)_BODY_Local_Int', (token(0),)),
+                                KApply('ProjectionElems::empty', ()),
+                            ),
+                        ),
+                        KApply('noBasicBlockIdx(_)_BODY_MaybeBasicBlockIdx_BasicBlockIdx', ()),
+                        KApply('UnwindAction::Continue', ()),
+                    ),
+                ),
+                zero_span,
+            ),
+        )
 
 
 class KMIRSemantics(DefaultSemantics):
