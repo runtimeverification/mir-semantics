@@ -83,6 +83,9 @@ class SMIRInfo:
             res[name] = fun_syms[sym]
         return res
 
+    def function_symbols(self) -> dict[int, dict]:
+        return {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
+
     @staticmethod
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
