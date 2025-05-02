@@ -23,6 +23,7 @@ from pyk.proof.show import APRProofNodePrinter
 from .cargo import cargo_get_smir_json
 from .kparse import KParse
 from .parse.parser import Parser
+from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -33,7 +34,6 @@ if TYPE_CHECKING:
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
-    from .smir import SMIRInfo
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -165,7 +165,22 @@ class KMIR(KProve, KRun, KParse):
             assert parse_result is not None
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
-            apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
+
+            # apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
+            # inlined and modified for testing
+            assert type(kmir_kast) is KApply
+            lhs_config = self.make_call_config(kmir_kast, SMIRInfo(smir_json))
+            lhs = CTerm(lhs_config)
+
+            var_config, _ = split_config_from(lhs_config)
+
+            rhs_subst = Subst({'K_CELL': KSequence([KMIR.Symbols.END_PROGRAM])})
+            rhs = CTerm(rhs_subst(var_config))
+            kcfg = KCFG()
+            init_node = kcfg.create_node(lhs)
+            target_node = kcfg.create_node(rhs)
+            apr_proof = APRProof(label, kcfg, [], init_node.id, target_node.id, {}, proof_dir=opts.proof_dir)
+
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:
