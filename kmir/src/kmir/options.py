@@ -123,11 +123,7 @@ class ProveRawOpts(ProveOpts):
 
 
 @dataclass
-class ViewOpts(ProofOpts): ...
-
-
-@dataclass
-class ShowOpts(ProofOpts):
+class DisplayOpts(ProofOpts):
     full_printer: bool
     smir_info: Path | None
 
@@ -142,6 +138,14 @@ class ShowOpts(ProofOpts):
         self.id = id
         self.full_printer = full_printer
         self.smir_info = smir_info
+
+
+@dataclass
+class ShowOpts(DisplayOpts): ...
+
+
+@dataclass
+class ViewOpts(DisplayOpts): ...
 
 
 @dataclass

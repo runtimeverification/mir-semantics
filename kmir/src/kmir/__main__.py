@@ -202,30 +202,32 @@ def _arg_parser() -> ArgumentParser:
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
 
-    command_parser.add_parser('view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args])
-
-    prune_parser = command_parser.add_parser(
-        'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
-    )
-    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
-
-    show_parser = command_parser.add_parser(
-        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args]
-    )
-    show_parser.add_argument(
+    display_args = ArgumentParser(add_help=False)
+    display_args.add_argument(
         '--no-full-printer',
         dest='full_printer',
         action='store_false',
         default=True,
         help='Do not display the full node in output.',
     )
-    show_parser.add_argument(
+    display_args.add_argument(
         '--smir-info',
         dest='smir_info',
         type=Path,
         default=None,
         help='Path to SMIR JSON file to improve debug messaging.',
     )
+
+    command_parser.add_parser(
+        'view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+    )
+
+    prune_parser = command_parser.add_parser(
+        'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
+    )
+    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
+
+    command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
@@ -268,7 +270,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'view':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ViewOpts(proof_dir, ns.id)
+            return ViewOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
         case 'prune':
             proof_dir = Path(ns.proof_dir).resolve()
             return PruneOpts(proof_dir, ns.id, ns.node_id)
