@@ -222,6 +222,10 @@ def _arg_parser() -> ArgumentParser:
     )
 
     command_parser.add_parser(
+        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+    )
+
+    command_parser.add_parser(
         'view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
     )
 
@@ -229,8 +233,6 @@ def _arg_parser() -> ArgumentParser:
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
-
-    command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
