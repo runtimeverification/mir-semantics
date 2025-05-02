@@ -8,7 +8,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
 from pyk.kast.manip import split_config_from
-from pyk.kast.prelude.collections import map_empty
+from pyk.kast.prelude.collections import list_empty, map_empty
 from pyk.kast.prelude.string import stringToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
@@ -89,7 +89,8 @@ class KMIR(KProve, KRun, KParse):
 
         subst = {
             'K_CELL': KMIR._mk_call_terminator(smir_info.function_tys[start_symbol]),
-            'START_SYMBOL_CELL': stringToken(start_symbol),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'FUNCTIONS_CELL': KApply(
                 'mkFunctionMap',
                 (
@@ -104,7 +105,7 @@ class KMIR(KProve, KRun, KParse):
                     types,
                 ),
             ),
-            'ADT_TO_TY_CELL': KApply(
+            'ADTTOTY_CELL': KApply(
                 'mkAdtMap',
                 (
                     map_empty(),
@@ -119,6 +120,15 @@ class KMIR(KProve, KRun, KParse):
 
     def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
         init_config = self.make_init_config(parsed_smir, start_symbol)
+        init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+        result = self.run_pattern(init_kore, depth=depth)
+
+        return result
+
+    def run_call(
+        self, parsed_smir: KApply, smir_json: SMIRInfo, start_symbol: str = 'main', depth: int | None = None
+    ) -> Pattern:
+        init_config = self.make_call_config(parsed_smir, smir_json, start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
 
@@ -167,50 +177,55 @@ class KMIR(KProve, KRun, KParse):
     def _mk_call_terminator(target: int) -> KInner:
         zero_span = KApply('span(_)_TYPES_Span_Int', token(0))
         return KApply(
-            'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
+            '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
             (
                 KApply(
-                    'TerminatorKind::Call',
+                    'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
                     (
                         KApply(
-                            'Operand::Constant',
+                            'TerminatorKind::Call',
                             (
                                 KApply(
-                                    'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
+                                    'Operand::Constant',
                                     (
-                                        zero_span,
                                         KApply(
-                                            'noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex',
-                                            (),
-                                        ),
-                                        KApply(
-                                            'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                                            'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
                                             (
-                                                KApply('ConstantKind::ZeroSized', ()),
+                                                zero_span,
                                                 KApply(
-                                                    'ty(_)_TYPES_Ty_Int',
-                                                    (token(target),),
+                                                    'noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex',
+                                                    (),
                                                 ),
-                                                KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
+                                                KApply(
+                                                    'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                                                    (
+                                                        KApply('ConstantKind::ZeroSized', ()),
+                                                        KApply(
+                                                            'ty(_)_TYPES_Ty_Int',
+                                                            (token(target),),
+                                                        ),
+                                                        KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
+                                                    ),
+                                                ),
                                             ),
                                         ),
                                     ),
                                 ),
+                                KApply('Operands::empty', ()),
+                                KApply(
+                                    'place(_,_)_BODY_Place_Local_ProjectionElems',
+                                    (
+                                        KApply('local(_)_BODY_Local_Int', (token(0),)),
+                                        KApply('ProjectionElems::empty', ()),
+                                    ),
+                                ),
+                                KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ()),
+                                KApply('UnwindAction::Continue', ()),
                             ),
                         ),
-                        KApply('Operands::empty', ()),
-                        KApply(
-                            'place(_,_)_BODY_Place_Local_ProjectionElems',
-                            (
-                                KApply('local(_)_BODY_Local_Int', (token(0),)),
-                                KApply('ProjectionElems::empty', ()),
-                            ),
-                        ),
-                        KApply('noBasicBlockIdx(_)_BODY_MaybeBasicBlockIdx_BasicBlockIdx', ()),
-                        KApply('UnwindAction::Continue', ()),
+                        zero_span,
                     ),
                 ),
-                zero_span,
             ),
         )
 

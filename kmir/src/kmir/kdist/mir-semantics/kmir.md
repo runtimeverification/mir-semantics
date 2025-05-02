@@ -544,12 +544,12 @@ An operand may be a `Reference` (the only way a function could access another fu
         ...
        </k>
 
-  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
+  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I:Int), .ProjectionElems)))
         =>
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) ... </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedLocal(CALLERLOCALS[I])
