@@ -182,7 +182,7 @@ syntax RegionKind ::= regionKindReEarlyParam(EarlyParamRegion)           [group(
                     | "regionKindReErased"                               [group(mir-enum), symbol(RegionKind::ReErased)]
 syntax Region ::= region(kind: RegionKind) [group(mir---kind)]
 
-syntax Span ::= span(Int) [group(mir-int)]
+syntax Span ::= span(Int) [group(mir-int), symbol(span)]
 
 syntax ExistentialTraitRef ::= existentialTraitRef(defId: TraitDef, genericArgs: GenericArgs)                     [group(mir---defId--genericArgs)]
 
