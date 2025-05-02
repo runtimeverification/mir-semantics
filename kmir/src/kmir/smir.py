@@ -17,8 +17,12 @@ AdtDef = NewType('AdtDef', int)
 class SMIRInfo:
     _smir: dict
 
-    def __init__(self, smir_json_file: Path) -> None:
-        self._smir = json.loads(smir_json_file.read_text())
+    def __init__(self, smir_json: dict) -> None:
+        self._smir = smir_json
+
+    @staticmethod
+    def from_file(smir_json_file: Path) -> SMIRInfo:
+        return SMIRInfo(json.loads(smir_json_file.read_text()))
 
     @cached_property
     def types(self) -> dict[Ty, Any]:

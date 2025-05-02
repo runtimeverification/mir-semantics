@@ -110,7 +110,7 @@ def _kmir_view(opts: ViewOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     smir_info = None
     if opts.smir_info is not None:
-        smir_info = SMIRInfo(opts.smir_info)
+        smir_info = SMIRInfo.from_file(opts.smir_info)
     node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=False)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
@@ -121,7 +121,7 @@ def _kmir_show(opts: ShowOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     smir_info = None
     if opts.smir_info is not None:
-        smir_info = SMIRInfo(opts.smir_info)
+        smir_info = SMIRInfo.from_file(opts.smir_info)
     node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
     shower = APRProofShow(kmir, node_printer=node_printer)
     lines = shower.show(proof)
