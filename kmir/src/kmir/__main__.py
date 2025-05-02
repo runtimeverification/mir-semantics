@@ -106,7 +106,10 @@ def _kmir_prove_run(opts: ProveRawOpts) -> None:
 def _kmir_prove_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    node_printer = KMIRAPRNodePrinter(kmir, proof)
+    smir_info = None
+    if opts.smir_info is not None:
+        smir_info = SMIRInfo(opts.smir_info)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
 
