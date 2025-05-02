@@ -145,8 +145,7 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
         KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
         APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)
 
-    def print_node(self, kcfg: KCFG, node: KCFG.Node) -> list[str]:
-        ret_strs = super().print_node(kcfg, node)
+    def _span(self, node: KCFG.Node) -> int | None:
         curr_span: int | None = None
         span_worklist: list[KInner] = [node.cterm.cell('K_CELL')]
         while span_worklist:
@@ -162,7 +161,21 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
                 span_worklist = list(next_item.args) + span_worklist
             if type(next_item) is KSequence:
                 span_worklist = list(next_item.items) + span_worklist
+        return curr_span
+
+    def print_node(self, kcfg: KCFG, node: KCFG.Node) -> list[str]:
+        ret_strs = super().print_node(kcfg, node)
         ret_strs.append(self.kmir.pretty_print(node.cterm.cell('K_CELL'))[0:80])
+        curr_span = self._span(node)
         if curr_span is not None:
             ret_strs.append(f'span: {curr_span}')
+        curr_func_ty_kast = node.cterm.cell('CURRENTFUNC_CELL')
+        if (
+            type(curr_func_ty_kast) is KApply
+            and curr_func_ty_kast.label.name == 'ty'
+            and type(curr_func_ty_kast.args[0]) is KToken
+            and curr_func_ty_kast.args[0].sort.name
+        ):
+            curr_func_ty = int(curr_func_ty_kast.args[0].token)
+            ret_strs.append(f'func: {curr_func_ty}')
         return ret_strs
