@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
+from pyk.kast.inner import KApply
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
@@ -17,6 +18,7 @@ from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
 from .parse.parser import parse_json
+from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -46,7 +48,14 @@ def _kmir_run(opts: RunOpts) -> None:
         sys.exit(1)
     kmir_kast, _ = parse_result
 
-    result = kmir.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
+    if opts.haskell_backend:
+        smir_json = SMIRInfo.from_file(smir_file)
+        assert type(kmir_kast) is KApply
+
+        result = kmir.run_call(kmir_kast, smir_json, opts.start_symbol, opts.depth)
+    else:
+        result = kmir.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
+
     print(kmir.kore_to_pretty(result))
 
 
