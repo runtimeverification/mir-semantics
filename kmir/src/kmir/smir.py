@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import json
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
-
-from kmir.rust.cargo import cargo_get_smir_json
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -18,8 +17,8 @@ AdtDef = NewType('AdtDef', int)
 class SMIRInfo:
     _smir: dict
 
-    def __init__(self, rs_file: Path) -> None:
-        self._smir = cargo_get_smir_json(rs_file)
+    def __init__(self, smir_json_file: Path) -> None:
+        self._smir = json.loads(smir_json_file.read_text())
 
     @cached_property
     def types(self) -> dict[Ty, Any]:
