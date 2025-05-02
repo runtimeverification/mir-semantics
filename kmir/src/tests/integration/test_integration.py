@@ -117,15 +117,15 @@ LOCAL_DECL_TESTS = [
         KSort('StatementKind'),
     ),
     ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
-    (2, KApply('span(_)_TYPES_Span_Int', (KToken('2', KSort('Int')))), KSort('Span')),
-    (9, KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))), KSort('Ty')),
+    (2, KApply('span', (KToken('2', KSort('Int')))), KSort('Span')),
+    (9, KApply('ty', (KToken('9', KSort('Int')))), KSort('Ty')),
     (
         {'mutability': 'Mut', 'span': 420, 'ty': 9},
         KApply(
             'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
             (
-                KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))),
-                KApply('span(_)_TYPES_Span_Int', (KToken('420', KSort('Int')))),
+                KApply('ty', (KToken('9', KSort('Int')))),
+                KApply('span', (KToken('420', KSort('Int')))),
                 KApply('Mutability::Mut', ()),
             ),
         ),
@@ -215,7 +215,7 @@ TOKEN_TESTS = [
             'statement(_,_)_BODY_Statement_StatementKind_Span',
             (
                 KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
-                KApply('span(_)_TYPES_Span_Int', (KToken('1', KSort('Int')))),
+                KApply('span', (KToken('1', KSort('Int')))),
             ),
         ),
         KSort('Statement'),
