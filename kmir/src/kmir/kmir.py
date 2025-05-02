@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
-from pyk.kast.manip import split_config_from
+from pyk.kast.inner import KApply, KInner, KSequence, KSort, KVariable, Subst
+from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kast.prelude.collections import list_empty, map_empty
 from pyk.kast.prelude.string import stringToken
 from pyk.kast.prelude.utils import token
@@ -172,9 +172,15 @@ class KMIR(KProve, KRun, KParse):
             lhs_config = self.make_call_config(kmir_kast, SMIRInfo(smir_json))
             lhs = CTerm(lhs_config)
 
-            var_config, _ = split_config_from(lhs_config)
+            var_config, var_subst = split_config_from(lhs_config)
 
-            rhs_subst = Subst({'K_CELL': KSequence([KMIR.Symbols.END_PROGRAM])})
+            _rhs_subst: dict[str, KInner] = {
+                v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
+            }
+
+            _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+
+            rhs_subst = Subst(_rhs_subst)
             rhs = CTerm(rhs_subst(var_config))
             kcfg = KCFG()
             init_node = kcfg.create_node(lhs)
