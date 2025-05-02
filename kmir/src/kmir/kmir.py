@@ -202,7 +202,7 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
         APRProofNodePrinter.__init__(self, proof, cterm_show, full_printer=full_printer)
         self.smir_info = smir_info
 
-    def _span(self, node: KCFG.Node) -> int | None:
+    def _span(self, node: KCFG.Node) -> str | None:
         curr_span: int | None = None
         span_worklist: list[KInner] = [node.cterm.cell('K_CELL')]
         while span_worklist:
@@ -218,7 +218,12 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
                 span_worklist = list(next_item.args) + span_worklist
             if type(next_item) is KSequence:
                 span_worklist = list(next_item.items) + span_worklist
-        return curr_span
+        if self.smir_info is not None and curr_span is not None and curr_span in self.smir_info.spans:
+            path, start_row, _start_column, _end_row, _end_column = self.smir_info.spans[curr_span]
+            return f'{str(path)[-30:]}:{start_row}'
+        if curr_span is not None:
+            return f'span: {curr_span}'
+        return None
 
     def _function_name(self, node: KCFG.Node) -> str | None:
         curr_func_ty_kast = node.cterm.cell('CURRENTFUNC_CELL')
