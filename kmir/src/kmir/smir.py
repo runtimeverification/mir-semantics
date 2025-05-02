@@ -58,31 +58,6 @@ class SMIRInfo:
         return res
 
     @cached_property
-    def function_symbols(self) -> tuple[dict[Ty, str], dict[str, Ty]]:
-        names = {}
-        tys = {}
-        for ty, sym in self._smir['functions']:
-            names[Ty(ty)] = sym
-            tys[sym] = Ty(ty)
-        return (names, tys)
-
-    @cached_property
-    def function_tys(self) -> dict[str, Ty]:
-        res = {}
-        (_, fun_syms) = self.function_symbols
-        for item in self._smir['items']:
-            if not SMIRInfo._is_func(item):
-                continue
-
-            mono_item_fn = item['mono_item_kind']['MonoItemFn']
-            name = mono_item_fn['name']
-            sym = item['symbol_name']
-            if not sym in fun_syms:
-                continue
-
-            res[name] = fun_syms[sym]
-        return res
-
     def function_symbols(self) -> dict[int, dict]:
         return {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
 
