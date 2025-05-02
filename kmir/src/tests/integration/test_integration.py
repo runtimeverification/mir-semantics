@@ -9,7 +9,7 @@ import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
 
-from kmir.__main__ import _kmir_gen_spec, _kmir_prove_run
+from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
 from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.kmir import KMIR
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts
@@ -117,15 +117,15 @@ LOCAL_DECL_TESTS = [
         KSort('StatementKind'),
     ),
     ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
-    (2, KApply('span(_)_TYPES_Span_Int', (KToken('2', KSort('Int')))), KSort('Span')),
-    (9, KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))), KSort('Ty')),
+    (2, KApply('span', (KToken('2', KSort('Int')))), KSort('Span')),
+    (9, KApply('ty', (KToken('9', KSort('Int')))), KSort('Ty')),
     (
         {'mutability': 'Mut', 'span': 420, 'ty': 9},
         KApply(
             'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
             (
-                KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))),
-                KApply('span(_)_TYPES_Span_Int', (KToken('420', KSort('Int')))),
+                KApply('ty', (KToken('9', KSort('Int')))),
+                KApply('span', (KToken('420', KSort('Int')))),
                 KApply('Mutability::Mut', ()),
             ),
         ),
@@ -215,7 +215,7 @@ TOKEN_TESTS = [
             'statement(_,_)_BODY_Statement_StatementKind_Span',
             (
                 KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
-                KApply('span(_)_TYPES_Span_Int', (KToken('1', KSort('Int')))),
+                KApply('span', (KToken('1', KSort('Int')))),
             ),
         ),
         KSort('Statement'),
@@ -404,7 +404,7 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
 
     _kmir_gen_spec(gen_opts)
-    _kmir_prove_run(prove_opts)
+    _kmir_prove_raw(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec_file).labels()
     for label in claim_labels:
@@ -424,7 +424,7 @@ PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
 def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
     proof_dir = tmp_path / (spec.stem + 'proofs')
     prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
-    _kmir_prove_run(prove_opts)
+    _kmir_prove_raw(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec).labels()
     for label in claim_labels:

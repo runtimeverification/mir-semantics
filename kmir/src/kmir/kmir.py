@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, KSort, Subst
+from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, Subst
 from pyk.kast.manip import split_config_from
 from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
+    from .smir import SMIRInfo
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -104,7 +105,7 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
-            smir_json = cargo_get_smir_json(opts.rs_file)
+            smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
             parser = Parser(self.definition)
             parse_result = parser.parse_mir_json(smir_json, 'Pgm')
             assert parse_result is not None
@@ -141,6 +142,62 @@ class KMIRNodePrinter(NodePrinter):
 
 
 class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
-    def __init__(self, kmir: KMIR, proof: APRProof, full_printer: bool = False) -> None:
+    smir_info: SMIRInfo | None
+
+    def __init__(
+        self, kmir: KMIR, proof: APRProof, smir_info: SMIRInfo | None = None, full_printer: bool = False
+    ) -> None:
         KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
         APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)
+        self.smir_info = smir_info
+
+    def _span(self, node: KCFG.Node) -> int | None:
+        curr_span: int | None = None
+        span_worklist: list[KInner] = [node.cterm.cell('K_CELL')]
+        while span_worklist:
+            next_item = span_worklist.pop(0)
+            if type(next_item) is KApply:
+                if (
+                    next_item.label.name == 'span'
+                    and type(next_item.args[0]) is KToken
+                    and next_item.args[0].sort.name == 'Int'
+                ):
+                    curr_span = int(next_item.args[0].token)
+                    break
+                span_worklist = list(next_item.args) + span_worklist
+            if type(next_item) is KSequence:
+                span_worklist = list(next_item.items) + span_worklist
+        return curr_span
+
+    def _function_name(self, node: KCFG.Node) -> str | None:
+        curr_func_ty_kast = node.cterm.cell('CURRENTFUNC_CELL')
+        if (
+            type(curr_func_ty_kast) is KApply
+            and curr_func_ty_kast.label.name == 'ty'
+            and type(curr_func_ty_kast.args[0]) is KToken
+            and curr_func_ty_kast.args[0].sort.name
+        ):
+            curr_func_ty = int(curr_func_ty_kast.args[0].token)
+            if curr_func_ty == -1:
+                return 'main'
+            if self.smir_info is not None:
+                if curr_func_ty in self.smir_info.function_symbols:
+                    _sym = self.smir_info.function_symbols[curr_func_ty]
+                    if 'NormalSym' in _sym:
+                        sym = _sym['NormalSym']
+                        if sym in self.smir_info.items:
+                            name = self.smir_info.items[sym]['mono_item_kind']['MonoItemFn']['name']
+                            assert type(name) is str
+                            return name
+        return None
+
+    def print_node(self, kcfg: KCFG, node: KCFG.Node) -> list[str]:
+        ret_strs = super().print_node(kcfg, node)
+        ret_strs.append(self.kmir.pretty_print(node.cterm.cell('K_CELL'))[0:80])
+        curr_func = self._function_name(node)
+        if curr_func is not None:
+            ret_strs.append(f'function: {curr_func}')
+        curr_span = self._span(node)
+        if curr_span is not None:
+            ret_strs.append(f'span: {curr_span}')
+        return ret_strs

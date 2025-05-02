@@ -94,11 +94,14 @@ class CargoProject:
         return bin_targets[0]
 
 
-def cargo_get_smir_json(rs_file: Path) -> dict[str, Any]:
+def cargo_get_smir_json(rs_file: Path, save_smir: bool = False) -> dict[str, Any]:
     smir_json_result = SMIR_JSON_DIR / rs_file.with_suffix('.smir.json').name
     run_process_2(['cargo', 'run', '--', '-Zno-codegen', str(rs_file)], cwd=SMIR_JSON_DIR)
     json_smir = json.loads(smir_json_result.read_text())
     _LOGGER.info(f'Loaded: {smir_json_result}')
-    smir_json_result.unlink()
-    _LOGGER.info(f'Deleted: {smir_json_result}')
+    if save_smir:
+        _LOGGER.info(f'SMIR JSON available at: {smir_json_result}')
+    else:
+        smir_json_result.unlink()
+        _LOGGER.info(f'Deleted: {smir_json_result}')
     return json_smir

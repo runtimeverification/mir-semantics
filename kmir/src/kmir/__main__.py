@@ -17,6 +17,7 @@ from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .options import GenSpecOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
 from .parse.parser import parse_json
+from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -82,7 +83,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file.write_text(kmir.pretty_print(spec_module))
 
 
-def _kmir_prove_run(opts: ProveRawOpts) -> None:
+def _kmir_prove_raw(opts: ProveRawOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
@@ -102,10 +103,13 @@ def _kmir_prove_run(opts: ProveRawOpts) -> None:
         print(f'{summary}')
 
 
-def _kmir_prove_view(opts: ViewOpts) -> None:
+def _kmir_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    node_printer = KMIRAPRNodePrinter(kmir, proof)
+    smir_info = None
+    if opts.smir_info is not None:
+        smir_info = SMIRInfo(opts.smir_info)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=False)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
 
@@ -113,13 +117,16 @@ def _kmir_prove_view(opts: ViewOpts) -> None:
 def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, full_printer=True)
+    smir_info = None
+    if opts.smir_info is not None:
+        smir_info = SMIRInfo(opts.smir_info)
+    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
     shower = APRProofShow(kmir, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))
 
 
-def _kmir_prove_prune(opts: PruneOpts) -> None:
+def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     pruned_nodes = proof.prune(opts.node_id)
     print(f'Pruned nodes: {pruned_nodes}')
@@ -136,13 +143,13 @@ def kmir(args: Sequence[str]) -> None:
         case GenSpecOpts():
             _kmir_gen_spec(opts)
         case ProveRawOpts():
-            _kmir_prove_run(opts)
+            _kmir_prove_raw(opts)
         case ViewOpts():
-            _kmir_prove_view(opts)
+            _kmir_view(opts)
         case ShowOpts():
             _kmir_show(opts)
         case PruneOpts():
-            _kmir_prove_prune(opts)
+            _kmir_prune(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
         case _:
@@ -198,20 +205,43 @@ def _arg_parser() -> ArgumentParser:
         '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
     )
 
-    command_parser.add_parser('view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args])
+    display_args = ArgumentParser(add_help=False)
+    display_args.add_argument(
+        '--no-full-printer',
+        dest='full_printer',
+        action='store_false',
+        default=True,
+        help='Do not display the full node in output.',
+    )
+    display_args.add_argument(
+        '--smir-info',
+        dest='smir_info',
+        type=Path,
+        default=None,
+        help='Path to SMIR JSON file to improve debug messaging.',
+    )
+
+    command_parser.add_parser(
+        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+    )
+
+    command_parser.add_parser(
+        'view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+    )
 
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
-    command_parser.add_parser('show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args])
-
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
     prove_rs_parser.add_argument(
         'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
+    )
+    prove_rs_parser.add_argument(
+        '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
 
     return parser
@@ -245,13 +275,13 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'view':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ViewOpts(proof_dir, ns.id)
+            return ViewOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
         case 'prune':
             proof_dir = Path(ns.proof_dir).resolve()
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ShowOpts(proof_dir, ns.id)
+            return ShowOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),
@@ -260,6 +290,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
+                save_smir=ns.save_smir,
             )
         case _:
             raise AssertionError()

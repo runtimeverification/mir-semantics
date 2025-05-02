@@ -74,6 +74,7 @@ class GenSpecOpts(KMirOpts):
 @dataclass
 class ProveRSOpts(ProveOpts):
     rs_file: Path
+    save_smir: bool
 
     def __init__(
         self,
@@ -83,6 +84,7 @@ class ProveRSOpts(ProveOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         reload: bool = False,
+        save_smir: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -90,6 +92,7 @@ class ProveRSOpts(ProveOpts):
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
+        self.save_smir = save_smir
 
 
 @dataclass
@@ -120,11 +123,29 @@ class ProveRawOpts(ProveOpts):
 
 
 @dataclass
-class ViewOpts(ProofOpts): ...
+class DisplayOpts(ProofOpts):
+    full_printer: bool
+    smir_info: Path | None
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        full_printer: bool = True,
+        smir_info: Path | None = None,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.full_printer = full_printer
+        self.smir_info = smir_info
 
 
 @dataclass
-class ShowOpts(ProofOpts): ...
+class ShowOpts(DisplayOpts): ...
+
+
+@dataclass
+class ViewOpts(DisplayOpts): ...
 
 
 @dataclass
