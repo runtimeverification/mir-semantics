@@ -83,7 +83,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file.write_text(kmir.pretty_print(spec_module))
 
 
-def _kmir_prove_run(opts: ProveRawOpts) -> None:
+def _kmir_prove_raw(opts: ProveRawOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
@@ -103,7 +103,7 @@ def _kmir_prove_run(opts: ProveRawOpts) -> None:
         print(f'{summary}')
 
 
-def _kmir_prove_view(opts: ViewOpts) -> None:
+def _kmir_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     smir_info = None
@@ -126,7 +126,7 @@ def _kmir_show(opts: ShowOpts) -> None:
     print('\n'.join(lines))
 
 
-def _kmir_prove_prune(opts: PruneOpts) -> None:
+def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     pruned_nodes = proof.prune(opts.node_id)
     print(f'Pruned nodes: {pruned_nodes}')
@@ -143,13 +143,13 @@ def kmir(args: Sequence[str]) -> None:
         case GenSpecOpts():
             _kmir_gen_spec(opts)
         case ProveRawOpts():
-            _kmir_prove_run(opts)
+            _kmir_prove_raw(opts)
         case ViewOpts():
-            _kmir_prove_view(opts)
+            _kmir_view(opts)
         case ShowOpts():
             _kmir_show(opts)
         case PruneOpts():
-            _kmir_prove_prune(opts)
+            _kmir_prune(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
         case _:
