@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
+from enum import Enum
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
 
+from kmir.kast import bool_var, int_var
+
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
     from typing import Any
+
+    from pyk.kast.inner import KInner
 
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
@@ -91,5 +98,73 @@ class SMIRInfo:
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
 
-    # TODO (does this go here?)
-    # def ty_as_kast(self, ty: Ty) -> KInner
+    def var_from_ty(self, ty: Ty, varname: str) -> tuple[KInner, Iterable[KInner]]:
+        typeinfo = self.types[ty]
+        type_metadata = _metadata_from_json(typeinfo)
+        match type_metadata:
+            case Int(info):
+                width = info.value
+                return int_var(varname, width, True)
+            case Uint(info):
+                width = info.value
+                return int_var(varname, width, False)
+            case Bool():
+                return bool_var(varname)
+            case _:
+                return NotImplemented
+
+
+class IntTy(Enum):
+    I8 = 1
+    I16 = 2
+    I32 = 4
+    I64 = 8
+    Isize = 8
+
+
+class UintTy(Enum):
+    U8 = 1
+    U16 = 2
+    U32 = 4
+    U64 = 8
+    Usize = 8
+
+
+@dataclass
+class TypeMetadata: ...
+
+
+@dataclass
+class RigidTy(TypeMetadata): ...
+
+
+@dataclass
+class Bool(RigidTy): ...
+
+
+@dataclass
+class Int(RigidTy):
+    info: IntTy
+
+
+@dataclass
+class Uint(RigidTy):
+    info: UintTy
+
+
+def _rigidty_from_json(typeinfo: str | dict) -> RigidTy:
+    if typeinfo == 'Bool':
+        return Bool()
+
+    assert isinstance(typeinfo, dict)
+    if 'UInt' in typeinfo:
+        return Uint(UintTy.__members__[typeinfo['UInt']])
+    if 'Int' in typeinfo:
+        return Int(IntTy.__members__[typeinfo['Int']])
+    return NotImplemented
+
+
+def _metadata_from_json(typeinfo: dict) -> TypeMetadata:
+    if 'PrimitiveType' in typeinfo:
+        return _rigidty_from_json(typeinfo['PrimitiveType'])
+    return NotImplemented
