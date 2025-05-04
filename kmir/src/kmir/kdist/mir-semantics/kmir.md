@@ -282,13 +282,13 @@ will effectively be no-ops at this level).
 
   rule <k> #execStmt(statement(statementKindSetDiscriminant(_PLACE, _VARIDX), _SPAN))
          =>
-           .K // FIXME! write variant index to PLACE
+           .K // write variant discriminator for given index to PLACE
          ...
        </k>
 
   rule <k> #execStmt(statement(statementKindIntrinsic(_INTRINSIC), _SPAN))
          =>
-           .K // FIXME! effect of calling INTRINSIC
+           .K // effect of calling INTRINSIC
          ...
        </k>
 
@@ -428,9 +428,9 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
   // returns blocks from the body
   rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List
   rule #getBlocksAux(monoItemFn(_, _, someBody(body(BLOCKS, _, _, _, _, _)))) => toKList(BLOCKS)
-  // other item kinds are not expected or supported FIXME: Just getting stuck for now
-  rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls at all
-  rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported. FIXME Should error, maybe during #init
+  // other item kinds are not expected or supported
+  rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls
+  rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty

@@ -46,11 +46,11 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  <memory> .Map </memory>
+                  // ============ static information ============
                   // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
                   // heap
-                  <memory> .Map </memory> // FIXME unclear how to model
-                  // FIXME where do we put the "GlobalAllocs"? in the heap, presumably?
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <types> .Map </types>
