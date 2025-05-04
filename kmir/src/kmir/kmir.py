@@ -182,7 +182,7 @@ class KMIR(KProve, KRun, KParse):
 
     @staticmethod
     def _mk_call_terminator(target: int) -> KInner:
-        zero_span = KApply('span(_)_TYPES_Span_Int', token(0))
+        zero_span = KApply('span', token(0))
         return KApply(
             '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
             (
@@ -208,7 +208,7 @@ class KMIR(KProve, KRun, KParse):
                                                     (
                                                         KApply('ConstantKind::ZeroSized', ()),
                                                         KApply(
-                                                            'ty(_)_TYPES_Ty_Int',
+                                                            'ty',
                                                             (token(target),),
                                                         ),
                                                         KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
