@@ -81,9 +81,14 @@ class KMIR(KProve, KRun, KParse):
         return result
 
     def apr_proof_from_kast(
-        self, id: str, kmir_kast: KInner, sort: str = 'GeneratedTopCell', proof_dir: Path | None = None
+        self,
+        id: str,
+        kmir_kast: KInner,
+        start_symbol: str = 'main',
+        sort: str = 'GeneratedTopCell',
+        proof_dir: Path | None = None,
     ) -> APRProof:
-        config = self.make_init_config(kmir_kast, 'main', sort=sort)
+        config = self.make_init_config(kmir_kast, start_symbol, sort=sort)
         config_with_cell_vars, _ = split_config_from(config)
 
         lhs = CTerm(config)
@@ -111,7 +116,9 @@ class KMIR(KProve, KRun, KParse):
             assert parse_result is not None
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
-            apr_proof = self.apr_proof_from_kast(label, kmir_kast, proof_dir=opts.proof_dir)
+            apr_proof = self.apr_proof_from_kast(
+                label, kmir_kast, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+            )
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:
