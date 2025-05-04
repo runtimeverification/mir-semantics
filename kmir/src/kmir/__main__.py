@@ -114,12 +114,9 @@ def _kmir_prove_raw(opts: ProveRawOpts) -> None:
 def _kmir_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    smir_info = None
-    if opts.smir_info is not None:
-        smir_info = SMIRInfo.from_file(opts.smir_info)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
-    node_printer = KMIRAPRNodePrinter(cterm_show, proof, smir_info=smir_info, full_printer=False)
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
 
@@ -127,12 +124,9 @@ def _kmir_view(opts: ViewOpts) -> None:
 def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    smir_info = None
-    if opts.smir_info is not None:
-        smir_info = SMIRInfo.from_file(opts.smir_info)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
-    node_printer = KMIRAPRNodePrinter(cterm_show, proof, smir_info=smir_info, full_printer=opts.full_printer)
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
     shower = APRProofShow(kmir.definition, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))

@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
-    from .options import ProveRSOpts
+    from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -195,12 +195,10 @@ class KMIRNodePrinter(NodePrinter):
 class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
     smir_info: SMIRInfo | None
 
-    def __init__(
-        self, cterm_show: CTermShow, proof: APRProof, smir_info: SMIRInfo | None = None, full_printer: bool = False
-    ) -> None:
-        KMIRNodePrinter.__init__(self, cterm_show, full_printer=full_printer)
-        APRProofNodePrinter.__init__(self, proof, cterm_show, full_printer=full_printer)
-        self.smir_info = smir_info
+    def __init__(self, cterm_show: CTermShow, proof: APRProof, opts: DisplayOpts) -> None:
+        KMIRNodePrinter.__init__(self, cterm_show, full_printer=opts.full_printer)
+        APRProofNodePrinter.__init__(self, proof, cterm_show, full_printer=opts.full_printer)
+        self.smir_info = SMIRInfo.from_file(opts.smir_info) if opts.smir_info else None
 
     def _span(self, node: KCFG.Node) -> str | None:
         curr_span: int | None = None
