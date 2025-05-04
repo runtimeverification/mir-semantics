@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: true
       - name: 'Install uv'
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
