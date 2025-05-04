@@ -34,7 +34,7 @@ High-level values can be
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )
                    // homogenous values              for array/slice
-                //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
+                //  | Ptr( Address, MaybeValue )
                    // address, metadata              for ref/ptr
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup

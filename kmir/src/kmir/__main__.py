@@ -68,7 +68,9 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    apr_proof = kmir.apr_proof_from_kast(str(opts.input_file.stem.replace('_', '-')), kmir_kast, sort='KmirCell')
+    apr_proof = kmir.apr_proof_from_kast(
+        str(opts.input_file.stem.replace('_', '-')), kmir_kast, start_symbol=opts.start_symbol, sort='KmirCell'
+    )
     claim = apr_proof.as_claim()
 
     output_file = opts.output_file
@@ -243,6 +245,9 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
+    prove_rs_parser.add_argument(
+        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+    )
 
     return parser
 
@@ -291,6 +296,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
                 save_smir=ns.save_smir,
+                start_symbol=ns.start_symbol,
             )
         case _:
             raise AssertionError()
