@@ -590,6 +590,26 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
     requires COND =/=Bool EXPECTED
 ```
 
+Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreachable`.
+Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error. 
+
+```k
+  rule <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+         =>
+           #execBlockIdx(TARGET)
+        ...
+       </k>
+
+  syntax MIRError ::= "ReachedUnreachable"
+
+  rule <k> #execTerminator(terminator(terminatorKindUnreachable, _SPAN))
+         =>
+           ReachedUnreachable
+        ...
+       </k>
+```
+
+
 ### Stopping on Program Errors
 
 The semantics has a dedicated error sort to stop execution when flawed input or undefined behaviour is detected.
