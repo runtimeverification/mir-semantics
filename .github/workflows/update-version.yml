@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - '_update-deps/runtimeverification/k'
+      - '_update-deps/runtimeverification/stable-mir-json'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,6 +32,15 @@ jobs:
           uv lock --upgrade
           git add pyproject.toml uv.lock
           git commit -m 'kmir/{pyproject.toml,uv.lock}: sync uv files, K version '${K_VERSION} || true
+      - name: 'Update stable-mir-json submodule'
+        run: |
+          VERSION=$(cat ./deps/stable-mir-json_release)
+          cd deps/stable-mir-json/
+          git fetch --all
+          git checkout "${VERSION}"
+          cd ../..
+          git add deps/stable-mir-json
+          git commit -m "deps/stable-mir-json: sync submodule ${VERSION}" || true
       - name: 'Update Nix flake inputs'
         run: |
           K_VERSION=$(cat deps/k_release)
