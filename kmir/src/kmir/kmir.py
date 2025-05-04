@@ -296,18 +296,23 @@ class ArgGenerator:
             )
         meta = meta.get()
 
-        # if 'PrimitiveType' in meta:
-        #     # ... bool, int and uint, calling self.Integer and self.BoolVal
-        # elif 'StructType' in meta:
-        #     # ... self.Aggregate with zero discriminator
-        # elif 'EnumType' in meta:
-        #     # ... self.Aggregate
-        # # elif 'UnionType' in meta: opaque
-        # elif 'ArrayType' in meta:
-        #     # ... self.Range with length
+        if 'PrimitiveType' in meta:
+            match meta['PrimitiveType']:
+                case 'Bool':
+                    self.BoolVal(ty)
+            # ... bool, int and uint, calling self.Integer and self.BoolVal
+        elif 'StructType' in meta:
+            self.Aggregate(ty, False)  # no discriminator
+        elif 'EnumType' in meta:
+            self.Aggregate(ty, True)  # generate discriminator
+        # elif 'UnionType' in meta: opaque
+        elif 'ArrayType' in meta:
+            elem_ty =  meta['ArrayType'][0]
+            ty_const_len = None if meta['ArrayType'][1] == token('noTyConst') else int.from_bytes(meta['ArrayType'][1]['kind'])
+            self.Range(ty, elem_ty, ty_const_len)
         # # elif 'PtrType' in meta: opaque
-        # elif 'RefType' in meta:
-        #     # ... self.Reference
+        elif 'RefType' in meta:
+            self.Reference(ty, meta['RefType'])
         # elif 'TupleType' in meta:
         #     # ... self.Tuple, like Array but heterogenous list
 
@@ -344,14 +349,14 @@ class ArgGenerator:
             ),
         )
 
-    def Aggregate(self, ty: int) -> KInner:
+    def Aggregate(self, ty: int, is_enum: bool) -> KInner:
         return KApply(
             'typedValue',
             (
                 KApply(
                     KMIR.Symbols.AGGREGATE,
                     (
-                        self.fresh_var('ARG_DISCRIMINANT'),
+                        self.fresh_var('ARG_DISCRIMINANT') if is_enum else token(0),
                         self.fresh_var('ARG_FIELDS'),
                     ),
                 ),
@@ -362,11 +367,15 @@ class ArgGenerator:
 
     def Reference(self, ty: int, pointee_ty: int) -> KInner:
         # recursively create a symbolic pointee value, but insert the projections (fields etc) _here_
-        pointee = KVariable('POINTEE TODO')  # recursion goes here
+        pointee = self.generate_for_ty(pointee_ty)
+        self.pointees += [pointee]
+        self.ref_offset
+        self.ref_offset += 1
+        pointee_place = KApply('place', (KApply('local', (token(0),)), KApply('.ProjectionElems', ())))
         return KApply(
             'typedValue',
             (
-                KApply(KMIR.Symbols.REFERENCE, (token(0), pointee, KApply('Mutability::Not', ()))),
+                KApply(KMIR.Symbols.REFERENCE, (token(0), pointee_place, KApply('Mutability::Not', ()))),
                 KApply(KMIR.Symbols.TY, (token(ty),)),
                 KApply('Mutability::Not', ()),
             ),
@@ -375,11 +384,9 @@ class ArgGenerator:
     def Range(self, ty: int, elem_ty: int, len: int | None = None) -> KInner:
 
         if len is None:
-            arg = self.fresh_var('ARG_SLICE')  # recursion goes here, but has sort List{elem_ty}
+            arg = self.fresh_var('ARG_SLICE')  # sort List{elem_ty}
         else:
-            elems: list[KInner] = []
-            while len > 0:
-                elems += [KApply('LIST TODO', ())]  # recursion goes here, uses elem_ty for all
+            elems: list[KInner] = [self.generate_for_ty(elem_ty) for _ in range(len)]
             arg = KSequence(elems)
         return KApply(
             'typedValue',
