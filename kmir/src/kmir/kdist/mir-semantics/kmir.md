@@ -203,7 +203,7 @@ be known to populate the `currentFunc` field.
   // It defaults to `Ty(-1)` which is currently what `main` gets (`main` is not in the functions table)
   syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function, total]
 
-  rule #tyFromName(NAME, ListItem(functionName(TY, FNAME)) _) => TY
+  rule #tyFromName(NAME, ListItem(functionName(TY, functionNormalSym(FNAME))) _) => TY
     requires NAME ==K FNAME
   rule #tyFromName(NAME, ListItem(_) REST:List) => #tyFromName(NAME, REST)
     [owise]
