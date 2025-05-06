@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
-SMIR_JSON_DIR: Final = Path(__file__).parents[3] / 'deps/stable-mir-json/'
+IN_TREE_SMIR_JSON_DIR: Final = Path(__file__).parents[3] / 'deps/stable-mir-json/'
 
 
 class CargoProject:
@@ -95,8 +95,17 @@ class CargoProject:
 
 
 def cargo_get_smir_json(rs_file: Path, save_smir: bool = False) -> dict[str, Any]:
-    smir_json_result = SMIR_JSON_DIR / rs_file.with_suffix('.smir.json').name
-    run_process_2(['cargo', 'run', '--', '-Zno-codegen', str(rs_file)], cwd=SMIR_JSON_DIR)
+    if Path(IN_TREE_SMIR_JSON_DIR).exists():
+        # prefer local dependency if it exists (i.e., we are in a source/build tree)
+        command = ['cargo', 'run', '--', '-Zno-codegen', str(rs_file)]
+        cwd = IN_TREE_SMIR_JSON_DIR
+    else:
+        # otherwise use 'stable-mir-json' from the path (fail if it does not exist)
+        command = ['stable-mir-json', '-Zno-codegen', str(rs_file)]
+        cwd = Path.cwd()
+
+    smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
+    run_process_2(command, cwd=cwd)
     json_smir = json.loads(smir_json_result.read_text())
     _LOGGER.info(f'Loaded: {smir_json_result}')
     if save_smir:

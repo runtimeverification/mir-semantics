@@ -104,7 +104,7 @@ class KMIR(KProve, KRun, KParse):
         if not opts.rs_file.is_file():
             raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
 
-        label = str(opts.rs_file.stem)
+        label = str(opts.rs_file.stem) + '.' + opts.start_symbol
         if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
             _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
