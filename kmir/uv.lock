@@ -465,7 +465,7 @@ wheels = [
 
 [[package]]
 name = "kframework"
-version = "7.1.248"
+version = "7.1.249"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -481,14 +481,14 @@ dependencies = [
     { name = "tomli" },
     { name = "xdg-base-dirs" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/68/47/ab34cef35c622b35384d8107c59819675e8cd463bcc260794beceb2094f2/kframework-7.1.248.tar.gz", hash = "sha256:bcaffbfdcd2a7d6e1fa64d9b1bd5bf2a503cdd0a2f875e55a61f93d40be58bd0", size = 240614, upload-time = "2025-04-30T12:38:56.925Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/eb/39ef69fd0ff32b635e6417270ea544bb2dcc90f7fe932a47cd60177a87d4/kframework-7.1.249.tar.gz", hash = "sha256:9799184daf5127e48463f3aa69ce4043858f9a284aacb43c21cddcfee4bbd168", size = 240614, upload-time = "2025-05-04T20:57:09.431Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/f1/86038e2787a0cffb5753749b5a993cdd881df68ddcd6035e306e77c00fb2/kframework-7.1.248-py3-none-any.whl", hash = "sha256:844e777f34b39aa98366befb2df26fe39a79e38e7c4f3104772782d9f2da23e8", size = 291344, upload-time = "2025-04-30T12:38:55.308Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/ff/2736d0c47a73648c209714adc24dbc3b69f1a0ae7c3cb8554525186d1cf1/kframework-7.1.249-py3-none-any.whl", hash = "sha256:690775876a0b88c04947e1e3b2e69648a1852e025138a22c663004ef632cff07", size = 291345, upload-time = "2025-05-04T20:57:08.088Z" },
 ]
 
 [[package]]
 name = "kmir"
-version = "0.3.147"
+version = "0.3.148"
 source = { editable = "." }
 dependencies = [
     { name = "kframework" },
@@ -514,7 +514,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "kframework", specifier = "==7.1.248" }]
+requires-dist = [{ name = "kframework", specifier = "==7.1.249" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -981,11 +981,11 @@ wheels = [
 
 [[package]]
 name = "setuptools"
-version = "80.2.0"
+version = "80.3.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/24/65/19a02e93da9d9f118ecb311419a353ae68a8e236c057bf164c866daa227f/setuptools-80.2.0.tar.gz", hash = "sha256:16a390b41627e1455567193435e7cafa9101803ffaa2fdd9ecd0af098301981d", size = 1354232, upload-time = "2025-05-03T02:58:17.474Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/dc/3976b322de9d2e87ed0007cf04cc7553969b6c7b3f48a565d0333748fbcd/setuptools-80.3.1.tar.gz", hash = "sha256:31e2c58dbb67c99c289f51c16d899afedae292b978f8051efaf6262d8212f927", size = 1315082, upload-time = "2025-05-04T18:47:04.397Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/95/522fb99f76ecf2efe0a372ee02665a3cda1e5653b37514fd05c98f05a9cf/setuptools-80.2.0-py3-none-any.whl", hash = "sha256:5f982284ad5d644764e1985baca205e235651b55f9a7ea8d46878d37104aa5e5", size = 1240763, upload-time = "2025-05-03T02:58:14.874Z" },
+    { url = "https://files.pythonhosted.org/packages/53/7e/5d8af3317ddbf9519b687bd1c39d8737fde07d97f54df65553faca5cffb1/setuptools-80.3.1-py3-none-any.whl", hash = "sha256:ea8e00d7992054c4c592aeb892f6ad51fe1b4d90cc6947cc45c45717c40ec537", size = 1201172, upload-time = "2025-05-04T18:47:02.575Z" },
 ]
 
 [[package]]
