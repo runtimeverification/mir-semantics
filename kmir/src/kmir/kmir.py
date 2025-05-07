@@ -8,6 +8,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, Subst
 from pyk.kast.manip import split_config_from
+from pyk.kast.prelude.collections import list_empty, map_empty
 from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -19,6 +20,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
+from .kast import mk_call_terminator
 from .kparse import KParse
 from .parse.parser import Parser
 
@@ -72,6 +74,49 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
         return init_config
+
+    def make_call_config(
+        self,
+        parsed_smir: KApply,
+        smir_info: SMIRInfo,
+        start_symbol: str = 'main',
+    ) -> KInner:
+
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
+
+        _sym, _allocs, functions, items, types = parsed_smir.args
+
+        subst = {
+            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], 0),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'FUNCTIONS_CELL': KApply(
+                'mkFunctionMap',
+                (
+                    functions,
+                    items,
+                ),
+            ),
+            'TYPES_CELL': KApply(
+                'mkTypeMap',
+                (
+                    map_empty(),
+                    types,
+                ),
+            ),
+            'ADTTOTY_CELL': KApply(
+                'mkAdtMap',
+                (
+                    map_empty(),
+                    types,
+                ),
+            ),
+        }
+
+        config = self.definition.empty_config(KSort('GeneratedTopCell'))
+
+        return Subst(subst).apply(config)
 
     def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
         init_config = self.make_init_config(parsed_smir, start_symbol)
