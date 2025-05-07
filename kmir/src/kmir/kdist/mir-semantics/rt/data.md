@@ -343,56 +343,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
+  syntax TypedValue ::= thunk ( Evaluation )
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
 
-  // error cases (not checked, just matched below to prevent them)
-
-  // no type check, the local's type is used.
-
-  // setting a non-mutable local that is initialised is an error
-
-  // if all is well, write the value
-  // mutable local
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
-    [preserves-definedness] // valid list indexing checked
-
-  // non-mutable uninitialised values are mutable once
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isNewLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  // reusing a local which was Moved is allowed
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
+        <locals> LOCALS => LOCALS[I <- TV] </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
 ```
 
 ### Writing Data to Places With Projections
@@ -962,7 +918,9 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
-  syntax KItem ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
+  syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
+
+  rule <k> #compute(BOP, E1, E2, MUT) => thunk(#compute(BOP, E1, E2, MUT)) ... </k> [priority(190)]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
