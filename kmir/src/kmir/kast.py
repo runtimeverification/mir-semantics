@@ -24,5 +24,5 @@ def int_var(varname: str, num_bytes: int, signed: bool) -> tuple[KInner, Iterabl
 
 def bool_var(varname: str) -> tuple[KInner, Iterable[KInner]]:
     var = KVariable(varname, 'Bool')
-    term = KApply('Value::Bool', (var,))
+    term = KApply('Value::BoolVal', (var,))
     return term, ()
