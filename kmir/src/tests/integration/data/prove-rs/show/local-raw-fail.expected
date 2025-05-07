@@ -1,0 +1,17 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "local_raw_fail" ) .GlobalAllocs ListItem ( functionName ( ty (
+│   function: main
+│   span: 51
+│
+│  (19 steps)
+└─ 3 (stuck, leaf)
+    rvalueAddressOf ( mutabilityMut , place ( ... local: local ( 3 ) , projection: p
+    function: main
+    span: 50
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+
