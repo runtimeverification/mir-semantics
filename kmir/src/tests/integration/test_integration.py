@@ -8,12 +8,14 @@ from typing import TYPE_CHECKING
 import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
+from pyk.proof.show import APRProofShow
 
 from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
 from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
-from kmir.kmir import KMIR
+from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts
 from kmir.parse.parser import Parser
+from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
@@ -434,6 +436,9 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
 
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
+PROVE_RS_SHOW_SPECS = [
+    'local-raw-fail',
+]
 
 
 @pytest.mark.parametrize(
@@ -441,11 +446,21 @@ PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
     PROVING_FILES,
     ids=[spec.stem for spec in PROVING_FILES],
 )
-def test_prove_rs(rs_file: Path, kmir: KMIR) -> None:
+def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
+    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+
     prove_rs_opts = ProveRSOpts(rs_file)
     apr_proof = kmir.prove_rs(prove_rs_opts)
+
     if not should_fail:
         assert apr_proof.passed
     else:
         assert apr_proof.failed
+
+    if should_show:
+        shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=False))
+        show_res = '\n'.join(shower.show(apr_proof))
+        assert_or_update_show_output(
+            show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
+        )
