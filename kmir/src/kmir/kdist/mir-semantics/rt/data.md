@@ -183,15 +183,6 @@ For a normal `Index` projection, the index is read from a given local which is e
 
   syntax MIRError ::= MIRIndexError ( List , Local )
                     | MIRConstantIndexError ( List , Int )
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemIndex(LOCAL) _PROJS
-           )
-          => MIRIndexError(ELEMENTS, LOCAL)
-        ...
-        </k>
-      [owise]
 ```
 
 In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
@@ -220,15 +211,6 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool OFFSET <=Int size(ELEMENTS)
      andBool MINLEN ==Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, _, FROM_END) _PROJS
-           )
-          => MIRConstantIndexError(ELEMENTS, #if FROM_END #then 0 -Int OFFSET #else OFFSET #fi)
-        ...
-        </k>
-      [owise]
 ```
 
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
