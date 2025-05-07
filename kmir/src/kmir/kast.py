@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import reduce
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KVariable
@@ -28,7 +29,29 @@ def bool_var(varname: str) -> tuple[KInner, Iterable[KInner]]:
     return term, ()
 
 
-def mk_call_terminator(target: int, _arg_count: int) -> KInner:
+def mk_call_terminator(target: int, arg_count: int) -> KInner:
+    operands = [
+        KApply(
+            'Operand::Copy',
+            KApply(
+                'place',
+                (KApply('local', (token(i + 1),))),
+            ),
+        )
+        for i in range(arg_count)
+    ]
+    args = reduce(
+        lambda x, y: KApply(
+            'Operands::append',
+            (
+                x,
+                y,
+            ),
+        ),
+        operands,
+        KApply('Operands::empty', ()),
+    )
+
     return KApply(
         '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
         (
@@ -64,11 +87,11 @@ def mk_call_terminator(target: int, _arg_count: int) -> KInner:
                                     ),
                                 ),
                             ),
-                            KApply('Operands::empty', ()),
+                            args,
                             KApply(
-                                'place(_,_)_BODY_Place_Local_ProjectionElems',
+                                'place',
                                 (
-                                    KApply('local(_)_BODY_Local_Int', (token(0),)),
+                                    KApply('local', (token(0),)),
                                     KApply('ProjectionElems::empty', ()),
                                 ),
                             ),
