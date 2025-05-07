@@ -1048,52 +1048,6 @@ The arithmetic operations require operands of the same numeric type.
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
-
-  // lower-priority rule to catch undefined behaviour
-  rule #compute(
-          BOP,
-          typedValue(Integer(_, WIDTH, SIGNEDNESS), TY, _),
-          typedValue(Integer(_, WIDTH, SIGNEDNESS), TY, _),
-          false) // unchecked
-    => Overflow_U_B
-    requires isArithmetic(BOP)
-    [priority(60)]
-
-  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
-  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
-  rule #compute(binOpDiv, _, typedValue(Integer(DIVISOR, _, _), _, _), _)
-      =>
-        DivisionByZero
-    requires DIVISOR ==Int 0
-    [priority(40)]
-
-  rule #compute(binOpRem, _, typedValue(Integer(DIVISOR, _, _), _, _), _)
-      =>
-        DivisionByZero
-    requires DIVISOR ==Int 0
-    [priority(40)]
-
-  rule #compute(
-          binOpDiv,
-          typedValue(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
-          typedValue(Integer(DIVISOR,  WIDTH, true), TY, _),
-          _)
-      =>
-        Overflow_U_B
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
-
-  rule #compute(
-          binOpRem,
-          typedValue(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
-          typedValue(Integer(DIVISOR,  WIDTH, true), TY, _),
-          _)
-      =>
-        Overflow_U_B
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
 ```
 
 #### Comparison operations
