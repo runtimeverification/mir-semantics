@@ -61,6 +61,28 @@ class SMIRInfo:
     def function_symbols(self) -> dict[int, dict]:
         return {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
 
+    @cached_property
+    def function_symbols_reverse(self) -> dict[str, int]:
+        return {sym['NormalSym']: ty for ty, sym in self.function_symbols.items() if 'NormalSym' in sym}
+
+    @cached_property
+    def function_tys(self) -> dict[str, int]:
+        fun_syms = self.function_symbols_reverse
+
+        res = {'main': -1}
+        for item in self._smir['items']:
+            if not SMIRInfo._is_func(item):
+                continue
+
+            mono_item_fn = item['mono_item_kind']['MonoItemFn']
+            name = mono_item_fn['name']
+            sym = item['symbol_name']
+            if not sym in fun_syms:
+                continue
+
+            res[name] = fun_syms[sym]
+        return res
+
     @staticmethod
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
