@@ -26,3 +26,58 @@ def bool_var(varname: str) -> tuple[KInner, Iterable[KInner]]:
     var = KVariable(varname, 'Bool')
     term = KApply('Value::BoolVal', (var,))
     return term, ()
+
+
+def mk_call_terminator(target: int, _arg_count: int) -> KInner:
+    return KApply(
+        '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
+        (
+            KApply(
+                'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
+                (
+                    KApply(
+                        'TerminatorKind::Call',
+                        (
+                            KApply(
+                                'Operand::Constant',
+                                (
+                                    KApply(
+                                        'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
+                                        (
+                                            KApply('span', token(0)),
+                                            KApply(
+                                                'noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex',
+                                                (),
+                                            ),
+                                            KApply(
+                                                'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                                                (
+                                                    KApply('ConstantKind::ZeroSized', ()),
+                                                    KApply(
+                                                        'ty',
+                                                        (token(target),),
+                                                    ),
+                                                    KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            KApply('Operands::empty', ()),
+                            KApply(
+                                'place(_,_)_BODY_Place_Local_ProjectionElems',
+                                (
+                                    KApply('local(_)_BODY_Local_Int', (token(0),)),
+                                    KApply('ProjectionElems::empty', ()),
+                                ),
+                            ),
+                            KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ()),
+                            KApply('UnwindAction::Continue', ()),
+                        ),
+                    ),
+                    KApply('span', token(0)),
+                ),
+            ),
+        ),
+    )
