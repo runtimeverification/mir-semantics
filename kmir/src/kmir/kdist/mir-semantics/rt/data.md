@@ -807,7 +807,7 @@ cast from a `TypedLocal` to another when it is followed by a `#cast` item,
 rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
-  syntax KItem ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
+  syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 
   syntax MIRError ::= CastError
 
@@ -835,37 +835,6 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
-
-Error cases for `castKindIntToInt`
-* unknown target type (not in `types`)
-* target type is not an `Int` type
-* value is not a `Integer`
-
-```k
-  rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
-       <types> TYPEMAP </types>
-    requires notBool isTypeInfo(TYPEMAP[TY])
-    [preserves-definedness]
-
-  rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>TypeInfo) ... </k>
-       <types> TYPEMAP </types>
-    requires notBool (#isIntType({TYPEMAP[TY]}:>TypeInfo))
-    [preserves-definedness]
-
-  rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
-    [owise]
-```
-
-### Other type casts
-
-Other type casts are not implemented yet.
-
-```k
-  rule <k> #cast(_, CASTKIND, _TY) => CastNotimplemented(CASTKIND)... </k>
-    requires CASTKIND =/=K castKindIntToInt
-    [owise]
-```
-
 
 ## Decoding constants from their bytes representation to values
 
