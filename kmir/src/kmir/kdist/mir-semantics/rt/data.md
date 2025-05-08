@@ -446,7 +446,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Aggregate(IDX, ARGS), TY, MUT),
+              typedValue(Aggregate(IDX, ARGS), TY, _),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
               CTXTS,
@@ -458,12 +458,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <=Int I
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
      [preserves-definedness] // valid list indexing checked
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _),
               projectionElemIndex(local(LOCAL)) PROJS,
               UPDATE,
               CTXTS,
@@ -487,12 +486,11 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
      andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _),
               projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
               UPDATE,
               CTXTS,
@@ -511,12 +509,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <=Int OFFSET
      andBool OFFSET <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _),
               projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
               UPDATE,
               CTXTS,
@@ -536,12 +533,11 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), MUT), _, _),
+            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -562,12 +558,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <Int OFFSET
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), MUT), _, _),
+            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -588,7 +583,6 @@ The solution is to use rewrite operations in a downward pass through the project
     requires OFFSET ==Int 0
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
