@@ -588,7 +588,10 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, MSG) => AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
+```
+If the specific assertion rules above for `#expect` are matched, then we definitely know that there is or is not an assertion failure (respective to the matched rule). However if a `thunk` wrapper exists around an `#expect` we want to non-deterministically explore both branches. This does not sacrifice unsoundness as we would not eliminate any assertion failures with `thunk`, but instead will create unnecessary ones in the cases the `thunk(#expect(...))` would evaluate to true.
 
+```k
   rule <k> thunk(#expect(_, _, _MSG)) => .K ... </k>
 
   rule <k> thunk(#expect(_, _, MSG)) => AssertError(MSG) ... </k>
