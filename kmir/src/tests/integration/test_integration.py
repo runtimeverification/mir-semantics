@@ -436,10 +436,7 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
 
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
-PROVE_RS_SHOW_SPECS = [
-    'local-raw-fail',
-    'interior-mut-fail'
-]
+PROVE_RS_SHOW_SPECS = ['local-raw-fail', 'interior-mut-fail']
 
 
 @pytest.mark.parametrize(
