@@ -1,3 +1,5 @@
+// @kmir prove-rs: unchecked_add_i32 unchecked_sub_u16 unchecked_mul_usize
+
 fn main() {
     unchecked_add_i32(1,2);
     unchecked_sub_i8(1, 2);

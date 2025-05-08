@@ -444,8 +444,21 @@ PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
 def test_prove_rs(rs_file: Path, kmir: KMIR) -> None:
     should_fail = rs_file.stem.endswith('fail')
     prove_rs_opts = ProveRSOpts(rs_file)
-    apr_proof = kmir.prove_rs(prove_rs_opts)
-    if not should_fail:
-        assert apr_proof.passed
+
+    # read start symbol(s) from the first line (default: [main] otherwise)
+    start_sym_prefix = '// @kmir prove-rs:'
+    with open(rs_file) as f:
+        headline = f.readline().strip('\n')
+
+    if headline.startswith(start_sym_prefix):
+        start_symbols = headline.removeprefix(start_sym_prefix).split()
     else:
-        assert apr_proof.failed
+        start_symbols = ['main']
+
+    for start_symbol in start_symbols:
+        prove_rs_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
