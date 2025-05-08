@@ -329,7 +329,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
   rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, local(I), PROJECTIONS) ~> CONT
         =>
-           #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, Moved, .Contexts, true)
+           #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, .Contexts) ~> #writeProjectedUpdate(Moved, true)
            ~> VAL
            ~> CONT
        </k>
@@ -400,11 +400,12 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
 
 ```k
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
+  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, Contexts )
+                 | #writeProjectedUpdate ( TypedLocal , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
-           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
+           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts) ~> #writeProjectedUpdate(VAL, false)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -448,11 +449,9 @@ The solution is to use rewrite operations in a downward pass through the project
               DEST,
               typedValue(Aggregate(IDX, ARGS), TY, _),
               projectionElemField(fieldIdx(I), _) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
+              CTXTS
             ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, IDX, ARGS, I) CTXTS, FORCE)
+            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, CtxField(TY, IDX, ARGS, I) CTXTS)
           ...
           </k>
     requires 0 <=Int I
@@ -464,18 +463,15 @@ The solution is to use rewrite operations in a downward pass through the project
               DEST,
               typedValue(Range(ELEMENTS), TY, _),
               projectionElemIndex(local(LOCAL)) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
+              CTXTS
            )
           =>
             #projectedUpdate(
               DEST,
               {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
               PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS,
-              FORCE)
+              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS
+            )
         ...
         </k>
         <locals> LOCALS </locals>
@@ -492,18 +488,15 @@ The solution is to use rewrite operations in a downward pass through the project
               DEST,
               typedValue(Range(ELEMENTS), TY, _),
               projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
+              CTXTS
            )
           =>
             #projectedUpdate(
               DEST,
               {ELEMENTS[OFFSET]}:>TypedValue,
               PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS,
-              FORCE)
+              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS
+            )
         ...
         </k>
     requires 0 <=Int OFFSET
@@ -515,18 +508,15 @@ The solution is to use rewrite operations in a downward pass through the project
               DEST,
               typedValue(Range(ELEMENTS), TY, _),
               projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
-              UPDATE,
-              CTXTS,
-              FORCE
+              CTXTS
            )
           =>
             #projectedUpdate(
               DEST,
               {ELEMENTS[OFFSET]}:>TypedValue,
               PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS,
-              FORCE)
+              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS
+            )
         ...
         </k>
     requires 0 <Int OFFSET
@@ -536,22 +526,18 @@ The solution is to use rewrite operations in a downward pass through the project
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
+             _DEST,
+             typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
          =>
-          #projectedUpdate(
+           #projectedUpdate(
               toStack(OFFSET, LOCAL),
               #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
               appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
+              .Contexts // previous contexts obsolete
+           )
         ...
         </k>
         <stack> STACK </stack>
@@ -561,22 +547,18 @@ The solution is to use rewrite operations in a downward pass through the project
     [preserves-definedness]
 
   rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
+             _DEST,
+             typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
          =>
-          #projectedUpdate(
-              toLocal(I),
-              {LOCALS[I]}:>TypedLocal,
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
+           #projectedUpdate(
+             toLocal(I),
+             {LOCALS[I]}:>TypedLocal,
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
         ...
         </k>
         <locals> LOCALS </locals>
@@ -585,14 +567,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness]
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
+  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS) ~> #writeProjectedUpdate(NEW, false)
           =>
             #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
         </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
+  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS) ~> #writeProjectedUpdate(NEW, true)
           =>
             #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
@@ -612,7 +594,7 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _) => .K ... </k>
+  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS) ~> #writeProjectedUpdate(NEW, _) => .K ... </k>
         <stack> STACK
               =>
                 STACK[(FRAME -Int 1) <-
