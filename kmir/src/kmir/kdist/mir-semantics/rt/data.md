@@ -40,6 +40,16 @@ Other uses of heating and cooling are to _read_ local variables as operands. Thi
   syntax KResult ::= TypedLocal
 ```
 
+### `thunk`
+
+We also create a subsor of `TypedValue` that is a `thunk` which takes an `Evaluation` as an argument. The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `TypedValue` so that we may continue execution (instead of getting stuck). In particular, if we have pointer arithmetic with abstract pointers (not able to be resolved into concrete ints/bytes directly), then it will wrapper the operations in a `thunk`. It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
+
+```k
+  syntax TypedValue ::= thunk ( Evaluation )
+
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
+```
+
 ### Errors Related to Accessing Local Variables
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
@@ -325,8 +335,6 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-  syntax TypedValue ::= thunk ( Evaluation )
-  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
         <locals> LOCALS => LOCALS[I <- TV] </locals>
