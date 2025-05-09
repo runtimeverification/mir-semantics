@@ -40,6 +40,16 @@ Other uses of heating and cooling are to _read_ local variables as operands. Thi
   syntax KResult ::= TypedLocal
 ```
 
+### `thunk`
+
+We also create a subsor of `TypedValue` that is a `thunk` which takes an `Evaluation` as an argument. The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `TypedValue` so that we may continue execution (instead of getting stuck). In particular, if we have pointer arithmetic with abstract pointers (not able to be resolved into concrete ints/bytes directly), then it will wrapper the operations in a `thunk`. It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
+
+```k
+  syntax TypedValue ::= thunk ( Evaluation )
+
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
+```
+
 ### Errors Related to Accessing Local Variables
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
@@ -183,15 +193,6 @@ For a normal `Index` projection, the index is read from a given local which is e
 
   syntax MIRError ::= MIRIndexError ( List , Local )
                     | MIRConstantIndexError ( List , Int )
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemIndex(LOCAL) _PROJS
-           )
-          => MIRIndexError(ELEMENTS, LOCAL)
-        ...
-        </k>
-      [owise]
 ```
 
 In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
@@ -220,15 +221,6 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool OFFSET <=Int size(ELEMENTS)
      andBool MINLEN ==Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, _, FROM_END) _PROJS
-           )
-          => MIRConstantIndexError(ELEMENTS, #if FROM_END #then 0 -Int OFFSET #else OFFSET #fi)
-        ...
-        </k>
-      [owise]
 ```
 
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
@@ -344,55 +336,9 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
-  // error cases (not checked, just matched below to prevent them)
-
-  // no type check, the local's type is used.
-
-  // setting a non-mutable local that is initialised is an error
-
-  // if all is well, write the value
-  // mutable local
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
-    [preserves-definedness] // valid list indexing checked
-
-  // non-mutable uninitialised values are mutable once
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isNewLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  // reusing a local which was Moved is allowed
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
-       </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
+        <locals> LOCALS => LOCALS[I <- TV] </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
 ```
 
 ### Writing Data to Places With Projections
@@ -400,7 +346,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
 
 ```k
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
+  syntax Evaluation ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
@@ -851,7 +797,7 @@ cast from a `TypedLocal` to another when it is followed by a `#cast` item,
 rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
-  syntax KItem ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
+  syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 
   syntax MIRError ::= CastError
 
@@ -879,37 +825,6 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
-
-Error cases for `castKindIntToInt`
-* unknown target type (not in `types`)
-* target type is not an `Int` type
-* value is not a `Integer`
-
-```k
-  rule <k> #cast(_, castKindIntToInt, TY) => UnknownCastTarget(TY, TYPEMAP) ... </k>
-       <types> TYPEMAP </types>
-    requires notBool isTypeInfo(TYPEMAP[TY])
-    [preserves-definedness]
-
-  rule <k> #cast(_, castKindIntToInt, TY) => UnexpectedCastTarget(castKindIntToInt, {TYPEMAP[TY]}:>TypeInfo) ... </k>
-       <types> TYPEMAP </types>
-    requires notBool (#isIntType({TYPEMAP[TY]}:>TypeInfo))
-    [preserves-definedness]
-
-  rule <k> #cast(NONINT, castKindIntToInt, _TY) => UnexpectedCastArgument(NONINT, castKindIntToInt) ... </k>
-    [owise]
-```
-
-### Other type casts
-
-Other type casts are not implemented yet.
-
-```k
-  rule <k> #cast(_, CASTKIND, _TY) => CastNotimplemented(CASTKIND)... </k>
-    requires CASTKIND =/=K castKindIntToInt
-    [owise]
-```
-
 
 ## Decoding constants from their bytes representation to values
 
@@ -962,7 +877,9 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
-  syntax KItem ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
+  syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
+
+  rule <k> #compute(BOP, E1, E2, MUT) => thunk(#compute(BOP, E1, E2, MUT)) ... </k> [priority(190)]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
@@ -1121,52 +1038,6 @@ The arithmetic operations require operands of the same numeric type.
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
-
-  // lower-priority rule to catch undefined behaviour
-  rule #compute(
-          BOP,
-          typedValue(Integer(_, WIDTH, SIGNEDNESS), TY, _),
-          typedValue(Integer(_, WIDTH, SIGNEDNESS), TY, _),
-          false) // unchecked
-    => Overflow_U_B
-    requires isArithmetic(BOP)
-    [priority(60)]
-
-  // These are additional high priority rules to detect/report divbyzero and div/rem overflow/underflow
-  // (the latter can only happen for signed Ints with dividend minInt and divisor -1
-  rule #compute(binOpDiv, _, typedValue(Integer(DIVISOR, _, _), _, _), _)
-      =>
-        DivisionByZero
-    requires DIVISOR ==Int 0
-    [priority(40)]
-
-  rule #compute(binOpRem, _, typedValue(Integer(DIVISOR, _, _), _, _), _)
-      =>
-        DivisionByZero
-    requires DIVISOR ==Int 0
-    [priority(40)]
-
-  rule #compute(
-          binOpDiv,
-          typedValue(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
-          typedValue(Integer(DIVISOR,  WIDTH, true), TY, _),
-          _)
-      =>
-        Overflow_U_B
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
-
-  rule #compute(
-          binOpRem,
-          typedValue(Integer(DIVIDEND, WIDTH, true), TY, _), // signed
-          typedValue(Integer(DIVISOR,  WIDTH, true), TY, _),
-          _)
-      =>
-        Overflow_U_B
-    requires DIVISOR ==Int -1
-     andBool DIVIDEND ==Int 0 -Int (1 <<Int (WIDTH -Int 1)) // == minInt
-    [priority(40)]
 ```
 
 #### Comparison operations

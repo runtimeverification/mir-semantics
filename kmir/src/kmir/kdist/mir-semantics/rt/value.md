@@ -67,14 +67,14 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
   // ----------------------------------------------------------
   rule tyOfLocal(typedValue(_, TY, _)) => TY
-  rule tyOfLocal(Moved)                => TyUnknown
   rule tyOfLocal(newLocal(TY, _))      => TY
+  rule tyOfLocal(_)                    => TyUnknown [owise]
 
   syntax Mutability ::= mutabilityOf ( TypedLocal ) [function, total]
   // ----------------------------------------------------------------
   rule mutabilityOf(typedValue(_, _, MUT)) => MUT
-  rule mutabilityOf(Moved)                 => mutabilityNot
   rule mutabilityOf(newLocal(_, MUT))      => MUT
+  rule mutabilityOf(_)                     => mutabilityNot [owise]
 ```
 
 ## A generic MIR Error sort
