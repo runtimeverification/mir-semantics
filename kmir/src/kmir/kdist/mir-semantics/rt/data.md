@@ -1288,6 +1288,59 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 `binOpShr`
 `binOpShrUnchecked`
 
+```k
+  syntax Bool ::= isBitwise ( BinOp ) [function, total]
+  // --------------------------------------------------
+  rule isBitwise(binOpBitXor) => true
+  rule isBitwise(binOpBitAnd) => true
+  rule isBitwise(binOpBitOr)  => true
+  rule isBitwise(_)           => false [owise]
+  syntax Bool ::= isShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isShift(binOpShl)          => true
+  rule isShift(binOpShlUnchecked) => true
+  rule isShift(binOpShr)          => true
+  rule isShift(binOpShrUnchecked) => true
+  rule isShift(_)                 => false [owise]
+  rule onInt(binOpBitXor, X, Y)       => X xorInt Y
+  rule onInt(binOpBitAnd, X, Y)       => X &Int Y
+  rule onInt(binOpBitOr, X, Y)        => X |Int Y
+
+
+  syntax Bool ::= onBool( BinOp, Bool, Bool ) [function]
+  rule onBool(binOpBitXor, X, Y)       => X xorBool Y
+  rule onBool(binOpBitAnd, X, Y)       => X andBool Y
+  rule onBool(binOpBitOr, X, Y)        => X orBool Y
+
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, SIGNED), TY, _),
+          typedValue(Integer(ARG2, WIDTH, SIGNED), TY, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(onInt(BOP, ARG1, ARG2), WIDTH, SIGNED),
+          TY,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(BoolVal(ARG1), TY, _),
+          typedValue(BoolVal(ARG2), TY, _),
+          false) // unchecked
+    =>
+       typedValue(
+          BoolVal(onBool(BOP, ARG1, ARG2)),
+          TY,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+```
+
 
 #### Nullary operations for activating certain checks
 
