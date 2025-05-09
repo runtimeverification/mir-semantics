@@ -438,6 +438,8 @@ PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
+    'assert_eq_exp-fail',
+    'bitwise-fail',
 ]
 
 
