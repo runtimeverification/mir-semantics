@@ -447,8 +447,8 @@ The solution is to use rewrite operations in a downward pass through the project
      [preserves-definedness] // valid list indexing checked upon context construction
 
   syntax ProjectedUpdate ::= #readProjection(WriteTo, TypedLocal, ProjectionElems, Contexts, List, List) [function] // total
-                           | ProjectedUpdate(WriteTo, Contexts)
-  // ----------------------------------------------------------
+                           | ProjectedUpdate(WriteTo, TypedValue, Contexts)
+  // ----------------------------------------------------------------------
   rule #readProjection(
          _DEST,
          typedValue(Aggregate(IDX, ARGS), TY, MUT) => {ARGS[I]}:>TypedLocal,
@@ -532,16 +532,16 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness]
 
-  rule #readProjection(DEST, _:TypedValue, .ProjectionElems, CONTEXTS, _, _)
-    => ProjectedUpdate(DEST, CONTEXTS)
+  rule #readProjection(DEST, TV:TypedValue, .ProjectionElems, CONTEXTS, _, _)
+    => ProjectedUpdate(DEST, TV, CONTEXTS)
 
-  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), CONTEXTS), NEW, false)
+  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), typedValue(_, _, mutabilityMut), CONTEXTS), NEW, false)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
         ...
        </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
-  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), CONTEXTS), NEW, true)
+  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), _, CONTEXTS), NEW, true)
         => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
        </k>
@@ -556,7 +556,7 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(ProjectedUpdate(toStack(FRAME, local(I)), CONTEXTS), NEW, _) => .K ... </k>
+  rule <k> #projectedUpdate(ProjectedUpdate(toStack(FRAME, local(I)), typedValue(_, _, mutabilityMut), CONTEXTS), NEW, _) => .K ... </k>
        <stack> STACK => STACK[(FRAME -Int 1) <- #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS)) ] </stack>
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
