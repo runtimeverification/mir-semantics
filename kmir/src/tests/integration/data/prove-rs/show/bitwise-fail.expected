@@ -1,0 +1,16 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "bitwise_fail" ) globalAllocEntry ( 5 , Memory ( allocation ( .
+│   function: main
+│   span: 68
+│
+│  (190 steps)
+└─ 3 (stuck, leaf)
+    #compute ( binOpShl , typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutab
+    span: 69
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+
