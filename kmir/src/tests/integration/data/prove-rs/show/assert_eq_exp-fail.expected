@@ -1,0 +1,17 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "assert_eq_exp_fail" ) globalAllocEntry ( 0 , Memory ( allocati
+│   function: main
+│   span: 93
+│
+│  (88 steps)
+└─ 3 (stuck, leaf)
+    #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
+    function: main
+    span: 101
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+

@@ -441,6 +441,8 @@ PROVE_RS_SHOW_SPECS = [
     'interior-mut-fail',
     'interior-mut2-fail',
     'interior-mut3-fail',
+    'assert_eq_exp-fail',
+    'bitwise-fail',
 ]
 
 
