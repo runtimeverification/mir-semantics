@@ -151,7 +151,7 @@
       }
     ],
     [
-      40,
+      35,
       {
         "NoOpSym": ""
       }
@@ -2629,12 +2629,6 @@
   ],
   "types": [
     [
-      0,
-      {
-        "FunType": "for<'a> fn(&'a (dyn std::ops::Fn() -> i32 + std::marker::Sync + std::panic::RefUnwindSafe + 'a), isize, *const *const u8, u8) -> std::result::Result<isize, !> {std::rt::lang_start_internal}"
-      }
-    ],
-    [
       1,
       {
         "TupleType": {
@@ -2651,25 +2645,9 @@
       }
     ],
     [
-      3,
-      {
-        "FunType": "extern \"rust-call\" fn(()) -> i32"
-      }
-    ],
-    [
-      4,
-      {
-        "TupleType": {
-          "types": [
-            7
-          ]
-        }
-      }
-    ],
-    [
       5,
       {
-        "RefType": 38
+        "RefType": 36
       }
     ],
     [
@@ -2681,15 +2659,9 @@
       }
     ],
     [
-      7,
-      {
-        "FunType": "fn()"
-      }
-    ],
-    [
       8,
       {
-        "PtrType": 39
+        "PtrType": 37
       }
     ],
     [
@@ -2705,7 +2677,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 18,
+          "adt_def": 19,
           "discriminants": [
             [
               0,
@@ -2723,24 +2695,6 @@
       11,
       {
         "RefType": 12
-      }
-    ],
-    [
-      12,
-      {
-        "FunType": "{closure@std::rt::lang_start<()>::{closure#0}}"
-      }
-    ],
-    [
-      13,
-      {
-        "FunType": "fn(fn()) {std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>}"
-      }
-    ],
-    [
-      14,
-      {
-        "FunType": "fn(()) -> std::process::ExitCode {<() as std::process::Termination>::report}"
       }
     ],
     [
@@ -2765,7 +2719,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 9
+          "adt_def": 10
         }
       }
     ],
@@ -2773,18 +2727,6 @@
       18,
       {
         "RefType": 15
-      }
-    ],
-    [
-      19,
-      {
-        "FunType": "extern \"rust-call\" fn(fn(), ()) -> <fn() as std::ops::FnOnce<()>>::Output {<fn() as std::ops::FnOnce<()>>::call_once}"
-      }
-    ],
-    [
-      20,
-      {
-        "FunType": "fn(()) {std::intrinsics::black_box::<()>}"
       }
     ],
     [
@@ -2800,12 +2742,6 @@
       }
     ],
     [
-      23,
-      {
-        "FunType": "for<'a, 'b> fn(&'a &i8, &'b &i8) -> bool {<&i8 as std::cmp::PartialEq>::eq}"
-      }
-    ],
-    [
       24,
       {
         "RefType": 25
@@ -2818,27 +2754,9 @@
       }
     ],
     [
-      26,
-      {
-        "FunType": "for<'a, 'b> fn(&'a i8, &'b i8) -> bool {<i8 as std::cmp::PartialEq>::eq}"
-      }
-    ],
-    [
-      27,
-      {
-        "FunType": "extern \"rust-call\" fn({closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::call_once}"
-      }
-    ],
-    [
       28,
       {
         "PtrType": 12
-      }
-    ],
-    [
-      29,
-      {
-        "FunType": "for<'a> extern \"rust-call\" fn(&'a mut {closure@std::rt::lang_start<()>::{closure#0}}, ()) -> <{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::Output {<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnMut<()>>::call_mut}"
       }
     ],
     [
@@ -2848,35 +2766,816 @@
       }
     ],
     [
-      31,
-      {
-        "FunType": "for<'a, 'b> fn(&'a &&i8, &'b &&i8) -> bool {<&&i8 as std::cmp::PartialEq>::eq}"
-      }
-    ],
-    [
-      32,
-      {
-        "FunType": "fn(&'static str) -> ! {core::panicking::panic}"
-      }
-    ],
-    [
       33,
       {
-        "RefType": 35
+        "RefType": 39
       }
     ],
     [
-      35,
+      37,
+      {
+        "PtrType": 9
+      }
+    ],
+    [
+      38,
+      {
+        "RefType": 40
+      }
+    ],
+    [
+      39,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      36,
+      40,
       {
-        "RefType": 37
+        "StructType": {
+          "name": "std::panic::Location",
+          "adt_def": 21
+        }
       }
     ]
   ],
-  "debug": null
+  "spans": [
+    [
+      0,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        194,
+        17,
+        194,
+        36
+      ]
+    ],
+    [
+      1,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        194,
+        17,
+        199,
+        6
+      ]
+    ],
+    [
+      2,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        9,
+        195,
+        93
+      ]
+    ],
+    [
+      3,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        10,
+        195,
+        93
+      ]
+    ],
+    [
+      4,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        201,
+        2,
+        201,
+        2
+      ]
+    ],
+    [
+      5,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        199,
+        5,
+        199,
+        6
+      ]
+    ],
+    [
+      6,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        194,
+        12,
+        194,
+        13
+      ]
+    ],
+    [
+      7,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        199,
+        6,
+        199,
+        7
+      ]
+    ],
+    [
+      9,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        189,
+        5,
+        189,
+        9
+      ]
+    ],
+    [
+      10,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        190,
+        5,
+        190,
+        9
+      ]
+    ],
+    [
+      11,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        191,
+        5,
+        191,
+        9
+      ]
+    ],
+    [
+      12,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        192,
+        5,
+        192,
+        12
+      ]
+    ],
+    [
+      13,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        188,
+        1,
+        201,
+        2
+      ]
+    ],
+    [
+      14,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        18,
+        195,
+        69
+      ]
+    ],
+    [
+      15,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        18,
+        195,
+        75
+      ]
+    ],
+    [
+      16,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        18,
+        195,
+        84
+      ]
+    ],
+    [
+      17,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        70,
+        195,
+        74
+      ]
+    ],
+    [
+      18,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        76,
+        195,
+        82
+      ]
+    ],
+    [
+      19,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        74,
+        195,
+        75
+      ]
+    ],
+    [
+      20,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        93,
+        195,
+        93
+      ]
+    ],
+    [
+      21,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        83,
+        195,
+        84
+      ]
+    ],
+    [
+      22,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2053,
+        9,
+        2053,
+        15
+      ]
+    ],
+    [
+      23,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        636,
+        9,
+        636,
+        15
+      ]
+    ],
+    [
+      24,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        636,
+        9,
+        636,
+        22
+      ]
+    ],
+    [
+      25,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        636,
+        21,
+        636,
+        22
+      ]
+    ],
+    [
+      26,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2053,
+        23,
+        2053,
+        24
+      ]
+    ],
+    [
+      27,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        195,
+        92,
+        195,
+        93
+      ]
+    ],
+    [
+      29,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2052,
+        19,
+        2052,
+        23
+      ]
+    ],
+    [
+      30,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        635,
+        19,
+        635,
+        24
+      ]
+    ],
+    [
+      31,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        154,
+        18,
+        154,
+        19
+      ]
+    ],
+    [
+      32,
+      [
+        "no-location",
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    [
+      33,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        154,
+        18,
+        154,
+        21
+      ]
+    ],
+    [
+      34,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        389,
+        5,
+        389,
+        33
+      ]
+    ],
+    [
+      35,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        389,
+        5,
+        389,
+        40
+      ]
+    ],
+    [
+      36,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        160,
+        2,
+        160,
+        2
+      ]
+    ],
+    [
+      38,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        150,
+        43,
+        150,
+        44
+      ]
+    ],
+    [
+      40,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        154,
+        9,
+        154,
+        15
+      ]
+    ],
+    [
+      41,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        388,
+        27,
+        388,
+        32
+      ]
+    ],
+    [
+      42,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        150,
+        1,
+        160,
+        2
+      ]
+    ],
+    [
+      43,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        73,
+        1636,
+        73
+      ]
+    ],
+    [
+      44,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        52,
+        1636,
+        59
+      ]
+    ],
+    [
+      45,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        63,
+        1636,
+        71
+      ]
+    ],
+    [
+      46,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        52,
+        1636,
+        71
+      ]
+    ],
+    [
+      47,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        70,
+        1636,
+        71
+      ]
+    ],
+    [
+      49,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        23,
+        1636,
+        28
+      ]
+    ],
+    [
+      50,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        30,
+        1636,
+        35
+      ]
+    ],
+    [
+      51,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1636,
+        17,
+        1636,
+        73
+      ]
+    ],
+    [
+      52,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1818,
+        13,
+        1818,
+        26
+      ]
+    ],
+    [
+      53,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1818,
+        13,
+        1818,
+        41
+      ]
+    ],
+    [
+      54,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1818,
+        27,
+        1818,
+        32
+      ]
+    ],
+    [
+      55,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1818,
+        34,
+        1818,
+        40
+      ]
+    ],
+    [
+      56,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1819,
+        10,
+        1819,
+        10
+      ]
+    ],
+    [
+      58,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1817,
+        15,
+        1817,
+        20
+      ]
+    ],
+    [
+      59,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1817,
+        22,
+        1817,
+        27
+      ]
+    ],
+    [
+      60,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/cmp.rs",
+        1817,
+        9,
+        1819,
+        10
+      ]
+    ],
+    [
+      61,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ops/function.rs",
+        250,
+        5,
+        250,
+        71
+      ]
+    ],
+    [
+      62,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ptr/mod.rs",
+        521,
+        1,
+        521,
+        56
+      ]
+    ],
+    [
+      63,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2424,
+        6,
+        2424,
+        6
+      ]
+    ],
+    [
+      64,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2423,
+        9,
+        2423,
+        26
+      ]
+    ],
+    [
+      66,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2422,
+        15,
+        2422,
+        19
+      ]
+    ],
+    [
+      67,
+      [
+        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        2422,
+        5,
+        2424,
+        6
+      ]
+    ],
+    [
+      68,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        7,
+        13,
+        7,
+        21
+      ]
+    ],
+    [
+      69,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        3,
+        13,
+        3,
+        17
+      ]
+    ],
+    [
+      70,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        4,
+        13,
+        4,
+        15
+      ]
+    ],
+    [
+      71,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        5,
+        13,
+        5,
+        15
+      ]
+    ],
+    [
+      72,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        7,
+        13,
+        7,
+        16
+      ]
+    ],
+    [
+      73,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        9,
+        13,
+        9,
+        21
+      ]
+    ],
+    [
+      74,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        9,
+        13,
+        9,
+        14
+      ]
+    ],
+    [
+      75,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        9,
+        19,
+        9,
+        21
+      ]
+    ],
+    [
+      76,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        9,
+        18,
+        9,
+        21
+      ]
+    ],
+    [
+      77,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        7,
+        5,
+        7,
+        22
+      ]
+    ],
+    [
+      78,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        10,
+        2,
+        10,
+        2
+      ]
+    ],
+    [
+      79,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        9,
+        5,
+        9,
+        22
+      ]
+    ],
+    [
+      81,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        3,
+        9,
+        3,
+        10
+      ]
+    ],
+    [
+      82,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        4,
+        9,
+        4,
+        10
+      ]
+    ],
+    [
+      83,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        5,
+        9,
+        5,
+        10
+      ]
+    ],
+    [
+      84,
+      [
+        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/references/doubleRef.rs",
+        1,
+        1,
+        10,
+        2
+      ]
+    ]
+  ],
+  "debug": null,
+  "machine": {
+    "endian": "Little",
+    "pointer_width": {
+      "num_bits": 64
+    }
+  }
 }
