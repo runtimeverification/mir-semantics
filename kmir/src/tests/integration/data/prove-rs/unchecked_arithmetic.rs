@@ -1,11 +1,9 @@
-// @kmir prove-rs: unchecked_add_i32 unchecked_sub_usize unchecked_sub_i16
+// @kmir prove-rs: unchecked_add_i32 unchecked_sub_usize unchecked_mul_isize
 
 fn main() {
     unchecked_add_i32(1,2);
-    unchecked_sub_i8(1, 2);
-    unchecked_sub_u16(1, 2);
-    unchecked_mul_i64(1, 2);
-    unchecked_mul_usize(1, 2);
+    unchecked_sub_usize(1, 2);
+    unchecked_mul_isize(1, 2);
 }
 
 /// If the precondition is not met, the program is not executed (exits cleanly, ex falso quodlibet)
@@ -116,5 +114,6 @@ unchecked_mul_claim_for!(unchecked_mul_isize, isize);
 unchecked_mul_claim_for!(unchecked_mul_u8   , u8   );
 unchecked_mul_claim_for!(unchecked_mul_u16  , u16  );
 unchecked_mul_claim_for!(unchecked_mul_u32  , u32  );
-unchecked_mul_claim_for!(unchecked_mul_u64  , u64  );
-unchecked_mul_claim_for!(unchecked_mul_usize, usize);
+// insufficient bit size for precondition
+// unchecked_mul_claim_for!(unchecked_mul_u64  , u64  );
+// unchecked_mul_claim_for!(unchecked_mul_usize, usize);
