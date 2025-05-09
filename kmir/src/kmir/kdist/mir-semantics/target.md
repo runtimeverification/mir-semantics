@@ -1,4 +1,6 @@
 ```k
+requires "ty.md"
+
 module TARGET-SORTS
 
 syntax MachineSize
@@ -8,10 +10,12 @@ endmodule
 module TARGET
   imports TARGET-SORTS
   imports INT
+  imports TYPES
 
-syntax MachineInfo ::= machineInfo(endian: Endian, pointerWidth: MachineSize)
-syntax Endian ::= "endianLittle" |  "endianBig"
-syntax MachineSize ::= machineSize(numBits: Int)
+syntax MachineInfo ::= machineInfo(endian: Endian, pointerWidth: MachineSize) [group(mir---endian--pointer-width)]
+syntax Endian ::= "endianLittle" [group(mir-enum), symbol(Endian::Little)]
+                | "endianBig" [group(mir-enum), symbol(Endian::Big)]
+syntax MachineSize ::= machineSize(numBits: MIRInt) [group(mir---num-bits), symbol(MachineSize::num_bits)]
 
 endmodule
 ```

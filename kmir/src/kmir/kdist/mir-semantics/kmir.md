@@ -45,7 +45,7 @@ function map and the initial memory have to be set up.
 
 ```k
   // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings)
+  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings _MACHINE:MachineInfo)
          =>
            #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
        </k>
