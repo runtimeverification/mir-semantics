@@ -27,6 +27,7 @@ jobs:
           version: 0.7.2
       - name: 'Update version'
         run: |
+          echo "${GITHUB_BASE_REF}"
           og_version=$(git show origin/${GITHUB_BASE_REF}:package/version)
           ./package/version.sh bump ${og_version}
           ./package/version.sh sub
