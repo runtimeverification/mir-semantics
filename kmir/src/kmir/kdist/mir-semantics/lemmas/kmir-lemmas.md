@@ -50,6 +50,38 @@ Therefore, its value range should be simplified for symbolic input asserted to b
      [simplification]
 ```
 
+However, `truncate` gets evaluated and is therefore not present any more for this simplification.
+The following simplification rules operate on the expression created by evaluating `truncate` when
+`WIDTH` is 8, 16, 32, 64, or 128 and the mode is `Unsigned`. The simplification would hold for any
+power of two but the semantics will always operate with these particular ones.
+
+```k
+  rule VAL &Int MASK => VAL 
+    requires 0   <=Int VAL 
+     andBool VAL <=Int MASK
+     andBool ( MASK ==Int bitmask8
+        orBool MASK ==Int bitmask16
+        orBool MASK ==Int bitmask32
+        orBool MASK ==Int bitmask64
+        orBool MASK ==Int bitmask128
+     )
+    [simplification, preserves-definedness]
+
+  syntax Int ::= "bitmask8"    [macro]
+               | "bitmask16"   [macro]
+               | "bitmask32"   [macro]
+               | "bitmask64"   [macro]
+               | "bitmask128"  [macro]
+
+  rule bitmask8   => ( 1 <<Int 8  ) -Int 1
+  rule bitmask16  => ( 1 <<Int 16 ) -Int 1
+  rule bitmask32  => ( 1 <<Int 32 ) -Int 1
+  rule bitmask64  => ( 1 <<Int 64 ) -Int 1
+  rule bitmask128 => ( 1 <<Int 128) -Int 1
+
+```
+
+
 ```k
 endmodule
 ```

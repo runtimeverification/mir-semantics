@@ -451,16 +451,36 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
 
     prove_rs_opts = ProveRSOpts(rs_file)
-    apr_proof = kmir.prove_rs(prove_rs_opts)
-
-    if not should_fail:
-        assert apr_proof.passed
-    else:
-        assert apr_proof.failed
 
     if should_show:
+        # always run `main` when kmir show is tested
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
+
         shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=False))
         show_res = '\n'.join(shower.show(apr_proof))
         assert_or_update_show_output(
             show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
         )
+    else:
+        # read start symbol(s) from the first line (default: [main] otherwise)
+        start_sym_prefix = '// @kmir prove-rs:'
+        with open(rs_file) as f:
+            headline = f.readline().strip('\n')
+
+        if headline.startswith(start_sym_prefix):
+            start_symbols = headline.removeprefix(start_sym_prefix).split()
+        else:
+            start_symbols = ['main']
+
+        for start_symbol in start_symbols:
+            prove_rs_opts.start_symbol = start_symbol
+            apr_proof = kmir.prove_rs(prove_rs_opts)
+            if not should_fail:
+                assert apr_proof.passed
+            else:
+                assert apr_proof.failed
