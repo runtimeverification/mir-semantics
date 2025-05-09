@@ -74,15 +74,12 @@ This truncation function is instrumental in the implementation of Integer arithm
     requires WIDTH <=Int 0
   // unsigned values can be truncated using a simple bitmask
   // NB if VAL is negative (underflow), the truncation will yield a positive number
+
   rule truncate(VAL, WIDTH, Unsigned)
       => // mask with relevant bits
         VAL &Int ((1 <<Int WIDTH) -Int 1)
     requires 0 <Int WIDTH
     [preserves-definedness]
-  rule truncate(VAL, WIDTH, Unsigned)
-      => VAL // shortcut when there is nothing to do
-    requires 0 <Int WIDTH andBool VAL <Int 1 <<Int WIDTH
-    [simplification, preserves-definedness]
 
   // for signed values we need to preserve/restore the sign
   rule truncate(VAL, WIDTH, Signed)
