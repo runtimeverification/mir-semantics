@@ -535,16 +535,11 @@ The solution is to use rewrite operations in a downward pass through the project
   rule #readProjection(DEST, TV:TypedValue, .ProjectionElems, CONTEXTS, _, _)
     => ProjectedUpdate(DEST, TV, CONTEXTS)
 
-  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), typedValue(_, _, mutabilityMut), CONTEXTS), NEW, false)
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-        ...
-       </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
-
-  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), _, CONTEXTS), NEW, true)
+  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), typedValue(_, _, MUT), CONTEXTS), NEW, FORCE)
         => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
        </k>
+     requires MUT ==K mutabilityMut orBool FORCE
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
