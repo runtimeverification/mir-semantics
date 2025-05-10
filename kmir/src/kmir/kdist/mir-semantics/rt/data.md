@@ -329,10 +329,12 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
   rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, local(I), PROJECTIONS) ~> CONT
         =>
-           #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, Moved, .Contexts, true)
+           #projectedUpdate(#readProjection(toLocal(I), OLDLOCAL, PROJECTIONS, .Contexts, STACK, LOCALS), Moved, true)
            ~> VAL
            ~> CONT
        </k>
+       <stack> STACK </stack>
+       <locals> LOCALS </locals>
     [preserves-definedness] // projections already used when reading
 ```
 
@@ -400,13 +402,13 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
 
 ```k
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
+  syntax KItem ::= #projectedUpdate ( ProjectedUpdate , TypedLocal , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-         =>
-           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
+        => #projectedUpdate(#readProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts, STACK, LOCALS), VAL, false)
        ...
        </k>
+       <stack> STACK </stack>
        <locals> LOCALS </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
@@ -426,60 +428,48 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
-                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( Ty, VariantIdx, List, Int, Mutability)
+                   | CtxIndex( Ty, List, Int, Mutability) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
   syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
-
+  // -------------------------------------------------------------------
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
 
-  rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I) CTXS)
-      => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I, MUT) CTXS)
+      => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, MUT), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  rule #buildUpdate(VAL, CtxIndex(TY, ELEMS, I) CTXS)
-      => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxIndex(TY, ELEMS, I, MUT) CTXS)
+      => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, MUT), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Aggregate(IDX, ARGS), TY, MUT),
-              projectionElemField(fieldIdx(I), _) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-            ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, IDX, ARGS, I) CTXTS, FORCE)
-          ...
-          </k>
+  syntax ProjectedUpdate ::= #readProjection(WriteTo, TypedLocal, ProjectionElems, Contexts, List, List) [function] // total
+                           | ProjectedUpdate(WriteTo, TypedValue, Contexts)
+  // ----------------------------------------------------------------------
+  rule #readProjection(
+         _DEST,
+         typedValue(Aggregate(IDX, ARGS), TY, MUT) => {ARGS[I]}:>TypedLocal,
+         projectionElemField(fieldIdx(I), TY) PROJS => PROJS,
+         CTXTS => CtxField(TY, IDX, ARGS, I, MUT) CTXTS,
+         _STACK,
+         _LOCALS
+       )
     requires 0 <=Int I
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
      [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
-              projectionElemIndex(local(LOCAL)) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS,
-              FORCE)
-        ...
-        </k>
-        <locals> LOCALS </locals>
+  rule #readProjection(
+         _DEST,
+         typedValue(Range(ELEMENTS), TY, MUT) => {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
+         projectionElemIndex(local(LOCAL)) PROJS => PROJS,
+         CTXTS => CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue), MUT) CTXTS,
+         _STACK,
+         LOCALS
+       )
     requires 0 <=Int LOCAL
      andBool LOCAL <Int size(LOCALS)
      andBool isTypedValue(LOCALS[LOCAL])
@@ -487,144 +477,82 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
      andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
-              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS,
-              FORCE)
-        ...
-        </k>
+  rule #readProjection(
+         _DEST,
+         typedValue(Range(ELEMENTS), TY, MUT) => {ELEMENTS[OFFSET]}:>TypedValue,
+         projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS => PROJS,
+         CTXTS => CtxIndex(TY, ELEMENTS, OFFSET, MUT) CTXTS,
+         _STACK,
+         _LOCALS
+       )
     requires 0 <=Int OFFSET
      andBool OFFSET <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
-              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS,
-              FORCE)
-        ...
-        </k>
+  rule #readProjection(
+         _DEST,
+         typedValue(Range(ELEMENTS), TY, MUT) => {ELEMENTS[OFFSET]}:>TypedValue,
+         projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS => PROJS,
+         CTXTS => CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET, MUT) CTXTS,
+         _STACK,
+         _LOCALS
+       )
     requires 0 <Int OFFSET
      andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), MUT), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
-         =>
-          #projectedUpdate(
-              toStack(OFFSET, LOCAL),
-              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
-        ...
-        </k>
-        <stack> STACK </stack>
+  rule #readProjection(
+         _DEST => toStack(OFFSET, LOCAL),
+         typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _), _, _),
+         projectionElemDeref PROJS => appendP(PLACEPROJ, PROJS),
+         _CTXTS => .Contexts,
+         STACK,
+         _LOCALS
+       )
     requires 0 <Int OFFSET
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
-  rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), MUT), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
-         =>
-          #projectedUpdate(
-              toLocal(I),
-              {LOCALS[I]}:>TypedLocal,
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
-        ...
-        </k>
-        <locals> LOCALS </locals>
+  rule #readProjection(
+         _DEST => toLocal(I),
+         typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _), _, _) => {LOCALS[I]}:>TypedLocal,
+         projectionElemDeref PROJS => appendP(PLACEPROJ, PROJS),
+         _CTXTS => .Contexts,
+         _STACK,
+         LOCALS
+       )
     requires OFFSET ==Int 0
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
-          =>
-            #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-        ...
-        </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
+  rule #readProjection(DEST, TV:TypedValue, .ProjectionElems, CONTEXTS, _, _)
+    => ProjectedUpdate(DEST, TV, CONTEXTS)
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
-          =>
-            #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+  rule <k> #projectedUpdate(ProjectedUpdate(toLocal(I), typedValue(_, _, MUT), CONTEXTS), NEW, FORCE)
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
         ...
-        </k>
+       </k>
+     requires MUT ==K mutabilityMut orBool FORCE
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
   // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> #forceSetLocal(local(I), VALUE)
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
        <locals> LOCALS => LOCALS[I <- VALUE] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _) => .K ... </k>
-        <stack> STACK
-              =>
-                STACK[(FRAME -Int 1) <-
-                        #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
-                      ]
-        </stack>
+  rule <k> #projectedUpdate(ProjectedUpdate(toStack(FRAME, local(I)), typedValue(_, _, mutabilityMut), CONTEXTS), NEW, _) => .K ... </k>
+       <stack> STACK => STACK[(FRAME -Int 1) <- #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS)) ] </stack>
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
