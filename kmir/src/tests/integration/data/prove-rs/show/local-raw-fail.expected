@@ -27,9 +27,9 @@
    │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
    │   function: main
    │
-   │  (10 steps)
+   │  (9 steps)
    └─ 7 (stuck, leaf)
-       thunk ( #projectedUpdate ( toLocal ( 2 ) , thunk ( rvalueAddressOf ( mutabilityM
+       #projectedUpdate ( toLocal ( 2 ) , thunk ( rvalueAddressOf ( mutabilityMut , pla
        function: main
        span: 53
 

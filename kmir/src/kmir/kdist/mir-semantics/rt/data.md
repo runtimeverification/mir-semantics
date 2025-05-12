@@ -346,7 +346,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
 
 ```k
-  syntax Evaluation ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
+  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
