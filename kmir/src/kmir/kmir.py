@@ -8,7 +8,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, Subst
 from pyk.kast.manip import split_config_from
-from pyk.kast.prelude.collections import list_empty, map_empty
+from pyk.kast.prelude.collections import list_empty, list_of, map_empty
 from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -20,7 +20,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
-from .kast import mk_call_terminator
+from .kast import mk_call_terminator, symbolic_locals
 from .kparse import KParse
 from .parse.parser import Parser
 
@@ -87,10 +87,15 @@ class KMIR(KProve, KRun, KParse):
 
         _sym, _allocs, functions, items, types, _ = parsed_smir.args
 
+        args_info = smir_info.function_arguments[start_symbol]
+
+        locals, constraints = symbolic_locals(smir_info, args_info)
+
         subst = {
-            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], 0),
+            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'LOCALS_CELL': list_of(locals),
             'FUNCTIONS_CELL': KApply(
                 'mkFunctionMap',
                 (

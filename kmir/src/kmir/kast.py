@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import reduce
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KVariable
@@ -11,6 +10,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from pyk.kast.inner import KInner
+
+    from .smir import SMIRInfo
 
 
 def int_var(varname: str, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
@@ -37,11 +38,17 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
         )
         for i in range(arg_count)
     ]
-    args = reduce(
-        lambda x, y: KApply('Operands::append', (x, y)),
-        operands,
-        KApply('Operands::empty', ()),
-    )
+
+    # args = foldr(Operands::append, Operands::empty, operands)
+    args = KApply('Operands::empty', ())
+    for op in reversed(operands):
+        args = KApply(
+            'Operands::append',
+            (
+                op,
+                args,
+            ),
+        )
 
     return KApply(
         '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
@@ -89,3 +96,48 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
             ),
         ),
     )
+
+
+def symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+    locals, constraints = ArgGenerator(smir_info).run(local_types)
+    local0 = KApply('newLocal', (KApply('ty', (token(0),)), KApply('Mutability::Not', ())))
+    return ([local0] + locals, constraints)
+
+
+class ArgGenerator:
+    smir_info: SMIRInfo
+    locals: list[KInner]
+    pointees: list[KInner]
+    constraints: list[KInner]
+    counter: int
+    ref_offset: int
+
+    if TYPE_CHECKING:
+        from .smir import Ty
+
+    def __init__(self, smir_info: SMIRInfo) -> None:
+        self.smir_info = smir_info
+        self.locals = []
+        self.pointees = []
+        self.constraints = []
+        self.counter = 1
+        self.ref_offset = 0
+
+    def run(self, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+        self.ref_offset = len(local_types) + 1
+        for ty in [t['ty'] for t in local_types]:
+            self._add_local(ty)
+        return (self.locals + self.pointees, self.constraints)
+
+    def _add_local(self, ty: Ty) -> None:
+        match self.smir_info.types.get(ty):
+            case _:
+                new = KApply(
+                    'typedValue', (self._fresh_var('ARG'), KApply('ty', (token(ty),)), KApply('Mutability::Not', ()))
+                )
+                self.locals.append(new)
+
+    def _fresh_var(self, prefix: str) -> KInner:
+        name = prefix + str(self.counter)
+        self.counter += 1
+        return KVariable(name)

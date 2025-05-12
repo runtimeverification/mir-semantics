@@ -52,11 +52,11 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   // local storage of the stack frame
   syntax TypedLocal ::= TypedValue | MovedLocal | NewLocal
 
-  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability )
+  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability ) [symbol(typedValue)]
 
   syntax MovedLocal ::= "Moved"
 
-  syntax NewLocal ::= newLocal ( Ty , Mutability )
+  syntax NewLocal ::= newLocal ( Ty , Mutability )                  [symbol(newLocal)]
 
   // the type of aggregates cannot be determined from the data provided when they
   // occur as `RValue`, therefore we have to make the `Ty` field optional here.

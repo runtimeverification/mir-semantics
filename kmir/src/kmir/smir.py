@@ -48,7 +48,7 @@ class SMIRInfo:
         return {_item['symbol_name']: _item for _item in self._smir['items']}
 
     @cached_property
-    def function_arguments(self) -> dict[str, dict]:
+    def function_arguments(self) -> dict[str, list[dict]]:
         res = {}
         for item in self._smir['items']:
             if not SMIRInfo._is_func(item):
