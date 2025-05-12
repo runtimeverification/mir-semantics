@@ -1291,10 +1291,20 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 ```k
   syntax Bool ::= isBitwise ( BinOp ) [function, total]
   // --------------------------------------------------
-  rule isBitwise(binOpBitXor) => true
-  rule isBitwise(binOpBitAnd) => true
-  rule isBitwise(binOpBitOr)  => true
-  rule isBitwise(_)           => false [owise]
+  rule isBitwise(binOpBitXor)   => true
+  rule isBitwise(binOpBitAnd)   => true
+  rule isBitwise(binOpBitOr)    => true
+  rule isBitwise(_)             => false [owise]
+  rule onInt(binOpBitXor, X, Y) => X xorInt Y
+  rule onInt(binOpBitAnd, X, Y) => X &Int Y
+  rule onInt(binOpBitOr, X, Y)  => X |Int Y
+
+  syntax Bool ::= onBool( BinOp, Bool, Bool ) [function]
+  // ---------------------------------------------------
+  rule onBool(binOpBitXor, X, Y)  => X xorBool Y
+  rule onBool(binOpBitAnd, X, Y)  => X andBool Y
+  rule onBool(binOpBitOr, X, Y)   => X orBool Y
+
   syntax Bool ::= isShift ( BinOp ) [function, total]
   // ------------------------------------------------
   rule isShift(binOpShl)          => true
@@ -1302,15 +1312,6 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
   rule isShift(binOpShr)          => true
   rule isShift(binOpShrUnchecked) => true
   rule isShift(_)                 => false [owise]
-  rule onInt(binOpBitXor, X, Y)       => X xorInt Y
-  rule onInt(binOpBitAnd, X, Y)       => X &Int Y
-  rule onInt(binOpBitOr, X, Y)        => X |Int Y
-
-
-  syntax Bool ::= onBool( BinOp, Bool, Bool ) [function]
-  rule onBool(binOpBitXor, X, Y)       => X xorBool Y
-  rule onBool(binOpBitAnd, X, Y)       => X andBool Y
-  rule onBool(binOpBitOr, X, Y)        => X orBool Y
 
   rule #compute(
           BOP,
