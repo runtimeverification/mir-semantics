@@ -372,8 +372,8 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
-                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( MaybeTy, VariantIdx, List, Int )
+                   | CtxIndex( MaybeTy, List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
