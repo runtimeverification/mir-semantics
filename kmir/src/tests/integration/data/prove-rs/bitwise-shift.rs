@@ -4,6 +4,7 @@ fn main() {
     assert!(1_u8 << 3_i8 == 8); // Negative on RHS if in 0..size
     assert!(1_i8 << 3_u8 == 8);
     assert!(1_i8 << 3_i8 == 8);
+    assert!(1_i8 << 7_u8 == -128_i8);
 
     // Shl Overflow
     assert!(255_u8 << 1_u8 == 254);   
