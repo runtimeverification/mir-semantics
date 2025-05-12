@@ -1176,6 +1176,22 @@ One important use case of `UbChecks` is to determine overflows in unchecked arit
 `nullOpAlignOf`
 `nullOpOffsetOf(VariantAndFieldIndices)`
 
+```k
+// FIXME: 64 is hardcoded since usize not supported
+rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
+      =>
+         typedValue(
+           Integer(#alignOf({TYPEMAP[TY]}:>TypeInfo), 64, false),
+           TyUnknown,
+           mutabilityNot
+         )
+         ...
+     </k>
+     <types> TYPEMAP </types>
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+```
+
 #### Other operations
 
 `binOpOffset`

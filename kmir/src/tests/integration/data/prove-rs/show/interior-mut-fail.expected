@@ -1,0 +1,16 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "interior_mut_fail" ) globalAllocEntry ( 2 , Memory ( allocatio
+│   function: main
+│   span: 288
+│
+│  (138 steps)
+└─ 3 (stuck, leaf)
+    rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 1 ) , projection: p
+    span: 88
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+
