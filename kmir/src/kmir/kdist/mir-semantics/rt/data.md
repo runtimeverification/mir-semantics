@@ -1313,6 +1313,12 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
   rule isShift(binOpShrUnchecked) => true
   rule isShift(_)                 => false [owise]
 
+  syntax Bool ::= isUncheckedShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isUncheckedShift(binOpShlUnchecked) => true
+  rule isUncheckedShift(binOpShrUnchecked) => true
+  rule isUncheckedShift(_)                 => false [owise]
+
   syntax Int ::= onShift( BinOp, Int, Int, Int ) [function]
   // ---------------------------------------------------
   rule onShift(binOpShl, X, Y, WIDTH)          => (X <<Int Y) modInt (1 <<Int WIDTH)
@@ -1359,7 +1365,7 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
           TY,
           mutabilityNot
         )
-    requires isShift(BOP)
+    requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
     [preserves-definedness]
 ```
 
