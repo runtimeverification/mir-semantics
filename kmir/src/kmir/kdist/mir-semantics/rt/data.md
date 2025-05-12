@@ -786,14 +786,6 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
-
-  syntax MIRError ::= CastError
-
-  syntax CastError ::= UnknownCastTarget ( Ty , Map )
-                     | UnexpectedCastTarget ( CastKind, TypeInfo )
-                     | UnexpectedCastArgument ( TypedLocal, CastKind )
-                     | CastNotimplemented ( CastKind )
-
 ```
 
 ### Integer Type Casts
@@ -880,22 +872,6 @@ There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`
   syntax KItem ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
 
   rule <k> rvalueUnaryOp(UNOP, OP1) => #applyUnOp(UNOP, OP1) ... </k>
-```
-
-### Potential errors
-
-```k
-  syntax MIRError ::= OperationError
-
- // (dynamic) program errors causing undefined behaviour
-  syntax OperationError ::= "DivisionByZero"
-                          | "Overflow_U_B"
-
-  // errors caused by invalid MIR code get stuck
-
-  // Moved or uninitialised operands
-
-  // specific errors for the particular operation types (argument or type mismatches)
 ```
 
 #### Arithmetic
