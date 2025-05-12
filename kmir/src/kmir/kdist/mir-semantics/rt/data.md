@@ -392,7 +392,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Aggregate(IDX, ARGS), TY, MUT),
+              typedValue(Aggregate(IDX, ARGS), TY, _MUT),
               projectionElemField(fieldIdx(I), _) PROJS,
               UPDATE,
               CTXTS,
@@ -404,12 +404,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <=Int I
      andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
      [preserves-definedness] // valid list indexing checked
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemIndex(local(LOCAL)) PROJS,
               UPDATE,
               CTXTS,
@@ -433,12 +432,11 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
      andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
               UPDATE,
               CTXTS,
@@ -457,12 +455,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <=Int OFFSET
      andBool OFFSET <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
               DEST,
-              typedValue(Range(ELEMENTS), TY, MUT),
+              typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
               UPDATE,
               CTXTS,
@@ -482,12 +479,11 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), MUT), _, _),
+            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -508,12 +504,11 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <Int OFFSET
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), MUT), _, _),
+            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -534,31 +529,24 @@ The solution is to use rewrite operations in a downward pass through the project
     requires OFFSET ==Int 0
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool (FORCE orBool MUT ==K mutabilityMut)
     [preserves-definedness]
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
-          =>
-            #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-        ...
-        </k>
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+           ...
+       </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
-          =>
-            #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
-        ...
-        </k>
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+           ...
+       </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
 
   // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> #forceSetLocal(local(I), VALUE)
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
        <locals> LOCALS => LOCALS[I <- VALUE] </locals>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
