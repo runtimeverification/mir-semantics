@@ -85,7 +85,7 @@ class KMIR(KProve, KRun, KParse):
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
-        _sym, _allocs, functions, items, types = parsed_smir.args
+        _sym, _allocs, functions, items, types, _ = parsed_smir.args
 
         subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], 0),

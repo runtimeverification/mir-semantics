@@ -33,21 +33,12 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
     operands = [
         KApply(
             'Operand::Copy',
-            KApply(
-                'place',
-                (KApply('local', (token(i + 1),))),
-            ),
+            (KApply('place', (KApply('local', (token(i + 1),)), KApply('ProjectionElems::empty', ()))),),
         )
         for i in range(arg_count)
     ]
     args = reduce(
-        lambda x, y: KApply(
-            'Operands::append',
-            (
-                x,
-                y,
-            ),
-        ),
+        lambda x, y: KApply('Operands::append', (x, y)),
         operands,
         KApply('Operands::empty', ()),
     )
@@ -68,18 +59,12 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
                                         'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
                                         (
                                             KApply('span', token(0)),
-                                            KApply(
-                                                'noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex',
-                                                (),
-                                            ),
+                                            KApply('noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex', ()),
                                             KApply(
                                                 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
                                                 (
                                                     KApply('ConstantKind::ZeroSized', ()),
-                                                    KApply(
-                                                        'ty',
-                                                        (token(target),),
-                                                    ),
+                                                    KApply('ty', (token(target),)),
                                                     KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
                                                 ),
                                             ),
