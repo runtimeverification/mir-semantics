@@ -1280,13 +1280,11 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 
 #### Bit-oriented operations
 
-`binOpBitXor`
-`binOpBitAnd`
-`binOpBitOr`
-`binOpShl`
-`binOpShlUnchecked`
-`binOpShr`
-`binOpShrUnchecked`
+Bitwise operations `binOpBitXor`, `binOpBitAnd`, and `binOpBitOr` are valid between integers, booleans, and borrows; but only if the type of left and right arguments is the same.
+
+TODO: Borrows. Stuck on global allocs / promoteds
+
+Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument. Right shifts on negative numbers are arithmetic shifts and preserve the sign. There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow. The UB case currently gets stuck.
 
 ```k
   syntax Bool ::= isBitwise ( BinOp ) [function, total]
