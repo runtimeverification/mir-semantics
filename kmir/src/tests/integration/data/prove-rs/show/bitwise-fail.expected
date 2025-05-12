@@ -4,10 +4,10 @@
 │   function: main
 │   span: 68
 │
-│  (30 steps)
+│  (43 steps)
 └─ 3 (stuck, leaf)
-    #compute ( binOpBitAnd , typedValue ( Integer ( 3 , 32 , true ) , ty ( 16 ) , mu
-    span: 50
+    #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+    function: main
 
 
 ┌─ 2 (root, leaf, target, terminal)

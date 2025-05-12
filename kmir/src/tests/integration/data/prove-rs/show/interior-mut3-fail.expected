@@ -4,10 +4,34 @@
 │   function: main
 │   span: 67
 │
-│  (48 steps)
-└─ 3 (stuck, leaf)
-    rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 1 ) , projection: p
-    span: 52
+│  (137 steps)
+├─ 3
+│   thunk ( #expect ( thunk ( #compute ( binOpEq , thunk ( #compute ( binOpBitAnd ,
+│   function: main
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   AssertError ( assertMessageMisalignedPointerDereference ( ... required: operandC
+┃  │   function: main
+┃  │
+┃  │  (1 step)
+┃  └─ 6 (stuck, leaf)
+┃      #ProgramError ( AssertError ( assertMessageMisalignedPointerDereference ( ... re
+┃      function: main
+┃
+┗━━┓
+   │
+   ├─ 5
+   │   #execBlockIdx ( basicBlockIdx ( 8 ) ) ~> .K
+   │   function: main
+   │
+   │  (8 steps)
+   └─ 7 (stuck, leaf)
+       #readProjection ( thunk ( #cast ( thunk ( rvalueAddressOf ( mutabilityNot , plac
+       function: main
+       span: 80
 
 
 ┌─ 2 (root, leaf, target, terminal)

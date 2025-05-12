@@ -38,7 +38,7 @@
     ListItem ( typedValue ( Any , ty ( 27 ) , mutabilityNot ) ) ) , ty ( 28 ) , mutabilityNot ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 11 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
     ListItem ( typedValue ( BoolVal ( true ) , ty ( 26 ) , mutabilityNot ) )
-    ListItem ( typedValue ( Any , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 29 ) , mutabilityNot ) )
+    ListItem ( typedValue ( Any , ty ( 27 ) , mutabilityNot ) ) ) , TyUnknown , mutabilityNot ) )
     ListItem ( Moved )
     ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     ListItem ( Moved )
