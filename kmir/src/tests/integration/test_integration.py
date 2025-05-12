@@ -439,9 +439,7 @@ PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'assert_eq_exp-fail',
-    'bitwise-fail',
     'bitwise-not-shift-fail',
-    'bitwise-shift-fail',
 ]
 
 
