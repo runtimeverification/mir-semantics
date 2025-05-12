@@ -42,7 +42,10 @@ Other uses of heating and cooling are to _read_ local variables as operands. Thi
 
 ### `thunk`
 
-We also create a subsor of `TypedValue` that is a `thunk` which takes an `Evaluation` as an argument. The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `TypedValue` so that we may continue execution (instead of getting stuck). In particular, if we have pointer arithmetic with abstract pointers (not able to be resolved into concrete ints/bytes directly), then it will wrapper the operations in a `thunk`. It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
+We also create a subsor of `TypedValue` that is a `thunk` which takes an `Evaluation` as an argument.
+The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `TypedValue` so that we may continue execution (instead of getting stuck).
+In particular, if we have pointer arithmetic with abstract pointers (not able to be resolved into concrete ints/bytes directly), then it will wrapper the operations in a `thunk`.
+It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
 
 ```k
   syntax TypedValue ::= thunk ( Evaluation )
