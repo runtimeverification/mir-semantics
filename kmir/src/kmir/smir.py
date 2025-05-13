@@ -8,12 +8,9 @@ from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any
 
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
-
-# TODO: Named tuples w/ `from_dict` and helpers to create K terms
 
 
 class SMIRInfo:
@@ -27,22 +24,20 @@ class SMIRInfo:
         return SMIRInfo(json.loads(smir_json_file.read_text()))
 
     @cached_property
-    def types(self) -> dict[Ty, Any]:
-        res = {}
-        for id, type in self._smir['types']:
-            res[Ty(id)] = type
-        return res
+    def types(self) -> dict[Ty, TypeMetadata]:
+        return {Ty(id): metadata_from_json(type) for id, type in self._smir['types']}
 
     @cached_property
     def adt_defs(self) -> dict[AdtDef, Ty]:
         res = {}
         for ty, typeinfo in self.types.items():
-            if 'StructType' in typeinfo:
-                adt_def = typeinfo['StructType']['adt_def']
-                res[AdtDef(adt_def)] = ty
-            if 'EnumType' in typeinfo:
-                adt_def = typeinfo['EnumType']['adt_def']
-                res[AdtDef(adt_def)] = ty
+            match typeinfo:
+                case StructT(adt_def=adt_def):
+                    res[AdtDef(adt_def)] = ty
+                case EnumT(adt_def=adt_def):
+                    res[AdtDef(adt_def)] = ty
+                case UnionT(adt_def=adt_def):
+                    res[AdtDef(adt_def)] = ty
         return res
 
     @cached_property
@@ -191,23 +186,23 @@ class UnionT(TypeMetadata):
 
 @dataclass
 class ArrayT(TypeMetadata):
-    element_type: Ty  # TypeMetadata
+    element_type: Ty
     length: int | None
 
 
 @dataclass
 class PtrT(TypeMetadata):
-    pointee_type: Ty  # TypeMetadata
+    pointee_type: Ty
 
 
 @dataclass
 class RefT(TypeMetadata):
-    pointee_type: Ty  # TypeMetadata
+    pointee_type: Ty
 
 
 @dataclass
 class TupleT(TypeMetadata):
-    components: list[Ty]  # TypeMetadata]
+    components: list[Ty]
 
 
 @dataclass
@@ -215,7 +210,7 @@ class FunT(TypeMetadata):
     type_str: str
 
 
-def _metadata_from_json(typeinfo: dict) -> TypeMetadata:
+def metadata_from_json(typeinfo: dict) -> TypeMetadata:
     if 'PrimitiveType' in typeinfo:
         return _primty_from_json(typeinfo['PrimitiveType'])
     elif 'EnumType' in typeinfo:
@@ -226,8 +221,6 @@ def _metadata_from_json(typeinfo: dict) -> TypeMetadata:
         return StructT(typeinfo['StructType']['name'], typeinfo['StructType']['adt_def'])
     elif 'UnionType' in typeinfo:
         return UnionT(typeinfo['UnionType']['name'], typeinfo['UnionType']['adt_def'])
-
-    # TODO recursively produce metadata. Migrate into SMIRInfo class for that
     elif 'ArrayType' in typeinfo:
         info = typeinfo['ArrayType']
         assert isinstance(info, list)

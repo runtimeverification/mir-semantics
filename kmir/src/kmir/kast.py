@@ -6,6 +6,8 @@ from pyk.kast.inner import KApply, KVariable
 from pyk.kast.prelude.kint import leInt
 from pyk.kast.prelude.utils import token
 
+from .smir import Int, Uint
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -14,8 +16,7 @@ if TYPE_CHECKING:
     from .smir import SMIRInfo
 
 
-def int_var(varname: str, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
-    var = KVariable(varname, 'Int')
+def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
     bit_width = num_bytes * 8
     var_max = ((1 << (bit_width - 1)) if signed else (1 << bit_width)) - 1
     var_min = -(1 << (bit_width - 1)) if signed else 0
@@ -131,13 +132,18 @@ class ArgGenerator:
 
     def _add_local(self, ty: Ty) -> None:
         match self.smir_info.types.get(ty):
+            case Int(info):
+                value, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
+            case Uint(info):
+                value, constraints = int_var(self._fresh_var('ARG_UINT'), info.value, False)
             case _:
-                new = KApply(
-                    'typedValue', (self._fresh_var('ARG'), KApply('ty', (token(ty),)), KApply('Mutability::Not', ()))
-                )
-                self.locals.append(new)
+                value = self._fresh_var('ARG')
+                constraints = []
 
-    def _fresh_var(self, prefix: str) -> KInner:
+        self.locals.append(KApply('typedValue', (value, KApply('ty', (token(ty),)), KApply('Mutability::Not', ()))))
+        self.constraints += constraints
+
+    def _fresh_var(self, prefix: str) -> KVariable:
         name = prefix + str(self.counter)
         self.counter += 1
         return KVariable(name)
