@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -366,6 +365,7 @@ EXEC_DATA = [
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
     kmir_backend: KMIR,
+    update_expected_output: bool,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
@@ -380,16 +380,8 @@ def test_exec_smir(
 
     result = kmir_backend.run_parsed(kmir_kast, depth=depth)
 
-    with output_kast.open('r') as f:
-        expected = f.read().rstrip()
-
     result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
-
-    if os.getenv('UPDATE_EXEC_SMIR') is None:
-        assert result_pretty == expected
-    else:
-        with output_kast.open('w') as f:
-            f.write(result_pretty)
+    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
 
 
 @pytest.mark.parametrize(
