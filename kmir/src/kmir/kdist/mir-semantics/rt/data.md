@@ -339,9 +339,51 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
-        <locals> LOCALS => LOCALS[I <- TV] </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
+ 
+// mutable local
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
+    [preserves-definedness] // valid list indexing checked
+  // non-mutable uninitialised values are mutable once
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isNewLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+  // reusing a local which was Moved is allowed
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isMovedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  // rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
+  //       <locals> LOCALS => LOCALS[I <- TV] </locals>
+  //   requires 0 <=Int I andBool I <Int size(LOCALS)
 ```
 
 ### Writing Data to Places With Projections
@@ -375,8 +417,8 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( MaybeTy, VariantIdx, List, Int )
-                   | CtxIndex( MaybeTy, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
+                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
