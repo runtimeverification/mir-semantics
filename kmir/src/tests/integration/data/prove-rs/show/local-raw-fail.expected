@@ -4,9 +4,9 @@
 │   function: main
 │   span: 51
 │
-│  (93 steps)
+│  (92 steps)
 ├─ 3
-│   thunk ( #expect ( thunk ( #compute ( binOpEq , thunk ( #compute ( binOpBitAnd ,
+│   #expect ( typedValue ( thunk ( #compute ( binOpEq , typedValue ( thunk ( #comput
 │   function: main
 ┃
 ┃ (1 step)
@@ -29,7 +29,7 @@
    │
    │  (9 steps)
    └─ 7 (stuck, leaf)
-       #projectedUpdate ( toLocal ( 2 ) , thunk ( rvalueAddressOf ( mutabilityMut , pla
+       #projectedUpdate ( toLocal ( 2 ) , typedValue ( thunk ( rvalueAddressOf ( mutabi
        function: main
        span: 53
 

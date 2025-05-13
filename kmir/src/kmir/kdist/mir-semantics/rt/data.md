@@ -48,9 +48,9 @@ In particular, if we have pointer arithmetic with abstract pointers (not able to
 It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
 
 ```k
-  syntax TypedValue ::= thunk ( Evaluation )
+  syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
+  rule <k> EV:Evaluation => typedValue(thunk(EV), TyUnknown, mutabilityNot) ... </k> requires notBool isTypedValue(EV) [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
@@ -899,7 +899,7 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
 
-  rule <k> #compute(BOP, E1, E2, MUT) => thunk(#compute(BOP, E1, E2, MUT)) ... </k> [priority(190)]
+  rule <k> #compute(BOP, E1, E2, MUT) => typedValue(thunk(#compute(BOP, E1, E2, MUT)), TyUnknown, mutabilityNot) ... </k> [priority(190)]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
