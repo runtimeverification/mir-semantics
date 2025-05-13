@@ -4,10 +4,10 @@
 │   function: main
 │   span: 288
 │
-│  (138 steps)
+│  (160 steps)
 └─ 3 (stuck, leaf)
-    rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 1 ) , projection: p
-    span: 88
+    #readProjection ( typedValue ( thunk ( #cast ( typedValue ( thunk ( rvalueAddres
+    span: 91
 
 
 ┌─ 2 (root, leaf, target, terminal)
