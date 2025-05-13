@@ -1,16 +1,15 @@
 
 ┌─ 1 (root, init)
-│   #init ( symbol ( "interior_mut2_fail" ) globalAllocEntry ( 1 , Memory ( allocati
-│   function: main
-│   span: 120
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
 │
-│  (129 steps)
+│  (130 steps)
 └─ 3 (stuck, leaf)
     rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 1 ) , projection: p
     span: 50
 
 
 ┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram
+│   #EndProgram ~> .K
 
 

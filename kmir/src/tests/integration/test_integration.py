@@ -112,10 +112,10 @@ RIGID_TY_TESTS = [
 ]
 
 LOCAL_DECL_TESTS = [
-    (2, KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
+    (2, KApply('local', (KToken('2', KSort('Int')))), KSort('Local')),
     (
         {'StorageLive': 2},
-        KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))))),
+        KApply('StatementKind::StorageLive', (KApply('local', (KToken('2', KSort('Int')))))),
         KSort('StatementKind'),
     ),
     ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
@@ -216,7 +216,7 @@ TOKEN_TESTS = [
         KApply(
             'statement(_,_)_BODY_Statement_StatementKind_Span',
             (
-                KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
+                KApply('StatementKind::StorageLive', (KApply('local', (KToken('42', KSort('Int')))))),
                 KApply('span', (KToken('1', KSort('Int')))),
             ),
         ),
