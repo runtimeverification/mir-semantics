@@ -94,6 +94,7 @@ class IntTy(Enum):
     I16 = 2
     I32 = 4
     I64 = 8
+    I128 = 16
     Isize = 8
 
 
@@ -102,6 +103,7 @@ class UintTy(Enum):
     U16 = 2
     U32 = 4
     U64 = 8
+    U128 = 16
     Usize = 8
 
 
