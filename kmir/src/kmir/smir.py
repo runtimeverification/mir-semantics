@@ -6,14 +6,9 @@ from enum import Enum
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
 
-from kmir.kast import bool_var, int_var
-
 if TYPE_CHECKING:
-    from collections.abc import Iterable
     from pathlib import Path
     from typing import Any
-
-    from pyk.kast.inner import KInner
 
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
@@ -98,21 +93,6 @@ class SMIRInfo:
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
 
-    def var_from_ty(self, ty: Ty, varname: str) -> tuple[KInner, Iterable[KInner]]:
-        typeinfo = self.types[ty]
-        type_metadata = _metadata_from_json(typeinfo)
-        match type_metadata:
-            case Int(info):
-                width = info.value
-                return int_var(varname, width, True)
-            case Uint(info):
-                width = info.value
-                return int_var(varname, width, False)
-            case Bool():
-                return bool_var(varname)
-            case _:
-                return NotImplemented
-
 
 class IntTy(Enum):
     I8 = 1
@@ -130,41 +110,137 @@ class UintTy(Enum):
     Usize = 8
 
 
+class FloatTy(Enum):
+    F16 = 2
+    F32 = 4
+    F64 = 8
+    F128 = 16
+
+
 @dataclass
 class TypeMetadata: ...
 
 
 @dataclass
-class RigidTy(TypeMetadata): ...
+class PrimitiveType(TypeMetadata): ...
 
 
 @dataclass
-class Bool(RigidTy): ...
+class Bool(PrimitiveType): ...
 
 
 @dataclass
-class Int(RigidTy):
+class Char(PrimitiveType): ...
+
+
+@dataclass
+class Str(PrimitiveType): ...
+
+
+@dataclass
+class Float(PrimitiveType):
+    info: FloatTy
+
+
+@dataclass
+class Int(PrimitiveType):
     info: IntTy
 
 
 @dataclass
-class Uint(RigidTy):
+class Uint(PrimitiveType):
     info: UintTy
 
 
-def _rigidty_from_json(typeinfo: str | dict) -> RigidTy:
+def _primty_from_json(typeinfo: str | dict) -> PrimitiveType:
     if typeinfo == 'Bool':
         return Bool()
+    elif typeinfo == 'Char':
+        return Char()
+    elif typeinfo == 'Str':
+        return Str()
 
     assert isinstance(typeinfo, dict)
     if 'UInt' in typeinfo:
         return Uint(UintTy.__members__[typeinfo['UInt']])
     if 'Int' in typeinfo:
         return Int(IntTy.__members__[typeinfo['Int']])
+    if 'Float' in typeinfo:
+        return Float(FloatTy.__members__[typeinfo['Float']])
     return NotImplemented
+
+
+@dataclass
+class EnumT(TypeMetadata):
+    name: str
+    adt_def: int
+    discriminants: dict
+
+
+@dataclass
+class StructT(TypeMetadata):
+    name: str
+    adt_def: int
+
+
+@dataclass
+class UnionT(TypeMetadata):
+    name: str
+    adt_def: int
+
+
+@dataclass
+class ArrayT(TypeMetadata):
+    element_type: Ty  # TypeMetadata
+    length: int | None
+
+
+@dataclass
+class PtrT(TypeMetadata):
+    pointee_type: Ty  # TypeMetadata
+
+
+@dataclass
+class RefT(TypeMetadata):
+    pointee_type: Ty  # TypeMetadata
+
+
+@dataclass
+class TupleT(TypeMetadata):
+    components: list[Ty]  # TypeMetadata]
+
+
+@dataclass
+class FunT(TypeMetadata):
+    type_str: str
 
 
 def _metadata_from_json(typeinfo: dict) -> TypeMetadata:
     if 'PrimitiveType' in typeinfo:
-        return _rigidty_from_json(typeinfo['PrimitiveType'])
+        return _primty_from_json(typeinfo['PrimitiveType'])
+    elif 'EnumType' in typeinfo:
+        info = typeinfo['EnumType']
+        discriminants = dict(info['discriminants'])
+        return EnumT(name=info['name'], adt_def=info['adt_def'], discriminants=discriminants)
+    elif 'StructType' in typeinfo:
+        return StructT(typeinfo['StructType']['name'], typeinfo['StructType']['adt_def'])
+    elif 'UnionType' in typeinfo:
+        return UnionT(typeinfo['UnionType']['name'], typeinfo['UnionType']['adt_def'])
+
+    # TODO recursively produce metadata. Migrate into SMIRInfo class for that
+    elif 'ArrayType' in typeinfo:
+        info = typeinfo['ArrayType']
+        assert isinstance(info, list)
+        # TODO decode array length from TyConst bytes
+        length = None  # if info[1] is None else decode(info[1]['kind']['Value'][1]['bytes'])
+        return ArrayT(info[0], length)
+    elif 'PtrType' in typeinfo:
+        return PtrT(typeinfo['PtrType'])
+    elif 'RefType' in typeinfo:
+        return RefT(typeinfo['RefType'])
+    elif 'TupleType' in typeinfo:
+        return TupleT(typeinfo['TupleType']['types'])
+    elif 'FunType' in typeinfo:
+        return FunT(typeinfo['FunType'])
+
     return NotImplemented
