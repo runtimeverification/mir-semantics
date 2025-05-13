@@ -29,7 +29,7 @@
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , TyUnknown , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot ) , ty ( 27 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
       ListItem ( Moved )
       ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )

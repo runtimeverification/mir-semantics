@@ -48,9 +48,9 @@ In particular, if we have pointer arithmetic with abstract pointers (not able to
 It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
 
 ```k
-  syntax TypedValue ::= thunk ( Evaluation )
+  syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
+  rule <k> EV:Evaluation => typedValue(thunk(EV), TyUnknown, mutabilityNot) ... </k> requires notBool isTypedValue(EV) [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
@@ -339,9 +339,46 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
-        <locals> LOCALS => LOCALS[I <- TV] </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
+// mutable local
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
+    [preserves-definedness] // valid list indexing checked
+  // non-mutable uninitialised values are mutable once
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isNewLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+  // reusing a local which was Moved is allowed
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
+          =>
+           .K
+          ...
+       </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
+       </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isMovedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
 ```
 
 ### Writing Data to Places With Projections
@@ -375,8 +412,8 @@ The solution is to use rewrite operations in a downward pass through the project
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( MaybeTy, VariantIdx, List, Int )
-                   | CtxIndex( MaybeTy, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
+                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
@@ -862,7 +899,7 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
 
-  rule <k> #compute(BOP, E1, E2, MUT) => thunk(#compute(BOP, E1, E2, MUT)) ... </k> [priority(190)]
+  rule <k> #compute(BOP, E1, E2, MUT) => typedValue(thunk(#compute(BOP, E1, E2, MUT)), TyUnknown, mutabilityNot) ... </k> [priority(190)]
 
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 

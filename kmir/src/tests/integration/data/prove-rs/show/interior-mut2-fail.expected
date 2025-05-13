@@ -6,7 +6,7 @@
 │
 │  (151 steps)
 └─ 3 (stuck, leaf)
-    #readProjection ( thunk ( #cast ( thunk ( rvalueAddressOf ( mutabilityNot , plac
+    #readProjection ( typedValue ( thunk ( #cast ( typedValue ( thunk ( rvalueAddres
     span: 53
 
 
