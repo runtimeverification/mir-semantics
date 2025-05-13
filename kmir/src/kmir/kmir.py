@@ -220,7 +220,7 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
             path, start_row, _start_column, _end_row, _end_column = self.smir_info.spans[curr_span]
             return f'{str(path)[-30:]}:{start_row}'
         if curr_span is not None:
-            return f'span: {curr_span}'
+            return f'{curr_span}'
         return None
 
     def _function_name(self, node: KCFG.Node) -> str | None:
