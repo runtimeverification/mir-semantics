@@ -71,7 +71,7 @@ syntax ParamDef ::= paramDef(Int)                       [group(mir-int)] // impo
 syntax RegionDef ::= regionDef(Int)                     [group(mir-int)] // imported from crate
 syntax TraitDef ::= traitDef(Int)                       [group(mir-int)] // imported from crate
 
-syntax VariantIdx ::= variantIdx(Int) [group(mir-int)]
+syntax VariantIdx ::= variantIdx(Int) [group(mir-int), symbol(variantIdx)]
 
 syntax DynKind ::= "dynKindDyn"      [group(mir-enum), symbol(DynKind::Dyn)]
                  | "dynKindDynStar"  [group(mir-enum), symbol(DynKind::DynStar)]
