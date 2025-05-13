@@ -156,8 +156,8 @@ def _primty_from_json(typeinfo: str | dict) -> PrimitiveType:
         return Str()
 
     assert isinstance(typeinfo, dict)
-    if 'UInt' in typeinfo:
-        return Uint(UintTy.__members__[typeinfo['UInt']])
+    if 'Uint' in typeinfo:
+        return Uint(UintTy.__members__[typeinfo['Uint']])
     if 'Int' in typeinfo:
         return Int(IntTy.__members__[typeinfo['Int']])
     if 'Float' in typeinfo:
