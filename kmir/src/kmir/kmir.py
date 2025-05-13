@@ -76,11 +76,7 @@ class KMIR(KProve, KRun, KParse):
         return init_config
 
     def make_call_config(
-        self,
-        parsed_smir: KApply,
-        smir_info: SMIRInfo,
-        start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell'
+        self, parsed_smir: KApply, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell'
     ) -> tuple[KInner, list[KInner]]:
 
         if not start_symbol in smir_info.function_tys:
