@@ -339,7 +339,6 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
 
- 
 // mutable local
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
           =>
@@ -380,10 +379,6 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
      andBool I <Int size(LOCALS)
      andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  // rule <k> #setLocalValue(place(local(I), .ProjectionElems), TV:TypedValue) => .K ... </k>
-  //       <locals> LOCALS => LOCALS[I <- TV] </locals>
-  //   requires 0 <=Int I andBool I <Int size(LOCALS)
 ```
 
 ### Writing Data to Places With Projections
