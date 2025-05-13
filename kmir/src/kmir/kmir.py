@@ -146,7 +146,7 @@ class KMIR(KProve, KRun, KParse):
         proof_dir: Path | None = None,
     ) -> APRProof:
         assert type(kmir_kast) is KApply
-        lhs_config, constraints = self.make_call_config(kmir_kast, smir_info, sort=sort)
+        lhs_config, constraints = self.make_call_config(kmir_kast, smir_info, start_symbol=start_symbol, sort=sort)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply, KVariable
 from pyk.kast.prelude.collections import list_of
 from pyk.kast.prelude.kint import leInt
+from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .smir import ArrayT, Bool, EnumT, Int, RefT, StructT, TupleT, Uint, UnionT
@@ -21,7 +22,7 @@ def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Itera
     bit_width = num_bytes * 8
     var_max = ((1 << (bit_width - 1)) if signed else (1 << bit_width)) - 1
     var_min = -(1 << (bit_width - 1)) if signed else 0
-    constraints = (leInt(var, token(var_max)), leInt(token(var_min), var))
+    constraints = (mlEqualsTrue(leInt(var, token(var_max))), mlEqualsTrue(leInt(token(var_min), var)))
     term = KApply('Value::Integer', (var, token(bit_width), token(signed)))
     return term, constraints
 
