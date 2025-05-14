@@ -331,9 +331,9 @@ depending on the value of a _discriminant_.
            #selectBlock(TARGETS, DISCR)
        </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, _, _), _, _))
+  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, WIDTH, _), _, _))
          =>
-           #execBlockIdx(#selectBlock(I, TARGETS))
+           #execBlockIdx(#selectBlock(bitRangeInt(I, 0, WIDTH), TARGETS))
        ...
        </k>
 
