@@ -435,6 +435,7 @@ PROVE_RS_SHOW_SPECS = [
     'interior-mut3-fail',
     'assert_eq_exp-fail',
     'bitwise-fail',
+    'symbolic-args-fail',
 ]
 
 
@@ -449,8 +450,20 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
 
     prove_rs_opts = ProveRSOpts(rs_file)
 
+    # read start symbol(s) from the first line (default: [main] otherwise)
+    start_sym_prefix = '// @kmir prove-rs:'
+    with open(rs_file) as f:
+        headline = f.readline().strip('\n')
+    if headline.startswith(start_sym_prefix):
+        start_symbols = headline.removeprefix(start_sym_prefix).split()
+    else:
+        start_symbols = ['main']
+
     if should_show:
-        # always run `main` when kmir show is tested
+        # only run a single start symbol when kmir show is tested
+        assert len(start_symbols) == 1
+        prove_rs_opts.start_symbol = start_symbols[0]
+
         apr_proof = kmir.prove_rs(prove_rs_opts)
 
         if not should_fail:
@@ -464,16 +477,6 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
         )
     else:
-        # read start symbol(s) from the first line (default: [main] otherwise)
-        start_sym_prefix = '// @kmir prove-rs:'
-        with open(rs_file) as f:
-            headline = f.readline().strip('\n')
-
-        if headline.startswith(start_sym_prefix):
-            start_symbols = headline.removeprefix(start_sym_prefix).split()
-        else:
-            start_symbols = ['main']
-
         for start_symbol in start_symbols:
             prove_rs_opts.start_symbol = start_symbol
             apr_proof = kmir.prove_rs(prove_rs_opts)
