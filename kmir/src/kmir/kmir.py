@@ -93,27 +93,9 @@ class KMIR(KProve, KRun, KParse):
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'FUNCTIONS_CELL': KApply(
-                'mkFunctionMap',
-                (
-                    functions,
-                    items,
-                ),
-            ),
-            'TYPES_CELL': KApply(
-                'mkTypeMap',
-                (
-                    map_empty(),
-                    types,
-                ),
-            ),
-            'ADTTOTY_CELL': KApply(
-                'mkAdtMap',
-                (
-                    map_empty(),
-                    types,
-                ),
-            ),
+            'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
+            'TYPES_CELL': KApply('mkTypeMap', (map_empty(), types)),
+            'ADTTOTY_CELL': KApply('mkAdtMap', (map_empty(), types)),
         }
 
         config = self.definition.empty_config(KSort(sort))
