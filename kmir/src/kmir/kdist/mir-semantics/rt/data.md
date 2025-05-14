@@ -1354,12 +1354,26 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
 
   rule #compute(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, SIGNED), TY, _),
+          typedValue(Integer(ARG1, WIDTH, false), TY, _),
           typedValue(Integer(ARG2, _, _), _, _),
           false) // unchecked
     =>
        typedValue(
-          Integer(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, SIGNED),
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Unsigned), WIDTH, false),
+          TY,
+          mutabilityNot
+        )
+    requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, true), TY, _),
+          typedValue(Integer(ARG2, _, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Signed), WIDTH, true),
           TY,
           mutabilityNot
         )
