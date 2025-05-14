@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from enum import Enum
-from functools import cached_property
+from functools import cached_property, reduce
 from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
@@ -226,8 +226,7 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
     elif 'ArrayType' in typeinfo:
         info = typeinfo['ArrayType']
         assert isinstance(info, list)
-        # TODO decode array length from TyConst bytes
-        length = None  # if info[1] is None else decode(info[1]['kind']['Value'][1]['bytes'])
+        length = None if info[1] is None else _decode(info[1]['kind']['Value'][1]['bytes'])
         return ArrayT(info[0], length)
     elif 'PtrType' in typeinfo:
         return PtrT(typeinfo['PtrType'])
@@ -239,3 +238,9 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
         return FunT(typeinfo['FunType'])
 
     return NotImplemented
+
+
+def _decode(bytes: list[int]) -> int:
+    # assume little-endian: reverse the bytes
+    bytes.reverse()
+    return reduce(lambda x, y: x * 256 + y, bytes)
