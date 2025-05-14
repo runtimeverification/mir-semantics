@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KApply, KVariable
+from pyk.kast.inner import KApply, KVariable, build_cons
 from pyk.kast.prelude.collections import list_of
 from pyk.kast.prelude.kint import leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
@@ -41,16 +41,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
         for i in range(arg_count)
     ]
 
-    # args = foldr(Operands::append, Operands::empty, operands)
-    args = KApply('Operands::empty', ())
-    for op in reversed(operands):
-        args = KApply(
-            'Operands::append',
-            (
-                op,
-                args,
-            ),
-        )
+    args = build_cons(KApply('Operands::empty', ()), 'Operands::append', operands)
 
     return KApply(
         '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
