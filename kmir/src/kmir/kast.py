@@ -149,7 +149,7 @@ class ArgGenerator:
                 return int_var(self._fresh_var('ARG_UINT'), info.value, False)
 
             case Bool():
-                return bool_var(self._fresh_var('ARG_UINT'))
+                return bool_var(self._fresh_var('ARG_BOOL'))
 
             case EnumT(_, _, discriminants):
                 variantVar = self._fresh_var('ARG_VARIDX')

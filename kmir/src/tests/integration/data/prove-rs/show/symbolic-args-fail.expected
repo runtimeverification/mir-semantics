@@ -10,7 +10,7 @@
 ┃ (branch)
 ┣━━┓ subst: .Subst
 ┃  ┃ constraint:
-┃  ┃     ARG_UINT3:Bool
+┃  ┃     ARG_BOOL3:Bool
 ┃  │
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
@@ -22,7 +22,7 @@
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
-   ┃     notBool ARG_UINT3:Bool
+   ┃     notBool ARG_BOOL3:Bool
    │
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
