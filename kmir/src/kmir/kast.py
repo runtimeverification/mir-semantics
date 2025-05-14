@@ -97,6 +97,13 @@ def symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[
     return ([local0] + locals, constraints)
 
 
+def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
+    return KApply(
+        'typedValue',
+        (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
+    )
+
+
 class ArgGenerator:
     smir_info: SMIRInfo
     locals: list[KInner]
@@ -118,14 +125,14 @@ class ArgGenerator:
 
     def run(self, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
         self.ref_offset = len(local_types) + 1
-        for ty in [t['ty'] for t in local_types]:
-            self._add_local(ty)
+        for ty, mut in [(t['ty'], t['mutability']) for t in local_types]:
+            self._add_local(ty, mut == 'Mut')
         return (self.locals + self.pointees, self.constraints)
 
-    def _add_local(self, ty: Ty) -> None:
-        value, constraints = self._symbolic_typed_value(ty)
+    def _add_local(self, ty: Ty, mutable: bool) -> None:
+        value, constraints = self._symbolic_value(ty, mutable)
 
-        self.locals.append(KApply('typedValue', (value, KApply('ty', (token(ty),)), KApply('Mutability::Not', ()))))
+        self.locals.append(_typed_value(value, ty, mutable))
         self.constraints += constraints
 
     def _fresh_var(self, prefix: str) -> KVariable:
@@ -133,7 +140,7 @@ class ArgGenerator:
         self.counter += 1
         return KVariable(name)
 
-    def _symbolic_typed_value(self, ty: Ty) -> tuple[KInner, Iterable[KInner]]:
+    def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner]]:
         match self.smir_info.types.get(ty):
             case Int(info):
                 return int_var(self._fresh_var('ARG_INT'), info.value, True)
@@ -165,8 +172,8 @@ class ArgGenerator:
                 elem_vars: list[KInner] = []
                 elem_constraints: list[KInner] = []
                 for _ in range(size):
-                    new_var, new_constraints = self._symbolic_typed_value(element_type)
-                    elem_vars.append(new_var)
+                    new_var, new_constraints = self._symbolic_value(element_type, mutable)
+                    elem_vars.append(_typed_value(new_var, element_type, mutable))
                     elem_constraints += new_constraints
                 return KApply('Value::Range', (list_of(elem_vars),)), elem_constraints
 
@@ -174,8 +181,8 @@ class ArgGenerator:
                 elem_vars = []
                 elem_constraints = []
                 for _ty in components:
-                    new_var, new_constraints = self._symbolic_typed_value(_ty)
-                    elem_vars.append(new_var)
+                    new_var, new_constraints = self._symbolic_value(_ty, mutable)
+                    elem_vars.append(_typed_value(new_var, _ty, mutable))
                     elem_constraints += new_constraints
                 return (
                     KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(elem_vars))),
@@ -183,17 +190,17 @@ class ArgGenerator:
                 )
 
             case RefT(pointee_ty):
-                pointee_var, pointee_constraints = self._symbolic_typed_value(pointee_ty)
+                pointee_var, pointee_constraints = self._symbolic_value(pointee_ty, mutable)
                 ref = self.ref_offset
                 self.ref_offset += 1
-                self.pointees.append(pointee_var)
+                self.pointees.append(_typed_value(pointee_var, pointee_ty, mutable))
                 return (
                     KApply(
                         'Value::Reference',
                         (
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
-                            KApply('Mutability::Not', ()),
+                            KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                         ),
                     ),
                     pointee_constraints,
