@@ -1155,13 +1155,106 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 
 #### Bit-oriented operations
 
-`binOpBitXor`
-`binOpBitAnd`
-`binOpBitOr`
-`binOpShl`
-`binOpShlUnchecked`
-`binOpShr`
-`binOpShrUnchecked`
+Bitwise operations `binOpBitXor`, `binOpBitAnd`, and `binOpBitOr` are valid between integers, booleans, and borrows; but only if the type of left and right arguments is the same.
+
+TODO: Borrows. Stuck on global allocs / promoteds
+
+Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument. Right shifts on negative numbers are arithmetic shifts and preserve the sign. There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow. The UB case currently gets stuck.
+
+```k
+  syntax Bool ::= isBitwise ( BinOp ) [function, total]
+  // --------------------------------------------------
+  rule isBitwise(binOpBitXor)   => true
+  rule isBitwise(binOpBitAnd)   => true
+  rule isBitwise(binOpBitOr)    => true
+  rule isBitwise(_)             => false [owise]
+  rule onInt(binOpBitXor, X, Y) => X xorInt Y
+  rule onInt(binOpBitAnd, X, Y) => X &Int Y
+  rule onInt(binOpBitOr, X, Y)  => X |Int Y
+
+  syntax Bool ::= onBool( BinOp, Bool, Bool ) [function]
+  // ---------------------------------------------------
+  rule onBool(binOpBitXor, X, Y)  => X xorBool Y
+  rule onBool(binOpBitAnd, X, Y)  => X andBool Y
+  rule onBool(binOpBitOr, X, Y)   => X orBool Y
+
+  syntax Bool ::= isShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isShift(binOpShl)          => true
+  rule isShift(binOpShlUnchecked) => true
+  rule isShift(binOpShr)          => true
+  rule isShift(binOpShrUnchecked) => true
+  rule isShift(_)                 => false [owise]
+
+  syntax Bool ::= isUncheckedShift ( BinOp ) [function, total]
+  // ------------------------------------------------
+  rule isUncheckedShift(binOpShlUnchecked) => true
+  rule isUncheckedShift(binOpShrUnchecked) => true
+  rule isUncheckedShift(_)                 => false [owise]
+
+  syntax Int ::= onShift( BinOp, Int, Int, Int ) [function]
+  // ---------------------------------------------------
+  rule onShift(binOpShl, X, Y, WIDTH)          => (X <<Int Y) modInt (1 <<Int WIDTH)
+  rule onShift(binOpShr, X, Y, WIDTH)          => (X >>Int Y) modInt (1 <<Int WIDTH)
+  rule onShift(binOpShlUnchecked, X, Y, WIDTH) => (X <<Int Y) modInt (1 <<Int WIDTH)
+  rule onShift(binOpShrUnchecked, X, Y, WIDTH) => (X >>Int Y) modInt (1 <<Int WIDTH)
+
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, SIGNED), TY, _),
+          typedValue(Integer(ARG2, WIDTH, SIGNED), TY, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(onInt(BOP, ARG1, ARG2), WIDTH, SIGNED),
+          TY,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(BoolVal(ARG1), TY, _),
+          typedValue(BoolVal(ARG2), TY, _),
+          false) // unchecked
+    =>
+       typedValue(
+          BoolVal(onBool(BOP, ARG1, ARG2)),
+          TY,
+          mutabilityNot
+        )
+    requires isBitwise(BOP)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, false), TY, _),
+          typedValue(Integer(ARG2, _, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Unsigned), WIDTH, false),
+          TY,
+          mutabilityNot
+        )
+    requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
+    [preserves-definedness]
+
+  rule #compute(
+          BOP,
+          typedValue(Integer(ARG1, WIDTH, true), TY, _),
+          typedValue(Integer(ARG2, _, _), _, _),
+          false) // unchecked
+    =>
+       typedValue(
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Signed), WIDTH, true),
+          TY,
+          mutabilityNot
+        )
+    requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
+    [preserves-definedness]
+```
 
 
 #### Nullary operations for activating certain checks
