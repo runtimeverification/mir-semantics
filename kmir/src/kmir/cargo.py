@@ -1,9 +1,21 @@
 from __future__ import annotations
 
 import json
+import logging
 import subprocess
 from functools import cached_property
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+from pyk.utils import run_process_2
+
+if TYPE_CHECKING:
+    from typing import Any, Final
+
+_LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
+IN_TREE_SMIR_JSON_DIR: Final = Path(__file__).parents[3] / 'deps/stable-mir-json/'
 
 
 class CargoProject:
@@ -80,3 +92,25 @@ class CargoProject:
             )
 
         return bin_targets[0]
+
+
+def cargo_get_smir_json(rs_file: Path, save_smir: bool = False) -> dict[str, Any]:
+    if Path(IN_TREE_SMIR_JSON_DIR).exists():
+        # prefer local dependency if it exists (i.e., we are in a source/build tree)
+        command = ['cargo', 'run', '--', '-Zno-codegen', str(rs_file)]
+        cwd = IN_TREE_SMIR_JSON_DIR
+    else:
+        # otherwise use 'stable-mir-json' from the path (fail if it does not exist)
+        command = ['stable-mir-json', '-Zno-codegen', str(rs_file)]
+        cwd = Path.cwd()
+
+    smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
+    run_process_2(command, cwd=cwd)
+    json_smir = json.loads(smir_json_result.read_text())
+    _LOGGER.info(f'Loaded: {smir_json_result}')
+    if save_smir:
+        _LOGGER.info(f'SMIR JSON available at: {smir_json_result}')
+    else:
+        smir_json_result.unlink()
+        _LOGGER.info(f'Deleted: {smir_json_result}')
+    return json_smir

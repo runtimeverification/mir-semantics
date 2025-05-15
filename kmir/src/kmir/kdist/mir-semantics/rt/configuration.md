@@ -46,6 +46,8 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  <memory> .Map </memory>
+                  // ============ static information ============
                   // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
                   // heap, Address(Int) -> ( GlobalAlloc | Data? ) 

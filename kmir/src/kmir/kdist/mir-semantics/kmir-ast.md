@@ -17,8 +17,8 @@ module KMIR-AST
   imports TYPES
 
 
-  syntax Pgm ::= Symbol GlobalAllocs FunctionNames MonoItems TypeMappings
-                 [symbol(pgm), group(mir---name--allocs--functions--items--types)]
+  syntax Pgm ::= Symbol GlobalAllocs FunctionNames MonoItems TypeMappings MachineInfo
+                 [symbol(pgm), group(mir---name--allocs--functions--items--types--machine)]
 
   syntax FunctionKind ::= functionNormalSym(Symbol) [symbol(FunctionKind::NormalSym), group(mir-enum)]
                         | functionIntrinsic(Symbol) [symbol(FunctionKind::IntrinsicSym), group(mir-enum)]

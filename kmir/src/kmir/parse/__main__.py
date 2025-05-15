@@ -2,8 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from kmir.build import llvm_semantics
-
+from ..build import LLVM_DEF_DIR
+from ..kmir import KMIR
 from .parser import parse_json
 
 
@@ -15,14 +15,15 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    sys.setrecursionlimit(10000000)
     args = parse_args()
-    tools = llvm_semantics()
+    kmir = KMIR(LLVM_DEF_DIR)
 
-    result = parse_json(tools.definition, Path(args.json), args.sort)
+    result = parse_json(kmir.definition, Path(args.json), args.sort)
 
     if result is None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
 
     term, _ = result
-    print(tools.krun.pretty_print(term))
+    print(kmir.pretty_print(term))

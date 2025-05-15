@@ -34,7 +34,7 @@ High-level values can be
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )
                    // homogenous values              for array/slice
-                //  | Ptr( Address, MaybeValue ) // FIXME why maybe? why value?
+                //  | Ptr( Address, MaybeValue )
                    // address, metadata              for ref/ptr
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
@@ -67,14 +67,14 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
   // ----------------------------------------------------------
   rule tyOfLocal(typedValue(_, TY, _)) => TY
-  rule tyOfLocal(Moved)                => TyUnknown
   rule tyOfLocal(newLocal(TY, _))      => TY
+  rule tyOfLocal(_)                    => TyUnknown [owise]
 
   syntax Mutability ::= mutabilityOf ( TypedLocal ) [function, total]
   // ----------------------------------------------------------------
   rule mutabilityOf(typedValue(_, _, MUT)) => MUT
-  rule mutabilityOf(Moved)                 => mutabilityNot
   rule mutabilityOf(newLocal(_, MUT))      => MUT
+  rule mutabilityOf(_)                     => mutabilityNot [owise]
 ```
 
 ## A generic MIR Error sort

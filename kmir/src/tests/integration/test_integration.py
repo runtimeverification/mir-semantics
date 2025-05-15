@@ -1,24 +1,25 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.proof import Proof
+from pyk.proof.show import APRProofShow
 
-from kmir.__main__ import GenSpecOpts, ProveRunOpts, _kmir_gen_spec, _kmir_prove_run
-from kmir.build import haskell_semantics, llvm_semantics
+from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
+from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
+from kmir.kmir import KMIR, KMIRAPRNodePrinter
+from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts
 from kmir.parse.parser import Parser
+from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
-    from kmir.kmir import KMIR
     from kmir.parse.parser import JSON
-    from kmir.tools import Tools
 
 
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
@@ -55,11 +56,11 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_INPUT_DIRS,
     ids=[str(test_file.relative_to(SCHEMA_PARSE_DATA)) for test_file in SCHEMA_PARSE_INPUT_DIRS],
 )
-def test_schema_parse(test_dir: Path, tools: Tools) -> None:
+def test_schema_parse(test_dir: Path, kmir: KMIR) -> None:
     input_json = test_dir / 'input.json'
     reference_sort = test_dir / 'reference.sort'
     reference_kmir = test_dir / 'reference.kmir'
-    parser = Parser(tools.definition)
+    parser = Parser(kmir.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -69,7 +70,7 @@ def test_schema_parse(test_dir: Path, tools: Tools) -> None:
     assert parser_result is not None
     converted_ast, _ = parser_result
 
-    rc, parsed_ast = tools.kparse.kparse(reference_kmir, sort=reference_sort_data)
+    rc, parsed_ast = kmir.kparse(reference_kmir, sort=reference_sort_data)
 
     assert converted_ast == parsed_ast
 
@@ -117,15 +118,15 @@ LOCAL_DECL_TESTS = [
         KSort('StatementKind'),
     ),
     ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
-    (2, KApply('span(_)_TYPES_Span_Int', (KToken('2', KSort('Int')))), KSort('Span')),
-    (9, KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))), KSort('Ty')),
+    (2, KApply('span', (KToken('2', KSort('Int')))), KSort('Span')),
+    (9, KApply('ty', (KToken('9', KSort('Int')))), KSort('Ty')),
     (
         {'mutability': 'Mut', 'span': 420, 'ty': 9},
         KApply(
             'localDecl(_,_,_)_BODY_LocalDecl_Ty_Span_Mutability',
             (
-                KApply('ty(_)_TYPES_Ty_Int', (KToken('9', KSort('Int')))),
-                KApply('span(_)_TYPES_Span_Int', (KToken('420', KSort('Int')))),
+                KApply('ty', (KToken('9', KSort('Int')))),
+                KApply('span', (KToken('420', KSort('Int')))),
                 KApply('Mutability::Mut', ()),
             ),
         ),
@@ -190,7 +191,39 @@ BYTES_TESTS = [
     ),
 ]
 
-SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS
+TOKEN_TESTS = [
+    (
+        {'FunType': 'extern \"rust-call\" fn(()) -> i32'},  # double quotes within string
+        KApply('TypeInfo::FunType', (KToken('"extern \\"rust-call\\" fn(()) -> i32"', KSort('String')))),
+        KSort('TypeInfo'),
+    ),
+    # MIRInt and MIRBool literals in context
+    (
+        {'ConstantIndex': {'offset': 1, 'min_length': 1, 'from_end': True}},
+        KApply(
+            'ProjectionElem::ConstantIndex',
+            (
+                KToken('1', KSort('Int')),
+                KToken('1', KSort('Int')),
+                KToken('true', KSort('Bool')),
+            ),
+        ),
+        KSort('ProjectionElem'),
+    ),
+    (
+        {'kind': {'StorageLive': 42}, 'span': 1},
+        KApply(
+            'statement(_,_)_BODY_Statement_StatementKind_Span',
+            (
+                KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
+                KApply('span', (KToken('1', KSort('Int')))),
+            ),
+        ),
+        KSort('Statement'),
+    ),
+]
+
+SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_TESTS + BYTES_TESTS + TOKEN_TESTS
 
 
 @pytest.mark.parametrize(
@@ -200,9 +233,9 @@ SCHEMA_PARSE_KAPPLY_DATA = RIGID_TY_TESTS + LOCAL_DECL_TESTS + FUNCTION_SYMBOL_T
 )
 def test_schema_kapply_parse(
     test_case: tuple[JSON, KInner, KSort],
-    tools: Tools,
+    kmir: KMIR,
 ) -> None:
-    parser = Parser(tools.definition)
+    parser = Parser(kmir.definition)
 
     json_data, expected_term, expected_sort = test_case
 
@@ -314,10 +347,16 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.state',
         None,
     ),
+    (
+        'Array-index-writes',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.state',
+        None,
+    ),
 ]
 
 
-@pytest.mark.parametrize('tools', [llvm_semantics(), haskell_semantics()], ids=['llvm', 'haskell'])
+@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -325,12 +364,13 @@ EXEC_DATA = [
 )
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
-    tools: Tools,
+    kmir_backend: KMIR,
+    update_expected_output: bool,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
 
-    parser = Parser(tools.definition)
+    parser = Parser(kmir_backend.definition)
 
     with input_json.open('r') as f:
         json_data = json.load(f)
@@ -338,18 +378,10 @@ def test_exec_smir(
     assert parsed is not None
     kmir_kast, _ = parsed
 
-    result = tools.run_parsed(kmir_kast, depth=depth)
+    result = kmir_backend.run_parsed(kmir_kast, depth=depth)
 
-    with output_kast.open('r') as f:
-        expected = f.read().rstrip()
-
-    result_pretty = tools.kprint.kore_to_pretty(result).rstrip()
-
-    if os.getenv('UPDATE_EXEC_SMIR') is None:
-        assert result_pretty == expected
-    else:
-        with output_kast.open('w') as f:
-            f.write(result_pretty)
+    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
+    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
 
 
 @pytest.mark.parametrize(
@@ -363,10 +395,10 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
 
     proof_dir = tmp_path / 'proof'
-    prove_opts = ProveRunOpts(spec_file, proof_dir, None, None)
+    prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
 
     _kmir_gen_spec(gen_opts)
-    _kmir_prove_run(prove_opts)
+    _kmir_prove_raw(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec_file).labels()
     for label in claim_labels:
@@ -385,10 +417,67 @@ PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
 )
 def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
     proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRunOpts(spec, proof_dir, None, None)
-    _kmir_prove_run(prove_opts)
+    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
+    _kmir_prove_raw(prove_opts)
 
     claim_labels = kmir.get_claim_index(spec).labels()
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
         assert proof.passed
+
+
+PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
+PROVE_RS_SHOW_SPECS = [
+    'local-raw-fail',
+    'interior-mut-fail',
+    'interior-mut2-fail',
+    'interior-mut3-fail',
+    'assert_eq_exp-fail',
+    'bitwise-not-shift-fail',
+]
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    PROVING_FILES,
+    ids=[spec.stem for spec in PROVING_FILES],
+)
+def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    should_fail = rs_file.stem.endswith('fail')
+    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+
+    prove_rs_opts = ProveRSOpts(rs_file)
+
+    if should_show:
+        # always run `main` when kmir show is tested
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
+
+        shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=False))
+        show_res = '\n'.join(shower.show(apr_proof))
+        assert_or_update_show_output(
+            show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
+        )
+    else:
+        # read start symbol(s) from the first line (default: [main] otherwise)
+        start_sym_prefix = '// @kmir prove-rs:'
+        with open(rs_file) as f:
+            headline = f.readline().strip('\n')
+
+        if headline.startswith(start_sym_prefix):
+            start_symbols = headline.removeprefix(start_sym_prefix).split()
+        else:
+            start_symbols = ['main']
+
+        for start_symbol in start_symbols:
+            prove_rs_opts.start_symbol = start_symbol
+            apr_proof = kmir.prove_rs(prove_rs_opts)
+            if not should_fail:
+                assert apr_proof.passed
+            else:
+                assert apr_proof.failed

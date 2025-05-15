@@ -17,14 +17,27 @@ runs:
       TAG=runtimeverificationinc/${CONTAINER_NAME}
       K_COMMIT=$(grep -Po '[0-9.]+' ./deps/k_release)
 
-      docker build . --tag ${TAG} --build-arg K_COMMIT=${K_COMMIT} --file .github/workflows/Dockerfile
+      USER=github-user
+      GROUP=${USER}
+      USER_ID=1000
+      GROUP_ID=${USER_ID}
 
-      docker run                 \
-        --name ${CONTAINER_NAME} \
-        --rm                     \
-        --interactive            \
-        --tty                    \
-        --detach                 \
-        -v ${PWD}:${PWD}         \
-        --workdir ${PWD}         \
+      docker build . --tag ${TAG}           \
+        --file .github/workflows/Dockerfile \
+        --build-arg K_COMMIT=${K_COMMIT}    \
+        --build-arg USER=${USER}            \
+        --build-arg GROUP=${GROUP}          \
+        --build-arg USER_ID=${USER_ID}      \
+        --build-arg GROUP_ID=${GROUP_ID}
+
+      docker run                          \
+        --name ${CONTAINER_NAME}          \
+        --rm                              \
+        --interactive                     \
+        --tty                             \
+        --detach                          \
+        --workdir /home/${USER}/workspace \
         ${TAG}
+
+      docker cp . ${CONTAINER_NAME}:/home/${USER}/workspace
+      docker exec --user root ${CONTAINER_NAME} chown -R ${USER}:${GROUP} /home/${USER}/workspace

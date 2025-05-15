@@ -15,29 +15,37 @@ RUN apt-get install -y curl graphviz python-is-python3 && \
     chown root:root /usr/local/bin/fixuid && \
     chmod 4755 /usr/local/bin/fixuid && \
     mkdir -p /etc/fixuid && \
-    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+    printf "user: $USER\ngroup: $GROUP\npaths:\n  - /home/${USER}" > /etc/fixuid/config.yml
 
 COPY kmir /kmir
 COPY deps/stable-mir-json /deps/stable-mir-json
-RUN chown -R kmir:kmir deps/stable-mir-json/
+RUN mkdir -p /rustup && \
+    chown -R kmir:kmir deps/stable-mir-json/ /rustup
 
 USER kmir:kmir
 WORKDIR /home/kmir
 # Set Env variables for Building
 ENV K_VERSION=${K_VERSION} \
     PATH=/home/kmir/.local/bin:/home/kmir/.cargo/bin:$PATH \
-    force_color_prompt=yes
+    force_color_prompt=yes \
+    RUSTUP_HOME=/rustup
 # Set Env Variables every time a new shell is opened (e.g. when using 'docker exec')
 RUN echo "export K_VERSION=${K_VERSION}" >> /home/kmir/.bash_profile && \
     echo "export PATH=/home/kmir/.local/bin:/home/kmir/.cargo/bin:\$PATH" >> /home/kmir/.bash_profile && \
     echo "export force_color_prompt=yes" >> /home/kmir/.bash_profile && \
+    echo "export RUSTUP_HOME=/rustup" >> /home/kmir/.bash_profile && \
     echo "source /home/kmir/.bash_profile" >> /home/kmir/.bashrc
 
-# install rustup non-interactively and build
+# install rustup non-interactively and build,
+# into RUSTUP_HOME outside of the home directory
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain none
 
 # install kmir python parts and K definition/llvm library
-RUN cd /kmir && pip install . && kdist build mir-semantics.\*
+RUN cd /kmir && \
+    pip install . && \
+    kdist build mir-semantics.\* && \
+    rm -rf $(kdist which mir-semantics.llvm)/dt
+# NB cannot remove the `llvm-library` one
 
 # build stable-mir-json and install into home
 # NB this will modify the default rust toolchain!
@@ -48,24 +56,25 @@ RUN cd /deps/stable-mir-json && \
     cargo run --bin cargo_stable_mir_json -- $PWD && \
     ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
     cargo clean
-# Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec` 
+
+# Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec`
 ENTRYPOINT ["fixuid", "-q"]
 
-CMD printf "%s\n" \
-    "Welcome to kmir, powered by K framework" \
-    "" \
-    "This docker image provides a K-framework installation with the following programs:" \
-    " * kompile" \
-    " * krun" \
-    " * kprove" \
-    " * kast" \
-    " * K backend tools (kore-*)" \
-    " * the pyk library to interact with K programmatically " \
-    "" \
-    "as well as a pre-installed kmir tool and stable-mir-json" \
-    "" \
-    "To use this docker image, start a container with an interactive shell and" \
-    "a working directory with your working directory mounted into it, like so:" \
-    "" \
-    'user@host$ docker run --rm -it -v "$PWD":/home/kmir/workspace -u $(id -u):$(id -g) <docker-image> /bin/bash' \
-    ""
+CMD ["printf", "%s\n" \
+    , "Welcome to kmir, powered by K framework" \
+    , "" \
+    , "This docker image provides a K-framework installation with the following programs:" \
+    , " * kompile" \
+    , " * krun" \
+    , " * kprove" \
+    , " * kast" \
+    , " * K backend tools (kore-*)" \
+    , " * the pyk library to interact with K programmatically " \
+    , "" \
+    , "as well as a pre-installed kmir tool and stable-mir-json" \
+    , "" \
+    , "To use this docker image, start a container with an interactive shell and" \
+    , "a working directory with your working directory mounted into it, like so:" \
+    , "" \
+    , "user@host$ docker run --rm -it -v \"$PWD\":/home/kmir/workspace -u $(id -u):$(id -g) <docker-image> /bin/bash" \
+    , ""]

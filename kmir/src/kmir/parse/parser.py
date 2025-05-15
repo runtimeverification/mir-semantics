@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
-from functools import cached_property
+from functools import cache, cached_property
 from typing import TYPE_CHECKING
 
 from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.outer import KTerminal
+from pyk.kast.prelude.utils import token
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -69,6 +70,7 @@ def _get_group(prod: KProduction) -> str:
 
 # Parse a mir production's group information.
 # Return a tuple (mir production's type, list of field names)
+@cache
 def _extract_mir_group_info(group_info: str) -> tuple[str, Sequence[str]]:
     # --- separates the field names from the mir instruction kind
     # --  separates the individual field names
@@ -111,6 +113,7 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 
 
 # Given a list Sort, return the element sort.
+@cache
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
     if name.endswith('ies'):  # Entries, ...
@@ -140,6 +143,8 @@ class Parser:
         defn: KDefinition,
     ):
         self.__definition = defn
+        object.__setattr__(self, '_mir_productions_for_sort', cache(self._mir_productions_for_sort))
+        object.__setattr__(self, '_mir_production_for_symbol', cache(self._mir_production_for_symbol))
 
     # Return all mir productions for Sort sort
     def _mir_productions_for_sort(self, sort: KSort) -> tuple[KProduction, ...]:
@@ -388,11 +393,12 @@ class Parser:
         assert isinstance(json, str)
         sort = prod.sort
         symbol = _get_label(prod)
+        tok = token(json)
         # Special handling of MIRString: return the string token instead.
         if symbol == 'MIRString::String':
-            return KToken('\"' + json + '\"', KSort('String')), KSort('String')
+            return tok, tok.sort
         # Apply the production to the generated string token
-        return KApply(symbol, (KToken('\"' + json + '\"', KSort('String')))), sort
+        return KApply(symbol, tok), sort
 
     # Parser's internal method,
     # Parse the provided json as an int using the provided production.
@@ -402,9 +408,9 @@ class Parser:
         symbol = _get_label(prod)
         # Special handling of MIRInt: return the int token instead.
         if symbol == 'MIRInt::Int':
-            return KToken(str(json), KSort('Int')), KSort('Int')
+            return token(json), KSort('Int')
         # Apply the production to the generated int token
-        return KApply(symbol, (KToken(str(json), KSort('Int')))), sort
+        return KApply(symbol, token(json)), sort
 
     # Parser's internal method,
     # Parse the provided json as a bool using the provided production.
@@ -412,16 +418,12 @@ class Parser:
         assert isinstance(json, bool)
         sort = prod.sort
         symbol = _get_label(prod)
-        # token values need to be lower-cased
-        if json:
-            value = 'true'
-        else:
-            value = 'false'
+        tok = token(json)
         # Special handling of MIRBool: return the bool token instead.
         if symbol == 'MIRBool::Bool':
-            return KToken(value, KSort('Bool')), KSort('Bool')
+            return tok, KSort('Bool')
         # Apply the production to the generated bool token
-        return KApply(symbol, (KToken(value, KSort('Bool')))), sort
+        return KApply(symbol, tok), sort
 
     # parse a sequence of ints into a byte array
     def _parse_mir_bytes_json(self, json: JSON, prod: KProduction) -> ParseResult:
@@ -435,7 +437,8 @@ class Parser:
                 assert isinstance(i, int) or i is None
             import string
 
-            if all(chr(int(i)) in string.printable for i in json):
+            # TODO: Handle uninitialized bytes instead of defaulting to 0
+            if all((chr(int(i)) if i is not None else chr(0)) in string.printable for i in json):
                 # if all elements are ascii printable, use simple characters
                 bytes = ''.join([chr(int(i)) for i in json])
             else:
