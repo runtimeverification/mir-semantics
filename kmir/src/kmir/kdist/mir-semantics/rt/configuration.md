@@ -46,12 +46,11 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  // heap, Address(Int) -> ( GlobalAlloc | Data? ) 
                   <memory> .Map </memory>
                   // ============ static information ============
                   // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
-                  // heap, Address(Int) -> ( GlobalAlloc | Data? ) 
-                  <memory> .Map </memory>
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <types> .Map </types>
