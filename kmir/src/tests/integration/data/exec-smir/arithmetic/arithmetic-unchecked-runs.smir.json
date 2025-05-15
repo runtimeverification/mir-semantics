@@ -40,7 +40,7 @@
             100,
             58,
             32,
-            117,
+            105,
             56,
             58,
             58,
@@ -54,9 +54,9 @@
             101,
             100,
             95,
-            97,
-            100,
-            100,
+            115,
+            117,
+            98,
             32,
             99,
             97,
@@ -120,7 +120,7 @@
             100,
             58,
             32,
-            105,
+            117,
             56,
             58,
             58,
@@ -134,9 +134,9 @@
             101,
             100,
             95,
-            115,
-            117,
-            98,
+            97,
+            100,
+            100,
             32,
             99,
             97,
@@ -3620,7 +3620,7 @@
     [
       5,
       {
-        "RefType": 38
+        "RefType": 37
       }
     ],
     [
@@ -3634,7 +3634,7 @@
     [
       8,
       {
-        "PtrType": 39
+        "PtrType": 38
       }
     ],
     [
@@ -3650,7 +3650,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 18,
+          "adt_def": 17,
           "discriminants": [
             [
               0,
@@ -3675,7 +3675,10 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 21
+          "adt_def": 22,
+          "fields": [
+            9
+          ]
         }
       }
     ],
@@ -3692,7 +3695,10 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 20
+          "adt_def": 11,
+          "fields": [
+            15
+          ]
         }
       }
     ],
@@ -3711,7 +3717,7 @@
     [
       24,
       {
-        "RefType": 37
+        "RefType": 39
       }
     ],
     [
@@ -3768,15 +3774,15 @@
       }
     ],
     [
-      37,
+      38,
       {
-        "PrimitiveType": "Str"
+        "PtrType": 9
       }
     ],
     [
       39,
       {
-        "PtrType": 9
+        "PrimitiveType": "Str"
       }
     ]
   ],

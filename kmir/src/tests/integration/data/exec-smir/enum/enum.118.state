@@ -72,15 +72,15 @@
   <types>
     ty ( 1 ) |-> typeInfoTupleType ( .Tys )
     ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
-    ty ( 5 ) |-> typeInfoRefType ( ty ( 30 ) )
+    ty ( 5 ) |-> typeInfoRefType ( ty ( 31 ) )
     ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
-    ty ( 8 ) |-> typeInfoPtrType ( ty ( 31 ) )
+    ty ( 8 ) |-> typeInfoPtrType ( ty ( 32 ) )
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 15 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 17 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 18 ) )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 19 ) )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 16 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 11 ) )
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
     ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
     ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )
@@ -89,13 +89,13 @@
     ty ( 27 ) |-> typeInfoEnumType ( "Letter" , adtDef ( 7 ) , Discriminant ( variantIdx ( 0 ) , 65 )  Discriminant ( variantIdx ( 1 ) , 66 )  Discriminant ( variantIdx ( 2 ) , 77 )  .Discriminants )
     ty ( 28 ) |-> typeInfoEnumType ( "WithData" , adtDef ( 8 ) , Discriminant ( variantIdx ( 0 ) , 88 )  Discriminant ( variantIdx ( 1 ) , 89 )  Discriminant ( variantIdx ( 2 ) , 90 )  Discriminant ( variantIdx ( 3 ) , 9090 )  .Discriminants )
     ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU16 ) )
-    ty ( 31 ) |-> typeInfoPtrType ( ty ( 9 ) )
+    ty ( 32 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
   <adt-to-ty>
     adtDef ( 7 ) |-> ty ( 27 )
     adtDef ( 8 ) |-> ty ( 28 )
-    adtDef ( 15 ) |-> ty ( 10 )
-    adtDef ( 16 ) |-> ty ( 17 )
-    adtDef ( 18 ) |-> ty ( 15 )
+    adtDef ( 11 ) |-> ty ( 17 )
+    adtDef ( 17 ) |-> ty ( 10 )
+    adtDef ( 19 ) |-> ty ( 15 )
   </adt-to-ty>
 </kmir>

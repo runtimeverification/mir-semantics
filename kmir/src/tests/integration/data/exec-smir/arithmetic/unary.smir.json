@@ -1939,7 +1939,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 17,
+          "adt_def": 15,
           "discriminants": [
             [
               0,
@@ -1964,7 +1964,10 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 9
+          "adt_def": 17,
+          "fields": [
+            9
+          ]
         }
       }
     ],
@@ -1981,7 +1984,10 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 8
+          "adt_def": 7,
+          "fields": [
+            15
+          ]
         }
       }
     ],
