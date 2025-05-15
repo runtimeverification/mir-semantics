@@ -84,15 +84,15 @@
   <types>
     ty ( 1 ) |-> typeInfoTupleType ( .Tys )
     ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
-    ty ( 5 ) |-> typeInfoRefType ( ty ( 30 ) )
+    ty ( 5 ) |-> typeInfoRefType ( ty ( 31 ) )
     ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
-    ty ( 8 ) |-> typeInfoPtrType ( ty ( 31 ) )
+    ty ( 8 ) |-> typeInfoPtrType ( ty ( 32 ) )
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 12 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 14 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 15 ) )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 17 ) )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 14 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 8 ) )
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
     ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
     ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )
@@ -101,11 +101,11 @@
     ty ( 27 ) |-> typeInfoTupleType ( ty ( 9 )  ty ( 25 )  .Tys )
     ty ( 28 ) |-> typeInfoTupleType ( ty ( 2 )  ty ( 25 )  .Tys )
     ty ( 29 ) |-> typeInfoTupleType ( ty ( 26 )  ty ( 25 )  .Tys )
-    ty ( 31 ) |-> typeInfoPtrType ( ty ( 9 ) )
+    ty ( 32 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
   <adt-to-ty>
-    adtDef ( 12 ) |-> ty ( 10 )
-    adtDef ( 14 ) |-> ty ( 17 )
-    adtDef ( 15 ) |-> ty ( 15 )
+    adtDef ( 8 ) |-> ty ( 17 )
+    adtDef ( 14 ) |-> ty ( 10 )
+    adtDef ( 17 ) |-> ty ( 15 )
   </adt-to-ty>
 </kmir>
