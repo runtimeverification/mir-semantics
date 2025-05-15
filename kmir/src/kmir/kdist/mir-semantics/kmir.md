@@ -321,7 +321,10 @@ block after the call returns.
 ```
 
 A `SwitchInt` terminator selects one of the blocks given as _targets_,
-depending on the value of a _discriminant_.
+depending on the value of a _discriminant_. If the discriminant is an
+an integer, it is always interpretted as the _unsigned_ value (even if
+negative). E.g. if branching is occuring on `-127_i8`, the discriminant
+will be `129`.
 
 ```k
   syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
