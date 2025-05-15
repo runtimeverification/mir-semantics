@@ -142,7 +142,7 @@ A projection can only be applied to an initialised value, so this operation requ
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  syntax KItem ::= #readProjection ( TypedValue , ProjectionElems )
+  syntax Evaluation ::= #readProjection ( TypedValue , ProjectionElems )
 ```
 
 The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
@@ -909,7 +909,7 @@ For binary operations generally, both arguments have to be read from the provide
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax KItem ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
+  syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
 
   rule <k> rvalueUnaryOp(UNOP, OP1) => #applyUnOp(UNOP, OP1) ... </k>
 ```
