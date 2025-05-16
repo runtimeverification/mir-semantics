@@ -74,10 +74,11 @@ Constant operands are simply decoded according to their type.
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
         =>
-           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo), TY, mutabilityNot)
+           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo, MEM), TY, mutabilityNot)
         ...
       </k>
       <types> TYPEMAP </types>
+      <memory> MEM </memory>
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
     [preserves-definedness] // valid Map lookup checked
@@ -851,19 +852,19 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
-  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
+  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo, Map ) [function]
 
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool), _MEM) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool), _MEM) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO, _MEM)
       =>
         #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
     requires #isIntType(TYPEINFO)
@@ -872,16 +873,23 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   // FIXME Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar))
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _), _MEM), typeInfoPrimitiveType(primTypeChar))
   //     =>
   //      Str(...)
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
+  rule #decodeConstant(constantKindAllocated(allocation(_BYTES, provenanceMap(
+          provenanceMapEntry(_SIZE, allocId(ID:Int)) .ProvenanceMapEntries
+        ), _ALIGN, _MUT)), typeInfoRefType(_TY), MEMORY)
+     =>
+       RefAlloc(ID)
+     requires ID in_keys(MEMORY)
+     [preserves-definedness] // AllocId in Memory is checked, TY in Types checked previously
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
-  rule #decodeConstant(_, _) => Any [owise]
+  rule #decodeConstant(_, _, _) => Any [owise]
 ```
 
 ## Primitive operations on numeric data
