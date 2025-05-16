@@ -30,7 +30,7 @@ High-level values can be
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability )
+                 | Reference
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )
                    // homogenous values              for array/slice
@@ -38,6 +38,9 @@ High-level values can be
                    // address, metadata              for ref/ptr
                  | "Any"
                    // arbitrary value                for transmute/invalid ptr lookup
+
+  syntax Reference ::= RefStack( Int , Place , Mutability )
+                     | RefAlloc( Int )
 ```
 
 ## Local variables

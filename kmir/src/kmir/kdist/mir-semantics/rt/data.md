@@ -232,7 +232,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
 ```k
   rule <k> #readProjection(
-              typedValue(Reference(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
+              typedValue(RefStack(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
               projectionElemDeref PROJS:ProjectionElems
             )
          =>
@@ -259,7 +259,7 @@ An important prerequisite of this rule is that when passing references to a call
 
 ```k
   rule <k> #readProjection(
-              typedValue(Reference(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
+              typedValue(RefStack(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
               projectionElemDeref PROJS
             )
          =>
@@ -290,8 +290,8 @@ An important prerequisite of this rule is that when passing references to a call
                       | #decrementRef ( TypedLocal )  [function, total]
                       | #adjustRef (TypedLocal, Int ) [function, total]
 
-  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
-    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(typedValue(RefStack(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedValue(RefStack(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -523,7 +523,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+            typedValue(RefStack(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -548,7 +548,7 @@ The solution is to use rewrite operations in a downward pass through the project
 
   rule <k> #projectedUpdate(
             _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+            typedValue(RefStack(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
             UPDATE,
             _CTXTS,
@@ -799,7 +799,7 @@ The `BorrowKind` indicates mutability of the value through the reference, but al
 ```k
   rule <k> rvalueRef(_REGION, KIND, PLACE)
          =>
-           typedValue(Reference(0, PLACE, #mutabilityOf(KIND)), TyUnknown, #mutabilityOf(KIND))
+           typedValue(RefStack(0, PLACE, #mutabilityOf(KIND)), TyUnknown, #mutabilityOf(KIND))
        ...
        </k>
 
