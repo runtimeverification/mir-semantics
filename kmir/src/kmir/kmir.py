@@ -153,7 +153,7 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
-            if opts.load_smir:
+            if opts.smir:
                 smir_json = json.loads(opts.rs_file.read_text())
             else:
                 smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
