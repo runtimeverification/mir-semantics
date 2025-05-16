@@ -162,9 +162,17 @@ class ArgGenerator:
                 args = self._fresh_var('ENUM_ARGS')
                 return KApply('Value::Aggregate', (KApply('variantIdx', (variantVar,)), args)), idx_range
 
-            case StructT():
-                args = self._fresh_var('STRUCT_ARGS')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), args)), []
+            case StructT(_, _, fields):
+                field_vars: list[KInner] = []
+                field_constraints: list[KInner] = []
+                for _ty in fields:
+                    new_var, new_constraints = self._symbolic_value(_ty, mutable)
+                    field_vars.append(_typed_value(new_var, _ty, mutable))
+                    field_constraints += new_constraints
+                return (
+                    KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(field_vars))),
+                    field_constraints,
+                )
 
             case UnionT():
                 args = self._fresh_var('ARG_UNION')
