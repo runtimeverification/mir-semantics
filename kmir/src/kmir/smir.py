@@ -178,6 +178,7 @@ class EnumT(TypeMetadata):
 class StructT(TypeMetadata):
     name: str
     adt_def: int
+    fields: list[Ty]
 
 
 @dataclass
@@ -220,7 +221,9 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
         discriminants = dict(info['discriminants'])
         return EnumT(name=info['name'], adt_def=info['adt_def'], discriminants=discriminants)
     elif 'StructType' in typeinfo:
-        return StructT(typeinfo['StructType']['name'], typeinfo['StructType']['adt_def'])
+        return StructT(
+            typeinfo['StructType']['name'], typeinfo['StructType']['adt_def'], typeinfo['StructType']['fields']
+        )
     elif 'UnionType' in typeinfo:
         return UnionT(typeinfo['UnionType']['name'], typeinfo['UnionType']['adt_def'])
     elif 'ArrayType' in typeinfo:
