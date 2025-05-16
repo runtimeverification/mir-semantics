@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
@@ -152,7 +153,10 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
-            smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
+            if opts.load_smir:
+                smir_json = json.loads(opts.rs_file.read_text())
+            else:
+                smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
             parser = Parser(self.definition)
             parse_result = parser.parse_mir_json(smir_json, 'Pgm')
             assert parse_result is not None

@@ -75,6 +75,7 @@ class GenSpecOpts(KMirOpts):
 class ProveRSOpts(ProveOpts):
     rs_file: Path
     save_smir: bool
+    load_smir: bool
     start_symbol: str
 
     def __init__(
@@ -86,6 +87,7 @@ class ProveRSOpts(ProveOpts):
         max_iterations: int | None = None,
         reload: bool = False,
         save_smir: bool = False,
+        load_smir: bool = False,
         start_symbol: str = 'main',
     ) -> None:
         self.rs_file = rs_file
@@ -95,6 +97,7 @@ class ProveRSOpts(ProveOpts):
         self.max_iterations = max_iterations
         self.reload = reload
         self.save_smir = save_smir
+        self.load_smir = load_smir
         self.start_symbol = start_symbol
 
 
