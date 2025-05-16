@@ -6,7 +6,7 @@
 │
 │  (254 steps)
 └─ 3 (stuck, leaf)
-    #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
+    #readProjection ( typedValue ( RefAlloc ( 8 ) , ty ( 25 ) , mutabilityNot ) , pr
     span: 63
 
 
