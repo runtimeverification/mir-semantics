@@ -245,7 +245,7 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
-    prove_rs_parser.add_argument('--load-smir', action='store_true', help='Treat the input file as a smir json.')
+    prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
