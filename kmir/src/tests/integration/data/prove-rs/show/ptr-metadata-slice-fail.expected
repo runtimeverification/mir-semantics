@@ -1,0 +1,16 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "ptr_metadata_slice_fail" ) globalAllocEntry ( 1 , Memory ( all
+│   function: main
+│   span: 127
+│
+│  (156 steps)
+└─ 3 (stuck, leaf)
+    #applyUnOp ( unOpPtrMetadata , typedValue ( thunk ( #cast ( typedValue ( RefStac
+    span: 58
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+

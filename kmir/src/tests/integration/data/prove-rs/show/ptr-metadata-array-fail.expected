@@ -1,0 +1,17 @@
+
+┌─ 1 (root, init)
+│   #init ( symbol ( "ptr_metadata_array_fail" ) globalAllocEntry ( 0 , Memory ( all
+│   function: main
+│   span: 51
+│
+│  (27 steps)
+└─ 3 (stuck, leaf)
+    #applyUnOp ( unOpPtrMetadata , typedValue ( thunk ( #cast ( typedValue ( RefAllo
+    function: main
+    span: 53
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram
+
+
