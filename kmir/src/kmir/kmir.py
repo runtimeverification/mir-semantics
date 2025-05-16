@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, Subst
-from pyk.kast.manip import split_config_from
+from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.manip import abstract_term_safely, split_config_from
+from pyk.kast.prelude.collections import list_empty, list_of, map_empty
 from pyk.kast.prelude.string import stringToken
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -20,8 +21,10 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
+from .kast import mk_call_terminator, symbolic_locals
 from .kparse import KParse
 from .parse.parser import Parser
+from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -32,7 +35,6 @@ if TYPE_CHECKING:
     from pyk.utils import BugReport
 
     from .options import ProveRSOpts
-    from .smir import SMIRInfo
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -74,8 +76,44 @@ class KMIR(KProve, KRun, KParse):
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
         return init_config
 
+    def make_call_config(
+        self, parsed_smir: KApply, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell'
+    ) -> tuple[KInner, list[KInner]]:
+
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
+
+        _sym, _allocs, functions, items, types, _ = parsed_smir.args
+
+        args_info = smir_info.function_arguments[start_symbol]
+
+        locals, constraints = symbolic_locals(smir_info, args_info)
+
+        subst = {
+            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'LOCALS_CELL': list_of(locals),
+            'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
+            'TYPES_CELL': KApply('mkTypeMap', (map_empty(), types)),
+            'ADTTOTY_CELL': KApply('mkAdtMap', (map_empty(), types)),
+        }
+
+        config = self.definition.empty_config(KSort(sort))
+
+        return (Subst(subst).apply(config), constraints)
+
     def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
         init_config = self.make_init_config(parsed_smir, start_symbol)
+        init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
+        result = self.run_pattern(init_kore, depth=depth)
+
+        return result
+
+    def run_call(
+        self, parsed_smir: KApply, smir_json: SMIRInfo, start_symbol: str = 'main', depth: int | None = None
+    ) -> Pattern:
+        init_config, _ = self.make_call_config(parsed_smir, smir_json, start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
 
@@ -85,17 +123,21 @@ class KMIR(KProve, KRun, KParse):
         self,
         id: str,
         kmir_kast: KInner,
+        smir_info: SMIRInfo,
         start_symbol: str = 'main',
         sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        config = self.make_init_config(kmir_kast, start_symbol, sort=sort)
-        config_with_cell_vars, _ = split_config_from(config)
+        assert type(kmir_kast) is KApply
+        lhs_config, constraints = self.make_call_config(kmir_kast, smir_info, start_symbol=start_symbol, sort=sort)
+        lhs = CTerm(lhs_config, constraints)
 
-        lhs = CTerm(config)
-
-        rhs_subst = Subst({'K_CELL': KMIR.Symbols.END_PROGRAM})
-        rhs = CTerm(rhs_subst(config_with_cell_vars))
+        var_config, var_subst = split_config_from(lhs_config)
+        _rhs_subst: dict[str, KInner] = {
+            v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
+        }
+        _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+        rhs = CTerm(Subst(_rhs_subst)(var_config))
         kcfg = KCFG()
         init_node = kcfg.create_node(lhs)
         target_node = kcfg.create_node(rhs)
@@ -121,7 +163,7 @@ class KMIR(KProve, KRun, KParse):
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
             apr_proof = self.apr_proof_from_kast(
-                label, kmir_kast, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
         if apr_proof.passed:
             return apr_proof

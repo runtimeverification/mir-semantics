@@ -22,17 +22,17 @@ High-level values can be
 - arrays and slices (with homogenous element types)
 
 ```k
-  syntax Value ::= Integer( Int, Int, Bool )
+  syntax Value ::= Integer( Int, Int, Bool )              [symbol(Value::Integer)]
                    // value, bit-width, signedness   for un/signed int
-                 | BoolVal( Bool )
+                 | BoolVal( Bool )                        [symbol(Value::BoolVal)]
                    // boolean
-                 | Aggregate( VariantIdx , List )
+                 | Aggregate( VariantIdx , List )         [symbol(Value::Aggregate)]
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
-                 | Float( Float, Int )
+                 | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability )
+                 | Reference( Int , Place , Mutability )  [symbol(Value::Reference)]
                    // stack depth (initially 0), place, borrow kind
-                 | Range( List )
+                 | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
                 //  | Ptr( Address, MaybeValue )
                    // address, metadata              for ref/ptr
@@ -52,11 +52,11 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   // local storage of the stack frame
   syntax TypedLocal ::= TypedValue | MovedLocal | NewLocal
 
-  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability )
+  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability ) [symbol(typedValue)]
 
   syntax MovedLocal ::= "Moved"
 
-  syntax NewLocal ::= newLocal ( Ty , Mutability )
+  syntax NewLocal ::= newLocal ( Ty , Mutability )                  [symbol(newLocal)]
 
   // the type of aggregates cannot be determined from the data provided when they
   // occur as `RValue`, therefore we have to make the `Ty` field optional here.

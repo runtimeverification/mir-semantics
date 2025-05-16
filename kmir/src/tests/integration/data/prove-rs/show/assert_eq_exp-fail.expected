@@ -1,10 +1,9 @@
 
 ┌─ 1 (root, init)
-│   #init ( symbol ( "assert_eq_exp_fail" ) globalAllocEntry ( 0 , Memory ( allocati
-│   function: main
-│   span: 93
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
 │
-│  (88 steps)
+│  (89 steps)
 └─ 3 (stuck, leaf)
     #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
     function: main
@@ -12,6 +11,6 @@
 
 
 ┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram
+│   #EndProgram ~> .K
 
 

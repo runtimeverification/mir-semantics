@@ -1,10 +1,9 @@
 
 ┌─ 1 (root, init)
-│   #init ( symbol ( "interior_mut3_fail" ) globalAllocEntry ( 1 , Memory ( allocati
-│   function: main
-│   span: 67
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
 │
-│  (136 steps)
+│  (137 steps)
 ├─ 3
 │   #expect ( typedValue ( thunk ( #compute ( binOpEq , typedValue ( thunk ( #comput
 │   function: main
@@ -35,6 +34,6 @@
 
 
 ┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram
+│   #EndProgram ~> .K
 
 
