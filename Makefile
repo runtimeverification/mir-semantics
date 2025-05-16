@@ -112,7 +112,7 @@ pyupgrade:
 # Update smir exec tests expectations
 .PHONY: update-exec-smir
 update-exec-smir:
-	UPDATE_EXEC_SMIR=true $(UV_RUN) pytest -k test_exec_smir
+	$(UV_RUN) pytest -k test_exec_smir --update-expected-output
 
 # Update checked-in smir.json files (using stable-mir-json dependency and jq)
 .PHONY: update-smir-json

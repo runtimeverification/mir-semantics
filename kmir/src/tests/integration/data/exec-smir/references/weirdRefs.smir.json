@@ -275,7 +275,7 @@
       }
     ],
     [
-      37,
+      42,
       {
         "NoOpSym": ""
       }
@@ -3138,7 +3138,7 @@
     [
       5,
       {
-        "RefType": 41
+        "RefType": 37
       }
     ],
     [
@@ -3152,7 +3152,7 @@
     [
       8,
       {
-        "PtrType": 42
+        "PtrType": 38
       }
     ],
     [
@@ -3168,7 +3168,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 21,
+          "adt_def": 15,
           "discriminants": [
             [
               0,
@@ -3193,7 +3193,10 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 13
+          "adt_def": 20,
+          "fields": [
+            9
+          ]
         }
       }
     ],
@@ -3210,7 +3213,10 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 12
+          "adt_def": 18,
+          "fields": [
+            15
+          ]
         }
       }
     ],
@@ -3249,7 +3255,7 @@
     [
       28,
       {
-        "RefType": 39
+        "RefType": 40
       }
     ],
     [
@@ -3263,7 +3269,12 @@
       {
         "StructType": {
           "name": "MyStruct",
-          "adt_def": 7
+          "adt_def": 7,
+          "fields": [
+            2,
+            25,
+            26
+          ]
         }
       }
     ],
@@ -3284,7 +3295,10 @@
       {
         "StructType": {
           "name": "Enclosing",
-          "adt_def": 8
+          "adt_def": 8,
+          "fields": [
+            45
+          ]
         }
       }
     ],
@@ -3303,28 +3317,33 @@
     [
       38,
       {
-        "RefType": 40
+        "PtrType": 9
       }
     ],
     [
       39,
       {
-        "PrimitiveType": "Str"
+        "RefType": 41
       }
     ],
     [
       40,
       {
-        "StructType": {
-          "name": "std::panic::Location",
-          "adt_def": 15
-        }
+        "PrimitiveType": "Str"
       }
     ],
     [
-      42,
+      41,
       {
-        "PtrType": 9
+        "StructType": {
+          "name": "std::panic::Location",
+          "adt_def": 17,
+          "fields": [
+            43,
+            44,
+            44
+          ]
+        }
       }
     ]
   ],
