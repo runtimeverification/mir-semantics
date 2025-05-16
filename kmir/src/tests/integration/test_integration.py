@@ -427,7 +427,7 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
 
 
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
+PROVING_FILES = list(PROVING_DIR.glob('*.*'))
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
@@ -448,8 +448,9 @@ PROVE_RS_SHOW_SPECS = [
 def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+    is_smir = rs_file.suffix == '.json'
 
-    prove_rs_opts = ProveRSOpts(rs_file)
+    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
 
     # read start symbol(s) from the first line (default: [main] otherwise)
     start_sym_prefix = '// @kmir prove-rs:'

@@ -301,7 +301,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
                 save_smir=ns.save_smir,
-                load_smir=ns.load_smir,
+                smir=ns.smir,
                 start_symbol=ns.start_symbol,
             )
         case _:
