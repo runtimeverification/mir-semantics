@@ -1885,7 +1885,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 13,
+          "adt_def": 16,
           "discriminants": [
             [
               0,
@@ -1910,7 +1910,10 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 18
+          "adt_def": 10,
+          "fields": [
+            9
+          ]
         }
       }
     ],
@@ -1927,7 +1930,10 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 17
+          "adt_def": 9,
+          "fields": [
+            15
+          ]
         }
       }
     ],
@@ -1979,7 +1985,13 @@
       {
         "StructType": {
           "name": "MyStruct",
-          "adt_def": 7
+          "adt_def": 7,
+          "fields": [
+            16,
+            25,
+            26,
+            27
+          ]
         }
       }
     ],

@@ -137,7 +137,7 @@
       }
     ],
     [
-      30,
+      32,
       {
         "NoOpSym": ""
       }
@@ -2090,7 +2090,7 @@
     [
       5,
       {
-        "RefType": 31
+        "RefType": 30
       }
     ],
     [
@@ -2104,7 +2104,7 @@
     [
       8,
       {
-        "PtrType": 32
+        "PtrType": 31
       }
     ],
     [
@@ -2120,7 +2120,7 @@
       {
         "EnumType": {
           "name": "std::result::Result",
-          "adt_def": 17,
+          "adt_def": 14,
           "discriminants": [
             [
               0,
@@ -2145,7 +2145,10 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 11
+          "adt_def": 19,
+          "fields": [
+            9
+          ]
         }
       }
     ],
@@ -2162,7 +2165,10 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 10
+          "adt_def": 8,
+          "fields": [
+            15
+          ]
         }
       }
     ],
@@ -2197,7 +2203,7 @@
       }
     ],
     [
-      32,
+      31,
       {
         "PtrType": 9
       }
@@ -2219,7 +2225,12 @@
       {
         "StructType": {
           "name": "std::panic::Location",
-          "adt_def": 20
+          "adt_def": 17,
+          "fields": [
+            36,
+            37,
+            37
+          ]
         }
       }
     ]
