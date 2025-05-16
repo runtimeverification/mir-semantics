@@ -109,16 +109,14 @@ they are callee in a `Call` terminator within an `Item`).
 The function _names_ and _ids_ are not relevant for calls and therefore dropped.
 
 ```k
-  syntax Address ::= "Address" "(" Int ")"
+  rule #mkMemoryMap(Globals) => #accumMemory(.Map, Globals)
 
-  rule #mkMemoryMap(Globals) => #accumMemory(.Map, Address(1), Globals)
-
-  rule #accumMemory(Acc, _, .GlobalAllocs) => Acc
-  rule #accumMemory(Acc, Address(INDEX), Global REST) => #accumMemory(Acc (Address(INDEX) |-> Global), Address(INDEX +Int 1), REST)
+  rule #accumMemory(Acc, .GlobalAllocs) => Acc
+  rule #accumMemory(Acc, globalAllocEntry(ID, ALLOC) REST) => #accumMemory(Acc (ID |-> ALLOC), REST)
 
   syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total ]
                | #mkMemoryMap ( GlobalAllocs )               [ function, total ]
-               | #accumMemory ( Map, Address, GlobalAllocs ) [ function, total ]
+               | #accumMemory ( Map, GlobalAllocs )          [ function, total ]
                | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
                | #accumItems ( Map, MonoItems )              [ function, total ]
 
