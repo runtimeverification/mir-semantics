@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -489,6 +490,7 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
 
 
 def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
+    sys.setrecursionlimit(15000000)
     smir_dir = Path(__file__).parent / 'data' / 'prove-smir'
     pinocchio_token_program = smir_dir / 'pinocchio_token_program.smir.json'
     start_symbols = [
