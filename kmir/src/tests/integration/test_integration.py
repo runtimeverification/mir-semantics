@@ -486,3 +486,23 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
                 assert apr_proof.passed
             else:
                 assert apr_proof.failed
+
+
+def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
+    smir_dir = Path(__file__).parent / 'data' / 'prove-smir'
+    pinocchio_token_program = smir_dir / 'pinocchio_token_program.smir.json'
+    start_symbols = [
+        'processor::transfer::process_transfer',
+    ]
+    prove_rs_opts = ProveRSOpts(pinocchio_token_program, smir=True)
+
+    for start_symbol in start_symbols:
+        prove_rs_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+        shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=False))
+        show_res = '\n'.join(shower.show(apr_proof))
+        assert_or_update_show_output(
+            show_res,
+            smir_dir / f'show/{pinocchio_token_program.stem}.{start_symbol}.expected',
+            update=update_expected_output,
+        )
