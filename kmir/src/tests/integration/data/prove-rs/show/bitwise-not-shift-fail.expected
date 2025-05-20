@@ -1,16 +1,15 @@
 
 ┌─ 1 (root, init)
-│   #init ( symbol ( "bitwise_not_shift_fail" ) globalAllocEntry ( 8 , Memory ( allo
-│   function: main
-│   span: 108
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
 │
-│  (254 steps)
+│  (261 steps)
 └─ 3 (stuck, leaf)
     #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
     span: 63
 
 
 ┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram
+│   #EndProgram ~> .K
 
 

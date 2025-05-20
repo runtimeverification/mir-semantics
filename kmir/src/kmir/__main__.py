@@ -69,7 +69,11 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
     kmir_kast, _ = parse_result
     apr_proof = kmir.apr_proof_from_kast(
-        str(opts.input_file.stem.replace('_', '-')), kmir_kast, start_symbol=opts.start_symbol, sort='KmirCell'
+        str(opts.input_file.stem.replace('_', '-')),
+        kmir_kast,
+        SMIRInfo.from_file(opts.input_file),
+        start_symbol=opts.start_symbol,
+        sort='KmirCell',
     )
     claim = apr_proof.as_claim()
 
@@ -110,7 +114,7 @@ def _kmir_view(opts: ViewOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     smir_info = None
     if opts.smir_info is not None:
-        smir_info = SMIRInfo(opts.smir_info)
+        smir_info = SMIRInfo.from_file(opts.smir_info)
     node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=False)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
@@ -121,7 +125,7 @@ def _kmir_show(opts: ShowOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     smir_info = None
     if opts.smir_info is not None:
-        smir_info = SMIRInfo(opts.smir_info)
+        smir_info = SMIRInfo.from_file(opts.smir_info)
     node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
     shower = APRProofShow(kmir, node_printer=node_printer)
     lines = shower.show(proof)
@@ -245,6 +249,7 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
+    prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
@@ -296,6 +301,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
                 save_smir=ns.save_smir,
+                smir=ns.smir,
                 start_symbol=ns.start_symbol,
             )
         case _:

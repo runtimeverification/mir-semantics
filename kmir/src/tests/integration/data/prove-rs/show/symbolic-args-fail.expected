@@ -1,0 +1,39 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (45 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool ARG_BOOL3:Bool
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+┃  │
+┃  │  (16 steps)
+┃  └─ 6 (stuck, leaf)
+┃      #applyUnOp ( unOpPtrMetadata , typedValue ( Reference ( 0 , place ( ... local: l
+┃      span: 59
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     ARG_BOOL3:Bool
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+   │
+   │  (66 steps)
+   └─ 7 (stuck, leaf)
+       #applyUnOp ( unOpPtrMetadata , typedValue ( Reference ( 0 , place ( ... local: l
+       span: 59
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+

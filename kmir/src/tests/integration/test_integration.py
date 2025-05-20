@@ -111,10 +111,10 @@ RIGID_TY_TESTS = [
 ]
 
 LOCAL_DECL_TESTS = [
-    (2, KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))), KSort('Local')),
+    (2, KApply('local', (KToken('2', KSort('Int')))), KSort('Local')),
     (
         {'StorageLive': 2},
-        KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('2', KSort('Int')))))),
+        KApply('StatementKind::StorageLive', (KApply('local', (KToken('2', KSort('Int')))))),
         KSort('StatementKind'),
     ),
     ('Not', KApply('Mutability::Not', ()), KSort('Mutability')),
@@ -215,7 +215,7 @@ TOKEN_TESTS = [
         KApply(
             'statement(_,_)_BODY_Statement_StatementKind_Span',
             (
-                KApply('StatementKind::StorageLive', (KApply('local(_)_BODY_Local_Int', (KToken('42', KSort('Int')))))),
+                KApply('StatementKind::StorageLive', (KApply('local', (KToken('42', KSort('Int')))))),
                 KApply('span', (KToken('1', KSort('Int')))),
             ),
         ),
@@ -340,7 +340,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.118.state', 118),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.119.state', 119),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
@@ -427,7 +427,7 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
 
 
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*.rs'))
+PROVING_FILES = list(PROVING_DIR.glob('*.*'))
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
@@ -435,6 +435,8 @@ PROVE_RS_SHOW_SPECS = [
     'interior-mut3-fail',
     'assert_eq_exp-fail',
     'bitwise-not-shift-fail',
+    'symbolic-args-fail',
+    'symbolic-structs-fail',
 ]
 
 
@@ -446,11 +448,24 @@ PROVE_RS_SHOW_SPECS = [
 def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+    is_smir = rs_file.suffix == '.json'
 
-    prove_rs_opts = ProveRSOpts(rs_file)
+    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
+
+    # read start symbol(s) from the first line (default: [main] otherwise)
+    start_sym_prefix = '// @kmir prove-rs:'
+    with open(rs_file) as f:
+        headline = f.readline().strip('\n')
+    if headline.startswith(start_sym_prefix):
+        start_symbols = headline.removeprefix(start_sym_prefix).split()
+    else:
+        start_symbols = ['main']
 
     if should_show:
-        # always run `main` when kmir show is tested
+        # only run a single start symbol when kmir show is tested
+        assert len(start_symbols) == 1
+        prove_rs_opts.start_symbol = start_symbols[0]
+
         apr_proof = kmir.prove_rs(prove_rs_opts)
 
         if not should_fail:
@@ -464,16 +479,6 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
         )
     else:
-        # read start symbol(s) from the first line (default: [main] otherwise)
-        start_sym_prefix = '// @kmir prove-rs:'
-        with open(rs_file) as f:
-            headline = f.readline().strip('\n')
-
-        if headline.startswith(start_sym_prefix):
-            start_symbols = headline.removeprefix(start_sym_prefix).split()
-        else:
-            start_symbols = ['main']
-
         for start_symbol in start_symbols:
             prove_rs_opts.start_symbol = start_symbol
             apr_proof = kmir.prove_rs(prove_rs_opts)

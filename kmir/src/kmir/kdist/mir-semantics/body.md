@@ -46,9 +46,9 @@ syntax MaybeOperand ::= someOperand(Operand) [group(mir-option)]
 
 syntax Operands ::= List {Operand, ""} [group(mir-list), symbol(Operands::append), terminator-symbol(Operands::empty)]
 
-syntax Local ::= local(Int)            [group(mir-int)]
-syntax MaybeLocal ::= someLocal(Local) [group(mir-option)]
-                    | "noLocal"        [group(mir-option)]
+syntax Local ::= local(Int)            [group(mir-int)   , symbol(local)]
+syntax MaybeLocal ::= someLocal(Local) [group(mir-option), symbol(someLocal)]
+                    | "noLocal"        [group(mir-option), symbol(noLocal)]
 
 syntax ProjectionElem ::=  "projectionElemDeref"                                                            [group(mir-enum),                                symbol(ProjectionElem::Deref)]
                         |  projectionElemField(FieldIdx, Ty)                                                [group(mir-enum),                                symbol(ProjectionElem::Field)]
@@ -60,9 +60,9 @@ syntax ProjectionElem ::=  "projectionElemDeref"                                
                         |  projectionElemSubtype(Ty)                                                        [group(mir-enum),                                symbol(ProjectionElem::Subtype)]
 
 syntax ProjectionElems ::= List {ProjectionElem, ""} [group(mir-list), symbol(ProjectionElems::append), terminator-symbol(ProjectionElems::empty)]
-syntax Place ::= place(local: Local, projection: ProjectionElems) [group(mir---local--projection)]
-syntax MaybePlace ::= somePlace(Place)                            [group(mir-option)]
-                    | "noPlace"                                   [group(mir-option)]
+syntax Place ::= place(local: Local, projection: ProjectionElems) [group(mir---local--projection), symbol(place)]
+syntax MaybePlace ::= somePlace(Place)                            [group(mir-option), symbol(somePlace)]
+                    | "noPlace"                                   [group(mir-option), symbol(noPlace)]
 
 syntax Branch ::= branch(MIRInt, BasicBlockIdx) [group(mir)]
 syntax Branches ::= List {Branch, ""} [group(mir-list), symbol(Branches::append), terminator-symbol(Branches::empty)]
