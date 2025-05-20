@@ -152,15 +152,15 @@ class ArgGenerator:
                 return bool_var(self._fresh_var('ARG_BOOL'))
 
             case EnumT(_, _, discriminants):
-                variantVar = self._fresh_var('ARG_VARIDX')
+                variant_var = self._fresh_var('ARG_VARIDX')
                 # constraints for variant index being in range
                 max_variant = max(discriminants.keys())
                 idx_range = [
-                    mlEqualsTrue(leInt(token(0), variantVar)),
-                    mlEqualsTrue(leInt(variantVar, token(max_variant))),
+                    mlEqualsTrue(leInt(token(0), variant_var)),
+                    mlEqualsTrue(leInt(variant_var, token(max_variant))),
                 ]
                 args = self._fresh_var('ENUM_ARGS')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (variantVar,)), args)), idx_range
+                return KApply('Value::Aggregate', (KApply('variantIdx', (variant_var,)), args)), idx_range
 
             case StructT(_, _, fields):
                 field_vars: list[KInner] = []
