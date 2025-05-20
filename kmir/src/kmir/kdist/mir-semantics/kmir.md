@@ -338,10 +338,9 @@ will be `129`.
 
   rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), TV) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, TV)
 
-  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), TV) ... </k> requires #switchUnMatch(MI, TV)
+  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), TV) ... </k> requires notBool #switchMatch(MI, TV)
 
   syntax Bool ::= #switchMatch   ( MIRInt , TypedValue ) [function, total]
-                | #switchUnMatch ( MIRInt , TypedValue ) [function, total]
 
   syntax Int ::= #evaluateAsInt(Evaluation) [function] // wraps thunks to appear in path conditions
 
@@ -349,13 +348,7 @@ will be `129`.
   rule #switchMatch(1, typedValue(BoolVal(true)        , _, _)) => true
   rule #switchMatch(I, typedValue(Integer(I2, WIDTH, _), _, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
   rule #switchMatch(I, typedValue(thunk(CMP), _, _))            => I ==Int #evaluateAsInt(CMP)
-  rule #switchMatch(_, _                                      ) => true [owise]
-
-  rule #switchUnMatch(1, typedValue(BoolVal(false)   , _, _)) => true
-  rule #switchUnMatch(0, typedValue(BoolVal(true)    , _, _)) => true
-  rule #switchUnMatch(I, typedValue(Integer(I2, _, _), _, _)) => I =/=Int I2
-  rule #switchUnMatch(I, typedValue(thunk(CMP), _, _))        => I =/=Int #evaluateAsInt(CMP)
-  rule #switchUnMatch(_, _                                  ) => true [owise]
+  rule #switchMatch(_, _                                      ) => false [owise]
 ```
 
 `Return` simply returns from a function call, using the information
