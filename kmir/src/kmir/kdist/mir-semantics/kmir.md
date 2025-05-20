@@ -334,6 +334,10 @@ will be `129`.
            #selectBlock(TARGETS, DISCR)
        </k>
 
+  // These rules preserve definedness because all the same subterms show up on each side except:
+  // - `branch(...)`, which is a constructor.
+  // - `#switchMatch(...)`, which is a total function, but can't be marked total because the LLVM backend complains.
+
   rule <k> #selectBlock(switchTargets(.Branches, BBIDX), _) => #execBlockIdx(BBIDX) ... </k>
 
   rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), TV) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, TV) [preserves-definedness]
