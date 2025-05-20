@@ -334,41 +334,21 @@ will be `129`.
            #selectBlock(TARGETS, DISCR)
        </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(Integer(I, WIDTH, _), _, _))
-         =>
-           #execBlockIdx(#selectBlock(bitRangeInt(I, 0, WIDTH), TARGETS))
-       ...
-       </k>
+  // These rules preserve definedness because all the same subterms show up on each side except:
+  // - `branch(...)`, which is a constructor.
+  // - `#switchMatch(...)`, which is a total function, but can't be marked total because the LLVM backend complains.
 
-  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(false), _, _))
-         =>
-           #execBlockIdx(#selectBlock(0, TARGETS))
-       ...
-       </k>
+  rule <k> #selectBlock(switchTargets(.Branches, BBIDX), _) => #execBlockIdx(BBIDX) ... </k>
 
-  rule <k> #selectBlock(TARGETS, typedValue(BoolVal(true), _, _))
-         =>
-           #execBlockIdx(#selectBlock(1, TARGETS))
-       ...
-       </k>
+  rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), TV) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, TV) [preserves-definedness]
 
-  syntax BasicBlockIdx ::= #selectBlock ( Int , SwitchTargets)              [function, total]
-                         | #selectBlockAux ( Int, Branches, BasicBlockIdx ) [function, total]
+  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), TV) ... </k> requires notBool #switchMatch(MI, TV) [preserves-definedness]
 
-  rule #selectBlock(I, switchTargets(BRANCHES, OTHERWISE)) => #selectBlockAux(I, BRANCHES, OTHERWISE)
+  syntax Bool ::= #switchMatch   ( MIRInt , TypedValue ) [function]
 
-  rule #selectBlockAux(I, branch( J       , IDX) _REST, _      ) => IDX
-    requires I ==Int J
-  rule #selectBlockAux(I, branch(mirInt(J), IDX) _REST, _      ) => IDX
-    requires I ==Int J
-
-  rule #selectBlockAux(I, branch( J       , _  ) REST , DEFAULT) => #selectBlockAux(I, REST, DEFAULT)
-    requires I =/=Int J
-  rule #selectBlockAux(I, branch(mirInt(J), _  ) REST , DEFAULT) => #selectBlockAux(I, REST, DEFAULT)
-    requires I =/=Int J
-
-  rule #selectBlockAux(_,                   .Branches , DEFAULT) => DEFAULT
-
+  rule #switchMatch(0, typedValue(BoolVal(B)           , _, _)) => notBool B
+  rule #switchMatch(1, typedValue(BoolVal(B)           , _, _)) => B
+  rule #switchMatch(I, typedValue(Integer(I2, WIDTH, _), _, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
 ```
 
 `Return` simply returns from a function call, using the information
