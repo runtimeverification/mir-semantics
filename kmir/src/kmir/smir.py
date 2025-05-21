@@ -84,6 +84,10 @@ class SMIRInfo:
             res[name] = fun_syms[sym]
         return res
 
+    @cached_property
+    def spans(self) -> dict[int, tuple[Path, int, int, int, int]]:
+        return {id: (p, sr, sc, er, ec) for id, [p, sr, sc, er, ec] in self._smir['spans']}
+
     @staticmethod
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']

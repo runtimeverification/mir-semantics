@@ -15,7 +15,7 @@ from pyk.proof.show import APRProofShow
 from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
 from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts
+from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.testing.fixtures import assert_or_update_show_output
 
@@ -479,9 +479,10 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
         else:
             assert apr_proof.failed
 
-        shower = APRProofShow(
-            kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, full_printer=False)
+        display_opts = ShowOpts(
+            rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
         )
+        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
         show_res = '\n'.join(shower.show(apr_proof))
         assert_or_update_show_output(
             show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
@@ -511,9 +512,10 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
-        shower = APRProofShow(
-            kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, full_printer=True)
+        display_opts = ShowOpts(
+            pinocchio_token_program.parent, apr_proof.id, full_printer=True, smir_info=None, omit_current_body=False
         )
+        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
         show_res = '\n'.join(shower.show(apr_proof))
         assert_or_update_show_output(
             show_res,
