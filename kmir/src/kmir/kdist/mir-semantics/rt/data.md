@@ -894,22 +894,20 @@ This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as t
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
-For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#compute`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#applyBinOp`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
-  syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
+  syntax Evaluation ::= #applyBinOp ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
 
-  rule <k> #compute(BOP, E1, E2, MUT) => typedValue(thunk(#compute(BOP, E1, E2, MUT)), TyUnknown, mutabilityNot) ... </k> [priority(190)]
+  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #applyBinOp(BINOP, OP1, OP2, false) ... </k>
 
-  rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
-
-  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #compute(BINOP, OP1, OP2, true)  ... </k>
+  rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #applyBinOp(BINOP, OP1, OP2, true)  ... </k>
 ```
 
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax KItem ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
+  syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
 
   rule <k> rvalueUnaryOp(UNOP, OP1) => #applyUnOp(UNOP, OP1) ... </k>
 ```
@@ -963,7 +961,7 @@ The arithmetic operations require operands of the same numeric type.
 
   // Checked operations return a pair of the truncated value and an overflow flag
   // signed numbers: must check for wrap-around (operation specific)
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, true), TY, _), //signed
           typedValue(Integer(ARG2, WIDTH, true), TY, _),
@@ -991,7 +989,7 @@ The arithmetic operations require operands of the same numeric type.
     [preserves-definedness]
 
   // unsigned numbers: simple overflow check using a bit mask
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, false), TY, _), // unsigned
           typedValue(Integer(ARG2, WIDTH, false), TY, _),
@@ -1020,7 +1018,7 @@ The arithmetic operations require operands of the same numeric type.
 
   // Unchecked operations signal undefined behaviour on overflow. The checks are the same as for the flags above.
 
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, true), TY, _), // signed
           typedValue(Integer(ARG2, WIDTH, true), TY, _),
@@ -1032,7 +1030,7 @@ The arithmetic operations require operands of the same numeric type.
     [preserves-definedness]
 
   // unsigned numbers: simple overflow check using a bit mask
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, false), TY, _), // unsigned
           typedValue(Integer(ARG2, WIDTH, false), TY, _),
@@ -1081,13 +1079,13 @@ All operations except `binOpCmp` return a `BoolVal`. The argument types must be 
   // * arguments must have the same type
   // * arguments must be numbers or Bool
 
-  rule #compute(OP, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #applyBinOp(OP, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
         typedValue(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
 
-  rule #compute(OP, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
+  rule #applyBinOp(OP, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
       =>
         typedValue(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
@@ -1107,11 +1105,11 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  rule #compute(binOpCmp, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #applyBinOp(binOpCmp, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
       =>
         typedValue(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
-  rule #compute(binOpCmp, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
+  rule #applyBinOp(binOpCmp, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
       =>
         typedValue(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 ```
@@ -1199,7 +1197,7 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
   rule onShift(binOpShlUnchecked, X, Y, WIDTH) => (X <<Int Y) modInt (1 <<Int WIDTH)
   rule onShift(binOpShrUnchecked, X, Y, WIDTH) => (X >>Int Y) modInt (1 <<Int WIDTH)
 
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, SIGNED), TY, _),
           typedValue(Integer(ARG2, WIDTH, SIGNED), TY, _),
@@ -1213,7 +1211,7 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
     requires isBitwise(BOP)
     [preserves-definedness]
 
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(BoolVal(ARG1), TY, _),
           typedValue(BoolVal(ARG2), TY, _),
@@ -1227,7 +1225,7 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
     requires isBitwise(BOP)
     [preserves-definedness]
 
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, false), TY, _),
           typedValue(Integer(ARG2, _, _), _, _),
@@ -1241,7 +1239,7 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
     requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
     [preserves-definedness]
 
-  rule #compute(
+  rule #applyBinOp(
           BOP,
           typedValue(Integer(ARG1, WIDTH, true), TY, _),
           typedValue(Integer(ARG2, _, _), _, _),

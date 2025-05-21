@@ -5,7 +5,7 @@
 │
 │  (137 steps)
 ├─ 3
-│   #expect ( typedValue ( thunk ( #compute ( binOpEq , typedValue ( thunk ( #comput
+│   #expect ( typedValue ( thunk ( #applyBinOp ( binOpEq , typedValue ( thunk ( #app
 │   function: main
 ┃
 ┃ (1 step)
