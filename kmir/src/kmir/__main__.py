@@ -119,8 +119,9 @@ def _kmir_view(opts: ViewOpts) -> None:
     printer = PrettyPrinter(kmir.definition)
     omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
     cterm_show = CTermShow(printer.print, omit_labels=omit_labels)
+    opts.full_printer = False
     node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
-    viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
+    viewer = APRProofViewer(proof, kmir, node_printer=node_printer, cterm_show=cterm_show)
     viewer.run()
 
 
