@@ -254,6 +254,24 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
 ```
 
+A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
+fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting
+the `variantIdx` of the `Aggregate` accordingly).
+This is done without consideration of the validity of the Downcast[^downcast].
+
+[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
+
+```k
+  rule <k> #readProjection(
+              typedValue(Aggregate(_VARIDX, ARGS), TY, MUT),
+              projectionElemDowncast(NEW_VARIDX) PROJS
+            )
+         =>
+           #readProjection(typedValue(Aggregate(NEW_VARIDX, ARGS), TY, MUT), PROJS)
+       ...
+       </k>
+```
+
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
 An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
 
@@ -519,6 +537,18 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Aggregate(_, ARGS), TY, MUT),
+              projectionElemDowncast(IDX) PROJS,
+              UPDATE,
+              CTXTS,
+              FORCE
+            ) =>
+            #projectedUpdate(DEST, typedValue(Aggregate(IDX, ARGS), TY, MUT), PROJS, UPDATE, CTXTS, FORCE)
+          ...
+          </k>
 
   rule <k> #projectedUpdate(
             _DEST,
