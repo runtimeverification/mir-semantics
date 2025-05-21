@@ -7,7 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
+from pyk.cterm.show import CTermShow
 from pyk.kast.outer import KFlatModule, KImport
+from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
@@ -115,7 +117,9 @@ def _kmir_view(opts: ViewOpts) -> None:
     smir_info = None
     if opts.smir_info is not None:
         smir_info = SMIRInfo.from_file(opts.smir_info)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=False)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, smir_info=smir_info, full_printer=False)
     viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
     viewer.run()
 
@@ -126,8 +130,10 @@ def _kmir_show(opts: ShowOpts) -> None:
     smir_info = None
     if opts.smir_info is not None:
         smir_info = SMIRInfo.from_file(opts.smir_info)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
-    shower = APRProofShow(kmir, node_printer=node_printer)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, smir_info=smir_info, full_printer=opts.full_printer)
+    shower = APRProofShow(kmir.definition, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))
 

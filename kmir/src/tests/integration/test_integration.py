@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from pyk.cterm.show import CTermShow
 from pyk.kast.inner import KApply, KSort, KToken
+from pyk.kast.pretty import PrettyPrinter
 from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
@@ -469,12 +471,17 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
 
         apr_proof = kmir.prove_rs(prove_rs_opts)
 
+        printer = PrettyPrinter(kmir.definition)
+        cterm_show = CTermShow(printer.print)
+
         if not should_fail:
             assert apr_proof.passed
         else:
             assert apr_proof.failed
 
-        shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=False))
+        shower = APRProofShow(
+            kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, full_printer=False)
+        )
         show_res = '\n'.join(shower.show(apr_proof))
         assert_or_update_show_output(
             show_res, PROVING_DIR / f'show/{rs_file.stem}.expected', update=update_expected_output
@@ -498,10 +505,15 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
     ]
     prove_rs_opts = ProveRSOpts(pinocchio_token_program, smir=True)
 
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
-        shower = APRProofShow(kmir, node_printer=KMIRAPRNodePrinter(kmir, apr_proof, full_printer=True))
+        shower = APRProofShow(
+            kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, full_printer=True)
+        )
         show_res = '\n'.join(shower.show(apr_proof))
         assert_or_update_show_output(
             show_res,
