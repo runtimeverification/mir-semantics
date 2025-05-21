@@ -50,7 +50,15 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 ```k
   syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => typedValue(thunk(EV), TyUnknown, mutabilityNot) ... </k> requires notBool isTypedValue(EV) [owise]
+  rule <k> EV:Evaluation => typedValue(thunk(EV), TyUnknown, mutabilityNot) ... </k> 
+    requires notBool isTypedValue(EV)
+     andBool notBool isThunk(EV)
+    [owise]
+
+  syntax Bool ::= isThunk ( Evaluation ) [function, total]
+
+  rule isThunk(typedValue(thunk(_), _, _)) => true
+  rule isThunk(  _                       ) => false [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
