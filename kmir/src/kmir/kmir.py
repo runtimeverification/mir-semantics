@@ -166,6 +166,8 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = self.apr_proof_from_kast(
                 label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
+            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
+                (apr_proof.proof_dir / apr_proof.id / 'smir.json').write_text(json.dumps(smir_json))
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:
@@ -198,7 +200,15 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
     def __init__(self, cterm_show: CTermShow, proof: APRProof, opts: DisplayOpts) -> None:
         KMIRNodePrinter.__init__(self, cterm_show, full_printer=opts.full_printer)
         APRProofNodePrinter.__init__(self, proof, cterm_show, full_printer=opts.full_printer)
-        self.smir_info = SMIRInfo.from_file(opts.smir_info) if opts.smir_info else None
+        self.smir_info = None
+        if opts.smir_info:
+            self.smir_info = SMIRInfo.from_file(opts.smir_info)
+        elif (
+            proof.proof_dir is not None
+            and (proof.proof_dir / proof.id).is_dir()
+            and (proof.proof_dir / proof.id / 'smir.json').is_file()
+        ):
+            self.smir_info = SMIRInfo.from_file(proof.proof_dir / proof.id / 'smir.json')
 
     def _span(self, node: KCFG.Node) -> str | None:
         curr_span: int | None = None
