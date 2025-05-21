@@ -132,6 +132,7 @@ class ProveRawOpts(ProveOpts):
 class DisplayOpts(ProofOpts):
     full_printer: bool
     smir_info: Path | None
+    omit_current_body: bool
 
     def __init__(
         self,
@@ -139,11 +140,13 @@ class DisplayOpts(ProofOpts):
         id: str,
         full_printer: bool = True,
         smir_info: Path | None = None,
+        omit_current_body: bool = True,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.id = id
         self.full_printer = full_printer
         self.smir_info = smir_info
+        self.omit_current_body = omit_current_body
 
 
 @dataclass

@@ -7,7 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
+from pyk.cterm.show import CTermShow
 from pyk.kast.outer import KFlatModule, KImport
+from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
@@ -112,22 +114,23 @@ def _kmir_prove_raw(opts: ProveRawOpts) -> None:
 def _kmir_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    smir_info = None
-    if opts.smir_info is not None:
-        smir_info = SMIRInfo.from_file(opts.smir_info)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=False)
-    viewer = APRProofViewer(proof, kmir, node_printer=node_printer)
+    printer = PrettyPrinter(kmir.definition)
+    omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
+    cterm_show = CTermShow(printer.print, omit_labels=omit_labels)
+    opts.full_printer = False
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
+    viewer = APRProofViewer(proof, kmir, node_printer=node_printer, cterm_show=cterm_show)
     viewer.run()
 
 
 def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    smir_info = None
-    if opts.smir_info is not None:
-        smir_info = SMIRInfo.from_file(opts.smir_info)
-    node_printer = KMIRAPRNodePrinter(kmir, proof, smir_info=smir_info, full_printer=opts.full_printer)
-    shower = APRProofShow(kmir, node_printer=node_printer)
+    printer = PrettyPrinter(kmir.definition)
+    omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
+    cterm_show = CTermShow(printer.print, omit_labels=omit_labels)
+    node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
+    shower = APRProofShow(kmir.definition, node_printer=node_printer)
     lines = shower.show(proof)
     print('\n'.join(lines))
 
@@ -226,6 +229,13 @@ def _arg_parser() -> ArgumentParser:
         default=None,
         help='Path to SMIR JSON file to improve debug messaging.',
     )
+    display_args.add_argument(
+        '--no-omit-current-body',
+        dest='omit_current_body',
+        default=True,
+        action='store_false',
+        help='Display the <currentBody> cell completely.',
+    )
 
     command_parser.add_parser(
         'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -285,13 +295,25 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'view':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ViewOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
+            return ViewOpts(
+                proof_dir,
+                ns.id,
+                full_printer=ns.full_printer,
+                smir_info=ns.smir_info,
+                omit_current_body=ns.omit_current_body,
+            )
         case 'prune':
             proof_dir = Path(ns.proof_dir).resolve()
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
             proof_dir = Path(ns.proof_dir).resolve()
-            return ShowOpts(proof_dir, ns.id, full_printer=ns.full_printer, smir_info=ns.smir_info)
+            return ShowOpts(
+                proof_dir,
+                ns.id,
+                full_printer=ns.full_printer,
+                smir_info=ns.smir_info,
+                omit_current_body=ns.omit_current_body,
+            )
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file).resolve(),

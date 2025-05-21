@@ -31,10 +31,11 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
 
+    from pyk.cterm.show import CTermShow
     from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
-    from .options import ProveRSOpts
+    from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -165,6 +166,8 @@ class KMIR(KProve, KRun, KParse):
             apr_proof = self.apr_proof_from_kast(
                 label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
+            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
+                (apr_proof.proof_dir / apr_proof.id / 'smir.json').write_text(json.dumps(smir_json))
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:
@@ -187,24 +190,27 @@ class KMIRSemantics(DefaultSemantics):
 
 
 class KMIRNodePrinter(NodePrinter):
-    kmir: KMIR
-
-    def __init__(self, kmir: KMIR, full_printer: bool = False) -> None:
-        NodePrinter.__init__(self, kmir, full_printer=full_printer)
-        self.kmir = kmir
+    def __init__(self, cterm_show: CTermShow, full_printer: bool = False) -> None:
+        NodePrinter.__init__(self, cterm_show, full_printer=full_printer)
 
 
 class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
     smir_info: SMIRInfo | None
 
-    def __init__(
-        self, kmir: KMIR, proof: APRProof, smir_info: SMIRInfo | None = None, full_printer: bool = False
-    ) -> None:
-        KMIRNodePrinter.__init__(self, kmir, full_printer=full_printer)
-        APRProofNodePrinter.__init__(self, proof, kmir, full_printer=full_printer)
-        self.smir_info = smir_info
+    def __init__(self, cterm_show: CTermShow, proof: APRProof, opts: DisplayOpts) -> None:
+        KMIRNodePrinter.__init__(self, cterm_show, full_printer=opts.full_printer)
+        APRProofNodePrinter.__init__(self, proof, cterm_show, full_printer=opts.full_printer)
+        self.smir_info = None
+        if opts.smir_info:
+            self.smir_info = SMIRInfo.from_file(opts.smir_info)
+        elif (
+            proof.proof_dir is not None
+            and (proof.proof_dir / proof.id).is_dir()
+            and (proof.proof_dir / proof.id / 'smir.json').is_file()
+        ):
+            self.smir_info = SMIRInfo.from_file(proof.proof_dir / proof.id / 'smir.json')
 
-    def _span(self, node: KCFG.Node) -> int | None:
+    def _span(self, node: KCFG.Node) -> str | None:
         curr_span: int | None = None
         span_worklist: list[KInner] = [node.cterm.cell('K_CELL')]
         while span_worklist:
@@ -220,7 +226,12 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
                 span_worklist = list(next_item.args) + span_worklist
             if type(next_item) is KSequence:
                 span_worklist = list(next_item.items) + span_worklist
-        return curr_span
+        if self.smir_info is not None and curr_span is not None and curr_span in self.smir_info.spans:
+            path, start_row, _start_column, _end_row, _end_column = self.smir_info.spans[curr_span]
+            return f'{str(path)[-30:]}:{start_row}'
+        if curr_span is not None:
+            return f'{curr_span}'
+        return None
 
     def _function_name(self, node: KCFG.Node) -> str | None:
         curr_func_ty_kast = node.cterm.cell('CURRENTFUNC_CELL')
@@ -246,7 +257,7 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
 
     def print_node(self, kcfg: KCFG, node: KCFG.Node) -> list[str]:
         ret_strs = super().print_node(kcfg, node)
-        ret_strs.append(self.kmir.pretty_print(node.cterm.cell('K_CELL'))[0:80])
+        ret_strs.append(self.cterm_show._printer(node.cterm.cell('K_CELL'))[0:80])
         curr_func = self._function_name(node)
         if curr_func is not None:
             ret_strs.append(f'function: {curr_func}')
