@@ -547,6 +547,18 @@ The solution is to use rewrite operations in a downward pass through the project
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Aggregate(_, ARGS), TY, MUT),
+              projectionElemDowncast(IDX) PROJS,
+              UPDATE,
+              CTXTS,
+              FORCE
+            ) =>
+            #projectedUpdate(DEST, typedValue(Aggregate(IDX, ARGS), TY, MUT), PROJS, UPDATE, CTXTS, FORCE)
+          ...
+          </k>
+
+  rule <k> #projectedUpdate(
             _DEST,
             typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
