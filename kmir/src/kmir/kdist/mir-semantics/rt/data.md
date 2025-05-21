@@ -903,7 +903,7 @@ For binary operations generally, both arguments have to be read from the provide
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #applyBinOp(BINOP, OP1, OP2, true)  ... </k>
 ```
 
-There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand.
 
 ```k
   syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
@@ -1288,9 +1288,41 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-`binOpOffset`
+The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
-`unOpPtrMetadata`
+```k
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _)) => #arrayLength({LOCALS[I]}:>TypedValue, PROJECTIONS)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // LOCALS indexing checked
+
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _)) => #arrayLength(#localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS)
+        ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+
+  syntax Evaluation ::= #arrayLength( TypedValue , ProjectionElems )
+
+  rule <k> #arrayLength(typedValue(Range(LIST), _, _), .ProjectionElems) => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
+
+  syntax KItem ::= #arrayLength()
+
+  rule <k> #arrayLength(TV, PROJS) => #readProjection(TV, PROJS) ~> #arrayLength() ... </k> [owise]
+
+  rule <k> TV:TypedValue ~> #arrayLength() => #arrayLength(TV, .ProjectionElems) ... </k>
+```
+
+
+
+`binOpOffset`
 
 ```k
 endmodule
