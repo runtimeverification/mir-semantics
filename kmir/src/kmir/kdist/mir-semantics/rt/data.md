@@ -899,8 +899,6 @@ For binary operations generally, both arguments have to be read from the provide
 ```k
   syntax Evaluation ::= #compute ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
 
-  rule <k> #compute(BOP, E1, E2, MUT) => typedValue(thunk(#compute(BOP, E1, E2, MUT)), TyUnknown, mutabilityNot) ... </k> [priority(190)]
-
   rule <k> rvalueBinaryOp(BINOP, OP1, OP2)        => #compute(BINOP, OP1, OP2, false) ... </k>
 
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #compute(BINOP, OP1, OP2, true)  ... </k>
