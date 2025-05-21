@@ -880,7 +880,6 @@ The `Value` sort above operates at a higher level than the bytes representation 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
-  rule #decodeConstant(_, _) => Any [owise]
 ```
 
 ## Primitive operations on numeric data
