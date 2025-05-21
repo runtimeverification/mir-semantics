@@ -504,7 +504,7 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
     start_symbols = [
         'processor::transfer::process_transfer',
     ]
-    prove_rs_opts = ProveRSOpts(pinocchio_token_program, smir=True)
+    prove_rs_opts = ProveRSOpts(pinocchio_token_program, max_iterations=7, smir=True)
 
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)

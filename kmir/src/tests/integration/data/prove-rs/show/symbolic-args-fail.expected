@@ -15,10 +15,38 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (16 steps)
-┃  └─ 6 (stuck, leaf)
-┃      #applyUnOp ( unOpPtrMetadata , typedValue ( Reference ( 0 , place ( ... local: l
-┃      span: 59
+┃  │  (37 steps)
+┃  ├─ 6
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃  ┃
+┃  ┃ (1 step)
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 8
+┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+┃  ┃  │
+┃  ┃  │  (4 steps)
+┃  ┃  ├─ 14 (terminal)
+┃  ┃  │   #EndProgram ~> .K
+┃  ┃  │
+┃  ┃  ┊  constraint: true
+┃  ┃  ┊  subst: ...
+┃  ┃  └─ 2 (leaf, target, terminal)
+┃  ┃      #EndProgram ~> .K
+┃  ┃
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 9
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  ┃  │
+┃  ┃  │  (85 steps)
+┃  ┃  └─ 15 (vacuous, leaf)
+┃  ┃      #expect ( typedValue ( BoolVal ( 0 <Int size ( ARG_ARRAY7:List ) ) , ty ( 28 ) ,
+┃  ┃
+┃  ┗━━┓
+┃     │
+┃     └─ 10 (stuck, leaf)
+┃         #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
@@ -27,13 +55,38 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (66 steps)
-   └─ 7 (stuck, leaf)
-       #applyUnOp ( unOpPtrMetadata , typedValue ( Reference ( 0 , place ( ... local: l
-       span: 59
+   │  (87 steps)
+   ├─ 7
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+   ┃
+   ┃ (1 step)
+   ┣━━┓
+   ┃  │
+   ┃  ├─ 11
+   ┃  │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+   ┃  │
+   ┃  │  (4 steps)
+   ┃  ├─ 16 (terminal)
+   ┃  │   #EndProgram ~> .K
+   ┃  │
+   ┃  ┊  constraint: true
+   ┃  ┊  subst: ...
+   ┃  └─ 2 (leaf, target, terminal)
+   ┃      #EndProgram ~> .K
+   ┃
+   ┣━━┓
+   ┃  │
+   ┃  ├─ 12
+   ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+   ┃  │
+   ┃  │  (85 steps)
+   ┃  └─ 17 (vacuous, leaf)
+   ┃      #expect ( typedValue ( BoolVal ( 0 <Int size ( ARG_ARRAY7:List ) ) , ty ( 28 ) ,
+   ┃
+   ┗━━┓
+      │
+      └─ 13 (stuck, leaf)
+          #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 
