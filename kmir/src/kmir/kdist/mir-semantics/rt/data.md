@@ -909,7 +909,7 @@ For binary operations generally, both arguments have to be read from the provide
 There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
 
 ```k
-  syntax KItem ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
+  syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
 
   rule <k> rvalueUnaryOp(UNOP, OP1) => #applyUnOp(UNOP, OP1) ... </k>
 ```
