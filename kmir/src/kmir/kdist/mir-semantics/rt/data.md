@@ -273,22 +273,21 @@ An important prerequisite of this rule is that when passing references to a call
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
-     andBool isTypedValue(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME))
     [preserves-definedness] // valid list indexing checked
 
-    // TODO case of MovedLocal and NewLocal
+    // MovedLocal and NewLocal get stuck below
 
-    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+    syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
       requires 0 <=Int I
        andBool I <Int size(LOCALS)
-       andBool isTypedLocal(LOCALS[I])
+       andBool isTypedValue(LOCALS[I])
       [preserves-definedness] // valid list indexing checked
 
-  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
-                      | #decrementRef ( TypedLocal )  [function, total]
-                      | #adjustRef (TypedLocal, Int ) [function, total]
+  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
+                      | #decrementRef ( TypedValue )  [function, total]
+                      | #adjustRef (TypedValue, Int ) [function, total]
 
   rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
     => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
