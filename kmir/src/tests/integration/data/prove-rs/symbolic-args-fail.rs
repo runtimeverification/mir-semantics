@@ -1,5 +1,3 @@
-// @kmir prove-rs: eats_all_args
-
 #[allow(dead_code)]
 struct MyStruct<'a>{ field: &'a MyEnum}
 

@@ -431,6 +431,11 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
 
 PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVING_FILES = list(PROVING_DIR.glob('*.*'))
+PROVE_RS_START_SYMBOLS = {
+    'symbolic-args-fail': ['eats_all_args'],
+    'symbolic-structs-fail': ['eats_structs_args'],
+    'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
+}
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
@@ -455,14 +460,9 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
 
     prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
 
-    # read start symbol(s) from the first line (default: [main] otherwise)
-    start_sym_prefix = '// @kmir prove-rs:'
-    with open(rs_file) as f:
-        headline = f.readline().strip('\n')
-    if headline.startswith(start_sym_prefix):
-        start_symbols = headline.removeprefix(start_sym_prefix).split()
-    else:
-        start_symbols = ['main']
+    start_symbols = ['main']
+    if rs_file.stem in PROVE_RS_START_SYMBOLS:
+        start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
 
     if should_show:
         # only run a single start symbol when kmir show is tested
