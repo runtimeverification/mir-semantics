@@ -114,8 +114,6 @@ def _kmir_prove_raw(opts: ProveRawOpts) -> None:
 def _kmir_view(opts: ViewOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    if not opts.smir_info and proof.proof_dir is not None and (proof.proof_dir / proof.id / 'smir.json').is_file():
-        opts.smir_info = proof.proof_dir / proof.id / 'smir.json'
     printer = PrettyPrinter(kmir.definition)
     omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
     cterm_show = CTermShow(printer.print, omit_labels=omit_labels)
