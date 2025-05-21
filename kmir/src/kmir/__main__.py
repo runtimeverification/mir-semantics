@@ -37,7 +37,7 @@ def _kmir_run(opts: RunOpts) -> None:
 
     smir_file: Path
     if opts.file:
-        smir_file = Path(opts.file).resolve()
+        smir_file = Path(opts.file)
     else:
         cargo = CargoProject(Path.cwd())
         target = opts.bin if opts.bin else cargo.default_target
@@ -278,13 +278,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 haskell_backend=ns.haskell_backend,
             )
         case 'gen-spec':
-            return GenSpecOpts(
-                input_file=Path(ns.input_file).resolve(), output_file=ns.output_file, start_symbol=ns.start_symbol
-            )
+            return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
         case 'prove':
-            proof_dir = Path(ns.proof_dir).resolve()
+            proof_dir = Path(ns.proof_dir)
             return ProveRawOpts(
-                spec_file=Path(ns.input_file).resolve(),
+                spec_file=Path(ns.input_file),
                 proof_dir=ns.proof_dir,
                 include_labels=ns.include_labels,
                 exclude_labels=ns.exclude_labels,
@@ -294,7 +292,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_iterations=ns.max_iterations,
             )
         case 'view':
-            proof_dir = Path(ns.proof_dir).resolve()
+            proof_dir = Path(ns.proof_dir)
             return ViewOpts(
                 proof_dir,
                 ns.id,
@@ -303,10 +301,10 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 omit_current_body=ns.omit_current_body,
             )
         case 'prune':
-            proof_dir = Path(ns.proof_dir).resolve()
+            proof_dir = Path(ns.proof_dir)
             return PruneOpts(proof_dir, ns.id, ns.node_id)
         case 'show':
-            proof_dir = Path(ns.proof_dir).resolve()
+            proof_dir = Path(ns.proof_dir)
             return ShowOpts(
                 proof_dir,
                 ns.id,
@@ -316,7 +314,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'prove-rs':
             return ProveRSOpts(
-                rs_file=Path(ns.rs_file).resolve(),
+                rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
