@@ -880,6 +880,14 @@ The `Value` sort above operates at a higher level than the bytes representation 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Float decoding: not supported natively in K
 
+  // unimplemented cases stored as thunks
+  syntax Evaluation ::= Undecoded ( Bytes, TypeInfo )
+
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), INFO) => thunk(Undecoded(BYTES, INFO)) [owise]
+
+  // a rule for zero-sized constants for struct types without fields
+  rule #decodeConstant(constantKindZeroSized, typeInfoStructType(_, _)) => Aggregate(variantIdx(0), .List)
+
 ```
 
 ## Primitive operations on numeric data
