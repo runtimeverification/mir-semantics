@@ -501,7 +501,7 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
         display_opts = ShowOpts(
-            pinocchio_token_program.parent, apr_proof.id, full_printer=True, smir_info=None, omit_current_body=False
+            pinocchio_token_program.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
         )
         shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
         show_res = '\n'.join(shower.show(apr_proof))
