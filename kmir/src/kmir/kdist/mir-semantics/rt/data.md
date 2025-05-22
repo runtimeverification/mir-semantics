@@ -83,46 +83,6 @@ Constant operands are simply decoded according to their type.
     [preserves-definedness] // valid Map lookup checked
 ```
 
-The code which copies/moves function arguments into the locals of a stack frame works
-in a similar way, but accesses the locals of the _caller_ instead of the locals of the
-current function.
-
-Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
-local value cannot be read, though, and the value should be initialised.
-
-```k
-  rule <k> operandCopy(place(local(I), .ProjectionElems))
-        =>
-           LOCALS[I]
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-    // error cases (NewLocal, Moved) get stuck
-```
-
-Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
-further access. Apart from that, the same caveats apply as for operands that are _copied_.
-
-```k
-  rule <k> operandMove(place(local(I), .ProjectionElems))
-        =>
-           LOCALS[I]
-        ...
-       </k>
-       <locals> LOCALS => LOCALS[I <- Moved]</locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-    // error cases (NewLocal, Moved) get stuck
-```
-
 #### Reading places with projections
 
 Reading an `Operand` above is only implemented for reading a `Local`, without any projecting modifications.
@@ -136,9 +96,7 @@ A projection can only be applied to an initialised value, so this operation requ
         ...
        </k>
        <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
@@ -181,9 +139,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
         ...
        </k>
        <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
