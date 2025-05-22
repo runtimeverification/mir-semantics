@@ -149,7 +149,7 @@ The `ProjectionElems` list contains a sequence of projections which is applied (
   syntax KItem ::= #readProjection ( Bool )
 
   rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjection(Moved, true) ~> VAL) ... </k>
 ```
 
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
@@ -245,12 +245,12 @@ Write operations to places that include (a chain of) projections are handled by 
 
 ```k
   syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
-                 | #writeProjectedUpdate ( TypedLocal , Bool )
+                 | #writeProjection ( TypedLocal , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
            #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
-        ~> #writeProjectedUpdate(VAL, false)
+        ~> #writeProjection(VAL, false)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -425,14 +425,14 @@ The solution is to use rewrite operations in a downward pass through the project
     [preserves-definedness]
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjectedUpdate(NEW, false)
+        ~> #writeProjection(NEW, false)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
            ...
        </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjectedUpdate(NEW, true)
+        ~> #writeProjection(NEW, true)
         => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
            ...
        </k>
@@ -448,7 +448,7 @@ The solution is to use rewrite operations in a downward pass through the project
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjectedUpdate(NEW, _)
+        ~> #writeProjection(NEW, _)
         => .K
         ...
        </k>
