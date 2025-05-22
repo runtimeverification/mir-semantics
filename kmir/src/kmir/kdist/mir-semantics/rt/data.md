@@ -131,7 +131,7 @@ A projection can only be applied to an initialised value, so this operation requ
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ...
        </k>
@@ -148,8 +148,8 @@ The `ProjectionElems` list contains a sequence of projections which is applied (
 ```k
   syntax KItem ::= #readProjection ( Bool )
 
-  rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
 ```
 
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
@@ -170,13 +170,13 @@ An important prerequisite of this rule is that when passing references to a call
 
 #### _Moving_ Operands Under Projections
 
-When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read. The `#projectedUpdate` function for writing projected values is used (defined below).
-In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written. The `#projectedUpdate` operation therefore carries a `force` flag to override the mutability check.
+When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read. The `#traverseProjection` function for writing projected values is used (defined below).
+In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written. The `#traverseProjection` operation therefore carries a `force` flag to override the mutability check.
 
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
-        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
         ~> #readProjection(true)
         ...
        </k>
@@ -241,15 +241,15 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
 
 ### Writing Data to Places With Projections
 
-Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
+Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
 
 ```k
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, Contexts )
+  syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
                  | #writeProjectedUpdate ( TypedLocal , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
          =>
-           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
+           #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
         ~> #writeProjectedUpdate(VAL, false)
        ...
        </k>
@@ -289,13 +289,13 @@ The solution is to use rewrite operations in a downward pass through the project
       => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
               DEST,
               typedValue(Aggregate(IDX, ARGS), TY, _MUT),
               projectionElemField(fieldIdx(I), _) PROJS,
               CTXTS
             ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, CtxField(TY, IDX, ARGS, I) CTXTS)
+            #traverseProjection(DEST, {ARGS[I]}:>TypedLocal, PROJS, CtxField(TY, IDX, ARGS, I) CTXTS)
           ...
           </k>
     requires 0 <=Int I
@@ -303,14 +303,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedLocal(ARGS[I])
      [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
               DEST,
               typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemIndex(local(LOCAL)) PROJS,
               CTXTS
            )
           =>
-            #projectedUpdate(
+            #traverseProjection(
               DEST,
               {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
               PROJS,
@@ -327,14 +327,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
               DEST,
               typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
               CTXTS
            )
           =>
-            #projectedUpdate(
+            #traverseProjection(
               DEST,
               {ELEMENTS[OFFSET]}:>TypedValue,
               PROJS,
@@ -347,14 +347,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedValue(ELEMENTS[OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
               DEST,
               typedValue(Range(ELEMENTS), TY, _MUT),
               projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
               CTXTS
            )
           =>
-            #projectedUpdate(
+            #traverseProjection(
               DEST,
               {ELEMENTS[OFFSET]}:>TypedValue,
               PROJS,
@@ -368,13 +368,13 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
              DEST,
              typedValue(Aggregate(_, ARGS), TY, MUT),
              projectionElemDowncast(IDX) PROJS,
              CTXTS
            )
-        => #projectedUpdate(
+        => #traverseProjection(
              DEST,
              typedValue(Aggregate(IDX, ARGS), TY, MUT),
              PROJS,
@@ -383,13 +383,13 @@ The solution is to use rewrite operations in a downward pass through the project
            ...
        </k>
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
              _DEST,
              typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #projectedUpdate(
+        => #traverseProjection(
              toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
@@ -403,14 +403,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
 
-  rule <k> #projectedUpdate(
+  rule <k> #traverseProjection(
             _DEST,
             typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
             projectionElemDeref PROJS,
             _CTXTS
             )
          =>
-          #projectedUpdate(
+          #traverseProjection(
               toLocal(I),
               {LOCALS[I]}:>TypedLocal,
               appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
@@ -424,14 +424,14 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness]
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjectedUpdate(NEW, false)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
            ...
        </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjectedUpdate(NEW, true)
         => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
            ...
@@ -447,7 +447,7 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjectedUpdate(NEW, _)
         => .K
         ...
@@ -1159,7 +1159,7 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
 
 ```k
   rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _))
-        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
         ...
@@ -1172,7 +1172,7 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
     [preserves-definedness] // LOCALS indexing checked
 
   rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _))
-        => #projectedUpdate(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
+        => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
         ...
