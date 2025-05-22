@@ -226,6 +226,24 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
 ```
 
+A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
+fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting
+the `variantIdx` of the `Aggregate` accordingly).
+This is done without consideration of the validity of the Downcast[^downcast].
+
+[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
+
+```k
+  rule <k> #readProjection(
+              typedValue(Aggregate(_VARIDX, ARGS), TY, MUT),
+              projectionElemDowncast(NEW_VARIDX) PROJS
+            )
+         =>
+           #readProjection(typedValue(Aggregate(NEW_VARIDX, ARGS), TY, MUT), PROJS)
+       ...
+       </k>
+```
+
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
 
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
@@ -252,24 +270,6 @@ In the simplest case, the reference refers to a local in the same stack frame (h
   rule appendP(.ProjectionElems, TAIL) => TAIL
   rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
 
-```
-
-A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
-fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting
-the `variantIdx` of the `Aggregate` accordingly).
-This is done without consideration of the validity of the Downcast[^downcast].
-
-[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
-
-```k
-  rule <k> #readProjection(
-              typedValue(Aggregate(_VARIDX, ARGS), TY, MUT),
-              projectionElemDowncast(NEW_VARIDX) PROJS
-            )
-         =>
-           #readProjection(typedValue(Aggregate(NEW_VARIDX, ARGS), TY, MUT), PROJS)
-       ...
-       </k>
 ```
 
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
