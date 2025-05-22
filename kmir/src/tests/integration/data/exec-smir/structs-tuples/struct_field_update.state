@@ -28,7 +28,7 @@
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
       ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Any , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( typedValue ( thunk ( Undecoded ( b"33333sE@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) ) , ty ( 27 ) , mutabilityMut ) ) ) , ty ( 28 ) , mutabilityMut ) )
       ListItem ( Moved )

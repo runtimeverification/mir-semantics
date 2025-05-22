@@ -5,7 +5,7 @@
 │
 │  (89 steps)
 └─ 3 (stuck, leaf)
-    #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
+    #readProjection ( typedValue ( thunk ( Undecoded ( b"\x00\x00\x00\x00\x00\x00\x0
     function: main
     span: 101
 
