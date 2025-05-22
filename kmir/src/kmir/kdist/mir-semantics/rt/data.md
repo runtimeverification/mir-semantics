@@ -131,8 +131,8 @@ A projection can only be applied to an initialised value, so this operation requ
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        =>
-           #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS)
+        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
         ...
        </k>
        <locals> LOCALS </locals>
@@ -143,12 +143,15 @@ A projection can only be applied to an initialised value, so this operation requ
     [preserves-definedness] // valid list indexing checked
 
   syntax KItem ::= #readProjection ( TypedValue , ProjectionElems )
+                 | #readProjection ( Bool )
 ```
 
 The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
 
 ```k
   rule <k> #readProjection(VAL, .ProjectionElems) => VAL ... </k>
+  rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
 ```
 
 A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values. The field is numbered from zero (in source order), and the field type is provided (not checked here).
@@ -321,10 +324,9 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 
 ```k
-  rule <k> operandMove(place(local(I) #as LOCAL, PROJECTIONS))
-        => // read first, then write moved marker (use type from before)
-           #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS) ~>
-           #markMoved({LOCALS[I]}:>TypedLocal, LOCAL, PROJECTIONS)
+  rule <k> operandMove(place(local(I), PROJECTIONS))
+        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(true)
         ...
        </k>
        <locals> LOCALS </locals>
