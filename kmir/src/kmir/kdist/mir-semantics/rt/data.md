@@ -315,6 +315,44 @@ An important prerequisite of this rule is that when passing references to a call
   rule #decrementRef(TL) => #adjustRef(TL, -1)
 ```
 
+`Deref` works on `PtrLocal`s (raw pointers to local values) in the same way as for 
+`Reference`s, as long as they don't carry an _offset_ from the original location.
+
+```k
+  rule <k> #readProjection(
+              typedValue(PtrLocal(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _, address(_, _, 0)), _, _),
+              projectionElemDeref PROJS:ProjectionElems
+            )
+         =>
+           #readProjection({LOCALS[I]}:>TypedValue, appendP(PLACEPROJS, PROJS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  rule <k> #readProjection(
+              typedValue(PtrLocal(FRAME, place(LOCAL:Local, PLACEPROJS), _, address(_, _, 0)), _, _),
+              projectionElemDeref PROJS
+            )
+         =>
+           #readProjection(
+              {#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME)}:>TypedValue,
+              appendP(PLACEPROJS, PROJS)
+            )
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int FRAME
+     andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+    [preserves-definedness] // valid list indexing checked
+
+  // Moved and NewLocal get stuck
+```
+
 #### _Moving_ Operands Under Projections
 
 When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read. The `#projectedUpdate` function for writing projected values is used (defined below).
@@ -600,6 +638,28 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool I <Int size(LOCALS)
     [preserves-definedness]
 
+  rule <k> #projectedUpdate(   _DEST              , typedValue(PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, address(_, _, 0)), _, _), projectionElemDeref PROJS, UPDATE, _CTXTS   , FORCE)
+        => #projectedUpdate(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET)                 , appendP(PLACEPROJ, PROJS), UPDATE, .Contexts, FORCE)
+             // NOTE: apply reference projections first, then rest; previous contexts obsolete
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #projectedUpdate(  _DEST    , typedValue(PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, address(_, _, 0)), _, _), projectionElemDeref PROJS, UPDATE,  _CTXTS  , FORCE)
+        => #projectedUpdate( toLocal(I), {LOCALS[I]}:>TypedLocal                                                               , appendP(PLACEPROJ, PROJS), UPDATE, .Contexts, FORCE )
+             // NOTE: apply reference projections first, then rest; previous contexts obsolete
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness]
+
   rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
            ...
@@ -843,8 +903,47 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
+```
 
-// AddressOf: not implemented yet
+The `RValue::AddressOf` operation is very similar to creating a reference, since it also
+refers to a given _place_. However, the raw pointer obtained by `AddressOf` can be subject
+to casts and pointer arithmetic using `BinOp::Offset`.
+
+```k
+  rule <k> rvalueAddressOf(MUT, PLACE)
+         =>
+           typedValue(PtrLocal(0, PLACE, MUT, address(0, 0, 0)), TyUnknown, MUT)
+           // we should use #alignOf to emulate the address
+       ...
+       </k>
+```
+
+In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
+turning a borrowed value into a raw pointer. To shorten out chains of Deref and AddressOf/Reference,
+a special rule for this case is applied with higher priority.
+
+```k
+  rule <k> rvalueAddressOf(MUT, place(local(I), projectionElemDeref .ProjectionElems))
+         =>
+           typedValue(refToPtrLocal({LOCALS[I]}:>TypedValue), TyUnknown, MUT)
+           // we should use #alignOf to emulate the address
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool isRef({LOCALS[I]}:>TypedValue)
+    [priority(40), preserves-definedness] // valid indexing checked, toPtrLocal can convert the reference
+
+  syntax Bool ::= isRef ( TypedValue ) [function, total]
+  // -----------------------------------------------------
+  rule isRef(typedValue(Reference(_, _, _), _, _)) => true
+  rule isRef(           _OTHER                   ) => false [owise]
+
+  syntax Value ::= refToPtrLocal ( TypedValue ) [function]
+
+  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, MUT), _, _)) => PtrLocal(OFFSET, PLACE, MUT, address(0, 0, 0))
 ```
 
 ## Type casts
