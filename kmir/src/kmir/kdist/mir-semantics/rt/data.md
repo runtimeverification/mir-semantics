@@ -1352,7 +1352,8 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
 
   syntax KItem ::= #arrayLength()
 
-  rule <k> #arrayLength(TV, PROJS) => #readProjection(TV, PROJS) ~> #arrayLength() ... </k> [owise]
+  rule <k> #arrayLength(TV, PROJS) => #readProjection(TV, PROJS) ~> #arrayLength() ... </k>
+    requires notBool PROJS ==K .ProjectionElems
 
   rule <k> TV:TypedValue ~> #arrayLength() => #arrayLength(TV, .ProjectionElems) ... </k>
 ```
