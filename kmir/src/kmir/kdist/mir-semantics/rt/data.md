@@ -152,56 +152,10 @@ The `ProjectionElems` list contains a sequence of projections which is applied (
   rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
 ```
 
-```k
-  syntax Int ::= #expectUsize ( TypedValue ) [function]
-
-  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
-
-  syntax MIRError ::= MIRIndexError ( List , Local )
-                    | MIRConstantIndexError ( List , Int )
-```
-
-In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
-
-```k
-```
-
-A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
-fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting
-the `variantIdx` of the `Aggregate` accordingly).
-This is done without consideration of the validity of the Downcast[^downcast].
-
-[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
-
-```k
-```
-
-A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
-
-In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
-
-```k
-  // Moved and NewLocal get stuck
-
-  // why do we not have this automatically for user-defined lists?
-  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
-  rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
-
-```
-
 For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
 An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
 
 ```k
-    syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
-
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
-      requires 0 <=Int I
-       andBool I <Int size(LOCALS)
-       andBool isTypedValue(LOCALS[I])
-      [preserves-definedness] // valid list indexing checked
-
   syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
                       | #decrementRef ( TypedValue )  [function, total]
                       | #adjustRef (TypedValue, Int ) [function, total]
@@ -232,20 +186,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  // TODO case of MovedLocal and NewLocal
-
-  syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
-
-  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, local(I), PROJECTIONS)
-        => #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, .Contexts)
-        ~> #writeProjectedUpdate(Moved, true)
-        ~> VAL
-        ...
-       </k>
-    [preserves-definedness] // projections already used when reading
 ```
-
 
 ### Setting Local Variables
 
@@ -268,6 +209,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
      andBool isTypedValue(LOCALS[I])
      andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
+
   // non-mutable uninitialised values are mutable once
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
           =>
@@ -281,6 +223,7 @@ The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` wi
      andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
+
   // reusing a local which was Moved is allowed
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
           =>
@@ -316,7 +259,6 @@ Write operations to places that include (a chain of) projections are handled by 
      andBool PROJ =/=K .ProjectionElems
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
-
 ```
 
 A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively. `Index`ing operations may have to read an index from another local, which is another rewrite. Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
@@ -533,6 +475,22 @@ The solution is to use rewrite operations in a downward pass through the project
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
     [preserves-definedness]
+
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  rule appendP(.ProjectionElems, TAIL) => TAIL
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+
+  syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+
+  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  syntax Int ::= #expectUsize ( TypedValue ) [function]
+
+  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
