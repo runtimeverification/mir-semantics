@@ -3,10 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (44 steps)
+│  (291 steps)
 └─ 3 (stuck, leaf)
-    #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
-    function: main
+    #projectedUpdate ( toStack ( 1 , local ( 20 ) ) , typedValue ( Aggregate ( varia
+    span: 54
 
 
 ┌─ 2 (root, leaf, target, terminal)
