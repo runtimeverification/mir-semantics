@@ -141,57 +141,18 @@ A projection can only be applied to an initialised value, so this operation requ
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  syntax KItem ::= #readProjection ( TypedValue , ProjectionElems )
-                 | #readProjection ( Bool )
 ```
 
 The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
 
 ```k
-  rule <k> #readProjection(VAL, .ProjectionElems) => VAL ... </k>
+  syntax KItem ::= #readProjection ( Bool )
+
   rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
   rule <k> #projectedUpdate(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjectedUpdate(Moved, true) ~> VAL) ... </k>
 ```
 
-A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values. The field is numbered from zero (in source order), and the field type is provided (not checked here).
-
 ```k
-  rule <k> #readProjection(
-              typedValue(Aggregate(_, ARGS), _, _),
-              projectionElemField(fieldIdx(I), _TY) PROJS
-            )
-         =>
-           #readProjection({ARGS[I]}:>TypedValue, PROJS)
-       ...
-       </k>
-    requires 0 <=Int I
-     andBool I <Int size(ARGS)
-     andBool isTypedValue(ARGS[I])
-    [preserves-definedness] // valid list indexing checked
-```
-
-An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array. The index can either be read from another operand, or it can be a constant (`ConstantIndex`).
-
-For a normal `Index` projection, the index is read from a given local which is expected to hold a `usize` value in the valid range between 0 and the array/slice length.
-
-```k
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemIndex(local(LOCAL)) PROJS
-           )
-          => #readProjection({ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue, PROJS)
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires 0 <=Int LOCAL
-     andBool LOCAL <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[LOCAL])
-     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
-     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable
-
   syntax Int ::= #expectUsize ( TypedValue ) [function]
 
   rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
@@ -203,29 +164,6 @@ For a normal `Index` projection, the index is read from a given local which is e
 In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
 
 ```k
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS
-           )
-          => #readProjection({ELEMENTS[OFFSET]}:>TypedValue, PROJS)
-        ...
-        </k>
-    requires 0 <=Int OFFSET
-     andBool OFFSET <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[OFFSET])
-
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS
-           )
-          => #readProjection({ELEMENTS[0 -Int OFFSET]}:>TypedValue, PROJS)
-        ...
-        </k>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(ELEMENTS)
-     andBool MINLEN ==Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
 ```
 
 A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
@@ -236,14 +174,6 @@ This is done without consideration of the validity of the Downcast[^downcast].
 [^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
 
 ```k
-  rule <k> #readProjection(
-              typedValue(Aggregate(_VARIDX, ARGS), TY, MUT),
-              projectionElemDowncast(NEW_VARIDX) PROJS
-            )
-         =>
-           #readProjection(typedValue(Aggregate(NEW_VARIDX, ARGS), TY, MUT), PROJS)
-       ...
-       </k>
 ```
 
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
@@ -251,20 +181,6 @@ A `Deref` projection operates on `Reference`s that refer to locals in the same o
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
 
 ```k
-  rule <k> #readProjection(
-              typedValue(Reference(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
-              projectionElemDeref PROJS:ProjectionElems
-            )
-         =>
-           #readProjection({LOCALS[I]}:>TypedValue, appendP(PLACEPROJS, PROJS))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
   // Moved and NewLocal get stuck
 
   // why do we not have this automatically for user-defined lists?
@@ -278,25 +194,6 @@ For references to enclosing stack frames, the local must be retrieved from the r
 An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
 
 ```k
-  rule <k> #readProjection(
-              typedValue(Reference(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
-              projectionElemDeref PROJS
-            )
-         =>
-           #readProjection(
-              {#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME)}:>TypedValue,
-              appendP(PLACEPROJS, PROJS)
-            )
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int FRAME
-     andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-    [preserves-definedness] // valid list indexing checked
-
-    // MovedLocal and NewLocal get stuck below
-
     syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
     rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
