@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (68 steps)
+│  (76 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (374 steps)
+┃  │  (391 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
@@ -33,7 +33,7 @@
    │
    │  (103 steps)
    └─ 7 (stuck, leaf)
-       #readProjection ( typedValue ( thunk ( #cast ( typedValue ( thunk ( rvalueAddres
+       #traverseProjection ( toLocal ( 6 ) , typedValue ( thunk ( #cast ( typedValue (
        span: 277
 
 

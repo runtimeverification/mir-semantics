@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (45 steps)
+│  (47 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (43 steps)
+┃  │  (50 steps)
 ┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃  ┃
@@ -43,16 +43,16 @@
 ┃     ├─ 9
 ┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃     │
-┃     │  (103 steps)
+┃     │  (116 steps)
 ┃     ├─ 13
-┃     │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+┃     │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
 ┃     │   span: 64
 ┃     ┃
 ┃     ┃ (1 step)
 ┃     ┣━━┓
 ┃     ┃  │
 ┃     ┃  ├─ 16
-┃     ┃  │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
 ┃     ┃  │   span: 64
 ┃     ┃  ┃
 ┃     ┃  ┃ (1 step)
@@ -76,13 +76,13 @@
 ┃     ┃  ┗━━┓
 ┃     ┃     │
 ┃     ┃     └─ 21 (stuck, leaf)
-┃     ┃         #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+┃     ┃         #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
 ┃     ┃         span: 64
 ┃     ┃
 ┃     ┗━━┓
 ┃        │
 ┃        └─ 17 (stuck, leaf)
-┃            #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+┃            #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
 ┃            span: 64
 ┃
 ┗━━┓ subst: .Subst
@@ -92,7 +92,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (95 steps)
+   │  (110 steps)
    ├─ 7 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
    ┃
@@ -120,16 +120,16 @@
       ├─ 11
       │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
       │
-      │  (103 steps)
+      │  (116 steps)
       ├─ 15
-      │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+      │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
       │   span: 64
       ┃
       ┃ (1 step)
       ┣━━┓
       ┃  │
       ┃  ├─ 18
-      ┃  │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+      ┃  │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
       ┃  │   span: 64
       ┃  ┃
       ┃  ┃ (1 step)
@@ -153,13 +153,13 @@
       ┃  ┗━━┓
       ┃     │
       ┃     └─ 23 (stuck, leaf)
-      ┃         #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+      ┃         #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
       ┃         span: 64
       ┃
       ┗━━┓
          │
          └─ 19 (stuck, leaf)
-             #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+             #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
              span: 64
 
 
