@@ -1303,7 +1303,10 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _)) => #arrayLength({LOCALS[I]}:>TypedValue, PROJECTIONS)
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _))
+        => #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
+        ~> #arrayLength()
         ...
        </k>
        <locals> LOCALS </locals>
@@ -1313,7 +1316,10 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // LOCALS indexing checked
 
-  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _)) => #arrayLength(#localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS)
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _))
+        => #projectedUpdate(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
+        ~> #arrayLength()
         ...
        </k>
        <stack> STACK </stack>
@@ -1321,16 +1327,9 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
 
-  syntax Evaluation ::= #arrayLength( TypedValue , ProjectionElems )
-
-  rule <k> #arrayLength(typedValue(Range(LIST), _, _), .ProjectionElems) => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
-
   syntax KItem ::= #arrayLength()
 
-  rule <k> #arrayLength(TV, PROJS) => #readProjection(TV, PROJS) ~> #arrayLength() ... </k>
-    requires notBool PROJS ==K .ProjectionElems
-
-  rule <k> TV:TypedValue ~> #arrayLength() => #arrayLength(TV, .ProjectionElems) ... </k>
+  rule <k> typedValue(Range(LIST), _, _) ~> #arrayLength() => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
 ```
 
 
