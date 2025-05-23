@@ -475,8 +475,7 @@ where the returned result should go.
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
-  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))))
-    => Ty
+  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _)))) => Ty
   rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
 ```
 

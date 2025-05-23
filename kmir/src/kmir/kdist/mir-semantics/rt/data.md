@@ -675,7 +675,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 ```k
   syntax Evaluation ::= Rvalue
 
-  rule  <k> rvalueUse(OPERAND) => OPERAND ... </k>
+  rule <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
   rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #cast(OPERAND, CASTKIND, TY) ... </k>
 ```
