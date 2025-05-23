@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (42 steps)
+┃  │  (43 steps)
 ┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃  ┃
@@ -43,7 +43,7 @@
 ┃     ├─ 9
 ┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃     │
-┃     │  (100 steps)
+┃     │  (103 steps)
 ┃     ├─ 13
 ┃     │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
 ┃     │   span: 64
@@ -92,7 +92,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (92 steps)
+   │  (95 steps)
    ├─ 7 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
    ┃
@@ -120,7 +120,7 @@
       ├─ 11
       │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
       │
-      │  (100 steps)
+      │  (103 steps)
       ├─ 15
       │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
       │   span: 64

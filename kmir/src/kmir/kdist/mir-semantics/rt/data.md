@@ -74,7 +74,7 @@ Constant operands are simply decoded according to their type.
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
         =>
-           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo), TY, mutabilityNot)
+           #decodeConstant(KIND, TY, {TYPEMAP[TY]}:>TypeInfo)
         ...
       </k>
       <types> TYPEMAP </types>
@@ -880,44 +880,28 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
-  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
+  syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
 
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(false)                             , TY, mutabilityNot)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(true)                              , TY, mutabilityNot)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
-      =>
-        #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)                            => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot)
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar))
-  //     =>
-  //      Str(...)
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // zero-sized struct types
+  rule #decodeConstant(constantKindZeroSized                            , TY, typeInfoStructType(_, _)           ) => typedValue(Aggregate(variantIdx(0), .List)             , TY, mutabilityNot)
+  // TODO Char type
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K
 
   // unimplemented cases stored as thunks
-  syntax Evaluation ::= Undecoded ( Bytes, TypeInfo )
-
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), INFO) => thunk(Undecoded(BYTES, INFO)) [owise]
-
-  // a rule for zero-sized constants for struct types without fields
-  rule #decodeConstant(constantKindZeroSized, typeInfoStructType(_, _)) => Aggregate(variantIdx(0), .List)
-
 ```
 
 ## Primitive operations on numeric data

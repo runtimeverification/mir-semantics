@@ -262,8 +262,8 @@ EXEC_DATA = [
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.27.state',
-        27,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.29.state',
+        29,
     ),
     (
         'assign-cast',
@@ -274,8 +274,8 @@ EXEC_DATA = [
     (
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.90.state',
-        90,
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.95.state',
+        95,
     ),
     (
         'struct-field-update',
@@ -343,7 +343,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.119.state', 119),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.125.state', 125),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
