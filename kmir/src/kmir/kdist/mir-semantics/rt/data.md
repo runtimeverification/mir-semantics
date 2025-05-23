@@ -886,17 +886,25 @@ The `Value` sort above operates at a higher level than the bytes representation 
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(false)                             , TY, mutabilityNot)
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
+        => typedValue(BoolVal(false), TY, mutabilityNot) ... </k>
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(true)                              , TY, mutabilityNot)
+
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
+        => typedValue(BoolVal(true), TY, mutabilityNot) ... </k>
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)                            => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot)
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)
+        => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot) ... </k>
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
+
   // zero-sized struct types
-  rule #decodeConstant(constantKindZeroSized                            , TY, typeInfoStructType(_, _)           ) => typedValue(Aggregate(variantIdx(0), .List)             , TY, mutabilityNot)
+  rule <k> #decodeConstant(constantKindZeroSized, TY, typeInfoStructType(_, _))
+        => typedValue(Aggregate(variantIdx(0), .List), TY, mutabilityNot) ... </k>
+
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K
