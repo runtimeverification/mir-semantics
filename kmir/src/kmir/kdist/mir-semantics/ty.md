@@ -257,7 +257,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
   // additional sort to provide type information in stable-mir-json
   syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)               [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
                     | typeInfoEnumType(MIRString, AdtDef, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
-                    | typeInfoStructType(MIRString, AdtDef)              [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def)]
+                    | typeInfoStructType(MIRString, AdtDef, Tys)         [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields)]
                     | typeInfoUnionType(MIRString, AdtDef)               [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
                     | typeInfoArrayType(Ty, MaybeTyConst)                [symbol(TypeInfo::ArrayType)    , group(mir-enum)]
                     | typeInfoPtrType(Ty)                                [symbol(TypeInfo::PtrType)      , group(mir-enum)]

@@ -995,7 +995,7 @@ The `Value` sort above operates at a higher level than the bytes representation 
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
   // zero-sized struct types
-  rule #decodeConstant(constantKindZeroSized                            , TY, typeInfoStructType(_, _)           ) => typedValue(Aggregate(variantIdx(0), .List)             , TY, mutabilityNot)
+  rule #decodeConstant(constantKindZeroSized                            , TY, typeInfoStructType(_, _, _)        ) => typedValue(Aggregate(variantIdx(0), .List)             , TY, mutabilityNot)
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K

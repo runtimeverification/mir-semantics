@@ -26,14 +26,15 @@
    │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
    │   function: main
    │
-   │  (10 steps)
-   └─ 7 (stuck, leaf)
-       #projectedUpdate ( toLocal ( 2 ) , typedValue ( thunk ( rvalueAddressOf ( mutabi
-       function: main
-       span: 53
+   │  (15 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │   function: main
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 

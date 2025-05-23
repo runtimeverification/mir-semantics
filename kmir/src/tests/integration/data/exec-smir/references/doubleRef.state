@@ -75,9 +75,9 @@
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
     ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 18 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 12 ) )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 12 ) , ty ( 9 )  .Tys )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 11 ) )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 11 ) , ty ( 15 )  .Tys )
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
     ty ( 21 ) |-> typeInfoPrimitiveType ( primTypeBool )
     ty ( 22 ) |-> typeInfoRefType ( ty ( 2 ) )
@@ -89,7 +89,7 @@
     ty ( 36 ) |-> typeInfoPtrType ( ty ( 9 ) )
     ty ( 38 ) |-> typeInfoRefType ( ty ( 40 ) )
     ty ( 39 ) |-> typeInfoPrimitiveType ( primTypeStr )
-    ty ( 40 ) |-> typeInfoStructType ( "std::panic::Location" , adtDef ( 21 ) )
+    ty ( 40 ) |-> typeInfoStructType ( "std::panic::Location" , adtDef ( 21 ) , ty ( 41 )  ty ( 42 )  ty ( 42 )  .Tys )
   </types>
   <adt-to-ty>
     adtDef ( 11 ) |-> ty ( 17 )

@@ -28,7 +28,7 @@
    │
    │  (8 steps)
    └─ 7 (stuck, leaf)
-       #readProjection ( typedValue ( thunk ( #cast ( typedValue ( thunk ( rvalueAddres
+       #readProjection ( typedValue ( thunk ( #cast ( typedValue ( PtrLocal ( 1 , place
        function: main
        span: 80
 

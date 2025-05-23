@@ -84,7 +84,7 @@ Another type-related `Map` is required to associate an `AdtDef` ID with its corr
   // --------------------------------------------------------------
   rule #mkAdtMap(ACC, .TypeMappings) => ACC
 
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoStructType(_, ADTDEF)) MORE:TypeMappings)
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoStructType(_, ADTDEF, _)) MORE:TypeMappings)
       =>
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)
@@ -94,6 +94,10 @@ Another type-related `Map` is required to associate an `AdtDef` ID with its corr
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)
 
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoUnionType(_, ADTDEF)) MORE:TypeMappings)
+      =>
+       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
+    requires notBool TY in_keys(ACC)
   rule #mkAdtMap(ACC, TypeMapping(_, _) MORE:TypeMappings)
       =>
        #mkAdtMap(ACC, MORE)
