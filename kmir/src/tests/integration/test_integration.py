@@ -429,6 +429,7 @@ PROVE_RS_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
+    'checked_arithmetic-fail': ['checked_add_i32'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -439,6 +440,7 @@ PROVE_RS_SHOW_SPECS = [
     'bitwise-not-shift-fail',
     'symbolic-args-fail',
     'symbolic-structs-fail',
+    'checked_arithmetic-fail',
 ]
 
 
