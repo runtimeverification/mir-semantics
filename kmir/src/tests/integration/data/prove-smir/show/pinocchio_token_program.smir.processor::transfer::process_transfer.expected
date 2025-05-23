@@ -3,38 +3,38 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (66 steps)
-├─ 3
+│  (68 steps)
+├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
-┃ (1 step)
-┣━━┓
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool size ( ARG_ARRAY2:List ) ==Int 8
 ┃  │
 ┃  ├─ 4
-┃  │   #execBlockIdx ( basicBlockIdx ( 2 ) ) ~> .K
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (104 steps)
-┃  └─ 7 (stuck, leaf)
-┃      #readProjection ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( typedVa
-┃      span: 112
+┃  │  (374 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
 ┃
-┣━━┓
-┃  │
-┃  ├─ 5
-┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
-┃  │
-┃  │  (56 steps)
-┃  └─ 8 (stuck, leaf)
-┃      #readProjection ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( typedVa
-┃      span: 273
-┃
-┗━━┓
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     8 ==Int size ( ARG_ARRAY2:List )
    │
-   └─ 6 (stuck, leaf)
-       #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   │
+   │  (103 steps)
+   └─ 7 (stuck, leaf)
+       #readProjection ( typedValue ( thunk ( #cast ( typedValue ( thunk ( rvalueAddres
+       span: 277
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 

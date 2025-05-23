@@ -74,7 +74,7 @@ Constant operands are simply decoded according to their type.
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
         =>
-           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo), TY, mutabilityNot)
+           #decodeConstant(KIND, TY, {TYPEMAP[TY]}:>TypeInfo)
         ...
       </k>
       <types> TYPEMAP </types>
@@ -226,6 +226,24 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
 ```
 
+A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the
+fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting
+the `variantIdx` of the `Aggregate` accordingly).
+This is done without consideration of the validity of the Downcast[^downcast].
+
+[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
+
+```k
+  rule <k> #readProjection(
+              typedValue(Aggregate(_VARIDX, ARGS), TY, MUT),
+              projectionElemDowncast(NEW_VARIDX) PROJS
+            )
+         =>
+           #readProjection(typedValue(Aggregate(NEW_VARIDX, ARGS), TY, MUT), PROJS)
+       ...
+       </k>
+```
+
 A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
 
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
@@ -273,22 +291,21 @@ An important prerequisite of this rule is that when passing references to a call
     requires 0 <Int FRAME
      andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
-     andBool isTypedValue(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME))
     [preserves-definedness] // valid list indexing checked
 
-    // TODO case of MovedLocal and NewLocal
+    // MovedLocal and NewLocal get stuck below
 
-    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+    syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
+    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
       requires 0 <=Int I
        andBool I <Int size(LOCALS)
-       andBool isTypedLocal(LOCALS[I])
+       andBool isTypedValue(LOCALS[I])
       [preserves-definedness] // valid list indexing checked
 
-  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
-                      | #decrementRef ( TypedLocal )  [function, total]
-                      | #adjustRef (TypedLocal, Int ) [function, total]
+  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
+                      | #decrementRef ( TypedValue )  [function, total]
+                      | #adjustRef (TypedValue, Int ) [function, total]
 
   rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
     => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
@@ -520,6 +537,18 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  rule <k> #projectedUpdate(
+              DEST,
+              typedValue(Aggregate(_, ARGS), TY, MUT),
+              projectionElemDowncast(IDX) PROJS,
+              UPDATE,
+              CTXTS,
+              FORCE
+            ) =>
+            #projectedUpdate(DEST, typedValue(Aggregate(IDX, ARGS), TY, MUT), PROJS, UPDATE, CTXTS, FORCE)
+          ...
+          </k>
 
   rule <k> #projectedUpdate(
             _DEST,
@@ -851,37 +880,28 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
-  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
+  syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
 
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(false)                             , TY, mutabilityNot)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool)) => typedValue(BoolVal(true)                              , TY, mutabilityNot)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
-      =>
-        #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)                            => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot)
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar))
-  //     =>
-  //      Str(...)
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // zero-sized struct types
+  rule #decodeConstant(constantKindZeroSized                            , TY, typeInfoStructType(_, _)           ) => typedValue(Aggregate(variantIdx(0), .List)             , TY, mutabilityNot)
+  // TODO Char type
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K
 
-  rule #decodeConstant(_, _) => Any [owise]
+  // unimplemented cases stored as thunks
 ```
 
 ## Primitive operations on numeric data
@@ -904,7 +924,7 @@ For binary operations generally, both arguments have to be read from the provide
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #applyBinOp(BINOP, OP1, OP2, true)  ... </k>
 ```
 
-There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand.
 
 ```k
   syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
@@ -1289,9 +1309,42 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-`binOpOffset`
+The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
-`unOpPtrMetadata`
+```k
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _)) => #arrayLength({LOCALS[I]}:>TypedValue, PROJECTIONS)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // LOCALS indexing checked
+
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _)) => #arrayLength(#localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS)
+        ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+
+  syntax Evaluation ::= #arrayLength( TypedValue , ProjectionElems )
+
+  rule <k> #arrayLength(typedValue(Range(LIST), _, _), .ProjectionElems) => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
+
+  syntax KItem ::= #arrayLength()
+
+  rule <k> #arrayLength(TV, PROJS) => #readProjection(TV, PROJS) ~> #arrayLength() ... </k>
+    requires notBool PROJS ==K .ProjectionElems
+
+  rule <k> TV:TypedValue ~> #arrayLength() => #arrayLength(TV, .ProjectionElems) ... </k>
+```
+
+
+
+`binOpOffset`
 
 ```k
 endmodule

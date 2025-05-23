@@ -36,8 +36,6 @@ High-level values can be
                    // homogenous values              for array/slice
                 //  | Ptr( Address, MaybeValue )
                    // address, metadata              for ref/ptr
-                 | "Any"
-                   // arbitrary value                for transmute/invalid ptr lookup
 ```
 
 ## Local variables

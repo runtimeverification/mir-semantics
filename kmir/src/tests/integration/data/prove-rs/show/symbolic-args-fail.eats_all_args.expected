@@ -15,18 +15,20 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (37 steps)
-┃  ├─ 6
+┃  │  (43 steps)
+┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃  ┃
-┃  ┃ (1 step)
-┃  ┣━━┓
+┃  ┃ (branch)
+┃  ┣━━┓ subst: .Subst
+┃  ┃  ┃ constraint:
+┃  ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
 ┃  ┃  │
 ┃  ┃  ├─ 8
-┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
 ┃  ┃  │
-┃  ┃  │  (4 steps)
-┃  ┃  ├─ 14 (terminal)
+┃  ┃  │  (5 steps)
+┃  ┃  ├─ 12 (terminal)
 ┃  ┃  │   #EndProgram ~> .K
 ┃  ┃  │
 ┃  ┃  ┊  constraint: true
@@ -34,19 +36,54 @@
 ┃  ┃  └─ 2 (leaf, target, terminal)
 ┃  ┃      #EndProgram ~> .K
 ┃  ┃
-┃  ┣━━┓
-┃  ┃  │
-┃  ┃  ├─ 9
-┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
-┃  ┃  │
-┃  ┃  │  (85 steps)
-┃  ┃  └─ 15 (vacuous, leaf)
-┃  ┃      #expect ( typedValue ( BoolVal ( 0 <Int size ( ARG_ARRAY7:List ) ) , ty ( 28 ) ,
-┃  ┃
-┃  ┗━━┓
+┃  ┗━━┓ subst: .Subst
+┃     ┃ constraint:
+┃     ┃     size ( ARG_ARRAY7:List ) >Int 0
 ┃     │
-┃     └─ 10 (stuck, leaf)
-┃         #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃     ├─ 9
+┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃     │
+┃     │  (103 steps)
+┃     ├─ 13
+┃     │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+┃     │   span: 64
+┃     ┃
+┃     ┃ (1 step)
+┃     ┣━━┓
+┃     ┃  │
+┃     ┃  ├─ 16
+┃     ┃  │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+┃     ┃  │   span: 64
+┃     ┃  ┃
+┃     ┃  ┃ (1 step)
+┃     ┃  ┣━━┓
+┃     ┃  ┃  │
+┃     ┃  ┃  ├─ 20
+┃     ┃  ┃  │   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+┃     ┃  ┃  │   span: 64
+┃     ┃  ┃  │
+┃     ┃  ┃  │  (6 steps)
+┃     ┃  ┃  ├─ 24 (terminal)
+┃     ┃  ┃  │   #EndProgram ~> .K
+┃     ┃  ┃  │
+┃     ┃  ┃  ┊  constraint:
+┃     ┃  ┃  ┊      Ceil_01b1388e
+┃     ┃  ┃  ┊  subst: ...
+┃     ┃  ┃  └─ 2 (leaf, target, terminal)
+┃     ┃  ┃      #EndProgram ~> .K
+┃     ┃  ┃
+┃     ┃  ┗━━┓
+┃     ┃     │
+┃     ┃     └─ 21 (stuck, leaf)
+┃     ┃         #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+┃     ┃         span: 64
+┃     ┃
+┃     ┗━━┓
+┃        │
+┃        └─ 17 (stuck, leaf)
+┃            #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+┃            span: 64
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
@@ -55,18 +92,20 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (87 steps)
-   ├─ 7
+   │  (95 steps)
+   ├─ 7 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
    ┃
-   ┃ (1 step)
-   ┣━━┓
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
    ┃  │
-   ┃  ├─ 11
-   ┃  │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+   ┃  ├─ 10
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
    ┃  │
-   ┃  │  (4 steps)
-   ┃  ├─ 16 (terminal)
+   ┃  │  (5 steps)
+   ┃  ├─ 14 (terminal)
    ┃  │   #EndProgram ~> .K
    ┃  │
    ┃  ┊  constraint: true
@@ -74,19 +113,54 @@
    ┃  └─ 2 (leaf, target, terminal)
    ┃      #EndProgram ~> .K
    ┃
-   ┣━━┓
-   ┃  │
-   ┃  ├─ 12
-   ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
-   ┃  │
-   ┃  │  (85 steps)
-   ┃  └─ 17 (vacuous, leaf)
-   ┃      #expect ( typedValue ( BoolVal ( 0 <Int size ( ARG_ARRAY7:List ) ) , ty ( 28 ) ,
-   ┃
-   ┗━━┓
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     size ( ARG_ARRAY7:List ) >Int 0
       │
-      └─ 13 (stuck, leaf)
-          #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+      ├─ 11
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+      │
+      │  (103 steps)
+      ├─ 15
+      │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+      │   span: 64
+      ┃
+      ┃ (1 step)
+      ┣━━┓
+      ┃  │
+      ┃  ├─ 18
+      ┃  │   #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+      ┃  │   span: 64
+      ┃  ┃
+      ┃  ┃ (1 step)
+      ┃  ┣━━┓
+      ┃  ┃  │
+      ┃  ┃  ├─ 22
+      ┃  ┃  │   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+      ┃  ┃  │   span: 64
+      ┃  ┃  │
+      ┃  ┃  │  (6 steps)
+      ┃  ┃  ├─ 25 (terminal)
+      ┃  ┃  │   #EndProgram ~> .K
+      ┃  ┃  │
+      ┃  ┃  ┊  constraint:
+      ┃  ┃  ┊      Ceil_01b1388e
+      ┃  ┃  ┊  subst: ...
+      ┃  ┃  └─ 2 (leaf, target, terminal)
+      ┃  ┃      #EndProgram ~> .K
+      ┃  ┃
+      ┃  ┗━━┓
+      ┃     │
+      ┃     └─ 23 (stuck, leaf)
+      ┃         #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_ARRAY
+      ┃         span: 64
+      ┃
+      ┗━━┓
+         │
+         └─ 19 (stuck, leaf)
+             #projectedUpdate ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_ARRAY
+             span: 64
 
 
 

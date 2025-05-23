@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (93 steps)
+│  (96 steps)
 ├─ 3
 │   #expect ( typedValue ( thunk ( #applyBinOp ( binOpEq , typedValue ( thunk ( #app
 │   function: main
@@ -26,7 +26,7 @@
    │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
    │   function: main
    │
-   │  (9 steps)
+   │  (10 steps)
    └─ 7 (stuck, leaf)
        #projectedUpdate ( toLocal ( 2 ) , typedValue ( thunk ( rvalueAddressOf ( mutabi
        function: main
