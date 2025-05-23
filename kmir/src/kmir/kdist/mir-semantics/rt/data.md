@@ -246,80 +246,77 @@ The solution is to use rewrite operations in a downward pass through the project
      [preserves-definedness] // valid list indexing checked upon context construction
 
   rule <k> #traverseProjection(
-              DEST,
-              typedValue(Aggregate(IDX, ARGS), TY, _MUT),
-              projectionElemField(fieldIdx(I), _) PROJS,
-              CTXTS
-            ) =>
-            #traverseProjection(DEST, {ARGS[I]}:>TypedLocal, PROJS, CtxField(TY, IDX, ARGS, I) CTXTS)
-          ...
-          </k>
-    requires 0 <=Int I
-     andBool I <Int size(ARGS)
+             DEST,
+             typedValue(Aggregate(IDX, ARGS), TY, _MUT),
+             projectionElemField(fieldIdx(I), _) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             {ARGS[I]}:>TypedLocal,
+             PROJS,
+             CtxField(TY, IDX, ARGS, I) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int I andBool I <Int size(ARGS)
      andBool isTypedLocal(ARGS[I])
      [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemIndex(local(LOCAL)) PROJS,
-              CTXTS
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemIndex(local(LOCAL)) PROJS,
+             CTXTS
            )
-          =>
-            #traverseProjection(
-              DEST,
-              {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
-              PROJS,
-              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS
-            )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS
+           )
         ...
         </k>
         <locals> LOCALS </locals>
-    requires 0 <=Int LOCAL
-     andBool LOCAL <Int size(LOCALS)
+    requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
      andBool isTypedValue(LOCALS[LOCAL])
-     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
-     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
+     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue) andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
-              CTXTS
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
+             CTXTS
            )
-          =>
-            #traverseProjection(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS
-            )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[OFFSET]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, OFFSET) CTXTS
+           )
         ...
         </k>
-    requires 0 <=Int OFFSET
-     andBool OFFSET <Int size(ELEMENTS)
+    requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
-              CTXTS
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
+             CTXTS
            )
-          =>
-            #traverseProjection(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS
-            )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[OFFSET]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS
+           )
         ...
         </k>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int MINLEN
+    requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
@@ -336,7 +333,7 @@ The solution is to use rewrite operations in a downward pass through the project
              PROJS,
              CTXTS
            )
-           ...
+       ...
        </k>
 
   rule <k> #traverseProjection(
@@ -351,46 +348,43 @@ The solution is to use rewrite operations in a downward pass through the project
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
            )
-           ...
+        ...
         </k>
         <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
+    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
 
   rule <k> #traverseProjection(
-            _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
-            projectionElemDeref PROJS,
-            _CTXTS
-            )
-         =>
-          #traverseProjection(
-              toLocal(I),
-              {LOCALS[I]}:>TypedLocal,
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              .Contexts // previous contexts obsolete
-            )
+             _DEST,
+             typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toLocal(I),
+             {LOCALS[I]}:>TypedLocal,
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
         ...
         </k>
         <locals> LOCALS </locals>
     requires OFFSET ==Int 0
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness]
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW, false)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-           ...
+       ...
        </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW, true)
         => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
-           ...
+       ...
        </k>
      [preserves-definedness] // valid conmtext ensured upon context construction
 
