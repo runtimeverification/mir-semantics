@@ -4,8 +4,9 @@ This module addresses all aspects of handling "values" i.e., data, at runtime du
 
 
 ```k
-requires "../ty.md"
 requires "../body.md"
+requires "../ty.md"
+requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
 
@@ -23,6 +24,7 @@ module RT-DATA
 
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
+  imports RT-TYPES
   imports KMIR-CONFIGURATION
 ```
 
@@ -948,9 +950,7 @@ a special rule for this case is applied with higher priority.
 
 ## Type casts
 
-Type casts between a number of different types exist in MIR. We implement a type
-cast from a `TypedLocal` to another when it is followed by a `#cast` item,
-rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
+Type casts between a number of different types exist in MIR. 
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
@@ -973,6 +973,22 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
+
+### Casts between pointer types
+
+Pointers can be converted from one pointee type to another when the pointee representations are compatible.
+This is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length).
+
+```k
+  rule <k> #cast(typedValue(VALUE, TY1, MUT), castKindPtrToPtr, TY2)
+          =>
+            typedValue(VALUE, TY2, MUT)
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+```
+
 
 ## Decoding constants from their bytes representation to values
 
