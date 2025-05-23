@@ -280,6 +280,7 @@ The solution is to use rewrite operations in a downward pass through the project
         <locals> LOCALS </locals>
     requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
      andBool isTypedValue(LOCALS[LOCAL])
+     andBool isInt(#expectUsize({LOCALS[LOCAL]]}:>TypedValue))
      andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue) andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
      andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
