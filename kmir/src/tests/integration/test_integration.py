@@ -472,10 +472,6 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
-        if not should_fail:
-            assert apr_proof.passed
-        else:
-            assert apr_proof.failed
 
         if should_show:
             display_opts = ShowOpts(
@@ -486,6 +482,11 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             assert_or_update_show_output(
                 show_res, PROVING_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
 
 
 def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
