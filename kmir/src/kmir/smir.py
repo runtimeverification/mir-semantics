@@ -67,7 +67,9 @@ class SMIRInfo:
 
     @cached_property
     def function_symbols(self) -> dict[int, dict]:
-        return {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
+        fnc_symbols = {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
+        fnc_symbols[-1] = {'NormalSym': 'main'}
+        return fnc_symbols
 
     @cached_property
     def function_symbols_reverse(self) -> dict[str, int]:

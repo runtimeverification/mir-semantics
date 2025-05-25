@@ -8,7 +8,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of, map_empty
+from pyk.kast.prelude.collections import list_empty, list_of, map_empty, map_of
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -76,6 +76,28 @@ class KMIR(KProve, KRun, KParse):
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
         return init_config
 
+    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+        parser = Parser(self.definition)
+        parsed_items: dict[KInner, KInner] = {}
+        for item_name, item in smir_info.items.items():
+            if (
+                not item_name in smir_info.function_symbols_reverse
+                and not item['mono_item_kind']['MonoItemFn']['name'] == 'main'
+            ):
+                _LOGGER.warning(f'Item not found in SMIR: {item_name}')
+                continue
+            elif item['mono_item_kind']['MonoItemFn']['name'] == 'main':
+                _LOGGER.warning(f'Hardcoding name "main" for item: {item_name}')
+                item_name = 'main'
+            item_ty = KApply('ty', [token(smir_info.function_symbols_reverse[item_name])])
+            parsed_item = parser.parse_mir_json(item, 'MonoItem')
+            if not parsed_item:
+                raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
+            parsed_item_kinner, _ = parsed_item
+            if type(parsed_item_kinner) is KApply and parsed_item_kinner.label.name == 'monoItemWrapper':
+                parsed_items[item_ty] = parsed_item_kinner.args[1]
+        return map_of(parsed_items)
+
     def make_call_config(
         self, parsed_smir: KApply, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell'
     ) -> tuple[KInner, list[KInner]]:
@@ -94,7 +116,7 @@ class KMIR(KProve, KRun, KParse):
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
+            'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': KApply('mkTypeMap', (map_empty(), types)),
             'ADTTOTY_CELL': KApply('mkAdtMap', (map_empty(), types)),
         }
