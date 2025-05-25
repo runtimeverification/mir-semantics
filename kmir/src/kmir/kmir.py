@@ -163,11 +163,12 @@ class KMIR(KProve, KRun, KParse):
             assert parse_result is not None
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
+            smir_info = SMIRInfo(smir_json)
             apr_proof = self.apr_proof_from_kast(
-                label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                label, kmir_kast, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
             if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                (apr_proof.proof_dir / apr_proof.id / 'smir.json').write_text(json.dumps(smir_json))
+                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:

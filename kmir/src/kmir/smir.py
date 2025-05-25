@@ -27,6 +27,9 @@ class SMIRInfo:
     def from_file(smir_json_file: Path) -> SMIRInfo:
         return SMIRInfo(json.loads(smir_json_file.read_text()))
 
+    def dump(self, smir_json_file: Path) -> None:
+        smir_json_file.write_text(json.dumps(self._smir))
+
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
         return {Ty(id): metadata_from_json(type) for id, type in self._smir['types']}
