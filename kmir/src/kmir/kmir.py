@@ -158,7 +158,7 @@ class KMIR(KProve, KRun, KParse):
             else:
                 smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
             parser = Parser(self.definition)
-            parse_result = parser.parse_mir_json(smir_info.smir, 'Pgm')
+            parse_result = parser.parse_mir_json(smir_info._smir, 'Pgm')
             assert parse_result is not None
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
