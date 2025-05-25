@@ -10,7 +10,7 @@ from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_empty
-from pyk.kast.prelude.string import stringToken
+from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -71,7 +71,7 @@ class KMIR(KProve, KRun, KParse):
         self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
     ) -> KInner:
         if isinstance(start_symbol, str):
-            start_symbol = stringToken(start_symbol)
+            start_symbol = token(start_symbol)
 
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
@@ -92,7 +92,7 @@ class KMIR(KProve, KRun, KParse):
 
         subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
             'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
