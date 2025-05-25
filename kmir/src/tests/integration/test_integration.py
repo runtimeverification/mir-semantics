@@ -441,6 +441,7 @@ PROVE_RS_SHOW_SPECS = [
     'symbolic-args-fail',
     'symbolic-structs-fail',
     'checked_arithmetic-fail',
+    'offset-u8-fail',
 ]
 
 
