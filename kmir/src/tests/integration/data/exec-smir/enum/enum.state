@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 89 , basicBlockIdx ( 7 ) )  branch ( 90 , basicBlockIdx ( 6 ) )  .Branches , otherwise: basicBlockIdx ( 5 ) ) ) , span: span ( 69 ) ) ) ~> .K
+    #selectBlock ( switchTargets (... branches: branch ( 89 , basicBlockIdx ( 7 ) )  branch ( 90 , basicBlockIdx ( 6 ) )  .Branches , otherwise: basicBlockIdx ( 5 ) ) , operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
