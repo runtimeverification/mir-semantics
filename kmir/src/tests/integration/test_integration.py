@@ -17,6 +17,7 @@ from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
+from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
@@ -372,16 +373,9 @@ def test_exec_smir(
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
+    smir_info = SMIRInfo.from_file(input_json)
 
-    parser = Parser(kmir_backend.definition)
-
-    with input_json.open('r') as f:
-        json_data = json.load(f)
-    parsed = parser.parse_mir_json(json_data, 'Pgm')
-    assert parsed is not None
-    kmir_kast, _ = parsed
-
-    result = kmir_backend.run_parsed(kmir_kast, depth=depth)
+    result = kmir_backend.run_smir(smir_info, depth=depth)
 
     result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
     assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)

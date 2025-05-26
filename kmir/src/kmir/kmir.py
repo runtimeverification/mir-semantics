@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, split_config_from
+from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
@@ -140,11 +140,12 @@ class KMIR(KProve, KRun, KParse):
         config = self.definition.empty_config(KSort(sort))
         return (Subst(subst).apply(config), constraints)
 
-    def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
-        init_config = self.make_init_config(parsed_smir, start_symbol)
+    def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
+        init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol)
+        if len(free_vars(init_config)) > 0 or len(init_constraints) > 0:
+            raise ValueError(f'Cannot run function with variables: {start_symbol}')
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
-
         return result
 
     def apr_proof_from_smir(
