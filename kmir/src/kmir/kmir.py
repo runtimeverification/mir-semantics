@@ -67,16 +67,6 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def make_init_config(
-        self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
-    ) -> KInner:
-        if isinstance(start_symbol, str):
-            start_symbol = token(start_symbol)
-
-        subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
-        init_config = subst.apply(self.definition.init_config(KSort(sort)))
-        return init_config
-
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parser = Parser(self.definition)
         parsed_items: dict[KInner, KInner] = {}
