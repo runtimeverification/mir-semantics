@@ -145,13 +145,6 @@ class KMIR(KProve, KRun, KParse):
 
         return result
 
-    def run_call(self, smir_json: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
-        init_config, _ = self.make_call_config(smir_json, start_symbol)
-        init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-        result = self.run_pattern(init_kore, depth=depth)
-
-        return result
-
     def apr_proof_from_smir(
         self,
         id: str,
