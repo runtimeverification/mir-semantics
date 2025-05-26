@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (304 steps)
+│  (324 steps)
 └─ 3 (stuck, leaf)
-    #projectedUpdate ( toStack ( 1 , local ( 20 ) ) , typedValue ( Aggregate ( varia
+    #traverseProjection ( toStack ( 1 , local ( 20 ) ) , typedValue ( Aggregate ( va
     span: 54
 
 
