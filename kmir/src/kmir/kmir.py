@@ -117,22 +117,23 @@ class KMIR(KProve, KRun, KParse):
         locals, constraints = symbolic_locals(smir_info, args_info)
         types, adts = self._make_type_and_adt_maps(smir_info)
 
-        subst = Subst(
-            {
-                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-                'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
-                'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-                'LOCALS_CELL': list_of(locals),
-                'FUNCTIONS_CELL': self._make_function_map(smir_info),
-                'TYPES_CELL': types,
-                'ADTTOTY_CELL': adts,
-            }
-        )
+        _subst = {
+            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'LOCALS_CELL': list_of(locals),
+            'FUNCTIONS_CELL': self._make_function_map(smir_info),
+            'TYPES_CELL': types,
+            'ADTTOTY_CELL': adts,
+        }
 
+        _init_subst: dict[str, KInner] = {}
         if init:
+            _subst['LOCALS_CELL'] = list_empty()
             init_config = self.definition.init_config(KSort(sort))
-            _, init_subst = split_config_from(init_config)
-            subst = Subst(init_subst).compose(subst)
+            _, _init_subst = split_config_from(init_config)
+
+        subst = Subst(_init_subst).compose(Subst(_subst))
 
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
