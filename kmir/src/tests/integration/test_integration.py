@@ -255,16 +255,16 @@ EXEC_DATA = [
         None,
     ),
     (
-        'main-a-b-c --depth 19',
+        'main-a-b-c --depth 20',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.19.state',
-        19,
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
+        20,
     ),
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.29.state',
-        29,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
+        30,
     ),
     (
         'assign-cast',
@@ -275,8 +275,8 @@ EXEC_DATA = [
     (
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.98.state',
-        98,
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
+        99,
     ),
     (
         'struct-field-update',
@@ -318,13 +318,13 @@ EXEC_DATA = [
         'Ref-refAsArg2',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
-        999,
+        1000,
     ),
     (
         'Ref-refReturned',
         EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
         EXEC_DATA_DIR / 'references' / 'refReturned.state',
-        999,
+        1000,
     ),
     (
         'Ref-doubleRef',
@@ -336,7 +336,7 @@ EXEC_DATA = [
         'Ref-mutableRef',
         EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
         EXEC_DATA_DIR / 'references' / 'mutableRef.state',
-        999,
+        1000,
     ),
     (
         'Ref-weirdRefs',
@@ -344,7 +344,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.134.state', 134),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
