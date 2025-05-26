@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
@@ -10,7 +9,7 @@ from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_empty
-from pyk.kast.prelude.string import stringToken
+from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -71,7 +70,7 @@ class KMIR(KProve, KRun, KParse):
         self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
     ) -> KInner:
         if isinstance(start_symbol, str):
-            start_symbol = stringToken(start_symbol)
+            start_symbol = token(start_symbol)
 
         subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
         init_config = subst.apply(self.definition.init_config(KSort(sort)))
@@ -92,7 +91,7 @@ class KMIR(KProve, KRun, KParse):
 
         subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
             'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
@@ -155,19 +154,19 @@ class KMIR(KProve, KRun, KParse):
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
             if opts.smir:
-                smir_json = json.loads(opts.rs_file.read_text())
+                smir_info = SMIRInfo.from_file(opts.rs_file)
             else:
-                smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
+                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
             parser = Parser(self.definition)
-            parse_result = parser.parse_mir_json(smir_json, 'Pgm')
+            parse_result = parser.parse_mir_json(smir_info._smir, 'Pgm')
             assert parse_result is not None
             kmir_kast, _ = parse_result
             assert isinstance(kmir_kast, KInner)
             apr_proof = self.apr_proof_from_kast(
-                label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                label, kmir_kast, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
             if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                (apr_proof.proof_dir / apr_proof.id / 'smir.json').write_text(json.dumps(smir_json))
+                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:

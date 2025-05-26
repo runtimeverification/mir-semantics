@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
-from typing import TYPE_CHECKING, NewType
+from typing import TYPE_CHECKING, Final, NewType
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
+
+_LOGGER: Final = logging.getLogger(__name__)
+_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 class SMIRInfo:
@@ -22,6 +26,9 @@ class SMIRInfo:
     @staticmethod
     def from_file(smir_json_file: Path) -> SMIRInfo:
         return SMIRInfo(json.loads(smir_json_file.read_text()))
+
+    def dump(self, smir_json_file: Path) -> None:
+        smir_json_file.write_text(json.dumps(self._smir))
 
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
@@ -73,12 +80,14 @@ class SMIRInfo:
         res = {'main': -1}
         for item in self._smir['items']:
             if not SMIRInfo._is_func(item):
+                _LOGGER.warning(f'Not a function: {item}')
                 continue
 
             mono_item_fn = item['mono_item_kind']['MonoItemFn']
             name = mono_item_fn['name']
             sym = item['symbol_name']
             if not sym in fun_syms:
+                _LOGGER.warning(f'Could not find sym in fun_syms: {sym}')
                 continue
 
             res[name] = fun_syms[sym]
