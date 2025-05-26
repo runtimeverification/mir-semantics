@@ -104,7 +104,9 @@ class KMIR(KProve, KRun, KParse):
         types: dict[KInner, KInner] = {}
         adts: dict[KInner, KInner] = {}
         for type in smir_info._smir['types']:
-            type_mapping = parser.parse_mir_json(type, 'TypeMapping')
+            parse_result = parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
             assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
             ty, tyinfo = type_mapping.args
             if ty in types:
