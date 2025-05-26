@@ -458,6 +458,9 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
+    if update_expected_output and not should_show:
+        pytest.skip()
+
     prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
