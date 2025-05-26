@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ~> .K
+    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -32,7 +32,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
     ListItem ( typedValue ( BoolVal ( false ) , ty ( 26 ) , mutabilityNot ) )
     ListItem ( typedValue ( thunk ( #decodeConstant ( constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00$@" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty ( 27 ) , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , TyUnknown , mutabilityNot ) ) ) , ty ( 28 ) , mutabilityNot ) )
@@ -48,6 +48,7 @@
     ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 27 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
     .Map

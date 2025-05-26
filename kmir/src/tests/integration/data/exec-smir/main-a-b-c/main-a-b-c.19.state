@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
+    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -31,7 +31,8 @@
   <stack>
     ListItem ( StackFrame ( ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
     .Map

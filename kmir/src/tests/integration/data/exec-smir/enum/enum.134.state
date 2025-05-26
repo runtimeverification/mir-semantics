@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #selectBlock ( switchTargets (... branches: branch ( 89 , basicBlockIdx ( 7 ) )  branch ( 90 , basicBlockIdx ( 6 ) )  .Branches , otherwise: basicBlockIdx ( 5 ) ) , operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) ) ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 89 , basicBlockIdx ( 7 ) )  branch ( 90 , basicBlockIdx ( 6 ) )  .Branches , otherwise: basicBlockIdx ( 5 ) ) ) , span: span ( 69 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -24,13 +24,13 @@
       ty ( -1 )
     </caller>
     <dest>
-      place (... local: local ( -1 ) , projection: .ProjectionElems )
+      place (... local: local ( 0 ) , projection: .ProjectionElems )
     </dest>
     <target>
       noBasicBlockIdx
     </target>
     <unwind>
-      unwindActionUnreachable
+      unwindActionContinue
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
@@ -53,7 +53,7 @@
     </locals>
   </currentFrame>
   <stack>
-    .List
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
     .Map

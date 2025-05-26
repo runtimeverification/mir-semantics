@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
+    #setArgsFromStack ( 3 , .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -33,7 +33,8 @@
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
     ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
     .Map
