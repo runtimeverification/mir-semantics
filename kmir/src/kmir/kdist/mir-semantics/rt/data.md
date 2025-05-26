@@ -32,7 +32,9 @@ module RT-DATA
 
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
-Other uses of heating and cooling are to _read_ local variables as operands. This may include `Moved` locals or uninitialised `NewLocal`s (as error cases). Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
+Other uses of heating and cooling are to _read_ local variables as operands.
+This may include `Moved` locals or uninitialised `NewLocal`s (as error cases).
+Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
 
 ```k
   syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
@@ -57,8 +59,7 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
 It is an error to read a `Moved` local or an uninitialised `NewLocal`.
-Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds
-(but the compiler should guarantee that all local indexes are valid).
+Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds (but the compiler should guarantee that all local indexes are valid).
 Types (`Ty`, an opaque number assigned by the Stable MIR extraction) are not checked, the local's type is used.
 
 ### Reading Operands (Local Variables and Constants)
@@ -86,7 +87,8 @@ Constant operands are simply decoded according to their type.
 #### Reading places with projections
 
 Reading an `Operand` above is only implemented for reading a `Local`, without any projecting modifications.
-Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
+Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation.
+The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
 A projection can only be applied to an initialised value, so this operation requires `TypedValue`.
 
 ```k
@@ -101,7 +103,9 @@ A projection can only be applied to an initialised value, so this operation requ
     [preserves-definedness] // valid list indexing checked
 ```
 
-The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
+The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof.
+The `TypedLocal` argument is there for the purpose of recursion over the projections.
+We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
 
 ```k
   syntax KItem ::= #readProjection ( Bool )
@@ -128,8 +132,11 @@ An important prerequisite of this rule is that when passing references to a call
 
 #### _Moving_ Operands Under Projections
 
-When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read. The `#traverseProjection` function for writing projected values is used (defined below).
-In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written. The `#traverseProjection` operation therefore carries a `force` flag to override the mutability check.
+When an operand is `Moved` by the read, the original has to be invalidated.
+In case of a projected value, this is a write operation nested in the data that is being read.
+The `#traverseProjection` function for writing projected values is used (defined below).
+In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written.
+The `#traverseProjection` operation therefore carries a `force` flag to override the mutability check.
 
 
 ```k
@@ -146,7 +153,8 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ### Setting Local Variables
 
-The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack.
+This may fail because a local may not be accessible, moved away, or not mutable.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
@@ -217,7 +225,9 @@ Write operations to places that include (a chain of) projections are handled by 
     [preserves-definedness]
 ```
 
-A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively. `Index`ing operations may have to read an index from another local, which is another rewrite. Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
+A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
+`Index`ing operations may have to read an index from another local, which is another rewrite.
+Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
 
 The solution is to use rewrite operations in a downward pass through the projections, and build the resulting updated value in an upward pass with information collected in the downward one.
 
@@ -531,7 +541,8 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 ### Aggregates
 
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
-Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
+Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used.
+For tuples and `struct`s, this index is always 0.
 
 Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
 For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`.
@@ -581,7 +592,8 @@ For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
-This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`. Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
+This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`.
+Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
 
 ```k
   syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
@@ -618,7 +630,9 @@ This variant index is used to look up the _discriminant_ from a table in the typ
 References and de-referencing give rise to another family of `RValue`s.
 
 References can be created using a particular region kind (not used here) and `BorrowKind`.
-The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references. These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind]. Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
+The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references.
+These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind].
+Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
 
 [^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
@@ -646,9 +660,8 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 
 ## Type casts
 
-Type casts between a number of different types exist in MIR. We implement a type
-cast from a `TypedLocal` to another when it is followed by a `#cast` item,
-rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
+Type casts between a number of different types exist in MIR.
+We implement a type cast from a `TypedLocal` to another when it is followed by a `#cast` item, rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
@@ -656,9 +669,8 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ### Integer Type Casts
 
-Casts between signed and unsigned integral numbers of different width exist, with a
-truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
-bit width, signedness, and possibly truncating or 2s-complementing the value.
+Casts between signed and unsigned integral numbers of different width exist, with a truncating semantics.
+These casts can only operate on the `Integer` variant of the `Value` type, adjusting bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
@@ -674,7 +686,9 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ## Decoding constants from their bytes representation to values
 
-The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values.
+The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value.
+This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
   syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
@@ -711,15 +725,21 @@ The `Value` sort above operates at a higher level than the bytes representation 
 
 ## Primitive operations on numeric data
 
-The `RValue:BinaryOp` performs built-in binary operations on two operands. As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types). Certain operation-dependent types apply to the arguments and determine the result type.
+The `RValue:BinaryOp` performs built-in binary operations on two operands.
+As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types).
+Certain operation-dependent types apply to the arguments and determine the result type.
 Likewise, `RValue:UnaryOp` only operates on certain operand types, notably `bool` and numeric types for arithmetic and bitwise negation.
 
-Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`. Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition. For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
-This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST). Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
+Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`.
+Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition.
+For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
+This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST).
+Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
-For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#applyBinOp`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#applyBinOp`), which can return a `TypedLocal` or an error.
+A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
   syntax Evaluation ::= #applyBinOp ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
@@ -729,7 +749,8 @@ For binary operations generally, both arguments have to be read from the provide
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #applyBinOp(BINOP, OP1, OP2, true)  ... </k>
 ```
 
-There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand.
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`.
+These operations only read a single operand.
 
 ```k
   syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
@@ -870,7 +891,8 @@ The arithmetic operations require operands of the same numeric type.
 #### Comparison operations
 
 Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
-All operations except `binOpCmp` return a `BoolVal`. The argument types must be the same for all comparison operations.
+All operations except `binOpCmp` return a `BoolVal`.
+The argument types must be the same for all comparison operations.
 
 ```k
   syntax Bool ::= isComparison(BinOp) [function, total]
@@ -942,7 +964,8 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
 #### Unary operations on Boolean and integral values
 
 The `unOpNeg` operation only works signed integral (and floating point) numbers.
-An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`). The semantics of the operation in this case is to wrap around (with the given bit width).
+An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`).
+The semantics of the operation in this case is to wrap around (with the given bit width).
 
 ```k
   rule <k> #applyUnOp(unOpNeg, typedValue(Integer(VAL, WIDTH, true), TY, _))
@@ -980,9 +1003,12 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 
 Bitwise operations `binOpBitXor`, `binOpBitAnd`, and `binOpBitOr` are valid between integers, booleans, and borrows; but only if the type of left and right arguments is the same.
 
-TODO: Borrows. Stuck on global allocs / promoteds
+TODO: Borrows: Stuck on global allocs / promoteds
 
-Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument. Right shifts on negative numbers are arithmetic shifts and preserve the sign. There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow. The UB case currently gets stuck.
+Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument.
+Right shifts on negative numbers are arithmetic shifts and preserve the sign.
+There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow.
+The UB case currently gets stuck.
 
 ```k
   syntax Bool ::= isBitwise ( BinOp ) [function, total]
@@ -1082,9 +1108,11 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
 
 #### Nullary operations for activating certain checks
 
-`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation. For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
+`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation.
+For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
 
-One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations. Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
+One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations.
+Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
 
 ```k
   rule <k> rvalueNullaryOp(nullOpUbChecks, _) => typedValue(BoolVal(false), TyUnknown, mutabilityNot) ... </k>
