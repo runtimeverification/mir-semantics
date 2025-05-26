@@ -70,9 +70,8 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    apr_proof = kmir.apr_proof_from_kast(
+    apr_proof = kmir.apr_proof_from_smir(
         str(opts.input_file.stem.replace('_', '-')),
-        kmir_kast,
         SMIRInfo.from_file(opts.input_file),
         start_symbol=opts.start_symbol,
         sort='KmirCell',
