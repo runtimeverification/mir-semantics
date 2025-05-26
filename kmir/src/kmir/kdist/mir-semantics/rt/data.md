@@ -725,15 +725,24 @@ a special rule for this case is applied with higher priority.
 
 ## Type casts
 
-Type casts between a number of different types exist in MIR. 
+Type casts between a number of different types exist in MIR.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 ```
 
-### Integer Type Casts
+### Number Type Casts
 
-Casts between signed and unsigned integral numbers of different width exist, with a
+The simplest case of a cast is conversion from one number type to another:
+
+| CastKind     |
+|--------------|
+| IntToInt     |
+| FloatToInt   |
+| FloatToFloat |
+| IntToFloat   |
+
+`IntToInt` casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
@@ -749,10 +758,20 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
+Casts involving `Float` values are currently not implemented.
+
 ### Casts between pointer types
 
-Pointers can be converted from one pointee type to another when the pointee representations are compatible.
-This is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length).
+
+| CastKind | Description                                                |
+|----------|------------------------------------------------------------|
+| PtrToPtr | Convert between references when representations compatible |
+
+Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
+The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
+the `Value` sort.
+Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
+which have the same representation `Value::Range`.
 
 ```k
   rule <k> #cast(typedValue(VALUE, TY1, MUT), castKindPtrToPtr, TY2)
@@ -763,6 +782,37 @@ This is especially possible for the case of _Slices_ (of dynamic length) and _Ar
         <types> TYPEMAP </types>
       requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
 ```
+
+`PointerCoercion` may achieve a simmilar effect, or deal with function and closure poitners, depending on the coercion type:
+
+| CastKind                           | PointerCoercion          | Description                        |
+|------------------------------------|--------------------------|-----------------------             |
+| PointerCoercion(_, CoercionSource) | ArrayToPointer           | from `*const [T; N]` to `*const T` |
+|                                    | Unsize                   | drop size information              |
+|                                    | ReifyFnPointer           |                                    |
+|                                    | UnsafeFnPointer          |                                    |
+|                                    | ClosureFnPointer(Safety) |                                    |
+|                                    | DynStar                  | create a dyn* object               |
+|                                    | MutToConstPointer        | make a mutable pointer immutable   |
+
+
+```k
+  // not checking whether types are actually compatible (trusting the compiler)
+  rule <k> #cast(typedValue(VALUE, _TY, MUT), castKindPointerCoercion(pointerCoercionUnsize), TY)
+          =>
+            typedValue(VALUE, TY, MUT)
+          ...
+        </k>
+```
+
+### Other casts involving pointers
+
+| CastKind                     | Description |
+|------------------------------|-------------|
+| PointerExposeProvenance      |             |
+| PointerWithExposedProvenance |             |
+| FnPtrToPtr                   |             |
+| Transmute                    |             |
 
 
 ## Decoding constants from their bytes representation to values
