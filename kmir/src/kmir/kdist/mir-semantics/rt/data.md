@@ -74,22 +74,19 @@ Constant operands are simply decoded according to their type.
 
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
-        =>
-           #decodeConstant(KIND, TY, {TYPEMAP[TY]}:>TypeInfo)
-        ...
-      </k>
-      <types> TYPEMAP </types>
+        => #decodeConstant(KIND, TY, {TYPEMAP[TY]}:>TypeInfo)
+       ...
+       </k>
+       <types> TYPEMAP </types>
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
     [preserves-definedness] // valid Map lookup checked
 ```
 
-#### Reading places with projections
+### Copying and Moving
 
-Reading an `Operand` above is only implemented for reading a `Local`, without any projecting modifications.
-Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation.
-The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
-A projection can only be applied to an initialised value, so this operation requires `TypedValue`.
+When an operand is `Copied` by a read, the original remains valid (see `false` passed to `#readProjection`).
+We ensure that any projections of the copy operation are traversed appropriately before performing the read.
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
@@ -103,47 +100,15 @@ A projection can only be applied to an initialised value, so this operation requ
     [preserves-definedness] // valid list indexing checked
 ```
 
-The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof.
-The `TypedLocal` argument is there for the purpose of recursion over the projections.
-We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
-
-```k
-  syntax KItem ::= #readProjection ( Bool )
-
-  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjection(Moved, true) ~> VAL) ... </k>
-```
-
-For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
-An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
-
-```k
-  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
-                      | #decrementRef ( TypedValue )  [function, total]
-                      | #adjustRef (TypedValue, Int ) [function, total]
-
-  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
-    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
-  rule #adjustRef(TL, _) => TL [owise]
-
-  rule #incrementRef(TL) => #adjustRef(TL, 1)
-  rule #decrementRef(TL) => #adjustRef(TL, -1)
-```
-
-#### _Moving_ Operands Under Projections
-
 When an operand is `Moved` by the read, the original has to be invalidated.
 In case of a projected value, this is a write operation nested in the data that is being read.
-The `#traverseProjection` function for writing projected values is used (defined below).
-In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written.
-The `#traverseProjection` operation therefore carries a `force` flag to override the mutability check.
-
+In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written (`true` is passed to `#readProjection`).
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
         => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
         ~> #readProjection(true)
-        ...
+       ...
        </k>
        <locals> LOCALS </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
@@ -155,65 +120,40 @@ The `#traverseProjection` operation therefore carries a `force` flag to override
 
 The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack.
 This may fail because a local may not be accessible, moved away, or not mutable.
+If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
+A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
+                 | #forceSetLocal ( Local , TypedLocal )
 
-// mutable local
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
      andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
-  // non-mutable uninitialised values are mutable once
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  // reusing a local which was Moved is allowed
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-```
-
-### Writing Data to Places With Projections
-
-Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
-
-```k
-  syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
-                 | #writeProjection ( TypedLocal , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-         =>
-           #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
         ~> #writeProjection(VAL, false)
        ...
        </k>
@@ -223,15 +163,59 @@ Write operations to places that include (a chain of) projections are handled by 
      andBool PROJ =/=K .ProjectionElems
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
+
+  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
+       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
 ```
 
-A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
-`Index`ing operations may have to read an index from another local, which is another rewrite.
-Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
+### Traversing Projections for Reads and Writes
 
-The solution is to use rewrite operations in a downward pass through the projections, and build the resulting updated value in an upward pass with information collected in the downward one.
+Read and write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
+This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`.
+A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
 
 ```k
+  syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
+                 | #writeProjection ( TypedLocal , Bool )
+                 | #readProjection ( Bool )
+
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjection(Moved, true) ~> VAL) ... </k>
+
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, false)
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
+
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, true)
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
+
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, _)
+        => .K
+        ...
+       </k>
+       <stack> STACK
+            => STACK[(FRAME -Int 1) <-
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
+                    ]
+       </stack>
+    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+```
+
+These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
+`#buildUpdate` helps to reconstruct the new value stored at that `Place` if we need to do a write (using the `Context` built during traversal).
+
+```k 
   // stores the target of the write operation, which may change when references are dereferenced.
   syntax WriteTo ::= toLocal ( Int )
                    | toStack ( Int , Local )
@@ -255,6 +239,55 @@ The solution is to use rewrite operations in a downward pass through the project
       => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
+  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
+
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, Moved)
+      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- Moved])
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness]
+
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, typedValue(VAL, _, _))
+      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)])
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+    [preserves-definedness]
+
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  rule appendP(.ProjectionElems, TAIL) => TAIL
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+
+  syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+
+  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
+                      | #decrementRef ( TypedValue )  [function, total]
+                      | #adjustRef (TypedValue, Int ) [function, total]
+
+  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(TL, _) => TL [owise]
+
+  rule #incrementRef(TL) => #adjustRef(TL, 1)
+  rule #decrementRef(TL) => #adjustRef(TL, -1)
+```
+
+#### Aggregates
+
+A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values.
+The field is numbered from zero (in source order), and the field type is provided (not checked here).
+
+A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting the `variantIdx` of the `Aggregate` accordingly).
+This is done without consideration of the validity of the Downcast[^downcast].
+
+[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
+
+```k
   rule <k> #traverseProjection(
              DEST,
              typedValue(Aggregate(IDX, ARGS), TY, _MUT),
@@ -273,6 +306,30 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedLocal(ARGS[I])
      [preserves-definedness] // valid list indexing checked
 
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Aggregate(_, ARGS), TY, MUT),
+             projectionElemDowncast(IDX) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             typedValue(Aggregate(IDX, ARGS), TY, MUT),
+             PROJS,
+             CTXTS
+           )
+       ...
+       </k>
+```
+
+#### Ranges
+
+An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array.
+The index can either be read from another operand, or it can be a constant (`ConstantIndex`).
+For a normal `Index` projection, the index is read from a given local which is expected to hold a `usize` value in the valid range between 0 and the array/slice length.
+In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
+
+```k
   rule <k> #traverseProjection(
              DEST,
              typedValue(Range(ELEMENTS), TY, _MUT),
@@ -332,21 +389,18 @@ The solution is to use rewrite operations in a downward pass through the project
      andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  rule <k> #traverseProjection(
-             DEST,
-             typedValue(Aggregate(_, ARGS), TY, MUT),
-             projectionElemDowncast(IDX) PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             typedValue(Aggregate(IDX, ARGS), TY, MUT),
-             PROJS,
-             CTXTS
-           )
-       ...
-       </k>
+  syntax Int ::= #expectUsize ( TypedValue ) [function]
 
+  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
+```
+
+#### References
+
+A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value.
+`Deref` reads the referred place (and may proceed with further projections).
+In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+
+```k
   rule <k> #traverseProjection(
              _DEST,
              typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
@@ -384,74 +438,6 @@ The solution is to use rewrite operations in a downward pass through the project
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness]
-
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, false)
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-       ...
-       </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
-
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, true)
-        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
-       ...
-       </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
-
-  syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
-
-  // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness] // valid list indexing checked
-
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, _)
-        => .K
-        ...
-       </k>
-       <stack> STACK
-             =>
-               STACK[(FRAME -Int 1) <-
-                       #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
-                     ]
-       </stack>
-    requires 0 <Int FRAME
-     andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-
-  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
-
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, Moved)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- Moved])
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness]
-
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, typedValue(VAL, _, _))
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)])
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness]
-
-  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
-  rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
-
-  syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
-
-  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  syntax Int ::= #expectUsize ( TypedValue ) [function]
-
-  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
