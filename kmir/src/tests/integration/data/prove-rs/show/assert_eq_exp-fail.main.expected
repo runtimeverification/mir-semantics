@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (93 steps)
+│  (97 steps)
 └─ 3 (stuck, leaf)
-    #readProjection ( typedValue ( thunk ( #decodeConstant ( constantKindAllocated (
+    #traverseProjection ( toLocal ( 6 ) , typedValue ( thunk ( #decodeConstant ( con
     function: main
     span: 101
 
