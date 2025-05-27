@@ -1,11 +1,16 @@
 {
   description = "kmir - ";
   inputs = {
+    rv-nix-tools.url = "github:runtimeverification/rv-nix-tools/854d4f05ea78547d46e807b414faad64cea10ae4";
+    nixpkgs.follows = "rv-nix-tools/nixpkgs";
+
     k-framework.url = "github:runtimeverification/k/v7.1.258";
-    nixpkgs.follows = "k-framework/nixpkgs";
+    k-framework.inputs.nixpkgs.follows = "nixpkgs";
+
     flake-utils.follows = "k-framework/flake-utils";
-    rv-utils.follows = "k-framework/rv-utils";
+  
     poetry2nix.follows = "k-framework/poetry2nix";
+    poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = { self, nixpkgs, flake-utils, k-framework, ... }@inputs:
     let
