@@ -85,8 +85,8 @@ class KMIR(KProve, KRun, KParse):
             if not parsed_item:
                 raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
             parsed_item_kinner, _ = parsed_item
-            if type(parsed_item_kinner) is KApply and parsed_item_kinner.label.name == 'monoItemWrapper':
-                parsed_items[item_ty] = parsed_item_kinner.args[1]
+            assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
+            parsed_items[item_ty] = parsed_item_kinner.args[1]
         return map_of(parsed_items)
 
     def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
@@ -102,9 +102,8 @@ class KMIR(KProve, KRun, KParse):
             if ty in types:
                 raise ValueError(f'Key collision in type map: {ty}')
             types[ty] = tyinfo
-            if isinstance(tyinfo, KApply):
-                if tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
-                    adts[tyinfo.args[1]] = ty
+            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
+                adts[tyinfo.args[1]] = ty
         return (map_of(types), map_of(adts))
 
     def make_call_config(
