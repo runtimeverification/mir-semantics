@@ -4,6 +4,7 @@ on:
     branches:
       - '_update-deps/runtimeverification/k'
       - '_update-deps/runtimeverification/stable-mir-json'
+      - '_update-deps/runtimeverification/rv-nix-tools'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,7 +46,9 @@ jobs:
       - name: 'Update Nix flake inputs'
         run: |
           K_VERSION=$(cat deps/k_release)
+          RV_NIX_TOOLS_VERSION=$(cat deps/rv-nix-tools)
           sed -i 's!    k-framework.url = "github:runtimeverification/k/[v0-9\.]*"!    k-framework.url = "github:runtimeverification/k/v'"${K_VERSION}"'"!' flake.nix
+          sed -i 's!    rv-nix-tools.url = "github:runtimeverification/rv-nix-tools/[a-z0-9\.]*"!    rv-nix-tools.url = "github:runtimeverification/rv-nix-tools/'"${RV_NIX_TOOLS_VERSION}"'"!' flake.nix
           nix --extra-experimental-features 'nix-command flakes' --show-trace flake update
           git add flake.nix flake.lock
           git commit -m 'flake.{nix,lock}: update Nix derivations' || true
