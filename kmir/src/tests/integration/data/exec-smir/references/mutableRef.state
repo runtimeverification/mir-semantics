@@ -21,13 +21,13 @@
       ty ( -1 )
     </caller>
     <dest>
-      place (... local: local ( -1 ) , projection: .ProjectionElems )
+      place (... local: local ( 0 ) , projection: .ProjectionElems )
     </dest>
     <target>
       noBasicBlockIdx
     </target>
     <unwind>
-      unwindActionUnreachable
+      unwindActionContinue
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
@@ -42,7 +42,7 @@
     </locals>
   </currentFrame>
   <stack>
-    .List
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
     .Map

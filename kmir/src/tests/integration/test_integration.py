@@ -17,6 +17,7 @@ from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
+from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
@@ -254,16 +255,16 @@ EXEC_DATA = [
         None,
     ),
     (
-        'main-a-b-c --depth 19',
+        'main-a-b-c --depth 20',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.19.state',
-        19,
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
+        20,
     ),
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.29.state',
-        29,
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
+        30,
     ),
     (
         'assign-cast',
@@ -274,8 +275,8 @@ EXEC_DATA = [
     (
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.98.state',
-        98,
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
+        99,
     ),
     (
         'struct-field-update',
@@ -317,13 +318,13 @@ EXEC_DATA = [
         'Ref-refAsArg2',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
         EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
-        999,
+        1000,
     ),
     (
         'Ref-refReturned',
         EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
         EXEC_DATA_DIR / 'references' / 'refReturned.state',
-        999,
+        1000,
     ),
     (
         'Ref-doubleRef',
@@ -335,7 +336,7 @@ EXEC_DATA = [
         'Ref-mutableRef',
         EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
         EXEC_DATA_DIR / 'references' / 'mutableRef.state',
-        999,
+        1000,
     ),
     (
         'Ref-weirdRefs',
@@ -343,7 +344,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.134.state', 134),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
@@ -372,16 +373,9 @@ def test_exec_smir(
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
+    smir_info = SMIRInfo.from_file(input_json)
 
-    parser = Parser(kmir_backend.definition)
-
-    with input_json.open('r') as f:
-        json_data = json.load(f)
-    parsed = parser.parse_mir_json(json_data, 'Pgm')
-    assert parsed is not None
-    kmir_kast, _ = parsed
-
-    result = kmir_backend.run_parsed(kmir_kast, depth=depth)
+    result = kmir_backend.run_smir(smir_info, depth=depth)
 
     result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
     assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
@@ -435,6 +429,7 @@ PROVE_RS_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
+    'checked_arithmetic-fail': ['checked_add_i32'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -445,6 +440,8 @@ PROVE_RS_SHOW_SPECS = [
     'bitwise-not-shift-fail',
     'symbolic-args-fail',
     'symbolic-structs-fail',
+    'checked_arithmetic-fail',
+    'offset-u8-fail',
 ]
 
 
@@ -458,6 +455,9 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
+    if update_expected_output and not should_show:
+        pytest.skip()
+
     prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
@@ -469,10 +469,6 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
-        if not should_fail:
-            assert apr_proof.passed
-        else:
-            assert apr_proof.failed
 
         if should_show:
             display_opts = ShowOpts(
@@ -483,6 +479,11 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             assert_or_update_show_output(
                 show_res, PROVING_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
 
 
 def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
