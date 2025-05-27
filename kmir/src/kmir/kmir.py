@@ -133,8 +133,11 @@ class KMIR(KProve, KRun, KParse):
             init_config = self.definition.init_config(KSort(sort))
             _, _init_subst = split_config_from(init_config)
 
-        subst = Subst(_init_subst).compose(Subst(_subst))
+        for key in _init_subst:
+            if key not in _subst:
+                _subst[key] = _init_subst[key]
 
+        subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
 
