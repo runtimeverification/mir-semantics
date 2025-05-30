@@ -43,13 +43,9 @@ def _kmir_run(opts: RunOpts) -> None:
         target = opts.bin if opts.bin else cargo.default_target
         smir_file = cargo.smir_for(target)
 
-    parse_result = parse_json(kmir.definition, smir_file, 'Pgm')
-    if parse_result is None:
-        print('Parse error!', file=sys.stderr)
-        sys.exit(1)
-    kmir_kast, _ = parse_result
+    smir_info = SMIRInfo.from_file(smir_file)
 
-    result = kmir.run_parsed(kmir_kast, opts.start_symbol, opts.depth)
+    result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
 
 
@@ -70,9 +66,8 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         sys.exit(1)
 
     kmir_kast, _ = parse_result
-    apr_proof = kmir.apr_proof_from_kast(
+    apr_proof = kmir.apr_proof_from_smir(
         str(opts.input_file.stem.replace('_', '-')),
-        kmir_kast,
         SMIRInfo.from_file(opts.input_file),
         start_symbol=opts.start_symbol,
         sort='KmirCell',

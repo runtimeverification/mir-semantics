@@ -3,11 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (89 steps)
+│  (161 steps)
 └─ 3 (stuck, leaf)
-    #readProjection ( typedValue ( Any , ty ( 25 ) , mutabilityNot ) , projectionEle
-    function: main
-    span: 101
+    #traverseProjection ( toLocal ( 2 ) , typedValue ( thunk ( #cast ( typedValue (
+    span: 53
 
 
 ┌─ 2 (root, leaf, target, terminal)

@@ -475,8 +475,7 @@ where the returned result should go.
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
-  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))))
-    => Ty
+  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _)))) => Ty
   rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
 ```
 
@@ -529,27 +528,25 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedValue))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool isTypedLocal(CALLERLOCALS[I])
-     andBool CALLERLOCALS[I] =/=K Moved
+     andBool isTypedValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedLocal))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedValue))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
-     andBool isTypedLocal(CALLERLOCALS[I])
-     andBool CALLERLOCALS[I] =/=K Moved
+     andBool isTypedValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).

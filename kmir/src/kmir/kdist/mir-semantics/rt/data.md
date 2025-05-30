@@ -32,7 +32,9 @@ module RT-DATA
 
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
-Other uses of heating and cooling are to _read_ local variables as operands. This may include `Moved` locals or uninitialised `NewLocal`s (as error cases). Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
+Other uses of heating and cooling are to _read_ local variables as operands.
+This may include `Moved` locals or uninitialised `NewLocal`s (as error cases).
+Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
 
 ```k
   syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
@@ -57,8 +59,7 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
 It is an error to read a `Moved` local or an uninitialised `NewLocal`.
-Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds
-(but the compiler should guarantee that all local indexes are valid).
+Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds (but the compiler should guarantee that all local indexes are valid).
 Types (`Ty`, an opaque number assigned by the Stable MIR extraction) are not checked, the local's type is used.
 
 ### Reading Operands (Local Variables and Constants)
@@ -73,324 +74,87 @@ Constant operands are simply decoded according to their type.
 
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
-        =>
-           typedValue(#decodeConstant(KIND, {TYPEMAP[TY]}:>TypeInfo), TY, mutabilityNot)
-        ...
-      </k>
-      <types> TYPEMAP </types>
+        => #decodeConstant(KIND, TY, {TYPEMAP[TY]}:>TypeInfo)
+       ...
+       </k>
+       <types> TYPEMAP </types>
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
     [preserves-definedness] // valid Map lookup checked
 ```
 
-The code which copies/moves function arguments into the locals of a stack frame works
-in a similar way, but accesses the locals of the _caller_ instead of the locals of the
-current function.
+### Copying and Moving
 
-Reading a _Copied_ operand means to simply put it in the K sequence. Obviously, a _Moved_
-local value cannot be read, though, and the value should be initialised.
-
-```k
-  rule <k> operandCopy(place(local(I), .ProjectionElems))
-        =>
-           LOCALS[I]
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-    // error cases (NewLocal, Moved) get stuck
-```
-
-Reading an `Operand` using `operandMove` has to invalidate the respective local, to prevent any
-further access. Apart from that, the same caveats apply as for operands that are _copied_.
-
-```k
-  rule <k> operandMove(place(local(I), .ProjectionElems))
-        =>
-           LOCALS[I]
-        ...
-       </k>
-       <locals> LOCALS => LOCALS[I <- Moved]</locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-    // error cases (NewLocal, Moved) get stuck
-```
-
-#### Reading places with projections
-
-Reading an `Operand` above is only implemented for reading a `Local`, without any projecting modifications.
-Projections operate on the data stored in the `TypedLocal` and are therefore specific to the `Value` implementation. The following function provides an abstraction for reading with projections, its equations are co-located with the `Value` implementation(s).
-A projection can only be applied to an initialised value, so this operation requires `TypedValue`.
+When an operand is `Copied` by a read, the original remains valid (see `false` passed to `#readProjection`).
+We ensure that any projections of the copy operation are traversed appropriately before performing the read.
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        =>
-           #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
         ...
        </k>
        <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  syntax KItem ::= #readProjection ( TypedValue , ProjectionElems )
 ```
 
-The `ProjectionElems` list contains a sequence of projections which is applied (left-to-right) to the value in a `TypedLocal` to obtain a derived value or component thereof. The `TypedLocal` argument is there for the purpose of recursion over the projections. We don't expect the operation to apply to an empty projection `.ProjectionElems`, the base case exists for the recursion.
+When an operand is `Moved` by the read, the original has to be invalidated.
+In case of a projected value, this is a write operation nested in the data that is being read.
+In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written (`true` is passed to `#readProjection`).
 
 ```k
-  rule <k> #readProjection(VAL, .ProjectionElems) => VAL ... </k>
-```
-
-A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values. The field is numbered from zero (in source order), and the field type is provided (not checked here).
-
-```k
-  rule <k> #readProjection(
-              typedValue(Aggregate(_, ARGS), _, _),
-              projectionElemField(fieldIdx(I), _TY) PROJS
-            )
-         =>
-           #readProjection({ARGS[I]}:>TypedValue, PROJS)
-       ...
-       </k>
-    requires 0 <=Int I
-     andBool I <Int size(ARGS)
-     andBool isTypedValue(ARGS[I])
-    [preserves-definedness] // valid list indexing checked
-```
-
-An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array. The index can either be read from another operand, or it can be a constant (`ConstantIndex`).
-
-For a normal `Index` projection, the index is read from a given local which is expected to hold a `usize` value in the valid range between 0 and the array/slice length.
-
-```k
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemIndex(local(LOCAL)) PROJS
-           )
-          => #readProjection({ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue, PROJS)
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires 0 <=Int LOCAL
-     andBool LOCAL <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[LOCAL])
-     andBool isInt(#expectUsize({LOCALS[LOCAL]}:>TypedValue))
-     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
-     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable
-
-  syntax Int ::= #expectUsize ( TypedValue ) [function]
-
-  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
-
-  syntax MIRError ::= MIRIndexError ( List , Local )
-                    | MIRConstantIndexError ( List , Int )
-```
-
-In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
-
-```k
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS
-           )
-          => #readProjection({ELEMENTS[OFFSET]}:>TypedValue, PROJS)
-        ...
-        </k>
-    requires 0 <=Int OFFSET
-     andBool OFFSET <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[OFFSET])
-
-
-  rule <k> #readProjection(
-              typedValue(Range(ELEMENTS), _, _),
-              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS
-           )
-          => #readProjection({ELEMENTS[0 -Int OFFSET]}:>TypedValue, PROJS)
-        ...
-        </k>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(ELEMENTS)
-     andBool MINLEN ==Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[0 -Int OFFSET])
-```
-
-A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value. `Deref` reads the referred place (and may proceed with further projections).
-
-In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
-
-```k
-  rule <k> #readProjection(
-              typedValue(Reference(0, place(local(I:Int), PLACEPROJS:ProjectionElems), _), _, _),
-              projectionElemDeref PROJS:ProjectionElems
-            )
-         =>
-           #readProjection({LOCALS[I]}:>TypedValue, appendP(PLACEPROJS, PROJS))
+  rule <k> operandMove(place(local(I), PROJECTIONS))
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(true)
        ...
        </k>
        <locals> LOCALS </locals>
-    requires 0 <Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  // Moved and NewLocal get stuck
-
-  // why do we not have this automatically for user-defined lists?
-  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
-  rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
-
 ```
-
-For references to enclosing stack frames, the local must be retrieved from the respective stack frame.
-An important prerequisite of this rule is that when passing references to a callee as arguments, the stack height must be adjusted.
-
-```k
-  rule <k> #readProjection(
-              typedValue(Reference(FRAME, place(LOCAL:Local, PLACEPROJS), _), _, _),
-              projectionElemDeref PROJS
-            )
-         =>
-           #readProjection(
-              {#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME)}:>TypedValue,
-              appendP(PLACEPROJS, PROJS)
-            )
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int FRAME
-     andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-     andBool isTypedValue(#localFromFrame({STACK[FRAME -Int 1]}:>StackFrame, LOCAL, FRAME))
-    [preserves-definedness] // valid list indexing checked
-
-    // TODO case of MovedLocal and NewLocal
-
-    syntax TypedLocal ::= #localFromFrame ( StackFrame, Local, Int ) [function]
-
-    rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedLocal, OFFSET)
-      requires 0 <=Int I
-       andBool I <Int size(LOCALS)
-       andBool isTypedLocal(LOCALS[I])
-      [preserves-definedness] // valid list indexing checked
-
-  syntax TypedLocal ::= #incrementRef ( TypedLocal )  [function, total]
-                      | #decrementRef ( TypedLocal )  [function, total]
-                      | #adjustRef (TypedLocal, Int ) [function, total]
-
-  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
-    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
-  rule #adjustRef(TL, _) => TL [owise]
-
-  rule #incrementRef(TL) => #adjustRef(TL, 1)
-  rule #decrementRef(TL) => #adjustRef(TL, -1)
-```
-
-#### _Moving_ Operands Under Projections
-
-When an operand is `Moved` by the read, the original has to be invalidated. In case of a projected value, this is a write operation nested in the data that is being read. The `#projectedUpdate` function for writing projected values is used (defined below).
-In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written. The `#projectedUpdate` operation therefore carries a `force` flag to override the mutability check.
-
-
-```k
-  rule <k> operandMove(place(local(I) #as LOCAL, PROJECTIONS))
-        => // read first, then write moved marker (use type from before)
-           #readProjection({LOCALS[I]}:>TypedValue, PROJECTIONS) ~>
-           #markMoved({LOCALS[I]}:>TypedLocal, LOCAL, PROJECTIONS)
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires PROJECTIONS =/=K .ProjectionElems
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  // TODO case of MovedLocal and NewLocal
-
-  syntax KItem ::= #markMoved ( TypedLocal, Local, ProjectionElems )
-
-  rule <k> VAL:TypedLocal ~> #markMoved(OLDLOCAL, local(I), PROJECTIONS) ~> CONT
-        =>
-           #projectedUpdate(toLocal(I), OLDLOCAL, PROJECTIONS, Moved, .Contexts, true)
-           ~> VAL
-           ~> CONT
-       </k>
-    [preserves-definedness] // projections already used when reading
-```
-
 
 ### Setting Local Variables
 
-The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack. This may fail because a local may not be accessible, moved away, or not mutable.
+The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack.
+This may fail because a local may not be accessible, moved away, or not mutable.
+If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
+A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
+                 | #forceSetLocal ( Local , TypedLocal )
 
-// mutable local
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
      andBool mutabilityOf({LOCALS[I]}:>TypedLocal) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
-  // non-mutable uninitialised values are mutable once
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-  // reusing a local which was Moved is allowed
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ ))
-          =>
-           .K
-          ...
-       </k>
+
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityOf({LOCALS[I]}:>TypedLocal))]
        </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isMovedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-```
-
-### Writing Data to Places With Projections
-
-Write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#projectedUpdate`.
-
-```k
-  syntax KItem ::= #projectedUpdate ( WriteTo , TypedLocal, ProjectionElems, TypedLocal, Contexts , Bool )
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-         =>
-           #projectedUpdate(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, VAL, .Contexts, false)
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedLocal, PROJ, .Contexts)
+        ~> #writeProjection(VAL, false)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -400,13 +164,58 @@ Write operations to places that include (a chain of) projections are handled by 
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
+  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
+       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+    [preserves-definedness] // valid list indexing checked
 ```
 
-A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively. `Index`ing operations may have to read an index from another local, which is another rewrite. Therefore a simple update _function_ cannot cater for all projections, neither can a rewrite (the context of the recursion would need to be held explicitly).
+### Traversing Projections for Reads and Writes
 
-The solution is to use rewrite operations in a downward pass through the projections, and build the resulting updated value in an upward pass with information collected in the downward one.
+Read and write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
+This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`.
+A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
 
 ```k
+  syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
+                 | #writeProjection ( TypedLocal , Bool )
+                 | #readProjection ( Bool )
+
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjection(Moved, true) ~> VAL) ... </k>
+
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, false)
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
+
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, true)
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+     [preserves-definedness] // valid conmtext ensured upon context construction
+
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW, _)
+        => .K
+        ...
+       </k>
+       <stack> STACK
+            => STACK[(FRAME -Int 1) <-
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
+                    ]
+       </stack>
+    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+```
+
+These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
+`#buildUpdate` helps to reconstruct the new value stored at that `Place` if we need to do a write (using the `Context` built during traversal).
+
+```k 
   // stores the target of the write operation, which may change when references are dereferenced.
   syntax WriteTo ::= toLocal ( Int )
                    | toStack ( Int , Local )
@@ -430,179 +239,6 @@ The solution is to use rewrite operations in a downward pass through the project
       => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Aggregate(IDX, ARGS), TY, _MUT),
-              projectionElemField(fieldIdx(I), _) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-            ) =>
-            #projectedUpdate(DEST, {ARGS[I]}:>TypedLocal, PROJS, UPDATE, CtxField(TY, IDX, ARGS, I) CTXTS, FORCE)
-          ...
-          </k>
-    requires 0 <=Int I
-     andBool I <Int size(ARGS)
-     andBool isTypedLocal(ARGS[I])
-     [preserves-definedness] // valid list indexing checked
-
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemIndex(local(LOCAL)) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS,
-              FORCE)
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires 0 <=Int LOCAL
-     andBool LOCAL <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[LOCAL])
-     andBool isInt(#expectUsize({LOCALS[LOCAL]}:>TypedValue))
-     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue)
-     andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
-    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
-
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, OFFSET) CTXTS,
-              FORCE)
-        ...
-        </k>
-    requires 0 <=Int OFFSET
-     andBool OFFSET <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[OFFSET])
-    [preserves-definedness] // ELEMENT indexable and writeable or forced
-
-  rule <k> #projectedUpdate(
-              DEST,
-              typedValue(Range(ELEMENTS), TY, _MUT),
-              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
-              UPDATE,
-              CTXTS,
-              FORCE
-           )
-          =>
-            #projectedUpdate(
-              DEST,
-              {ELEMENTS[OFFSET]}:>TypedValue,
-              PROJS,
-              UPDATE,
-              CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS,
-              FORCE)
-        ...
-        </k>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int MINLEN
-     andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
-     andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
-    [preserves-definedness] // ELEMENT indexable and writeable or forced
-
-  rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
-         =>
-          #projectedUpdate(
-              toStack(OFFSET, LOCAL),
-              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
-        ...
-        </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-    [preserves-definedness]
-
-  rule <k> #projectedUpdate(
-            _DEST,
-            typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
-            projectionElemDeref PROJS,
-            UPDATE,
-            _CTXTS,
-            FORCE
-            )
-         =>
-          #projectedUpdate(
-              toLocal(I),
-              {LOCALS[I]}:>TypedLocal,
-              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
-              UPDATE,
-              .Contexts, // previous contexts obsolete
-              FORCE
-            )
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness]
-
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, false)
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
-           ...
-       </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
-
-  rule <k> #projectedUpdate(toLocal(I), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, true)
-        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
-           ...
-       </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
-
-  syntax KItem ::= #forceSetLocal ( Local , TypedLocal )
-
-  // #forceSetLocal sets the given value unconditionally (to write Moved values)
-  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness] // valid list indexing checked
-
-  rule <k> #projectedUpdate(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, NEW, CONTEXTS, _) => .K ... </k>
-        <stack> STACK
-              =>
-                STACK[(FRAME -Int 1) <-
-                        #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
-                      ]
-        </stack>
-    requires 0 <Int FRAME
-     andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
 
   rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, Moved)
@@ -615,6 +251,192 @@ The solution is to use rewrite operations in a downward pass through the project
       => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal({LOCALS[I]}:>TypedLocal), mutabilityMut)])
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
+    [preserves-definedness]
+
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  rule appendP(.ProjectionElems, TAIL) => TAIL
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+
+  syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+
+  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef({LOCALS[I]}:>TypedValue, OFFSET)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
+                      | #decrementRef ( TypedValue )  [function, total]
+                      | #adjustRef (TypedValue, Int ) [function, total]
+
+  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(TL, _) => TL [owise]
+
+  rule #incrementRef(TL) => #adjustRef(TL, 1)
+  rule #decrementRef(TL) => #adjustRef(TL, -1)
+```
+
+#### Aggregates
+
+A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values.
+The field is numbered from zero (in source order), and the field type is provided (not checked here).
+
+A `Downcast` projection operates on an `enum` (represented as an `Aggregate`), and interprets the fields stored in the `Aggregate` as belonging to the variant given in the `Downcast` (by setting the `variantIdx` of the `Aggregate` accordingly).
+This is done without consideration of the validity of the Downcast[^downcast].
+
+[^downcast]: See discussion in https://github.com/rust-lang/rust/issues/93688#issuecomment-1032929496.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Aggregate(IDX, ARGS), TY, _MUT),
+             projectionElemField(fieldIdx(I), _) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             {ARGS[I]}:>TypedLocal,
+             PROJS,
+             CtxField(TY, IDX, ARGS, I) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int I andBool I <Int size(ARGS)
+     andBool isTypedLocal(ARGS[I])
+     [preserves-definedness] // valid list indexing checked
+
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Aggregate(_, ARGS), TY, MUT),
+             projectionElemDowncast(IDX) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             typedValue(Aggregate(IDX, ARGS), TY, MUT),
+             PROJS,
+             CTXTS
+           )
+       ...
+       </k>
+```
+
+#### Ranges
+
+An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array.
+The index can either be read from another operand, or it can be a constant (`ConstantIndex`).
+For a normal `Index` projection, the index is read from a given local which is expected to hold a `usize` value in the valid range between 0 and the array/slice length.
+In case of a `ConstantIndex`, the index is provided as an immediate value, together with a "minimum length" of the array/slice and a flag indicating whether indexing should be performed from the end (in which case the minimum length must be exact).
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemIndex(local(LOCAL)) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, #expectUsize({LOCALS[LOCAL]}:>TypedValue)) CTXTS
+           )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[LOCAL])
+     andBool isInt(#expectUsize({LOCALS[LOCAL]}:>TypedValue))
+     andBool 0 <=Int #expectUsize({LOCALS[LOCAL]}:>TypedValue) andBool #expectUsize({LOCALS[LOCAL]}:>TypedValue) <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[#expectUsize({LOCALS[LOCAL]}:>TypedValue)])
+    [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
+
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[OFFSET]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, OFFSET) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
+     andBool isTypedValue(ELEMENTS[OFFSET])
+    [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  rule <k> #traverseProjection(
+             DEST,
+             typedValue(Range(ELEMENTS), TY, _MUT),
+             projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             {ELEMENTS[OFFSET]}:>TypedValue,
+             PROJS,
+             CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
+     andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
+     andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
+    [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  syntax Int ::= #expectUsize ( TypedValue ) [function]
+
+  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
+```
+
+#### References
+
+A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value.
+`Deref` reads the referred place (and may proceed with further projections).
+In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+
+```k
+  rule <k> #traverseProjection(
+             _DEST,
+             typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toStack(OFFSET, LOCAL),
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #traverseProjection(
+             _DEST,
+             typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toLocal(I),
+             {LOCALS[I]}:>TypedLocal,
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness]
 ```
 
@@ -646,7 +468,7 @@ The most basic ones are simply accessing an operand, either directly or by way o
 ```k
   syntax Evaluation ::= Rvalue
 
-  rule  <k> rvalueUse(OPERAND) => OPERAND ... </k>
+  rule <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
   rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #cast(OPERAND, CASTKIND, TY) ... </k>
 ```
@@ -705,7 +527,8 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 ### Aggregates
 
 Likewise built into the language are aggregates (tuples and `struct`s) and variants (`enum`s).
-Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used. For tuples and `struct`s, this index is always 0.
+Besides their list of arguments, `enum`s also carry a `VariantIdx` indicating which variant was used.
+For tuples and `struct`s, this index is always 0.
 
 Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
 For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`.
@@ -755,7 +578,8 @@ For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
-This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`. Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
+This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`.
+Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
 
 ```k
   syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
@@ -792,7 +616,9 @@ This variant index is used to look up the _discriminant_ from a table in the typ
 References and de-referencing give rise to another family of `RValue`s.
 
 References can be created using a particular region kind (not used here) and `BorrowKind`.
-The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references. These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind]. Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
+The `BorrowKind` indicates mutability of the value through the reference, but also provides more find-grained characteristics of mutable references.
+These fine-grained borrow kinds are not represented here, as some of them are disallowed in the compiler phase targeted by this semantics, and others related to memory management in lower-level artefacts[^borrowkind].
+Therefore, reference values are represented with a simple `Mutability` flag instead of `BorrowKind`
 
 [^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
@@ -820,9 +646,8 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 
 ## Type casts
 
-Type casts between a number of different types exist in MIR. We implement a type
-cast from a `TypedLocal` to another when it is followed by a `#cast` item,
-rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
+Type casts between a number of different types exist in MIR.
+We implement a type cast from a `TypedLocal` to another when it is followed by a `#cast` item, rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
@@ -830,9 +655,8 @@ rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ### Integer Type Casts
 
-Casts between signed and unsigned integral numbers of different width exist, with a
-truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
-bit width, signedness, and possibly truncating or 2s-complementing the value.
+Casts between signed and unsigned integral numbers of different width exist, with a truncating semantics.
+These casts can only operate on the `Integer` variant of the `Value` type, adjusting bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
@@ -848,53 +672,60 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ## Decoding constants from their bytes representation to values
 
-The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values. The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
+The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values.
+The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value.
+This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
-  syntax Value ::= #decodeConstant ( ConstantKind, TypeInfo ) [function]
+  syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
 
   //////////////////////////////////////////////////////////////////////////////////////
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
+        => typedValue(BoolVal(false), TY, mutabilityNot) ... </k>
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
+
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
+        => typedValue(BoolVal(true), TY, mutabilityNot) ... </k>
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operations
-  rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TYPEINFO)
-      =>
-        #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)
+        => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot) ... </k>
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar))
-  //     =>
-  //      Str(...)
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // zero-sized struct types
+  rule <k> #decodeConstant(constantKindZeroSized, TY, typeInfoStructType(_, _))
+        => typedValue(Aggregate(variantIdx(0), .List), TY, mutabilityNot) ... </k>
 
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO Char type
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K
 
-  rule #decodeConstant(_, _) => Any [owise]
+  // unimplemented cases stored as thunks
 ```
 
 ## Primitive operations on numeric data
 
-The `RValue:BinaryOp` performs built-in binary operations on two operands. As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types). Certain operation-dependent types apply to the arguments and determine the result type.
+The `RValue:BinaryOp` performs built-in binary operations on two operands.
+As [described in the `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.BinaryOp), its semantics depends on the operations and the types of operands (including variable return types).
+Certain operation-dependent types apply to the arguments and determine the result type.
 Likewise, `RValue:UnaryOp` only operates on certain operand types, notably `bool` and numeric types for arithmetic and bitwise negation.
 
-Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`. Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition. For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
-This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST). Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
+Arithmetics is usually performed using `RValue:CheckedBinaryOp(BinOp, Operand, Operand)`.
+Its semantics is the same as for `BinaryOp`, but it yields `(T, bool)` with a `bool` indicating an error condition.
+For addition, subtraction, and multiplication on integers the error condition is set when the infinite precision result would not be equal to the actual result.[^checkedbinaryop]
+This is specific to Stable MIR, the MIR AST instead uses `<OP>WithOverflow` as the `BinOp` (which conversely do not exist in the Stable MIR AST).
+Where `CheckedBinaryOp(<OP>, _, _)` returns the wrapped result together with the boolean overflow indicator, the `<Op>Unchecked` operation has _undefined behaviour_ on overflows (i.e., when the infinite precision result is unequal to the actual wrapped result).
 
 [^checkedbinaryop]: See [description in `stable_mir` crate](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.Rvalue.html#variant.CheckedBinaryOp) and the difference between [MIR `BinOp`](https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BinOp.html) and its [Stable MIR correspondent](https://doc.rust-lang.org/nightly/nightly-rustc/stable_mir/mir/enum.BinOp.html).
 
-For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#applyBinOp`), which can return a `TypedLocal` or an error. A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
+For binary operations generally, both arguments have to be read from the provided operands, followed by checking the types and then performing the actual operation (both implemented in `#applyBinOp`), which can return a `TypedLocal` or an error.
+A flag carries the information whether to perform an overflow check through to this function for `CheckedBinaryOp`.
 
 ```k
   syntax Evaluation ::= #applyBinOp ( BinOp, Evaluation, Evaluation, Bool) [seqstrict(2,3)]
@@ -904,7 +735,8 @@ For binary operations generally, both arguments have to be read from the provide
   rule <k> rvalueCheckedBinaryOp(BINOP, OP1, OP2) => #applyBinOp(BINOP, OP1, OP2, true)  ... </k>
 ```
 
-There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`. These operations only read a single operand and do not need a `#suspend` helper.
+There are also a few _unary_ operations (`UnOpNot`, `UnOpNeg`, `UnOpPtrMetadata`)  used in `RValue:UnaryOp`.
+These operations only read a single operand.
 
 ```k
   syntax Evaluation ::= #applyUnOp ( UnOp , Evaluation ) [strict(2)]
@@ -1045,7 +877,8 @@ The arithmetic operations require operands of the same numeric type.
 #### Comparison operations
 
 Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
-All operations except `binOpCmp` return a `BoolVal`. The argument types must be the same for all comparison operations.
+All operations except `binOpCmp` return a `BoolVal`.
+The argument types must be the same for all comparison operations.
 
 ```k
   syntax Bool ::= isComparison(BinOp) [function, total]
@@ -1117,7 +950,8 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
 #### Unary operations on Boolean and integral values
 
 The `unOpNeg` operation only works signed integral (and floating point) numbers.
-An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`). The semantics of the operation in this case is to wrap around (with the given bit width).
+An overflow can happen when negating the minimal representable integral value (in the given `WIDTH`).
+The semantics of the operation in this case is to wrap around (with the given bit width).
 
 ```k
   rule <k> #applyUnOp(unOpNeg, typedValue(Integer(VAL, WIDTH, true), TY, _))
@@ -1155,9 +989,12 @@ The `unOpNot` operation works on boolean and integral values, with the usual sem
 
 Bitwise operations `binOpBitXor`, `binOpBitAnd`, and `binOpBitOr` are valid between integers, booleans, and borrows; but only if the type of left and right arguments is the same.
 
-TODO: Borrows. Stuck on global allocs / promoteds
+TODO: Borrows: Stuck on global allocs / promoteds
 
-Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument. Right shifts on negative numbers are arithmetic shifts and preserve the sign. There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow. The UB case currently gets stuck.
+Shifts are valid on integers if the right argument (the shift amount) is strictly less than the width of the left argument.
+Right shifts on negative numbers are arithmetic shifts and preserve the sign.
+There are two variants (checked and unchecked), checked will wrap on overflow and not trigger UB, unchecked will trigger UB on overflow.
+The UB case currently gets stuck.
 
 ```k
   syntax Bool ::= isBitwise ( BinOp ) [function, total]
@@ -1257,9 +1094,11 @@ Shifts are valid on integers if the right argument (the shift amount) is strictl
 
 #### Nullary operations for activating certain checks
 
-`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation. For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
+`nullOpUbChecks` is supposed to return `BoolVal(true)` if checks for undefined behaviour were activated in the compilation.
+For our MIR semantics this means to either retain this information (which we don't) or to decide whether or not these checks are useful and should be active during execution.
 
-One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations. Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
+One important use case of `UbChecks` is to determine overflows in unchecked arithmetic operations.
+Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
 
 ```k
   rule <k> rvalueNullaryOp(nullOpUbChecks, _) => typedValue(BoolVal(false), TyUnknown, mutabilityNot) ... </k>
@@ -1289,9 +1128,41 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-`binOpOffset`
+The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
-`unOpPtrMetadata`
+```k
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _))
+        => #traverseProjection(toLocal(I), {LOCALS[I]}:>TypedValue, PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
+        ~> #arrayLength()
+        ...
+       </k>
+       <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // LOCALS indexing checked
+
+  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _))
+        => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
+        ~> #readProjection(false)
+        ~> #arrayLength()
+        ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+
+  syntax KItem ::= #arrayLength()
+
+  rule <k> typedValue(Range(LIST), _, _) ~> #arrayLength() => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
+```
+
+
+
+`binOpOffset`
 
 ```k
 endmodule

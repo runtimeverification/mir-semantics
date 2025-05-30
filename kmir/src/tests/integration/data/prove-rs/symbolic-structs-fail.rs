@@ -1,5 +1,3 @@
-// @kmir prove-rs: eats_struct_args
-
 #[allow(dead_code)]
 struct IntStruct{
     field1: i16,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Sequence
 from functools import cache, cached_property
 from typing import TYPE_CHECKING
@@ -9,6 +8,8 @@ from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.outer import KTerminal
 from pyk.kast.prelude.utils import token
+
+from ..smir import SMIRInfo
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -23,8 +24,8 @@ ParseResult = tuple[KApply | KToken, KSort] | None
 def parse_json(definition: KDefinition, json_file: Path, sort: str) -> ParseResult:
     p = Parser(definition)
 
-    with open(json_file, 'r') as f:
-        json_data = json.load(f)
+    smir_info = SMIRInfo.from_file(json_file)
+    json_data = smir_info._smir
 
     result = p.parse_mir_json(json_data, sort)
 
