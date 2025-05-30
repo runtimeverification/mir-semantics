@@ -1,22 +1,30 @@
 name: 'Test'
 on:
+  # run on all pull requests
   pull_request:
+  # run on master pushes (also manages the version in the release branch)
+  push:
+    branches:
+      - master
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-
+  # push updates and a version bump to the release branch
   version-bump:
-    name: 'Version Bump'
+    name: 'Version Bump and Start Release'
+    # this runs _last_
+    needs: [ unit-tests, integration-tests, code-quality-checks, test-kmir-image ]
     runs-on: 'ubuntu-latest'
+    # this runs _only on master_
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: 'Configure GitHub user'
         run: |
           git config user.name devops
@@ -25,19 +33,34 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           version: 0.7.2
-      - name: 'Update version'
+      - name: 'Update release branch with current master'
         run: |
-          og_version=$(git show origin/${GITHUB_BASE_REF}:package/version)
-          ./package/version.sh bump ${og_version}
-          ./package/version.sh sub
-          new_version=$(cat package/version)
+          git checkout -B release origin/release
+          prior_version=$(cat package/version)
+          old_master="$(git merge-base origin/master origin/release)"
+          new_master="$(git rev-parse origin/master)"
+          # otherwise bump the prior_version
+          if git diff --exit-code ${old_master} ${new_master} -- package/version; then
+              git merge --no-edit origin/master
+              package/version.sh bump ${prior_version}
+          else
+              # if the version has changed on master, use it unmodified
+              git merge --no-edit --strategy-option=theirs origin/master
+          fi
+          # substitute the version in all relevant files
+          package/version.sh sub
           uv --directory kmir lock --no-upgrade
-          git add --update && git commit --message "Set Version: $(cat package/version)" || true
-      - name: 'Push updates'
-        run: git push origin HEAD:${GITHUB_HEAD_REF}
+
+          # add changes to staging and commit (if there are any)
+          if git add --update && git commit --no-edit --allow-empty --message "Set Version: $(cat package/version)"; then
+            # Push the changes to the release branch -- Trigger the Release Process and Testing
+            git push origin release
+            # tag master with a release tag
+            git tag "release-$(cat package/version)" origin/master
+            git push origin "release-$(cat package/version)"
+          fi
 
   code-quality-checks:
-    needs: version-bump
     name: 'Code Quality Checks'
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +74,6 @@ jobs:
         run: make check
 
   unit-tests:
-    needs: code-quality-checks
     name: 'Unit Tests'
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +87,6 @@ jobs:
         run: make test-unit
 
   integration-tests:
-    needs: code-quality-checks
     name: 'Integration Tests'
     runs-on: [self-hosted, linux, normal]
     steps:
@@ -112,7 +133,7 @@ jobs:
 
   test-kmir-image:
     name: Test Kmir Image
-    needs: [ unit-tests, version-bump ]
+    needs: [ unit-tests, code-quality-checks ]
     runs-on: ubuntu-latest
     env:
       container_name: "kmir-${{ github.run_id }}"
@@ -166,7 +187,7 @@ jobs:
             -w /home/kmir/workspace \
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} \
             /bin/bash
-                    
+
           # Run all tests in a single exec command to maintain fixuid context
           docker exec \
             -w /home/kmir/workspace \
@@ -184,8 +205,7 @@ jobs:
           # Print test results
           echo "Test results:"
           find kmir/src/tests/integration/data -name "proofs" -type d -exec echo {} >> GITHUB_STEP_SUMMARY \;
-          
+
       - name: Tear Down Container
         if: always()
         run: docker stop ${{ env.container_name }}
-
