@@ -54,6 +54,6 @@ jobs:
           git config user.name devops
           git config user.email devops@runtimeverification.com
       - name: Tag Release Branch
-        runs: |
+        run: |
           git tag "v$(cat package/version)" origin/release
           git push origin "v$(cat package/version)"
