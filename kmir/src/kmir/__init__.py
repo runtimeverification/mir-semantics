@@ -1,3 +1,3 @@
 from typing import Final
 
-VERSION: Final = '0.3.181'
+VERSION: Final = '0.4.0'
