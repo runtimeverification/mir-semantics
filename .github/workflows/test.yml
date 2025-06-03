@@ -7,37 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  version-bump:
-    name: 'Version Bump'
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: 'Configure GitHub user'
-        run: |
-          git config user.name devops
-          git config user.email devops@runtimeverification.com
-      - name: 'Install uv'
-        uses: astral-sh/setup-uv@v5
-        with:
-          version: 0.7.2
-      - name: 'Update version'
-        run: |
-          og_version=$(git show origin/${GITHUB_BASE_REF}:package/version)
-          ./package/version.sh bump ${og_version}
-          ./package/version.sh sub
-          new_version=$(cat package/version)
-          uv --directory kmir lock --no-upgrade
-          git add --update && git commit --message "Set Version: $(cat package/version)" || true
-      - name: 'Push updates'
-        run: git push origin HEAD:${GITHUB_HEAD_REF}
-
   code-quality-checks:
-    needs: version-bump
     name: 'Code Quality Checks'
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +82,7 @@ jobs:
 
   test-kmir-image:
     name: Test Kmir Image
-    needs: [ unit-tests, version-bump ]
+    needs: [ unit-tests, code-quality-checks ]
     runs-on: ubuntu-latest
     env:
       container_name: "kmir-${{ github.run_id }}"
@@ -166,7 +136,7 @@ jobs:
             -w /home/kmir/workspace \
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} \
             /bin/bash
-                    
+
           # Run all tests in a single exec command to maintain fixuid context
           docker exec \
             -w /home/kmir/workspace \
@@ -184,8 +154,7 @@ jobs:
           # Print test results
           echo "Test results:"
           find kmir/src/tests/integration/data -name "proofs" -type d -exec echo {} >> GITHUB_STEP_SUMMARY \;
-          
+
       - name: Tear Down Container
         if: always()
         run: docker stop ${{ env.container_name }}
-
