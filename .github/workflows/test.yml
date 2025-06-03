@@ -1,6 +1,5 @@
 name: 'Test'
 on:
-  # run on all pull requests
   pull_request:
   workflow_dispatch:
 concurrency:
@@ -22,6 +21,7 @@ jobs:
         run: make check
 
   unit-tests:
+    needs: code-quality-checks
     name: 'Unit Tests'
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +35,7 @@ jobs:
         run: make test-unit
 
   integration-tests:
+    needs: code-quality-checks
     name: 'Integration Tests'
     runs-on: [self-hosted, linux, normal]
     steps:
