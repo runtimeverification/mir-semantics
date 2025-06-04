@@ -79,7 +79,6 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
 import argparse
 from pathlib import Path
 
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('smirs', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
@@ -87,12 +86,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--log-level', '-l', metavar='LOGLEVEL', default='INFO')
     return parser.parse_args()
 
-
-# def main() -> None:
-#     kmir = KMIR(LLVM_DEF_DIR)
-
-
-#     result = parse_json(kmir.definition, Path(args.json), args.sort)
 def run_linker() -> None:
     args = parse_args()
 
