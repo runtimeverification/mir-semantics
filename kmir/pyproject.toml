@@ -18,6 +18,8 @@ email = "contact@runtimeverification.com"
 [project.scripts]
 parse = "kmir.parse.__main__:main"
 kmir = "kmir.__main__:main"
+# temporary for testing, do not merge!
+link = "kmir.linker:run_linker"
 
 [project.entry-points.kdist]
 mir-semantics = "kmir.kdist.plugin"
