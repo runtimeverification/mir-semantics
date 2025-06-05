@@ -165,8 +165,79 @@ def apply_offset_proj(proj: dict, offset: int) -> None:
 
 
 def apply_offset_stmt(stmt: dict, offset: int) -> None:
-    # all statement kinds
-    return None  # NotImplemented
+    if 'Assign' in stmt:
+        apply_offset_place(stmt['Assign'][0], offset)
+        apply_offset_rvalue(stmt['Assign'][1], offset)
+    elif 'FakeRead' in stmt:
+        apply_offset_place(stmt['FakeRead'][1], offset)
+    elif 'SetDiscriminant' in stmt:
+        apply_offset_place(stmt['SetDiscriminant'][0], offset)
+    elif 'Deinit' in stmt:
+        apply_offset_place(stmt['Deinit'], offset)
+    # StorageLive
+    # StorageDead
+    elif 'Retag' in stmt:
+        apply_offset_place(stmt['Retag'], offset)
+    elif 'PlaceMention' in stmt:
+        apply_offset_place(stmt['PlaceMention'], offset)
+    elif 'AscribeUserType' in stmt:
+        apply_offset_place(stmt['AscribeUserType']['place'], offset)
+        for proj in stmt['AscribeUserType']['projections']:
+            apply_offset_proj(proj, offset)
+    # Coverage
+    # Intrinsic
+    # ConstEvalCounter
+    # Nop
+
+
+def apply_offset_rvalue(rval: dict, offset: int) -> None:
+    if 'AddressOf' in rval:
+        apply_offset_place(rval['AddressOf'][1], offset)
+    elif 'Aggregate' in rval:
+        # handle AggregateKind
+        if 'Array' in rval['Aggregate'][0]:
+            rval['Aggregate'][0]['Array'] = rval['Aggregate'][0]['Array'] + offset  # ty field
+        # Tuple
+        elif 'Adt' in rval['Aggregate'][0]:
+            rval['Aggregate'][0]['Adt'][0] = rval['Aggregate'][0]['Adt'][0] + offset  # AdtDef field
+            # FIXME traverse GenericArgs field, see TyConst code
+            # usertype annotation and field idx not used, unchanged for now
+        # Closure, contains GenericArgs
+        # Coroutine, contains GenericArgs
+        elif 'RawPtr' in rval['Aggregate'][0]:
+            rval['Aggregate'][0]['RawPtr'][0] = rval['Aggregate'][0]['RawPtr'][0] + offset  # ty field
+        for op in rval['Aggregate'][1]:
+            apply_offset_operand(op, offset)
+    elif 'BinaryOp' in rval:
+        apply_offset_operand(rval['BinaryOp'][1], offset)
+        apply_offset_operand(rval['BinaryOp'][2], offset)
+    elif 'Cast' in rval:
+        apply_offset_operand(rval['Cast'][1], offset)
+        rval['Cast'][2] = rval['Cast'][2] + offset
+    elif 'CheckedBinaryOp' in rval:
+        apply_offset_operand(rval['CheckedBinaryOp'][1], offset)
+        apply_offset_operand(rval['CheckedBinaryOp'][2], offset)
+    elif 'CopyForDeref' in rval:
+        apply_offset_place(rval['CopyForDeref'], offset)
+    elif 'Discriminant' in rval:
+        apply_offset_place(rval['Discriminant'], offset)
+    elif 'Len' in rval:
+        apply_offset_place(rval['Len'], offset)
+    elif 'Ref' in rval:
+        apply_offset_place(rval['Ref'][2], offset)
+    elif 'Repeat' in rval:
+        apply_offset_operand(rval['Repeat'][0], offset)
+        apply_offset_tyconst(rval['Repeat'][1]['kind'], offset)
+    elif 'ShallowInitBox' in rval:
+        apply_offset_operand(rval['ShallowInitBox'][0], offset)
+        rval['ShallowInitBox'][1] = rval['ShallowInitBox'][1] + offset
+    # ThreadLocalRef
+    elif 'NullaryOp' in rval:
+        rval['NullaryOp'][1] = rval['NullaryOp'][1] + offset
+    elif 'UnaryOp' in rval:
+        apply_offset_operand(rval['UnaryOp'][1], offset)
+    elif 'Use' in rval:
+        apply_offset_operand(rval['Use'], offset)
 
 
 ############################# Testing only
