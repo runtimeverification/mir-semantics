@@ -132,12 +132,8 @@ def apply_offset_tyconst(tyconst: dict, offset: int) -> None:
     # Param
     # Bound
     if 'Unevaluated' in tyconst:
-        # GenericArgs can recursively contain TyConst, or Ty
         for arg in tyconst['Unevaluated'][1]:
-            if 'Type' in arg:
-                arg['Type'] = arg['Type'] + offset
-            elif 'Const' in arg:
-                apply_offset_tyconst(arg['Const']['kind'], offset)
+            apply_offset_gen_arg(arg, offset)
     elif 'Value' in tyconst:
         tyconst['Value'][0] = tyconst['Value'][0] + offset
     elif 'ZSTValue' in tyconst:
@@ -200,10 +196,16 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
         # Tuple
         elif 'Adt' in rval['Aggregate'][0]:
             rval['Aggregate'][0]['Adt'][0] = rval['Aggregate'][0]['Adt'][0] + offset  # AdtDef field
-            # FIXME traverse GenericArgs field, see TyConst code
+            # GenericArgs can recursively contain TyConst, or Ty
+            for arg in rval['Aggregate'][0]['Adt'][2]:
+                apply_offset_gen_arg(arg, offset)
             # usertype annotation and field idx not used, unchanged for now
-        # Closure, contains GenericArgs
-        # Coroutine, contains GenericArgs
+        elif 'Closure' in rval['Aggregate'][0]:
+            for arg in rval['Aggregate'][0]['Closure'][1]:
+                apply_offset_gen_arg(arg, offset)
+        elif 'Coroutine' in rval['Aggregate'][0]:
+            for arg in rval['Aggregate'][0]['Coroutine'][1]:
+                apply_offset_gen_arg(arg, offset)
         elif 'RawPtr' in rval['Aggregate'][0]:
             rval['Aggregate'][0]['RawPtr'][0] = rval['Aggregate'][0]['RawPtr'][0] + offset  # ty field
         for op in rval['Aggregate'][1]:
@@ -238,6 +240,14 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
         apply_offset_operand(rval['UnaryOp'][1], offset)
     elif 'Use' in rval:
         apply_offset_operand(rval['Use'], offset)
+
+
+def apply_offset_gen_arg(arg: dict, offset: int) -> None:
+    # GenericArg may contain a Ty or a TyConst
+    if 'Type' in arg:
+        arg['Type'] = arg['Type'] + offset
+    elif 'Const' in arg:
+        apply_offset_tyconst(arg['Const']['kind'], offset)
 
 
 ############################# Testing only
