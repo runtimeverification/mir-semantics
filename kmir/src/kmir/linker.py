@@ -53,10 +53,12 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
         (ty + offset, apply_offset_typeInfo(typeInfo, offset)) for ty, typeInfo in info._smir['types']
     ]
 
+    # TODO adjust all alloc IDs (incl. alloc provenance)
+    # TODO then adjust alloc references during item traversal
+
     # traverse item bodies and replace all `ty` fields
     for item in info._smir['items']:
         apply_offset_item(item['mono_item_kind'], offset)
-
 
 def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
     # traverses type information, updating all `Ty`-valued fields and `adt_def` fields within
