@@ -74,19 +74,20 @@ class CargoProject:
         # Return the most recently modified smir file
         return sorted_smir_files[0]
 
-    def smir_files_for_project(self) -> list[Path]:
+    def smir_files_for_project(self, clean: bool = False) -> list[Path]:
         # run a cargo build --release command with stable-mir-json as the rustc compiler
         # to be 100% safe, run cargo clean if there are no *smir.json files
         # assumes cargo and stable-mir-json are on the path (with these names)
 
-        _LOGGER.info(f'Running "cargo clean" in {self.working_directory}')
-        command_result = subprocess.run(['cargo', 'clean'], capture_output=True, text=True, cwd=self.working_directory)
-        for l in command_result.stderr.splitlines():
-            _LOGGER.info(l)
+        if clean:
+            _LOGGER.info(f'Running "cargo clean" in {self.working_directory}')
+            command_result = subprocess.run(['cargo', 'clean'], capture_output=True, text=True, cwd=self.working_directory)
+            for l in command_result.stderr.splitlines():
+                _LOGGER.info(l)
 
         _LOGGER.info(f'Running "cargo build" with stable-mir-json in {self.working_directory}')
         env = {**os.environ, 'RUSTC': 'stable-mir-json'}
-        cmd = ['cargo', 'build', '--message-format=json']  # ?? , '--release'] ??
+        cmd = ['cargo', 'build', '--message-format=json', '--release']
         command_result = subprocess.run(cmd, env=env, capture_output=True, text=True, cwd=self.working_directory)
 
         for l in command_result.stderr.splitlines():
