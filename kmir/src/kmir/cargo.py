@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import subprocess
 from functools import cached_property
 from pathlib import Path
@@ -72,6 +73,48 @@ class CargoProject:
 
         # Return the most recently modified smir file
         return sorted_smir_files[0]
+
+    def smir_files_for_project(self) -> list[Path]:
+        # run a cargo build --release command with stable-mir-json as the rustc compiler
+        # to be 100% safe, run cargo clean if there are no *smir.json files
+        # assumes cargo and stable-mir-json are on the path (with these names)
+
+        _LOGGER.info(f'Running "cargo clean" in {self.working_directory}')
+        command_result = subprocess.run(['cargo', 'clean'], capture_output=True, text=True, cwd=self.working_directory)
+        for l in command_result.stderr.splitlines():
+            _LOGGER.info(l)
+
+        _LOGGER.info(f'Running "cargo build" with stable-mir-json in {self.working_directory}')
+        env = {**os.environ, 'RUSTC': 'stable-mir-json'}
+        cmd = ['cargo', 'build', '--message-format=json']  # ?? , '--release'] ??
+        command_result = subprocess.run(cmd, env=env, capture_output=True, text=True, cwd=self.working_directory)
+
+        for l in command_result.stderr.splitlines():
+            _LOGGER.info(l)
+        _LOGGER.debug(command_result.stdout)
+
+        messages = [json.loads(line) for line in command_result.stdout.splitlines()]
+
+        artifacts = [
+            (Path(message['filenames'][0]), message.get('executable') is not None)
+            for message in messages
+            if message.get('reason') == 'compiler-artifact'
+        ]
+
+        libraries = []
+        executables = []
+        for file, is_exec in artifacts:
+            _LOGGER.debug(f'{"Artifact" if is_exec else "Library"} at ../{file.parent.name}/{file.name}')
+            if is_exec:
+                smirs = list((file.parent / 'deps').glob(f'{file.name}*.smir.json'))
+                executables.append(smirs[0])
+            else:
+                name = file.stem.removeprefix('lib') + '.smir.json'
+                libraries.append(file.parent / name)
+
+        _LOGGER.debug(f'Result: {executables + libraries}')
+
+        return executables + libraries
 
     @cached_property
     def default_target(self) -> str:
