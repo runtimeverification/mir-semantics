@@ -160,3 +160,13 @@ class ViewOpts(DisplayOpts): ...
 @dataclass
 class PruneOpts(ProofOpts):
     node_id: int
+
+
+@dataclass
+class LinkOpts(KMirOpts):
+    smir_files: list[Path]
+    output_file: Path
+
+    def __init__(self, smir_files: list[str], output_file: str | None = None) -> None:
+        self.smir_files = [Path(f) for f in smir_files]
+        self.output_file = Path(output_file) if output_file is not None else Path('linker_output.smir.json')

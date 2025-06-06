@@ -251,29 +251,3 @@ def apply_offset_gen_arg(arg: dict, offset: int) -> None:
         arg['Type'] = arg['Type'] + offset
     elif 'Const' in arg:
         apply_offset_tyconst(arg['Const']['kind'], offset)
-
-
-############################# Testing only
-
-import argparse
-from pathlib import Path
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('smirs', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
-    parser.add_argument('--output', '-o', metavar='OUTPUT_FILE', help='Output file', default='out.smir.json')
-    parser.add_argument('--log-level', '-l', metavar='LOGLEVEL', default='INFO')
-    return parser.parse_args()
-
-
-def run_linker() -> None:
-    args = parse_args()
-
-    logging.basicConfig(level=args.log_level.upper())
-
-    smirs = [SMIRInfo.from_file(Path(f)) for f in args.smirs]
-
-    result = link(smirs)
-
-    result.dump(Path(args.output))
