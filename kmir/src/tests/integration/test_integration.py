@@ -14,7 +14,9 @@ from pyk.proof.show import APRProofShow
 
 from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
 from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
+from kmir.cargo import CargoProject
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
+from kmir.linker import link
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
@@ -511,3 +513,28 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
             smir_dir / f'show/{pinocchio_token_program.stem}.{start_symbol}.expected',
             update=update_expected_output,
         )
+
+
+MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'multi-crate').resolve(strict=True)
+MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
+
+@pytest.mark.parametrize(
+    'main_crate',
+    MULTI_CRATE_TESTS,
+    ids=[spec.parent.stem for spec in MULTI_CRATE_TESTS],
+)
+def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    cargo = CargoProject(main_crate)
+
+    smirs = cargo.smir_files_for_project(clean=True)
+
+    if len(smirs) == 0:
+        raise Exception('empty smirs')
+
+    linked = link([SMIRInfo.from_file(f) for f in smirs])
+    result = kmir.run_smir(linked)
+
+    output_kast = main_crate.parent / 'output.expected'
+
+    result_pretty = kmir.kore_to_pretty(result).rstrip()
+    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
