@@ -61,8 +61,14 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
 def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
     # traverses type information, updating all `Ty`-valued fields and `adt_def` fields within
     # returns the updated (i.e., mutated) `typeinfo`` dictionary
-    if 'StructType' in typeinfo:
+    # 'PrimitiveType' in typeinfo:
+    if 'EnumType' in typeinfo:
+        typeinfo['EnumType']['adt_def'] = typeinfo['EnumType']['adt_def'] + offset
+    elif 'StructType' in typeinfo:
         typeinfo['StructType']['fields'] = [x + offset for x in typeinfo['StructType']['fields']]
+        typeinfo['StructType']['adt_def'] = typeinfo['StructType']['adt_def'] + offset
+    elif 'UnionType' in typeinfo:
+        typeinfo['UnionType']['adt_def'] = typeinfo['UnionType']['adt_def'] + offset
     elif 'ArrayType' in typeinfo:
         assert isinstance(typeinfo['ArrayType'], list)
         typeinfo['ArrayType'][0] = typeinfo['ArrayType'][0] + offset
@@ -72,13 +78,7 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
         typeinfo['RefType'] = typeinfo['RefType'] + offset
     elif 'TupleType' in typeinfo:
         typeinfo['TupleType']['types'] = [x + offset for x in typeinfo['TupleType']['types']]
-    # noop cases
-    # elif 'PrimitiveType' in typeinfo:
-    # elif 'EnumType' in typeinfo:
-    # elif 'UnionType' in typeinfo:
-    # elif 'FunType' in typeinfo:
-
-    # FIXME adt_def!
+    # 'FunType' in typeinfo:
 
     return typeinfo
 
