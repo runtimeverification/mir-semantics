@@ -80,7 +80,7 @@ class CargoProject:
         return sorted_smir_files[0]
 
     def smir_files_for_project(self, clean: bool = False) -> list[Path]:
-        # run a cargo build --release command with stable-mir-json as the rustc compiler
+        # run a cargo build command with stable-mir-json as the rustc compiler
         # to be 100% safe, run cargo clean if there are no *smir.json files
         # assumes cargo and stable-mir-json are on the path (with these names)
 
@@ -94,7 +94,7 @@ class CargoProject:
 
         _LOGGER.info(f'Running "cargo build" with stable-mir-json in {self.working_directory}')
         env = {**os.environ, 'RUSTC': str(self.stable_mir_json)}
-        cmd = ['cargo', 'build', '--message-format=json', '--release']
+        cmd = ['cargo', 'build', '--message-format=json']
         command_result = subprocess.run(cmd, env=env, capture_output=True, text=True, cwd=self.working_directory)
 
         for l in command_result.stderr.splitlines():

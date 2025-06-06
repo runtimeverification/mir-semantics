@@ -35,8 +35,8 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 
 def ty_range(smir: SMIRInfo) -> int:
-    f_max = max([ty for ty, _ in smir.function_symbols.items()])
-    ty_max = max([ty for ty, _ in smir.types.items()])
+    f_max = max([0] + [ty for ty, _ in smir.function_symbols.items()])
+    ty_max = max([0] + [ty for ty, _ in smir.types.items()])
     return max(f_max, ty_max)
 
 
