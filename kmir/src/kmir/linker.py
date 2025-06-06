@@ -60,6 +60,7 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
     for item in info._smir['items']:
         apply_offset_item(item['mono_item_kind'], offset)
 
+
 def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
     # traverses type information, updating all `Ty`-valued fields and `adt_def` fields within
     # returns the updated (i.e., mutated) `typeinfo`` dictionary
