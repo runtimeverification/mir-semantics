@@ -518,6 +518,7 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'multi-crate').resolve(strict=True)
 MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
 
+
 @pytest.mark.parametrize(
     'main_crate',
     MULTI_CRATE_TESTS,
