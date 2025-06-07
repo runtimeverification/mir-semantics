@@ -80,13 +80,15 @@ class KMIR(KProve, KRun, KParse):
             elif item['mono_item_kind']['MonoItemFn']['name'] == 'main':
                 _LOGGER.warning(f'Hardcoding name "main" for item: {item_name}')
                 item_name = 'main'
-            item_ty = KApply('ty', [token(smir_info.function_symbols_reverse[item_name])])
             parsed_item = parser.parse_mir_json(item, 'MonoItem')
             if not parsed_item:
                 raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
             parsed_item_kinner, _ = parsed_item
             assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
-            parsed_items[item_ty] = parsed_item_kinner.args[1]
+            # each item can have several entries in the function table for linked SMIR JSON
+            for ty in smir_info.function_symbols_reverse[item_name]:
+                item_ty = KApply('ty', [token(ty)])
+                parsed_items[item_ty] = parsed_item_kinner.args[1]
         return map_of(parsed_items)
 
     def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:

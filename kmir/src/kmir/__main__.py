@@ -17,7 +17,8 @@ from pyk.proof.tui import APRProofViewer
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
-from .options import GenSpecOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
+from .linker import link
+from .options import GenSpecOpts, LinkOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
 from .parse.parser import parse_json
 from .smir import SMIRInfo
 
@@ -137,6 +138,11 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_link(opts: LinkOpts) -> None:
+    result = link([SMIRInfo.from_file(f) for f in opts.smir_files])
+    result.dump(opts.output_file)
+
+
 def kmir(args: Sequence[str]) -> None:
     ns = _arg_parser().parse_args(args)
     opts = _parse_args(ns)
@@ -156,6 +162,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prune(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
+        case LinkOpts():
+            _kmir_link(opts)
         case _:
             raise AssertionError()
 
@@ -259,6 +267,14 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    link_parser = command_parser.add_parser(
+        'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
+    )
+    link_parser.add_argument('smir_files', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
+    link_parser.add_argument(
+        '--output-file', '-o', metavar='FILE', help='Output file', default='linker_output.smir.json'
+    )
+
     return parser
 
 
@@ -318,6 +334,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
+            )
+        case 'link':
+            return LinkOpts(
+                smir_files=ns.smir_files,
+                output_file=ns.output_file,
             )
         case _:
             raise AssertionError()

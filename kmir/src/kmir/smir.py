@@ -68,12 +68,18 @@ class SMIRInfo:
     @cached_property
     def function_symbols(self) -> dict[int, dict]:
         fnc_symbols = {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
-        fnc_symbols[-1] = {'NormalSym': 'main'}
+        fnc_symbols[-1] = {'NormalSym': 'main'}  # instead of fully qualified name, see kmir.py:_make_function_map
         return fnc_symbols
 
     @cached_property
-    def function_symbols_reverse(self) -> dict[str, int]:
-        return {sym['NormalSym']: ty for ty, sym in self.function_symbols.items() if 'NormalSym' in sym}
+    def function_symbols_reverse(self) -> dict[str, list[int]]:
+        # must retain any duplicates, therefore returning a list of Ty instead of a single one
+        tys_for_name: dict[str, list[int]] = {}
+        for ty, sym in self.function_symbols.items():
+            if 'NormalSym' in sym:
+                tys_for_name.setdefault(sym['NormalSym'], [])
+                tys_for_name[sym['NormalSym']].append(ty)
+        return tys_for_name
 
     @cached_property
     def function_tys(self) -> dict[str, int]:
@@ -92,7 +98,8 @@ class SMIRInfo:
                 _LOGGER.warning(f'Could not find sym in fun_syms: {sym}')
                 continue
 
-            res[name] = fun_syms[sym]
+            # by construction of function_symbols_reverse, it must return at least a singleton
+            res[name] = fun_syms[sym][0]
         return res
 
     @cached_property
