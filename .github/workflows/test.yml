@@ -48,8 +48,8 @@ jobs:
         uses: ./.github/actions/with-docker
         with:
           container-name: mir-semantics-ci-${{ github.sha }}
-      - name: 'Build kmir'
-        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make build
+      - name: 'Build stable-mir-json and kmir'
+        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make stable-mir-json build
       - name: 'Run integration tests'
         run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration
       - name: 'Tear down Docker'
