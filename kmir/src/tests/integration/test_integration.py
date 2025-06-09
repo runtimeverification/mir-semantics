@@ -30,8 +30,8 @@ if TYPE_CHECKING:
     from kmir.parse.parser import JSON
 
 
-PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*.*'))
+PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+PROVE_RS_FILES = list(PROVE_RS_DIR.glob('*.*'))
 PROVE_RS_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
@@ -54,8 +54,8 @@ PROVE_RS_SHOW_SPECS = [
 
 @pytest.mark.parametrize(
     'rs_file',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
+    PROVE_RS_FILES,
+    ids=[spec.stem for spec in PROVE_RS_FILES],
 )
 def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
@@ -84,7 +84,7 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
             show_res = '\n'.join(shower.show(apr_proof))
             assert_or_update_show_output(
-                show_res, PROVING_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+                show_res, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
 
         if not should_fail:
