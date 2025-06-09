@@ -30,6 +30,314 @@ if TYPE_CHECKING:
     from kmir.parse.parser import JSON
 
 
+PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+PROVING_FILES = list(PROVING_DIR.glob('*.*'))
+PROVE_RS_START_SYMBOLS = {
+    'symbolic-args-fail': ['main', 'eats_all_args'],
+    'symbolic-structs-fail': ['eats_struct_args'],
+    'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
+    'checked_arithmetic-fail': ['checked_add_i32'],
+}
+PROVE_RS_SHOW_SPECS = [
+    'local-raw-fail',
+    'interior-mut-fail',
+    'interior-mut2-fail',
+    'interior-mut3-fail',
+    'assert_eq_exp-fail',
+    'bitwise-not-shift-fail',
+    'symbolic-args-fail',
+    'symbolic-structs-fail',
+    'checked_arithmetic-fail',
+    'offset-u8-fail',
+]
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    PROVING_FILES,
+    ids=[spec.stem for spec in PROVING_FILES],
+)
+def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    should_fail = rs_file.stem.endswith('fail')
+    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+    is_smir = rs_file.suffix == '.json'
+
+    if update_expected_output and not should_show:
+        pytest.skip()
+
+    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+
+    start_symbols = ['main']
+    if rs_file.stem in PROVE_RS_START_SYMBOLS:
+        start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
+
+    for start_symbol in start_symbols:
+        prove_rs_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+
+        if should_show:
+            display_opts = ShowOpts(
+                rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
+            )
+            shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
+            show_res = '\n'.join(shower.show(apr_proof))
+            assert_or_update_show_output(
+                show_res, PROVING_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+            )
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
+
+
+def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
+    sys.setrecursionlimit(15000000)
+    smir_dir = Path(__file__).parent / 'data' / 'prove-smir'
+    pinocchio_token_program = smir_dir / 'pinocchio_token_program.smir.json'
+    start_symbols = [
+        'processor::transfer::process_transfer',
+    ]
+    prove_rs_opts = ProveRSOpts(pinocchio_token_program, max_iterations=7, smir=True)
+
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+
+    for start_symbol in start_symbols:
+        prove_rs_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+        display_opts = ShowOpts(
+            pinocchio_token_program.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
+        )
+        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
+        show_res = '\n'.join(shower.show(apr_proof))
+        assert_or_update_show_output(
+            show_res,
+            smir_dir / f'show/{pinocchio_token_program.stem}.{start_symbol}.expected',
+            update=update_expected_output,
+        )
+
+
+MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'multi-crate').resolve(strict=True)
+MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
+
+
+@pytest.mark.parametrize(
+    'main_crate',
+    MULTI_CRATE_TESTS,
+    ids=[spec.parent.stem for spec in MULTI_CRATE_TESTS],
+)
+def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    cargo = CargoProject(main_crate)
+
+    smirs = cargo.smir_files_for_project(clean=True)
+
+    if len(smirs) == 0:
+        raise Exception('empty smirs')
+
+    linked = link([SMIRInfo.from_file(f) for f in smirs])
+
+    # results for `run` have unstable IDs so run a termination proof for testing
+    _, linked_file_str = tempfile.mkstemp()
+    linked_file = Path(linked_file_str)
+    linked.dump(linked_file)
+    opts = ProveRSOpts(linked_file, smir=True)
+    proof = kmir.prove_rs(opts)
+
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+    display_opts = ShowOpts(linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False)
+    shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
+    show_res = '\n'.join(shower.show(proof))
+
+    os.unlink(linked_file)
+
+    assert_or_update_show_output(
+        show_res,
+        main_crate.parent / 'output.expected',
+        update=update_expected_output,
+    )
+
+
+EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict=True)
+EXEC_DATA = [
+    (
+        'main-a-b-c',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.run.state',
+        None,
+    ),
+    (
+        'main-a-b-c --depth 20',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
+        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
+        20,
+    ),
+    (
+        'call-with-args',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
+        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
+        30,
+    ),
+    (
+        'assign-cast',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.smir.json',
+        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
+        None,
+    ),
+    (
+        'structs-tuples',
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
+        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
+        99,
+    ),
+    (
+        'struct-field-update',
+        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.smir.json',
+        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
+        None,
+    ),
+    (
+        'arithmetic',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
+        None,
+    ),
+    (
+        'arithmetic-unchecked',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.state',
+        None,
+    ),
+    (
+        'unary',
+        EXEC_DATA_DIR / 'arithmetic' / 'unary.smir.json',
+        EXEC_DATA_DIR / 'arithmetic' / 'unary.state',
+        None,
+    ),
+    (
+        'Ref-simple',
+        EXEC_DATA_DIR / 'references' / 'simple.smir.json',
+        EXEC_DATA_DIR / 'references' / 'simple.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg.state',
+        None,
+    ),
+    (
+        'Ref-refAsArg2',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
+        1000,
+    ),
+    (
+        'Ref-refReturned',
+        EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
+        EXEC_DATA_DIR / 'references' / 'refReturned.state',
+        1000,
+    ),
+    (
+        'Ref-doubleRef',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'doubleRef.state',
+        None,
+    ),
+    (
+        'Ref-mutableRef',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
+        EXEC_DATA_DIR / 'references' / 'mutableRef.state',
+        1000,
+    ),
+    (
+        'Ref-weirdRefs',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.smir.json',
+        EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
+        None,
+    ),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
+    (
+        'Array-indexing',
+        EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_indexing.state',
+        None,
+    ),
+    (
+        'Array-index-writes',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_write.state',
+        None,
+    ),
+]
+
+
+@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
+@pytest.mark.parametrize(
+    'test_case',
+    EXEC_DATA,
+    ids=[name for (name, _, _, _) in EXEC_DATA],
+)
+def test_exec_smir(
+    test_case: tuple[str, Path, Path, int],
+    kmir_backend: KMIR,
+    update_expected_output: bool,
+) -> None:
+
+    (_, input_json, output_kast, depth) = test_case
+    smir_info = SMIRInfo.from_file(input_json)
+
+    result = kmir_backend.run_smir(smir_info, depth=depth)
+
+    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
+    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
+
+
+@pytest.mark.parametrize(
+    'test_data',
+    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
+    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
+)
+def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
+    testname, smir_json = test_data
+    spec_file = tmp_path / f'{testname}.k'
+    gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
+
+    proof_dir = tmp_path / 'proof'
+    prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
+
+    _kmir_gen_spec(gen_opts)
+    _kmir_prove_raw(prove_opts)
+
+    claim_labels = kmir.get_claim_index(spec_file).labels()
+    for label in claim_labels:
+        proof = Proof.read_proof_data(proof_dir, label)
+        assert proof.passed
+
+
+PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
+PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
+
+
+@pytest.mark.parametrize(
+    'spec',
+    PROVING_FILES,
+    ids=[spec.stem for spec in PROVING_FILES],
+)
+def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
+    proof_dir = tmp_path / (spec.stem + 'proofs')
+    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
+    _kmir_prove_raw(prove_opts)
+
+    claim_labels = kmir.get_claim_index(spec).labels()
+    for label in claim_labels:
+        proof = Proof.read_proof_data(proof_dir, label)
+        assert proof.passed
+
+
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
 SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'local',
@@ -248,311 +556,3 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
-
-
-EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict=True)
-EXEC_DATA = [
-    (
-        'main-a-b-c',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.run.state',
-        None,
-    ),
-    (
-        'main-a-b-c --depth 20',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
-        EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
-        20,
-    ),
-    (
-        'call-with-args',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
-        EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
-        30,
-    ),
-    (
-        'assign-cast',
-        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.smir.json',
-        EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
-        None,
-    ),
-    (
-        'structs-tuples',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
-        99,
-    ),
-    (
-        'struct-field-update',
-        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.smir.json',
-        EXEC_DATA_DIR / 'structs-tuples' / 'struct_field_update.state',
-        None,
-    ),
-    (
-        'arithmetic',
-        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.smir.json',
-        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic.state',
-        None,
-    ),
-    (
-        'arithmetic-unchecked',
-        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.smir.json',
-        EXEC_DATA_DIR / 'arithmetic' / 'arithmetic-unchecked-runs.state',
-        None,
-    ),
-    (
-        'unary',
-        EXEC_DATA_DIR / 'arithmetic' / 'unary.smir.json',
-        EXEC_DATA_DIR / 'arithmetic' / 'unary.state',
-        None,
-    ),
-    (
-        'Ref-simple',
-        EXEC_DATA_DIR / 'references' / 'simple.smir.json',
-        EXEC_DATA_DIR / 'references' / 'simple.state',
-        None,
-    ),
-    (
-        'Ref-refAsArg',
-        EXEC_DATA_DIR / 'references' / 'refAsArg.smir.json',
-        EXEC_DATA_DIR / 'references' / 'refAsArg.state',
-        None,
-    ),
-    (
-        'Ref-refAsArg2',
-        EXEC_DATA_DIR / 'references' / 'refAsArg2.smir.json',
-        EXEC_DATA_DIR / 'references' / 'refAsArg2.state',
-        1000,
-    ),
-    (
-        'Ref-refReturned',
-        EXEC_DATA_DIR / 'references' / 'refReturned.smir.json',
-        EXEC_DATA_DIR / 'references' / 'refReturned.state',
-        1000,
-    ),
-    (
-        'Ref-doubleRef',
-        EXEC_DATA_DIR / 'references' / 'doubleRef.smir.json',
-        EXEC_DATA_DIR / 'references' / 'doubleRef.state',
-        None,
-    ),
-    (
-        'Ref-mutableRef',
-        EXEC_DATA_DIR / 'references' / 'mutableRef.smir.json',
-        EXEC_DATA_DIR / 'references' / 'mutableRef.state',
-        1000,
-    ),
-    (
-        'Ref-weirdRefs',
-        EXEC_DATA_DIR / 'references' / 'weirdRefs.smir.json',
-        EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
-        None,
-    ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
-    (
-        'Array-indexing',
-        EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
-        EXEC_DATA_DIR / 'arrays' / 'array_indexing.state',
-        None,
-    ),
-    (
-        'Array-index-writes',
-        EXEC_DATA_DIR / 'arrays' / 'array_write.smir.json',
-        EXEC_DATA_DIR / 'arrays' / 'array_write.state',
-        None,
-    ),
-]
-
-
-@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
-@pytest.mark.parametrize(
-    'test_case',
-    EXEC_DATA,
-    ids=[name for (name, _, _, _) in EXEC_DATA],
-)
-def test_exec_smir(
-    test_case: tuple[str, Path, Path, int],
-    kmir_backend: KMIR,
-    update_expected_output: bool,
-) -> None:
-
-    (_, input_json, output_kast, depth) = test_case
-    smir_info = SMIRInfo.from_file(input_json)
-
-    result = kmir_backend.run_smir(smir_info, depth=depth)
-
-    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
-    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
-
-
-@pytest.mark.parametrize(
-    'test_data',
-    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
-    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
-)
-def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
-    testname, smir_json = test_data
-    spec_file = tmp_path / f'{testname}.k'
-    gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
-
-    proof_dir = tmp_path / 'proof'
-    prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
-
-    _kmir_gen_spec(gen_opts)
-    _kmir_prove_raw(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec_file).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
-
-
-PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
-
-
-@pytest.mark.parametrize(
-    'spec',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
-)
-def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
-    proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
-    _kmir_prove_raw(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
-
-
-PROVING_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*.*'))
-PROVE_RS_START_SYMBOLS = {
-    'symbolic-args-fail': ['main', 'eats_all_args'],
-    'symbolic-structs-fail': ['eats_struct_args'],
-    'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
-    'checked_arithmetic-fail': ['checked_add_i32'],
-}
-PROVE_RS_SHOW_SPECS = [
-    'local-raw-fail',
-    'interior-mut-fail',
-    'interior-mut2-fail',
-    'interior-mut3-fail',
-    'assert_eq_exp-fail',
-    'bitwise-not-shift-fail',
-    'symbolic-args-fail',
-    'symbolic-structs-fail',
-    'checked_arithmetic-fail',
-    'offset-u8-fail',
-]
-
-
-@pytest.mark.parametrize(
-    'rs_file',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
-)
-def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
-    should_fail = rs_file.stem.endswith('fail')
-    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
-    is_smir = rs_file.suffix == '.json'
-
-    if update_expected_output and not should_show:
-        pytest.skip()
-
-    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
-
-    start_symbols = ['main']
-    if rs_file.stem in PROVE_RS_START_SYMBOLS:
-        start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
-
-    for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
-
-        if should_show:
-            display_opts = ShowOpts(
-                rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
-            )
-            shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
-            show_res = '\n'.join(shower.show(apr_proof))
-            assert_or_update_show_output(
-                show_res, PROVING_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
-            )
-
-        if not should_fail:
-            assert apr_proof.passed
-        else:
-            assert apr_proof.failed
-
-
-def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
-    sys.setrecursionlimit(15000000)
-    smir_dir = Path(__file__).parent / 'data' / 'prove-smir'
-    pinocchio_token_program = smir_dir / 'pinocchio_token_program.smir.json'
-    start_symbols = [
-        'processor::transfer::process_transfer',
-    ]
-    prove_rs_opts = ProveRSOpts(pinocchio_token_program, max_iterations=7, smir=True)
-
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
-
-    for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
-        display_opts = ShowOpts(
-            pinocchio_token_program.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
-        )
-        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
-        show_res = '\n'.join(shower.show(apr_proof))
-        assert_or_update_show_output(
-            show_res,
-            smir_dir / f'show/{pinocchio_token_program.stem}.{start_symbol}.expected',
-            update=update_expected_output,
-        )
-
-
-MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'multi-crate').resolve(strict=True)
-MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
-
-
-@pytest.mark.parametrize(
-    'main_crate',
-    MULTI_CRATE_TESTS,
-    ids=[spec.parent.stem for spec in MULTI_CRATE_TESTS],
-)
-def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: bool) -> None:
-    cargo = CargoProject(main_crate)
-
-    smirs = cargo.smir_files_for_project(clean=True)
-
-    if len(smirs) == 0:
-        raise Exception('empty smirs')
-
-    linked = link([SMIRInfo.from_file(f) for f in smirs])
-
-    # results for `run` have unstable IDs so run a termination proof for testing
-    _, linked_file_str = tempfile.mkstemp()
-    linked_file = Path(linked_file_str)
-    linked.dump(linked_file)
-    opts = ProveRSOpts(linked_file, smir=True)
-    proof = kmir.prove_rs(opts)
-
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
-    display_opts = ShowOpts(linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False)
-    shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
-    show_res = '\n'.join(shower.show(proof))
-
-    os.unlink(linked_file)
-
-    assert_or_update_show_output(
-        show_res,
-        main_crate.parent / 'output.expected',
-        update=update_expected_output,
-    )
