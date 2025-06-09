@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -533,9 +535,24 @@ def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: 
         raise Exception('empty smirs')
 
     linked = link([SMIRInfo.from_file(f) for f in smirs])
-    result = kmir.run_smir(linked)
 
-    output_kast = main_crate.parent / 'output.expected'
+    # results for `run` have unstable IDs so run a termination proof for testing
+    _, linked_file_str = tempfile.mkstemp()
+    linked_file = Path(linked_file_str)
+    linked.dump(linked_file)
+    opts = ProveRSOpts(linked_file, smir=True)
+    proof = kmir.prove_rs(opts)
 
-    result_pretty = kmir.kore_to_pretty(result).rstrip()
-    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+    display_opts = ShowOpts(linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False)
+    shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
+    show_res = '\n'.join(shower.show(proof))
+
+    os.unlink(linked_file)
+
+    assert_or_update_show_output(
+        show_res,
+        main_crate.parent / 'output.expected',
+        update=update_expected_output,
+    )
