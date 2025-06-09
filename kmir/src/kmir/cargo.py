@@ -174,11 +174,16 @@ def stable_mir_json() -> Path:
         Path.home() / '.stable-mir-json' / 'debug.sh',
     ]
 
-    existing = [cand for cand in (in_tree + on_path + in_home) if cand.exists()]
+    candidates = in_tree + on_path + in_home
+
+    existing = [cand for cand in candidates if cand.exists()]
 
     if len(existing) < 1:
-        _LOGGER.error("Unable to find stable-mir-json executable. This won't work well.")
-        return Path('stable-mir-json')
+        _LOGGER.error('Cannot build: Unable to find stable-mir-json executable. Tried')
+        for p in candidates:
+            _LOGGER.error(f'Path {p}')
+        _LOGGER.error('Please install into $HOME or ensure you have an executable `stable-mir-json` on the path.')
+        raise FileNotFoundError('stable-mir-json not installed.')
     else:
         _LOGGER.debug(f'Using stable-mir-json from {existing[0]}')
         return existing[0]
