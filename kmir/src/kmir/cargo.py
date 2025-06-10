@@ -118,10 +118,18 @@ class CargoProject:
         ]
 
         targets = []
+        exe = None
         for file, kind in artifacts:
             _LOGGER.debug(f'Artifact ({kind}) at ../{file.parent.name}/{file.name}')
             in_deps = file.parent.name == 'deps'
             if kind == 'bin':
+                # we can only support a single executable at the moment
+                if exe is not None:
+                    raise FileExistsError(
+                        f'Already linking executable {exe} but found {file.name}.'
+                        'Several execuatbles not supported at the moment.'
+                    )
+                exe = file.name
                 # executables are in the target directory and do not have a suffix as in `deps`
                 related_files = list((file.parent / 'deps').glob(f'{file.name}*.smir.json'))
                 targets.append(related_files[0])
