@@ -36,15 +36,15 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 def _kmir_run(opts: RunOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR) if opts.haskell_backend else KMIR(LLVM_DEF_DIR)
 
-    smir_file: Path
     if opts.file:
-        smir_file = Path(opts.file)
+        smir_info = SMIRInfo.from_file(Path(opts.file))
     else:
         cargo = CargoProject(Path.cwd())
-        target = opts.bin if opts.bin else cargo.default_target
-        smir_file = cargo.smir_for(target)
-
-    smir_info = SMIRInfo.from_file(smir_file)
+        # multi-exec projects currently not supported
+        if opts.bin:
+            _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
+        # target = opts.bin if opts.bin else cargo.default_target
+        smir_info = cargo.smir_for_project(clean=False)
 
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))

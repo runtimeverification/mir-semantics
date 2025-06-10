@@ -64,27 +64,6 @@ class CargoProject:
         messages = [json.loads(message) for message in split_command_result]
         return messages
 
-    def smir_for(self, target: str) -> Path:
-        """Gets the latest smir json in the target directory for the given target. Raises a RuntimeError if none exist."""
-
-        is_artifact = lambda message: message.get('reason') == 'compiler-artifact'
-        is_my_target = lambda artifact: artifact.get('target', {}).get('name') == target
-        artifact = next(message for message in self.build_messages if is_artifact(message) and is_my_target(message))
-        executable_name = Path(artifact['executable'])
-        deps_dir = executable_name.parent / 'deps'
-
-        # Get the smir file(s) and sort them by modified time
-        smir_files = deps_dir.glob(f'{target}*.smir.json')
-        sorted_smir_files = sorted(smir_files, key=lambda f: f.stat().st_mtime, reverse=True)
-
-        if len(sorted_smir_files) == 0:
-            raise RuntimeError(
-                f'Unable to find smir json for target {target!r}. Have you built it using stable-mir-json?'
-            )
-
-        # Return the most recently modified smir file
-        return sorted_smir_files[0]
-
     def smir_for_project(self, clean: bool = False) -> SMIRInfo:
         # run a cargo build command with stable-mir-json as the rustc compiler
         # and run cargo clean before (optional)
