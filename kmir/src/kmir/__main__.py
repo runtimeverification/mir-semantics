@@ -17,7 +17,8 @@ from pyk.proof.tui import APRProofViewer
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
-from .options import GenSpecOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
+from .linker import link
+from .options import GenSpecOpts, LinkOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
 from .parse.parser import parse_json
 from .smir import SMIRInfo
 
@@ -35,15 +36,15 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 def _kmir_run(opts: RunOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR) if opts.haskell_backend else KMIR(LLVM_DEF_DIR)
 
-    smir_file: Path
     if opts.file:
-        smir_file = Path(opts.file)
+        smir_info = SMIRInfo.from_file(Path(opts.file))
     else:
         cargo = CargoProject(Path.cwd())
-        target = opts.bin if opts.bin else cargo.default_target
-        smir_file = cargo.smir_for(target)
-
-    smir_info = SMIRInfo.from_file(smir_file)
+        # multi-exec projects currently not supported
+        if opts.bin:
+            _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
+        # target = opts.bin if opts.bin else cargo.default_target
+        smir_info = cargo.smir_for_project(clean=False)
 
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
@@ -137,6 +138,11 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_link(opts: LinkOpts) -> None:
+    result = link([SMIRInfo.from_file(f) for f in opts.smir_files])
+    result.dump(opts.output_file)
+
+
 def kmir(args: Sequence[str]) -> None:
     ns = _arg_parser().parse_args(args)
     opts = _parse_args(ns)
@@ -156,6 +162,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prune(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
+        case LinkOpts():
+            _kmir_link(opts)
         case _:
             raise AssertionError()
 
@@ -259,6 +267,14 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    link_parser = command_parser.add_parser(
+        'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
+    )
+    link_parser.add_argument('smir_files', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
+    link_parser.add_argument(
+        '--output-file', '-o', metavar='FILE', help='Output file', default='linker_output.smir.json'
+    )
+
     return parser
 
 
@@ -318,6 +334,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
+            )
+        case 'link':
+            return LinkOpts(
+                smir_files=ns.smir_files,
+                output_file=ns.output_file,
             )
         case _:
             raise AssertionError()
