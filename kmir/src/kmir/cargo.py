@@ -11,6 +11,9 @@ from typing import TYPE_CHECKING
 
 from pyk.utils import run_process_2
 
+from .linker import link
+from .smir import SMIRInfo
+
 if TYPE_CHECKING:
     from typing import Any, Final
 
@@ -24,6 +27,9 @@ class CargoProject:
     working_directory: Path
 
     def __init__(self, working_directory: Path) -> None:
+        # rudimentary check that this is in fact a cargo project directory
+        if not (working_directory / 'Cargo.toml').exists():
+            raise FileNotFoundError(f'{working_directory}: Not a cargo project.')
         self.working_directory = working_directory
 
     @cached_property
@@ -79,10 +85,12 @@ class CargoProject:
         # Return the most recently modified smir file
         return sorted_smir_files[0]
 
-    def smir_files_for_project(self, clean: bool = False) -> list[Path]:
+    def smir_for_project(self, clean: bool = False) -> SMIRInfo:
         # run a cargo build command with stable-mir-json as the rustc compiler
-        # to be 100% safe, run cargo clean if there are no *smir.json files
+        # and run cargo clean before (optional)
         # assumes cargo and stable-mir-json are on the path (with these names)
+
+        # TODO check if linked file present (not present => rebuild unconditionally)
 
         if clean:
             _LOGGER.info(f'Running "cargo clean" in {self.working_directory}')
@@ -104,25 +112,39 @@ class CargoProject:
         messages = [json.loads(line) for line in command_result.stdout.splitlines()]
 
         artifacts = [
-            (Path(message['filenames'][0]), message.get('executable') is not None)
+            (Path(message['filenames'][0]), message['target']['kind'][0])
             for message in messages
             if message.get('reason') == 'compiler-artifact'
         ]
 
-        libraries = []
-        executables = []
-        for file, is_exec in artifacts:
-            _LOGGER.debug(f'{"Artifact" if is_exec else "Library"} at ../{file.parent.name}/{file.name}')
-            if is_exec:
-                smirs = list((file.parent / 'deps').glob(f'{file.name}*.smir.json'))
-                executables.append(smirs[0])
+        targets = []
+        for file, kind in artifacts:
+            _LOGGER.debug(f'Artifact ({kind}) at ../{file.parent.name}/{file.name}')
+            in_deps = file.parent.name == 'deps'
+            if kind == 'bin':
+                # executables are in the target directory and do not have a suffix as in `deps`
+                related_files = list((file.parent / 'deps').glob(f'{file.name}*.smir.json'))
+                targets.append(related_files[0])
             else:
+                # lib, rlib, dylib, cdylib may be in `deps` or in target and have consistent names
                 name = file.stem.removeprefix('lib') + '.smir.json'
-                libraries.append(file.parent / name)
+                location = file.parent if in_deps else file.parent / 'deps'
+                targets.append(location / name)
 
-        _LOGGER.debug(f'Result: {executables + libraries}')
+        _LOGGER.debug(f'Files: {targets}')
 
-        return executables + libraries
+        # link all files together and write linked output to target location
+        # if any file is not found, cargo clean needs to be run.
+        try:
+            smirs = [SMIRInfo.from_file(f) for f in targets]
+        except FileNotFoundError:
+            _LOGGER.error('SMIR JSON files not found after building, you must run `cargo clean` and rebuild.')
+            raise
+        linked = link(smirs)
+        linked_file = targets[-1].parent.parent / 'linked.smir.json'
+        linked.dump(linked_file)
+
+        return linked
 
     @cached_property
     def default_target(self) -> str:
