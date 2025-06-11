@@ -30,6 +30,10 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
         'functions': [f for smir in smirs for f in smir._smir['functions']],
         'items': [i for smir in smirs for i in smir._smir['items']],
         'types': [t for smir in smirs for t in smir._smir['types']],
+        # TODO apply offset to spans
+        'spans': [],
+        'machine': smirs[0]._smir['machine'],
+        # debug and uneval_constants are omitted in the linked output
     }
     return SMIRInfo(result_dict)
 
