@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections import deque
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
@@ -52,6 +53,16 @@ class SMIRInfo:
         return {_item['symbol_name']: _item for _item in self._smir['items']}
 
     @cached_property
+    def main_symbol(self) -> str | None:
+        mains = [
+            sym
+            for sym, item in self.items.items()
+            if 'MonoItemFn' in item['mono_item_kind']
+            if item['mono_item_kind']['MonoItemFn']['name'] == 'main'
+        ]
+        return mains[0] if mains else None
+
+    @cached_property
     def function_arguments(self) -> dict[str, list[dict]]:
         res = {}
         for item in self._smir['items']:
@@ -68,7 +79,7 @@ class SMIRInfo:
     @cached_property
     def function_symbols(self) -> dict[int, dict]:
         fnc_symbols = {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
-        fnc_symbols[-1] = {'NormalSym': 'main'}  # instead of fully qualified name, see kmir.py:_make_function_map
+        fnc_symbols[-1] = {'NormalSym': self.main_symbol}
         return fnc_symbols
 
     @cached_property
@@ -85,7 +96,7 @@ class SMIRInfo:
     def function_tys(self) -> dict[str, int]:
         fun_syms = self.function_symbols_reverse
 
-        res = {'main': -1}
+        res = {}
         for item in self._smir['items']:
             if not SMIRInfo._is_func(item):
                 _LOGGER.warning(f'Not a function: {item}')
@@ -109,6 +120,47 @@ class SMIRInfo:
     @staticmethod
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
+
+    def reduce_to(self, start_name: str) -> SMIRInfo:
+        # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function
+        start_ty = self.function_tys[start_name]
+
+        _LOGGER.debug(f'Reducing items, starting at {start_ty}. Call Edges {self.call_edges}')
+
+        reachable = compute_closure(Ty(start_ty), self.call_edges)
+
+        _LOGGER.debug(f'Reducing to reachable Tys {reachable}')
+
+        new_smir = self._smir.copy()  # shallow copy, but we can overwrite the `items`
+
+        # filter the new symbols to avoid key errors
+        new_syms = [self.function_symbols[ty] for ty in reachable]
+        new_syms_ = [sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym]
+        new_smir['items'] = [self.items[sym] for sym in new_syms_ if sym in self.items]
+
+        return SMIRInfo(new_smir)
+
+    @cached_property
+    def call_edges(self) -> dict[Ty, set[Ty]]:
+        # determines which functions are _called_ from others, by symbol name
+        result = {}
+        for sym, item in self.items.items():
+            if not SMIRInfo._is_func(item):
+                continue
+            # skip functions not present in the `function_symbols_reverse` table
+            if not sym in self.function_symbols_reverse:
+                continue
+            called_funs = [
+                b['terminator']['kind']['Call']['func']
+                for b in item['mono_item_kind']['MonoItemFn']['body']['blocks']
+                if 'Call' in b['terminator']['kind']
+            ]
+            called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
+            # TODO also add any constant operands used as arguments whose ty refer to a function
+            # the semantics currently does not support this, see issue #488 and stable-mir-json issue #55
+            for ty in self.function_symbols_reverse[sym]:
+                result[Ty(ty)] = called_tys
+        return result
 
 
 class IntTy(Enum):
@@ -269,3 +321,21 @@ def _decode(bytes: list[int]) -> int:
     # assume little-endian: reverse the bytes
     bytes.reverse()
     return reduce(lambda x, y: x * 256 + y, bytes)
+
+
+def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:
+    work = deque([start])
+    reached = set()
+    finished = False
+    while not finished:
+        try:
+            next = work.popleft()
+        except IndexError:
+            # queue empty, we are done
+            finished = True
+        if not next in reached:
+            reached.add(next)
+            # tolerate missing edge entries in edges
+            if next in edges:
+                work.extend(edges[next])
+    return reached

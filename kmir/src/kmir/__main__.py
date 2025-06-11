@@ -66,10 +66,10 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
         print('Parse error!', file=sys.stderr)
         sys.exit(1)
 
-    kmir_kast, _ = parse_result
+    smir_info = SMIRInfo.from_file(opts.input_file).reduce_to(opts.start_symbol)
     apr_proof = kmir.apr_proof_from_smir(
         str(opts.input_file.stem.replace('_', '-')),
-        SMIRInfo.from_file(opts.input_file),
+        smir_info,
         start_symbol=opts.start_symbol,
         sort='KmirCell',
     )
