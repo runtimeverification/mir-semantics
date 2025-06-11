@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections import deque
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
@@ -109,6 +110,38 @@ class SMIRInfo:
     @staticmethod
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
+
+    def reduce_to(self, start_name: str) -> SMIRInfo:
+        # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function
+        start_ty = self.function_tys[start_name]
+
+        reachable = compute_closure(Ty(start_ty), self.call_edges)
+
+        new_smir = self._smir.copy()  # shallow copy, but we can overwrite the `items`
+        new_smir['items'] = [
+            self.items[sym['NormalSym']] for ty in reachable for sym in self.function_symbols[ty] if 'NormalSym' in sym
+        ]
+
+        return SMIRInfo(new_smir)
+
+    @cached_property
+    def call_edges(self) -> dict[Ty, set[Ty]]:
+        # determines which functions are _called_ from others, by symbol name
+        result = {}
+        for sym, item in self.items.items():
+            if not SMIRInfo._is_func(item):
+                continue
+            called_funs = [
+                b['terminator']['kind']['Call']['func']
+                for b in item['mono_item_kind']['MonoItemFn']['body']['blocks']
+                if 'Call' in b['terminator']['kind']
+            ]
+            called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
+            # TODO also add any constant operands used as arguments whose ty refer to a function
+            # the semantics currently does not support this, see issue #488 and stable-mir-json issue #55
+            for ty in self.function_symbols_reverse[sym]:
+                result[Ty(ty)] = called_tys
+        return result
 
 
 class IntTy(Enum):
@@ -269,3 +302,21 @@ def _decode(bytes: list[int]) -> int:
     # assume little-endian: reverse the bytes
     bytes.reverse()
     return reduce(lambda x, y: x * 256 + y, bytes)
+
+
+def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:
+    work = deque([start])
+    reached = set()
+    finished = False
+    while not finished:
+        try:
+            next = work.popleft()
+        except IndexError:
+            # queue empty, we are done
+            finished = True
+        if not next in reached:
+            reached.add(next)
+            # tolerate missing edge entries in edges
+            if next in edges:
+                work.extend(edges[next])
+    return reached
