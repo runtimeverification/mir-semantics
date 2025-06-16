@@ -1,26 +1,25 @@
 <kmir>
   <k>
-    #EndProgram ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
   </retVal>
   <currentFunc>
-    ty ( -1 )
+    ty ( 27 )
   </currentFunc>
   <currentFrame>
     <currentBody>
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 25 ) , id: mirConstId ( 9 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) ) )
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 52 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) )
     </currentBody>
     <caller>
-      ty ( -1 )
+      ty ( 26 )
     </caller>
     <dest>
       place (... local: local ( 0 ) , projection: .ProjectionElems )
     </dest>
     <target>
-      noBasicBlockIdx
+      someBasicBlockIdx ( basicBlockIdx ( 1 ) )
     </target>
     <unwind>
       unwindActionContinue
@@ -30,6 +29,9 @@
     </locals>
   </currentFrame>
   <stack>
+    ListItem ( StackFrame ( ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
@@ -52,9 +54,9 @@
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
     ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result" , adtDef ( 15 ) , Discriminant ( variantIdx ( 0 ) , 0 )  Discriminant ( variantIdx ( 1 ) , 1 )  .Discriminants )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 18 ) , ty ( 9 )  .Tys )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 18 ) )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 17 ) , ty ( 15 )  .Tys )
+    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 17 ) )
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
     ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
     ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )

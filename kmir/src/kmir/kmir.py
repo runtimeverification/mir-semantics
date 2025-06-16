@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import json
 import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KInner, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of, map_empty
-from pyk.kast.prelude.string import stringToken
+from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
+from pyk.kast.prelude.collections import list_empty, list_of, map_of
+from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -32,6 +31,7 @@ if TYPE_CHECKING:
     from typing import Final
 
     from pyk.cterm.show import CTermShow
+    from pyk.kast.inner import KInner
     from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
@@ -67,70 +67,93 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def make_init_config(
-        self, parsed_smir: KInner, start_symbol: KInner | str = 'main', sort: str = 'GeneratedTopCell'
-    ) -> KInner:
-        if isinstance(start_symbol, str):
-            start_symbol = stringToken(start_symbol)
+    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+        parser = Parser(self.definition)
+        parsed_items: dict[KInner, KInner] = {}
+        for item_name, item in smir_info.items.items():
+            if not item_name in smir_info.function_symbols_reverse:
+                _LOGGER.warning(f'Item not found in SMIR: {item_name}')
+                continue
+            parsed_item = parser.parse_mir_json(item, 'MonoItem')
+            if not parsed_item:
+                raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
+            parsed_item_kinner, _ = parsed_item
+            assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
+            # each item can have several entries in the function table for linked SMIR JSON
+            for ty in smir_info.function_symbols_reverse[item_name]:
+                item_ty = KApply('ty', [token(ty)])
+                parsed_items[item_ty] = parsed_item_kinner.args[1]
+        return map_of(parsed_items)
 
-        subst = Subst({'$PGM': parsed_smir, '$STARTSYM': start_symbol})
-        init_config = subst.apply(self.definition.init_config(KSort(sort)))
-        return init_config
+    def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
+        parser = Parser(self.definition)
+        types: dict[KInner, KInner] = {}
+        adts: dict[KInner, KInner] = {}
+        for type in smir_info._smir['types']:
+            parse_result = parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
+            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+            ty, tyinfo = type_mapping.args
+            if ty in types:
+                raise ValueError(f'Key collision in type map: {ty}')
+            types[ty] = tyinfo
+            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
+                adts[tyinfo.args[1]] = ty
+        return (map_of(types), map_of(adts))
 
     def make_call_config(
-        self, parsed_smir: KApply, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell'
+        self, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell', init: bool = False
     ) -> tuple[KInner, list[KInner]]:
-
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
-        _sym, _allocs, functions, items, types, _ = parsed_smir.args
-
         args_info = smir_info.function_arguments[start_symbol]
-
         locals, constraints = symbolic_locals(smir_info, args_info)
+        types, adts = self._make_type_and_adt_maps(smir_info)
 
-        subst = {
+        _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (stringToken(start_symbol),)),
+            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'FUNCTIONS_CELL': KApply('mkFunctionMap', (functions, items)),
-            'TYPES_CELL': KApply('mkTypeMap', (map_empty(), types)),
-            'ADTTOTY_CELL': KApply('mkAdtMap', (map_empty(), types)),
+            'FUNCTIONS_CELL': self._make_function_map(smir_info),
+            'TYPES_CELL': types,
+            'ADTTOTY_CELL': adts,
         }
 
+        _init_subst: dict[str, KInner] = {}
+        if init:
+            _subst['LOCALS_CELL'] = list_empty()
+            init_config = self.definition.init_config(KSort(sort))
+            _, _init_subst = split_config_from(init_config)
+
+        for key in _init_subst:
+            if key not in _subst:
+                _subst[key] = _init_subst[key]
+
+        subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
+        return (subst.apply(config), constraints)
 
-        return (Subst(subst).apply(config), constraints)
-
-    def run_parsed(self, parsed_smir: KInner, start_symbol: KInner | str = 'main', depth: int | None = None) -> Pattern:
-        init_config = self.make_init_config(parsed_smir, start_symbol)
+    def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
+        smir_info = smir_info.reduce_to(start_symbol)
+        init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol, init=True)
+        if len(free_vars(init_config)) > 0 or len(init_constraints) > 0:
+            raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
-
         return result
 
-    def run_call(
-        self, parsed_smir: KApply, smir_json: SMIRInfo, start_symbol: str = 'main', depth: int | None = None
-    ) -> Pattern:
-        init_config, _ = self.make_call_config(parsed_smir, smir_json, start_symbol)
-        init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
-        result = self.run_pattern(init_kore, depth=depth)
-
-        return result
-
-    def apr_proof_from_kast(
+    def apr_proof_from_smir(
         self,
         id: str,
-        kmir_kast: KInner,
         smir_info: SMIRInfo,
         start_symbol: str = 'main',
         sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        assert type(kmir_kast) is KApply
-        lhs_config, constraints = self.make_call_config(kmir_kast, smir_info, start_symbol=start_symbol, sort=sort)
+        lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol, sort=sort)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
@@ -155,19 +178,18 @@ class KMIR(KProve, KRun, KParse):
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
             if opts.smir:
-                smir_json = json.loads(opts.rs_file.read_text())
+                smir_info = SMIRInfo.from_file(opts.rs_file)
             else:
-                smir_json = cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir)
-            parser = Parser(self.definition)
-            parse_result = parser.parse_mir_json(smir_json, 'Pgm')
-            assert parse_result is not None
-            kmir_kast, _ = parse_result
-            assert isinstance(kmir_kast, KInner)
-            apr_proof = self.apr_proof_from_kast(
-                label, kmir_kast, SMIRInfo(smir_json), start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+
+            smir_info = smir_info.reduce_to(opts.start_symbol)
+
+            _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+            apr_proof = self.apr_proof_from_smir(
+                label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
             if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                (apr_proof.proof_dir / apr_proof.id / 'smir.json').write_text(json.dumps(smir_json))
+                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
         if apr_proof.passed:
             return apr_proof
         with self.kcfg_explore(label) as kcfg_explore:
