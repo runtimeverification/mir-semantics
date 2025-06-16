@@ -746,7 +746,8 @@ These operations only read a single operand.
 
 #### Arithmetic
 
-The arithmetic operations require operands of the same numeric type.
+The arithmetic operations require operands of the same numeric type, however these rules assume the `Ty`s
+are correct.
 
 | `BinOp`           |                                        | Operands can be |
 |-------------------|--------------------------------------- |-----------------|-------------------------------------- |
@@ -788,21 +789,20 @@ The arithmetic operations require operands of the same numeric type.
   // operation undefined otherwise
 
   // error cases for isArithmetic(BOP):
-  // * arguments must have the same type (TY match)
   // * arguments must be Numbers
 
   // Checked operations return a pair of the truncated value and an overflow flag
   // signed numbers: must check for wrap-around (operation specific)
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, true), TY, _), //signed
-          typedValue(Integer(ARG2, WIDTH, true), TY, _),
+          typedValue(Integer(ARG1, WIDTH, true), _, _), //signed
+          typedValue(Integer(ARG2, WIDTH, true), _, _),
           true) // checked
     =>
        typedValue(
           Aggregate(
             variantIdx(0),
-            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot))
+            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TyUnknown, mutabilityNot))
             ListItem(
               typedValue(
                 BoolVal(
@@ -823,14 +823,14 @@ The arithmetic operations require operands of the same numeric type.
   // unsigned numbers: simple overflow check using a bit mask
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, false), TY, _), // unsigned
-          typedValue(Integer(ARG2, WIDTH, false), TY, _),
+          typedValue(Integer(ARG1, WIDTH, false), _, _), // unsigned
+          typedValue(Integer(ARG2, WIDTH, false), _, _),
           true) // checked
     =>
        typedValue(
           Aggregate(
             variantIdx(0),
-            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot))
+            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TyUnknown, mutabilityNot))
             ListItem(
               typedValue(
                 BoolVal(
@@ -852,10 +852,10 @@ The arithmetic operations require operands of the same numeric type.
 
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, true), TY, _), // signed
-          typedValue(Integer(ARG2, WIDTH, true), TY, _),
+          typedValue(Integer(ARG1, WIDTH, true), _, _), // signed
+          typedValue(Integer(ARG2, WIDTH, true), _, _),
           false) // unchecked
-    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TyUnknown, mutabilityNot)
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
@@ -864,10 +864,10 @@ The arithmetic operations require operands of the same numeric type.
   // unsigned numbers: simple overflow check using a bit mask
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, false), TY, _), // unsigned
-          typedValue(Integer(ARG2, WIDTH, false), TY, _),
+          typedValue(Integer(ARG1, WIDTH, false), _, _), // unsigned
+          typedValue(Integer(ARG2, WIDTH, false), _, _),
           false) // unchecked
-    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TyUnknown, mutabilityNot)
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
@@ -878,7 +878,7 @@ The arithmetic operations require operands of the same numeric type.
 
 Comparison operations can be applied to all integral types and to boolean values (where `false < true`).
 All operations except `binOpCmp` return a `BoolVal`.
-The argument types must be the same for all comparison operations.
+The argument types must be the same for all comparison operations, however this is not checked by the rules.
 
 ```k
   syntax Bool ::= isComparison(BinOp) [function, total]
@@ -909,16 +909,15 @@ The argument types must be the same for all comparison operations.
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
   // error cases for isComparison and binOpCmp:
-  // * arguments must have the same type
   // * arguments must be numbers or Bool
 
-  rule #applyBinOp(OP, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #applyBinOp(OP, typedValue(Integer(VAL1, WIDTH, SIGN), _, _), typedValue(Integer(VAL2, WIDTH, SIGN), _, _), _)
       =>
         typedValue(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
 
-  rule #applyBinOp(OP, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
+  rule #applyBinOp(OP, typedValue(BoolVal(VAL1), _, _), typedValue(BoolVal(VAL2), _, _), _)
       =>
         typedValue(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
     requires isComparison(OP)
@@ -938,11 +937,11 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  rule #applyBinOp(binOpCmp, typedValue(Integer(VAL1, WIDTH, SIGN), TY, _), typedValue(Integer(VAL2, WIDTH, SIGN), TY, _), _)
+  rule #applyBinOp(binOpCmp, typedValue(Integer(VAL1, WIDTH, SIGN), _, _), typedValue(Integer(VAL2, WIDTH, SIGN), _, _), _)
       =>
         typedValue(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 
-  rule #applyBinOp(binOpCmp, typedValue(BoolVal(VAL1), TY, _), typedValue(BoolVal(VAL2), TY, _), _)
+  rule #applyBinOp(binOpCmp, typedValue(BoolVal(VAL1), _, _), typedValue(BoolVal(VAL2), _, _), _)
       =>
         typedValue(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
 ```
