@@ -49,7 +49,7 @@ smir-parse-tests: # build # commented out for CI's sake
 test-unit:
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration: build
+test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
