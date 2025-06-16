@@ -16,8 +16,11 @@ test: test-unit test-integration smir-parse-tests
 ##################################################
 # for integration tests: build stable-mir-json in-tree
 
+stable-mir-json: CARGO_BUILD_OPTS = 
 stable-mir-json:
-	cd deps/stable-mir-json && cargo build
+	cd deps/stable-mir-json && cargo build ${CARGO_BUILD_OPTS}
+	cd deps/stable-mir-json && cargo run --bin cargo_stable_mir_json -- ${TOP_DIR}/deps/stable-mir-json ${TOP_DIR}/deps
+	${TOP_DIR}/deps/.stable-mir-json/release.sh --version || ${TOP_DIR}/deps/.stable-mir-json/debug.sh --version
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
 smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
@@ -99,8 +102,13 @@ cov-integration: test-integration
 ##################################################
 # Utilities
 
-.PHONY: clean
-clean:
+.PHONY: clean stable-mir-json-clean
+
+stable-mir-json-clean:
+	cd deps/stable-mir-json && cargo clean
+	rm -rf deps/.stable-mir-json
+
+clean: stable-mir-json-clean
 	rm -rf kmir/dist kmir/.coverage kmir/cov-* kmir/.mypy_cache kmir/.pytest_cache
 	find kmir/ -type d -name __pycache__ -prune -exec rm -rf {} \;
 

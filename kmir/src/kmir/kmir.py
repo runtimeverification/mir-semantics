@@ -71,22 +71,18 @@ class KMIR(KProve, KRun, KParse):
         parser = Parser(self.definition)
         parsed_items: dict[KInner, KInner] = {}
         for item_name, item in smir_info.items.items():
-            if (
-                not item_name in smir_info.function_symbols_reverse
-                and not item['mono_item_kind']['MonoItemFn']['name'] == 'main'
-            ):
+            if not item_name in smir_info.function_symbols_reverse:
                 _LOGGER.warning(f'Item not found in SMIR: {item_name}')
                 continue
-            elif item['mono_item_kind']['MonoItemFn']['name'] == 'main':
-                _LOGGER.warning(f'Hardcoding name "main" for item: {item_name}')
-                item_name = 'main'
-            item_ty = KApply('ty', [token(smir_info.function_symbols_reverse[item_name])])
             parsed_item = parser.parse_mir_json(item, 'MonoItem')
             if not parsed_item:
                 raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
             parsed_item_kinner, _ = parsed_item
             assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
-            parsed_items[item_ty] = parsed_item_kinner.args[1]
+            # each item can have several entries in the function table for linked SMIR JSON
+            for ty in smir_info.function_symbols_reverse[item_name]:
+                item_ty = KApply('ty', [token(ty)])
+                parsed_items[item_ty] = parsed_item_kinner.args[1]
         return map_of(parsed_items)
 
     def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
@@ -141,6 +137,7 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
+        smir_info = smir_info.reduce_to(start_symbol)
         init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol, init=True)
         if len(free_vars(init_config)) > 0 or len(init_constraints) > 0:
             raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
@@ -184,6 +181,10 @@ class KMIR(KProve, KRun, KParse):
                 smir_info = SMIRInfo.from_file(opts.rs_file)
             else:
                 smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+
+            smir_info = smir_info.reduce_to(opts.start_symbol)
+
+            _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
             apr_proof = self.apr_proof_from_smir(
                 label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
             )
