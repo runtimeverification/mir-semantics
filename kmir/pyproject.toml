@@ -8,7 +8,7 @@ version = "0.3.181"
 description = ""
 requires-python = "~=3.10"
 dependencies = [
-    "kframework==v7.1.265",
+    "kframework==v7.1.268",
 ]
 
 [[project.authors]]
