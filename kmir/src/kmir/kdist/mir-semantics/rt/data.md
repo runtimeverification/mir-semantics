@@ -273,6 +273,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
     => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(typedValue(PtrLocal(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedValue(PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -444,7 +446,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, address(0, 0, 0)), _, _),
+             typedValue(PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -463,7 +465,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, address(0, 0, 0)), _, _),
+             typedValue(PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -574,6 +576,8 @@ For tuples and `struct`s, this index is always 0.
 Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
 For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`.
 
+Literal arrays are also built using this RValue.
+
 ```k
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
 
@@ -588,12 +592,18 @@ For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID
        <adt-to-ty> ADTMAPPING </adt-to-ty>
     requires isTy(ADTMAPPING[ADTDEF])
 
-  rule <k> ARGS:List ~> #mkAggregate(_OTHERKIND)
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindArray(_TY))
+        =>
+            typedValue(Range(ARGS), TyUnknown, mutabilityNot)
+        ...
+       </k>
+
+
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindTuple)
         =>
             typedValue(Aggregate(variantIdx(0), ARGS), TyUnknown, mutabilityNot)
         ...
        </k>
-    [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -690,7 +700,7 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 ```k
   rule <k> rvalueAddressOf(MUT, PLACE)
          =>
-           typedValue(PtrLocal(0, PLACE, MUT, address(0, 0, 0)), TyUnknown, MUT)
+           typedValue(PtrLocal(0, PLACE, MUT), TyUnknown, MUT)
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -721,7 +731,7 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( TypedValue ) [function]
 
-  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, MUT), _, _)) => PtrLocal(OFFSET, PLACE, MUT, address(0, 0, 0))
+  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, MUT), _, _)) => PtrLocal(OFFSET, PLACE, MUT)
 ```
 
 ## Type casts

@@ -34,12 +34,10 @@ High-level values can be
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability , AddressEmulation )
+                 | PtrLocal( Int , Place , Mutability )
                    // pointer to a local TypedValue (on the stack)
-                   // first 3 fields are the same as in Reference, plus emulating pointer arithmetics
+                   // first 3 fields are the same as in Reference, plus emulating pointer arithmetics (future work)
 
-  syntax AddressEmulation ::= address( Int , Int , Int )
-                                // base, alignment, offset
 ```
 
 ## Local variables
