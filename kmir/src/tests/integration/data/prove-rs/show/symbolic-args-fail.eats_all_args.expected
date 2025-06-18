@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (47 steps)
+│  (50 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃
@@ -15,9 +15,9 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (50 steps)
+┃  │  (133 steps)
 ┃  ├─ 6 (split)
-┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃  ┃
 ┃  ┃ (branch)
 ┃  ┣━━┓ subst: .Subst
@@ -25,7 +25,7 @@
 ┃  ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
 ┃  ┃  │
 ┃  ┃  ├─ 8
-┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃  ┃  │
 ┃  ┃  │  (5 steps)
 ┃  ┃  ├─ 12 (terminal)
@@ -41,19 +41,19 @@
 ┃     ┃     size ( ARG_ARRAY7:List ) >Int 0
 ┃     │
 ┃     ├─ 9
-┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃     │
 ┃     │  (116 steps)
 ┃     ├─ 13
-┃     │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
-┃     │   span: 64
+┃     │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+┃     │   span: 69
 ┃     ┃
 ┃     ┃ (1 step)
 ┃     ┣━━┓
 ┃     ┃  │
 ┃     ┃  ├─ 16
-┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
-┃     ┃  │   span: 64
+┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+┃     ┃  │   span: 69
 ┃     ┃  ┃
 ┃     ┃  ┃ (1 step)
 ┃     ┃  ┣━━┓
@@ -61,7 +61,7 @@
 ┃     ┃  ┃  ├─ 20
 ┃     ┃  ┃  │   #execStmts ( .Statements )
 ~> #execTerminator ( terminator ( ... kind: terminato
-┃     ┃  ┃  │   span: 64
+┃     ┃  ┃  │   span: 69
 ┃     ┃  ┃  │
 ┃     ┃  ┃  │  (6 steps)
 ┃     ┃  ┃  ├─ 24 (terminal)
@@ -76,14 +76,14 @@
 ┃     ┃  ┗━━┓
 ┃     ┃     │
 ┃     ┃     └─ 21 (stuck, leaf)
-┃     ┃         #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
-┃     ┃         span: 64
+┃     ┃         #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+┃     ┃         span: 69
 ┃     ┃
 ┃     ┗━━┓
 ┃        │
 ┃        └─ 17 (stuck, leaf)
-┃            #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
-┃            span: 64
+┃            #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+┃            span: 69
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
@@ -94,7 +94,7 @@
    │
    │  (110 steps)
    ├─ 7 (split)
-   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
    ┃
    ┃ (branch)
    ┣━━┓ subst: .Subst
@@ -102,7 +102,7 @@
    ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
    ┃  │
    ┃  ├─ 10
-   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
    ┃  │
    ┃  │  (5 steps)
    ┃  ├─ 14 (terminal)
@@ -118,19 +118,19 @@
       ┃     size ( ARG_ARRAY7:List ) >Int 0
       │
       ├─ 11
-      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
       │
       │  (116 steps)
       ├─ 15
-      │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
-      │   span: 64
+      │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+      │   span: 69
       ┃
       ┃ (1 step)
       ┣━━┓
       ┃  │
       ┃  ├─ 18
-      ┃  │   #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
-      ┃  │   span: 64
+      ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+      ┃  │   span: 69
       ┃  ┃
       ┃  ┃ (1 step)
       ┃  ┣━━┓
@@ -138,7 +138,7 @@
       ┃  ┃  ├─ 22
       ┃  ┃  │   #execStmts ( .Statements )
 ~> #execTerminator ( terminator ( ... kind: terminato
-      ┃  ┃  │   span: 64
+      ┃  ┃  │   span: 69
       ┃  ┃  │
       ┃  ┃  │  (6 steps)
       ┃  ┃  ├─ 25 (terminal)
@@ -153,14 +153,14 @@
       ┃  ┗━━┓
       ┃     │
       ┃     └─ 23 (stuck, leaf)
-      ┃         #traverseProjection ( toStack ( 1 , local ( 10 ) ) , project:TypedValue ( ARG_AR
-      ┃         span: 64
+      ┃         #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+      ┃         span: 69
       ┃
       ┗━━┓
          │
          └─ 19 (stuck, leaf)
-             #traverseProjection ( toStack ( 1 , local ( 10 ) ) , typedValue ( Range ( ARG_AR
-             span: 64
+             #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+             span: 69
 
 
 

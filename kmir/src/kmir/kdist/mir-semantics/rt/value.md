@@ -34,7 +34,7 @@ High-level values can be
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability )
+                 | PtrLocal( Int , Place , Mutability )   [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // first 3 fields are the same as in Reference, plus emulating pointer arithmetics (future work)
 
