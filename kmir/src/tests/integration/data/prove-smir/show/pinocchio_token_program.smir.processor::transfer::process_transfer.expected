@@ -31,10 +31,28 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (103 steps)
-   └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 6 ) , typedValue ( thunk ( #cast ( typedValue (
-       span: 277
+   │  (413 steps)
+   ├─ 7 (split)
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 6 ) )
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     notBool size ( ARG_ARRAY1:List ) >=Int 3
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 6 ) )
+   ┃  │
+   ┃  │  (38 steps)
+   ┃  └─ 10 (leaf, pending)
+   ┃      #EndProgram ~> .K
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     size ( ARG_ARRAY1:List ) >=Int 3
+      │
+      └─ 9 (leaf, pending)
+          #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 6 ) )
 
 
 

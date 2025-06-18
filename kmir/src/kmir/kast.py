@@ -8,7 +8,7 @@ from pyk.kast.prelude.kint import leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .smir import ArrayT, Bool, EnumT, Int, RefT, StructT, TupleT, Uint, UnionT
+from .smir import ArrayT, Bool, EnumT, Int, PtrT, RefT, StructT, TupleT, Uint, UnionT
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -211,6 +211,22 @@ class ArgGenerator:
                 return (
                     KApply(
                         'Value::Reference',
+                        (
+                            token(0),
+                            KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
+                            KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
+                        ),
+                    ),
+                    pointee_constraints,
+                )
+            case PtrT(pointee_ty):
+                pointee_var, pointee_constraints = self._symbolic_value(pointee_ty, mutable)
+                ref = self.ref_offset
+                self.ref_offset += 1
+                self.pointees.append(_typed_value(pointee_var, pointee_ty, mutable))
+                return (
+                    KApply(
+                        'Value::PtrLocal',
                         (
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
