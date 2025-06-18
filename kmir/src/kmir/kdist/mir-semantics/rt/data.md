@@ -4,8 +4,9 @@ This module addresses all aspects of handling "values" i.e., data, at runtime du
 
 
 ```k
-requires "../ty.md"
 requires "../body.md"
+requires "../ty.md"
+requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
 
@@ -23,6 +24,7 @@ module RT-DATA
 
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
+  imports RT-TYPES
   imports KMIR-CONFIGURATION
 ```
 
@@ -215,7 +217,7 @@ A `Deref` projection in the projections list changes the target of the write ope
 These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
 `#buildUpdate` helps to reconstruct the new value stored at that `Place` if we need to do a write (using the `Context` built during traversal).
 
-```k 
+```k
   // stores the target of the write operation, which may change when references are dereferenced.
   syntax WriteTo ::= toLocal ( Int )
                    | toStack ( Int , Local )
@@ -271,6 +273,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
     => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(typedValue(PtrLocal(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
+    => typedValue(PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -438,6 +442,45 @@ In the simplest case, the reference refers to a local in the same stack frame (h
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness]
+
+
+  rule <k> #traverseProjection(
+             _DEST,
+             typedValue(PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toStack(OFFSET, LOCAL),
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #traverseProjection(
+             _DEST,
+             typedValue(PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toLocal(I),
+             {LOCALS[I]}:>TypedLocal,
+             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             .Contexts // previous contexts obsolete
+           )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+    [preserves-definedness]
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
@@ -533,6 +576,8 @@ For tuples and `struct`s, this index is always 0.
 Tuples, `struct`s, and `enum`s are built as `Aggregate` values with a list of argument values.
 For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID (`Ty`) is retrieved from a special mapping of `AdtDef` to `Ty`.
 
+Literal arrays are also built using this RValue.
+
 ```k
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
 
@@ -547,12 +592,18 @@ For `enums`, the `VariantIdx` is set, and for `struct`s and `enum`s, the type ID
        <adt-to-ty> ADTMAPPING </adt-to-ty>
     requires isTy(ADTMAPPING[ADTDEF])
 
-  rule <k> ARGS:List ~> #mkAggregate(_OTHERKIND)
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindArray(_TY))
+        =>
+            typedValue(Range(ARGS), TyUnknown, mutabilityNot)
+        ...
+       </k>
+
+
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindTuple)
         =>
             typedValue(Aggregate(variantIdx(0), ARGS), TyUnknown, mutabilityNot)
         ...
        </k>
-    [owise]
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
@@ -640,23 +691,71 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
+```
 
-// AddressOf: not implemented yet
+The `RValue::AddressOf` operation is very similar to creating a reference, since it also
+refers to a given _place_. However, the raw pointer obtained by `AddressOf` can be subject
+to casts and pointer arithmetic using `BinOp::Offset`.
+
+```k
+  rule <k> rvalueAddressOf(MUT, PLACE)
+         =>
+           typedValue(PtrLocal(0, PLACE, MUT), TyUnknown, MUT)
+           // we should use #alignOf to emulate the address
+       ...
+       </k>
+```
+
+In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
+turning a borrowed value into a raw pointer. To shorten out chains of Deref and AddressOf/Reference,
+a special rule for this case is applied with higher priority.
+
+```k
+  rule <k> rvalueAddressOf(MUT, place(local(I), projectionElemDeref .ProjectionElems))
+         =>
+           typedValue(refToPtrLocal({LOCALS[I]}:>TypedValue), TyUnknown, MUT)
+           // we should use #alignOf to emulate the address
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool isRef({LOCALS[I]}:>TypedValue)
+    [priority(40), preserves-definedness] // valid indexing checked, toPtrLocal can convert the reference
+
+  syntax Bool ::= isRef ( TypedValue ) [function, total]
+  // -----------------------------------------------------
+  rule isRef(typedValue(Reference(_, _, _), _, _)) => true
+  rule isRef(           _OTHER                   ) => false [owise]
+
+  syntax Value ::= refToPtrLocal ( TypedValue ) [function]
+
+  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, MUT), _, _)) => PtrLocal(OFFSET, PLACE, MUT)
 ```
 
 ## Type casts
 
 Type casts between a number of different types exist in MIR.
-We implement a type cast from a `TypedLocal` to another when it is followed by a `#cast` item, rewriting `typedLocal(...) ~> #cast(...) ~> REST` to `typedLocal(...) ~> REST`.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
 ```
 
-### Integer Type Casts
+### Number Type Casts
 
-Casts between signed and unsigned integral numbers of different width exist, with a truncating semantics.
-These casts can only operate on the `Integer` variant of the `Value` type, adjusting bit width, signedness, and possibly truncating or 2s-complementing the value.
+The simplest case of a cast is conversion from one number type to another:
+
+| CastKind     |
+|--------------|
+| IntToInt     |
+| FloatToInt   |
+| FloatToFloat |
+| IntToFloat   |
+
+`IntToInt` casts between signed and unsigned integral numbers of different width exist, with a
+truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
+bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
@@ -669,6 +768,63 @@ These casts can only operate on the `Integer` variant of the `Value` type, adjus
       requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
+
+Casts involving `Float` values are currently not implemented.
+
+### Casts between pointer types
+
+
+| CastKind | Description                                                |
+|----------|------------------------------------------------------------|
+| PtrToPtr | Convert between references when representations compatible |
+
+Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
+The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
+the `Value` sort.
+Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
+which have the same representation `Value::Range`.
+
+```k
+  rule <k> #cast(typedValue(VALUE, TY1, MUT), castKindPtrToPtr, TY2)
+          =>
+            typedValue(VALUE, TY2, MUT)
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+```
+
+`PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
+
+| CastKind                           | PointerCoercion          | Description                        |
+|------------------------------------|--------------------------|-----------------------             |
+| PointerCoercion(_, CoercionSource) | ArrayToPointer           | from `*const [T; N]` to `*const T` |
+|                                    | Unsize                   | drop size information              |
+|                                    | ReifyFnPointer           |                                    |
+|                                    | UnsafeFnPointer          |                                    |
+|                                    | ClosureFnPointer(Safety) |                                    |
+|                                    | DynStar                  | create a dyn* object               |
+|                                    | MutToConstPointer        | make a mutable pointer immutable   |
+
+
+```k
+  // not checking whether types are actually compatible (trusting the compiler)
+  rule <k> #cast(typedValue(VALUE, _TY, MUT), castKindPointerCoercion(pointerCoercionUnsize), TY)
+          =>
+            typedValue(VALUE, TY, MUT)
+          ...
+        </k>
+```
+
+### Other casts involving pointers
+
+| CastKind                     | Description |
+|------------------------------|-------------|
+| PointerExposeProvenance      |             |
+| PointerWithExposedProvenance |             |
+| FnPtrToPtr                   |             |
+| Transmute                    |             |
+
 
 ## Decoding constants from their bytes representation to values
 
@@ -699,7 +855,7 @@ This is currently only defined for `PrimitiveType`s (primitive types in MIR).
      [preserves-definedness]
 
   // zero-sized struct types
-  rule <k> #decodeConstant(constantKindZeroSized, TY, typeInfoStructType(_, _))
+  rule <k> #decodeConstant(constantKindZeroSized, TY, typeInfoStructType(_, _, _))
         => typedValue(Aggregate(variantIdx(0), .List), TY, mutabilityNot) ... </k>
 
   // TODO Char type
