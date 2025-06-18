@@ -794,7 +794,7 @@ which have the same representation `Value::Range`.
       requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
 ```
 
-`PointerCoercion` may achieve a simmilar effect, or deal with function and closure poitners, depending on the coercion type:
+`PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
 
 | CastKind                           | PointerCoercion          | Description                        |
 |------------------------------------|--------------------------|-----------------------             |
