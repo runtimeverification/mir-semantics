@@ -114,7 +114,8 @@ class CargoProject:
                 location = file.parent / 'deps'
             else:
                 # lib, rlib, dylib, cdylib may be in `deps` or in target and have prefix 'lib'
-                glob = file.stem.removeprefix('lib') + '.smir.json'
+                # files in `deps` have a hex ID suffix, files directly in the target don't
+                glob = file.stem.removeprefix('lib') + ('' if in_deps else '-*') + '.smir.json'
                 location = file.parent if in_deps else file.parent / 'deps'
 
             related_files = list(location.glob(glob))

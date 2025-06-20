@@ -146,7 +146,9 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
 
         printer = PrettyPrinter(kmir.definition)
         cterm_show = CTermShow(printer.print)
-        display_opts = ShowOpts(linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False)
+        display_opts = ShowOpts(
+            linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False
+        )
         shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
         show_res = '\n'.join(shower.show(proof))
 
