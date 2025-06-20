@@ -109,14 +109,19 @@ class CargoProject:
                         'Several execuatbles not supported at the moment.'
                     )
                 exe = file.name
+                glob = exe.replace('-', '_') + '-*.smir.json'
                 # executables are in the target directory and do not have a suffix as in `deps`
-                related_files = list((file.parent / 'deps').glob(f'{file.name}*.smir.json'))
-                targets.append(related_files[0])
+                location = file.parent / 'deps'
             else:
-                # lib, rlib, dylib, cdylib may be in `deps` or in target and have consistent names
-                name = file.stem.removeprefix('lib') + '.smir.json'
+                # lib, rlib, dylib, cdylib may be in `deps` or in target and have prefix 'lib'
+                glob = file.stem.removeprefix('lib') + '.smir.json'
                 location = file.parent if in_deps else file.parent / 'deps'
-                targets.append(location / name)
+
+            related_files = list(location.glob(glob))
+            if not related_files:
+                _LOGGER.error('SMIR JSON files not found after building, you must run `cargo clean` and rebuild.')
+                raise FileNotFoundError(f'{location}/{glob}')
+            targets.append(related_files[0])
 
         _LOGGER.debug(f'Files: {targets}')
 
