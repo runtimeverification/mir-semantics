@@ -1,0 +1,10 @@
+[package]
+name = "crate2"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+crate1 = { version = "0.1.0", path = "../crate1" }
