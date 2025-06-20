@@ -100,7 +100,6 @@ class CargoProject:
         exe = None
         for file, kind in artifacts:
             _LOGGER.debug(f'Artifact ({kind}) at ../{file.parent.name}/{file.name}')
-            in_deps = file.parent.name == 'deps'
             if kind == 'bin':
                 # we can only support a single executable at the moment
                 if exe is not None:
@@ -110,13 +109,15 @@ class CargoProject:
                     )
                 exe = file.name
                 glob = exe.replace('-', '_') + '-*.smir.json'
-                # executables are in the target directory and do not have a suffix as in `deps`
+                # executables are in the target directory with the crate name and have a hex ID suffix in `deps`
                 location = file.parent / 'deps'
             else:
                 # lib, rlib, dylib, cdylib may be in `deps` or in target and have prefix 'lib'
-                # files in `deps` have a hex ID suffix, files directly in the target don't
-                glob = file.stem.removeprefix('lib') + ('' if in_deps else '-*') + '.smir.json'
+                in_deps = file.parent.name == 'deps'
                 location = file.parent if in_deps else file.parent / 'deps'
+                # files for lib and rlib require a hex ID suffix unless in `deps`, dylib (*.so) ones don't
+                is_dyn = file.suffix == '.so'
+                glob = file.stem.removeprefix('lib') + ('' if in_deps or is_dyn else '-*') + '.smir.json'
 
             related_files = list(location.glob(glob))
             if not related_files:
