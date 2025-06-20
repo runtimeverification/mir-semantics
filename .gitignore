@@ -3,3 +3,4 @@ __pycache__/
 .coverage
 /deps/.stable-mir-json
 /.vscode/
+kmir/src/tests/integration/data/**/target
