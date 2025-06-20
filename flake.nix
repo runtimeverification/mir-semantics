@@ -5,7 +5,7 @@
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-nix-tools.follows = "k-framework/rv-nix-tools";
-    poetry2nix.follows = "k-framework/poetry2nix";
+    # poetry2nix.follows = "k-framework/poetry2nix"; # FIXME: To stop crash with `nix flake update`
   };
   outputs = { self, nixpkgs, flake-utils, k-framework, ... }@inputs:
     let
