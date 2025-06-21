@@ -120,7 +120,7 @@ def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
         )
 
 
-MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'multi-crate').resolve(strict=True)
+MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
 MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
 
 
@@ -129,7 +129,7 @@ MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
     MULTI_CRATE_TESTS,
     ids=[spec.parent.stem for spec in MULTI_CRATE_TESTS],
 )
-def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: bool) -> None:
+def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bool) -> None:
     cargo = CargoProject(main_crate)
 
     linked = cargo.smir_for_project(clean=True)
@@ -138,22 +138,22 @@ def test_multi_crate_exec(main_crate: Path, kmir: KMIR, update_expected_output: 
     _, linked_file_str = tempfile.mkstemp()
     linked_file = Path(linked_file_str)
     linked.dump(linked_file)
-    opts = ProveRSOpts(linked_file, smir=True)
-    proof = kmir.prove_rs(opts)
 
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
-    display_opts = ShowOpts(linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False)
-    shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
-    show_res = '\n'.join(shower.show(proof))
+    # run proofs for all '<start-symbol>.expected' files (failing or not)
+    for file in main_crate.parent.glob('*.expected'):
+        opts = ProveRSOpts(linked_file, smir=True, start_symbol=file.stem)
+        proof = kmir.prove_rs(opts)
 
+        printer = PrettyPrinter(kmir.definition)
+        cterm_show = CTermShow(printer.print)
+        display_opts = ShowOpts(
+            linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False
+        )
+        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
+        show_res = '\n'.join(shower.show(proof))
+
+        assert_or_update_show_output(show_res, file, update=update_expected_output)
     os.unlink(linked_file)
-
-    assert_or_update_show_output(
-        show_res,
-        main_crate.parent / 'output.expected',
-        update=update_expected_output,
-    )
 
 
 EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict=True)

@@ -1,0 +1,39 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (34 steps)
+├─ 3 (split)
+│   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 1
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT2:Int ==Bool false
+┃  │
+┃  ├─ 4
+┃  │   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 1
+┃  │
+┃  │  (2 steps)
+┃  └─ 6 (stuck, leaf)
+┃      #ProgramError ( AssertError ( assertMessageOverflow ( binOpAdd , operandCopy ( p
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT2:Int ==Bool false
+   │
+   ├─ 5
+   │   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 1
+   │
+   │  (16 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
+
+
+
