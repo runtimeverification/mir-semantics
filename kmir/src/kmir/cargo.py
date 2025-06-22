@@ -119,9 +119,9 @@ class CargoProject:
                 # lib, rlib, dylib, cdylib may be in `deps` or in target and have prefix 'lib'
                 in_deps = file.parent.name == 'deps'
                 location = file.parent if in_deps else file.parent / 'deps'
-                # files for lib and rlib require a hex ID suffix unless in `deps`, dylib (*.so) ones don't
-                is_dyn = file.suffix == '.so'
-                glob = file.stem.removeprefix('lib') + ('' if in_deps or is_dyn else '-*') + '.smir.json'
+                # files for lib and rlib require a hex ID suffix unless in `deps`, *.dylib (or *.so) ones don't
+                is_rlib = file.suffix == '.rlib'
+                glob = file.stem.removeprefix('lib') + ('' if in_deps or not is_rlib else '-*') + '.smir.json'
 
             related_files = list(location.glob(glob))
             if not related_files:
