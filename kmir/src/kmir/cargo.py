@@ -88,11 +88,13 @@ class CargoProject:
             _LOGGER.info(l)
         _LOGGER.debug(command_result.stdout)
 
+        messages = [json.loads(line) for line in command_result.stdout.splitlines()]
+
         if command_result.returncode != 0:
             _LOGGER.error('Cargo compilation failed!')
+            for msg in [m['message'] for m in messages if m.get('reason') == 'compiler-message']:
+                _LOGGER.error(msg['level'] + '\n' + msg['rendered'])
             raise Exception('Cargo compilation failed')
-
-        messages = [json.loads(line) for line in command_result.stdout.splitlines()]
 
         artifacts = [
             (Path(message['filenames'][0]), message['target']['kind'][0])
