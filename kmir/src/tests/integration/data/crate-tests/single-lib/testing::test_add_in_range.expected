@@ -1,0 +1,40 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (112 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool ARG_UINT1:Int +Int 340282366920938463463374607431768211456 %Int 340282366920938463463374607431768211456 +Int ARG_UINT2:Int +Int 340282366920938463463374607431768211456 %Int 340282366920938463463374607431768211456 <=Int 18446744073709551615
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+┃  │
+┃  │  (4 steps)
+┃  └─ 6 (stuck, leaf)
+┃      #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+┃      span: 72
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     ARG_UINT1:Int +Int 340282366920938463463374607431768211456 %Int 340282366920938463463374607431768211456 +Int ARG_UINT2:Int +Int 340282366920938463463374607431768211456 %Int 340282366920938463463374607431768211456 <=Int 18446744073709551615
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+   │
+   │  (175 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
+
+
+

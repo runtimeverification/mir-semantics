@@ -1,0 +1,15 @@
+[package]
+name = "small-test-dylib"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "small_test_dylib"
+path = "src/lib.rs"    # The source file of the target.
+test = false           # Is tested by default.
+doctest = false        # Documentation examples are tested by default.
+bench = false          # Is benchmarked by default.
+doc = false            # Is documented by default.
+crate-type = ["dylib"] # The crate types to generate.
+
+[dependencies]
