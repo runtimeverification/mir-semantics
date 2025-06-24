@@ -75,6 +75,10 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   rule mutabilityOf(typedValue(_, _, MUT)) => MUT
   rule mutabilityOf(newLocal(_, MUT))      => MUT
   rule mutabilityOf(_)                     => mutabilityNot [owise]
+
+  syntax Value ::= valueOf ( TypedValue ) [function, total]
+  // ------------------------------------------------------
+  rule valueOf(typedValue(V, _, _)) => V
 ```
 
 ## A generic MIR Error sort
