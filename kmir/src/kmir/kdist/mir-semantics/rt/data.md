@@ -35,6 +35,7 @@ module RT-DATA
 The semantics uses lists for stack frames and locals.
 More often than not, an element of the list must be selected by index and is required to be of a certain sort.
 In case of the `<locals>`, we only expect `TypedLocal` to be in the list, and use a dedicated indexing function.
+The same holds for lists used as arguments in the `Value` sort.
 
 ```k
   syntax TypedLocal ::= getLocal ( List, Int ) [function]
@@ -58,12 +59,12 @@ In case of the `<locals>`, we only expect `TypedLocal` to be in the list, and us
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
 Other uses of heating and cooling are to _read_ local variables as operands.
-This may include `Moved` locals or uninitialised `NewLocal`s (as error cases).
-Therefore we use the supersort `TypedLocal` of `TypedValue` as the `Result` sort.
+`TypedValue` ai the `Result` sort, read access to `Moved` locals or uninitialised `NewLocal`s is an error and will get stuck.
 
 ```k
   syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
 
+  // TODO change to TypedValue
   syntax KResult ::= TypedLocal
 ```
 
@@ -115,7 +116,7 @@ We ensure that any projections of the copy operation are traversed appropriately
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getLocal(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ...
        </k>
@@ -131,7 +132,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getLocal(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
         ~> #readProjection(true)
        ...
        </k>
@@ -179,7 +180,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
         => #traverseProjection(toLocal(I), getLocal(LOCALS, I), PROJ, .Contexts)
-        ~> #writeProjection(VAL, false)
+        ~> #writeProjection(VAL)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -203,28 +204,29 @@ A `Deref` projection in the projections list changes the target of the write ope
 
 ```k
   syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
-                 | #writeProjection ( TypedLocal , Bool )
                  | #readProjection ( Bool )
+                 | #writeProjection ( TypedValue )
+                 | "#writeMoved"
 
   rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeProjection(Moved, true) ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, VAL:TypedValue, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, false)
+        ~> #writeProjection(NEW)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
        ...
        </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
+     [preserves-definedness] // valid context ensured upon context construction
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, true)
-        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+        ~> #writeMoved
+        => #forceSetLocal(local(I), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
        ...
        </k>
-     [preserves-definedness] // valid conmtext ensured upon context construction
+     [preserves-definedness] // valid context ensured upon context construction
 
   rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW, _)
+        ~> #writeProjection(NEW)
         => .K
         ...
        </k>
@@ -235,6 +237,21 @@ A `Deref` projection in the projections list changes the target of the write ope
        </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
+     [preserves-definedness] // valid context ensured upon context construction
+
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeMoved
+        => .K
+        ...
+       </k>
+       <stack> STACK
+            => STACK[(FRAME -Int 1) <-
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
+                    ]
+       </stack>
+    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+     [preserves-definedness] // valid context ensured upon context construction
 ```
 
 These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
