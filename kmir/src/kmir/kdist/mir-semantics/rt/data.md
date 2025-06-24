@@ -38,13 +38,16 @@ In case of the `<locals>`, we only expect `TypedLocal` to be in the list, and us
 The same holds for lists used as arguments in the `Value` sort.
 
 ```k
-  syntax TypedLocal ::= getLocal ( List, Int ) [function]
+  syntax TypedLocal ::= "InvalidLocal" // error token only
+
+  syntax TypedLocal ::= getLocal ( List, Int ) [function, total]
   // ----------------------------------------------
   rule getLocal(LOCALS, IDX) => {LOCALS[IDX]}:>TypedLocal
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[IDX])
 
-  // TODO rule getLocal(_, _) => InvalidLocal [owise]
+  rule getLocal(_, _) => InvalidLocal [owise]
+
   syntax TypedValue ::= getValue ( List, Int ) [function]
   // ----------------------------------------------
   rule getValue(LOCALS, IDX) => {LOCALS[IDX]}:>TypedValue
