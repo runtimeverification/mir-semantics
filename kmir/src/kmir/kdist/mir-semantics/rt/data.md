@@ -56,6 +56,18 @@ The same holds for lists used as arguments in the `Value` sort.
      [preserves-definedness]
 ```
 
+To ensure the sort coercions above do not cause any harm, some definedness-related rules are added here:
+
+```k
+  // data coerced to sort TypedLocal is not undefined if it is of that sort
+  rule #Ceil({X}:>TypedLocal) => #Ceil(X)
+    requires isTypedLocal(X)                         [simplification]
+
+  // TypedLocals created by the semantics do not have undefined subterms
+  rule #Ceil(LIST:List[IDX]) => #Top
+    requires 0 <=Int IDX andBool IDX <Int size(LIST) [simplification]
+```
+
 ### Evaluating Items to `TypedValue` or `TypedLocal`
 
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
