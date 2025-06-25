@@ -70,29 +70,32 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
 
 ### Evaluating Items to `TypedValue` or `TypedLocal`
 
-Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `TypedValue`.
+Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `Value`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
 Other uses of heating and cooling are to _read_ local variables as operands.
-`TypedValue` ai the `Result` sort, read access to `Moved` locals or uninitialised `NewLocal`s is an error and will get stuck.
+A `TypedValue` stored as a local is trivially rewritten to `Value` by projecting out the value.
+It is an error to read `NewLocal` or `Moved`.
 
 ```k
-  syntax Evaluation ::= TypedLocal // other sorts are added at the first use site
+  syntax Evaluation ::= TypedValue | Value // other sorts are added at the first use site
 
   // TODO change to TypedValue
-  syntax KResult ::= TypedLocal
+  syntax KResult ::= Value
+
+  rule <k> typedValue(VAL, _, _) => VAL ... </k> [owise]
 ```
 
 ### `thunk`
 
-We also create a subsort of `TypedValue` that is a `thunk` which takes an `Evaluation` as an argument.
-The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `TypedValue` so that we may continue execution (instead of getting stuck).
+We also create a subsort of `Value` that is a `thunk` which takes an `Evaluation` as an argument.
+The `thunk` captures any `Evaluation` that we cannot make further progress on, and turns that into a `Value` so that we may continue execution (instead of getting stuck).
 In particular, if we have pointer arithmetic with abstract pointers (not able to be resolved into concrete ints/bytes directly), then it will wrapper the operations in a `thunk`.
 It is also useful to capture unimplemented semantic constructs so that we can have test / proof driven development.
 
 ```k
   syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => typedValue(thunk(EV), TyUnknown, mutabilityNot) ... </k> requires notBool isTypedValue(EV) [owise]
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
@@ -167,7 +170,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
                  | #forceSetLocal ( Local , TypedLocal )
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)]
        </locals>
@@ -176,7 +179,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
        </locals>
@@ -184,7 +187,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), typedValue(VAL:Value, _, _ )) => .K ... </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
           LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
        </locals>
@@ -219,15 +222,15 @@ A `Deref` projection in the projections list changes the target of the write ope
 ```k
   syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
                  | #readProjection ( Bool )
-                 | #writeProjection ( TypedValue )
-                 | "#writeMoved"
+                 | #writeProjection ( Value )
+                 | "#writeMoved" // TODO add Ty and Mut?
 
-  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, typedValue(VAL, _, _), .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, typedValue(VAL, _, _), .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+        => #setLocalValue(place(local(I), .ProjectionElems), valueOf({#buildUpdate(typedValue(NEW, tyOfLocal(ORIGINAL), mutabilityOf(ORIGINAL)), CONTEXTS)}:>TypedValue))
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
@@ -239,14 +242,14 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
         => .K
         ...
        </k>
        <stack> STACK
             => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(typedValue(NEW, tyOfLocal(ORIGINAL), mutabilityOf(ORIGINAL)), CONTEXTS))
                     ]
        </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
@@ -894,24 +897,24 @@ This is currently only defined for `PrimitiveType`s (primitive types in MIR).
   // decoding the correct amount of bytes depending on base type size
 
   // Boolean: should be one byte with value one or zero
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
-        => typedValue(BoolVal(false), TY, mutabilityNot) ... </k>
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
+        => BoolVal(false) ... </k>
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, typeInfoPrimitiveType(primTypeBool))
-        => typedValue(BoolVal(true), TY, mutabilityNot) ... </k>
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
+        => BoolVal(true) ... </k>
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
-  // Integer: handled in separate module for numeric operations
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), TY, TYPEINFO)
-        => typedValue(#decodeInteger(BYTES, #intTypeOf(TYPEINFO)), TY, mutabilityNot) ... </k>
+  // Integer: handled in separate module for numeric operation_s
+  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, TYPEINFO)
+        => #decodeInteger(BYTES, #intTypeOf(TYPEINFO)) ... </k>
     requires #isIntType(TYPEINFO)
      andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
 
   // zero-sized struct types
-  rule <k> #decodeConstant(constantKindZeroSized, TY, typeInfoStructType(_, _, _))
-        => typedValue(Aggregate(variantIdx(0), .List), TY, mutabilityNot) ... </k>
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
+        => Aggregate(variantIdx(0), .List) ... </k>
 
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
