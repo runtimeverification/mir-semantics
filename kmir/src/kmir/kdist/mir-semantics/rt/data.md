@@ -53,8 +53,7 @@ The same holds for lists used as arguments in the `Value` sort.
   rule getValue(LOCALS, IDX) => {LOCALS[IDX]}:>TypedValue
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedValue(LOCALS[IDX])
-
-
+     [preserves-definedness]
 ```
 
 ### Evaluating Items to `TypedValue` or `TypedLocal`
