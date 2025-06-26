@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (50 steps)
+│  (77 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃
@@ -60,7 +60,9 @@
 ┃     ┃  │   #EndProgram ~> .K
 ┃     ┃  │
 ┃     ┃  ┊  constraint:
-┃     ┃  ┊      Ceil_01b1388e
+┃     ┃  ┊      Ceil_bf532df0
+┃     ┃  ┊      Ceil_f577f392
+┃     ┃  ┊      Ceil_6c7cdc7e
 ┃     ┃  ┊  subst: ...
 ┃     ┃  └─ 2 (leaf, target, terminal)
 ┃     ┃      #EndProgram ~> .K
@@ -123,7 +125,9 @@
       ┃  │   #EndProgram ~> .K
       ┃  │
       ┃  ┊  constraint:
-      ┃  ┊      Ceil_01b1388e
+      ┃  ┊      Ceil_bf532df0
+      ┃  ┊      Ceil_f577f392
+      ┃  ┊      Ceil_6c7cdc7e
       ┃  ┊  subst: ...
       ┃  └─ 2 (leaf, target, terminal)
       ┃      #EndProgram ~> .K
