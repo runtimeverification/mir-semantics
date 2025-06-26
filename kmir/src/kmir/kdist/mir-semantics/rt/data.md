@@ -587,14 +587,15 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 `RValue::Len` returns the length of an array or slice stored at a place.
 
 ```k
-  syntax KItem ::= #mkArray ( Evaluation , Int ) [strict(1)]
+  syntax Value ::= #mkArray ( Evaluation , Int ) [strict(1)] // TODO Problem, we don't have the Ty
 
   rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND, TYPES)) ... </k>
        <types> TYPES </types>
     requires isInt(readTyConstInt(KIND, TYPES))
     [preserves-definedness]
 
-  rule <k> #mkArray(ELEMENT:TypedValue, N) => typedValue(Range(makeList(N, ELEMENT)), TyUnknown, mutabilityNot) ... </k>
+  rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, typedValue(ELEMENT, TyUnknown, mutabilityNot))) ... </k>
+    // HAAAAACK
     requires 0 <=Int N
     [preserves-definedness]
 
@@ -613,13 +614,13 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 
 
   // length of arrays or slices
-  syntax KItem ::= #lengthU64 ( Evaluation ) [strict(1)]
+  syntax Value ::= #lengthU64 ( Evaluation ) [strict(1)]
 
   rule <k> rvalueLen(PLACE) => #lengthU64(operandCopy(PLACE)) ... </k>
 
-  rule <k> #lengthU64(typedValue(Range(LIST), _, _))
+  rule <k> #lengthU64(Range(LIST))
         =>
-            typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot)  // returns usize
+            Integer(size(LIST), 64, false)  // returns usize
         ...
        </k>
 
@@ -640,26 +641,24 @@ Literal arrays are also built using this RValue.
   rule <k> rvalueAggregate(KIND, ARGS) => #readOperands(ARGS) ~> #mkAggregate(KIND) ... </k>
 
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
-  syntax KItem ::= #mkAggregate ( AggregateKind )
+  syntax Value ::= #mkAggregate ( AggregateKind )
 
-  rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(ADTDEF, VARIDX, _, _, _))
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(_ADTDEF, VARIDX, _, _, _))
         =>
-            typedValue(Aggregate(VARIDX, ARGS), {ADTMAPPING[ADTDEF]}:>MaybeTy, mutabilityNot)
+            Aggregate(VARIDX, ARGS)
         ...
        </k>
-       <adt-to-ty> ADTMAPPING </adt-to-ty>
-    requires isTy(ADTMAPPING[ADTDEF])
 
   rule <k> ARGS:List ~> #mkAggregate(aggregateKindArray(_TY))
         =>
-            typedValue(Range(ARGS), TyUnknown, mutabilityNot)
+            Range(ARGS)
         ...
        </k>
 
 
   rule <k> ARGS:List ~> #mkAggregate(aggregateKindTuple)
         =>
-            typedValue(Aggregate(variantIdx(0), ARGS), TyUnknown, mutabilityNot)
+            Aggregate(variantIdx(0), ARGS)
         ...
        </k>
 
@@ -679,9 +678,9 @@ Literal arrays are also built using this RValue.
         ...
        </k>
 
-  rule <k> VAL:TypedValue ~> #readOn(ACC, REST)
+  rule <k> VAL:Value ~> #readOn(ACC, REST)
         =>
-           #readOperandsAux(ACC ListItem(VAL), REST)
+           #readOperandsAux(ACC ListItem(typedValue(VAL, TyUnknown, mutabilityNot)), REST) // HAAAACK
         ...
        </k>
 ```
@@ -691,21 +690,24 @@ This variant index is used to look up the _discriminant_ from a table in the typ
 Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
 
 ```k
-  syntax KItem ::= #discriminant ( Evaluation ) [strict(1)]
+  rule <k> rvalueDiscriminant(place(local(I), PROJS) #as PLACE)
+        => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)) ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid indexing and sort coercion
 
-  rule <k> rvalueDiscriminant(PLACE) => #discriminant(operandCopy(PLACE)) ... </k>
-
-  rule <k> #discriminant(typedValue(Aggregate(IDX, _), TY, _))
-        =>
-           typedValue(
-              Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 128, false), // parameters for storead u128
-              TyUnknown,
-              mutabilityNot
-            )
+  syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
+  // ----------------------------------------------------------------
+  rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
+        => Integer(#lookupDiscriminant({TYPEMAP[TY]}:>TypeInfo, IDX), 128, false) // parameters for stored u128
         ...
        </k>
        <types> TYPEMAP </types>
-    requires isTypeInfo(TYPEMAP[TY])
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+    [preserves-definedness] // valid map lookup and sort coercion
 
   syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
                | #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
@@ -716,7 +718,49 @@ Note that the discriminant may be different from the variant index for user-defi
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( Discriminant(IDX, RESULT)    _        , IDX) => RESULT
   rule #lookupDiscrAux( _OTHER:Discriminant MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX) [owise]
+```
 
+The `Ty` of the aggregate is required in order to access the discriminant mapping table for the type in the type metadata.
+A special function traverses type metadata along the applied projections to achieve this (using the type metadata map `Ty -> TypeInfo`).
+
+```k
+  // should this be in types.md?
+
+  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ,  Map ) [function, total]
+  // -----------------------------------------------------------
+  rule getTyOf(TyUnknown,             _                      ,     _    ) => TyUnknown
+  rule getTyOf(TY,                    .ProjectionElems       ,     _    ) => TY
+
+  rule getTyOf(TY, projectionElemDeref                  PROJS, TYPEMAP ) => getTyOf(pointeeTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf( _, projectionElemField(_, TY)           PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // could also look it up
+  
+  rule getTyOf(TY, projectionElemIndex(_)               PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // TODO assumes TY is already a slice type
+
+  rule getTyOf(TY, projectionElemDowncast(_)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // unchanged type, just setting variantIdx
+
+  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+
+  rule getTyOf( _, projectionElemSubtype(TY)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+  // -----------------------------------------------------------
+  rule getTyOf(_, _, _) => TyUnknown [owise]
+
+
+  syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
+                   | elemTy ( TypeInfo )    [function, total]
+  // ------------------------------------------------------
+  rule pointeeTy(typeInfoPtrType(TY)) => TY
+  rule pointeeTy(typeInfoRefType(TY)) => TY
+  rule pointeeTy(     _             ) => TyUnknown [owise]
+  rule elemTy(typeInfoArrayType(TY, _)) => TY
+  rule elemTy(     _                  ) => TyUnknown [owise]
+```
+
+```k
 // ShallowIntBox: not implemented yet
 ```
 
@@ -734,7 +778,7 @@ Therefore, reference values are represented with a simple `Mutability` flag inst
 ```k
   rule <k> rvalueRef(_REGION, KIND, PLACE)
          =>
-           typedValue(Reference(0, PLACE, #mutabilityOf(KIND)), TyUnknown, #mutabilityOf(KIND))
+           Reference(0, PLACE, #mutabilityOf(KIND))
        ...
        </k>
 
@@ -758,7 +802,7 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 ```k
   rule <k> rvalueAddressOf(MUT, PLACE)
          =>
-           typedValue(PtrLocal(0, PLACE, MUT), TyUnknown, MUT)
+           PtrLocal(0, PLACE, MUT)
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -771,7 +815,7 @@ a special rule for this case is applied with higher priority.
 ```k
   rule <k> rvalueAddressOf(MUT, place(local(I), projectionElemDeref .ProjectionElems))
          =>
-           typedValue(refToPtrLocal(getValue(LOCALS, I)), TyUnknown, MUT)
+           refToPtrLocal(getValue(LOCALS, I), MUT)
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -787,9 +831,9 @@ a special rule for this case is applied with higher priority.
   rule isRef(typedValue(Reference(_, _, _), _, _)) => true
   rule isRef(           _OTHER                   ) => false [owise]
 
-  syntax Value ::= refToPtrLocal ( TypedValue ) [function]
+  syntax Value ::= refToPtrLocal ( TypedValue , Mutability ) [function]
 
-  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, MUT), _, _)) => PtrLocal(OFFSET, PLACE, MUT)
+  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, _), _, _), MUT) => PtrLocal(OFFSET, PLACE, MUT)
 ```
 
 ## Type casts
@@ -817,9 +861,9 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
-  rule <k> #cast(typedValue(Integer(VAL, WIDTH, _SIGNEDNESS), _, MUT), castKindIntToInt, TY)
+  rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, TY)
           =>
-            typedValue(#intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>TypeInfo)), TY, MUT)
+            #intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
           ...
         </k>
         <types> TYPEMAP </types>
@@ -843,9 +887,9 @@ Conversion is especially possible for the case of _Slices_ (of dynamic length) a
 which have the same representation `Value::Range`.
 
 ```k
-  rule <k> #cast(typedValue(VALUE, TY1, MUT), castKindPtrToPtr, TY2)
+  rule <k> #cast(typedValue(VALUE, TY1, _), castKindPtrToPtr, TY2) // TODO supply TY1 separately
           =>
-            typedValue(VALUE, TY2, MUT)
+            VALUE // TODO too simple, fat pointers may require changes to data size
           ...
         </k>
         <types> TYPEMAP </types>
@@ -857,7 +901,7 @@ which have the same representation `Value::Range`.
 | CastKind                           | PointerCoercion          | Description                        |
 |------------------------------------|--------------------------|-----------------------             |
 | PointerCoercion(_, CoercionSource) | ArrayToPointer           | from `*const [T; N]` to `*const T` |
-|                                    | Unsize                   | drop size information              |
+|                                    | Unsize                   | reify size information             |
 |                                    | ReifyFnPointer           |                                    |
 |                                    | UnsafeFnPointer          |                                    |
 |                                    | ClosureFnPointer(Safety) |                                    |
@@ -867,9 +911,9 @@ which have the same representation `Value::Range`.
 
 ```k
   // not checking whether types are actually compatible (trusting the compiler)
-  rule <k> #cast(typedValue(VALUE, _TY, MUT), castKindPointerCoercion(pointerCoercionUnsize), TY)
+  rule <k> #cast(typedValue(VALUE, _TY, _MUT), castKindPointerCoercion(pointerCoercionUnsize), _TY2)
           =>
-            typedValue(VALUE, TY, MUT)
+            VALUE // FIXME too simple, unsize makes a fat pointer from a thin one
           ...
         </k>
 ```
@@ -1009,11 +1053,10 @@ are correct.
   // signed numbers: must check for wrap-around (operation specific)
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, true), _, _), //signed
-          typedValue(Integer(ARG2, WIDTH, true), _, _),
+          Integer(ARG1, WIDTH, true), //signed
+          Integer(ARG2, WIDTH, true),
           true) // checked
     =>
-       typedValue(
           Aggregate(
             variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TyUnknown, mutabilityNot))
@@ -1027,21 +1070,17 @@ are correct.
                 mutabilityNot
               )
             )
-          ),
-          TyUnknown,
-          mutabilityNot
-        )
+          )
     requires isArithmetic(BOP)
     [preserves-definedness]
 
   // unsigned numbers: simple overflow check using a bit mask
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, false), _, _), // unsigned
-          typedValue(Integer(ARG2, WIDTH, false), _, _),
+          Integer(ARG1, WIDTH, false), // unsigned
+          Integer(ARG2, WIDTH, false),
           true) // checked
     =>
-       typedValue(
           Aggregate(
             variantIdx(0),
             ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TyUnknown, mutabilityNot))
@@ -1055,10 +1094,7 @@ are correct.
                 mutabilityNot
               )
             )
-          ),
-          TyUnknown,
-          mutabilityNot
-        )
+          )
     requires isArithmetic(BOP)
     [preserves-definedness]
 
@@ -1066,10 +1102,10 @@ are correct.
 
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, true), _, _), // signed
-          typedValue(Integer(ARG2, WIDTH, true), _, _),
+          Integer(ARG1, WIDTH, true), // signed
+          Integer(ARG2, WIDTH, true),
           false) // unchecked
-    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TyUnknown, mutabilityNot)
+    => Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true)
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) ==Int onInt(BOP, ARG1, ARG2)
@@ -1078,10 +1114,10 @@ are correct.
   // unsigned numbers: simple overflow check using a bit mask
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, false), _, _), // unsigned
-          typedValue(Integer(ARG2, WIDTH, false), _, _),
+          Integer(ARG1, WIDTH, false), // unsigned
+          Integer(ARG2, WIDTH, false),
           false) // unchecked
-    => typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TyUnknown, mutabilityNot)
+    => Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false)
     requires isArithmetic(BOP)
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
@@ -1125,15 +1161,15 @@ The argument types must be the same for all comparison operations, however this 
   // error cases for isComparison and binOpCmp:
   // * arguments must be numbers or Bool
 
-  rule #applyBinOp(OP, typedValue(Integer(VAL1, WIDTH, SIGN), _, _), typedValue(Integer(VAL2, WIDTH, SIGN), _, _), _)
+  rule #applyBinOp(OP, Integer(VAL1, WIDTH, SIGN), Integer(VAL2, WIDTH, SIGN), _)
       =>
-        typedValue(BoolVal(cmpOpInt(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        BoolVal(cmpOpInt(OP, VAL1, VAL2))
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
 
-  rule #applyBinOp(OP, typedValue(BoolVal(VAL1), _, _), typedValue(BoolVal(VAL2), _, _), _)
+  rule #applyBinOp(OP, BoolVal(VAL1), BoolVal(VAL2), _)
       =>
-        typedValue(BoolVal(cmpOpBool(OP, VAL1, VAL2)), TyUnknown, mutabilityNot)
+        BoolVal(cmpOpBool(OP, VAL1, VAL2))
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
 ```
@@ -1151,13 +1187,13 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  rule #applyBinOp(binOpCmp, typedValue(Integer(VAL1, WIDTH, SIGN), _, _), typedValue(Integer(VAL2, WIDTH, SIGN), _, _), _)
+  rule #applyBinOp(binOpCmp, Integer(VAL1, WIDTH, SIGN), Integer(VAL2, WIDTH, SIGN), _)
       =>
-        typedValue(Integer(cmpInt(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+        Integer(cmpInt(VAL1, VAL2), 8, true)
 
-  rule #applyBinOp(binOpCmp, typedValue(BoolVal(VAL1), _, _), typedValue(BoolVal(VAL2), _, _), _)
+  rule #applyBinOp(binOpCmp, BoolVal(VAL1), BoolVal(VAL2), _)
       =>
-        typedValue(Integer(cmpBool(VAL1, VAL2), 8, true), TyUnknown, mutabilityNot)
+        Integer(cmpBool(VAL1, VAL2), 8, true)
 ```
 
 #### Unary operations on Boolean and integral values
@@ -1167,9 +1203,9 @@ An overflow can happen when negating the minimal representable integral value (i
 The semantics of the operation in this case is to wrap around (with the given bit width).
 
 ```k
-  rule <k> #applyUnOp(unOpNeg, typedValue(Integer(VAL, WIDTH, true), TY, _))
+  rule <k> #applyUnOp(unOpNeg, Integer(VAL, WIDTH, true))
           =>
-            typedValue(Integer(truncate(0 -Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+            Integer(truncate(0 -Int VAL, WIDTH, Signed), WIDTH, true)
         ...
         </k>
 
@@ -1179,21 +1215,21 @@ The semantics of the operation in this case is to wrap around (with the given bi
 The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
 
 ```k
-  rule <k> #applyUnOp(unOpNot, typedValue(BoolVal(VAL), TY, _))
+  rule <k> #applyUnOp(unOpNot, BoolVal(VAL))
           =>
-            typedValue(BoolVal(notBool VAL), TY, mutabilityNot)
+            BoolVal(notBool VAL)
         ...
         </k>
 
-  rule <k> #applyUnOp(unOpNot, typedValue(Integer(VAL, WIDTH, true), TY, _))
+  rule <k> #applyUnOp(unOpNot, Integer(VAL, WIDTH, true))
           =>
-            typedValue(Integer(truncate(~Int VAL, WIDTH, Signed), WIDTH, true), TY, mutabilityNot)
+            Integer(truncate(~Int VAL, WIDTH, Signed), WIDTH, true)
         ...
         </k>
 
-  rule <k> #applyUnOp(unOpNot, typedValue(Integer(VAL, WIDTH, false), TY, _))
+  rule <k> #applyUnOp(unOpNot, Integer(VAL, WIDTH, false))
           =>
-            typedValue(Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false), TY, mutabilityNot)
+            Integer(truncate(~Int VAL, WIDTH, Unsigned), WIDTH, false)
         ...
         </k>
 ```
@@ -1249,57 +1285,41 @@ The UB case currently gets stuck.
 
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, SIGNED), TY, _),
-          typedValue(Integer(ARG2, WIDTH, SIGNED), TY, _),
+          Integer(ARG1, WIDTH, SIGNED),
+          Integer(ARG2, WIDTH, SIGNED),
           false) // unchecked
     =>
-       typedValue(
-          Integer(onInt(BOP, ARG1, ARG2), WIDTH, SIGNED),
-          TY,
-          mutabilityNot
-        )
+          Integer(onInt(BOP, ARG1, ARG2), WIDTH, SIGNED)
     requires isBitwise(BOP)
     [preserves-definedness]
 
   rule #applyBinOp(
           BOP,
-          typedValue(BoolVal(ARG1), TY, _),
-          typedValue(BoolVal(ARG2), TY, _),
+          BoolVal(ARG1),
+          BoolVal(ARG2),
           false) // unchecked
     =>
-       typedValue(
-          BoolVal(onBool(BOP, ARG1, ARG2)),
-          TY,
-          mutabilityNot
-        )
+          BoolVal(onBool(BOP, ARG1, ARG2))
     requires isBitwise(BOP)
     [preserves-definedness]
 
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, false), TY, _),
-          typedValue(Integer(ARG2, _, _), _, _),
+          Integer(ARG1, WIDTH, false),
+          Integer(ARG2, _, _),
           false) // unchecked
     =>
-       typedValue(
-          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Unsigned), WIDTH, false),
-          TY,
-          mutabilityNot
-        )
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Unsigned), WIDTH, false)
     requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
     [preserves-definedness]
 
   rule #applyBinOp(
           BOP,
-          typedValue(Integer(ARG1, WIDTH, true), TY, _),
-          typedValue(Integer(ARG2, _, _), _, _),
+          Integer(ARG1, WIDTH, true),
+          Integer(ARG2, _, _),
           false) // unchecked
     =>
-       typedValue(
-          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Signed), WIDTH, true),
-          TY,
-          mutabilityNot
-        )
+          Integer(truncate(onShift(BOP, ARG1, ARG2, WIDTH), WIDTH, Signed), WIDTH, true)
     requires isShift(BOP) andBool ((notBool isUncheckedShift(BOP)) orBool ARG2 <Int WIDTH)
     [preserves-definedness]
 ```
@@ -1327,11 +1347,7 @@ Since our arithmetic operations signal undefined behaviour on overflow independe
 // FIXME: 64 is hardcoded since usize not supported
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
-         typedValue(
-           Integer(#alignOf({TYPEMAP[TY]}:>TypeInfo), 64, false),
-           TyUnknown,
-           mutabilityNot
-         )
+           Integer(#alignOf({TYPEMAP[TY]}:>TypeInfo), 64, false)
          ...
      </k>
      <types> TYPEMAP </types>
@@ -1344,7 +1360,7 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(local(I), PROJECTIONS), _), _, _))
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
@@ -1357,7 +1373,7 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // LOCALS indexing checked
 
-  rule <k> #applyUnOp(unOpPtrMetadata, typedValue(Reference(OFFSET, place(LOCAL, PROJECTIONS), _), _, _))
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _))
         => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
@@ -1368,9 +1384,9 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
 
-  syntax KItem ::= #arrayLength()
+  syntax Value ::= #arrayLength()
 
-  rule <k> typedValue(Range(LIST), _, _) ~> #arrayLength() => typedValue(Integer(size(LIST), 64, false), TyUnknown, mutabilityNot) ... </k>
+  rule <k> Range(LIST) ~> #arrayLength() => Integer(size(LIST), 64, false) ... </k>
 ```
 
 
