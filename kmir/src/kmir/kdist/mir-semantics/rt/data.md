@@ -79,7 +79,6 @@ It is an error to read `NewLocal` or `Moved`.
 ```k
   syntax Evaluation ::= TypedValue | Value // other sorts are added at the first use site
 
-  // TODO change to TypedValue
   syntax KResult ::= Value
 
   rule <k> typedValue(VAL, _, _) => VAL ... </k> [owise]
