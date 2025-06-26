@@ -279,8 +279,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( Ty, VariantIdx, List, Int )
-                   | CtxIndex( Ty, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( MaybeTy, VariantIdx, List, Int )
+                   | CtxIndex( MaybeTy, List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
@@ -586,7 +586,7 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 `RValue::Len` returns the length of an array or slice stored at a place.
 
 ```k
-  syntax Value ::= #mkArray ( Evaluation , Int ) [strict(1)] // TODO Problem, we don't have the Ty
+  syntax Evaluation ::= #mkArray ( Evaluation , Int ) [strict(1)]
 
   rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND, TYPES)) ... </k>
        <types> TYPES </types>
