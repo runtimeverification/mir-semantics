@@ -570,7 +570,25 @@ The most basic ones are simply accessing an operand, either directly or by way o
 
   rule <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
-  rule <k> rvalueCast(CASTKIND, OPERAND, TY) => #cast(OPERAND, CASTKIND, TY) ... </k>
+  rule <k> rvalueCast(CASTKIND, operandCopy(place(local(I), PROJS)) #as OPERAND, TY)
+        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TY) ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  rule <k> rvalueCast(CASTKIND, operandMove(place(local(I), PROJS)) #as OPERAND, TY)
+        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TY) ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+
+  rule <k> rvalueCast(CASTKIND, operandConstant(constOperand(_, _, mirConst(_, CONST_TY, _))) #as OPERAND, TY)
+        => #cast(OPERAND, CASTKIND, CONST_TY, TY) ... </k>
+    [preserves-definedness] // valid list indexing checked
 ```
 
 A number of unary and binary operations exist, (which are dependent on the operand types).
@@ -613,7 +631,7 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 
 
   // length of arrays or slices
-  syntax Value ::= #lengthU64 ( Evaluation ) [strict(1)]
+  syntax Evaluation ::= #lengthU64 ( Evaluation ) [strict(1)]
 
   rule <k> rvalueLen(PLACE) => #lengthU64(operandCopy(PLACE)) ... </k>
 
@@ -840,7 +858,7 @@ a special rule for this case is applied with higher priority.
 Type casts between a number of different types exist in MIR.
 
 ```k
-  syntax Evaluation ::= #cast( Evaluation, CastKind, Ty ) [strict(1)]
+  syntax Evaluation ::= #cast( Evaluation, CastKind, MaybeTy, Ty ) [strict(1)]
 ```
 
 ### Number Type Casts
@@ -860,7 +878,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
   // int casts
-  rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, TY)
+  rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, _, TY)
           =>
             #intAsType(VAL, WIDTH, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
           ...
@@ -886,13 +904,18 @@ Conversion is especially possible for the case of _Slices_ (of dynamic length) a
 which have the same representation `Value::Range`.
 
 ```k
-  rule <k> #cast(typedValue(VALUE, TY1, _), castKindPtrToPtr, TY2) // TODO supply TY1 separately
+  rule <k> #cast(VALUE:Value, castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             VALUE // TODO too simple, fat pointers may require changes to data size
           ...
         </k>
         <types> TYPEMAP </types>
-      requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+       andBool isTypeInfo(TYPEMAP[TY_TARGET])
+       andBool #typesCompatible({TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP)
+      [preserves-definedness] // valid map lookups checked
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
@@ -910,7 +933,7 @@ which have the same representation `Value::Range`.
 
 ```k
   // not checking whether types are actually compatible (trusting the compiler)
-  rule <k> #cast(typedValue(VALUE, _TY, _MUT), castKindPointerCoercion(pointerCoercionUnsize), _TY2)
+  rule <k> #cast(VALUE:Value, castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
             VALUE // FIXME too simple, unsize makes a fat pointer from a thin one
           ...
