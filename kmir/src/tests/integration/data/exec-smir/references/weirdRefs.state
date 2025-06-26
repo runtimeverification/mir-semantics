@@ -36,9 +36,9 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 43 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 43 , 64 , false ) , ty ( 26 ) , mutabilityMut ) ) ) , ty ( 30 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Integer ( 43 , 8 , true ) , TyUnknown , mutabilityNot ) )
+      ListItem ( typedValue ( BoolVal ( true ) , TyUnknown , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 43 , 64 , false ) , TyUnknown , mutabilityNot ) ) ) , ty ( 30 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 2 ) )  .ProjectionElems ) , mutabilityMut ) , ty ( 31 ) , mutabilityNot ) )
       ListItem ( Moved )
       ListItem ( newLocal ( ty ( 32 ) , mutabilityMut ) )
@@ -46,7 +46,7 @@
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 33 ) , mutabilityNot ) )
       ListItem ( Moved )
       ListItem ( newLocal ( ty ( 32 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 29 ) , mutabilityMut ) ) ) , ty ( 34 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , TyUnknown , mutabilityNot ) ) ) , ty ( 34 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 29 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 9 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 35 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 43 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
