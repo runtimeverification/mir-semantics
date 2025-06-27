@@ -30,19 +30,19 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Range ( ListItem ( typedValue ( Integer ( 1 , 16 , true ) , TyUnknown , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1 , 16 , true ) , TyUnknown , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1 , 16 , true ) , TyUnknown , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1 , 16 , true ) , TyUnknown , mutabilityNot ) ) ) , ty ( 29 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( 1 , 16 , true ) )
+      ListItem ( Integer ( 1 , 16 , true ) )
+      ListItem ( Integer ( 1 , 16 , true ) )
+      ListItem ( Integer ( 1 , 16 , true ) ) ) , ty ( 29 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 0 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( Moved )
+      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 1 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( Moved )
-      ListItem ( Moved )
+      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 31 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
