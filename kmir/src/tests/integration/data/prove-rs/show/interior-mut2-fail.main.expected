@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (179 steps)
+│  (161 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 2 ) , typedValue ( thunk ( #cast ( PtrLocal ( 0
+    #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 0 , place ( ...
     span: 53
 
 

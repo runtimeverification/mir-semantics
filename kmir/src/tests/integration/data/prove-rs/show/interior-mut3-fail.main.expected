@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (158 steps)
+│  (149 steps)
 ├─ 3
 │   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
 │   function: main
@@ -28,7 +28,7 @@
    │
    │  (8 steps)
    └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 2 ) , typedValue ( thunk ( #cast ( PtrLocal ( 1
+       #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 1 , place ( ...
        function: main
        span: 80
 
