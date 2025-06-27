@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (40 steps)
+│  (34 steps)
 ├─ 3 (split)
 │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int &Int 18446744073709
 ┃
