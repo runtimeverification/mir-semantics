@@ -38,21 +38,22 @@ In case of the `<locals>`, we only expect `TypedLocal` to be in the list, and us
 The same holds for lists used as arguments in the `Value` sort.
 
 ```k
-  syntax TypedLocal ::= "InvalidLocal" // error token only
-
-  syntax TypedLocal ::= getLocal ( List, Int ) [function, total]
+  syntax TypedLocal ::= getLocal ( List, Int ) [function]
   // ----------------------------------------------
   rule getLocal(LOCALS, IDX) => {LOCALS[IDX]}:>TypedLocal
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[IDX])
 
-  rule getLocal(_, _) => InvalidLocal [owise]
-
-  syntax TypedValue ::= getValue ( List, Int ) [function]
+  // indexing values out of TypedValue and Value lists
+  syntax Value ::= getValue ( List, Int ) [function]
   // ----------------------------------------------
-  rule getValue(LOCALS, IDX) => {LOCALS[IDX]}:>TypedValue
+  rule getValue(LOCALS, IDX) => {valueOf({LOCALS[IDX]}:>TypedValue)}:>Value
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedValue(LOCALS[IDX])
+     andBool isValue(valueOf({LOCALS[IDX]}:>TypedValue))
+  rule getValue(VALUES, IDX) => {VALUES[IDX]}:>Value
+    requires 0 <=Int IDX andBool IDX <Int size(VALUES)
+     andBool isValue(VALUES[IDX])
      [preserves-definedness]
 ```
 
@@ -167,7 +168,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , TypedLocal )
+                 | #forceSetLocal ( Local , MaybeValue )
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -186,16 +187,16 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
-       </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isMovedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+  // // FIXME this becomes setmoved
+  // rule <k> #setLocalValue(place(local(I), .ProjectionElems), Moved) => .K ... </k>
+  //      <locals>
+  //         LOCALS => LOCALS[I <- typedValue(Moved, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
+  //      </locals>
+  //   requires 0 <=Int I andBool I <Int size(LOCALS)
+  //   [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-        => #traverseProjection(toLocal(I), getLocal(LOCALS, I), PROJ, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
         ~> #writeProjection(VAL)
        ...
        </k>
@@ -206,30 +207,31 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
-  rule <k> #forceSetLocal(local(I), VALUE) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- VALUE] </locals>
+  rule <k> #forceSetLocal(local(I), MBVAL) => .K ... </k>
+       <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 
 ### Traversing Projections for Reads and Writes
 
 Read and write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
-This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`.
+This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`/`#setMoved`.
 A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
 
 ```k
-  syntax KItem ::= #traverseProjection ( WriteTo , TypedLocal, ProjectionElems, Contexts )
+  syntax KItem ::= #traverseProjection ( WriteTo , Value, ProjectionElems, Contexts )
                  | #readProjection ( Bool )
                  | #writeProjection ( Value )
-                 | "#writeMoved" // TODO add Ty and Mut?
+                 | "#writeMoved"
 
-  rule <k> #traverseProjection(_, typedValue(VAL, _, _), .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, typedValue(VAL, _, _), .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
 
-  rule <k> #traverseProjection(toLocal(I), ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
-        => #setLocalValue(place(local(I), .ProjectionElems), valueOf({#buildUpdate(typedValue(NEW, tyOfLocal(ORIGINAL), mutabilityOf(ORIGINAL)), CONTEXTS)}:>TypedValue))
+        => #setLocalValue(place(local(I), .ProjectionElems), {#buildUpdate(NEW, CONTEXTS)}:>Value)
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
@@ -241,14 +243,14 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
         => .K
         ...
        </k>
        <stack> STACK
             => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(typedValue(NEW, tyOfLocal(ORIGINAL), mutabilityOf(ORIGINAL)), CONTEXTS))
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
                     ]
        </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
@@ -279,43 +281,38 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( MaybeTy, VariantIdx, List, Int )
-                   | CtxIndex( MaybeTy, List , Int ) // array index constant or has been read before
+  syntax Context ::= CtxField( VariantIdx, List, Int )
+                   | CtxIndex( List , Int ) // array index constant or has been read before
 
   syntax Contexts ::= List{Context, ""}
 
-  syntax TypedLocal ::= #buildUpdate ( TypedLocal, Contexts ) [function]
+  syntax MaybeValue ::= #buildUpdate ( MaybeValue , Contexts ) [function]
 
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
 
-  rule #buildUpdate(VAL, CtxField(TY, IDX, ARGS, I) CTXS)
-      => #buildUpdate(typedValue(Aggregate(IDX, ARGS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxField(IDX, ARGS, I) CTXS)
+      => #buildUpdate(Aggregate(IDX, ARGS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  rule #buildUpdate(VAL, CtxIndex(TY, ELEMS, I) CTXS)
-      => #buildUpdate(typedValue(Range(ELEMS[I <- VAL]), TY, mutabilityMut), CTXS)
+  rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
+      => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, TypedLocal ) [function]
+  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, MaybeValue ) [function]
 
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, Moved)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- Moved])
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-    [preserves-definedness]
-
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, typedValue(VAL, _, _))
+  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
       => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-    [preserves-definedness]
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid list indexing and sort checked
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   rule appendP(.ProjectionElems, TAIL) => TAIL
   rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
 
-  syntax TypedValue ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+  syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
   rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef(getValue(LOCALS, I), OFFSET)
     requires 0 <=Int I
@@ -323,14 +320,14 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  syntax TypedValue ::= #incrementRef ( TypedValue )  [function, total]
-                      | #decrementRef ( TypedValue )  [function, total]
-                      | #adjustRef (TypedValue, Int ) [function, total]
+  syntax Value ::= #incrementRef ( Value )  [function, total]
+                 | #decrementRef ( Value )  [function, total]
+                 | #adjustRef (Value, Int ) [function, total]
 
-  rule #adjustRef(typedValue(Reference(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
-    => typedValue(Reference(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
-  rule #adjustRef(typedValue(PtrLocal(HEIGHT, PLACE, REFMUT), TY, MUT), OFFSET)
-    => typedValue(PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT), TY, MUT)
+  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT), OFFSET)
+    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT)
+  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT), OFFSET)
+    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -350,31 +347,31 @@ This is done without consideration of the validity of the Downcast[^downcast].
 ```k
   rule <k> #traverseProjection(
              DEST,
-             typedValue(Aggregate(IDX, ARGS), TY, _MUT),
+             Aggregate(IDX, ARGS),
              projectionElemField(fieldIdx(I), _) PROJS,
              CTXTS
            )
         => #traverseProjection(
              DEST,
-             getLocal(ARGS, I),
+             getValue(ARGS, I),
              PROJS,
-             CtxField(TY, IDX, ARGS, I) CTXTS
+             CtxField(IDX, ARGS, I) CTXTS
            )
         ...
         </k>
     requires 0 <=Int I andBool I <Int size(ARGS)
-     andBool isTypedLocal(ARGS[I])
+     andBool isValue(ARGS[I])
      [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(
              DEST,
-             typedValue(Aggregate(_, ARGS), TY, MUT),
+             Aggregate(_, ARGS),
              projectionElemDowncast(IDX) PROJS,
              CTXTS
            )
         => #traverseProjection(
              DEST,
-             typedValue(Aggregate(IDX, ARGS), TY, MUT),
+             Aggregate(IDX, ARGS),
              PROJS,
              CTXTS
            )
@@ -392,7 +389,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
 ```k
   rule <k> #traverseProjection(
              DEST,
-             typedValue(Range(ELEMENTS), TY, _MUT),
+             Range(ELEMENTS),
              projectionElemIndex(local(LOCAL)) PROJS,
              CTXTS
            )
@@ -400,7 +397,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              getValue(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))),
              PROJS,
-             CtxIndex(TY, ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))) CTXTS
+             CtxIndex(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))) CTXTS
            )
         ...
         </k>
@@ -409,12 +406,12 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool isTypedValue(LOCALS[LOCAL])
      andBool isInt(#expectUsize(getValue(LOCALS, LOCAL)))
      andBool 0 <=Int #expectUsize(getValue(LOCALS, LOCAL)) andBool #expectUsize(getValue(LOCALS, LOCAL)) <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[#expectUsize(getValue(LOCALS, LOCAL))])
+     andBool isValue(ELEMENTS[#expectUsize(getValue(LOCALS, LOCAL))])
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
              DEST,
-             typedValue(Range(ELEMENTS), TY, _MUT),
+             Range(ELEMENTS),
              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
              CTXTS
            )
@@ -422,17 +419,17 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              getValue(ELEMENTS, OFFSET),
              PROJS,
-             CtxIndex(TY, ELEMENTS, OFFSET) CTXTS
+             CtxIndex(ELEMENTS, OFFSET) CTXTS
            )
         ...
         </k>
     requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
-     andBool isTypedValue(ELEMENTS[OFFSET])
+     andBool isValue(ELEMENTS[OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
              DEST,
-             typedValue(Range(ELEMENTS), TY, _MUT),
+             Range(ELEMENTS),
              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
              CTXTS
            )
@@ -440,18 +437,18 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              getValue(ELEMENTS, OFFSET),
              PROJS,
-             CtxIndex(TY, ELEMENTS, MINLEN -Int OFFSET) CTXTS
+             CtxIndex(ELEMENTS, MINLEN -Int OFFSET) CTXTS
            )
         ...
         </k>
     requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
-     andBool isTypedValue(ELEMENTS[MINLEN -Int OFFSET])
+     andBool isValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
-  syntax Int ::= #expectUsize ( TypedValue ) [function]
+  syntax Int ::= #expectUsize ( Value ) [function]
 
-  rule #expectUsize(typedValue(Integer(I, 64, false), _, _)) => I
+  rule #expectUsize(Integer(I, 64, false)) => I
 ```
 
 #### References
@@ -463,7 +460,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 ```k
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -482,13 +479,13 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(Reference(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
-             getLocal(LOCALS, I),
+             getValue(LOCALS, I),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
            )
@@ -497,13 +494,13 @@ In the simplest case, the reference refers to a local in the same stack frame (h
         <locals> LOCALS </locals>
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
 
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT), _, _),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -522,13 +519,13 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             typedValue(PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT), _, _),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
-             getLocal(LOCALS, I),
+             getValue(LOCALS, I),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
            )
@@ -611,8 +608,7 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
     requires isInt(readTyConstInt(KIND, TYPES))
     [preserves-definedness]
 
-  rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, typedValue(ELEMENT, TyUnknown, mutabilityNot))) ... </k>
-    // HAAAAACK
+  rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, ELEMENT)) ... </k>
     requires 0 <=Int N
     [preserves-definedness]
 
@@ -697,7 +693,7 @@ Literal arrays are also built using this RValue.
 
   rule <k> VAL:Value ~> #readOn(ACC, REST)
         =>
-           #readOperandsAux(ACC ListItem(typedValue(VAL, TyUnknown, mutabilityNot)), REST) // HAAAACK
+           #readOperandsAux(ACC ListItem(VAL), REST)
         ...
        </k>
 ```
@@ -843,14 +839,14 @@ a special rule for this case is applied with higher priority.
      andBool isRef(getValue(LOCALS, I))
     [priority(40), preserves-definedness] // valid indexing checked, toPtrLocal can convert the reference
 
-  syntax Bool ::= isRef ( TypedValue ) [function, total]
+  syntax Bool ::= isRef ( Value ) [function, total]
   // -----------------------------------------------------
-  rule isRef(typedValue(Reference(_, _, _), _, _)) => true
-  rule isRef(           _OTHER                   ) => false [owise]
+  rule isRef(Reference(_, _, _)) => true
+  rule isRef(     _OTHER       ) => false [owise]
 
-  syntax Value ::= refToPtrLocal ( TypedValue , Mutability ) [function]
+  syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(typedValue(Reference(OFFSET, PLACE, _), _, _), MUT) => PtrLocal(OFFSET, PLACE, MUT)
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _), MUT) => PtrLocal(OFFSET, PLACE, MUT)
 ```
 
 ## Type casts
@@ -1081,15 +1077,11 @@ are correct.
     =>
           Aggregate(
             variantIdx(0),
-            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true), TyUnknown, mutabilityNot))
+            ListItem(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed), WIDTH, true))
             ListItem(
-              typedValue(
-                BoolVal(
-                  // overflow: compare with and without truncation
-                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt(BOP, ARG1, ARG2)
-                ),
-                TyUnknown,
-                mutabilityNot
+              BoolVal(
+                // overflow: compare with and without truncation
+                truncate(onInt(BOP, ARG1, ARG2), WIDTH, Signed) =/=Int onInt(BOP, ARG1, ARG2)
               )
             )
           )
@@ -1105,15 +1097,11 @@ are correct.
     =>
           Aggregate(
             variantIdx(0),
-            ListItem(typedValue(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false), TyUnknown, mutabilityNot))
+            ListItem(Integer(truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned), WIDTH, false))
             ListItem(
-              typedValue(
-                BoolVal(
-                  // overflow flag: compare to truncated result
-                  truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
-                ),
-                TyUnknown,
-                mutabilityNot
+              BoolVal(
+                // overflow flag: compare to truncated result
+                truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) =/=Int onInt(BOP, ARG1, ARG2)
               )
             )
           )
@@ -1356,7 +1344,7 @@ One important use case of `UbChecks` is to determine overflows in unchecked arit
 Since our arithmetic operations signal undefined behaviour on overflow independently, the value returned by `UbChecks` is `false` for now.
 
 ```k
-  rule <k> rvalueNullaryOp(nullOpUbChecks, _) => typedValue(BoolVal(false), TyUnknown, mutabilityNot) ... </k>
+  rule <k> rvalueNullaryOp(nullOpUbChecks, _) => BoolVal(false) ... </k>
 ```
 
 #### "Nullary" operations reifying type information

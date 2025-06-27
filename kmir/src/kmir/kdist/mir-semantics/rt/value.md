@@ -46,17 +46,20 @@ A list `locals` of local variables of a stack frame is stored as values together
 with their type information (to enable type-checking assignments). Also, the
 `Mutability` is remembered to prevent mutation of immutable values.
 
-The local variables may be actual values (`typedValue`), uninitialised (`NewLocal`) or `Moved`.
+The local variables may be actual values (`typedValue`), uninitialised (`NewLocal`) or `Moved` values.
 
 ```k
   // local storage of the stack frame
-  syntax TypedLocal ::= TypedValue | MovedLocal | NewLocal
+  syntax TypedLocal ::= TypedValue | NewLocal
 
-  syntax TypedValue ::= typedValue ( Value , MaybeTy , Mutability ) [symbol(typedValue)]
-
-  syntax MovedLocal ::= "Moved"
+  syntax TypedValue ::= typedValue ( MaybeValue , Ty , Mutability ) [symbol(typedValue)]
 
   syntax NewLocal ::= newLocal ( Ty , Mutability )                  [symbol(newLocal)]
+
+  // values may have been moved
+  syntax MaybeValue ::= Value | MovedValue
+
+  syntax MovedValue ::= "Moved"
 
   // the type of aggregates cannot be determined from the data provided when they
   // occur as `RValue`, therefore we have to make the `Ty` field optional here.
@@ -64,19 +67,17 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
                    | "TyUnknown"
 
   // accessors
-  syntax MaybeTy ::= tyOfLocal ( TypedLocal ) [function, total]
-  // ----------------------------------------------------------
+  syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
+  // -----------------------------------------------------
   rule tyOfLocal(typedValue(_, TY, _)) => TY
   rule tyOfLocal(newLocal(TY, _))      => TY
-  rule tyOfLocal(_)                    => TyUnknown [owise]
 
   syntax Mutability ::= mutabilityOf ( TypedLocal ) [function, total]
   // ----------------------------------------------------------------
   rule mutabilityOf(typedValue(_, _, MUT)) => MUT
   rule mutabilityOf(newLocal(_, MUT))      => MUT
-  rule mutabilityOf(_)                     => mutabilityNot [owise]
 
-  syntax Value ::= valueOf ( TypedValue ) [function, total]
+  syntax MaybeValue ::= valueOf ( TypedValue ) [function, total]
   // ------------------------------------------------------
   rule valueOf(typedValue(V, _, _)) => V
 ```
