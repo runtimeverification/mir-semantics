@@ -167,7 +167,7 @@ class ArgGenerator:
                 field_constraints: list[KInner] = []
                 for _ty in fields:
                     new_var, new_constraints = self._symbolic_value(_ty, mutable)
-                    field_vars.append(_typed_value(new_var, _ty, mutable))
+                    field_vars.append(new_var)
                     field_constraints += new_constraints
                 return (
                     KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(field_vars))),
@@ -187,7 +187,7 @@ class ArgGenerator:
                 elem_constraints: list[KInner] = []
                 for _ in range(size):
                     new_var, new_constraints = self._symbolic_value(element_type, mutable)
-                    elem_vars.append(_typed_value(new_var, element_type, mutable))
+                    elem_vars.append(new_var)
                     elem_constraints += new_constraints
                 return KApply('Value::Range', (list_of(elem_vars),)), elem_constraints
 
@@ -196,7 +196,7 @@ class ArgGenerator:
                 elem_constraints = []
                 for _ty in components:
                     new_var, new_constraints = self._symbolic_value(_ty, mutable)
-                    elem_vars.append(_typed_value(new_var, _ty, mutable))
+                    elem_vars.append(new_var)
                     elem_constraints += new_constraints
                 return (
                     KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(elem_vars))),
