@@ -1,7 +1,6 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-│   span: 0
 │
 │  (723 steps)
 ├─ 3 (terminal)
