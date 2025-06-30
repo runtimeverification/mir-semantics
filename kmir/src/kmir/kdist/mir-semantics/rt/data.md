@@ -43,6 +43,7 @@ The same holds for lists used as arguments in the `Value` sort.
   rule getLocal(LOCALS, IDX) => {LOCALS[IDX]}:>TypedLocal
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[IDX])
+     [preserves-definedness] // valid indexing and sort coercion checked
 
   // indexing values out of TypedValue and Value lists
   syntax Value ::= getValue ( List, Int ) [function]
@@ -51,10 +52,12 @@ The same holds for lists used as arguments in the `Value` sort.
     requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
      andBool isTypedValue(LOCALS[IDX])
      andBool isValue(valueOf({LOCALS[IDX]}:>TypedValue))
+     [preserves-definedness] // valid indexing and sort coercion checked
+
   rule getValue(VALUES, IDX) => {VALUES[IDX]}:>Value
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)
      andBool isValue(VALUES[IDX])
-     [preserves-definedness]
+     [preserves-definedness] // valid indexing and sort coercion checked
 ```
 
 To ensure the sort coercions above do not cause any harm, some definedness-related rules are added here:
