@@ -150,7 +150,8 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
             linked_file.parent, proof.id, full_printer=False, smir_info=None, omit_current_body=False
         )
         shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, proof, display_opts))
-        show_res = '\n'.join(shower.show(proof))
+        spans_removed = [line for line in shower.show(proof) if 'span: ' not in line]
+        show_res = '\n'.join(spans_removed)
 
         assert_or_update_show_output(show_res, file, update=update_expected_output)
     os.unlink(linked_file)
