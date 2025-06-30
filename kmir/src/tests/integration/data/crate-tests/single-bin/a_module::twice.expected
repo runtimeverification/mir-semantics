@@ -1,7 +1,6 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-│   span: 0
 │
 │  (42 steps)
 ├─ 3 (split)

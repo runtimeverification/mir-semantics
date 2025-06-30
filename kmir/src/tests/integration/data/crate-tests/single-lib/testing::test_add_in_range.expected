@@ -1,7 +1,6 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-│   span: 0
 │
 │  (112 steps)
 ├─ 3 (split)
@@ -18,7 +17,6 @@
 ┃  │  (4 steps)
 ┃  └─ 6 (stuck, leaf)
 ┃      #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-┃      span: 72
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
