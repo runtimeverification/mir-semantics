@@ -67,6 +67,10 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
   rule #Ceil({X}:>TypedLocal) => #Ceil(X)
     requires isTypedLocal(X)                         [simplification]
 
+  // data coerced to sort Value is not undefined if it is of that sort
+  rule #Ceil({X}:>Value) => #Ceil(X)
+    requires isValue(X)                              [simplification]
+
   // TypedLocals created by the semantics do not have undefined subterms
   rule #Ceil(LIST:List[IDX]) => #Top
     requires 0 <=Int IDX andBool IDX <Int size(LIST) [simplification]
@@ -171,7 +175,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , MaybeValue )
+                 | #forceSetLocal ( Local , Value )
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -289,7 +293,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   syntax Contexts ::= List{Context, ""}
 
-  syntax MaybeValue ::= #buildUpdate ( MaybeValue , Contexts ) [function]
+  syntax Value ::= #buildUpdate ( Value , Contexts ) [function]
 
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
@@ -302,7 +306,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
-  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, MaybeValue ) [function]
+  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
   rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
       => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])

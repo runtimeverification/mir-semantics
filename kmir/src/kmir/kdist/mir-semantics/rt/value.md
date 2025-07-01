@@ -21,6 +21,9 @@ High-level values can be
 - references to a place in the current or an enclosing stack frame
 - arrays and slices (with homogenous element types)
 
+The special `Moved` value represents values that have been used and should not be accessed any more.
+`Moved` values may be overwritten with a new value but using them will halt execution.
+
 ```k
   syntax Value ::= Integer( Int, Int, Bool )              [symbol(Value::Integer)]
                    // value, bit-width, signedness   for un/signed int
@@ -37,7 +40,8 @@ High-level values can be
                  | PtrLocal( Int , Place , Mutability )   [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // first 3 fields are the same as in Reference, plus emulating pointer arithmetics (future work)
-
+                 | "Moved"
+                   // The value has been used and is gone now
 ```
 
 ## Local variables
@@ -46,20 +50,15 @@ A list `locals` of local variables of a stack frame is stored as values together
 with their type information (to enable type-checking assignments). Also, the
 `Mutability` is remembered to prevent mutation of immutable values.
 
-The local variables may be actual values (`typedValue`), uninitialised (`NewLocal`) or `Moved` values.
+The local variables may be actual values (`typedValue`) or uninitialised (`NewLocal`).
 
 ```k
   // local storage of the stack frame
   syntax TypedLocal ::= TypedValue | NewLocal
 
-  syntax TypedValue ::= typedValue ( MaybeValue , Ty , Mutability ) [symbol(typedValue)]
+  syntax TypedValue ::= typedValue ( Value , Ty , Mutability ) [symbol(typedValue)]
 
-  syntax NewLocal ::= newLocal ( Ty , Mutability )                  [symbol(newLocal)]
-
-  // values may have been moved
-  syntax MaybeValue ::= Value | MovedValue
-
-  syntax MovedValue ::= "Moved"
+  syntax NewLocal ::= newLocal ( Ty , Mutability )             [symbol(newLocal)]
 
   // the type of aggregates cannot be determined from the data provided when they
   // occur as `RValue`, therefore we have to make the `Ty` field optional here.
@@ -77,7 +76,7 @@ The local variables may be actual values (`typedValue`), uninitialised (`NewLoca
   rule mutabilityOf(typedValue(_, _, MUT)) => MUT
   rule mutabilityOf(newLocal(_, MUT))      => MUT
 
-  syntax MaybeValue ::= valueOf ( TypedValue ) [function, total]
+  syntax Value ::= valueOf ( TypedValue ) [function, total]
   // ------------------------------------------------------
   rule valueOf(typedValue(V, _, _)) => V
 ```
