@@ -1400,6 +1400,7 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
     requires 0 <Int OFFSET
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
+     [preserves-definedness] // STACK indexing checked
 
   syntax Value ::= #arrayLength()
 
