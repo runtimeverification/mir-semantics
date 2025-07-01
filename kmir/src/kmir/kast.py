@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import logging
+from typing import TYPE_CHECKING, Final
 
 from pyk.kast.inner import KApply, KVariable, build_cons
 from pyk.kast.prelude.collections import list_of
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
     from .smir import SMIRInfo
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
@@ -235,5 +238,8 @@ class ArgGenerator:
                     ),
                     pointee_constraints,
                 )
-            case _:
-                return self._fresh_var('ARG'), []
+            case other:
+                _LOGGER.warning(f'Missing type information ({other}) for type {ty}')
+                # missing type information, but can assert that this is a value
+                var = self._fresh_var('ARG')
+                return var, [mlEqualsTrue(KApply('isValue', (var,)))]
