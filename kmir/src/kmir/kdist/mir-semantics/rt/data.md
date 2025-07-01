@@ -102,7 +102,7 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 ```k
   syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isTypedValue(EV) [owise]
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isValue(EV) [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
