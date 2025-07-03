@@ -2,6 +2,7 @@
 
 ```k
 requires "../ty.md"
+requires "../body.md"
 
 module RT-TYPES
   imports BOOL
@@ -9,6 +10,7 @@ module RT-TYPES
   imports K-EQUAL
 
   imports TYPES
+  imports BODY
 
 ```
 
@@ -62,6 +64,48 @@ Pointers to arrays/slices are compatible with pointers to the element type
   rule #isArrayOf(      _                 , _ ) => false [owise]
 ```
 
+## Determining types of places with projection
+
+A helper function `getTyOf` traverses type metadata (using the type metadata map `Ty -> TypeInfo`) along the applied projections to determine the `Ty` of the projected place.
+To make this function total, an optional `MaybeTy` is used.
+
+```k
+  syntax MaybeTy ::= Ty
+                   | "TyUnknown"
+
+  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ,  Map ) [function, total]
+  // -----------------------------------------------------------
+  rule getTyOf(TyUnknown,             _                      ,     _    ) => TyUnknown
+  rule getTyOf(TY,                    .ProjectionElems       ,     _    ) => TY
+
+  rule getTyOf(TY, projectionElemDeref                  PROJS, TYPEMAP ) => getTyOf(pointeeTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf( _, projectionElemField(_, TY)           PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // could also look it up
+  
+  rule getTyOf(TY, projectionElemIndex(_)               PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
+  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // TODO assumes TY is already a slice type
+
+  rule getTyOf(TY, projectionElemDowncast(_)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // unchanged type, just setting variantIdx
+
+  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+
+  rule getTyOf( _, projectionElemSubtype(TY)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+  // -----------------------------------------------------------
+  rule getTyOf(_, _, _) => TyUnknown [owise]
+
+
+  syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
+                   | elemTy ( TypeInfo )    [function, total]
+  // ------------------------------------------------------
+  rule pointeeTy(typeInfoPtrType(TY)) => TY
+  rule pointeeTy(typeInfoRefType(TY)) => TY
+  rule pointeeTy(     _             ) => TyUnknown [owise]
+  rule elemTy(typeInfoArrayType(TY, _)) => TY
+  rule elemTy(     _                  ) => TyUnknown [owise]
+```
 
 
 ```k

@@ -60,11 +60,6 @@ The local variables may be actual values (`typedValue`) or uninitialised (`NewLo
 
   syntax NewLocal ::= newLocal ( Ty , Mutability )             [symbol(newLocal)]
 
-  // the type of aggregates cannot be determined from the data provided when they
-  // occur as `RValue`, therefore we have to make the `Ty` field optional here.
-  syntax MaybeTy ::= Ty
-                   | "TyUnknown"
-
   // accessors
   syntax Ty ::= tyOfLocal ( TypedLocal ) [function, total]
   // -----------------------------------------------------

@@ -697,6 +697,9 @@ The `Aggregate` type carries a `VariantIdx` to distinguish the different variant
 This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`.
 Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
 
+The `Ty` of the aggregate is required in order to access the discriminant mapping table for the type in the type metadata.
+The `getTyOf` helper applies the projections from the `Place` to determine the `Ty` it.
+
 ```k
   rule <k> rvalueDiscriminant(place(local(I), PROJS) #as PLACE)
         => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)) ... </k>
@@ -726,46 +729,6 @@ Note that the discriminant may be different from the variant index for user-defi
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( Discriminant(IDX, RESULT)    _        , IDX) => RESULT
   rule #lookupDiscrAux( _OTHER:Discriminant MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX) [owise]
-```
-
-The `Ty` of the aggregate is required in order to access the discriminant mapping table for the type in the type metadata.
-A special function traverses type metadata along the applied projections to achieve this (using the type metadata map `Ty -> TypeInfo`).
-
-```k
-  // should this be in types.md?
-
-  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ,  Map ) [function, total]
-  // -----------------------------------------------------------
-  rule getTyOf(TyUnknown,             _                      ,     _    ) => TyUnknown
-  rule getTyOf(TY,                    .ProjectionElems       ,     _    ) => TY
-
-  rule getTyOf(TY, projectionElemDeref                  PROJS, TYPEMAP ) => getTyOf(pointeeTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf( _, projectionElemField(_, TY)           PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // could also look it up
-  
-  rule getTyOf(TY, projectionElemIndex(_)               PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // TODO assumes TY is already a slice type
-
-  rule getTyOf(TY, projectionElemDowncast(_)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // unchanged type, just setting variantIdx
-
-  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
-
-  rule getTyOf( _, projectionElemSubtype(TY)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
-  // -----------------------------------------------------------
-  rule getTyOf(_, _, _) => TyUnknown [owise]
-
-
-  syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
-                   | elemTy ( TypeInfo )    [function, total]
-  // ------------------------------------------------------
-  rule pointeeTy(typeInfoPtrType(TY)) => TY
-  rule pointeeTy(typeInfoRefType(TY)) => TY
-  rule pointeeTy(     _             ) => TyUnknown [owise]
-  rule elemTy(typeInfoArrayType(TY, _)) => TY
-  rule elemTy(     _                  ) => TyUnknown [owise]
 ```
 
 ```k
