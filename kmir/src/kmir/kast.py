@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import logging
+from typing import TYPE_CHECKING, Final
 
 from pyk.kast.inner import KApply, KVariable, build_cons
 from pyk.kast.prelude.collections import list_of
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
     from .smir import SMIRInfo
+
+_LOGGER: Final = logging.getLogger(__name__)
 
 
 def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
@@ -167,7 +170,7 @@ class ArgGenerator:
                 field_constraints: list[KInner] = []
                 for _ty in fields:
                     new_var, new_constraints = self._symbolic_value(_ty, mutable)
-                    field_vars.append(_typed_value(new_var, _ty, mutable))
+                    field_vars.append(new_var)
                     field_constraints += new_constraints
                 return (
                     KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(field_vars))),
@@ -187,7 +190,7 @@ class ArgGenerator:
                 elem_constraints: list[KInner] = []
                 for _ in range(size):
                     new_var, new_constraints = self._symbolic_value(element_type, mutable)
-                    elem_vars.append(_typed_value(new_var, element_type, mutable))
+                    elem_vars.append(new_var)
                     elem_constraints += new_constraints
                 return KApply('Value::Range', (list_of(elem_vars),)), elem_constraints
 
@@ -196,7 +199,7 @@ class ArgGenerator:
                 elem_constraints = []
                 for _ty in components:
                     new_var, new_constraints = self._symbolic_value(_ty, mutable)
-                    elem_vars.append(_typed_value(new_var, _ty, mutable))
+                    elem_vars.append(new_var)
                     elem_constraints += new_constraints
                 return (
                     KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), list_of(elem_vars))),
@@ -235,5 +238,8 @@ class ArgGenerator:
                     ),
                     pointee_constraints,
                 )
-            case _:
-                return self._fresh_var('ARG'), []
+            case other:
+                _LOGGER.warning(f'Missing type information ({other}) for type {ty}')
+                # missing type information, but can assert that this is a value
+                var = self._fresh_var('ARG')
+                return var, [mlEqualsTrue(KApply('isValue', (var,)))]

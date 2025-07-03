@@ -31,7 +31,8 @@
 ┃  ┃  ├─ 12 (terminal)
 ┃  ┃  │   #EndProgram ~> .K
 ┃  ┃  │
-┃  ┃  ┊  constraint: true
+┃  ┃  ┊  constraint:
+┃  ┃  ┊      Ceil_8920325e
 ┃  ┃  ┊  subst: ...
 ┃  ┃  └─ 2 (leaf, target, terminal)
 ┃  ┃      #EndProgram ~> .K
@@ -45,44 +46,31 @@
 ┃     │
 ┃     │  (116 steps)
 ┃     ├─ 13
-┃     │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+┃     │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
 ┃     │   span: 69
 ┃     ┃
 ┃     ┃ (1 step)
 ┃     ┣━━┓
 ┃     ┃  │
 ┃     ┃  ├─ 16
-┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:Value ( ARG_ARRAY7:
 ┃     ┃  │   span: 69
-┃     ┃  ┃
-┃     ┃  ┃ (1 step)
-┃     ┃  ┣━━┓
-┃     ┃  ┃  │
-┃     ┃  ┃  ├─ 20
-┃     ┃  ┃  │   #execStmts ( .Statements )
-~> #execTerminator ( terminator ( ... kind: terminato
-┃     ┃  ┃  │   span: 69
-┃     ┃  ┃  │
-┃     ┃  ┃  │  (6 steps)
-┃     ┃  ┃  ├─ 24 (terminal)
-┃     ┃  ┃  │   #EndProgram ~> .K
-┃     ┃  ┃  │
-┃     ┃  ┃  ┊  constraint:
-┃     ┃  ┃  ┊      Ceil_01b1388e
-┃     ┃  ┃  ┊  subst: ...
-┃     ┃  ┃  └─ 2 (leaf, target, terminal)
-┃     ┃  ┃      #EndProgram ~> .K
-┃     ┃  ┃
-┃     ┃  ┗━━┓
-┃     ┃     │
-┃     ┃     └─ 21 (stuck, leaf)
-┃     ┃         #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
-┃     ┃         span: 69
+┃     ┃  │
+┃     ┃  │  (7 steps)
+┃     ┃  ├─ 20 (terminal)
+┃     ┃  │   #EndProgram ~> .K
+┃     ┃  │
+┃     ┃  ┊  constraint:
+┃     ┃  ┊      Ceil_2dbaabca
+┃     ┃  ┊      Ceil_8920325e
+┃     ┃  ┊  subst: ...
+┃     ┃  └─ 2 (leaf, target, terminal)
+┃     ┃      #EndProgram ~> .K
 ┃     ┃
 ┃     ┗━━┓
 ┃        │
 ┃        └─ 17 (stuck, leaf)
-┃            #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+┃            #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
 ┃            span: 69
 ┃
 ┗━━┓ subst: .Subst
@@ -122,44 +110,30 @@
       │
       │  (116 steps)
       ├─ 15
-      │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+      │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
       │   span: 69
       ┃
       ┃ (1 step)
       ┣━━┓
       ┃  │
       ┃  ├─ 18
-      ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
+      ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:Value ( ARG_ARRAY7:
       ┃  │   span: 69
-      ┃  ┃
-      ┃  ┃ (1 step)
-      ┃  ┣━━┓
-      ┃  ┃  │
-      ┃  ┃  ├─ 22
-      ┃  ┃  │   #execStmts ( .Statements )
-~> #execTerminator ( terminator ( ... kind: terminato
-      ┃  ┃  │   span: 69
-      ┃  ┃  │
-      ┃  ┃  │  (6 steps)
-      ┃  ┃  ├─ 25 (terminal)
-      ┃  ┃  │   #EndProgram ~> .K
-      ┃  ┃  │
-      ┃  ┃  ┊  constraint:
-      ┃  ┃  ┊      Ceil_01b1388e
-      ┃  ┃  ┊  subst: ...
-      ┃  ┃  └─ 2 (leaf, target, terminal)
-      ┃  ┃      #EndProgram ~> .K
-      ┃  ┃
-      ┃  ┗━━┓
-      ┃     │
-      ┃     └─ 23 (stuck, leaf)
-      ┃         #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:TypedValue ( ARG_AR
-      ┃         span: 69
+      ┃  │
+      ┃  │  (7 steps)
+      ┃  ├─ 21 (terminal)
+      ┃  │   #EndProgram ~> .K
+      ┃  │
+      ┃  ┊  constraint:
+      ┃  ┊      Ceil_2dbaabca
+      ┃  ┊  subst: ...
+      ┃  └─ 2 (leaf, target, terminal)
+      ┃      #EndProgram ~> .K
       ┃
       ┗━━┓
          │
          └─ 19 (stuck, leaf)
-             #traverseProjection ( toStack ( 1 , local ( 11 ) ) , typedValue ( Range ( ARG_AR
+             #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
              span: 69
 
 
