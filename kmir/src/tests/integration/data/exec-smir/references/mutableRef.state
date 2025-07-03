@@ -34,10 +34,10 @@
       ListItem ( typedValue ( Integer ( 22 , 8 , true ) , ty ( 2 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( Moved )
+      ListItem ( typedValue ( Moved , ty ( 2 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( Moved )
+      ListItem ( typedValue ( Moved , ty ( 2 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
     </locals>
   </currentFrame>

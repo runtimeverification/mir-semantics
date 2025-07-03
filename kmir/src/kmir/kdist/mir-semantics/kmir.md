@@ -344,15 +344,15 @@ will be `129`.
 
   rule <k> #selectBlock(switchTargets(.Branches, BBIDX), _) => #execBlockIdx(BBIDX) ... </k>
 
-  rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), TV) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, TV) [preserves-definedness]
+  rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), V) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, V) [preserves-definedness]
 
-  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), TV) ... </k> requires notBool #switchMatch(MI, TV) [preserves-definedness]
+  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), V) ... </k> requires notBool #switchMatch(MI, V) [preserves-definedness]
 
-  syntax Bool ::= #switchMatch   ( MIRInt , TypedValue ) [function]
+  syntax Bool ::= #switchMatch   ( MIRInt , Value ) [function]
 
-  rule #switchMatch(0, typedValue(BoolVal(B)           , _, _)) => notBool B
-  rule #switchMatch(1, typedValue(BoolVal(B)           , _, _)) => B
-  rule #switchMatch(I, typedValue(Integer(I2, WIDTH, _), _, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
+  rule #switchMatch(0, BoolVal(B)           ) => notBool B
+  rule #switchMatch(1, BoolVal(B)           ) => B
+  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
 ```
 
 `Return` simply returns from a function call, using the information
@@ -364,12 +364,12 @@ context of the enclosing stack frame, at the _target_.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
-If the loval `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
+If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(LOCAL0)) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -378,7 +378,7 @@ If the loval `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(LOCAL0:TypedValue) _ => NEWLOCALS </locals>
+         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
@@ -532,7 +532,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedValue))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -543,7 +543,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef({CALLERLOCALS[I]}:>TypedValue))
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
@@ -567,10 +567,10 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 
   syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
 
-  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, _MSG) => .K ... </k>
+  rule <k> #expect(BoolVal(COND), EXPECTED, _MSG) => .K ... </k>
     requires COND ==Bool EXPECTED
 
-  rule <k> #expect(typedValue(BoolVal(COND), _, _), EXPECTED, MSG) => AssertError(MSG) ... </k>
+  rule <k> #expect(BoolVal(COND), EXPECTED, MSG) => AssertError(MSG) ... </k>
     requires COND =/=Bool EXPECTED
 ```
 If the specific assertion rules above for `#expect` are matched, then we definitely know that there is or is not an assertion failure (respective to the matched rule).
@@ -578,13 +578,13 @@ However if a `thunk` wrapper exists inside an `#expect` we want to non-determini
 This does not sacrifice unsoundness as we would not eliminate any assertion failures with `thunk`, but instead will create unnecessary ones in the cases the `thunk(#expect(...))` would evaluate to true.
 
 ```k
-  rule <k> #expect(typedValue(thunk(_), _, _), _, _MSG) => .K ... </k>
+  rule <k> #expect(thunk(_), _, _MSG) => .K ... </k>
 
-  rule <k> #expect(typedValue(thunk(_), _, _), _, MSG) => AssertError(MSG) ... </k>
+  rule <k> #expect(thunk(_), _, MSG) => AssertError(MSG) ... </k>
 ```
 
 Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreachable`.
-Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error. 
+Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))

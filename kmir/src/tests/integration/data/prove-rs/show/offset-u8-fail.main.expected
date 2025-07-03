@@ -5,7 +5,7 @@
 │
 │  (73 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 5 ) , typedValue ( thunk ( #applyBinOp ( binOpOf
+    #traverseProjection ( toLocal ( 5 ) , thunk ( #applyBinOp ( binOpOffset , thunk
     span: 70
 
 

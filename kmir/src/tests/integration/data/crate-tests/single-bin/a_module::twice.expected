@@ -1,11 +1,10 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-│   span: 0
 │
 │  (42 steps)
 ├─ 3 (split)
-│   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 1
+│   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709
 ┃
 ┃ (branch)
 ┣━━┓ subst: .Subst
@@ -13,7 +12,7 @@
 ┃  ┃     notBool notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT1:Int ==Bool false
 ┃  │
 ┃  ├─ 4
-┃  │   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 1
+┃  │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709
 ┃  │
 ┃  │  (2 steps)
 ┃  └─ 6 (stuck, leaf)
@@ -24,7 +23,7 @@
    ┃     notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT1:Int ==Bool false
    │
    ├─ 5
-   │   #expect ( typedValue ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 1
+   │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709
    │
    │  (21 steps)
    ├─ 7 (terminal)

@@ -5,7 +5,7 @@
 │
 │  (149 steps)
 ├─ 3
-│   #expect ( typedValue ( thunk ( #applyBinOp ( binOpEq , typedValue ( thunk ( #app
+│   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
 │   function: main
 ┃
 ┃ (1 step)
@@ -28,7 +28,7 @@
    │
    │  (8 steps)
    └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 2 ) , typedValue ( thunk ( #cast ( typedValue (
+       #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 1 , place ( ...
        function: main
        span: 80
 

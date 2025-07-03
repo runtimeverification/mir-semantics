@@ -35,7 +35,7 @@
       ListItem ( typedValue ( Integer ( 122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
       ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( -122 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( Moved )
+      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
   <stack>
