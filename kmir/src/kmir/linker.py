@@ -13,9 +13,9 @@ _LOGGER: Final = logging.getLogger(__name__)
 
 
 def link(smirs: list[SMIRInfo]) -> SMIRInfo:
-    max_ty_range = max(map(ty_range, smirs))
+    max_id_range = max(map(id_range, smirs))
     # round up to nearest power of 10
-    offset = 10 ** (ceil(log10(max_ty_range)))
+    offset = 10 ** (ceil(log10(max_id_range)))
 
     _LOGGER.info(f'Maximum type ID (offset) is {offset}, linking {len(smirs)} smir.json files')
 
@@ -30,18 +30,18 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
         'functions': [f for smir in smirs for f in smir._smir['functions']],
         'items': [i for smir in smirs for i in smir._smir['items']],
         'types': [t for smir in smirs for t in smir._smir['types']],
-        # TODO apply offset to spans
-        'spans': [],
+        'spans': [s for smir in smirs for s in smir._smir['spans']],
         'machine': smirs[0]._smir['machine'],
         # debug and uneval_constants are omitted in the linked output
     }
     return SMIRInfo(result_dict)
 
 
-def ty_range(smir: SMIRInfo) -> int:
-    f_max = max([0] + [ty for ty, _ in smir.function_symbols.items()])
-    ty_max = max([0] + [ty for ty, _ in smir.types.items()])
-    return max(f_max, ty_max)
+def id_range(smir: SMIRInfo) -> int:
+    f_max = max([0] + list(smir.function_symbols.keys()))
+    ty_max = max([0] + list(smir.types.keys()))
+    span_range = max([0] + list(smir.spans.keys()))
+    return max(f_max, ty_max, span_range)
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
@@ -56,6 +56,7 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
     info._smir['types'] = [
         (ty + offset, apply_offset_typeInfo(typeInfo, offset)) for ty, typeInfo in info._smir['types']
     ]
+    info._smir['spans'] = [(i + offset, span) for i, span in info._smir['spans']]
 
     # TODO adjust all alloc IDs (incl. alloc provenance)
     # TODO then adjust alloc references during item traversal
@@ -92,15 +93,21 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
 
 def apply_offset_item(item: dict, offset: int) -> None:
     # Operating on MonoItemFn (MonoItemStatic and GlobalAsm do not contain any `Ty`),
-    # traverses the body of the function and adds `offset` to all `Ty` fields (mutastes)
+    # * traverses function body to add `offset` to all `Ty` and `span` fields (mutastes)
+    # * traverses function locals and debug information to add `offset` to all `span` fields
     if 'MonoItemFn' in item and 'body' in item['MonoItemFn']:
         body = item['MonoItemFn']['body']
         for local in body['locals']:
             local['ty'] = local['ty'] + offset
+            local['span'] = local['span'] + offset
         for block in body['blocks']:
             for stmt in block['statements']:
                 apply_offset_stmt(stmt['kind'], offset)
+                stmt['span'] = stmt['span'] + offset
             apply_offset_terminator(block['terminator']['kind'], offset)
+            block['terminator']['span'] = block['terminator']['span'] + offset
+
+        # TODO span in var_debug_info, each item's source_info.span
 
 
 def apply_offset_terminator(term: dict, offset: int) -> None:
@@ -133,6 +140,7 @@ def apply_offset_operand(op: dict, offset: int) -> None:
         op['Constant']['const_']['ty'] = op['Constant']['const_']['ty'] + offset
         if 'Ty' in op['Constant']['const_']['kind']:
             apply_offset_tyconst(op['Constant']['const_']['kind']['Ty']['kind'], offset)
+        op['Constant']['span'] = op['Constant']['span'] + offset
 
 
 def apply_offset_tyconst(tyconst: dict, offset: int) -> None:
