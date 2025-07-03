@@ -5,7 +5,7 @@
 │
 │  (161 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 2 ) , typedValue ( thunk ( #cast ( typedValue (
+    #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 0 , place ( ...
     span: 53
 
 

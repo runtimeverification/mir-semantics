@@ -5,7 +5,7 @@
 │
 │  (97 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 6 ) , typedValue ( thunk ( #decodeConstant ( con
+    #traverseProjection ( toLocal ( 6 ) , thunk ( #decodeConstant ( constantKindAllo
     function: main
     span: 101
 
