@@ -8,13 +8,6 @@ fn assume(cond: bool) {
     if !cond { exit(0); }
 }
 
-// must call test_add_in_range for it to be discovered by linker
-pub fn expose_test() {
-    testing::test_add_in_range(0, 0);
-}
-
-
-
 pub mod testing {
     use super::*;
 
