@@ -70,13 +70,9 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
   // data coerced to sort Value is not undefined if it is of that sort
   rule #Ceil({X}:>Value) => #Ceil(X)
     requires isValue(X)                              [simplification]
-
-  // TypedLocals created by the semantics do not have undefined subterms
-  rule #Ceil(LIST:List[IDX]) => #Top
-    requires 0 <=Int IDX andBool IDX <Int size(LIST) [simplification]
 ```
 
-### Evaluating Items to `TypedValue` or `TypedLocal`
+### Evaluating Items to `Value`s
 
 Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `Value`.
 The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
