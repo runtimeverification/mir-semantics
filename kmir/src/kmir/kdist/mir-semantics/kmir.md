@@ -364,7 +364,7 @@ context of the enclosing stack frame, at the _target_.
 If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
 NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
 
-If the loval `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
+If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _

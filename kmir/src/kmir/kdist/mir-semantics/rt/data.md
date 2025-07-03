@@ -89,7 +89,7 @@ It is an error to read `NewLocal` or `Moved`.
 
   syntax KResult ::= Value
 
-  rule <k> typedValue(VAL, _, _) => VAL ... </k> [owise]
+  rule <k> typedValue(VAL, _, _) => VAL ... </k> [priority(100)]
 ```
 
 ### `thunk`
@@ -102,7 +102,7 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 ```k
   syntax Value ::= thunk ( Evaluation )
 
-  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isValue(EV) [owise]
+  rule <k> EV:Evaluation => thunk(EV) ... </k> requires notBool isValue(EV) andBool notBool isTypedValue(EV) [owise]
 ```
 
 ### Errors Related to Accessing Local Variables
@@ -168,8 +168,8 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ### Setting Local Variables
 
-The `#setLocalValue` operation writes a `TypedLocal` value to a given `Place` within the `List` of local variables currently on top of the stack.
-This may fail because a local may not be accessible, moved away, or not mutable.
+The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
+This may fail because a local may not be accessible or not mutable.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
 A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
 
@@ -194,14 +194,6 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isNewLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  // // FIXME this becomes setmoved
-  // rule <k> #setLocalValue(place(local(I), .ProjectionElems), Moved) => .K ... </k>
-  //      <locals>
-  //         LOCALS => LOCALS[I <- typedValue(Moved, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
-  //      </locals>
-  //   requires 0 <=Int I andBool I <Int size(LOCALS)
-  //   [preserves-definedness] // valid list indexing checked
-
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
         ~> #writeProjection(VAL)
@@ -212,7 +204,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
      andBool isTypedValue(LOCALS[I])
-    [preserves-definedness]
+    [preserves-definedness] // valid list indexing and sort checked
 
   rule <k> #forceSetLocal(local(I), MBVAL) => .K ... </k>
        <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
@@ -238,7 +230,7 @@ A `Deref` projection in the projections list changes the target of the write ope
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
-        => #setLocalValue(place(local(I), .ProjectionElems), {#buildUpdate(NEW, CONTEXTS)}:>Value)
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
