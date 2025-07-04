@@ -321,8 +321,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT), OFFSET)
     => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT)
-  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT), OFFSET)
-    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT)
+  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, EMULATION), OFFSET)
+    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, EMULATION)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -495,7 +495,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, _EMUL),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -514,7 +514,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, _EMUL),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -773,7 +773,7 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 ```k
   rule <k> rvalueAddressOf(MUT, PLACE)
          =>
-           PtrLocal(0, PLACE, MUT)
+           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -804,7 +804,7 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(OFFSET, PLACE, _), MUT) => PtrLocal(OFFSET, PLACE, MUT)
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME
 ```
 
 ## Type casts

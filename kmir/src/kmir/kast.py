@@ -234,6 +234,7 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
+                            KApply('PtrEmulation', (KApply('noMetadata', ()),)),  # FIXME insert size if not static
                         ),
                     ),
                     pointee_constraints,

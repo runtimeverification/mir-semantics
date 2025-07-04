@@ -37,11 +37,30 @@ The special `Moved` value represents values that have been used and should not b
                    // stack depth (initially 0), place, borrow kind
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability )   [symbol(Value::PtrLocal)]
+                 | PtrLocal( Int , Place , Mutability, PtrEmulation )
+                                                          [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
-                   // first 3 fields are the same as in Reference, plus emulating pointer arithmetics (future work)
+                   // first 3 fields are the same as in Reference, plus pointee metadata
                  | "Moved"
                    // The value has been used and is gone now
+```
+
+### Emulating pointers
+
+Because the semantics uses abstract high-level values, Rust's concept of _fat and thin_
+pointers has to be emulated when handling pointer data.
+
+A _thin pointer_ in Rust is simply an address of data in the heap or on the stack.
+
+A _fat pointer_ in Rust is a pair of an address and [additional metadata about the pointee](https://doc.rust-lang.org/std/ptr/trait.Pointee.html#associatedtype.Metadata).
+This is necessary for dynamically-sized pointee types (most prominently slices) and dynamic trait objects.
+For types without metadata (statically-known size and type), the emulation uses `noMetadata`.
+
+```k
+  syntax PtrEmulation ::= ptrEmulation ( Metadata ) [symbol(PtrEmulation)]
+
+  syntax Metadata ::= "noMetadata"         [symbol(noMetadata)]
+                    | dynamicSize ( Int )  [symbol(dynamicSize)]
 ```
 
 ## Local variables
