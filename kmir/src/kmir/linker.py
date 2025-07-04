@@ -106,8 +106,15 @@ def apply_offset_item(item: dict, offset: int) -> None:
                 stmt['span'] = stmt['span'] + offset
             apply_offset_terminator(block['terminator']['kind'], offset)
             block['terminator']['span'] = block['terminator']['span'] + offset
-
-        # TODO span in var_debug_info, each item's source_info.span
+        # adjust span in var_debug_info, each item's source_info.span
+        for thing in body['var_debug_info']:
+            thing['source_info']['span'] += offset
+            if 'Constant' in thing['value']:
+                apply_offset_operand({'Constant': thing['value']}, offset)
+            if 'composite' in thing and thing['composite'] is not None:
+                thing['composite']['ty'] += offset
+                for proj in thing['composite']['projection']:
+                    apply_offset_proj(proj, offset)
 
 
 def apply_offset_terminator(term: dict, offset: int) -> None:
