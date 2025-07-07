@@ -319,8 +319,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                  | #decrementRef ( Value )  [function, total]
                  | #adjustRef (Value, Int ) [function, total]
 
-  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT), OFFSET)
-    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT)
+  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
+    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
   rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, EMULATION), OFFSET)
     => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, EMULATION)
   rule #adjustRef(TL, _) => TL [owise]
@@ -455,7 +455,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 ```k
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, _META),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -474,7 +474,7 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, _META),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -746,12 +746,23 @@ Therefore, reference values are represented with a simple `Mutability` flag inst
 
 [^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
+References also carry pointer `Metadata`, which informs about the pointee size for dynamically-sized types.
+
 ```k
-  rule <k> rvalueRef(_REGION, KIND, PLACE)
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
          =>
-           Reference(0, PLACE, #mutabilityOf(KIND))
+           Reference(0, PLACE, #mutabilityOf(KIND), noMetadata)
        ...
        </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP)
+    [preserves-definedness] // valid list indexing checked
+
+  // FIXME add rule for metadata (reading the local)
+  // TODO: if hasMetadata(getTyOf(PLACE..)), read data and determine current size
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
 
@@ -799,12 +810,12 @@ a special rule for this case is applied with higher priority.
 
   syntax Bool ::= isRef ( Value ) [function, total]
   // -----------------------------------------------------
-  rule isRef(Reference(_, _, _)) => true
-  rule isRef(     _OTHER       ) => false [owise]
+  rule isRef(Reference(_, _, _, _)) => true
+  rule isRef(     _OTHER          ) => false [owise]
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(OFFSET, PLACE, _), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META))
 ```
 
 ## Type casts
@@ -1328,7 +1339,7 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _))
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, _META)) // FIXME use META
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
@@ -1341,7 +1352,7 @@ The unary operation `unOpPtrMetadata`, when given a reference to an array or sli
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // LOCALS indexing checked
 
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _))
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _, _META)) // FIXME use META
         => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()

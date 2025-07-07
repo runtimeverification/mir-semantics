@@ -33,8 +33,9 @@ The special `Moved` value represents values that have been used and should not b
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability )  [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind
+                 | Reference( Int , Place , Mutability , Metadata )
+                                                          [symbol(Value::Reference)]
+                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, PtrEmulation )
@@ -45,10 +46,10 @@ The special `Moved` value represents values that have been used and should not b
                    // The value has been used and is gone now
 ```
 
-### Emulating pointers
+### Metadata for References and Pointers
 
 Because the semantics uses abstract high-level values, Rust's concept of _fat and thin_
-pointers has to be emulated when handling pointer data.
+pointers has to be emulated when handling reference and pointer data.
 
 A _thin pointer_ in Rust is simply an address of data in the heap or on the stack.
 

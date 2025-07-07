@@ -107,6 +107,39 @@ To make this function total, an optional `MaybeTy` is used.
   rule elemTy(     _                  ) => TyUnknown [owise]
 ```
 
+## Dynamic Metadata for types
+
+References to data on the heap or stack may require metadata, most commonly the size of slices, which is not statically known.
+The helper function `hasMetadata` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `Metadata` sort in `value.md`).
+
+NB that the need for metadata is determined for the _pointee_ type, not the pointer type.
+
+A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly-rustc/src/rustc_middle/ty/util.rs.html#224-235) to determine whether or not a type needs dynamic metadata.
+Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
+For `struct`s that are not `is_sized`, the metadata is that of the last field in the struct.
+
+```k
+  syntax Bool ::= hasMetadata    (  MaybeTy , Map ) [function]
+                | hasMetadataAux ( TypeInfo , Map ) [function]
+  // ------------------------------------------------------------
+  rule hasMetadata(TY, TYPEMAP) => hasMetadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+    [preserves-definedness] // valid map key and sort coercion
+
+  rule hasMetadataAux(typeInfoArrayType(_, noTyConst),    _    ) => true
+
+  rule hasMetadataAux(typeInfoStructType(_, _, TYS)  , TYPEMAP ) => hasMetadata(lastTy(TYS), TYPEMAP)
+    [preserves-definedness]
+
+  rule hasMetadataAux(    _OTHER                     ,    _    ) => false [owise]
+
+  syntax MaybeTy ::= lastTy ( Tys ) [function, total]
+  // ------------------------------------------------
+  rule lastTy(    .Tys    ) => TyUnknown
+  rule lastTy( TY:Ty .Tys ) => TY
+  rule lastTy(  _:Ty  TYS ) => lastTy(TYS) [owise]
+```
 
 ```k
 endmodule
