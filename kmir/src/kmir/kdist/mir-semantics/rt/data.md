@@ -747,6 +747,9 @@ Therefore, reference values are represented with a simple `Mutability` flag inst
 [^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
 References also carry pointer `Metadata`, which informs about the pointee size for dynamically-sized types.
+For slices (represented as `Value::Range`), the metadata is the length (as a dynamic size).
+For `struct`s (represented as `Value::Aggregate`), the metadata is that of the _last_ field (for dynamically-sized data).
+Other `Value`s are not expected to have pointer `Metadata` as per their types.
 
 ```k
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
@@ -757,15 +760,35 @@ References also carry pointer `Metadata`, which informs about the pointee size f
        <locals> LOCALS </locals>
        <types> TYPEMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isTypedValue(LOCALS[I])
      andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP)
     [preserves-definedness] // valid list indexing checked
 
-  // FIXME add rule for metadata (reading the local)
-  // TODO: if hasMetadata(getTyOf(PLACE..)), read data and determine current size
+  // with metadata (reading the local)
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
+        => #mkRefWithMetadata(PLACE, #mutabilityOf(KIND), operandCopy(PLACE))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP)
+    [preserves-definedness] // valid list indexing checked
+
+  syntax Evaluation ::= #mkRefWithMetadata ( Place , Mutability, Evaluation ) [strict(3)]
+
+  rule <k> #mkRefWithMetadata(PLACE, MUT, VAL:Value) => Reference(0, PLACE, MUT, metadataFor(VAL)) ... </k>
+
+  syntax Metadata ::= metadataFor ( Value ) [function, total]
+  // --------------------------------------------------------
+  rule metadataFor(    Range(LIST)   ) => dynamicSize(size(LIST))
+  rule metadataFor(Aggregate(_, ARGS)) => metadataFor({ARGS[-1]}:>Value)
+    requires 0 <Int size(ARGS) andBool isValue(ARGS[-1]) [preserves-definedness] // valid list indexing and sort coercion
+  rule metadataFor(      _OTHER     ) => noMetadata
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
-
+  // -----------------------------------------------------------------
   rule #mutabilityOf(borrowKindShared)  => mutabilityNot
   rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
