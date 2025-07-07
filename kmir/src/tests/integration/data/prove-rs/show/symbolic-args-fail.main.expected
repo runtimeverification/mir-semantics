@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (540 steps)
+│  (546 steps)
 └─ 3 (stuck, leaf)
     #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
     function: main
