@@ -123,15 +123,12 @@ For `struct`s that are not `is_sized`, the metadata is that of the last field in
                 | hasMetadataAux ( TypeInfo , Map ) [function]
   // ------------------------------------------------------------
   rule hasMetadata(TY, TYPEMAP) => hasMetadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-    [preserves-definedness] // valid map key and sort coercion
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
+  rule hasMetadata( _,       _) => false [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
 
   rule hasMetadataAux(typeInfoArrayType(_, noTyConst),    _    ) => true
-
   rule hasMetadataAux(typeInfoStructType(_, _, TYS)  , TYPEMAP ) => hasMetadata(lastTy(TYS), TYPEMAP)
     [preserves-definedness]
-
   rule hasMetadataAux(    _OTHER                     ,    _    ) => false [owise]
 
   syntax MaybeTy ::= lastTy ( Tys ) [function, total]
