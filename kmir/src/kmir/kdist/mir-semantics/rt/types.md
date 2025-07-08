@@ -3,6 +3,7 @@
 ```k
 requires "../ty.md"
 requires "../body.md"
+requires "numbers.md"
 
 module RT-TYPES
   imports BOOL
@@ -11,7 +12,7 @@ module RT-TYPES
 
   imports TYPES
   imports BODY
-
+  imports RT-NUMBERS
 ```
 
 Type metadata from Stable MIR JSON is present in a type lookup table `Ty -> TypeInfo` at runtime. 
@@ -107,7 +108,7 @@ To make this function total, an optional `MaybeTy` is used.
   rule elemTy(     _                  ) => TyUnknown [owise]
 ```
 
-## Dynamic Metadata for types
+## Static and Dynamic Metadata for Types
 
 References to data on the heap or stack may require metadata, most commonly the size of slices, which is not statically known.
 The helper function `hasMetadata` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `Metadata` sort in `value.md`).
@@ -136,6 +137,32 @@ For `struct`s that are not `is_sized`, the metadata is that of the last field in
   rule lastTy(    .Tys    ) => TyUnknown
   rule lastTy( TY:Ty .Tys ) => TY
   rule lastTy(  _:Ty  TYS ) => lastTy(TYS) [owise]
+```
+
+For arrays of static size, the following helper function determines the size.
+
+```k
+  syntax Int ::= staticSize    (  MaybeTy , Map ) [function]
+               | staticSizeAux ( TypeInfo , Map ) [function]
+  // ----------------------------------------------
+  rule staticSize(TY, TYPEMAP) => staticSizeAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
+  rule staticSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => readTyConstInt(CONST, TYPEMAP)
+```
+
+```k
+  // reading Int-valued TyConsts from allocated bytes
+  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
+  // -----------------------------------------------------------
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
+
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
 ```
 
 ```k

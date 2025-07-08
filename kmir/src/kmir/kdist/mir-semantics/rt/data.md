@@ -607,19 +607,6 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
     requires 0 <=Int N
     [preserves-definedness]
 
-  // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
-  // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
-    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
-    [preserves-definedness]
-
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
-    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
-    [preserves-definedness]
-
 
   // length of arrays or slices
   syntax Evaluation ::= #lengthU64 ( Evaluation ) [strict(1)]
@@ -794,7 +781,9 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
 ```
 
-A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`, except that the compiler guarantees the only use of the copied value will be for dereferencing, which enables optimisations in the borrow checker and in code generation.
+A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
+except that the compiler guarantees the only use of the copied value will be for dereferencing,
+which enables optimisations in the borrow checker and in code generation.
 
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
@@ -803,14 +792,21 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 The `RValue::AddressOf` operation is very similar to creating a reference, since it also
 refers to a given _place_. However, the raw pointer obtained by `AddressOf` can be subject
 to casts and pointer arithmetic using `BinOp::Offset`.
+The operation typically creates a pointer with empty metadata.
 
 ```k
-  rule <k> rvalueAddressOf(MUT, PLACE)
+  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
          =>
-           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME
+           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata))
            // we should use #alignOf to emulate the address
        ...
        </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP) // without metadata
+    [preserves-definedness] // valid list indexing checked
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1359,23 +1355,40 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
+The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length as a `usize`.
+For arrays of static length, the array size is read from the type information.
+For slices with dynamic length (not statically known), the length is expected to be stored in the reference as metadata.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, _META)) // FIXME use META
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
-        ~> #readProjection(false)
-        ~> #arrayLength()
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE))) => Integer(SIZE, 64, false) ... </k>
+
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, noMetadata)) 
+        => Integer(staticSize(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJECTIONS, TYPEMAP), TYPEMAP), 64, false)
         ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
     requires OFFSET ==Int 0
      andBool 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // LOCALS indexing checked
+     andBool isTypedLocal(LOCALS[I])
+     andBool isInt(staticSize(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJECTIONS, TYPEMAP), TYPEMAP))
+    [preserves-definedness] // valid list indexing and sort coercion checked
 
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _, _META)) // FIXME use META
+  // rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, noMetadata)) // FIXME use type information instead
+  //       => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
+  //       ~> #readProjection(false)
+  //       ~> #arrayLength()
+  //       ...
+  //      </k>
+  //      <locals> LOCALS </locals>
+  //   requires OFFSET ==Int 0
+  //    andBool 0 <=Int I
+  //    andBool I <Int size(LOCALS)
+  //    andBool isTypedValue(LOCALS[I])
+  //   [preserves-definedness] // LOCALS indexing checked
+
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _, noMetadata)) // FIXME use type information instead
         => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ~> #arrayLength()
