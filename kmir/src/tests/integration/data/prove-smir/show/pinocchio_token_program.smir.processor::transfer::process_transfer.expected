@@ -10,7 +10,7 @@
 ┃ (branch)
 ┣━━┓ subst: .Subst
 ┃  ┃ constraint:
-┃  ┃     notBool size ( ARG_ARRAY2:List ) ==Int 8
+┃  ┃     notBool size ( ARG_ARRAY3:List ) ==Int 8
 ┃  │
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
@@ -26,7 +26,7 @@
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
-   ┃     8 ==Int size ( ARG_ARRAY2:List )
+   ┃     8 ==Int size ( ARG_ARRAY3:List )
    │
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
