@@ -55,13 +55,22 @@ A _thin pointer_ in Rust is simply an address of data in the heap or on the stac
 
 A _fat pointer_ in Rust is a pair of an address and [additional metadata about the pointee](https://doc.rust-lang.org/std/ptr/trait.Pointee.html#associatedtype.Metadata).
 This is necessary for dynamically-sized pointee types (most prominently slices) and dynamic trait objects.
-For types without metadata (statically-known size and type), the emulation uses `noMetadata`.
+
+References to arrays and slices carry `Metadata`.
+For array types with statically-known size, the metadata is set to `staticSize` to avoid repeated type lookups.
+Other types without metadata use `noMetadata`.
+
+```k
+  syntax Metadata ::= "noMetadata"         [symbol(noMetadata)]
+                    | staticSize ( Int )   [symbol(staticSize)]
+                    | dynamicSize ( Int )  [symbol(dynamicSize)]
+```
+
+A pointer in Rust carries the same metadata.
+
 
 ```k
   syntax PtrEmulation ::= ptrEmulation ( Metadata ) [symbol(PtrEmulation)]
-
-  syntax Metadata ::= "noMetadata"         [symbol(noMetadata)]
-                    | dynamicSize ( Int )  [symbol(dynamicSize)]
 ```
 
 ## Local variables

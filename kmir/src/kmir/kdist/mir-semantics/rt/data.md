@@ -465,9 +465,15 @@ An attempt to read more elements than the length of the accessed array is undefi
   // ----------------------------------------------------------------------------------------
   // no metadata, no change to the value
   rule <k> #traverseDeref ( DEST, noMetadata, VAL, PROJS, CTXTS) 
-        => #traverseProjection(DEST, VAL, PROJS, CTXTS) // FIXME need to use static size! Where do we get the type?
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS)
         ...
        </k>
+  // staticSize metadata requires an array of suitable length and truncates it
+  rule <k> #traverseDeref ( DEST, staticSize(SIZE), Range(ELEMS), PROJS, CTXTS)
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
   rule <k> #traverseDeref ( DEST, dynamicSize(SIZE), Range(ELEMS), PROJS, CTXTS) 
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
@@ -767,38 +773,27 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
 
 ```k
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
-         =>
-           Reference(0, PLACE, #mutabilityOf(KIND), noMetadata)
+        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP))
        ...
        </k>
        <locals> LOCALS </locals>
        <types> TYPEMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP)
-    [preserves-definedness] // valid list indexing checked
+    [preserves-definedness] // valid list indexing checked, #metadata should only use static information
 
-  // with metadata (reading the local)
-  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
-        => #mkRefWithMetadata(PLACE, #mutabilityOf(KIND), operandCopy(PLACE))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-       <types> TYPEMAP </types>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP)
-    [preserves-definedness] // valid list indexing checked
+  syntax Evaluation ::= #mkRef ( Place , Mutability, Metadata)
+                      | #mkDynSizeRef ( Place , Mutability , Evaluation ) [strict(3)]
 
-  syntax Evaluation ::= #mkRefWithMetadata ( Place , Mutability, Evaluation ) [strict(3)]
+  rule <k> #mkRef(PLACE, MUT, dynamicSize(_)) => #mkDynSizeRef(PLACE, MUT, operandCopy(PLACE)) ... </k>
+  rule <k> #mkRef(PLACE, MUT,    META       ) => Reference(0, PLACE, MUT, META)                ... </k> [priority(60)]
 
-  rule <k> #mkRefWithMetadata(PLACE, MUT, VAL:Value) => Reference(0, PLACE, MUT, metadataFor(VAL)) ... </k>
+  // with dynamic metadata (reading the value)
+  rule <k> #mkDynSizeRef(PLACE, MUT, VAL:Value) => Reference(0, PLACE, MUT, metadataFor(VAL)) ... </k>
 
   syntax Metadata ::= metadataFor ( Value ) [function, total]
   // --------------------------------------------------------
   rule metadataFor(    Range(LIST)   ) => dynamicSize(size(LIST))
-  rule metadataFor(Aggregate(_, ARGS)) => metadataFor({ARGS[-1]}:>Value)
-    requires 0 <Int size(ARGS) andBool isValue(ARGS[-1]) [preserves-definedness] // valid list indexing and sort coercion
   rule metadataFor(      _OTHER     ) => noMetadata      [owise]
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
@@ -822,17 +817,17 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 The operation typically creates a pointer with empty metadata.
 
 ```k
-  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
+  rule <k> rvalueAddressOf(MUT, PLACE)
          =>
-           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata))
+           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME should use staticSize or dynamicSize
            // we should use #alignOf to emulate the address
        ...
        </k>
-       <locals> LOCALS </locals>
-       <types> TYPEMAP </types>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP) // without metadata
+      //  <locals> LOCALS </locals>
+      //  <types> TYPEMAP </types>
+    // requires 0 <=Int I andBool I <Int size(LOCALS)
+    //  andBool isTypedValue(LOCALS[I])
+    //  andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP) // without metadata
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -938,18 +933,17 @@ the original allocation size must be checked to be sufficient (future work).
 
   syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
   // ----------------------------------------------------------------------------------
-  // no metadata to begin with, nothing to return
-  rule #convertPtrEmul(   ptrEmulation(noMetadata)    ,      _                     ,   _     ) => ptrEmulation(noMetadata)        [priority(40)]
-  // target pointee type does not have metadata
-  rule #convertPtrEmul(      _                        , typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(noMetadata)
-    requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
-  rule #convertPtrEmul(      _                        , typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(noMetadata)
-    requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
+  // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+
+  // FIXME!
+
   // reproduce previous dynamic size if target pointee type mandates it
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
-    requires hasMetadata(POINTEE_TY, TYPEMAP)
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
-    requires hasMetadata(POINTEE_TY, TYPEMAP)
+  // rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
+  //   requires hasMetadata(POINTEE_TY, TYPEMAP)
+  // rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
+  //   requires hasMetadata(POINTEE_TY, TYPEMAP)
   // non-pointer and non-ref target type (should not happen!)
   rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata)        [owise]
 ```
@@ -969,18 +963,20 @@ the original allocation size must be checked to be sufficient (future work).
 
 The `Unsize` coercion converts from a sized pointee type to one that requires a `dynamicSize`.
 Specifically, pointers to arrays of statically-known length are cast to pointers to slices, which requires adding the known size as a `dynamicSize`.
+The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
-  rule <k> #cast(Reference(OFFSET, PLACE, MUT, noMetadata), castKindPointerCoercion(pointerCoercionUnsize), TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(Reference(OFFSET, PLACE, MUT, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            Reference(OFFSET, PLACE, MUT, dynamicSize(staticSize(pointeeTy({TYPEMAP[TY_SOURCE]}:>TypeInfo), TYPEMAP)))
+            Reference(OFFSET, PLACE, MUT, dynamicSize(SIZE))
           ...
         </k>
-        <types> TYPEMAP </types>
-      requires TY_SOURCE in_keys(TYPEMAP)
-       andBool isTypeInfo(TYPEMAP[TY_SOURCE])
-    // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
-      [preserves-definedness] // valid type map indexing and sort coercion
+      //   <types> TYPEMAP </types>
+      // could look up the static size here instead of caching it:
+      // requires TY_SOURCE in_keys(TYPEMAP)
+      //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+      // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
+      // [preserves-definedness] // valid type map indexing and sort coercion
 ```
 
 ### Other casts involving pointers
