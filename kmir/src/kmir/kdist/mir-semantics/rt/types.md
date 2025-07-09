@@ -130,22 +130,21 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   rule #metadata( _,       _) => noMetadata [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
 
   rule #metadataAux(typeInfoArrayType(_, noTyConst                     ),    _   ) => dynamicSize(1)
-  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP, BE))
-                                                                                      // GROSS! Type metadata stores array sizes in Big-Endian! WHY?
+  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP))
   rule #metadataAux(    _OTHER                                          ,    _   ) => noMetadata     [owise]
 ```
 
 
 ```k
   // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind , Map , Endianness ) [function]
+  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
   // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP, E) => Bytes2Int(BYTES, E, Unsigned)
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
     requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
      andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
     [preserves-definedness]
 
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP, E) => Bytes2Int(BYTES, E, Signed  )
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
     requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
      andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
     [preserves-definedness]
