@@ -139,7 +139,7 @@ For `struct`s that are not `is_sized`, the metadata is that of the last field in
   rule lastTy(  _:Ty  TYS ) => lastTy(TYS) [owise]
 ```
 
-For arrays of static size, the following helper function determines the size.
+For arrays of static size, the following helper function determines the size (for `Unsize` casts).
 
 ```k
   syntax Int ::= staticSize    (  MaybeTy , Map ) [function]

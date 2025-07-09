@@ -884,13 +884,21 @@ Casts involving `Float` values are currently not implemented.
 Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
 The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
 the `Value` sort.
+
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
+* Conversion from a slice to an array pointer requires the slice to be (dynamically) _at least as long as_ than the array length.
+* Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`, the previously-static length).
+* Conversion from one array pointer type to another array pointer type requires the new array to be (statically) _at most as long as_ the old one.
+
+Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
+Conversely, when casting a pointer to an element to a pointer to a slice or array, 
+the original allocation size must be checked to be sufficient (future work).
 
 ```k
-  rule <k> #cast(VALUE:Value, castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            VALUE // TODO too simple, fat pointers may require changes to data size
+            PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP))
           ...
         </k>
         <types> TYPEMAP </types>
@@ -900,6 +908,23 @@ which have the same representation `Value::Range`.
        andBool isTypeInfo(TYPEMAP[TY_TARGET])
        andBool #typesCompatible({TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP)
       [preserves-definedness] // valid map lookups checked
+
+  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
+  // ----------------------------------------------------------------------------------
+  // no metadata to begin with, nothing to return
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    ,      _                     ,   _     ) => ptrEmulation(noMetadata)
+  // target pointee type does not have metadata
+  rule #convertPtrEmul(      _                        , typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(noMetadata)
+    requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
+  rule #convertPtrEmul(      _                        , typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(noMetadata)
+    requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
+  // reproduce previous dynamic size if target pointee type mandates it
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
+    requires hasMetadata(POINTEE_TY, TYPEMAP) // FIXME needs checks?
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
+    requires hasMetadata(POINTEE_TY, TYPEMAP) // FIXME needs checks?
+  // non-pointer and non-ref target type (should not happen!)
+  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata) [owise]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
@@ -915,13 +940,20 @@ which have the same representation `Value::Range`.
 |                                    | MutToConstPointer        | make a mutable pointer immutable   |
 
 
+The `Unsize` coercion converts from a sized pointee type to one that requires a `dynamicSize`.
+Specifically, pointers to arrays of statically-known length are cast to pointers to slices, which requires adding the known size as a `dynamicSize`.
+
 ```k
-  // not checking whether types are actually compatible (trusting the compiler)
-  rule <k> #cast(VALUE:Value, castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(Reference(OFFSET, PLACE, MUT, noMetadata), castKindPointerCoercion(pointerCoercionUnsize), TY_SOURCE, _TY_TARGET)
           =>
-            VALUE // FIXME too simple, unsize makes a fat pointer from a thin one
+            Reference(OFFSET, PLACE, MUT, dynamicSize(staticSize(pointeeTy({TYPEMAP[TY_SOURCE]}:>TypeInfo), TYPEMAP)))
           ...
         </k>
+        <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+    // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
+      [preserves-definedness] // valid type map indexing and sort coercion
 ```
 
 ### Other casts involving pointers
