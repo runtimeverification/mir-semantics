@@ -448,19 +448,42 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
 
 #### References
 
-A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value.
+A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the same or 
+an enclosing stack frame, indicated by the stack height in the value.
 `Deref` reads the referred place (and may proceed with further projections).
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+If the offset height is greater than zero, the stack element is accessed.
+
+Pointers and references may carry metadata indicating a _size_ (`dynamicSize`).
+If present, the `Deref` is expected to access a _slice_ and the size determines how many elements are read from it.
+
+An attempt to read more elements than the length of the accessed array is undefined behaviour and halts the execution.
 
 ```k
+  // helper rewrite to implement truncating slices to required size
+  syntax KItem ::= #traverseDeref ( WriteTo ,  Metadata , Value , ProjectionElems, Contexts )
+  // ----------------------------------------------------------------------------------------
+  // no metadata, no change to the value
+  rule <k> #traverseDeref ( DEST, noMetadata, VAL, PROJS, CTXTS) 
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS) // FIXME need to use static size! Where do we get the type?
+        ...
+       </k>
+  // dynamicSize metadata requires an array of suitable length and truncates it
+  rule <k> #traverseDeref ( DEST, dynamicSize(SIZE), Range(ELEMS), PROJS, CTXTS) 
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, _META),
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META),
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseProjection(
+        => #traverseDeref(
              toStack(OFFSET, LOCAL),
+             META,
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
@@ -474,12 +497,13 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, _META),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, META),
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseProjection(
+        => #traverseDeref(
              toLocal(I),
+             META,
              getValue(LOCALS, I),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
@@ -492,15 +516,17 @@ In the simplest case, the reference refers to a local in the same stack frame (h
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
+// FIXME add case of dynamicSize(SIZE), truncating the Range(...) that is being read (expected)
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, _EMUL),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrEmulation(META)),
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseProjection(
+        => #traverseDeref(
              toStack(OFFSET, LOCAL),
+             META,
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
@@ -514,12 +540,13 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, _EMUL),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrEmulation(META)),
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseProjection(
+        => #traverseDeref(
              toLocal(I),
+             META,
              getValue(LOCALS, I),
              appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
              .Contexts // previous contexts obsolete
