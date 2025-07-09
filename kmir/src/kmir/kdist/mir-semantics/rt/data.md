@@ -631,9 +631,9 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 ```k
   syntax Evaluation ::= #mkArray ( Evaluation , Int ) [strict(1)]
 
-  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND, TYPES)) ... </k>
+  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND, TYPES, LE)) ... </k>
        <types> TYPES </types>
-    requires isInt(readTyConstInt(KIND, TYPES))
+    requires isInt(readTyConstInt(KIND, TYPES, LE))
     [preserves-definedness]
 
   rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, ELEMENT)) ... </k>
