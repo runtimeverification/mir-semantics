@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (139 steps)
+┃  │  (136 steps)
 ┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃  ┃
@@ -80,7 +80,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (116 steps)
+   │  (113 steps)
    ├─ 7 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
    ┃

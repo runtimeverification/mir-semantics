@@ -772,7 +772,7 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
   rule metadataFor(    Range(LIST)   ) => dynamicSize(size(LIST))
   rule metadataFor(Aggregate(_, ARGS)) => metadataFor({ARGS[-1]}:>Value)
     requires 0 <Int size(ARGS) andBool isValue(ARGS[-1]) [preserves-definedness] // valid list indexing and sort coercion
-  rule metadataFor(      _OTHER     ) => noMetadata
+  rule metadataFor(      _OTHER     ) => noMetadata      [owise]
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
   // -----------------------------------------------------------------
@@ -912,7 +912,7 @@ the original allocation size must be checked to be sufficient (future work).
   syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
   // ----------------------------------------------------------------------------------
   // no metadata to begin with, nothing to return
-  rule #convertPtrEmul(   ptrEmulation(noMetadata)    ,      _                     ,   _     ) => ptrEmulation(noMetadata)
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    ,      _                     ,   _     ) => ptrEmulation(noMetadata)        [priority(40)]
   // target pointee type does not have metadata
   rule #convertPtrEmul(      _                        , typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(noMetadata)
     requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
@@ -920,11 +920,11 @@ the original allocation size must be checked to be sufficient (future work).
     requires notBool hasMetadata(POINTEE_TY, TYPEMAP)
   // reproduce previous dynamic size if target pointee type mandates it
   rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
-    requires hasMetadata(POINTEE_TY, TYPEMAP) // FIXME needs checks?
+    requires hasMetadata(POINTEE_TY, TYPEMAP)
   rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(dynamicSize(SIZE))
-    requires hasMetadata(POINTEE_TY, TYPEMAP) // FIXME needs checks?
+    requires hasMetadata(POINTEE_TY, TYPEMAP)
   // non-pointer and non-ref target type (should not happen!)
-  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata) [owise]
+  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata)        [owise]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
