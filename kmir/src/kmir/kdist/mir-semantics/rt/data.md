@@ -1355,54 +1355,15 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length as a `usize`.
-For arrays of static length, the array size is read from the type information.
-For slices with dynamic length (not statically known), the length is expected to be stored in the reference as metadata.
+The unary operation `unOpPtrMetadata`, when given a reference or pointer to a slice, will return the reference or pointer metadata.
+* For slices with dynamic length (not statically known), this metadata is the `dynamicSize` and is returned as a `usize`.
+* For values with statically-known size, this operation returns a _unit_ value. However, these calls should not occur in practical programs.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE))) => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE)))              => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, PtrLocal(_, _, _, ptrEmulation(dynamicSize(SIZE)))) => Integer(SIZE, 64, false) ... </k>
 
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, noMetadata)) 
-        => Integer(staticSize(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJECTIONS, TYPEMAP), TYPEMAP), 64, false)
-        ...
-       </k>
-       <locals> LOCALS </locals>
-       <types> TYPEMAP </types>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-     andBool isInt(staticSize(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJECTIONS, TYPEMAP), TYPEMAP))
-    [preserves-definedness] // valid list indexing and sort coercion checked
-
-  // rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _, noMetadata)) // FIXME use type information instead
-  //       => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
-  //       ~> #readProjection(false)
-  //       ~> #arrayLength()
-  //       ...
-  //      </k>
-  //      <locals> LOCALS </locals>
-  //   requires OFFSET ==Int 0
-  //    andBool 0 <=Int I
-  //    andBool I <Int size(LOCALS)
-  //    andBool isTypedValue(LOCALS[I])
-  //   [preserves-definedness] // LOCALS indexing checked
-
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _, noMetadata)) // FIXME use type information instead
-        => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
-        ~> #readProjection(false)
-        ~> #arrayLength()
-        ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     [preserves-definedness] // STACK indexing checked
-
-  syntax Value ::= #arrayLength()
-
-  rule <k> Range(LIST) ~> #arrayLength() => Integer(size(LIST), 64, false) ... </k>
+  // could add a rule for cases without metadata
 ```
 
 
