@@ -448,7 +448,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
 
 #### References
 
-A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the same or 
+A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the same or
 an enclosing stack frame, indicated by the stack height in the value.
 `Deref` reads the referred place (and may proceed with further projections).
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
@@ -461,21 +461,21 @@ An attempt to read more elements than the length of the accessed array is undefi
 
 ```k
   // helper rewrite to implement truncating slices to required size
-  syntax KItem ::= #traverseDeref ( WriteTo ,  Metadata , Value , ProjectionElems, Contexts )
+  syntax KItem ::= #derefTruncate ( Metadata , ProjectionElems )
   // ----------------------------------------------------------------------------------------
   // no metadata, no change to the value
-  rule <k> #traverseDeref ( DEST, noMetadata, VAL, PROJS, CTXTS) 
+  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS)
         => #traverseProjection(DEST, VAL, PROJS, CTXTS)
         ...
        </k>
   // staticSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseDeref ( DEST, staticSize(SIZE), Range(ELEMS), PROJS, CTXTS)
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseDeref ( DEST, dynamicSize(SIZE), Range(ELEMS), PROJS, CTXTS) 
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
@@ -487,13 +487,13 @@ An attempt to read more elements than the length of the accessed array is undefi
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseDeref(
-             toStack(OFFSET, LOCAL),
-             META,
+        => #traverseProjection(
+            toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -507,13 +507,13 @@ An attempt to read more elements than the length of the accessed array is undefi
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseDeref(
+        => #traverseProjection(
              toLocal(I),
-             META,
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
@@ -530,13 +530,13 @@ An attempt to read more elements than the length of the accessed array is undefi
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseDeref(
-             toStack(OFFSET, LOCAL),
-             META,
+        => #traverseProjection(
+            toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -550,13 +550,13 @@ An attempt to read more elements than the length of the accessed array is undefi
              projectionElemDeref PROJS,
              _CTXTS
            )
-        => #traverseDeref(
+        => #traverseProjection(
              toLocal(I),
-             META,
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
@@ -914,7 +914,7 @@ which have the same representation `Value::Range`.
 * Conversion from one array pointer type to another array pointer type requires the new array to be (statically) _at most as long as_ the old one.
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
-Conversely, when casting a pointer to an element to a pointer to a slice or array, 
+Conversely, when casting a pointer to an element to a pointer to a slice or array,
 the original allocation size must be checked to be sufficient (future work).
 
 ```k
