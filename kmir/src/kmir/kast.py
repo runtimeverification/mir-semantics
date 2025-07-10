@@ -202,7 +202,11 @@ class ArgGenerator:
                     new_var, new_constraints, _ = self._symbolic_value(element_type, mutable)
                     elem_vars.append(new_var)
                     elem_constraints += new_constraints
-                return KApply('Value::Range', (list_of(elem_vars),)), elem_constraints, None
+                return (
+                    KApply('Value::Range', (list_of(elem_vars),)),
+                    elem_constraints,
+                    KApply('staticSize', (token(size),)),
+                )
 
             case TupleT(components):
                 elem_vars = []
