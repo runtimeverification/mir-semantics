@@ -37,7 +37,7 @@ PROVE_RS_START_SYMBOLS = {
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
-    'pointer-cast-length-test-fail': ['array_cast_test']
+    'pointer-cast-length-test-fail': ['array_cast_test'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -50,7 +50,7 @@ PROVE_RS_SHOW_SPECS = [
     'symbolic-structs-fail',
     'checked_arithmetic-fail',
     'offset-u8-fail',
-    'pointer-cast-length-test-fail'
+    'pointer-cast-length-test-fail',
 ]
 
 
