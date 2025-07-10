@@ -773,7 +773,7 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
 
 ```k
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
-        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP))
+        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -817,18 +817,26 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 The operation typically creates a pointer with empty metadata.
 
 ```k
-  rule <k> rvalueAddressOf(MUT, PLACE)
+  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
          =>
-           PtrLocal(0, PLACE, MUT, ptrEmulation(noMetadata)) // FIXME should use staticSize or dynamicSize
+           #mkPtr(PLACE, MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
            // we should use #alignOf to emulate the address
        ...
        </k>
-      //  <locals> LOCALS </locals>
-      //  <types> TYPEMAP </types>
-    // requires 0 <=Int I andBool I <Int size(LOCALS)
-    //  andBool isTypedValue(LOCALS[I])
-    //  andBool notBool hasMetadata(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), TYPEMAP) // without metadata
-    [preserves-definedness] // valid list indexing checked
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked, #metadata should only use static information
+
+  syntax Evaluation ::= #mkPtr ( Place , Mutability , Metadata )
+                      | #mkDynLengthPtr ( Place , Mutability, Evaluation ) [strict(3)]
+
+  rule #mkPtr(PLACE, MUT, dynamicSize(_)) => #mkDynLengthPtr(PLACE, MUT, operandCopy(PLACE))
+
+  rule #mkPtr(PLACE, MUT, META) => PtrLocal(0, PLACE, MUT, ptrEmulation(META)) [priority(60)]
+
+  rule #mkDynLengthPtr(PLACE, MUT, Range(ELEMS)) => PtrLocal(0, PLACE, MUT, ptrEmulation(dynamicSize(size(ELEMS))))
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,

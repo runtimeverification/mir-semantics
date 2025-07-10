@@ -122,9 +122,12 @@ A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
 ```k
-  syntax Metadata ::= #metadata    (  MaybeTy , Map ) [function]
-                    | #metadataAux ( TypeInfo , Map ) [function]
+  syntax Metadata ::= #metadata    ( Ty , ProjectionElems , Map ) [function, total]
+                    | #metadata    (  MaybeTy , Map )             [function, total]
+                    | #metadataAux ( TypeInfo , Map )             [function, total]
   // ------------------------------------------------------------
+  rule #metadata(TY, PROJS, TYPEMAP) => #metadata(getTyOf(TY, PROJS, TYPEMAP), TYPEMAP)
+
   rule #metadata(TY, TYPEMAP) => #metadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
     requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
   rule #metadata( _,       _) => noMetadata [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
