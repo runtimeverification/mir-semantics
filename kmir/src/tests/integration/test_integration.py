@@ -268,6 +268,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'arrays' / 'array_write.state',
         None,
     ),
+    (
+        'pointer-cast-length-test',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test.state',
+        1000,
+    ),
 ]
 
 
