@@ -44,6 +44,11 @@ If nothing is removed, the list remains the same. If all elements are removed, n
   rule range(L:List, size(L), 0) => .List [simplification]
 
   rule range(L:List, 0, size(L)) => .List [simplification]
+
+  rule size(range(L, A, B)) => size(L) -Int A -Int B
+    requires A +Int B <=Int size(L) [simplification, preserves-definedness]
+
+  rule #Ceil(range(L, A, B)) => #Ceil(L) #And #Ceil(A) #And #Ceil(B) #And {true #Equals A +Int B <=Int size(L)} [simplification]
 ```
 
 ## Simplifications for Int
