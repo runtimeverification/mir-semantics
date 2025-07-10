@@ -31,6 +31,31 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
   rule N <Int size(ListItem(_) REST:List) => N -Int 1 <Int size(REST)
     requires 0 <Int N
     [simplification, symbolic(REST)]
+
+  rule 0 <=Int size(_LIST:List) => true [simplification]
+```
+
+The hooked `range` function selects a segment from a list, by removing elements from front and back.
+If nothing is removed, the list remains the same. If all elements are removed, nothing remains.
+
+```k
+  rule range(L:List, 0, 0) => L [simplification]
+
+  rule range(L:List, size(L), 0) => .List [simplification]
+
+  rule range(L:List, 0, size(L)) => .List [simplification]
+```
+
+## Simplifications for Int
+
+These are trivial simplifications driven by syntactic equality, which should be present upstream.
+
+```k
+  rule A <=Int A => true [simplification]
+
+  rule A ==Int A => true [simplification]
+
+  rule A -Int A => 0 [simplification]
 ```
 
 ## Simplifications related to the `truncate` function
