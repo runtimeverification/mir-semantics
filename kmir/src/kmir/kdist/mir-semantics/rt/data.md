@@ -917,7 +917,7 @@ Conversion is especially possible for the case of _Slices_ (of dynamic length) a
 which have the same representation `Value::Range`.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META) #as EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP))
           ...
@@ -928,12 +928,12 @@ which have the same representation `Value::Range`.
        andBool isTypeInfo(TYPEMAP[TY_SOURCE])
        andBool isTypeInfo(TYPEMAP[TY_TARGET])
        andBool #typesCompatible({TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP)
-       andBool #metadataCompatible(META, #metadata(pointeeTy({TYPEMAP[TY_TARGET]}:>TypeInfo), TYPEMAP))
       [preserves-definedness] // valid map lookups checked
 
   syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
   // ----------------------------------------------------------------------------------
 ```
+
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
 ```k
   rule #convertPtrEmul(     ptrEmulation(_)           , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata)
@@ -941,13 +941,18 @@ Pointers to slices can be converted to pointers to single elements, _losing_ the
   rule #convertPtrEmul(     ptrEmulation(_)           , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata)
     requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                                [priority(60)]
 ```
+
 Conversely, when casting a pointer to an element to a pointer to a slice or array,
-the original allocation size must be checked to be sufficient (future work).
+the original allocation size must be checked to be sufficient.
+
+**TODO** this is future work, requiring a "provenance" that retains the original allocation size. Invalid casts should be marked with special "InvalidCast" metadata.
+
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
   rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
   rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
 ```
+
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
 ```k
   // convert static length to dynamic length
@@ -956,35 +961,36 @@ Conversion from an array to a slice pointer requires adding metadata (`dynamicSi
   rule #convertPtrEmul(ptrEmulation(staticSize(SIZE)), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
 ```
-Conversion from a slice to an array pointer requires the slice to be (dynamically) _at least as long as_ than the array length.
-Conversion from one array pointer type to another array pointer type requires the new array to be (statically) _at most as long as_ the old one.
+
+Conversion from a slice to an array pointer, or between different static length array pointers, is allowed in all cases.
+It may however be illegal to _dereference_ (i.e., access) the created pointer, depending on the original array length (see `traverseDeref`).
+
+**TODO** we can mark cases of insufficient original length as "InvalidCast" in the future, similar to the above future work.
 
 ```k
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
-    requires #metadataCompatible(dynamicSize(SIZE), #metadata(POINTEE_TY, TYPEMAP))
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
-    requires #metadataCompatible(dynamicSize(SIZE), #metadata(POINTEE_TY, TYPEMAP))
+  rule #convertPtrEmul(ptrEmulation(staticSize(_)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(staticSize(_)), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
 
-  syntax Bool ::= #metadataCompatible ( Metadata , Metadata ) [function, total]
-  //-----------------------------------------------------------------------------
-  rule #metadataCompatible(        noMetadata   ,       noMetadata     ) => true [priority(40)]
-  rule #metadataCompatible( staticSize(OLD_SIZE),  staticSize(NEW_SIZE)) => OLD_SIZE <=Int NEW_SIZE
-  rule #metadataCompatible( staticSize(OLD_SIZE), dynamicSize(NEW_SIZE)) => OLD_SIZE <=Int NEW_SIZE
-  rule #metadataCompatible(dynamicSize(OLD_SIZE),  staticSize(NEW_SIZE)) => OLD_SIZE <=Int NEW_SIZE
-  rule #metadataCompatible(dynamicSize(OLD_SIZE), dynamicSize(NEW_SIZE)) => OLD_SIZE <=Int NEW_SIZE
-  rule #metadataCompatible(    noMetadata       ,    _                 ) => true  
-  rule #metadataCompatible(        _            , noMetadata           ) => false
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_)), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
 ```
 
+For a cast bwetween two pointer types with `dynamicSize` metadata (unlikely to occur), the dynamic size value is retained.
+
 ```k
-  // retain dynamic length
   rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
   rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
+```
 
+```k
   // non-pointer and non-ref target type (should not happen!)
-  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata)        [owise]
+  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata)        [priority(100)]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
