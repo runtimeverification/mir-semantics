@@ -319,10 +319,10 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                  | #decrementRef ( Value )  [function, total]
                  | #adjustRef (Value, Int ) [function, total]
 
-  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT), OFFSET)
-    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT)
-  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT), OFFSET)
-    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT)
+  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
+    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
+  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, EMULATION), OFFSET)
+    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, EMULATION)
   rule #adjustRef(TL, _) => TL [owise]
 
   rule #incrementRef(TL) => #adjustRef(TL, 1)
@@ -448,23 +448,52 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
 
 #### References
 
-A `Deref` projection operates on `Reference`s that refer to locals in the same or an enclosing stack frame, indicated by the stack height in the `Reference` value.
+A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the same or
+an enclosing stack frame, indicated by the stack height in the value.
 `Deref` reads the referred place (and may proceed with further projections).
 In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
+If the offset height is greater than zero, the stack element is accessed.
+
+Pointers and references may carry metadata indicating a _size_ (`dynamicSize`).
+If present, the `Deref` is expected to access a _slice_ and the size determines how many elements are read from it.
+
+An attempt to read more elements than the length of the accessed array is undefined behaviour and halts the execution.
 
 ```k
+  // helper rewrite to implement truncating slices to required size
+  syntax KItem ::= #derefTruncate ( Metadata , ProjectionElems )
+  // ----------------------------------------------------------------------------------------
+  // no metadata, no change to the value
+  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS)
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS)
+        ...
+       </k>
+  // staticSize metadata requires an array of suitable length and truncates it
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+  // dynamicSize metadata requires an array of suitable length and truncates it
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-             toStack(OFFSET, LOCAL),
+            toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -474,16 +503,17 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, META),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
@@ -492,19 +522,19 @@ In the simplest case, the reference refers to a local in the same stack frame (h
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
-
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrEmulation(META)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-             toStack(OFFSET, LOCAL),
+            toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -514,16 +544,17 @@ In the simplest case, the reference refers to a local in the same stack frame (h
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrEmulation(META)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PROJS), // apply reference projections first, then rest
+             PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
@@ -605,19 +636,6 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 
   rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, ELEMENT)) ... </k>
     requires 0 <=Int N
-    [preserves-definedness]
-
-  // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
-  // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
-    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
-    [preserves-definedness]
-
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
-    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
     [preserves-definedness]
 
 
@@ -746,21 +764,46 @@ Therefore, reference values are represented with a simple `Mutability` flag inst
 
 [^borrowkind]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.BorrowKind.html
 
+References also carry pointer `Metadata`, which informs about the pointee size for dynamically-sized types.
+For slices (represented as `Value::Range`), the metadata is the length (as a dynamic size).
+For `struct`s (represented as `Value::Aggregate`), the metadata is that of the _last_ field (for dynamically-sized data).
+Other `Value`s are not expected to have pointer `Metadata` as per their types.
+
 ```k
-  rule <k> rvalueRef(_REGION, KIND, PLACE)
-         =>
-           Reference(0, PLACE, #mutabilityOf(KIND))
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
+        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
        ...
        </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked, #metadata should only use static information
+
+  syntax Evaluation ::= #mkRef ( Place , Mutability, Metadata)
+                      | #mkDynSizeRef ( Place , Mutability , Evaluation ) [strict(3)]
+
+  rule <k> #mkRef(PLACE, MUT, dynamicSize(_)) => #mkDynSizeRef(PLACE, MUT, operandCopy(PLACE)) ... </k>
+  rule <k> #mkRef(PLACE, MUT,    META       ) => Reference(0, PLACE, MUT, META)                ... </k> [priority(60)]
+
+  // with dynamic metadata (reading the value)
+  rule <k> #mkDynSizeRef(PLACE, MUT, VAL:Value) => Reference(0, PLACE, MUT, metadataFor(VAL)) ... </k>
+
+  syntax Metadata ::= metadataFor ( Value ) [function, total]
+  // --------------------------------------------------------
+  rule metadataFor(    Range(LIST)   ) => dynamicSize(size(LIST))
+  rule metadataFor(      _OTHER     ) => noMetadata      [owise]
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
-
+  // -----------------------------------------------------------------
   rule #mutabilityOf(borrowKindShared)  => mutabilityNot
   rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
 ```
 
-A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`, except that the compiler guarantees the only use of the copied value will be for dereferencing, which enables optimisations in the borrow checker and in code generation.
+A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
+except that the compiler guarantees the only use of the copied value will be for dereferencing,
+which enables optimisations in the borrow checker and in code generation.
 
 ```k
   rule <k> rvalueCopyForDeref(PLACE) => rvalueUse(operandCopy(PLACE)) ... </k>
@@ -769,14 +812,29 @@ A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 The `RValue::AddressOf` operation is very similar to creating a reference, since it also
 refers to a given _place_. However, the raw pointer obtained by `AddressOf` can be subject
 to casts and pointer arithmetic using `BinOp::Offset`.
+The operation typically creates a pointer with empty metadata.
 
 ```k
-  rule <k> rvalueAddressOf(MUT, PLACE)
+  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
          =>
-           PtrLocal(0, PLACE, MUT)
+           #mkPtr(PLACE, MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
            // we should use #alignOf to emulate the address
        ...
        </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked, #metadata should only use static information
+
+  syntax Evaluation ::= #mkPtr ( Place , Mutability , Metadata )
+                      | #mkDynLengthPtr ( Place , Mutability, Evaluation ) [strict(3)]
+
+  rule #mkPtr(PLACE, MUT, dynamicSize(_)) => #mkDynLengthPtr(PLACE, MUT, operandCopy(PLACE))
+
+  rule #mkPtr(PLACE, MUT, META) => PtrLocal(0, PLACE, MUT, ptrEmulation(META)) [priority(60)]
+
+  rule #mkDynLengthPtr(PLACE, MUT, Range(ELEMS)) => PtrLocal(0, PLACE, MUT, ptrEmulation(dynamicSize(size(ELEMS))))
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -799,12 +857,12 @@ a special rule for this case is applied with higher priority.
 
   syntax Bool ::= isRef ( Value ) [function, total]
   // -----------------------------------------------------
-  rule isRef(Reference(_, _, _)) => true
-  rule isRef(     _OTHER       ) => false [owise]
+  rule isRef(Reference(_, _, _, _)) => true
+  rule isRef(     _OTHER          ) => false [owise]
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(OFFSET, PLACE, _), MUT) => PtrLocal(OFFSET, PLACE, MUT)
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META))
 ```
 
 ## Type casts
@@ -854,13 +912,14 @@ Casts involving `Float` values are currently not implemented.
 Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
 The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
 the `Value` sort.
+
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
 
 ```k
-  rule <k> #cast(VALUE:Value, castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            VALUE // TODO too simple, fat pointers may require changes to data size
+            PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP))
           ...
         </k>
         <types> TYPEMAP </types>
@@ -870,6 +929,68 @@ which have the same representation `Value::Range`.
        andBool isTypeInfo(TYPEMAP[TY_TARGET])
        andBool #typesCompatible({TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP)
       [preserves-definedness] // valid map lookups checked
+
+  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
+  // ----------------------------------------------------------------------------------
+```
+
+Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
+```k
+  rule #convertPtrEmul(     ptrEmulation(_)           , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata)
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                                [priority(60)]
+  rule #convertPtrEmul(     ptrEmulation(_)           , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata)
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                                [priority(60)]
+```
+
+Conversely, when casting a pointer to an element to a pointer to a slice or array,
+the original allocation size must be checked to be sufficient.
+
+**TODO** this is future work, requiring a "provenance" that retains the original allocation size. Invalid casts should be marked with special "InvalidCast" metadata.
+
+```k
+  // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+  rule #convertPtrEmul(   ptrEmulation(noMetadata)    , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+```
+
+Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
+```k
+  // convert static length to dynamic length
+  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE)), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
+```
+
+Conversion from a slice to an array pointer, or between different static length array pointers, is allowed in all cases.
+It may however be illegal to _dereference_ (i.e., access) the created pointer, depending on the original array length (see `traverseDeref`).
+
+**TODO** we can mark cases of insufficient original length as "InvalidCast" in the future, similar to the above future work.
+
+```k
+  rule #convertPtrEmul(ptrEmulation(staticSize(_)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(staticSize(_)), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_)), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_)), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP))
+    requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
+```
+
+For a cast bwetween two pointer types with `dynamicSize` metadata (unlikely to occur), the dynamic size value is retained.
+
+```k
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE)), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE))
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
+```
+
+```k
+  // non-pointer and non-ref target type (should not happen!)
+  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata)        [priority(100)]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
@@ -885,13 +1006,22 @@ which have the same representation `Value::Range`.
 |                                    | MutToConstPointer        | make a mutable pointer immutable   |
 
 
+The `Unsize` coercion converts from a sized pointee type to one that requires a `dynamicSize`.
+Specifically, pointers to arrays of statically-known length are cast to pointers to slices, which requires adding the known size as a `dynamicSize`.
+The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
+
 ```k
-  // not checking whether types are actually compatible (trusting the compiler)
-  rule <k> #cast(VALUE:Value, castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(Reference(OFFSET, PLACE, MUT, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            VALUE // FIXME too simple, unsize makes a fat pointer from a thin one
+            Reference(OFFSET, PLACE, MUT, dynamicSize(SIZE))
           ...
         </k>
+      //   <types> TYPEMAP </types>
+      // could look up the static size here instead of caching it:
+      // requires TY_SOURCE in_keys(TYPEMAP)
+      //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+      // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
+      // [preserves-definedness] // valid type map indexing and sort coercion
 ```
 
 ### Other casts involving pointers
@@ -1325,37 +1455,15 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
 
 #### Other operations
 
-The unary operation `unOpPtrMetadata`, when given a reference to an array or slice, will return the array length of the slice length (which is dynamic, not statically known), as a `usize`.
+The unary operation `unOpPtrMetadata`, when given a reference or pointer to a slice, will return the reference or pointer metadata.
+* For slices with dynamic length (not statically known), this metadata is the `dynamicSize` and is returned as a `usize`.
+* For values with statically-known size, this operation returns a _unit_ value. However, these calls should not occur in practical programs.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(local(I), PROJECTIONS), _))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
-        ~> #readProjection(false)
-        ~> #arrayLength()
-        ...
-       </k>
-       <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // LOCALS indexing checked
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE)))              => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, PtrLocal(_, _, _, ptrEmulation(dynamicSize(SIZE)))) => Integer(SIZE, 64, false) ... </k>
 
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(OFFSET, place(LOCAL, PROJECTIONS), _))
-        => #traverseProjection(toStack(OFFSET, LOCAL), #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET), PROJECTIONS, .Contexts)
-        ~> #readProjection(false)
-        ~> #arrayLength()
-        ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     [preserves-definedness] // STACK indexing checked
-
-  syntax Value ::= #arrayLength()
-
-  rule <k> Range(LIST) ~> #arrayLength() => Integer(size(LIST), 64, false) ... </k>
+  // could add a rule for cases without metadata
 ```
 
 

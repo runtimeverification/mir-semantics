@@ -3,6 +3,8 @@
 ```k
 requires "../ty.md"
 requires "../body.md"
+requires "numbers.md"
+requires "value.md"
 
 module RT-TYPES
   imports BOOL
@@ -11,7 +13,8 @@ module RT-TYPES
 
   imports TYPES
   imports BODY
-
+  imports RT-NUMBERS
+  imports RT-VALUE-SYNTAX
 ```
 
 Type metadata from Stable MIR JSON is present in a type lookup table `Ty -> TypeInfo` at runtime. 
@@ -107,6 +110,48 @@ To make this function total, an optional `MaybeTy` is used.
   rule elemTy(     _                  ) => TyUnknown [owise]
 ```
 
+## Static and Dynamic Metadata for Types
+
+References to data on the heap or stack may require metadata, most commonly the size of slices, which is not statically known.
+The helper function `#metadata` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `Metadata` sort in `value.md`).
+To avoid repeated lookups, static array sizes are also stored as metadata (for `Unsize` casts).
+
+NB that the need for metadata is determined for the _pointee_ type, not the pointer type.
+
+A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly-rustc/src/rustc_middle/ty/util.rs.html#224-235) to determine whether or not a type needs dynamic metadata.
+Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
+
+```k
+  syntax Metadata ::= #metadata    ( Ty , ProjectionElems , Map ) [function, total]
+                    | #metadata    (  MaybeTy , Map )             [function, total]
+                    | #metadataAux ( TypeInfo , Map )             [function, total]
+  // ------------------------------------------------------------
+  rule #metadata(TY, PROJS, TYPEMAP) => #metadata(getTyOf(TY, PROJS, TYPEMAP), TYPEMAP)
+
+  rule #metadata(TY, TYPEMAP) => #metadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
+    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
+  rule #metadata( _,       _) => noMetadata [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
+
+  rule #metadataAux(typeInfoArrayType(_, noTyConst                     ),    _   ) => dynamicSize(1)
+  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP))
+  rule #metadataAux(    _OTHER                                          ,    _   ) => noMetadata     [owise]
+```
+
+
+```k
+  // reading Int-valued TyConsts from allocated bytes
+  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
+  // -----------------------------------------------------------
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
+
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+    [preserves-definedness]
+```
 
 ```k
 endmodule
