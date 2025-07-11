@@ -329,8 +329,9 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
 
 def _decode(bytes: list[int]) -> int:
     # assume little-endian: reverse the bytes
-    bytes.reverse()
-    return reduce(lambda x, y: x * 256 + y, bytes)
+    bs = bytes.copy()
+    bs.reverse()
+    return reduce(lambda x, y: x * 256 + y, bs)
 
 
 def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:

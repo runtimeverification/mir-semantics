@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (59 steps)
+│  (60 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (95 steps)
+┃  │  (96 steps)
 ┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃
@@ -55,7 +55,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (65 steps)
+   │  (66 steps)
    ├─ 7 (terminal)
    │   #EndProgram ~> .K
    │
