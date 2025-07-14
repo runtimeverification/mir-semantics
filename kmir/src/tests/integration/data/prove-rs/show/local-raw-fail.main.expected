@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (103 steps)
+│  (104 steps)
 ├─ 3
 │   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
 │   function: main
@@ -26,7 +26,7 @@
    │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
    │   function: main
    │
-   │  (15 steps)
+   │  (16 steps)
    ├─ 7 (terminal)
    │   #EndProgram ~> .K
    │   function: main

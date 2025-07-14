@@ -39,7 +39,7 @@
       ListItem ( typedValue ( Integer ( 0 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemIndex ( local ( 6 ) )  .ProjectionElems ) , mutabilityMut ) , ty ( 31 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemIndex ( local ( 6 ) )  .ProjectionElems ) , mutabilityMut , noMetadata ) , ty ( 31 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 1 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )

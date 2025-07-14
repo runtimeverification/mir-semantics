@@ -79,7 +79,17 @@ class SMIRInfo:
     @cached_property
     def function_symbols(self) -> dict[int, dict]:
         fnc_symbols = {ty: sym for ty, sym, *_ in self._smir['functions'] if type(ty) is int}
+        # by convention, Ty -1 is used for 'main' if it exists
         fnc_symbols[-1] = {'NormalSym': self.main_symbol}
+
+        # function items not present in the SMIR lookup table are added with negative Ty ID
+        missing = [name for name in self.items.keys() if {'NormalSym': name} not in fnc_symbols.values()]
+
+        fake_ty = -2
+        for name in missing:
+            fnc_symbols[fake_ty] = {'NormalSym': name}
+            fake_ty -= 1
+
         return fnc_symbols
 
     @cached_property
@@ -319,8 +329,9 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
 
 def _decode(bytes: list[int]) -> int:
     # assume little-endian: reverse the bytes
-    bytes.reverse()
-    return reduce(lambda x, y: x * 256 + y, bytes)
+    bs = bytes.copy()
+    bs.reverse()
+    return reduce(lambda x, y: x * 256 + y, bs)
 
 
 def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:

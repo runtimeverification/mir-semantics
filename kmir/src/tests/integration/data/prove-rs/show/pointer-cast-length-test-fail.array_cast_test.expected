@@ -1,0 +1,57 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (43 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool size ( ARG_ARRAY1:List ) >=Int 4
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+┃  │
+┃  │  (4 steps)
+┃  └─ 6 (stuck, leaf)
+┃      #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+┃      span: 72
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     size ( ARG_ARRAY1:List ) >=Int 4
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   │
+   │  (208 steps)
+   ├─ 7
+   │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( ARG_ARRAY1:L
+   │   span: 87
+   ┃
+   ┃ (1 step)
+   ┣━━┓
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , project:Value ( range ( ARG_
+   ┃  │   span: 87
+   ┃  │
+   ┃  │  (116 steps)
+   ┃  └─ 10 (stuck, leaf)
+   ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
+   ┃      span: 97
+   ┃
+   ┗━━┓
+      │
+      └─ 9 (stuck, leaf)
+          #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( ARG_ARRAY1:L
+          span: 87
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+

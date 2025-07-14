@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (149 steps)
+│  (150 steps)
 ├─ 3
 │   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
 │   function: main
