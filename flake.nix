@@ -1,7 +1,7 @@
 {
   description = "kmir - ";
   inputs = {
-    k-framework.url = "github:runtimeverification/k/v7.1.274";
+    k-framework.url = "github:runtimeverification/k/v7.1.275";
     nixpkgs.follows = "k-framework/nixpkgs";
     flake-utils.follows = "k-framework/flake-utils";
     rv-nix-tools.follows = "k-framework/rv-nix-tools";
