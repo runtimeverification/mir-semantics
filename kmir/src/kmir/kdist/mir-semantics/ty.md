@@ -256,18 +256,20 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
 
   // additional sort to provide type information in stable-mir-json
   syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)               [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
-                    | typeInfoEnumType(MIRString, AdtDef, Discriminants) [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
+                    | typeInfoEnumType(MIRString, AdtDef, Discriminants)
+                                                                         [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
                     | typeInfoStructType(MIRString, AdtDef, Tys)         [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields)]
                     | typeInfoUnionType(MIRString, AdtDef)               [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
-                    | typeInfoArrayType(Ty, MaybeTyConst)                [symbol(TypeInfo::ArrayType)    , group(mir-enum)]
-                    | typeInfoPtrType(Ty)                                [symbol(TypeInfo::PtrType)      , group(mir-enum)]
-                    | typeInfoRefType(Ty)                                [symbol(TypeInfo::RefType)      , group(mir-enum)]
+                    | typeInfoArrayType(Ty, MaybeTyConst)                [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
+                    | typeInfoPtrType(Ty)                                [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
+                    | typeInfoRefType(Ty)                                [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
                     | typeInfoTupleType(Tys)                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
                     | typeInfoFunType(MIRString)                         [symbol(TypeInfo::FunType)      , group(mir-enum)]
+                    | "VoidType"                                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
 
   // discriminant information for enum types
-  syntax Discriminant ::= Discriminant ( VariantIdx , MIRInt ) [group(mir)]
+  syntax Discriminant ::= Discriminant ( MIRInt ) [group(mir-int)]
 
   syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
 

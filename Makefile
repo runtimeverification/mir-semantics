@@ -16,7 +16,7 @@ test: test-unit test-integration smir-parse-tests
 ##################################################
 # for integration tests: build stable-mir-json in-tree
 
-stable-mir-json: CARGO_BUILD_OPTS = 
+stable-mir-json: CARGO_BUILD_OPTS =
 stable-mir-json:
 	cd deps/stable-mir-json && cargo build ${CARGO_BUILD_OPTS}
 	cd deps/stable-mir-json && cargo run --bin cargo_stable_mir_json -- ${TOP_DIR}/deps/stable-mir-json ${TOP_DIR}/deps
@@ -120,11 +120,12 @@ pyupgrade:
 # Update smir exec tests expectations
 .PHONY: update-exec-smir
 update-exec-smir:
-	$(UV_RUN) pytest -k test_exec_smir --update-expected-output
+	$(UV_RUN) pytest -k test_exec_smir --update-expected-output -v --numprocesses=4
 
 # Update checked-in smir.json files (using stable-mir-json dependency and jq)
+# file paths for spans in the the updated smir are truncated to known infixes
 .PHONY: update-smir-json
-update-smir-json: TARGETS = $(shell git ls-files | grep -e ".*\.smir\.json$$")
+update-smir-json: TARGETS = $(shell git ls-files | grep -e ".*\.smir\.json$$" | grep -v -e pinocchio)
 update-smir-json: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run --
 update-smir-json: stable-mir-json
 	for file in ${TARGETS}; do \
@@ -132,7 +133,7 @@ update-smir-json: stable-mir-json
 		rust=$$dir/$$(basename $${file%.smir.json}.rs); \
 		[ -f "$$rust" ] || (echo "Source file $$rust missing."; exit 1); \
 		${SMIR} -Zno-codegen --out-dir $$dir $$rust; \
-		jq . $$file > $$file.tmp; \
+		jq '.spans[].[1].[0] |= sub("/.*lib/rustlib"; "rustlib") | .spans[].[1].[0] |= sub("/.*/integration/data"; "data")' $$file > $$file.tmp; \
 		mv $$file.tmp $$file; \
 	done
 

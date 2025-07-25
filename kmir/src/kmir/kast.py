@@ -161,7 +161,7 @@ class ArgGenerator:
             case EnumT(_, _, discriminants):
                 variant_var = self._fresh_var('ARG_VARIDX')
                 # constraints for variant index being in range
-                max_variant = max(discriminants.keys())
+                max_variant = len(discriminants)
                 idx_range = [
                     mlEqualsTrue(leInt(token(0), variant_var)),
                     mlEqualsTrue(leInt(variant_var, token(max_variant))),
@@ -188,11 +188,11 @@ class ArgGenerator:
 
             case ArrayT(_, None):
                 elems = self._fresh_var('ARG_ARRAY')
-                len = self._fresh_var('ARG_ARRAY_LEN')
+                l = self._fresh_var('ARG_ARRAY_LEN')
                 return (
                     KApply('Value::Range', (elems,)),
-                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), len))],
-                    KApply('dynamicSize', (len,)),
+                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
+                    KApply('dynamicSize', (l,)),
                 )
 
             case ArrayT(element_type, size) if size is not None:

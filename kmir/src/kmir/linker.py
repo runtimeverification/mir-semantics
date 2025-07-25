@@ -72,18 +72,18 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
     # 'PrimitiveType' in typeinfo:
     if 'EnumType' in typeinfo:
         typeinfo['EnumType']['adt_def'] = typeinfo['EnumType']['adt_def'] + offset
+        typeinfo['EnumType']['fields'] = [[x + offset for x in l] for l in typeinfo['EnumType']['fields']]
     elif 'StructType' in typeinfo:
         typeinfo['StructType']['fields'] = [x + offset for x in typeinfo['StructType']['fields']]
         typeinfo['StructType']['adt_def'] = typeinfo['StructType']['adt_def'] + offset
     elif 'UnionType' in typeinfo:
         typeinfo['UnionType']['adt_def'] = typeinfo['UnionType']['adt_def'] + offset
     elif 'ArrayType' in typeinfo:
-        assert isinstance(typeinfo['ArrayType'], list)
-        typeinfo['ArrayType'][0] = typeinfo['ArrayType'][0] + offset
+        typeinfo['ArrayType']['elem_type'] = typeinfo['ArrayType']['elem_type'] + offset
     elif 'PtrType' in typeinfo:
-        typeinfo['PtrType'] = typeinfo['PtrType'] + offset
+        typeinfo['PtrType']['pointee_type'] = typeinfo['PtrType']['pointee_type'] + offset
     elif 'RefType' in typeinfo:
-        typeinfo['RefType'] = typeinfo['RefType'] + offset
+        typeinfo['RefType']['pointee_type'] = typeinfo['RefType']['pointee_type'] + offset
     elif 'TupleType' in typeinfo:
         typeinfo['TupleType']['types'] = [x + offset for x in typeinfo['TupleType']['types']]
     # 'FunType' in typeinfo:

@@ -546,7 +546,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS => CALLERLOCALS[I <- Moved])) _:List
+       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
