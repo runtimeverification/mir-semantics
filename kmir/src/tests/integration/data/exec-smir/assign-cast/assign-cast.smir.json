@@ -46,7 +46,7 @@
       }
     ],
     [
-      30,
+      33,
       {
         "NoOpSym": ""
       }
@@ -2088,7 +2088,28 @@
       1,
       {
         "TupleType": {
-          "types": []
+          "types": [],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": []
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 1,
+            "size": {
+              "num_bits": 0
+            }
+          }
         }
       }
     ],
@@ -2103,7 +2124,58 @@
     [
       5,
       {
-        "RefType": 31
+        "RefType": {
+          "pointee_type": 30,
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  },
+                  {
+                    "num_bits": 64
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "ScalarPair": [
+                {
+                  "Initialized": {
+                    "value": {
+                      "Pointer": 0
+                    },
+                    "valid_range": {
+                      "start": 1,
+                      "end": 18446744073709551615
+                    }
+                  }
+                },
+                {
+                  "Initialized": {
+                    "value": {
+                      "Pointer": 0
+                    },
+                    "valid_range": {
+                      "start": 1,
+                      "end": 18446744073709551615
+                    }
+                  }
+                }
+              ]
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 128
+            }
+          }
+        }
       }
     ],
     [
@@ -2117,7 +2189,34 @@
     [
       8,
       {
-        "PtrType": 32
+        "PtrType": {
+          "pointee_type": 31,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
     ],
     [
@@ -2132,25 +2231,90 @@
       10,
       {
         "EnumType": {
-          "name": "std::result::Result",
-          "adt_def": 15,
+          "name": "std::result::Result<isize, !>",
+          "adt_def": 13,
           "discriminants": [
+            0,
+            1
+          ],
+          "fields": [
             [
-              0,
-              0
+              6
             ],
             [
-              1,
-              1
+              32
             ]
-          ]
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Int": {
+                      "length": "I64",
+                      "signed": true
+                    }
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
         }
       }
     ],
     [
       11,
       {
-        "RefType": 12
+        "RefType": {
+          "pointee_type": 12,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
     ],
     [
@@ -2158,10 +2322,46 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 17,
+          "adt_def": 16,
           "fields": [
             9
-          ]
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Int": {
+                      "length": "I8",
+                      "signed": false
+                    }
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 255
+                  }
+                }
+              }
+            },
+            "abi_align": 1,
+            "size": {
+              "num_bits": 8
+            }
+          }
         }
       }
     ],
@@ -2178,29 +2378,146 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 9,
+          "adt_def": 15,
           "fields": [
             15
-          ]
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Int": {
+                      "length": "I8",
+                      "signed": false
+                    }
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 255
+                  }
+                }
+              }
+            },
+            "abi_align": 1,
+            "size": {
+              "num_bits": 8
+            }
+          }
         }
       }
     ],
     [
       18,
       {
-        "RefType": 15
+        "RefType": {
+          "pointee_type": 15,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
     ],
     [
       22,
       {
-        "PtrType": 12
+        "PtrType": {
+          "pointee_type": 12,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
     ],
     [
       24,
       {
-        "RefType": 12
+        "RefType": {
+          "pointee_type": 12,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
     ],
     [
@@ -2244,17 +2561,48 @@
       }
     ],
     [
-      32,
+      31,
       {
-        "PtrType": 9
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
       }
+    ],
+    [
+      32,
+      "VoidType"
     ]
   ],
   "spans": [
     [
       0,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         194,
@@ -2264,7 +2612,7 @@
     [
       1,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         199,
@@ -2274,7 +2622,7 @@
     [
       2,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         9,
         195,
@@ -2284,7 +2632,7 @@
     [
       3,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         10,
         195,
@@ -2294,7 +2642,7 @@
     [
       4,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         201,
         2,
         201,
@@ -2304,7 +2652,7 @@
     [
       5,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         5,
         199,
@@ -2314,7 +2662,7 @@
     [
       6,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         12,
         194,
@@ -2324,7 +2672,7 @@
     [
       7,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         6,
         199,
@@ -2334,7 +2682,7 @@
     [
       9,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         189,
         5,
         189,
@@ -2344,7 +2692,7 @@
     [
       10,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         190,
         5,
         190,
@@ -2354,7 +2702,7 @@
     [
       11,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         191,
         5,
         191,
@@ -2364,7 +2712,7 @@
     [
       12,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         192,
         5,
         192,
@@ -2374,7 +2722,7 @@
     [
       13,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         188,
         1,
         201,
@@ -2384,7 +2732,7 @@
     [
       14,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -2394,7 +2742,7 @@
     [
       15,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -2404,7 +2752,7 @@
     [
       16,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -2414,7 +2762,7 @@
     [
       17,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         70,
         195,
@@ -2424,7 +2772,7 @@
     [
       18,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         76,
         195,
@@ -2434,7 +2782,7 @@
     [
       19,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         74,
         195,
@@ -2444,7 +2792,7 @@
     [
       20,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         93,
         195,
@@ -2454,7 +2802,7 @@
     [
       21,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         83,
         195,
@@ -2464,7 +2812,7 @@
     [
       22,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         9,
         2053,
@@ -2474,7 +2822,7 @@
     [
       23,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -2484,7 +2832,7 @@
     [
       24,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -2494,7 +2842,7 @@
     [
       25,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         21,
         636,
@@ -2504,7 +2852,7 @@
     [
       26,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         23,
         2053,
@@ -2514,7 +2862,7 @@
     [
       27,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         92,
         195,
@@ -2524,7 +2872,7 @@
     [
       29,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2052,
         19,
         2052,
@@ -2534,7 +2882,7 @@
     [
       30,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         635,
         19,
         635,
@@ -2544,7 +2892,7 @@
     [
       31,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -2564,7 +2912,7 @@
     [
       33,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -2574,7 +2922,7 @@
     [
       34,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -2584,7 +2932,7 @@
     [
       35,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -2594,7 +2942,7 @@
     [
       36,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         160,
         2,
         160,
@@ -2604,7 +2952,7 @@
     [
       38,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         43,
         150,
@@ -2614,7 +2962,7 @@
     [
       40,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         9,
         154,
@@ -2624,7 +2972,7 @@
     [
       41,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         388,
         27,
         388,
@@ -2634,7 +2982,7 @@
     [
       42,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         1,
         160,
@@ -2644,7 +2992,7 @@
     [
       43,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ops/function.rs",
+        "rustlib/src/rust/library/core/src/ops/function.rs",
         250,
         5,
         250,
@@ -2654,7 +3002,7 @@
     [
       44,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ptr/mod.rs",
+        "rustlib/src/rust/library/core/src/ptr/mod.rs",
         521,
         1,
         521,
@@ -2664,7 +3012,7 @@
     [
       45,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2424,
         6,
         2424,
@@ -2674,7 +3022,7 @@
     [
       46,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2423,
         9,
         2423,
@@ -2684,7 +3032,7 @@
     [
       48,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         15,
         2422,
@@ -2694,7 +3042,7 @@
     [
       49,
       [
-        "/home/zncv/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         5,
         2424,
@@ -2704,7 +3052,7 @@
     [
       50,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         57,
         2,
         57,
@@ -2714,7 +3062,7 @@
     [
       51,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         4,
         18,
         4,
@@ -2724,7 +3072,7 @@
     [
       52,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         6,
         13,
         6,
@@ -2734,7 +3082,7 @@
     [
       53,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         8,
         13,
         8,
@@ -2744,7 +3092,7 @@
     [
       54,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         10,
         13,
         10,
@@ -2754,7 +3102,7 @@
     [
       55,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         16,
         13,
         16,
@@ -2764,7 +3112,7 @@
     [
       56,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         17,
         13,
         17,
@@ -2774,7 +3122,7 @@
     [
       57,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         19,
         13,
         19,
@@ -2784,7 +3132,7 @@
     [
       58,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         20,
         13,
         20,
@@ -2794,7 +3142,7 @@
     [
       59,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         26,
         13,
         26,
@@ -2804,7 +3152,7 @@
     [
       60,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         27,
         13,
         27,
@@ -2814,7 +3162,7 @@
     [
       61,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         29,
         13,
         29,
@@ -2824,7 +3172,7 @@
     [
       62,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         30,
         13,
         30,
@@ -2834,7 +3182,7 @@
     [
       63,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         32,
         13,
         32,
@@ -2844,7 +3192,7 @@
     [
       64,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         33,
         13,
         33,
@@ -2854,7 +3202,7 @@
     [
       65,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         34,
         13,
         34,
@@ -2864,7 +3212,7 @@
     [
       67,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         4,
         9,
         4,
@@ -2874,7 +3222,7 @@
     [
       68,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         6,
         9,
         6,
@@ -2884,7 +3232,7 @@
     [
       69,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         8,
         9,
         8,
@@ -2894,7 +3242,7 @@
     [
       70,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         10,
         9,
         10,
@@ -2904,7 +3252,7 @@
     [
       71,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         16,
         9,
         16,
@@ -2914,7 +3262,7 @@
     [
       72,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         17,
         9,
         17,
@@ -2924,7 +3272,7 @@
     [
       73,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         19,
         9,
         19,
@@ -2934,7 +3282,7 @@
     [
       74,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         20,
         9,
         20,
@@ -2944,7 +3292,7 @@
     [
       75,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         26,
         9,
         26,
@@ -2954,7 +3302,7 @@
     [
       76,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         27,
         9,
         27,
@@ -2964,7 +3312,7 @@
     [
       77,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         29,
         9,
         29,
@@ -2974,7 +3322,7 @@
     [
       78,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         30,
         9,
         30,
@@ -2984,7 +3332,7 @@
     [
       79,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         32,
         9,
         32,
@@ -2994,7 +3342,7 @@
     [
       80,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         33,
         9,
         33,
@@ -3004,7 +3352,7 @@
     [
       81,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         34,
         9,
         34,
@@ -3014,7 +3362,7 @@
     [
       82,
       [
-        "/home/zncv/Applications/mir-semantics-review/kmir/src/tests/integration/data/exec-smir/assign-cast/assign-cast.rs",
+        "data/exec-smir/assign-cast/assign-cast.rs",
         1,
         1,
         57,

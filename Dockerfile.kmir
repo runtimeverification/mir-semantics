@@ -57,6 +57,8 @@ RUN cd /deps/stable-mir-json && \
     ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
     cargo clean
 
+RUN bash -c 'rustup toolchain list && rustup default $(rustup toolchain list)'
+
 # Fixuid is helpful for 1 time executions of docker containers but is not helpful when relying on `docker exec`
 ENTRYPOINT ["fixuid", "-q"]
 

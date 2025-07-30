@@ -22,7 +22,7 @@
 ┃  ┃ (branch)
 ┃  ┣━━┓ subst: .Subst
 ┃  ┃  ┃ constraint:
-┃  ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
+┃  ┃  ┃     notBool size ( ARG_ARRAY8:List ) >Int 0
 ┃  ┃  │
 ┃  ┃  ├─ 8
 ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
@@ -31,29 +31,28 @@
 ┃  ┃  ├─ 12 (terminal)
 ┃  ┃  │   #EndProgram ~> .K
 ┃  ┃  │
-┃  ┃  ┊  constraint:
-┃  ┃  ┊      Ceil_d5029c10
+┃  ┃  ┊  constraint: true
 ┃  ┃  ┊  subst: ...
 ┃  ┃  └─ 2 (leaf, target, terminal)
 ┃  ┃      #EndProgram ~> .K
 ┃  ┃
 ┃  ┗━━┓ subst: .Subst
 ┃     ┃ constraint:
-┃     ┃     size ( ARG_ARRAY7:List ) >Int 0
+┃     ┃     size ( ARG_ARRAY8:List ) >Int 0
 ┃     │
 ┃     ├─ 9
 ┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃     │
 ┃     │  (119 steps)
 ┃     ├─ 13
-┃     │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
+┃     │   #traverseProjection ( toStack ( 1 , local ( 12 ) ) , Range ( ARG_ARRAY8:List ) ,
 ┃     │   span: 69
 ┃     ┃
 ┃     ┃ (1 step)
 ┃     ┣━━┓
 ┃     ┃  │
 ┃     ┃  ├─ 16
-┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:Value ( ARG_ARRAY7:
+┃     ┃  │   #traverseProjection ( toStack ( 1 , local ( 12 ) ) , project:Value ( ARG_ARRAY8:
 ┃     ┃  │   span: 69
 ┃     ┃  │
 ┃     ┃  │  (7 steps)
@@ -61,8 +60,7 @@
 ┃     ┃  │   #EndProgram ~> .K
 ┃     ┃  │
 ┃     ┃  ┊  constraint:
-┃     ┃  ┊      Ceil_017e41e7
-┃     ┃  ┊      Ceil_d5029c10
+┃     ┃  ┊      Ceil_d21c965f
 ┃     ┃  ┊  subst: ...
 ┃     ┃  └─ 2 (leaf, target, terminal)
 ┃     ┃      #EndProgram ~> .K
@@ -70,7 +68,7 @@
 ┃     ┗━━┓
 ┃        │
 ┃        └─ 17 (stuck, leaf)
-┃            #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
+┃            #traverseProjection ( toStack ( 1 , local ( 12 ) ) , Range ( ARG_ARRAY8:List ) ,
 ┃            span: 69
 ┃
 ┗━━┓ subst: .Subst
@@ -87,7 +85,7 @@
    ┃ (branch)
    ┣━━┓ subst: .Subst
    ┃  ┃ constraint:
-   ┃  ┃     notBool size ( ARG_ARRAY7:List ) >Int 0
+   ┃  ┃     notBool size ( ARG_ARRAY8:List ) >Int 0
    ┃  │
    ┃  ├─ 10
    ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
@@ -103,21 +101,21 @@
    ┃
    ┗━━┓ subst: .Subst
       ┃ constraint:
-      ┃     size ( ARG_ARRAY7:List ) >Int 0
+      ┃     size ( ARG_ARRAY8:List ) >Int 0
       │
       ├─ 11
       │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
       │
       │  (119 steps)
       ├─ 15
-      │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
+      │   #traverseProjection ( toStack ( 1 , local ( 12 ) ) , Range ( ARG_ARRAY8:List ) ,
       │   span: 69
       ┃
       ┃ (1 step)
       ┣━━┓
       ┃  │
       ┃  ├─ 18
-      ┃  │   #traverseProjection ( toStack ( 1 , local ( 11 ) ) , project:Value ( ARG_ARRAY7:
+      ┃  │   #traverseProjection ( toStack ( 1 , local ( 12 ) ) , project:Value ( ARG_ARRAY8:
       ┃  │   span: 69
       ┃  │
       ┃  │  (7 steps)
@@ -125,7 +123,7 @@
       ┃  │   #EndProgram ~> .K
       ┃  │
       ┃  ┊  constraint:
-      ┃  ┊      Ceil_017e41e7
+      ┃  ┊      Ceil_d21c965f
       ┃  ┊  subst: ...
       ┃  └─ 2 (leaf, target, terminal)
       ┃      #EndProgram ~> .K
@@ -133,7 +131,7 @@
       ┗━━┓
          │
          └─ 19 (stuck, leaf)
-             #traverseProjection ( toStack ( 1 , local ( 11 ) ) , Range ( ARG_ARRAY7:List ) ,
+             #traverseProjection ( toStack ( 1 , local ( 12 ) ) , Range ( ARG_ARRAY8:List ) ,
              span: 69
 
 

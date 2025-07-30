@@ -255,7 +255,7 @@ def _primty_from_json(typeinfo: str | dict) -> PrimitiveType:
 class EnumT(TypeMetadata):
     name: str
     adt_def: int
-    discriminants: dict
+    discriminants: list[int]
 
 
 @dataclass
@@ -302,7 +302,7 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
         return _primty_from_json(typeinfo['PrimitiveType'])
     elif 'EnumType' in typeinfo:
         info = typeinfo['EnumType']
-        discriminants = dict(info['discriminants'])
+        discriminants = list(info['discriminants'])
         return EnumT(name=info['name'], adt_def=info['adt_def'], discriminants=discriminants)
     elif 'StructType' in typeinfo:
         return StructT(
@@ -312,13 +312,12 @@ def metadata_from_json(typeinfo: dict) -> TypeMetadata:
         return UnionT(typeinfo['UnionType']['name'], typeinfo['UnionType']['adt_def'])
     elif 'ArrayType' in typeinfo:
         info = typeinfo['ArrayType']
-        assert isinstance(info, list)
-        length = None if info[1] is None else _decode(info[1]['kind']['Value'][1]['bytes'])
-        return ArrayT(info[0], length)
+        length = None if info['size'] is None else _decode(info['size']['kind']['Value'][1]['bytes'])
+        return ArrayT(info['elem_type'], length)
     elif 'PtrType' in typeinfo:
-        return PtrT(typeinfo['PtrType'])
+        return PtrT(typeinfo['PtrType']['pointee_type'])
     elif 'RefType' in typeinfo:
-        return RefT(typeinfo['RefType'])
+        return RefT(typeinfo['RefType']['pointee_type'])
     elif 'TupleType' in typeinfo:
         return TupleT(typeinfo['TupleType']['types'])
     elif 'FunType' in typeinfo:
