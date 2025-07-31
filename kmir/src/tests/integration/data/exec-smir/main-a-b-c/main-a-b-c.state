@@ -61,7 +61,7 @@
     ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
     ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )
     ty ( 29 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 30 ) |-> VoidType
+    ty ( 30 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 10 ) |-> ty ( 17 )

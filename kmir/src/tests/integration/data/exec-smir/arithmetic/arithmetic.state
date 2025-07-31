@@ -97,7 +97,7 @@
     ty ( 28 ) |-> typeInfoTupleType ( ty ( 2 )  ty ( 25 )  .Tys )
     ty ( 29 ) |-> typeInfoTupleType ( ty ( 26 )  ty ( 25 )  .Tys )
     ty ( 32 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 33 ) |-> VoidType
+    ty ( 33 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 9 ) |-> ty ( 17 )

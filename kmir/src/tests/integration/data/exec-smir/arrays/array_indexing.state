@@ -77,7 +77,7 @@
     ty ( 28 ) |-> typeInfoRefType ( ty ( 33 ) )
     ty ( 29 ) |-> typeInfoArrayType ( ty ( 26 ) , someTyConst ( tyConst (... kind: tyConstKindValue ( ty ( 25 ) , allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , id: tyConstId ( 0 ) ) ) )
     ty ( 30 ) |-> typeInfoPrimitiveType ( primTypeBool )
-    ty ( 31 ) |-> VoidType
+    ty ( 31 ) |-> typeInfoVoidType
     ty ( 32 ) |-> typeInfoRefType ( ty ( 34 ) )
     ty ( 33 ) |-> typeInfoPrimitiveType ( primTypeStr )
     ty ( 34 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 8 ) , ty ( 28 )  ty ( 35 )  ty ( 35 )  .Tys )

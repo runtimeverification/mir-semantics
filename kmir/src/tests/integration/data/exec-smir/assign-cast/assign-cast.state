@@ -76,7 +76,7 @@
     ty ( 28 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
     ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU64 ) )
     ty ( 31 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 32 ) |-> VoidType
+    ty ( 32 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 13 ) |-> ty ( 10 )

@@ -87,7 +87,7 @@
     ty ( 29 ) |-> typeInfoArrayType ( ty ( 26 ) , someTyConst ( tyConst (... kind: tyConstKindValue ( ty ( 25 ) , allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , id: tyConstId ( 0 ) ) ) )
     ty ( 30 ) |-> typeInfoPrimitiveType ( primTypeBool )
     ty ( 31 ) |-> typeInfoRefType ( ty ( 26 ) )
-    ty ( 32 ) |-> VoidType
+    ty ( 32 ) |-> typeInfoVoidType
     ty ( 34 ) |-> typeInfoPtrType ( ty ( 9 ) )
     ty ( 35 ) |-> typeInfoRefType ( ty ( 37 ) )
     ty ( 36 ) |-> typeInfoPrimitiveType ( primTypeStr )

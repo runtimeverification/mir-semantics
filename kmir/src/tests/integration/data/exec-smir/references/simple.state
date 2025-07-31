@@ -65,7 +65,7 @@
     ty ( 26 ) |-> typeInfoRefType ( ty ( 31 ) )
     ty ( 27 ) |-> typeInfoRefType ( ty ( 2 ) )
     ty ( 28 ) |-> typeInfoPrimitiveType ( primTypeBool )
-    ty ( 29 ) |-> VoidType
+    ty ( 29 ) |-> typeInfoVoidType
     ty ( 30 ) |-> typeInfoRefType ( ty ( 32 ) )
     ty ( 31 ) |-> typeInfoPrimitiveType ( primTypeStr )
     ty ( 32 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 8 ) , ty ( 26 )  ty ( 33 )  ty ( 33 )  .Tys )
