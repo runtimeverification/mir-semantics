@@ -51,6 +51,12 @@ If nothing is removed, the list remains the same. If all elements are removed, n
   rule #Ceil(range(L, A, B)) => #Ceil(L) #And #Ceil(A) #And #Ceil(B) #And {true #Equals A +Int B <=Int size(L)} [simplification]
 ```
 
+The `#mapOffset` function maps `#adjustRef` over a lists of `Value`s, leaving the list length unchanged.
+
+```k
+  rule size(#mapOffset(L, _)) => size(L) [simplification, preserves-definedness]
+```
+
 ## Simplifications for Int
 
 These are trivial simplifications driven by syntactic equality, which should be present upstream.

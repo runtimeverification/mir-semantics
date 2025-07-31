@@ -67,7 +67,7 @@
     ty ( 27 ) |-> typeInfoTupleType ( ty ( 16 )  ty ( 16 )  .Tys )
     ty ( 28 ) |-> typeInfoStructType ( "MyStruct" , adtDef ( 7 ) , ty ( 16 )  ty ( 25 )  ty ( 26 )  ty ( 27 )  .Tys )
     ty ( 30 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 31 ) |-> VoidType
+    ty ( 31 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 7 ) |-> ty ( 28 )

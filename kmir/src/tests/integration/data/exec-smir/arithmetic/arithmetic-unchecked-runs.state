@@ -82,7 +82,7 @@
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
     ty ( 21 ) |-> typeInfoPrimitiveType ( primTypeBool )
     ty ( 24 ) |-> typeInfoRefType ( ty ( 37 ) )
-    ty ( 25 ) |-> VoidType
+    ty ( 25 ) |-> typeInfoVoidType
     ty ( 26 ) |-> typeInfoTupleType ( ty ( 2 )  ty ( 21 )  .Tys )
     ty ( 28 ) |-> typeInfoTupleType ( ty ( 9 )  ty ( 21 )  .Tys )
     ty ( 30 ) |-> typeInfoPtrType ( ty ( 12 ) )

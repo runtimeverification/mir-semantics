@@ -315,16 +315,30 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  syntax Value ::= #incrementRef ( Value )  [function, total]
-                 | #decrementRef ( Value )  [function, total]
-                 | #adjustRef (Value, Int ) [function, total]
-
+  syntax Value ::= #adjustRef (Value, Int ) [function, total]
+  // --------------------------------------------------------
   rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
     => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
   rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, EMULATION), OFFSET)
     => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, EMULATION)
+  rule #adjustRef(Aggregate(IDX, ARGS), OFFSET)
+    => Aggregate(IDX, #mapOffset(ARGS, OFFSET))
+  rule #adjustRef(Range(ELEMS), OFFSET)
+    => Range(#mapOffset(ELEMS, OFFSET))
   rule #adjustRef(TL, _) => TL [owise]
 
+  syntax List ::= #mapOffset ( List, Int ) [function, total]
+  // -------------------------------------------------------
+  rule #mapOffset(.List, _)
+    => .List
+  rule #mapOffset(ListItem(ELEM:Value) REST, OFFSET)
+    => ListItem(#adjustRef(ELEM, OFFSET)) #mapOffset(REST, OFFSET)
+  rule #mapOffset(OTHER, _)
+    => OTHER [owise] // should not happen
+
+  syntax Value ::= #incrementRef ( Value )  [function, total]
+                 | #decrementRef ( Value )  [function, total]
+  // --------------------------------------------------------
   rule #incrementRef(TL) => #adjustRef(TL, 1)
   rule #decrementRef(TL) => #adjustRef(TL, -1)
 ```

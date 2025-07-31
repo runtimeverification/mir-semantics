@@ -68,7 +68,7 @@
     ty ( 25 ) |-> typeInfoPrimitiveType ( primTypeBool )
     ty ( 26 ) |-> typeInfoTupleType ( ty ( 9 )  ty ( 25 )  .Tys )
     ty ( 28 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 29 ) |-> VoidType
+    ty ( 29 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 9 ) |-> ty ( 17 )

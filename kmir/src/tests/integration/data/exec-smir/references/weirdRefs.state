@@ -97,7 +97,7 @@
     ty ( 29 ) |-> typeInfoRefType ( ty ( 30 ) )
     ty ( 30 ) |-> typeInfoStructType ( "MyStruct" , adtDef ( 7 ) , ty ( 2 )  ty ( 25 )  ty ( 26 )  .Tys )
     ty ( 31 ) |-> typeInfoRefType ( ty ( 2 ) )
-    ty ( 32 ) |-> VoidType
+    ty ( 32 ) |-> typeInfoVoidType
     ty ( 33 ) |-> typeInfoRefType ( ty ( 31 ) )
     ty ( 34 ) |-> typeInfoStructType ( "Enclosing<'_>" , adtDef ( 8 ) , ty ( 29 )  .Tys )
     ty ( 35 ) |-> typeInfoRefType ( ty ( 34 ) )
