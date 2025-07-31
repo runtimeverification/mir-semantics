@@ -64,7 +64,7 @@
     ty ( 26 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyUsize ) )
     ty ( 28 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI16 ) )
     ty ( 30 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 31 ) |-> VoidType
+    ty ( 31 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 14 ) |-> ty ( 10 )

@@ -265,7 +265,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                     | typeInfoRefType(Ty)                                [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
                     | typeInfoTupleType(Tys)                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
                     | typeInfoFunType(MIRString)                         [symbol(TypeInfo::FunType)      , group(mir-enum)]
-                    | "VoidType"                                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
+                    | "typeInfoVoidType"                                 [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
 
   // discriminant information for enum types

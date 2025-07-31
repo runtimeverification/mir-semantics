@@ -122,7 +122,7 @@
     ty ( 36 ) |-> typeInfoPtrType ( ty ( 40 ) )
     ty ( 37 ) |-> typeInfoPtrType ( ty ( 42 ) )
     ty ( 38 ) |-> typeInfoPrimitiveType ( primTypeBool )
-    ty ( 39 ) |-> VoidType
+    ty ( 39 ) |-> typeInfoVoidType
     ty ( 40 ) |-> typeInfoArrayType ( ty ( 9 ) , someTyConst ( tyConst (... kind: tyConstKindValue ( ty ( 29 ) , allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , id: tyConstId ( 1 ) ) ) )
     ty ( 41 ) |-> typeInfoRefType ( ty ( 40 ) )
     ty ( 42 ) |-> typeInfoArrayType ( ty ( 9 ) , someTyConst ( tyConst (... kind: tyConstKindValue ( ty ( 29 ) , allocation (... bytes: b"\t\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , id: tyConstId ( 2 ) ) ) )

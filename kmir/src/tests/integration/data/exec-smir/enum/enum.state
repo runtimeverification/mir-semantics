@@ -85,7 +85,7 @@
     ty ( 28 ) |-> typeInfoEnumType ( "WithData" , adtDef ( 8 ) , Discriminant ( 88 )  Discriminant ( 89 )  Discriminant ( 90 )  Discriminant ( 9090 )  .Discriminants )
     ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU16 ) )
     ty ( 31 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 32 ) |-> VoidType
+    ty ( 32 ) |-> typeInfoVoidType
   </types>
   <adt-to-ty>
     adtDef ( 7 ) |-> ty ( 27 )

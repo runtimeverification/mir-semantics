@@ -68,7 +68,7 @@
     ty ( 27 ) |-> typeInfoRefType ( ty ( 36 ) )
     ty ( 28 ) |-> typeInfoRefType ( ty ( 2 ) )
     ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeBool )
-    ty ( 30 ) |-> VoidType
+    ty ( 30 ) |-> typeInfoVoidType
     ty ( 34 ) |-> typeInfoPtrType ( ty ( 9 ) )
     ty ( 35 ) |-> typeInfoRefType ( ty ( 37 ) )
     ty ( 36 ) |-> typeInfoPrimitiveType ( primTypeStr )
