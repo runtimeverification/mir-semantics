@@ -785,7 +785,7 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
 
 ```k
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
-        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
+        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), LOCALS)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -794,14 +794,14 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadata should only use static information
 
-  syntax Evaluation ::= #mkRef ( Place , Mutability, Metadata)
-                      | #mkDynSizeRef ( Place , Mutability , Evaluation ) [strict(3)]
+  syntax Evaluation ::= #mkRef ( Place , Mutability, Metadata, List)
+                      | #mkDynSizeRef ( Place , Mutability , List , Evaluation ) [strict(4)]
 
-  rule <k> #mkRef(PLACE, MUT, dynamicSize(_)) => #mkDynSizeRef(PLACE, MUT, operandCopy(PLACE)) ... </k>
-  rule <k> #mkRef(PLACE, MUT,    META       ) => Reference(0, PLACE, MUT, META)                ... </k> [priority(60)]
+  rule <k> #mkRef(      PLACE        , MUT, dynamicSize(_), LOCALS) => #mkDynSizeRef(PLACE, MUT, LOCALS, operandCopy(PLACE))               ... </k>
+  rule <k> #mkRef(place(LOCAL, PROJS), MUT,    META       , LOCALS) => Reference(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, META) ... </k> [priority(60)]
 
   // with dynamic metadata (reading the value)
-  rule <k> #mkDynSizeRef(PLACE, MUT, VAL:Value) => Reference(0, PLACE, MUT, metadataFor(VAL)) ... </k>
+  rule <k> #mkDynSizeRef(place(LOCAL, PROJS), MUT, LOCALS, VAL:Value) => Reference(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, metadataFor(VAL)) ... </k>
 
   syntax Metadata ::= metadataFor ( Value ) [function, total]
   // --------------------------------------------------------
@@ -813,6 +813,18 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
   rule #mutabilityOf(borrowKindShared)  => mutabilityNot
   rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
+
+  // turns Index(LOCAL) projections into ConstantIndex(Int)
+  syntax ProjectionElems ::= #resolveProjs ( ProjectionElems , List ) [function, total]
+  // ----------------------------------------------------------------------------------
+  rule #resolveProjs(        .ProjectionElems           , _LOCALS) => .ProjectionElems
+  rule #resolveProjs( projectionElemIndex(local(I)) REST, LOCALS ) => projectionElemConstantIndex(#expectUsize(getValue(LOCALS,I)), 0, false) #resolveProjs(REST, LOCALS)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool isInt(#expectUsize(getValue(LOCALS,I)))
+    [preserves-definedness]
+  rule #resolveProjs(     OTHER:ProjectionElem      REST, LOCALS ) => OTHER #resolveProjs(REST, LOCALS) [owise]
 ```
 
 A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
@@ -831,7 +843,7 @@ The operation typically creates a pointer with empty metadata.
 ```k
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
          =>
-           #mkPtr(PLACE, MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
+           #mkPtr(PLACE, MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), LOCALS)
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -841,14 +853,23 @@ The operation typically creates a pointer with empty metadata.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadata should only use static information
 
-  syntax Evaluation ::= #mkPtr ( Place , Mutability , Metadata )
-                      | #mkDynLengthPtr ( Place , Mutability, Evaluation ) [strict(3)]
+  syntax Evaluation ::= #mkPtr ( Place , Mutability , Metadata , List )
+                      | #mkDynLengthPtr ( Place , Mutability , List , Evaluation ) [strict(4)]
 
-  rule #mkPtr(PLACE, MUT, dynamicSize(_)) => #mkDynLengthPtr(PLACE, MUT, operandCopy(PLACE))
+  rule <k> #mkPtr(      PLACE        , MUT, dynamicSize(_), LOCALS)
+        => #mkDynLengthPtr(PLACE, MUT, LOCALS, operandCopy(PLACE))
+        ...
+       </k>
 
-  rule #mkPtr(PLACE, MUT, META) => PtrLocal(0, PLACE, MUT, ptrEmulation(META)) [priority(60)]
+  rule <k> #mkPtr(place(LOCAL, PROJS), MUT,    META       , LOCALS)
+        => PtrLocal(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, ptrEmulation(META))
+        ...
+       </k> [priority(60)]
 
-  rule #mkDynLengthPtr(PLACE, MUT, Range(ELEMS)) => PtrLocal(0, PLACE, MUT, ptrEmulation(dynamicSize(size(ELEMS))))
+  rule <k> #mkDynLengthPtr(place(LOCAL, PROJS), MUT, LOCALS, Range(ELEMS))
+        => PtrLocal(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, ptrEmulation(dynamicSize(size(ELEMS))))
+        ...
+       </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
