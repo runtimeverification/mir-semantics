@@ -276,6 +276,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.state',
         1000,
     ),
+    (
+        'Ref-array-elem-ref',
+        EXEC_DATA_DIR / 'references' / 'array_elem_ref.smir.json',
+        EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
+        None,
+    ),
 ]
 
 
