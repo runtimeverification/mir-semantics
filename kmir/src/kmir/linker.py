@@ -80,6 +80,8 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
         typeinfo['UnionType']['adt_def'] = typeinfo['UnionType']['adt_def'] + offset
     elif 'ArrayType' in typeinfo:
         typeinfo['ArrayType']['elem_type'] = typeinfo['ArrayType']['elem_type'] + offset
+        if 'size' in typeinfo:
+            apply_offset_tyconst(typeinfo['size'], offset)
     elif 'PtrType' in typeinfo:
         typeinfo['PtrType']['pointee_type'] = typeinfo['PtrType']['pointee_type'] + offset
     elif 'RefType' in typeinfo:
