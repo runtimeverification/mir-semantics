@@ -801,6 +801,24 @@ Literal arrays are also built using this RValue.
        </k>
 ```
 
+The `AggregateKind::RawPtr`, somewhat as a special case of a `struct` aggregate, constructs a raw pointer
+from a given data pointer and metadata[^rawPtrAgg]. In case of a _thin_ pointer, the metadata is a unit value,
+for _fat_ pointers it is a `usize` value indicating the data length.
+
+[^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
+
+```k
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(dynamicSize(LENGTH)))
+        ...
+       </k>
+
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata))
+        ...
+       </k>
+```
+
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
 This variant index is used to look up the _discriminant_ from a table in the type metadata during evaluation of the `Rvalue::Discriminant`.
 Note that the discriminant may be different from the variant index for user-defined discriminants and uninhabited variants.
