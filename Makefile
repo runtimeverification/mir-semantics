@@ -1,5 +1,5 @@
 UV     := uv --directory kmir
-UV_RUN := $(UV) run
+UV_RUN := $(UV) run --
 
 PARALLEL := 4
 
