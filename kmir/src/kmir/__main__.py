@@ -18,7 +18,17 @@ from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
-from .options import GenSpecOpts, LinkOpts, ProveRawOpts, ProveRSOpts, PruneOpts, RunOpts, ShowOpts, ViewOpts
+from .options import (
+    GenSpecOpts,
+    LinkOpts,
+    ProveRawOpts,
+    ProveRSOpts,
+    PruneOpts,
+    RunOpts,
+    ShowOpts,
+    ShowRulesOpts,
+    ViewOpts,
+)
 from .parse.parser import parse_json
 from .smir import SMIRInfo
 
@@ -78,7 +88,7 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
     output_file = opts.output_file
     if output_file is None:
         suffixes = ''.join(opts.input_file.suffixes)
-        base = opts.input_file.name.removesuffix(suffixes)
+        base = opts.input_file.name.removesuffix(suffixes).replace('_', '-')
         output_file = Path(f'{base}-spec.k')
 
     module_name = output_file.stem.upper().replace('_', '-')
@@ -131,6 +141,49 @@ def _kmir_show(opts: ShowOpts) -> None:
     print('\n'.join(lines))
 
 
+def _kmir_show_rules(opts: ShowRulesOpts) -> None:
+    """Show rules applied on the edge from source to target node."""
+    import json
+
+    # Read the KCFG data
+    kcfg_file = opts.proof_dir / opts.id / 'kcfg' / 'kcfg.json'
+    if not kcfg_file.exists():
+        print(f'Error: KCFG file not found at {kcfg_file}')
+        return
+
+    with open(kcfg_file, 'r') as f:
+        kcfg_data = json.load(f)
+
+    # Find the edge from source to target
+    edge_found = False
+    for edge in kcfg_data.get('edges', []):
+        if edge.get('source') == opts.source and edge.get('target') == opts.target:
+            edge_found = True
+            rules = edge.get('rules', [])
+
+            print(f'Rules applied on edge {opts.source} -> {opts.target}:')
+            print(f'Total rules: {len(rules)}')
+            print('-' * 80)
+
+            for i, rule in enumerate(rules, 1):
+                # Extract rule name from the full rule string
+                rule_name = rule.split(':')[0] if ':' in rule else rule
+                print(f'{i:3d}. {rule_name}')
+
+                # If there's location information, show it
+                if ':' in rule:
+                    location = rule.split(':', 1)[1]
+                    print(f'     Location: {location}')
+
+            break
+
+    if not edge_found:
+        print(f'Error: No edge found from node {opts.source} to node {opts.target}')
+        print('Available edges:')
+        for edge in kcfg_data.get('edges', []):
+            print(f'  {edge.get("source")} -> {edge.get("target")}')
+
+
 def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     pruned_nodes = proof.prune(opts.node_id)
@@ -158,6 +211,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_view(opts)
         case ShowOpts():
             _kmir_show(opts)
+        case ShowRulesOpts():
+            _kmir_show_rules(opts)
         case PruneOpts():
             _kmir_prune(opts)
         case ProveRSOpts():
@@ -241,11 +296,17 @@ def _arg_parser() -> ArgumentParser:
     )
 
     command_parser.add_parser(
-        'show', help='Show a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+        'show', help='Show proof information', parents=[kcli_args.logging_args, proof_args, display_args]
     )
 
+    show_rules_parser = command_parser.add_parser(
+        'show-rules', help='Show rules applied on a specific edge', parents=[kcli_args.logging_args, proof_args]
+    )
+    show_rules_parser.add_argument('source', type=int, metavar='SOURCE', help='Source node ID')
+    show_rules_parser.add_argument('target', type=int, metavar='TARGET', help='Target node ID')
+
     command_parser.add_parser(
-        'view', help='View a saved proof', parents=[kcli_args.logging_args, proof_args, display_args]
+        'view', help='View proof information', parents=[kcli_args.logging_args, proof_args, display_args]
     )
 
     prune_parser = command_parser.add_parser(
@@ -302,6 +363,21 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 reload=ns.reload,
                 max_iterations=ns.max_iterations,
             )
+        case 'show':
+            return ShowOpts(
+                proof_dir=Path(ns.proof_dir),
+                id=ns.id,
+                full_printer=ns.full_printer,
+                smir_info=Path(ns.smir_info) if ns.smir_info else None,
+                omit_current_body=ns.omit_current_body,
+            )
+        case 'show-rules':
+            return ShowRulesOpts(
+                proof_dir=Path(ns.proof_dir),
+                id=ns.id,
+                source=ns.source,
+                target=ns.target,
+            )
         case 'view':
             proof_dir = Path(ns.proof_dir)
             return ViewOpts(
@@ -314,15 +390,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'prune':
             proof_dir = Path(ns.proof_dir)
             return PruneOpts(proof_dir, ns.id, ns.node_id)
-        case 'show':
-            proof_dir = Path(ns.proof_dir)
-            return ShowOpts(
-                proof_dir,
-                ns.id,
-                full_printer=ns.full_printer,
-                smir_info=ns.smir_info,
-                omit_current_body=ns.omit_current_body,
-            )
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
