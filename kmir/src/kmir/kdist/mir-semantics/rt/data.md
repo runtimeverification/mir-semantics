@@ -211,6 +211,29 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
 ### Traversing Projections for Reads and Writes
 
+A `Place` to read from or write to is a `Local` variable (actually just its index), and a (potentially empty) vector of `ProjectionElem`ents.
+
+There are different kinds of `ProjectionElem`s:
+- `Deref`erencing references or pointers (or `Box`es allocated in the heap)
+  - read data at the address given in the local
+  - operates on a value that is a pointer or reference to another
+- `Field` access in struct.s and tuples
+  - fields are numbered from zero (in source order). The field type is also given.
+  - operates on structs and tuples
+- `Index`ing into arrays or slices
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+  - indexes zero-based from the front
+  - the index is provided in another local
+- `ConstantIndex`ing with a constant offset
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+  - the index was statically known and is therefore a `u64`
+  - the `min_length` of the object to index into is provided as another `u64`
+  - when `from_end` is true, this is  taken to be exact, and indexing happens from the end
+- `Subslice`
+  - a slice from `from` to `to` (the latter either from start or `from_end`)
+  - operates on a value that is an array (statically-known size) or slice (variable size)
+- Casting values (`OpaqueCast` or `Downcast` - variant narrowing) and `Subtype`ing
+
 Read and write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
 This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`/`#setMoved`.
 A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
@@ -278,6 +301,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( VariantIdx, List, Int )
                    | CtxIndex( List , Int ) // array index constant or has been read before
+                   | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
 
   syntax Contexts ::= List{Context, ""}
 
@@ -293,6 +317,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
+
+  // we don't expect an update to happen on an entire _subslice_ but define a rule for it anyway
+  rule #buildUpdate(Range(INNER), CtxSubslice(ELEMS, START, END) CTXS)
+      => #buildUpdate( Range(updateList(ELEMS, START, INNER)), CTXS)
+    requires size(INNER) ==Int END -Int START // ensures updateList is defined
+     [preserves-definedness] // START,END indexes checked before, length check for update here
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
@@ -458,6 +488,52 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
   syntax Int ::= #expectUsize ( Value ) [function]
 
   rule #expectUsize(Integer(I, 64, false)) => I
+```
+
+A `Subslice` projection operates on an array or slice (`Range`) value to extract a slice of the array from a start index to an end index (exclusive) [^subslice].
+Start and end index are given as immediate values.
+Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or the start of the array if flagged as such.
+
+[^subslice]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/type.ProjectionKind.html#variant.Subslice
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ELEMENTS),
+             projectionElemSubslice(START, END, false) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(range(ELEMENTS, START, size(ELEMENTS) -Int END)),
+             PROJS,
+             CtxSubslice(ELEMENTS, START, END) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int START andBool START <Int size(ELEMENTS)
+     andBool 0 <Int END andBool END <=Int size(ELEMENTS)
+     andBool START <Int END
+    [preserves-definedness] // Indexes checked to be in range for ELEMENTS
+
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ELEMENTS),
+             projectionElemSubslice(START, END, true) PROJS, // END from end of ELEMS
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(range(ELEMENTS, START, END)),
+             PROJS,
+             CtxSubslice(ELEMENTS, START, size(ELEMENTS) -Int END) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int START andBool START <Int size(ELEMENTS)
+     andBool 0 <=Int END andBool END <Int size(ELEMENTS)
+     andBool START <Int size(ELEMENTS) -Int END
+    [preserves-definedness] // Indexes checked to be in range for ELEMENTS
 ```
 
 #### References
