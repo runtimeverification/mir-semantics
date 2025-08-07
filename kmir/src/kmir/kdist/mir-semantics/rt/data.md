@@ -511,7 +511,7 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
            )
         ...
         </k>
-    requires 0 <=Int START andBool START <Int size(ELEMENTS)
+    requires 0 <=Int START andBool START <=Int size(ELEMENTS)
      andBool 0 <Int END andBool END <=Int size(ELEMENTS)
      andBool START <Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
@@ -530,9 +530,9 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
            )
         ...
         </k>
-    requires 0 <=Int START andBool START <Int size(ELEMENTS)
+    requires 0 <=Int START andBool START <=Int size(ELEMENTS)
      andBool 0 <=Int END andBool END <Int size(ELEMENTS)
-     andBool START <Int size(ELEMENTS) -Int END
+     andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
 ```
 
