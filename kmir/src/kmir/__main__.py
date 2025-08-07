@@ -155,7 +155,7 @@ def _kmir_show_rules(opts: ShowRulesOpts) -> None:
     for rule in rules:
         print(rule)
         print('-' * 80)
-    return
+
 
 def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
