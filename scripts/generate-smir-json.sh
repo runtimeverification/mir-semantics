@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Convenience script: Generate Stable MIR JSON/DOT/PNG/PDF files from Rust source code
 # Usage: ./scripts/generate-smir-json.sh <rust_file> [output_dir] [format]
 
-set -e
+set -xeuo pipefail
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 <rust_file> [output_dir] [format]"
