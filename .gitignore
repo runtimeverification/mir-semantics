@@ -4,3 +4,4 @@ __pycache__/
 /deps/.stable-mir-json
 /.vscode/
 kmir/src/tests/integration/data/**/target
+.DS_Store
