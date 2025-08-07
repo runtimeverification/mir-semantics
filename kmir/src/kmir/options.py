@@ -158,6 +158,24 @@ class ViewOpts(DisplayOpts): ...
 
 
 @dataclass
+class ShowRulesOpts(ProofOpts):
+    source: int
+    target: int
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        source: int,
+        target: int,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.source = source
+        self.target = target
+
+
+@dataclass
 class PruneOpts(ProofOpts):
     node_id: int
 

@@ -16,7 +16,7 @@ The _args_, _destination_, _unwind_, and (optional!) _target_ are
 supplied by either the `Terminator` kind `Call` (within a program), or
 unnecessary (when calling `main`).
 
-The execution of a body consists of
+The execution of a function call consists of
 * setting up a stack frame for this call
   - with reserved space for all _locals_: return value, arg.s, and local
     variables
