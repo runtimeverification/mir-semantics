@@ -87,6 +87,15 @@ uv --directory kmir run kmir prove-rs path/to/program.rs --verbose --proof-dir .
 uv --directory kmir run kmir gen-spec path/to/program.smir.json --output-file path/to/spec.k
 ```
 
+**`kmir link`** - Link together multiple SMIR JSON files
+```bash
+# Link multiple SMIR JSON files into a single output file
+uv --directory kmir run kmir link file1.smir.json file2.smir.json file3.smir.json --output-file linked.smir.json
+
+# Use default output filename (linker_output.smir.json)
+uv --directory kmir run kmir link file1.smir.json file2.smir.json
+```
+
 ### Analysis Commands
 
 **`kmir show`** - Display proof information
