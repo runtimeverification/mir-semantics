@@ -143,46 +143,19 @@ def _kmir_show(opts: ShowOpts) -> None:
 
 def _kmir_show_rules(opts: ShowRulesOpts) -> None:
     """Show rules applied on the edge from source to target node."""
-    import json
-
-    # Read the KCFG data
-    kcfg_file = opts.proof_dir / opts.id / 'kcfg' / 'kcfg.json'
-    if not kcfg_file.exists():
-        print(f'Error: KCFG file not found at {kcfg_file}')
-        return
-
-    with open(kcfg_file, 'r') as f:
-        kcfg_data = json.load(f)
-
-    # Find the edge from source to target
-    edge_found = False
-    for edge in kcfg_data.get('edges', []):
-        if edge.get('source') == opts.source and edge.get('target') == opts.target:
-            edge_found = True
-            rules = edge.get('rules', [])
-
-            print(f'Rules applied on edge {opts.source} -> {opts.target}:')
-            print(f'Total rules: {len(rules)}')
-            print('-' * 80)
-
-            for i, rule in enumerate(rules, 1):
-                # Extract rule name from the full rule string
-                rule_name = rule.split(':')[0] if ':' in rule else rule
-                print(f'{i:3d}. {rule_name}')
-
-                # If there's location information, show it
-                if ':' in rule:
-                    location = rule.split(':', 1)[1]
-                    print(f'     Location: {location}')
-
-            break
-
-    if not edge_found:
+    proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+    edge = proof.kcfg.edge(opts.source, opts.target)
+    if edge is None:
         print(f'Error: No edge found from node {opts.source} to node {opts.target}')
-        print('Available edges:')
-        for edge in kcfg_data.get('edges', []):
-            print(f'  {edge.get("source")} -> {edge.get("target")}')
-
+        return
+    rules = edge.rules
+    print(f'Rules applied on edge {opts.source} -> {opts.target}:')
+    print(f'Total rules: {len(rules)}')
+    print('-' * 80)
+    for rule in rules:
+        print(rule)
+        print('-' * 80)
+    return
 
 def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
