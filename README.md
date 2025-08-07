@@ -67,50 +67,50 @@ Use `--help` with each command for more details.
 **`kmir run`** - Execute a Rust program from SMIR JSON or directly from source
 ```bash
 # Run from SMIR JSON file
-uv --directory kmir run kmir run --file path/to/program.smir.json
+uv --project kmir run kmir run --file path/to/program.smir.json
 
 # Run with verbose output
-uv --directory kmir run kmir run --file path/to/program.smir.json --verbose
+uv --project kmir run kmir run --file path/to/program.smir.json --verbose
 ```
 
 **`kmir prove-rs`** - Directly prove properties of Rust source code (recommended)
 ```bash
 # Basic proof
-uv --directory kmir run kmir prove-rs path/to/program.rs
+uv --project kmir run kmir prove-rs path/to/program.rs
 
 # Detailed proof with output
-uv --directory kmir run kmir prove-rs path/to/program.rs --verbose --proof-dir ./proof_dir
+uv --project kmir run kmir prove-rs path/to/program.rs --verbose --proof-dir ./proof_dir
 ```
 
 **`kmir gen-spec`** - Generate K specification from SMIR JSON
 ```bash
-uv --directory kmir run kmir gen-spec path/to/program.smir.json --output-file path/to/spec.k
+uv --project kmir run kmir gen-spec path/to/program.smir.json --output-file path/to/spec.k
 ```
 
 **`kmir link`** - Link together multiple SMIR JSON files
 ```bash
 # Link multiple SMIR JSON files into a single output file
-uv --directory kmir run kmir link file1.smir.json file2.smir.json file3.smir.json --output-file linked.smir.json
+uv --project kmir run kmir link file1.smir.json file2.smir.json file3.smir.json --output-file linked.smir.json
 
 # Use default output filename (linker_output.smir.json)
-uv --directory kmir run kmir link file1.smir.json file2.smir.json
+uv --project kmir run kmir link file1.smir.json file2.smir.json
 ```
 
 ### Analysis Commands
 
 **`kmir show`** - Display proof information
 ```bash
-uv --directory kmir run kmir show proof_id --proof-dir ./proof_dir
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir
 ```
 
 **`kmir view`** - Detailed view of proof results
 ```bash
-uv --directory kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
+uv --project kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
 ```
 
 **`kmir show-rules`** - Show rules applied between nodes
 ```bash
-uv --directory kmir run kmir show-rules proof_id source_node target_node --proof-dir ./proof_dir
+uv --project kmir run kmir show-rules proof_id source_node target_node --proof-dir ./proof_dir
 ```
 
 ### Recommended Workflow
@@ -123,18 +123,18 @@ uv --directory kmir run kmir show-rules proof_id source_node target_node --proof
 
 2. **Direct Proof** (Recommended):
    ```bash
-   uv --directory kmir run kmir prove-rs your_file.rs --verbose --proof-dir ./proof_dir
+   uv --project kmir run kmir prove-rs your_file.rs --verbose --proof-dir ./proof_dir
    ```
 
 3. **View Results**:
    ```bash
-   uv --directory kmir run kmir show proof_id --proof-dir ./proof_dir
-   uv --directory kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
+   uv --project kmir run kmir show proof_id --proof-dir ./proof_dir
+   uv --project kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
    ```
 
 4. **Analyze Rules**:
    ```bash
-   uv --directory kmir run kmir show-rules proof_id 1 3 --proof-dir ./proof_dir
+   uv --project kmir run kmir show-rules proof_id 1 3 --proof-dir ./proof_dir
    ```
 
 ### Command Options
