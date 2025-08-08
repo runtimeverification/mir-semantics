@@ -138,7 +138,7 @@ class DisplayOpts(ProofOpts):
         self,
         proof_dir: Path | str,
         id: str,
-        full_printer: bool = True,
+        full_printer: bool = False,
         smir_info: Path | None = None,
         omit_current_body: bool = True,
     ) -> None:
@@ -150,7 +150,48 @@ class DisplayOpts(ProofOpts):
 
 
 @dataclass
-class ShowOpts(DisplayOpts): ...
+class ShowOpts(DisplayOpts):
+    nodes: tuple[int, ...] | None
+    node_deltas: tuple[tuple[int, int], ...] | None
+    omit_cells: tuple[str, ...] | None
+    omit_static_info: bool
+    use_default_printer: bool
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        full_printer: bool = False,
+        smir_info: Path | None = None,
+        omit_current_body: bool = True,
+        nodes: str | None = None,
+        node_deltas: str | None = None,
+        omit_cells: str | None = None,
+        omit_static_info: bool = True,
+        use_default_printer: bool = False,
+    ) -> None:
+        super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
+        self.omit_static_info = omit_static_info
+        self.use_default_printer = use_default_printer
+        self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
+        if node_deltas is not None:
+            deltas = []
+            for delta in node_deltas.split(','):
+                parts = delta.strip().split(':')
+                if len(parts) == 2:
+                    deltas.append((int(parts[0].strip()), int(parts[1].strip())))
+            self.node_deltas = tuple(deltas)
+        else:
+            self.node_deltas = None
+
+        static_info_cells = ('<functions>', '<start-symbol>', '<types>', '<adt-to-ty>')
+
+        user_omit_cells = tuple(cell.strip() for cell in omit_cells.split(',')) if omit_cells is not None else ()
+
+        if omit_static_info:
+            self.omit_cells = static_info_cells + user_omit_cells
+        else:
+            self.omit_cells = user_omit_cells if user_omit_cells else None
 
 
 @dataclass
