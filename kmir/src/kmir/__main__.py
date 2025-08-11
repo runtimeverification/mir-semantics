@@ -20,6 +20,7 @@ from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
     GenSpecOpts,
+    InfoOpts,
     LinkOpts,
     ProveRawOpts,
     ProveRSOpts,
@@ -30,7 +31,7 @@ from .options import (
     ViewOpts,
 )
 from .parse.parser import parse_json
-from .smir import SMIRInfo
+from .smir import SMIRInfo, RefT, Ty
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -164,6 +165,16 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_info(opts: InfoOpts) -> None:
+    smir_info = SMIRInfo.from_file(opts.smir_file)
+    
+    if opts.types:
+        print(f"\nTypes requested: {opts.types}")
+        chosen_types = [Ty(type_id) for type_id in opts.types]
+        for type_id in chosen_types:
+            print(f"Type {type_id}: {smir_info.unref_type(type_id)}")
+
+
 def _kmir_link(opts: LinkOpts) -> None:
     result = link([SMIRInfo.from_file(f) for f in opts.smir_files])
     result.dump(opts.output_file)
@@ -178,6 +189,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_spec(opts)
+        case InfoOpts():
+            _kmir_info(opts)
         case ProveRawOpts():
             _kmir_prove_raw(opts)
         case ViewOpts():
@@ -220,6 +233,12 @@ def _arg_parser() -> ArgumentParser:
     gen_spec_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
+
+    info_parser = command_parser.add_parser(
+        'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
+    )
+    info_parser.add_argument('smir_file', metavar='FILE', help='SMIR JSON file to analyze')
+    info_parser.add_argument('--types', metavar='TYPES', help='Comma separated list of type IDs to show details for')
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
@@ -324,6 +343,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'gen-spec':
             return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
+        case 'info':
+            return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
         case 'prove':
             proof_dir = Path(ns.proof_dir)
             return ProveRawOpts(

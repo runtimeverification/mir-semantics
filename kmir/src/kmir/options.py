@@ -181,6 +181,16 @@ class PruneOpts(ProofOpts):
 
 
 @dataclass
+class InfoOpts(KMirOpts):
+    smir_file: Path
+    types: tuple[int, ...] | None
+
+    def __init__(self, smir_file: Path, types: str | None = None) -> None:
+        self.smir_file = smir_file
+        self.types = tuple(int(t.strip()) for t in types.split(',')) if types is not None else None
+
+
+@dataclass
 class LinkOpts(KMirOpts):
     smir_files: list[Path]
     output_file: Path
