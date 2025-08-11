@@ -315,11 +315,7 @@ class FunT(TypeMetadata):
     type_str: str
 
 
-def metadata_from_json(typeinfo: dict | int) -> TypeMetadata:
-    # Handle case where typeinfo is directly an integer (reference type)
-    if isinstance(typeinfo, int):
-        return RefT(typeinfo)
-
+def metadata_from_json(typeinfo: dict) -> TypeMetadata:
     if 'PrimitiveType' in typeinfo:
         return _primty_from_json(typeinfo['PrimitiveType'])
     elif 'EnumType' in typeinfo:
