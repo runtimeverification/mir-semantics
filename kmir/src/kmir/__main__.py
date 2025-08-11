@@ -20,6 +20,7 @@ from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
     GenSpecOpts,
+    InfoOpts,
     LinkOpts,
     ProveRawOpts,
     ProveRSOpts,
@@ -30,7 +31,7 @@ from .options import (
     ViewOpts,
 )
 from .parse.parser import parse_json
-from .smir import SMIRInfo
+from .smir import SMIRInfo, Ty
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -130,14 +131,38 @@ def _kmir_view(opts: ViewOpts) -> None:
 
 
 def _kmir_show(opts: ShowOpts) -> None:
+    from pyk.kast.pretty import PrettyPrinter
+
+    from .kprint import KMIRPrettyPrinter
+
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    printer = PrettyPrinter(kmir.definition)
-    omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
-    cterm_show = CTermShow(printer.print, omit_labels=omit_labels)
+
+    # Use custom KMIR printer by default, switch to standard printer if requested
+    if opts.use_default_printer:
+        printer = PrettyPrinter(kmir.definition)
+        _LOGGER.info('Using standard PrettyPrinter')
+    else:
+        printer = KMIRPrettyPrinter(kmir.definition)
+        _LOGGER.info('Using custom KMIRPrettyPrinter')
+
+    all_omit_cells = list(opts.omit_cells or ())
+    if opts.omit_current_body:
+        all_omit_cells.append('<currentBody>')
+
+    cterm_show = CTermShow(printer.print, omit_labels=tuple(all_omit_cells))
     node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
     shower = APRProofShow(kmir.definition, node_printer=node_printer)
-    lines = shower.show(proof)
+    shower.kcfg_show.pretty_printer = printer
+    _LOGGER.info(
+        f'Showing {proof.id} with\n nodes: {opts.nodes},\n node_deltas: {opts.node_deltas},\n omit_cells: {tuple(all_omit_cells)}'
+    )
+    lines = shower.show(
+        proof,
+        nodes=opts.nodes or (),
+        node_deltas=opts.node_deltas or (),
+        omit_cells=tuple(all_omit_cells),
+    )
     print('\n'.join(lines))
 
 
@@ -164,6 +189,16 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_info(opts: InfoOpts) -> None:
+    smir_info = SMIRInfo.from_file(opts.smir_file)
+
+    if opts.types:
+        print(f'\nTypes requested: {opts.types}')
+        chosen_types = [Ty(type_id) for type_id in opts.types]
+        for type_id in chosen_types:
+            print(f'Type {type_id}: {smir_info.unref_type(type_id)}')
+
+
 def _kmir_link(opts: LinkOpts) -> None:
     result = link([SMIRInfo.from_file(f) for f in opts.smir_files])
     result.dump(opts.output_file)
@@ -178,6 +213,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_spec(opts)
+        case InfoOpts():
+            _kmir_info(opts)
         case ProveRawOpts():
             _kmir_prove_raw(opts)
         case ViewOpts():
@@ -221,6 +258,12 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    info_parser = command_parser.add_parser(
+        'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
+    )
+    info_parser.add_argument('smir_file', metavar='FILE', help='SMIR JSON file to analyze')
+    info_parser.add_argument('--types', metavar='TYPES', help='Comma separated list of type IDs to show details for')
+
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
@@ -247,11 +290,11 @@ def _arg_parser() -> ArgumentParser:
 
     display_args = ArgumentParser(add_help=False)
     display_args.add_argument(
-        '--no-full-printer',
+        '--full-printer',
         dest='full_printer',
-        action='store_false',
-        default=True,
-        help='Do not display the full node in output.',
+        action='store_true',
+        default=False,
+        help='Display the full node in output.',
     )
     display_args.add_argument(
         '--smir-info',
@@ -268,8 +311,29 @@ def _arg_parser() -> ArgumentParser:
         help='Display the <currentBody> cell completely.',
     )
 
-    command_parser.add_parser(
+    show_parser = command_parser.add_parser(
         'show', help='Show proof information', parents=[kcli_args.logging_args, proof_args, display_args]
+    )
+    show_parser.add_argument('--nodes', metavar='NODES', help='Comma separated list of node IDs to show')
+    show_parser.add_argument(
+        '--node-deltas', metavar='DELTAS', help='Comma separated list of node deltas in format "source:target"'
+    )
+    show_parser.add_argument(
+        '--omit-cells', metavar='CELLS', help='Comma separated list of cell names to omit from output'
+    )
+    show_parser.add_argument(
+        '--no-omit-static-info',
+        dest='omit_static_info',
+        action='store_false',
+        default=True,
+        help='Display static information cells (functions, start-symbol, types, adt-to-ty)',
+    )
+    show_parser.add_argument(
+        '--use-default-printer',
+        dest='use_default_printer',
+        action='store_true',
+        default=False,
+        help='Use standard PrettyPrinter instead of custom KMIR printer',
     )
 
     show_rules_parser = command_parser.add_parser(
@@ -324,6 +388,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'gen-spec':
             return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
+        case 'info':
+            return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
         case 'prove':
             proof_dir = Path(ns.proof_dir)
             return ProveRawOpts(
@@ -343,6 +409,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 full_printer=ns.full_printer,
                 smir_info=Path(ns.smir_info) if ns.smir_info else None,
                 omit_current_body=ns.omit_current_body,
+                nodes=ns.nodes,
+                node_deltas=ns.node_deltas,
+                omit_cells=ns.omit_cells,
+                omit_static_info=ns.omit_static_info,
+                use_default_printer=ns.use_default_printer,
             )
         case 'show-rules':
             return ShowRulesOpts(

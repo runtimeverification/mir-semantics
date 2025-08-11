@@ -96,11 +96,46 @@ uv --project kmir run kmir link file1.smir.json file2.smir.json file3.smir.json 
 uv --project kmir run kmir link file1.smir.json file2.smir.json
 ```
 
+**`kmir info`** - Inspect SMIR JSON metadata (currently: types)
+```bash
+# Show information about specific type IDs in a SMIR JSON
+uv --project kmir run kmir info path/to/program.smir.json --types "1,2,3"
+
+# Notes
+# - The --types option accepts a comma-separated list of numeric Stable MIR type IDs.
+# - Output format: one line per requested type, e.g.:
+#   Type Ty(1): Int(....)
+#   Type Ty(2): StructT(name=..., adt_def=..., fields=[...])
+# - If --types is omitted, the command currently produces no output.
+```
+
 ### Analysis Commands
 
-**`kmir show`** - Display proof information
+**`kmir show`** - Display proof information with advanced filtering options
 ```bash
+# Basic usage
 uv --project kmir run kmir show proof_id --proof-dir ./proof_dir
+
+# Show specific nodes only
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --nodes "1,2,3"
+
+# Show node deltas (transitions between specific nodes)
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --node-deltas "1:2,3:4"
+
+# Display full node information (default is compact)
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --full-printer
+
+# Show static information cells (functions, types, etc.)
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --no-omit-static-info
+
+# Show current body cell content
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --no-omit-current-body
+
+# Omit specific cells from output
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --omit-cells "cell1,cell2"
+
+# Combine multiple options for detailed analysis
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --full-printer --no-omit-static-info --nodes "1,2" --verbose
 ```
 
 **`kmir view`** - Detailed view of proof results
@@ -128,7 +163,16 @@ uv --project kmir run kmir show-rules proof_id source_node target_node --proof-d
 
 3. **View Results**:
    ```bash
+   # Quick overview (compact format, static info hidden)
    uv --project kmir run kmir show proof_id --proof-dir ./proof_dir
+   
+   # Detailed analysis with full information
+   uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --full-printer --no-omit-static-info
+   
+   # Focus on specific nodes
+   uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --nodes "1,2,3"
+   
+   # Interactive view
    uv --project kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
    ```
 
@@ -136,6 +180,32 @@ uv --project kmir run kmir show-rules proof_id source_node target_node --proof-d
    ```bash
    uv --project kmir run kmir show-rules proof_id 1 3 --proof-dir ./proof_dir
    ```
+
+### Advanced Show Usage Examples
+
+**Debugging workflow:**
+```bash
+# 1. Start with a quick overview
+uv --project kmir run kmir show my_proof --proof-dir ./proofs
+
+# 2. Focus on problematic nodes (e.g., nodes 5, 6, 7)
+uv --project kmir run kmir show my_proof --proof-dir ./proofs --nodes "5,6,7"
+
+# 3. Examine transitions between specific nodes
+uv --project kmir run kmir show my_proof --proof-dir ./proofs --node-deltas "5:6,6:7"
+
+# 4. Get full details for deep debugging
+uv --project kmir run kmir show my_proof --proof-dir ./proofs --nodes "6" --full-printer --no-omit-static-info --no-omit-current-body
+```
+
+**Performance analysis:**
+```bash
+# Hide verbose cells but show execution flow
+uv --project kmir run kmir show my_proof --proof-dir ./proofs --omit-cells "locals,heap" --verbose
+
+# Focus on function calls and type information
+uv --project kmir run kmir show my_proof --proof-dir ./proofs --no-omit-static-info --omit-cells "currentBody"
+```
 
 ### Command Options
 
@@ -145,6 +215,15 @@ Most commands support:
 - `--proof-dir DIR`: Directory for proof results
 - `--max-depth DEPTH`: Maximum execution depth
 - `--max-iterations ITERATIONS`: Maximum iterations
+
+**`kmir show` specific options:**
+- `--nodes NODES`: Comma separated list of node IDs to show (e.g., "1,2,3")
+- `--node-deltas DELTAS`: Comma separated list of node deltas in format "source:target" (e.g., "1:2,3:4")
+- `--omit-cells CELLS`: Comma separated list of cell names to omit from output
+- `--full-printer`: Display the full node in output (default is compact)
+- `--no-omit-static-info`: Display static information cells (functions, start-symbol, types, adt-to-ty)
+- `--no-omit-current-body`: Display the `<currentBody>` cell completely
+- `--smir-info SMIR_INFO`: Path to SMIR JSON file to improve debug messaging
 
 For complete options, use `--help` with each command.
 

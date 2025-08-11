@@ -35,6 +35,24 @@ class SMIRInfo:
     def types(self) -> dict[Ty, TypeMetadata]:
         return {Ty(id): metadata_from_json(type) for id, type in self._smir['types']}
 
+    def unref_type(self, ty: Ty) -> TypeMetadata | None:
+        """Recursively resolve type until reaching a non-reference type."""
+        if ty not in self.types:
+            _LOGGER.warning(f'Type {ty} not found in types')
+            return None
+        type_info = self.types[ty]
+        while isinstance(type_info, RefT):
+            if Ty(type_info.pointee_type) not in self.types:
+                _LOGGER.info(f'Pointee type {Ty(type_info.pointee_type)} not found in types for reference type {ty}')
+                return type_info
+            type_info = self.types[Ty(type_info.pointee_type)]
+        return type_info
+
+    @cached_property
+    def unref_types(self) -> dict[Ty, TypeMetadata | None]:
+        """Returns a dictionary of all types and their unreferenced versions."""
+        return {ty: self.unref_type(ty) for ty in self.types.keys()}
+
     @cached_property
     def adt_defs(self) -> dict[AdtDef, Ty]:
         res = {}
