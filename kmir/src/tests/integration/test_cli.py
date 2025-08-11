@@ -2,20 +2,25 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-
-import pytest
+from typing import TYPE_CHECKING
 
 from kmir.__main__ import _kmir_info, _kmir_link, _kmir_prune, _kmir_show
-from kmir.kmir import KMIR
 from kmir.options import InfoOpts, LinkOpts, ProveRSOpts, PruneOpts, ShowOpts
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
+if TYPE_CHECKING:
+    import pytest
+    from pyk.proof import APRProof
+
+    from kmir.kmir import KMIR
 
 PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 
 
-def _prove_and_store(kmir: KMIR, rs_or_json: Path, tmp_path: Path, start_symbol: str = 'main', is_smir: bool = False):
+def _prove_and_store(
+    kmir: KMIR, rs_or_json: Path, tmp_path: Path, start_symbol: str = 'main', is_smir: bool = False
+) -> APRProof:
     opts = ProveRSOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol)
     apr_proof = kmir.prove_rs(opts)
     apr_proof.write_proof_data()
@@ -41,7 +46,9 @@ def test_cli_show_printers_snapshot(
     _kmir_show(show_opts_custom)
     out_custom = capsys.readouterr().out.rstrip()
     assert_or_update_show_output(
-        out_custom, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-custom-printer.expected', update=update_expected_output
+        out_custom,
+        PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-custom-printer.expected',
+        update=update_expected_output,
     )
 
     # Standard PrettyPrinter
@@ -56,7 +63,9 @@ def test_cli_show_printers_snapshot(
     _kmir_show(show_opts_default)
     out_default = capsys.readouterr().out.rstrip()
     assert_or_update_show_output(
-        out_default, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-default-printer.expected', update=update_expected_output
+        out_default,
+        PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-default-printer.expected',
+        update=update_expected_output,
     )
 
 
@@ -64,7 +73,7 @@ def test_cli_info_snapshot(capsys: pytest.CaptureFixture[str], update_expected_o
     smir_json = PROVE_RS_DIR / 'arith.smir.json'
     smir_info = SMIRInfo.from_file(smir_json)
     # choose first few type ids deterministically
-    chosen_tys = sorted(list(smir_info.types.keys()))[:3]
+    chosen_tys = sorted(smir_info.types.keys())[:3]
     types_arg = ','.join(str(t) for t in chosen_tys)
 
     info_opts = InfoOpts(smir_file=smir_json, types=types_arg)
@@ -96,7 +105,7 @@ def test_cli_link_counts_snapshot(tmp_path: Path, update_expected_output: bool) 
 
     assert_or_update_show_output(
         counts_text,
-        PROVE_RS_DIR / f"show/link.{smir1.stem}+{smir2.stem}.counts.expected",
+        PROVE_RS_DIR / f'show/link.{smir1.stem}+{smir2.stem}.counts.expected',
         update=update_expected_output,
     )
 
@@ -114,5 +123,3 @@ def test_cli_prune_snapshot(
     assert_or_update_show_output(
         out, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-prune.expected', update=update_expected_output
     )
-
-
