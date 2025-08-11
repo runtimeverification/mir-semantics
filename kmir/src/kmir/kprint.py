@@ -8,7 +8,7 @@ from pyk.kast.pretty import PrettyPrinter, indent
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Definition
+    from pyk.kast.outer import KDefinition
 
 
 class KMIRPrettyPrinter(PrettyPrinter):
@@ -17,7 +17,7 @@ class KMIRPrettyPrinter(PrettyPrinter):
     Formats ListItem elements with line breaks for better readability.
     """
 
-    def __init__(self, definition: Definition) -> None:
+    def __init__(self, definition: KDefinition) -> None:
         """
         Initialize KMIR Pretty Printer
 

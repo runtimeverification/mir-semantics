@@ -96,6 +96,19 @@ uv --project kmir run kmir link file1.smir.json file2.smir.json file3.smir.json 
 uv --project kmir run kmir link file1.smir.json file2.smir.json
 ```
 
+**`kmir info`** - Inspect SMIR JSON metadata (currently: types)
+```bash
+# Show information about specific type IDs in a SMIR JSON
+uv --project kmir run kmir info path/to/program.smir.json --types "1,2,3"
+
+# Notes
+# - The --types option accepts a comma-separated list of numeric Stable MIR type IDs.
+# - Output format: one line per requested type, e.g.:
+#   Type Ty(1): Int(....)
+#   Type Ty(2): StructT(name=..., adt_def=..., fields=[...])
+# - If --types is omitted, the command currently produces no output.
+```
+
 ### Analysis Commands
 
 **`kmir show`** - Display proof information with advanced filtering options

@@ -47,7 +47,7 @@ class SMIRInfo:
                 return type_info
             type_info = self.types[Ty(type_info.pointee_type)]
         return type_info
-    
+
     @cached_property
     def unref_types(self) -> dict[Ty, TypeMetadata | None]:
         """Returns a dictionary of all types and their unreferenced versions."""
@@ -319,7 +319,7 @@ def metadata_from_json(typeinfo: dict | int) -> TypeMetadata:
     # Handle case where typeinfo is directly an integer (reference type)
     if isinstance(typeinfo, int):
         return RefT(typeinfo)
-    
+
     if 'PrimitiveType' in typeinfo:
         return _primty_from_json(typeinfo['PrimitiveType'])
     elif 'EnumType' in typeinfo:

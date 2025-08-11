@@ -31,7 +31,7 @@ from .options import (
     ViewOpts,
 )
 from .parse.parser import parse_json
-from .smir import SMIRInfo, RefT, Ty
+from .smir import SMIRInfo, Ty
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -167,12 +167,12 @@ def _kmir_prune(opts: PruneOpts) -> None:
 
 def _kmir_info(opts: InfoOpts) -> None:
     smir_info = SMIRInfo.from_file(opts.smir_file)
-    
+
     if opts.types:
-        print(f"\nTypes requested: {opts.types}")
+        print(f'\nTypes requested: {opts.types}')
         chosen_types = [Ty(type_id) for type_id in opts.types]
         for type_id in chosen_types:
-            print(f"Type {type_id}: {smir_info.unref_type(type_id)}")
+            print(f'Type {type_id}: {smir_info.unref_type(type_id)}')
 
 
 def _kmir_link(opts: LinkOpts) -> None:
