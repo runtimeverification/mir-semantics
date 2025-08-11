@@ -173,7 +173,6 @@ def _kmir_show(opts: ShowOpts) -> None:
     print('\n'.join(lines))
 
 
-
 def _kmir_prune(opts: PruneOpts) -> None:
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     pruned_nodes = proof.prune(opts.node_id)
@@ -329,9 +328,7 @@ def _arg_parser() -> ArgumentParser:
         help='Use standard PrettyPrinter instead of custom KMIR printer',
     )
 
-    show_parser.add_argument(
-        '--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"'
-    )
+    show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
 
     command_parser.add_parser(
         'view', help='View proof information', parents=[kcli_args.logging_args, proof_args, display_args]
