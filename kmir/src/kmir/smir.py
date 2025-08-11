@@ -38,12 +38,12 @@ class SMIRInfo:
     def unref_type(self, ty: Ty) -> TypeMetadata | None:
         """Recursively resolve type until reaching a non-reference type."""
         if ty not in self.types:
-            _LOGGER.warning(f"Type {ty} not found in types")
+            _LOGGER.warning(f'Type {ty} not found in types')
             return None
         type_info = self.types[ty]
         while isinstance(type_info, RefT):
             if Ty(type_info.pointee_type) not in self.types:
-                _LOGGER.warning(f"Pointee type {Ty(type_info.pointee_type)} not found in types for reference type {ty}")
+                _LOGGER.warning(f'Pointee type {Ty(type_info.pointee_type)} not found in types for reference type {ty}')
                 return type_info
             type_info = self.types[Ty(type_info.pointee_type)]
         return type_info
