@@ -41,7 +41,7 @@ class SMIRInfo:
             _LOGGER.warning(f'Type {ty} not found in types')
             return None
         type_info = self.types[ty]
-        while isinstance(type_info, RefT):
+        while isinstance(type_info, RefT) or isinstance(type_info, PtrT):
             if Ty(type_info.pointee_type) not in self.types:
                 _LOGGER.info(f'Pointee type {Ty(type_info.pointee_type)} not found in types for reference type {ty}')
                 return type_info
