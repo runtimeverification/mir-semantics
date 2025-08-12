@@ -153,6 +153,8 @@ class DisplayOpts(ProofOpts):
 class ShowOpts(DisplayOpts):
     nodes: tuple[int, ...] | None
     node_deltas: tuple[tuple[int, int], ...] | None
+    node_deltas_pro: tuple[tuple[int, int], ...] | None
+    rules: tuple[tuple[int, int], ...] | None
     omit_cells: tuple[str, ...] | None
     omit_static_info: bool
     use_default_printer: bool
@@ -166,6 +168,8 @@ class ShowOpts(DisplayOpts):
         omit_current_body: bool = True,
         nodes: str | None = None,
         node_deltas: str | None = None,
+        node_deltas_pro: str | None = None,
+        rules: str | None = None,
         omit_cells: str | None = None,
         omit_static_info: bool = True,
         use_default_printer: bool = False,
@@ -174,15 +178,20 @@ class ShowOpts(DisplayOpts):
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
-        if node_deltas is not None:
-            deltas = []
-            for delta in node_deltas.split(','):
+
+        def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:
+            if text is None:
+                return None
+            pairs: list[tuple[int, int]] = []
+            for delta in text.split(','):
                 parts = delta.strip().split(':')
-                if len(parts) == 2:
-                    deltas.append((int(parts[0].strip()), int(parts[1].strip())))
-            self.node_deltas = tuple(deltas)
-        else:
-            self.node_deltas = None
+                if len(parts) == 2 and parts[0].strip() and parts[1].strip():
+                    pairs.append((int(parts[0].strip()), int(parts[1].strip())))
+            return tuple(pairs)
+
+        self.node_deltas = _parse_pairs(node_deltas)
+        self.node_deltas_pro = _parse_pairs(node_deltas_pro)
+        self.rules = _parse_pairs(rules)
 
         static_info_cells = ('<functions>', '<start-symbol>', '<types>', '<adt-to-ty>')
 
@@ -196,24 +205,6 @@ class ShowOpts(DisplayOpts):
 
 @dataclass
 class ViewOpts(DisplayOpts): ...
-
-
-@dataclass
-class ShowRulesOpts(ProofOpts):
-    source: int
-    target: int
-
-    def __init__(
-        self,
-        proof_dir: Path | str,
-        id: str,
-        source: int,
-        target: int,
-    ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.id = id
-        self.source = source
-        self.target = target
 
 
 @dataclass
