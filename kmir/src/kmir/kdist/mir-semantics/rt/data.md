@@ -920,6 +920,29 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
     [preserves-definedness]
   rule #resolveProjs(     OTHER:ProjectionElem      REST, LOCALS ) => OTHER #resolveProjs(REST, LOCALS) [owise]
 ```
+As a special case, the new reference may be created by _dereferencing_ an existing pointer.
+In this case, the semantics will shorten out the ref-deref chain and directly create a reference to the final data and its respective metadata.
+
+```k
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), projectionElemDeref .ProjectionElems))
+        => ptrToRef(getValue(LOCALS,I), #mutabilityOf(KIND))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool isPtr(getValue(LOCALS,I))
+    [priority(40), preserves-definedness] // valid list indexing checked, only called if pointer dereferenced
+
+  syntax Bool ::= isPtr ( Value ) [function, total]
+  // -----------------------------------------------------
+  rule isPtr(PtrLocal(_, _, _, _)) => true
+  rule isPtr(     _OTHER         ) => false [owise]
+
+  syntax Value ::= ptrToRef( Value , Mutability ) [function]
+  // -------------------------------------------------------------------
+  rule ptrToRef(PtrLocal(OFFSET, PLACE, _MUT, ptrEmulation(META)), MUT) => Reference(OFFSET, PLACE, MUT, META)
+```
 
 A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
 except that the compiler guarantees the only use of the copied value will be for dereferencing,

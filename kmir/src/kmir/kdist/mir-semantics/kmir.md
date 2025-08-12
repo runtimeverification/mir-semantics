@@ -361,31 +361,9 @@ value is the value in local `_0`, and will go to the _destination_ in
 the `LOCALS` of the caller's stack frame. Execution continues with the
 context of the enclosing stack frame, at the _target_.
 
-If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
-NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
-
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
-         =>
-           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
-       </k>
-       <currentFunc> _ => CALLER </currentFunc>
-       //<currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
-         <caller> CALLER => NEWCALLER </caller>
-         <dest> DEST => NEWDEST </dest>
-         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
-         <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
-       //</currentFrame>
-       // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
-       <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
-     [preserves-definedness] // CALLER lookup defined
-
   // no value to return, skip writing
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
@@ -418,6 +396,78 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
   // other item kinds are not expected or supported
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported
+```
+
+Otherwise the value from `_0` is written to the target destination in the caller's stack frame.
+
+If the returned value contains a `Reference` or `PtrLocal`, its stack height must be decremented because a stack frame is popped.
+A stack height of `0` should normally not occur here, because the compiler prevents local variable references from escaping.
+However, an important special case is returning a reference (or pointer) which refers to a pointer (or reference) that _gets dereferenced_.
+The semantics will avoid creating those chains of referencing and dereferencing. 
+If they occur, execution must stop to avoid invalid a reference offset.
+
+```k
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller> CALLER => NEWCALLER </caller>
+         <dest> DEST => NEWDEST </dest>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+      andBool notBool (isRef(VAL) orBool isPtr(VAL))
+     [preserves-definedness] // CALLER lookup defined
+
+  // guard against offset zero for References and PtrLocal (special case)
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller> CALLER => NEWCALLER </caller>
+         <dest> DEST => NEWDEST </dest>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(typedValue(Reference(OFFSET, _, _, _) #as VAL, _, _)) _ => NEWLOCALS </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+      andBool 0 <Int OFFSET
+     [preserves-definedness] // CALLER lookup defined
+
+  // guard against offset zero for References and PtrLocal (special case)
+  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       //<currentFrame>
+         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <caller> CALLER => NEWCALLER </caller>
+         <dest> DEST => NEWDEST </dest>
+         <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+         <unwind> _ => UNWIND </unwind>
+         <locals> ListItem(typedValue(PtrLocal(OFFSET, _, _, _) #as VAL, _, _)) _ => NEWLOCALS </locals>
+       //</currentFrame>
+       // remaining call stack (without top frame)
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCS </functions>
+     requires CALLER in_keys(FUNCS)
+      andBool 0 <Int OFFSET
+     [preserves-definedness] // CALLER lookup defined
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
