@@ -27,11 +27,11 @@ from .options import (
     PruneOpts,
     RunOpts,
     ShowOpts,
-    ShowRulesOpts,
     ViewOpts,
 )
 from .parse.parser import parse_json
 from .smir import SMIRInfo, Ty
+from .utils import render_rules
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -154,32 +154,23 @@ def _kmir_show(opts: ShowOpts) -> None:
     node_printer = KMIRAPRNodePrinter(cterm_show, proof, opts)
     shower = APRProofShow(kmir.definition, node_printer=node_printer)
     shower.kcfg_show.pretty_printer = printer
+    effective_node_deltas = tuple(sorted({*(opts.node_deltas or ()), *(opts.node_deltas_pro or ())}))
+    effective_rule_edges = tuple(sorted({*(opts.rules or ()), *(opts.node_deltas_pro or ())}))
+
     _LOGGER.info(
-        f'Showing {proof.id} with\n nodes: {opts.nodes},\n node_deltas: {opts.node_deltas},\n omit_cells: {tuple(all_omit_cells)}'
+        f'Showing {proof.id} with\n nodes: {opts.nodes},\n node_deltas: {effective_node_deltas},\n omit_cells: {tuple(all_omit_cells)}'
     )
     lines = shower.show(
         proof,
         nodes=opts.nodes or (),
-        node_deltas=opts.node_deltas or (),
+        node_deltas=effective_node_deltas,
         omit_cells=tuple(all_omit_cells),
     )
+    if effective_rule_edges:
+        lines.append('# Rules: ')
+        lines.extend(render_rules(proof, effective_rule_edges))
+
     print('\n'.join(lines))
-
-
-def _kmir_show_rules(opts: ShowRulesOpts) -> None:
-    """Show rules applied on the edge from source to target node."""
-    proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
-    edge = proof.kcfg.edge(opts.source, opts.target)
-    if edge is None:
-        print(f'Error: No edge found from node {opts.source} to node {opts.target}')
-        return
-    rules = edge.rules
-    print(f'Rules applied on edge {opts.source} -> {opts.target}:')
-    print(f'Total rules: {len(rules)}')
-    print('-' * 80)
-    for rule in rules:
-        print(rule)
-        print('-' * 80)
 
 
 def _kmir_prune(opts: PruneOpts) -> None:
@@ -221,8 +212,6 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_view(opts)
         case ShowOpts():
             _kmir_show(opts)
-        case ShowRulesOpts():
-            _kmir_show_rules(opts)
         case PruneOpts():
             _kmir_prune(opts)
         case ProveRSOpts():
@@ -319,6 +308,9 @@ def _arg_parser() -> ArgumentParser:
         '--node-deltas', metavar='DELTAS', help='Comma separated list of node deltas in format "source:target"'
     )
     show_parser.add_argument(
+        '--node-deltas-pro', metavar='DELTAS', help='Extra node deltas (printed after main output)'
+    )
+    show_parser.add_argument(
         '--omit-cells', metavar='CELLS', help='Comma separated list of cell names to omit from output'
     )
     show_parser.add_argument(
@@ -336,11 +328,7 @@ def _arg_parser() -> ArgumentParser:
         help='Use standard PrettyPrinter instead of custom KMIR printer',
     )
 
-    show_rules_parser = command_parser.add_parser(
-        'show-rules', help='Show rules applied on a specific edge', parents=[kcli_args.logging_args, proof_args]
-    )
-    show_rules_parser.add_argument('source', type=int, metavar='SOURCE', help='Source node ID')
-    show_rules_parser.add_argument('target', type=int, metavar='TARGET', help='Target node ID')
+    show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
 
     command_parser.add_parser(
         'view', help='View proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -411,16 +399,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 omit_current_body=ns.omit_current_body,
                 nodes=ns.nodes,
                 node_deltas=ns.node_deltas,
+                node_deltas_pro=ns.node_deltas_pro,
+                rules=ns.rules,
                 omit_cells=ns.omit_cells,
                 omit_static_info=ns.omit_static_info,
                 use_default_printer=ns.use_default_printer,
-            )
-        case 'show-rules':
-            return ShowRulesOpts(
-                proof_dir=Path(ns.proof_dir),
-                id=ns.id,
-                source=ns.source,
-                target=ns.target,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)

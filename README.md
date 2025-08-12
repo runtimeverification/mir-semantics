@@ -122,6 +122,9 @@ uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --nodes "1,2,3"
 # Show node deltas (transitions between specific nodes)
 uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --node-deltas "1:2,3:4"
 
+# Show additional deltas after the main output, and also print rules for those edges
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --node-deltas "1:2" --node-deltas-pro "3:4"
+
 # Display full node information (default is compact)
 uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --full-printer
 
@@ -143,9 +146,9 @@ uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --full-printer 
 uv --project kmir run kmir view proof_id --proof-dir ./proof_dir --verbose
 ```
 
-**`kmir show-rules`** - Show rules applied between nodes
+**Rules within `kmir show`** - Show rules applied between nodes
 ```bash
-uv --project kmir run kmir show-rules proof_id source_node target_node --proof-dir ./proof_dir
+uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --rules "SOURCE:TARGET[,SOURCE:TARGET...]"
 ```
 
 ### Recommended Workflow
@@ -178,7 +181,7 @@ uv --project kmir run kmir show-rules proof_id source_node target_node --proof-d
 
 4. **Analyze Rules**:
    ```bash
-   uv --project kmir run kmir show-rules proof_id 1 3 --proof-dir ./proof_dir
+   uv --project kmir run kmir show proof_id --proof-dir ./proof_dir --rules "1:3"
    ```
 
 ### Advanced Show Usage Examples
@@ -219,6 +222,8 @@ Most commands support:
 **`kmir show` specific options:**
 - `--nodes NODES`: Comma separated list of node IDs to show (e.g., "1,2,3")
 - `--node-deltas DELTAS`: Comma separated list of node deltas in format "source:target" (e.g., "1:2,3:4")
+- `--node-deltas-pro DELTAS`: Additional node deltas (same format as `--node-deltas`). Equivalent to "print the corresponding deltas again, and automatically print the rules for these edges".
+- `--rules EDGES`: Comma separated list of edges in format "source:target". Prints rules for each edge in Markdown link format `[label](file:///abs/path#LstartLine)` when available
 - `--omit-cells CELLS`: Comma separated list of cell names to omit from output
 - `--full-printer`: Display the full node in output (default is compact)
 - `--no-omit-static-info`: Display static information cells (functions, start-symbol, types, adt-to-ty)
