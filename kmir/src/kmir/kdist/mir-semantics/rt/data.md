@@ -551,26 +551,32 @@ An attempt to read more elements than the length of the accessed array is undefi
 
 ```k
   // helper rewrite to implement truncating slices to required size
-  syntax KItem ::= #derefTruncate ( Metadata , ProjectionElems )
+  // `Int`: current stack height
+  syntax KItem ::= #derefTruncate ( Metadata , ProjectionElems , Int )
   // ----------------------------------------------------------------------------------------
+  // current stack height information is useless after truncation
   // no metadata, no change to the value
-  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS)
+  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS, _)
         => #traverseProjection(DEST, VAL, PROJS, CTXTS)
         ...
        </k>
   // staticSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS, _)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS, _)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+```
 
+Dereference when no dereference has occurred yet: 
+
+```k
   rule <k> #traverseProjection(
              _DEST,
              Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META),
@@ -581,9 +587,9 @@ An attempt to read more elements than the length of the accessed array is undefi
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              PLACEPROJ, // apply reference projections
-             .Contexts // previous contexts obsolete
+             .Contexts // previous contexts obsolete TODO: make sure this is correct
            )
-          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, OFFSET) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -603,7 +609,7 @@ An attempt to read more elements than the length of the accessed array is undefi
              PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
-          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, OFFSET) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
@@ -624,7 +630,7 @@ An attempt to read more elements than the length of the accessed array is undefi
              PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
-          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, OFFSET) // then truncate, then continue with remaining projections
         ...
         </k>
         <stack> STACK </stack>
@@ -644,13 +650,106 @@ An attempt to read more elements than the length of the accessed array is undefi
              PLACEPROJ, // apply reference projections
              .Contexts // previous contexts obsolete
            )
-          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, OFFSET) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness]
+```
+
+Dereference when at least one dereference has already occurred:
+
+```k
+  rule <k> #traverseProjection(
+             _DEST,
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+          ~> #derefTruncate(META, PROJS, HEIGHT) 
+        => #traverseProjection(
+            toStack(OFFSET +Int HEIGHT, LOCAL),
+             #localFromFrame({STACK[OFFSET +Int HEIGHT -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             PLACEPROJ, // apply reference projections
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(META, PROJS, OFFSET +Int HEIGHT) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, HEIGHT) // keep the previous truncation
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET +Int HEIGHT andBool OFFSET +Int HEIGHT <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET +Int HEIGHT -Int 1])
+    [preserves-definedness, priority(45)]
+
+  rule <k> #traverseProjection(
+             _DEST,
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, META),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+          ~> #derefTruncate(META, PROJS, HEIGHT) 
+        => #traverseProjection(
+             toLocal(I),
+             getValue(LOCALS, I),
+             PLACEPROJ, // apply reference projections
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(META, PROJS, OFFSET +Int HEIGHT) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, HEIGHT) // keep the previous truncation
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0 andBool HEIGHT ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness, priority(45)]
+
+  rule <k> #traverseProjection(
+             _DEST,
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrEmulation(META)),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+          ~> #derefTruncate(META, PROJS, HEIGHT) 
+        => #traverseProjection(
+            toStack(OFFSET +Int HEIGHT, LOCAL),
+             #localFromFrame({STACK[OFFSET +Int HEIGHT -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             PLACEPROJ, // apply reference projections
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(META, PROJS, OFFSET +Int HEIGHT) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, HEIGHT) // keep the previous truncation
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET +Int HEIGHT andBool OFFSET +Int HEIGHT <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET +Int HEIGHT -Int 1])
+    [preserves-definedness, priority(45)]
+
+  rule <k> #traverseProjection(
+             _DEST,
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrEmulation(META)),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+          ~> #derefTruncate(META, PROJS, HEIGHT) 
+        => #traverseProjection(
+             toLocal(I),
+             getValue(LOCALS, I),
+             PLACEPROJ, // apply reference projections
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(META, PROJS, OFFSET +Int HEIGHT) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(META, PROJS, HEIGHT) // keep the previous truncation
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0 andBool HEIGHT ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+    [preserves-definedness, priority(45)]
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
