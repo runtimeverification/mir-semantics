@@ -442,6 +442,10 @@ Otherwise, the semantics will lose the real meaning of the value to return.
   // ------------     Other     ------------
   // TODO: Is it safe to get the value with non-empty projection list?
   rule #traverseLocalProjection(VAL, _, _) => VAL [owise]
+  // ------------     Thunk     ------------
+  // syntax Value ::= thuckTraverseLocalProjection ( Value , List , List ) 
+  // rule #traverseLocalProjection(thunk(VAL), LOCALS, PROJS_LIST)
+  //   => thuckTraverseLocalProjection(VAL, LOCALS, PROJS_LIST) [owise]
 
   syntax List  ::= #traverseLocalProjection ( List  , List ) [function, total]
   // `List` : list of values to traverse
