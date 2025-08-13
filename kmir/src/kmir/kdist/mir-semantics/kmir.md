@@ -6,6 +6,8 @@ requires "symbolic/kmir-symbolic-locals.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
+
+requires "symbolic/p-token.md"
 ```
 
 ## Syntax of MIR in K
@@ -37,6 +39,8 @@ module KMIR-CONTROL-FLOW
 
   imports KMIR-CONFIGURATION
   imports RT-DATA
+
+  imports KMIR-P-TOKEN
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
