@@ -91,7 +91,7 @@ def render_rules(proof: APRProof, edges: Sequence[tuple[int, int]]) -> list[str]
         ndbranch = ndbranches[0] if len(ndbranches) == 1 else None
 
         selected = edge if edge is not None else ndbranch
-        
+
         print(f'selected: {selected}')
 
         match selected:
