@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
+from pyk.kcfg.kcfg import KCFG
+
 if TYPE_CHECKING:
     from pyk.proof.reachability import APRProof
 
@@ -78,27 +80,44 @@ def render_rules(proof: APRProof, edges: Sequence[tuple[int, int]]) -> list[str]
     - proof: APRProof containing the kcfg with edges
     - edges: iterable of (src, dst)
     """
-    # Deduplicate while preserving a stable ordering
-    seen: set[tuple[int, int]] = set()
-    ordered_unique_edges: list[tuple[int, int]] = []
-    for e in edges:
-        if e not in seen:
-            seen.add(e)
-            ordered_unique_edges.append(e)
+    # Deduplicate while preserving original ordering
+    ordered_unique_edges: list[tuple[int, int]] = list(dict.fromkeys(edges))
 
     lines: list[str] = []
+    divider = '-' * 80
     for src, dst in ordered_unique_edges:
         edge = proof.kcfg.edge(src, dst)
-        if edge is None:
-            lines.append(f'Rules applied on edge {src} -> {dst}:')
-            lines.append('No edge found')
-            continue
-        applied = edge.rules
-        lines.append(f'Rules applied on edge {src} -> {dst}:')
-        lines.append(f'Total rules: {len(applied)}')
-        lines.append('-' * 80)
-        for rule in applied:
+        ndbranches = proof.kcfg.ndbranches(source_id=src, target_id=dst)
+        ndbranch = ndbranches[0] if len(ndbranches) == 1 else None
+
+        selected = edge if edge is not None else ndbranch
+        
+        print(f'selected: {selected}')
+
+        match selected:
+            case KCFG.Edge(rules=rules):
+                title = f'Rules applied on edge {src} -> {dst}:'
+                rules_to_print = list(rules)
+            case KCFG.NDBranch(_targets=targets, rules=rules):
+                title = f'NDBranch applied on edge {src} -> {dst}:'
+                # pick rule by the index of the matched target
+                # TODO: the rules applied for ndbranches is not stored.
+                try:
+                    target_index = next(i for i, t in enumerate(targets) if t.id == dst)
+                except StopIteration:
+                    continue
+                if target_index < len(rules):
+                    rules_to_print = [rules[target_index]]
+                else:
+                    rules_to_print = []
+            case _:
+                continue
+
+        lines.append(title)
+        lines.append(f'Total rules: {len(rules_to_print)}')
+        lines.append(divider)
+        for rule in rules_to_print:
             lines.append(_rule_to_markdown_link(rule))
-            lines.append('-' * 80)
+            lines.append(divider)
 
     return lines
