@@ -25,9 +25,6 @@ The additional data is commonly an instance of `Transmutable` (assumed here), wh
 
 We model this special assumption through a special subsort of `Value` with rules to create and access the contained inner structure as an aggregate of its own.
 
-When accessing the special value's fields, it is transformed to a normal `Aggregate` struct on the fly
-in order to avoid having to encode each field access individually.
-
 ```k
   syntax Value ::= PAccount
 
@@ -67,12 +64,49 @@ in order to avoid having to encode each field access individually.
   rule toInts(.List) => .Ints
   rule toInts( ListItem(Integer(X, 8, false)) REST:List) => X toInts(REST)
 
+  syntax Value ::= #fromPAcc ( PAcc ) [function, total]
+  // -----------------------------------------------------------
+  rule #fromPAcc(PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), KEY1INTS, KEY2INTS, U64(X), U64(Y)))
+      =>
+        Aggregate(variantIdx(0),
+                  ListItem(Integer(A, 8, false))
+                  ListItem(Integer(B, 8, false))
+                  ListItem(Integer(C, 8, false))
+                  ListItem(Integer(D, 8, false))
+                  ListItem(Integer(E, 32, false))
+                  ListItem(Range(fromInts(KEY1INTS)))
+                  ListItem(Range(fromInts(KEY2INTS)))
+                  ListItem(Integer(X, 64, false))
+                  ListItem(Integer(Y, 64, false))
+        )
+
+  syntax List ::= fromInts ( Ints ) [function]
+  // -----------------------------------------------------------
+  rule fromInts(.Ints) => .List
+  rule fromInts( X:Int REST:Ints) => ListItem(Integer(X, 8, false)) fromInts(REST)
+
   // interface account structure
   syntax Amount ::= Ints // 8 bytes
   syntax Flag ::= Ints // 4 bytes
   syntax IAcc ::= IAcc ( Key, Key, Amount, Flag, Key, U8, Flag, Amount, Amount, Flag, Key )
+
+  // TODO fromIAcc function to create an Aggregate, used when dereferencing the data pointer
+
 ```
+
+When accessing the special value's fields, it is transformed to a normal `Aggregate` struct on the fly
+in order to avoid having to encode each field access individually.
+
+
 ```k
+  // TODO special traverseProjection rules that call fromPAcc on demand when needed
+```
+
+The special values are introduced by a special function call (cheat code function).
+
+```k
+  // TODO special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
+
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
@@ -83,8 +117,12 @@ in order to avoid having to encode each field access individually.
   // modify the pointee, creating additional data (different kinds) with fresh variables
   // 
   rule [p-token-account-account]:
-    <k> #mkPTokenAccount(PLACE) => #setLocalValue(PLACE, #addAccount(operandCopy(PLACE))) ... </k>
-    // FIXME must add two projections to PLACE: field(0) Deref
+    <k> #mkPTokenAccount(place(LOCAL, PROJS))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
+            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+      ...
+    </k>
 
   syntax Evaluation ::= #addAccount ( Evaluation ) [seqstrict()]
                 //  | ##addMint ( Evaluation )    
