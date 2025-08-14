@@ -1,6 +1,7 @@
 ```k
 requires "../kmir-ast.md"
 requires "../rt/data.md"
+requires "../kmir.md"
 requires "../rt/configuration.md"
 ```
 
@@ -8,10 +9,11 @@ This module provides specialised data types and associated access rules
 for data used by the p-token contract and its operations.
 
 ```k
-module KMIR-P-TOKEN [symbolic] 
+module KMIR-P-TOKEN [symbolic]
   imports TYPES
   imports BODY
   imports RT-DATA
+  imports KMIR-CONTROL-FLOW
 ```
 
 ## Special-purpose types for P-token
@@ -28,10 +30,11 @@ We model this special assumption through a special subsort of `Value` with rules
 ```k
   syntax Value ::= PAccount
 
-  syntax PAccount ::= 
+  syntax PAccount ::=
       PAccountAccount( PAcc , IAcc )  // p::Account and iface::Account structs
     | PAccountMint( PAcc , Value )     // p::Account and iface::Mint structs
     | PAccountMultisig( PAcc , Value ) // p::Account and iface::Multisig structs
+    // | PAccountRent ( PAcc, Value )
 
   // pinocchio Account structure
   syntax U8 ::= U8( Int )
@@ -45,7 +48,7 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax PAcc ::= #toPAcc ( Value ) [function]
   // -------------------------------------------------------
   rule #toPAcc(
-        Aggregate(variantIdx(0), 
+        Aggregate(variantIdx(0),
                   ListItem(Integer(A, 8, false))
                   ListItem(Integer(B, 8, false))
                   ListItem(Integer(C, 8, false))
@@ -55,7 +58,7 @@ We model this special assumption through a special subsort of `Value` with rules
                   ListItem(Range(KEY2BYTES))
                   ListItem(Integer(X, 64, false))
                   ListItem(Integer(Y, 64, false))
-        )) 
+        ))
       =>
        PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), toInts(KEY1BYTES), toInts(KEY2BYTES), U64(X), U64(Y))
 
@@ -94,18 +97,44 @@ We model this special assumption through a special subsort of `Value` with rules
 
 ```
 
+### Access to the pinocchio `Account` struct
+1
 When accessing the special value's fields, it is transformed to a normal `Aggregate` struct on the fly
 in order to avoid having to encode each field access individually.
 
+Read access will only happen in the `traverseProjection` operation (reading fields of the struct.
+Write access (as well as moving reads) uses `traverseProjection` and also requires a special context node to reconstruct the custom value.
 
 ```k
   // TODO special traverseProjection rules that call fromPAcc on demand when needed
+  // TODO special context node(s) storing the second component
+  // TODO restore the custom value in #buildUpdate
 ```
 
-The special values are introduced by a special function call (cheat code function).
+### Introducing the special types with a cheat code
+
+The special values are introduced by special function calls (cheat code functions).
+An `AccountInfo` reference is passed to the function.
 
 ```k
-  // TODO special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
+  // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
+  rule [mkPTokenAccount]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, _TARGET, _UNWIND), _SPAN))
+      => #mkPTokenAccount(PLACE)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_account"
+    [priority(30), preserves-definedness]
+
+  syntax String ::= #functionName ( MonoItemKind ) [function, total]
+  // ---------------------------------------------------------------
+  rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
+
 
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
@@ -115,7 +144,7 @@ The special values are introduced by a special function call (cheat code functio
   // place assumed to hold an AccountInfo, having 1 field holding a pointer to an account
   // follow the pointer in field 1 to read the account data
   // modify the pointee, creating additional data (different kinds) with fresh variables
-  // 
+  //
   rule [p-token-account-account]:
     <k> #mkPTokenAccount(place(LOCAL, PROJS))
       => #setLocalValue(
@@ -125,7 +154,7 @@ The special values are introduced by a special function call (cheat code functio
     </k>
 
   syntax Evaluation ::= #addAccount ( Evaluation ) [seqstrict()]
-                //  | ##addMint ( Evaluation )    
+                //  | ##addMint ( Evaluation )
                 //  | ##addMultisig ( Evaluation )
 
   rule #addAccount(Aggregate(_, _) #as P_ACC)
