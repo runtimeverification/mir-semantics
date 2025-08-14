@@ -39,8 +39,6 @@ module KMIR-CONTROL-FLOW
 
   imports KMIR-CONFIGURATION
   imports RT-DATA
-
-  imports KMIR-P-TOKEN
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
@@ -635,4 +633,5 @@ module KMIR
   imports KMIR-LEMMAS
   imports KMIR-SYMBOLIC-LOCALS
 
+  imports KMIR-P-TOKEN
 endmodule
