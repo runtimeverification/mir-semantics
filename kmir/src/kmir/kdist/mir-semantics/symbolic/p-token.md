@@ -108,9 +108,20 @@ Read access will only happen in the `traverseProjection` operation (reading fiel
 Write access (as well as moving reads) uses `traverseProjection` and also requires a special context node to reconstruct the custom value.
 
 ```k
-  // TODO special traverseProjection rules that call fromPAcc on demand when needed
-  // TODO special context node(s) storing the second component
-  // TODO restore the custom value in #buildUpdate
+  // special traverseProjection rules that call fromPAcc on demand when needed
+  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJS, CtxPAccountAccount(IACC) CTXTS)
+        ...
+        </k>
+     [priority(30)]
+
+  // special context node(s) storing the second component
+  syntax Context ::= CtxPAccountAccount ( IAcc )
+
+  // restore the custom value in #buildUpdate
+  rule #buildUpdate(VAL, CtxPAccountAccount(IACC) CTXS) 
+    => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
+
 ```
 
 ### Introducing the special types with a cheat code
@@ -120,7 +131,7 @@ An `AccountInfo` reference is passed to the function.
 
 ```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
-  rule [mkPTokenAccount]:
+  rule [cheatcode-is-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkPTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
     ...
@@ -140,7 +151,7 @@ An `AccountInfo` reference is passed to the function.
   // dereference, then read and dereference pointer in field 1 to read the account data
   // modify the pointee, creating additional data (different kinds) with fresh variables
   //
-  rule [p-token-account-account]:
+  rule
     <k> #mkPTokenAccount(place(LOCAL, PROJS))
       => #setLocalValue(
             place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
