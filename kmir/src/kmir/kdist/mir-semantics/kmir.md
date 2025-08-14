@@ -369,7 +369,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #returnValue(getValue(LOCALS, 0), LOCALS)) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -378,7 +378,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> LOCALS => NEWLOCALS </locals>
+         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
