@@ -14,6 +14,8 @@ module KMIR-P-TOKEN [symbolic]
   imports BODY
   imports RT-DATA
   imports KMIR-CONTROL-FLOW
+
+  imports KMIR-P-TOKEN-HELPERS
 ```
 
 ## Special-purpose types for P-token
@@ -119,8 +121,8 @@ An `AccountInfo` reference is passed to the function.
 ```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [mkPTokenAccount]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, _TARGET, _UNWIND), _SPAN))
-      => #mkPTokenAccount(PLACE)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkPTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
     ...
     </k>
     <functions> FUNCTIONS </functions>
@@ -129,27 +131,20 @@ An `AccountInfo` reference is passed to the function.
      andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
 
-  syntax String ::= #functionName ( MonoItemKind ) [function, total]
-  // ---------------------------------------------------------------
-  rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
-  rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
-  rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
-
-
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
                  | #mkPTokenMultisig ( Place )
 
-  // place assumed to hold an AccountInfo, having 1 field holding a pointer to an account
-  // follow the pointer in field 1 to read the account data
+  // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
+  // dereference, then read and dereference pointer in field 1 to read the account data
   // modify the pointee, creating additional data (different kinds) with fresh variables
   //
   rule [p-token-account-account]:
     <k> #mkPTokenAccount(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
+            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
 
@@ -166,5 +161,20 @@ An `AccountInfo` reference is passed to the function.
 
 
 ```k
+endmodule
+```
+
+## Helper module for LLVM backend
+
+```k
+module KMIR-P-TOKEN-HELPERS
+  imports KMIR-AST
+
+  syntax String ::= #functionName ( MonoItemKind ) [function, total]
+  // ---------------------------------------------------------------
+  rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
+
 endmodule
 ```
