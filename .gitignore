@@ -5,3 +5,5 @@ __pycache__/
 /.vscode/
 kmir/src/tests/integration/data/**/target
 .DS_Store
+kmir/src/tests/integration/data/prove-rs/proof
+kmir/src/tests/integration/data/prove-rs/*.md
