@@ -42,7 +42,7 @@ module KMIR-CONFIGURATION
                     <dest> place(local(-1), .ProjectionElems)</dest>
                     <target> noBasicBlockIdx </target>
                     <unwind> unwindActionUnreachable </unwind>
-                    <locals> .List </locals>
+                    <locals> .List </locals>  // list of TypedValue in `value.md`, the first one is the return value
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>

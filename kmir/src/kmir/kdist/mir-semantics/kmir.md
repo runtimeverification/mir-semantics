@@ -3,8 +3,7 @@
 ```k
 requires "kmir-ast.md"
 requires "symbolic/kmir-symbolic-locals.md"
-requires "rt/data.md"
-requires "rt/configuration.md"
+requires "rt/runtime.md"
 requires "lemmas/kmir-lemmas.md"
 ```
 
@@ -35,8 +34,7 @@ module KMIR-CONTROL-FLOW
   imports MONO
   imports TYPES
 
-  imports KMIR-CONFIGURATION
-  imports RT-DATA
+  imports RUNTIME
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
@@ -369,7 +367,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, #returnValue(getValue(LOCALS, 0), LOCALS)) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -378,7 +376,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
+         <locals> LOCALS => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>

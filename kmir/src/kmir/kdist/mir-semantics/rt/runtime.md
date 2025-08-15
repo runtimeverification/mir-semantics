@@ -11,6 +11,7 @@ The runtime modules are organized as follows:
 - **`numbers.md`** - Implements number type operations and conversions
 - **`types.md`** - Provides type metadata helpers and compatibility checks
 - **`data.md`** - Handles data operations during MIR execution
+- **`return.md`** - Handles return values
 - **`configuration.md`** - Defines the execution configuration structure
 
 ```k
@@ -18,6 +19,7 @@ requires "./value.md"
 requires "./numbers.md"
 requires "./types.md"
 requires "./data.md"
+requires "./return.md"
 requires "./configuration.md"
 
 module RUNTIME
@@ -25,6 +27,7 @@ module RUNTIME
   imports RT-NUMBERS
   imports RT-TYPES
   imports RT-DATA
+  imports RT-RETURN
   imports KMIR-CONFIGURATION
 
 endmodule
