@@ -21,7 +21,7 @@ It will traverse the projection of the locals and decrement the reference count 
 
 ```k
   syntax Value ::= #returnValue ( Value , List ) [function, total]
-  
+
   rule #returnValue(Reference(_, _, _, _) #as VAL, LOCALS)
     => #decrementRef(#traverseLocalProjection(VAL, LOCALS, .ProjectionElems))
   rule #returnValue(PtrLocal(_, _, _, _) #as VAL, LOCALS)
@@ -36,12 +36,20 @@ It will traverse the projection of the locals and decrement the reference count 
 > **TODO**: Consider integrating this function with `#traverseProjection`, since their functionalities are quite similar. This function should serve as a preliminary step before cross-frame traversal in `#traverseProjection`, but there are some functional differences. For example, `#traverseProjection` must preserve context for write operations, while this function does not.
 
 It has three arguments:
-- `Value`: the value to traverse
+- `Value`: the value to traverse or a list of values to traverse
 - `List`: locals of the current stack frame
 - `ProjectionElems`: the projections to traverse
 
 ```k
   syntax Value ::= #traverseLocalProjection ( Value , List , ProjectionElems ) [function, total]
+  syntax List  ::= #traverseLocalProjectionList ( List , List , ProjectionElems ) [function, total]
+  
+  rule #traverseLocalProjectionList(ListItem(ELEM:Value) REST:List, LOCALS, PROJS)
+    => ListItem(#traverseLocalProjection(ELEM, LOCALS, PROJS)) #traverseLocalProjectionList(REST, LOCALS, PROJS)
+  rule #traverseLocalProjectionList(.List, _, _) => .List
+  // This case is not possible, since the list of values to traverse is always a list of values.
+  rule #traverseLocalProjectionList(ListItem(OTHER) REST:List, LOCALS, PROJS)
+    => ListItem(OTHER) #traverseLocalProjectionList(REST, LOCALS, PROJS) [owise]
 ```
 
 For references and pointers, we traverse the local values as long as the height is zero, indicating that the value still refers to the current stack frame. 
@@ -100,8 +108,12 @@ For aggregates, the behavior mirrors that of `#traverseProjection`.
     => #traverseLocalProjection(getValue(ARGS, I) , LOCALS, PROJS)
     requires 0 <=Int I andBool I <Int size(ARGS) 
      andBool isValue(ARGS[I])
+    [preserves-definedness] // valid list indexing checked
   rule #traverseLocalProjection(Aggregate(_, ARGS)  , LOCALS, projectionElemDowncast(IDX) PROJS)
     => #traverseLocalProjection(Aggregate(IDX, ARGS), LOCALS, PROJS)
+  // Return traversed Aggregate when PROJS is empty
+  rule #traverseLocalProjection(Aggregate(IDX, ARGS), LOCALS, .ProjectionElems)
+    => Aggregate(IDX, #traverseLocalProjectionList(ARGS, LOCALS, .ProjectionElems))
 ```
 
 For ranges, the behavior mirrors that of `#traverseProjection`.
@@ -138,6 +150,9 @@ For ranges, the behavior mirrors that of `#traverseProjection`.
      andBool 0 <=Int END andBool END <Int size(ELEMS)
      andBool START <=Int size(ELEMS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
+  // Return traversed Range when PROJS is empty
+  rule #traverseLocalProjection(Range(ELEMS), LOCALS, .ProjectionElems)
+    => Range(#traverseLocalProjectionList(ELEMS, LOCALS, .ProjectionElems))
 ```
 
 If the list of `projectionElems` is empty, return the value directly.
