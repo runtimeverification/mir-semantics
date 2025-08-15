@@ -8,7 +8,7 @@ Some of the lemmas relate to the control flow implementation in `kmir.md` and wi
 Others are related to helper functions used for integer arithmetic.
 
 ```k
-requires "../rt/data.md"
+requires "../rt/runtime.md"
 requires "../kmir.md"
 
 module KMIR-LEMMAS
@@ -16,7 +16,7 @@ module KMIR-LEMMAS
   imports INT-SYMBOLIC
   imports BOOL
 
-  imports RT-DATA
+  imports RUNTIME
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
 
