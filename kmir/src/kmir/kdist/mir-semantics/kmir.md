@@ -381,7 +381,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
        <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
+     requires CALLER in_keys(FUNCS) andBool 0 <Int size(LOCALS) andBool isTypedValue(LOCALS[0])
      [preserves-definedness] // CALLER lookup defined
 
   // no value to return, skip writing
