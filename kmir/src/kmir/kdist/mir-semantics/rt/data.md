@@ -942,9 +942,12 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 The operation typically creates a pointer with empty metadata.
 
 ```k
-  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS) #as PLACE)
+  syntax KItem ::= #forPtr ( Mutability, Metadata )
+
+  rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
-           #mkPtr(PLACE, MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), LOCALS)
+           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
+          ~> #forPtr(MUT, #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
            // we should use #alignOf to emulate the address
        ...
        </k>
@@ -954,35 +957,16 @@ The operation typically creates a pointer with empty metadata.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadata should only use static information
 
-  syntax Evaluation ::= #mkPtr ( Place , Mutability , Metadata , List )
-                      | #mkDynLengthPtr ( Place , Mutability , List , Evaluation ) [strict(4)]
-
-  rule <k> #mkPtr(      PLACE        , MUT, dynamicSize(_), LOCALS)
-        => #mkDynLengthPtr(PLACE, MUT, LOCALS, operandCopy(PLACE))
+  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, META)
+        => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, #maybeDynamicSize(META, VAL))
         ...
-       </k>
+      </k>
 
-  rule <k> #mkPtr(place(LOCAL, PROJS), MUT,    META       , LOCALS)
-        => PtrLocal(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, ptrEmulation(META))
-        ...
-       </k> [priority(60)]
-
-  rule <k> #mkDynLengthPtr(place(LOCAL, PROJS), MUT, LOCALS, Range(ELEMS))
-        => PtrLocal(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, ptrEmulation(dynamicSize(size(ELEMS))))
-        ...
-       </k>
-
-  // turns Index(LOCAL) projections into ConstantIndex(Int)
-  syntax ProjectionElems ::= #resolveProjs ( ProjectionElems , List ) [function, total]
-  // ----------------------------------------------------------------------------------
-  rule #resolveProjs(        .ProjectionElems           , _LOCALS) => .ProjectionElems
-  rule #resolveProjs( projectionElemIndex(local(I)) REST, LOCALS ) => projectionElemConstantIndex(#expectUsize(getValue(LOCALS,I)), 0, false) #resolveProjs(REST, LOCALS)
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool isInt(#expectUsize(getValue(LOCALS,I)))
-    [preserves-definedness]
-  rule #resolveProjs(     OTHER:ProjectionElem      REST, LOCALS ) => OTHER #resolveProjs(REST, LOCALS) [owise]
+  syntax Value ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) [function, total]
+  // ------------------------------------------------------------------------------------------
+  rule #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, ptrEmulation(META))
+  rule #mkPtr(toStack(OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(OFFSET, place(  LOCAL , PROJS), MUT, ptrEmulation(META))
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
