@@ -64,7 +64,7 @@ class KMIR(KProve, KRun, KParse):
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
-            interim_simplification=200,  # working around memory problems in LLVM backend calls
+            interim_simplification=50,  # working around memory problems in LLVM backend calls
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
