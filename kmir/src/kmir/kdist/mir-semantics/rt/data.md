@@ -910,15 +910,15 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
         ...
       </k>
 
-  syntax Value ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) [function, total]
+  syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) // [function, total]
   // -----------------------------------------------------------------------------------------------
-  rule #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META)
-  rule #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META)
+  rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META) ... </k>
+  rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
 
   syntax Metadata ::= #maybeDynamicSize ( Metadata , Value ) [function, total]
   // -------------------------------------------------------------------------
   rule #maybeDynamicSize(dynamicSize(_), Range(LIST)) => dynamicSize(size(LIST))
-  rule #maybeDynamicSize(dynamicSize(_),   _OTHER   ) => noMetadata              [owise]
+  rule #maybeDynamicSize(dynamicSize(_),   _OTHER   ) => noMetadata              [priority(100)]
   rule #maybeDynamicSize(   OTHER_META ,     _      ) => OTHER_META              [owise]
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
@@ -963,10 +963,10 @@ The operation typically creates a pointer with empty metadata.
         ...
       </k>
 
-  syntax Value ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) [function, total]
+  syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, ptrEmulation(META))
-  rule #mkPtr(toStack(OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(OFFSET, place(  LOCAL , PROJS), MUT, ptrEmulation(META))
+  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, ptrEmulation(META)) ... </k>
+  rule <k> #mkPtr(toStack(OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(OFFSET, place(  LOCAL , PROJS), MUT, ptrEmulation(META)) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
