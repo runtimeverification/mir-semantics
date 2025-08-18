@@ -25,7 +25,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
    │
-   │  (179 steps)
+   │  (181 steps)
    ├─ 7 (terminal)
    │   #EndProgram ~> .K
    │
