@@ -27,7 +27,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (208 steps)
+   │  (209 steps)
    ├─ 7
    │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    │   span: 87
@@ -51,7 +51,7 @@
    ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    ┃  ┃  │   span: 87
    ┃  ┃  │
-   ┃  ┃  │  (111 steps)
+   ┃  ┃  │  (113 steps)
    ┃  ┃  └─ 13 (stuck, leaf)
    ┃  ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( #mapOffset ( ARG_ARRAY1:Li
    ┃  ┃      span: 97
