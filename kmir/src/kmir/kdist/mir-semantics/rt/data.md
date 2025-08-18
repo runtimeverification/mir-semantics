@@ -299,18 +299,18 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | toStack ( Int , Local )
 
   // retains information about the value that was deconstructed by a projection
-  syntax Context ::= CtxField( VariantIdx, List, Int )
+  syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
 
   syntax Contexts ::= List{Context, ""}
 
   syntax Value ::= #buildUpdate ( Value , Contexts ) [function]
-
+  // ----------------------------------------------------------
   rule #buildUpdate(VAL, .Contexts) => VAL
      [preserves-definedness]
 
-  rule #buildUpdate(VAL, CtxField(IDX, ARGS, I) CTXS)
+  rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
       => #buildUpdate(Aggregate(IDX, ARGS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
@@ -387,14 +387,14 @@ This is done without consideration of the validity of the Downcast[^downcast].
   rule <k> #traverseProjection(
              DEST,
              Aggregate(IDX, ARGS),
-             projectionElemField(fieldIdx(I), _) PROJS,
+             projectionElemField(fieldIdx(I), TY) PROJS,
              CTXTS
            )
         => #traverseProjection(
              DEST,
              getValue(ARGS, I),
              PROJS,
-             CtxField(IDX, ARGS, I) CTXTS
+             CtxField(IDX, ARGS, I, TY) CTXTS
            )
         ...
         </k>
@@ -877,9 +877,23 @@ For slices (represented as `Value::Range`), the metadata is the length (as a dyn
 For `struct`s (represented as `Value::Aggregate`), the metadata is that of the _last_ field (for dynamically-sized data).
 Other `Value`s are not expected to have pointer `Metadata` as per their types.
 
+As references are sometimes created by dereferencing other references or pointers, the referenced value is first evaluated (using `#traverseProjection`).
+This eliminates any `Deref` projections from the place, and also resolves `Index` projections to `ConstantIndex` ones.
+
 ```k
-  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS) #as PLACE)
-        => #mkRef(PLACE, #mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP), LOCALS)
+  // reconstructs projections stored as context (used for Rvalues Ref and AddressOf )
+  syntax ProjectionElems ::= #projectionsFor( Contexts )                   [function, total]
+                           | #projectionsFor( Contexts , ProjectionElems ) [function, total]
+  // ----------------------------------------------------------------------------------------
+  rule #projectionsFor(CTXS) => #projectionsFor(CTXS, .ProjectionElems)
+  rule #projectionsFor(       .Contexts          , PROJS) => PROJS
+  rule #projectionsFor(CtxField(_, _, I, TY) CTXS, PROJS) => #projectionsFor(CTXS,     projectionElemField(fieldIdx(I), TY) PROJS)
+  rule #projectionsFor(       CtxIndex(_, I) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
+  rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
+
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
+        ~> #forRef(#mutabilityOf(KIND), #metadata(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -888,37 +902,30 @@ Other `Value`s are not expected to have pointer `Metadata` as per their types.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadata should only use static information
 
-  syntax Evaluation ::= #mkRef ( Place , Mutability, Metadata, List)
-                      | #mkDynSizeRef ( Place , Mutability , List , Evaluation ) [strict(4)]
+  syntax KItem ::= #forRef( Mutability , Metadata )
 
-  rule <k> #mkRef(      PLACE        , MUT, dynamicSize(_), LOCALS) => #mkDynSizeRef(PLACE, MUT, LOCALS, operandCopy(PLACE))               ... </k>
-  rule <k> #mkRef(place(LOCAL, PROJS), MUT,    META       , LOCALS) => Reference(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, META) ... </k> [priority(60)]
+  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, META)
+        => #mkRef(DEST, #projectionsFor(CTXTS), MUT, #maybeDynamicSize(META, VAL))
+        ...
+      </k>
 
-  // with dynamic metadata (reading the value)
-  rule <k> #mkDynSizeRef(place(LOCAL, PROJS), MUT, LOCALS, VAL:Value) => Reference(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, metadataFor(VAL)) ... </k>
+  syntax Value ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) [function, total]
+  // -----------------------------------------------------------------------------------------------
+  rule #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META)
+  rule #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META)
 
-  syntax Metadata ::= metadataFor ( Value ) [function, total]
-  // --------------------------------------------------------
-  rule metadataFor(    Range(LIST)   ) => dynamicSize(size(LIST))
-  rule metadataFor(      _OTHER     ) => noMetadata      [owise]
+  syntax Metadata ::= #maybeDynamicSize ( Metadata , Value ) [function, total]
+  // -------------------------------------------------------------------------
+  rule #maybeDynamicSize(dynamicSize(_), Range(LIST)) => dynamicSize(size(LIST))
+  rule #maybeDynamicSize(dynamicSize(_),   _OTHER   ) => noMetadata              [owise]
+  rule #maybeDynamicSize(   OTHER_META ,     _      ) => OTHER_META              [owise]
 
   syntax Mutability ::= #mutabilityOf ( BorrowKind ) [function, total]
   // -----------------------------------------------------------------
   rule #mutabilityOf(borrowKindShared)  => mutabilityNot
   rule #mutabilityOf(borrowKindFake(_)) => mutabilityNot // Shallow fake borrow disallowed in late stages
   rule #mutabilityOf(borrowKindMut(_))  => mutabilityMut // all mutable kinds behave equally for us
-
-  // turns Index(LOCAL) projections into ConstantIndex(Int)
-  syntax ProjectionElems ::= #resolveProjs ( ProjectionElems , List ) [function, total]
-  // ----------------------------------------------------------------------------------
-  rule #resolveProjs(        .ProjectionElems           , _LOCALS) => .ProjectionElems
-  rule #resolveProjs( projectionElemIndex(local(I)) REST, LOCALS ) => projectionElemConstantIndex(#expectUsize(getValue(LOCALS,I)), 0, false) #resolveProjs(REST, LOCALS)
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool isInt(#expectUsize(getValue(LOCALS,I)))
-    [preserves-definedness]
-  rule #resolveProjs(     OTHER:ProjectionElem      REST, LOCALS ) => OTHER #resolveProjs(REST, LOCALS) [owise]
 ```
 
 A `CopyForDeref` `RValue` has the semantics of a simple `Use(operandCopy(...))`,
@@ -964,6 +971,18 @@ The operation typically creates a pointer with empty metadata.
         => PtrLocal(0, place(LOCAL, #resolveProjs(PROJS, LOCALS)), MUT, ptrEmulation(dynamicSize(size(ELEMS))))
         ...
        </k>
+
+  // turns Index(LOCAL) projections into ConstantIndex(Int)
+  syntax ProjectionElems ::= #resolveProjs ( ProjectionElems , List ) [function, total]
+  // ----------------------------------------------------------------------------------
+  rule #resolveProjs(        .ProjectionElems           , _LOCALS) => .ProjectionElems
+  rule #resolveProjs( projectionElemIndex(local(I)) REST, LOCALS ) => projectionElemConstantIndex(#expectUsize(getValue(LOCALS,I)), 0, false) #resolveProjs(REST, LOCALS)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool isInt(#expectUsize(getValue(LOCALS,I)))
+    [preserves-definedness]
+  rule #resolveProjs(     OTHER:ProjectionElem      REST, LOCALS ) => OTHER #resolveProjs(REST, LOCALS) [owise]
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,

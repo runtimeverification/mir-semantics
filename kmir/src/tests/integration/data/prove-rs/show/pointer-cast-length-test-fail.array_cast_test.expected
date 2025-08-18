@@ -39,10 +39,28 @@
    ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , project:Value ( range ( #map
    ┃  │   span: 87
    ┃  │
-   ┃  │  (116 steps)
-   ┃  └─ 10 (stuck, leaf)
-   ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( #mapOffset ( ARG_ARRAY1:Li
-   ┃      span: 97
+   ┃  │  (6 steps)
+   ┃  ├─ 10
+   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( range (
+   ┃  │   span: 87
+   ┃  ┃
+   ┃  ┃ (1 step)
+   ┃  ┣━━┓
+   ┃  ┃  │
+   ┃  ┃  ├─ 11
+   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   ┃  ┃  │   span: 87
+   ┃  ┃  │
+   ┃  ┃  │  (111 steps)
+   ┃  ┃  └─ 13 (stuck, leaf)
+   ┃  ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( #mapOffset ( ARG_ARRAY1:Li
+   ┃  ┃      span: 97
+   ┃  ┃
+   ┃  ┗━━┓
+   ┃     │
+   ┃     └─ 12 (stuck, leaf)
+   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( range (
+   ┃         span: 87
    ┃
    ┗━━┓
       │

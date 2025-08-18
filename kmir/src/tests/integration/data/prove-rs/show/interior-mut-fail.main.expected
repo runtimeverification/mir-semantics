@@ -3,10 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (176 steps)
+│  (155 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 11 ) , thunk ( #cast ( PtrLocal ( 0 , place ( ..
-    span: 91
+    #traverseProjection ( toStack ( 3 , local ( 1 ) ) , thunk ( #decodeConstant ( co
+    span: 86
 
 
 ┌─ 2 (root, leaf, target, terminal)
