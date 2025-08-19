@@ -122,6 +122,9 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
   rule #buildUpdate(VAL, CtxPAccountAccount(IACC) CTXS) 
     => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
 
+  // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
+  rule #projectionsFor(CtxPAccountAccount(_) CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
+
 ```
 
 ### Introducing the special types with a cheat code
