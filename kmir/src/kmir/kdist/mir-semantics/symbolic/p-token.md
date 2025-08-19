@@ -163,7 +163,7 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
   syntax Context ::= CtxPAccountPAcc ( IAcc )
 
   // restore the custom value in #buildUpdate
-  rule #buildUpdate(VAL, CtxPAccountPAcc(IACC) CTXS) 
+  rule #buildUpdate(VAL, CtxPAccountPAcc(IACC) CTXS)
     => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
 
   // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
@@ -216,6 +216,53 @@ An `AccountInfo` reference is passed to the function.
 
 ```
 
+Access to the data structure that follow a pinocchio account is usually via characteristic sequences of statements:
+- calling `borrow_data_unchecked` (which calls `account.data_ptr` and uses `account.data_len`)
+- followed by `core::slice::as_ptr`
+- and then a pointer cast and a call to `core::ptr::read` (at the desired type)
+The last function call returns the data structure (not mutable).
+
+This is what `get_account` in the test code does.
+
+Code within `pinocchio` itself uses the `Transmutable` methods `load`, `load_mut` or respective `*_unchecked` variants.
+- calling `borrow_data_unchecked` or `borrow_mut_data_unchecked` (returns a ref to a `[u8]` slice)
+- then calling `load_unchecked` (maybe via `load`) or `load_mut_unchecked` from the desired `Transmutable` instance
+  - `load_unchecked` checks the slice length and then casts the slice pointer (`slice.as_ptr`) to a `T` pointer and then a reference
+  - `load` calls `load_unchecked` and then checks for initialisation data
+  - both functions return the ref within a `Result::Ok`
+
+Since the access pattern spans several function calls in sequence, we introduce
+a special reference-like marker for the intermediate state where `borrow_[mut_]data_unchecked` has been performed,
+which gets eliminated by the call to `load_[mut_]unchecked`.
+
+- identify the call to `borrow_[mut_]data_unchecked`
+- the (single) argument (expected to be `&AccountInfo`) is dereferenced, and its field evaluated
+  - this yields a PtrLocal to the custom data structure of sort `PAccount` (not checked)
+- the return value (DEST) is filled with a special reference to where the data is stored, derived from the pointer inside the `AccountInfo` struct
+
+```k
+  syntax Value ::= PAccByteRef ( Int , Place , Mutability )
+
+  // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
+  rule [cheatcode-read-account]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityNot)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_data_unchecked"
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
+
+  rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, PLACE, _MUT, _EMUL), MUT)
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT))
+        ...
+        </k>
+```
 
 
 
