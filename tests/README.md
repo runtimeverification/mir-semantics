@@ -35,3 +35,7 @@ Traceback (most recent call last):
     for b in item['mono_item_kind']['MonoItemFn']['body']['blocks']
 TypeError: 'NoneType' object is not subscriptable
 ```
+
+## Mock borrow_data_unchecked but encountered different stuck
+
+`mock_borrow_data_unchecked_failed.rs`
