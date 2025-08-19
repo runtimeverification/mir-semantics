@@ -27,6 +27,8 @@ The additional data is commonly an instance of `Transmutable` (assumed here), wh
 - `spl_token_interface::state::Mint`
 - `spl_token_interface::state::Multisig`
 
+A fourth kind of struct following the `Account` can be a "rent sysvar".
+
 We model this special assumption through a special subsort of `Value` with rules to create and access the contained inner structure as an aggregate of its own.
 
 ```k
@@ -95,12 +97,54 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax Flag ::= Ints // 4 bytes
   syntax IAcc ::= IAcc ( Key, Key, Amount, Flag, Key, U8, Flag, Amount, Amount, Flag, Key )
 
-  // TODO fromIAcc function to create an Aggregate, used when dereferencing the data pointer
+  // fromIAcc function to create an Aggregate, used when dereferencing the data pointer
+  syntax Value ::= #fromIAcc ( IAcc ) [function, total]
+  // --------------------------------------------------
+  rule #fromIAcc(IAcc(MINT, OWNER, AMT, DLG_FLAG, DLG_KEY, U8(STATE), NATIVE_FLAG, NATIVE_AMT, DLG_AMT, CLOSE_FLAG, CLOSE_KEY))
+    =>
+      Aggregate(variantIdx(0),
+                ListItem(Range(fromInts(MINT)))
+                ListItem(Range(fromInts(OWNER)))
+                ListItem(Range(fromInts(AMT)))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromInts(DLG_FLAG))) ListItem(Range(fromInts(DLG_KEY)))))
+                ListItem(Integer(STATE, 8, false))
+                ListItem(Range(fromInts(NATIVE_FLAG)))
+                ListItem(Range(fromInts(NATIVE_AMT)))
+                ListItem(Range(fromInts(DLG_AMT)))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromInts(CLOSE_FLAG))) ListItem(Range(fromInts(CLOSE_KEY)))))
+      )
 
+  syntax IAcc ::= #toIAcc ( Value ) [function]
+  // --------------------------------------------------
+  rule #toIAcc(
+          Aggregate(variantIdx(0),
+                ListItem(Range(MINT))
+                ListItem(Range(OWNER))
+                ListItem(Range(AMT))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(DLG_FLAG)) ListItem(Range(DLG_KEY))))
+                ListItem(Integer(STATE, 8, false))
+                ListItem(Range(NATIVE_FLAG))
+                ListItem(Range(NATIVE_AMT))
+                ListItem(Range(DLG_AMT))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE_FLAG)) ListItem(Range(CLOSE_KEY))))
+          )
+        )
+      => IAcc(toInts(MINT),
+              toInts(OWNER),
+              toInts(AMT),
+              toInts(DLG_FLAG),
+              toInts(DLG_KEY),
+              U8(STATE),
+              toInts(NATIVE_FLAG),
+              toInts(NATIVE_AMT),
+              toInts(DLG_AMT),
+              toInts(CLOSE_FLAG),
+              toInts(CLOSE_KEY)
+          )
 ```
 
 ### Access to the pinocchio `Account` struct
-1
+
 When accessing the special value's fields, it is transformed to a normal `Aggregate` struct on the fly
 in order to avoid having to encode each field access individually.
 
@@ -110,20 +154,20 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
 ```k
   // special traverseProjection rules that call fromPAcc on demand when needed
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJS, CtxPAccountAccount(IACC) CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJS, CtxPAccountPAcc(IACC) CTXTS)
         ...
         </k>
      [priority(30)]
 
   // special context node(s) storing the second component
-  syntax Context ::= CtxPAccountAccount ( IAcc )
+  syntax Context ::= CtxPAccountPAcc ( IAcc )
 
   // restore the custom value in #buildUpdate
-  rule #buildUpdate(VAL, CtxPAccountAccount(IACC) CTXS) 
+  rule #buildUpdate(VAL, CtxPAccountPAcc(IACC) CTXS) 
     => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
 
   // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
-  rule #projectionsFor(CtxPAccountAccount(_) CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
+  rule #projectionsFor(CtxPAccountPAcc(_) CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
 
 ```
 
@@ -173,6 +217,27 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 
+
+
+
+```k
+  syntax ProjectionElem ::= "PAccountIAcc"
+
+  // special traverseProjection rules that call fromPAcc on demand when needed
+  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromIAcc(IACC)            , PROJS, CtxPAccountIAcc(PACC) CTXTS)
+        ...
+        </k>
+     [priority(20)] // avoid matching the default rule to access PAcc
+
+
+  syntax Context ::= CtxPAccountIAcc( PAcc )
+
+  rule #projectionsFor(CtxPAccountIAcc(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
+
+  rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
+
+```
 
 ```k
 endmodule
