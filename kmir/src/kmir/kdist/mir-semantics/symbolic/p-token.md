@@ -152,12 +152,13 @@ Read access will only happen in the `traverseProjection` operation (reading fiel
 Write access (as well as moving reads) uses `traverseProjection` and also requires a special context node to reconstruct the custom value.
 
 ```k
-  // special traverseProjection rules that call fromPAcc on demand when needed
-  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJS, CtxPAccountPAcc(IACC) CTXTS)
+  // special traverseProjection rules that call fromPAcc on demand when needed. 
+  // NB Only applies when more projections follow.
+  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJ PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJ PROJS, CtxPAccountPAcc(IACC) CTXTS)
         ...
         </k>
-     [priority(30)]
+    [priority(30)]
 
   // special context node(s) storing the second component
   syntax Context ::= CtxPAccountPAcc ( IAcc )
@@ -165,6 +166,7 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
   // restore the custom value in #buildUpdate
   rule #buildUpdate(VAL, CtxPAccountPAcc(IACC) CTXS)
     => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
+    [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
 
   // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
   rule #projectionsFor(CtxPAccountPAcc(_) CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
@@ -283,6 +285,7 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
   rule #projectionsFor(CtxPAccountIAcc(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
 
   rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
+    [preserves-definedness] // by construction, VAL has the right shape from introducing the context
 
 ```
 
