@@ -152,7 +152,7 @@ Read access will only happen in the `traverseProjection` operation (reading fiel
 Write access (as well as moving reads) uses `traverseProjection` and also requires a special context node to reconstruct the custom value.
 
 ```k
-  // special traverseProjection rules that call fromPAcc on demand when needed. 
+  // special traverseProjection rules that call fromPAcc on demand when needed.
   // NB Only applies when more projections follow.
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJ PROJS, CTXTS)
         => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJ PROJS, CtxPAccountPAcc(IACC) CTXTS)
@@ -292,6 +292,16 @@ A (small) complication is that the reference is returned within a `Result` enum.
   // If the reference refers to a different data structure, return an error (as the length check in the original code deos)
   syntax KItem ::= #mkIAccRef( Place , Evaluation ) [seqstrict(2)]
 
+  rule <k> #mkIAccRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT))
+        => #setLocalValue(
+              DEST,
+              // Result type
+              Aggregate(variantIdx(0),
+                  ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, PAccountIAcc)), MUT, noMetadata))
+              )
+            )
+        ...
+       </k>
 ```
 
 The access to the second component of the `PAccount` value is implemented with a special projection.
