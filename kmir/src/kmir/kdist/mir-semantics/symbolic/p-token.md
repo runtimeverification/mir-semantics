@@ -42,8 +42,7 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax U8 ::= U8( Int )
   syntax U32 ::= U32 ( Int )
   syntax U64 ::= U64 ( Int )
-  syntax Ints ::= List {Int,""}
-  syntax Key ::= Ints // 32 bytes
+  syntax Key ::= List {Int,""} // 32 bytes
 
   syntax PAcc ::= PAcc ( U8, U8, U8, U8, U32, Key, Key , U64, U64)
 
@@ -62,16 +61,11 @@ We model this special assumption through a special subsort of `Value` with rules
                   ListItem(Integer(Y, 64, false))
         ))
       =>
-       PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), toInts(KEY1BYTES), toInts(KEY2BYTES), U64(X), U64(Y))
-
-  syntax Ints ::= toInts ( List ) [function]
-  // -----------------------------------------------------------
-  rule toInts(.List) => .Ints
-  rule toInts( ListItem(Integer(X, 8, false)) REST:List) => X toInts(REST)
+       PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(Y))
 
   syntax Value ::= #fromPAcc ( PAcc ) [function, total]
   // -----------------------------------------------------------
-  rule #fromPAcc(PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), KEY1INTS, KEY2INTS, U64(X), U64(Y)))
+  rule #fromPAcc(PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), KEY1, KEY2, U64(X), U64(Y)))
       =>
         Aggregate(variantIdx(0),
                   ListItem(Integer(A, 8, false))
@@ -79,20 +73,47 @@ We model this special assumption through a special subsort of `Value` with rules
                   ListItem(Integer(C, 8, false))
                   ListItem(Integer(D, 8, false))
                   ListItem(Integer(E, 32, false))
-                  ListItem(Range(fromInts(KEY1INTS)))
-                  ListItem(Range(fromInts(KEY2INTS)))
+                  ListItem(Range(fromKey(KEY1)))
+                  ListItem(Range(fromKey(KEY2)))
                   ListItem(Integer(X, 64, false))
                   ListItem(Integer(Y, 64, false))
         )
 
-  syntax List ::= fromInts ( Ints ) [function]
+  syntax Key ::= toKey ( List ) [function]
   // -----------------------------------------------------------
-  rule fromInts(.Ints) => .List
-  rule fromInts( X:Int REST:Ints) => ListItem(Integer(X, 8, false)) fromInts(REST)
+  rule toKey(.List) => .Key
+  rule toKey( ListItem(Integer(X, 8, false)) REST:List) => X toKey(REST)
+
+  syntax List ::= fromKey ( Key ) [function]
+  // -----------------------------------------------------------
+  rule fromKey(.Key) => .List
+  rule fromKey( X:Int REST) => ListItem(Integer(X, 8, false)) fromKey(REST)
 
   // interface account structure
-  syntax Amount ::= Ints // 8 bytes
-  syntax Flag ::= Ints // 4 bytes
+  syntax Amount ::= List{Int,""} // 8 bytes
+  syntax Amount ::= toAmount ( List ) [function]
+  // -----------------------------------------------------------
+  rule toAmount(.List) => .Amount
+  rule toAmount( ListItem(Integer(X, 8, false)) REST:List) => X toAmount(REST)
+
+  syntax List ::= fromAmount ( Amount ) [function]
+  // -----------------------------------------------------------
+  rule fromAmount(.Amount) => .List
+  rule fromAmount( X:Int REST) => ListItem(Integer(X, 8, false)) fromAmount(REST)
+
+  syntax Flag ::= List{Int,""} // 4 bytes
+
+  syntax List ::= fromFlag ( Flag ) [function]
+  // -----------------------------------------------------------
+  rule fromFlag(.Flag) => .List
+  rule fromFlag( X:Int REST) => ListItem(Integer(X, 8, false)) fromFlag(REST)
+
+  syntax Flag ::= toFlag ( List ) [function]
+  // -----------------------------------------------------------
+  rule toFlag(.List) => .Flag
+  rule toFlag( ListItem(Integer(X, 8, false)) REST:List) => X toFlag(REST)
+
+
   syntax IAcc ::= IAcc ( Key, Key, Amount, Flag, Key, U8, Flag, Amount, Amount, Flag, Key )
 
   // fromIAcc function to create an Aggregate, used when dereferencing the data pointer
@@ -101,15 +122,15 @@ We model this special assumption through a special subsort of `Value` with rules
   rule #fromIAcc(IAcc(MINT, OWNER, AMT, DLG_FLAG, DLG_KEY, U8(STATE), NATIVE_FLAG, NATIVE_AMT, DLG_AMT, CLOSE_FLAG, CLOSE_KEY))
     =>
       Aggregate(variantIdx(0),
-                ListItem(Range(fromInts(MINT)))
-                ListItem(Range(fromInts(OWNER)))
-                ListItem(Range(fromInts(AMT)))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromInts(DLG_FLAG))) ListItem(Range(fromInts(DLG_KEY)))))
+                ListItem(Range(fromKey(MINT)))
+                ListItem(Range(fromKey(OWNER)))
+                ListItem(Range(fromAmount(AMT)))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(DLG_FLAG))) ListItem(Range(fromKey(DLG_KEY)))))
                 ListItem(Integer(STATE, 8, false))
-                ListItem(Range(fromInts(NATIVE_FLAG)))
-                ListItem(Range(fromInts(NATIVE_AMT)))
-                ListItem(Range(fromInts(DLG_AMT)))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromInts(CLOSE_FLAG))) ListItem(Range(fromInts(CLOSE_KEY)))))
+                ListItem(Range(fromFlag(NATIVE_FLAG)))
+                ListItem(Range(fromAmount(NATIVE_AMT)))
+                ListItem(Range(fromAmount(DLG_AMT)))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(CLOSE_FLAG))) ListItem(Range(fromKey(CLOSE_KEY)))))
       )
 
   syntax IAcc ::= #toIAcc ( Value ) [function]
@@ -127,17 +148,17 @@ We model this special assumption through a special subsort of `Value` with rules
                 ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE_FLAG)) ListItem(Range(CLOSE_KEY))))
           )
         )
-      => IAcc(toInts(MINT),
-              toInts(OWNER),
-              toInts(AMT),
-              toInts(DLG_FLAG),
-              toInts(DLG_KEY),
+      => IAcc(toKey(MINT),
+              toKey(OWNER),
+              toAmount(AMT),
+              toFlag(DLG_FLAG),
+              toKey(DLG_KEY),
               U8(STATE),
-              toInts(NATIVE_FLAG),
-              toInts(NATIVE_AMT),
-              toInts(DLG_AMT),
-              toInts(CLOSE_FLAG),
-              toInts(CLOSE_KEY)
+              toFlag(NATIVE_FLAG),
+              toAmount(NATIVE_AMT),
+              toAmount(DLG_AMT),
+              toFlag(CLOSE_FLAG),
+              toKey(CLOSE_KEY)
           )
 ```
 
