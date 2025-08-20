@@ -240,13 +240,13 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 - identify the call to `borrow_[mut_]data_unchecked`
 - the (single) argument (expected to be `&AccountInfo`) is dereferenced, and its field evaluated
   - this yields a PtrLocal to the custom data structure of sort `PAccount` (not checked)
-- the return value (DEST) is filled with a special reference to where the data is stored, derived from the pointer inside the `AccountInfo` struct
+- the return value (DEST) is filled with a special reference to where the data is stored, derived from the pointer inside the `AccountInfo` struct. This value has Rust type `*const u8` or `*mut u8`.
 
 ```k
   syntax Value ::= PAccByteRef ( Int , Place , Mutability )
 
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
-  rule [cheatcode-read-account]:
+  rule [cheatcode-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
     => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityNot)
       ~> #execBlockIdx(TARGET)
@@ -257,6 +257,7 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_data_unchecked"
     [priority(30), preserves-definedness]
+  // TODO intercept call to `borrow_mut_data_unchecked`
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
 
@@ -266,8 +267,36 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
         </k>
 ```
 
+This intermediate representation will be eliminated by an intercepted call to `load_[mut_]unchecked` , the
+latter returning a reference to the second data structure within the `PAccount`-sorted value.
+While the `PAccByteRef` is generic, the `load_*` functions are specific to the contained type (instances of `Transmutable`).
+A (small) complication is that the reference is returned within a `Result` enum.
 
+```k
+  // intercept call to `load_unchecked`
+  rule [cheatcode-mk-iface-account-ref]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkIAccRef(DEST, OPERAND)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::account::Account>"
+    [priority(30), preserves-definedness]
+  // TODO intercept call to `load_mut_unchecked`
 
+  // expect the Evaluation to return a `PAccByteRef` referring to a `PAccountAccount`
+  // return a reference to the second component within this PAccountAccount.
+  // If the reference refers to a different data structure, return an error (as the length check in the original code deos)
+  syntax KItem ::= #mkIAccRef( Place , Evaluation ) [seqstrict(2)]
+
+```
+
+The access to the second component of the `PAccount` value is implemented with a special projection.
+This ensures that the data structure can be written to (by constructing and writing the enclosing `PAccount`).
+NB The projection rule must have higher priority than the one which auto-projects to the `PAcc` part of the `PAccount`.
 
 ```k
   syntax ProjectionElem ::= "PAccountIAcc"
