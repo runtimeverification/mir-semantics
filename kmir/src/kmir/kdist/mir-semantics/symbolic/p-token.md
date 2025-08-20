@@ -9,13 +9,11 @@ This module provides specialised data types and associated access rules
 for data used by the p-token contract and its operations.
 
 ```k
-module KMIR-P-TOKEN [symbolic]
+module KMIR-P-TOKEN
   imports TYPES
   imports BODY
   imports RT-DATA
   imports KMIR-CONTROL-FLOW
-
-  imports KMIR-P-TOKEN-HELPERS
 ```
 
 ## Special-purpose types for P-token
@@ -179,6 +177,14 @@ The special values are introduced by special function calls (cheat code function
 An `AccountInfo` reference is passed to the function.
 
 ```k
+  syntax String ::= #functionName ( MonoItemKind ) [function, total]
+  // ---------------------------------------------------------------
+  rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
+```
+
+```{.k .symbolic}
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [cheatcode-is-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -193,8 +199,8 @@ An `AccountInfo` reference is passed to the function.
 
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
-                 | #mkPTokenMint ( Place )
-                 | #mkPTokenMultisig ( Place )
+                //  | #mkPTokenMint ( Place )
+                //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
   // dereference, then read and dereference pointer in field 1 to read the account data
@@ -244,7 +250,9 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 
 ```k
   syntax Value ::= PAccByteRef ( Int , Place , Mutability )
+```
 
+```{.k .symbolic}
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -272,7 +280,7 @@ latter returning a reference to the second data structure within the `PAccount`-
 While the `PAccByteRef` is generic, the `load_*` functions are specific to the contained type (instances of `Transmutable`).
 A (small) complication is that the reference is returned within a `Result` enum.
 
-```k
+```{.k .symbolic}
   // intercept call to `load_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -329,20 +337,5 @@ NB The projection rule must have higher priority than the one which auto-project
 ```
 
 ```k
-endmodule
-```
-
-## Helper module for LLVM backend
-
-```k
-module KMIR-P-TOKEN-HELPERS
-  imports KMIR-AST
-
-  syntax String ::= #functionName ( MonoItemKind ) [function, total]
-  // ---------------------------------------------------------------
-  rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
-  rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
-  rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
-
 endmodule
 ```

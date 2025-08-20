@@ -634,7 +634,6 @@ module KMIR
   imports KMIR-SYMBOLIC-LOCALS
 
   imports KMIR-P-TOKEN
-  imports KMIR-P-TOKEN-HELPERS // for LLVM backend
 
 endmodule
 ```
