@@ -418,6 +418,19 @@ This is done without consideration of the validity of the Downcast[^downcast].
        </k>
 ```
 
+If an Aggregate contains only one element and #traverseProjection becomes stuck, you can directly access this element. For more details, you may remove this rule and run `tests/integration/data/prove-rs/closure_access_struct.rs`.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             Aggregate(_, ARGS),
+             PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, getValue(ARGS, 0), PROJS, CTXTS) ... </k>
+    requires size(ARGS) ==Int 1 [preserves-definedness, priority(100)]
+```
+
 #### Ranges
 
 An `Index` projection operates on an array or slice (`Range`) value, to access an element of the array.
