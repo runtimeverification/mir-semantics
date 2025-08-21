@@ -21,9 +21,9 @@ module KMIR-P-TOKEN
 The `pinocchio::account_info::AccountInfo` type contains a (mutable) pointer to a `pinocchio::account_info::Account`.
 However, in practice the pointed-at memory is assumed to contain additional data _after_ this `Account`.
 The additional data is commonly an instance of `Transmutable` (assumed here), which limits the choices to 3 structs:
-- `spl_token_interface::state::Account`
-- `spl_token_interface::state::Mint`
-- `spl_token_interface::state::Multisig`
+- `spl_token_interface::state::Account`, modelled as sort `IAcc`;
+- `spl_token_interface::state::Mint`, modelled as sort `IMint`;
+- `spl_token_interface::state::Multisig`, modelled as sort `IMulti`.
 
 A fourth kind of struct following the `Account` can be a "rent sysvar".
 
@@ -33,17 +33,20 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax Value ::= PAccount
 
   syntax PAccount ::=
-      PAccountAccount( PAcc , IAcc )  // p::Account and iface::Account structs
-    | PAccountMint( PAcc , Value )     // p::Account and iface::Mint structs
-    | PAccountMultisig( PAcc , Value ) // p::Account and iface::Multisig structs
+      PAccountAccount( PAcc , IAcc )    // p::Account and iface::Account structs
+    | PAccountMint( PAcc , IMint )      // p::Account and iface::Mint structs
+    // | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
     // | PAccountRent ( PAcc, Value )
+```
 
+### Pinocchio Account
+
+The `pinocchio::account_info::Account` type is the first "component" of the special data structure.
+It is modelled as a `PAcc` sort in K.
+The code uses some helper sorts for better readability.
+
+```k
   // pinocchio Account structure
-  syntax U8 ::= U8( Int )
-  syntax U32 ::= U32 ( Int )
-  syntax U64 ::= U64 ( Int )
-  syntax Key ::= List {Int,""} // 32 bytes
-
   syntax PAcc ::= PAcc ( U8, U8, U8, U8, U32, Key, Key , U64, U64)
 
   syntax PAcc ::= #toPAcc ( Value ) [function]
@@ -79,6 +82,12 @@ We model this special assumption through a special subsort of `Value` with rules
                   ListItem(Integer(Y, 64, false))
         )
 
+  syntax U8 ::= U8( Int )
+  syntax U32 ::= U32 ( Int )
+  syntax U64 ::= U64 ( Int )
+
+  syntax Key ::= List {Int,""} // 32 bytes
+
   syntax Key ::= toKey ( List ) [function]
   // -----------------------------------------------------------
   rule toKey(.List) => .Key
@@ -88,32 +97,12 @@ We model this special assumption through a special subsort of `Value` with rules
   // -----------------------------------------------------------
   rule fromKey(.Key) => .List
   rule fromKey( X:Int REST) => ListItem(Integer(X, 8, false)) fromKey(REST)
+```
 
+### SPL Token Interface Account
+
+```k
   // interface account structure
-  syntax Amount ::= List{Int,""} // 8 bytes
-  syntax Amount ::= toAmount ( List ) [function]
-  // -----------------------------------------------------------
-  rule toAmount(.List) => .Amount
-  rule toAmount( ListItem(Integer(X, 8, false)) REST:List) => X toAmount(REST)
-
-  syntax List ::= fromAmount ( Amount ) [function]
-  // -----------------------------------------------------------
-  rule fromAmount(.Amount) => .List
-  rule fromAmount( X:Int REST) => ListItem(Integer(X, 8, false)) fromAmount(REST)
-
-  syntax Flag ::= List{Int,""} // 4 bytes
-
-  syntax List ::= fromFlag ( Flag ) [function]
-  // -----------------------------------------------------------
-  rule fromFlag(.Flag) => .List
-  rule fromFlag( X:Int REST) => ListItem(Integer(X, 8, false)) fromFlag(REST)
-
-  syntax Flag ::= toFlag ( List ) [function]
-  // -----------------------------------------------------------
-  rule toFlag(.List) => .Flag
-  rule toFlag( ListItem(Integer(X, 8, false)) REST:List) => X toFlag(REST)
-
-
   syntax IAcc ::= IAcc ( Key, Key, Amount, Flag, Key, U8, Flag, Amount, Amount, Flag, Key )
 
   // fromIAcc function to create an Aggregate, used when dereferencing the data pointer
@@ -159,6 +148,66 @@ We model this special assumption through a special subsort of `Value` with rules
               toAmount(DLG_AMT),
               toFlag(CLOSE_FLAG),
               toKey(CLOSE_KEY)
+          )
+
+  syntax Amount ::= List{Int,""} // 8 bytes
+  syntax Amount ::= toAmount ( List ) [function]
+  // -----------------------------------------------------------
+  rule toAmount(.List) => .Amount
+  rule toAmount( ListItem(Integer(X, 8, false)) REST:List) => X toAmount(REST)
+
+  syntax List ::= fromAmount ( Amount ) [function]
+  // -----------------------------------------------------------
+  rule fromAmount(.Amount) => .List
+  rule fromAmount( X:Int REST) => ListItem(Integer(X, 8, false)) fromAmount(REST)
+
+  syntax Flag ::= List{Int,""} // 4 bytes
+
+  syntax List ::= fromFlag ( Flag ) [function]
+  // -----------------------------------------------------------
+  rule fromFlag(.Flag) => .List
+  rule fromFlag( X:Int REST) => ListItem(Integer(X, 8, false)) fromFlag(REST)
+
+  syntax Flag ::= toFlag ( List ) [function]
+  // -----------------------------------------------------------
+  rule toFlag(.List) => .Flag
+  rule toFlag( ListItem(Integer(X, 8, false)) REST:List) => X toFlag(REST)
+```
+
+### SPL Token Interfact Mint
+```k
+  // Mint struct: optional mint authority, supply, decimals, initialised flag, optional freeze authority
+  syntax IMint ::= IMint ( Flag, Key , Amount , U8 , U8 , Flag , Key )
+
+  syntax IMint ::= #toIMint ( Value ) [function]
+  // ------------------------------------------
+  rule #toIMint(
+          Aggregate(variantIdx(0),
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(MINT_AUTH_FLAG)) ListItem(Range(MINT_AUTH_KEY))))
+                ListItem(Range(SUPPLY))
+                ListItem(Integer(DECIMALS, 8, false))
+                ListItem(Integer(INITIALISED, 8, false))
+                ListItem(Aggregate(variantIdx(0), ListItem(Range(FREEZE_AUTH_FLAG)) ListItem(Range(FREEZE_AUTH_KEY))))
+          )
+        )
+      => IMint(toFlag(MINT_AUTH_FLAG),
+               toKey(MINT_AUTH_KEY),
+               toAmount(SUPPLY),
+               U8(DECIMALS),
+               U8(INITIALISED),
+               toFlag(FREEZE_AUTH_FLAG),
+               toKey(FREEZE_AUTH_KEY)
+          )
+
+    syntax Value ::= #fromIMint ( IMint ) [function, total]
+    // ----------------------------------------------------
+    rule #fromIMint(IMint(MINT_AUTH_FLAG, MINT_AUTH_KEY, SUPPLY, U8(DECIMALS), U8(INITIALISED), FREEZE_AUTH_FLAG, FREEZE_AUTH_KEY))
+      => Aggregate(variantIdx(0),
+                   ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(MINT_AUTH_FLAG))) ListItem(Range(fromKey(MINT_AUTH_KEY)))))
+                   ListItem(Range(fromAmount(SUPPLY)))
+                   ListItem(Integer(DECIMALS, 8, false))
+                   ListItem(Integer(INITIALISED, 8, false))
+                   ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(FREEZE_AUTH_FLAG))) ListItem(Range(fromKey(FREEZE_AUTH_KEY)))))
           )
 ```
 
@@ -217,10 +266,20 @@ An `AccountInfo` reference is passed to the function.
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
+  rule [cheatcode-is-mint]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkPTokenMint(PLACE) ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_mint"
+    [priority(30), preserves-definedness]
 
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
-                //  | #mkPTokenMint ( Place )
+                 | #mkPTokenMint ( Place )
                 //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
@@ -235,24 +294,31 @@ An `AccountInfo` reference is passed to the function.
       ...
     </k>
 
-  syntax Evaluation ::= #addAccount ( Evaluation ) [seqstrict()]
-                //  | ##addMint ( Evaluation )
-                //  | ##addMultisig ( Evaluation )
+  rule
+    <k> #mkPTokenMint(place(LOCAL, PROJS))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
+            #addMint(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+      ...
+    </k>
+
+  syntax Evaluation ::= #addAccount ( Evaluation )  [seqstrict()]
+                      | #addMint ( Evaluation )     [seqstrict()]
+                      // | #addMultisig ( Evaluation ) [seqstrict()]
 
   rule #addAccount(Aggregate(_, _) #as P_ACC)
       => PAccountAccount(#toPAcc(P_ACC), IAcc(?_MINT, ?_OWNER, ?_AMOUNT, ?_DELEGATEFLAG, ?_DELEGATE, U8(?STATE), ?_NATIVEFLAG, ?_NATIVE_AMOUNT, ?_DELEG_AMOUNT, ?_CLOSEFLAG, ?_CLOSE_AUTH))
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
 
+  rule #addMint(Aggregate(_, _) #as P_ACC)
+      => PAccountMint(#toPAcc(P_ACC), IMint(?_MINT_AUTH_FLAG, ?_MINT_AUTH_KEY, ?_SUPPLY, U8(?DECIMALS), U8(?INITIALISED), ?_FREEZE_AUTH_FLAG, ?_FREEZE_AUTH_KEY))
+    ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
+    andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 1 // not allowed any other values
 ```
 
+### Establishing Access to the Second Component of a `PAccount`-sorted Value
+
 Access to the data structure that follow a pinocchio account is usually via characteristic sequences of statements:
-- calling `borrow_data_unchecked` (which calls `account.data_ptr` and uses `account.data_len`)
-- followed by `core::slice::as_ptr`
-- and then a pointer cast and a call to `core::ptr::read` (at the desired type)
-The last function call returns the data structure (not mutable).
-
-This is what `get_account` in the test code does.
-
 Code within `pinocchio` itself uses the `Transmutable` methods `load`, `load_mut` or respective `*_unchecked` variants.
 - calling `borrow_data_unchecked` or `borrow_mut_data_unchecked` (returns a ref to a `[u8]` slice)
 - then calling `load_unchecked` (maybe via `load`) or `load_mut_unchecked` from the desired `Transmutable` instance
@@ -302,10 +368,10 @@ While the `PAccByteRef` is generic, the `load_*` functions are specific to the c
 A (small) complication is that the reference is returned within a `Result` enum.
 
 ```{.k .symbolic}
-  // intercept call to `load_unchecked`
+  // intercept calls to `load_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkIAccRef(DEST, OPERAND)
+    => #mkPAccountRef(DEST, OPERAND, PAccountIAcc)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -316,29 +382,44 @@ A (small) complication is that the reference is returned within a `Result` enum.
     [priority(30), preserves-definedness]
   // TODO intercept call to `load_mut_unchecked`
 
-  // expect the Evaluation to return a `PAccByteRef` referring to a `PAccountAccount`
-  // return a reference to the second component within this PAccountAccount.
-  // If the reference refers to a different data structure, return an error (as the length check in the original code deos)
-  syntax KItem ::= #mkIAccRef( Place , Evaluation ) [seqstrict(2)]
+  rule [cheatcode-mk-imint-ref]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkPAccountRef(DEST, OPERAND, PAccountIMint)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::mint::Mint>"
+    [priority(30), preserves-definedness]
+  // TODO intercept call to `load_mut_unchecked`
 
-  rule <k> #mkIAccRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT))
+  // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
+  // return a reference to the second component <Thing> within this PAccount data.
+  // We could check the pointee and, if it is a different data structure, return an error (as the length check in the original code)
+  syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem ) [seqstrict(2)]
+
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT), ACCESS_PROJ)
         => #setLocalValue(
               DEST,
               // Result type
               Aggregate(variantIdx(0),
-                  ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, PAccountIAcc)), MUT, noMetadata))
+                  ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
               )
             )
         ...
        </k>
 ```
 
+### Reading and Writing the Second Component
+
 The access to the second component of the `PAccount` value is implemented with a special projection.
 This ensures that the data structure can be written to (by constructing and writing the enclosing `PAccount`).
 NB The projection rule must have higher priority than the one which auto-projects to the `PAcc` part of the `PAccount`.
 
 ```k
-  syntax ProjectionElem ::= "PAccountIAcc"
+  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint"
 
   // special traverseProjection rules that call fromPAcc on demand when needed
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)
@@ -347,14 +428,23 @@ NB The projection rule must have higher priority than the one which auto-project
         </k>
      [priority(20)] // avoid matching the default rule to access PAcc
 
+  rule <k> #traverseProjection(DEST, PAccountMint(PACC, IMINT), PAccountIMint PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromIMint(IMINT)        , PROJS, CtxPAccountIMint(PACC) CTXTS)
+        ...
+        </k>
+     [priority(20)] // avoid matching the default rule to access PAcc
+
 
   syntax Context ::= CtxPAccountIAcc( PAcc )
+                   | CtxPAccountIMint( PAcc )
 
   rule #projectionsFor(CtxPAccountIAcc(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
+  rule #projectionsFor(CtxPAccountIMint(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMint PROJS)
 
   rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
-
+  rule #buildUpdate(VAL, CtxPAccountIMint(PACC) CTXS) => #buildUpdate(PAccountMint(PACC, #toIMint(VAL)), CTXS)
+    [preserves-definedness] // by construction, VAL has the right shape from introducing the context
 ```
 
 ```k
