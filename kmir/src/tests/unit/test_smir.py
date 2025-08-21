@@ -38,6 +38,12 @@ SMIR_TEST_IDS = [name for name, _, _ in SIMPLE_TEST_DATA]
 
 
 @pytest.mark.parametrize('smir_file', SMIR_TEST_DATA, ids=SMIR_TEST_IDS)
+def test_function_symbols(smir_file: Path, update_expected_output: bool, request: pytest.FixtureRequest) -> None:
+    """Test function_symbols using actual SMIR JSON data from tests/smir/."""
+    _test_smir_property(smir_file, 'function_symbols', update_expected_output, request)
+
+
+@pytest.mark.parametrize('smir_file', SMIR_TEST_DATA, ids=SMIR_TEST_IDS)
 def test_function_symbols_reverse(
     smir_file: Path, update_expected_output: bool, request: pytest.FixtureRequest
 ) -> None:
@@ -46,6 +52,6 @@ def test_function_symbols_reverse(
 
 
 @pytest.mark.parametrize('smir_file', SMIR_TEST_DATA, ids=SMIR_TEST_IDS)
-def test_function_symbols(smir_file: Path, update_expected_output: bool, request: pytest.FixtureRequest) -> None:
-    """Test function_symbols using actual SMIR JSON data from tests/smir/."""
-    _test_smir_property(smir_file, 'function_symbols', update_expected_output, request)
+def test_function_tys(smir_file: Path, update_expected_output: bool, request: pytest.FixtureRequest) -> None:
+    """Test function_symbols_reverse using actual SMIR JSON data from tests/smir/."""
+    _test_smir_property(smir_file, 'function_tys', update_expected_output, request)

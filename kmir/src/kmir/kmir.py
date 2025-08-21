@@ -68,9 +68,9 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+    def functions(self, smir_info: SMIRInfo) -> dict[int, KInner]:
         parser = Parser(self.definition)
-        parsed_items: dict[KInner, KInner] = {}
+        functions: dict[int, KInner] = {}
         for item_name, item in smir_info.items.items():
             if not item_name in smir_info.function_symbols_reverse:
                 _LOGGER.warning(f'Item not found in SMIR: {item_name}')
@@ -82,9 +82,14 @@ class KMIR(KProve, KRun, KParse):
             assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
             # each item can have several entries in the function table for linked SMIR JSON
             for ty in smir_info.function_symbols_reverse[item_name]:
-                item_ty = KApply('ty', [token(ty)])
-                parsed_items[item_ty] = parsed_item_kinner.args[1]
-        return map_of(parsed_items)
+                functions[ty] = parsed_item_kinner.args[1]
+        return functions
+
+    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+        parsed_terms: dict[KInner, KInner] = {}
+        for ty, body in self.functions(smir_info).items():
+            parsed_terms[KApply('ty', [token(ty)])] = body
+        return map_of(parsed_terms)
 
     def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
         parser = Parser(self.definition)

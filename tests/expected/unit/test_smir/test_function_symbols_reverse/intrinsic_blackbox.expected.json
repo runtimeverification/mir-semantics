@@ -1,4 +1,7 @@
 {
+  "": [
+    80
+  ],
   "_ZN3std2rt10lang_start17hfd15b23c9619f4e9E": [
     -2
   ],
@@ -58,5 +61,9 @@
   ],
   "_ZN8blackbox7add_one17h19d5f3b41fdf13daE": [
     43
+  ],
+  "black_box": [
+    20,
+    35
   ]
 }

@@ -112,12 +112,13 @@ class SMIRInfo:
 
     @cached_property
     def function_symbols_reverse(self) -> dict[str, list[int]]:
+        # TODO: Check the effects with all types of symbols
         # must retain any duplicates, therefore returning a list of Ty instead of a single one
         tys_for_name: dict[str, list[int]] = {}
         for ty, sym in self.function_symbols.items():
-            if 'NormalSym' in sym:
-                tys_for_name.setdefault(sym['NormalSym'], [])
-                tys_for_name[sym['NormalSym']].append(ty)
+            assert len(sym) == 1, f'Symbol {sym} has multiple types: {sym.keys()}'
+            sym_ty = list(sym.keys())[0]
+            tys_for_name.setdefault(sym[sym_ty], []).append(ty)
         return tys_for_name
 
     @cached_property
