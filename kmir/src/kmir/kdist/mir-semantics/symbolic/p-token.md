@@ -95,10 +95,13 @@ The code uses some helper sorts for better readability.
   rule toKey(.List) => .Key
   rule toKey( ListItem(Integer(X, 8, false)) REST:List) => X toKey(REST)
 
-  syntax List ::= fromKey ( Key ) [function]
+  syntax List ::= fromKey ( Key ) [function, total]
   // -----------------------------------------------------------
   rule fromKey(.Key) => .List
   rule fromKey( X:Int REST) => ListItem(Integer(X, 8, false)) fromKey(REST)
+
+  rule fromKey(toKey(THING)) => THING [simplification]
+  rule toKey(fromKey(KEY)) => KEY     [simplification, preserves-definedness]
 ```
 
 ### SPL Token Interface Account
@@ -116,12 +119,12 @@ The code uses some helper sorts for better readability.
                 ListItem(Range(fromKey(MINT)))
                 ListItem(Range(fromKey(OWNER)))
                 ListItem(Range(fromAmount(AMT)))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(DLG_FLAG))) ListItem(Range(fromKey(DLG_KEY)))))
+                ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(DLG_FLAG)) ListItem(Range(fromKey(DLG_KEY)))))
                 ListItem(Integer(STATE, 8, false))
-                ListItem(Range(fromFlag(NATIVE_FLAG)))
+                ListItem(fromFlag(NATIVE_FLAG))
                 ListItem(Range(fromAmount(NATIVE_AMT)))
                 ListItem(Range(fromAmount(DLG_AMT)))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(CLOSE_FLAG))) ListItem(Range(fromKey(CLOSE_KEY)))))
+                ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(CLOSE_FLAG)) ListItem(Range(fromKey(CLOSE_KEY)))))
       )
 
   syntax IAcc ::= #toIAcc ( Value ) [function]
@@ -131,12 +134,12 @@ The code uses some helper sorts for better readability.
                 ListItem(Range(MINT))
                 ListItem(Range(OWNER))
                 ListItem(Range(AMT))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(DLG_FLAG)) ListItem(Range(DLG_KEY))))
+                ListItem(Aggregate(variantIdx(0), ListItem(DLG_FLAG) ListItem(Range(DLG_KEY))))
                 ListItem(Integer(STATE, 8, false))
-                ListItem(Range(NATIVE_FLAG))
+                ListItem(NATIVE_FLAG)
                 ListItem(Range(NATIVE_AMT))
                 ListItem(Range(DLG_AMT))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE_FLAG)) ListItem(Range(CLOSE_KEY))))
+                ListItem(Aggregate(variantIdx(0), ListItem(CLOSE_FLAG) ListItem(Range(CLOSE_KEY))))
           )
         )
       => IAcc(toKey(MINT),
@@ -152,28 +155,47 @@ The code uses some helper sorts for better readability.
               toKey(CLOSE_KEY)
           )
 
-  syntax Amount ::= List{Int,""} // 8 bytes
+  rule #toIAcc(#fromIAcc(IACC)) => IACC [simplification, preserves-definedness]
+  rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification]
+
+  syntax Amount ::= List{Int,""} // 8 bytes , but model as u64. From = LE bytes , to = decode(LE)
+
   syntax Amount ::= toAmount ( List ) [function]
   // -----------------------------------------------------------
   rule toAmount(.List) => .Amount
   rule toAmount( ListItem(Integer(X, 8, false)) REST:List) => X toAmount(REST)
 
-  syntax List ::= fromAmount ( Amount ) [function]
+  syntax List ::= fromAmount ( Amount ) [function, total]
   // -----------------------------------------------------------
   rule fromAmount(.Amount) => .List
   rule fromAmount( X:Int REST) => ListItem(Integer(X, 8, false)) fromAmount(REST)
 
-  syntax Flag ::= List{Int,""} // 4 bytes
+  rule toAmount(fromAmount(AMT)) => AMT [simplification, preserves-definedness]
+  rule fromAmount(toAmount(VAL)) => VAL [simplification]
 
-  syntax List ::= fromFlag ( Flag ) [function]
-  // -----------------------------------------------------------
-  rule fromFlag(.Flag) => .List
-  rule fromFlag( X:Int REST) => ListItem(Integer(X, 8, false)) fromFlag(REST)
+  syntax Flag ::= Flag ( Int )       // 4 bytes , first byte representing bool. From = 4 bytes, to = read/check all bytes
+                | FlagError ( Value ) // to make converters total, add an error constructor
 
-  syntax Flag ::= toFlag ( List ) [function]
+  syntax Value ::= fromFlag ( Flag ) [function, total]
   // -----------------------------------------------------------
-  rule toFlag(.List) => .Flag
-  rule toFlag( ListItem(Integer(X, 8, false)) REST:List) => X toFlag(REST)
+  rule fromFlag( Flag(B)) => Range(ListItem(Integer(B, 8, false)) ListItem(Integer(0, 8, false)) ListItem(Integer(0, 8, false)) ListItem(Integer(0, 8, false)))
+    requires 0 <=Int B andBool B <=Int 1
+  rule fromFlag( FlagError(VAL)) => VAL
+
+  syntax Flag ::= toFlag ( Value ) [function, total]
+  // -----------------------------------------------------------
+  rule toFlag( Range(ListItem(Integer(X, 8, false)) REST:List)) => Flag(X)
+    requires 0 <=Int X andBool X <=Int 1 andBool size(REST) ==Int 3 andBool allZeroBytes(REST)
+  rule toFlag( VAL ) => FlagError(VAL) [owise]
+
+  syntax Bool ::= allZeroBytes(List) [function, total]
+  // ---------------------------------------------
+  rule allZeroBytes(.List) => true
+  rule allZeroBytes(ListItem(Integer(0, 8, false)) REST) => allZeroBytes(REST)
+  rule allZeroBytes(ListItem(_OTHER) _:List) => false [owise]
+
+  rule fromFlag(toFlag(VAL)) => VAL [simplification, preserves-definedness]
+  rule toFlag(fromFlag(FLG)) => FLG [simplification, preserves-definedness]
 ```
 
 ### SPL Token Interfact Mint
@@ -185,11 +207,11 @@ The code uses some helper sorts for better readability.
   // ------------------------------------------
   rule #toIMint(
           Aggregate(variantIdx(0),
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(MINT_AUTH_FLAG)) ListItem(Range(MINT_AUTH_KEY))))
+                ListItem(Aggregate(variantIdx(0), ListItem(MINT_AUTH_FLAG) ListItem(Range(MINT_AUTH_KEY))))
                 ListItem(Range(SUPPLY))
                 ListItem(Integer(DECIMALS, 8, false))
                 ListItem(Integer(INITIALISED, 8, false))
-                ListItem(Aggregate(variantIdx(0), ListItem(Range(FREEZE_AUTH_FLAG)) ListItem(Range(FREEZE_AUTH_KEY))))
+                ListItem(Aggregate(variantIdx(0), ListItem(FREEZE_AUTH_FLAG) ListItem(Range(FREEZE_AUTH_KEY))))
           )
         )
       => IMint(toFlag(MINT_AUTH_FLAG),
@@ -205,12 +227,15 @@ The code uses some helper sorts for better readability.
     // ----------------------------------------------------
     rule #fromIMint(IMint(MINT_AUTH_FLAG, MINT_AUTH_KEY, SUPPLY, U8(DECIMALS), U8(INITIALISED), FREEZE_AUTH_FLAG, FREEZE_AUTH_KEY))
       => Aggregate(variantIdx(0),
-                   ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(MINT_AUTH_FLAG))) ListItem(Range(fromKey(MINT_AUTH_KEY)))))
+                   ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(MINT_AUTH_FLAG)) ListItem(Range(fromKey(MINT_AUTH_KEY)))))
                    ListItem(Range(fromAmount(SUPPLY)))
                    ListItem(Integer(DECIMALS, 8, false))
                    ListItem(Integer(INITIALISED, 8, false))
-                   ListItem(Aggregate(variantIdx(0), ListItem(Range(fromFlag(FREEZE_AUTH_FLAG))) ListItem(Range(fromKey(FREEZE_AUTH_KEY)))))
+                   ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(FREEZE_AUTH_FLAG)) ListItem(Range(fromKey(FREEZE_AUTH_KEY)))))
           )
+
+    rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
+    rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
 ```
 
 ### Access to the pinocchio `Account` struct
@@ -317,13 +342,39 @@ An `AccountInfo` reference is passed to the function.
                       // | #addMultisig ( Evaluation ) [seqstrict()]
 
   rule #addAccount(Aggregate(_, _) #as P_ACC)
-      => PAccountAccount(#toPAcc(P_ACC), IAcc(?_MINT, ?_OWNER, ?_AMOUNT, ?_DELEGATEFLAG, ?_DELEGATE, U8(?STATE), ?_NATIVEFLAG, ?_NATIVE_AMOUNT, ?_DELEG_AMOUNT, ?_CLOSEFLAG, ?_CLOSE_AUTH))
+      => PAccountAccount(
+            #toPAcc(P_ACC), 
+            IAcc(?_MINT, 
+                 ?_OWNER, 
+                 ?_AMOUNT, 
+                 Flag(?DELEGATEFLAG), ?_DELEGATE, 
+                 U8(?STATE), 
+                 Flag(?NATIVEFLAG), 
+                 ?_NATIVE_AMOUNT, 
+                 ?_DELEG_AMOUNT, 
+                 Flag(?CLOSEFLAG), ?_CLOSE_AUTH
+              )
+          )
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
+    andBool 0 <=Int ?DELEGATEFLAG andBool ?DELEGATEFLAG <=Int 1 // not allowed any other values
+    andBool 0 <=Int ?NATIVEFLAG andBool ?NATIVEFLAG <=Int 1 // not allowed any other values
+    andBool 0 <=Int ?CLOSEFLAG andBool ?CLOSEFLAG <=Int 1 // not allowed any other values
 
   rule #addMint(Aggregate(_, _) #as P_ACC)
-      => PAccountMint(#toPAcc(P_ACC), IMint(?_MINT_AUTH_FLAG, ?_MINT_AUTH_KEY, ?_SUPPLY, U8(?DECIMALS), U8(?INITIALISED), ?_FREEZE_AUTH_FLAG, ?_FREEZE_AUTH_KEY))
+      => PAccountMint(
+            #toPAcc(P_ACC),
+            IMint(Flag(?MINT_AUTH_FLAG), ?_MINT_AUTH_KEY,
+                  ?_SUPPLY,
+                  U8(?DECIMALS),
+                  U8(?INITIALISED),
+                  Flag(?FREEZE_AUTH_FLAG), ?_FREEZE_AUTH_KEY
+              )
+          )
     ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
     andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 1 // not allowed any other values
+    andBool 0 <=Int ?MINT_AUTH_FLAG andBool ?MINT_AUTH_FLAG <=Int 1 // not allowed any other values
+    andBool 0 <=Int ?FREEZE_AUTH_FLAG andBool ?FREEZE_AUTH_FLAG <=Int 1 // not allowed any other values
+
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
