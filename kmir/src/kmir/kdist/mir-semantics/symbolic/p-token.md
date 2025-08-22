@@ -37,6 +37,8 @@ We model this special assumption through a special subsort of `Value` with rules
     | PAccountMint( PAcc , IMint )      // p::Account and iface::Mint structs
     // | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
     // | PAccountRent ( PAcc, Value )
+
+  syntax PAccount2nd ::= IAcc | IMint // all sorts that can be 2nd component
 ```
 
 ### Pinocchio Account
@@ -227,13 +229,21 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
         ...
         </k>
     [priority(30)]
+  rule <k> #traverseProjection(DEST, PAccountMint(PACC, IMINT), PROJ PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(IMINT) CTXTS)
+        ...
+        </k>
+    [priority(30)]
 
   // special context node(s) storing the second component
-  syntax Context ::= CtxPAccountPAcc ( IAcc )
+  syntax Context ::= CtxPAccountPAcc ( PAccount2nd )
 
   // restore the custom value in #buildUpdate
-  rule #buildUpdate(VAL, CtxPAccountPAcc(IACC) CTXS)
+  rule #buildUpdate(VAL, CtxPAccountPAcc(IACC:IAcc) CTXS)
     => #buildUpdate(PAccountAccount(#toPAcc(VAL), IACC), CTXS)
+    [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
+  rule #buildUpdate(VAL, CtxPAccountPAcc(IMINT:IMint) CTXS)
+    => #buildUpdate(PAccountMint(#toPAcc(VAL), IMINT), CTXS)
     [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
 
   // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
