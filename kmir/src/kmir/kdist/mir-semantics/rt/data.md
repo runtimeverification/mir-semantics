@@ -1056,6 +1056,30 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
+Boolean values can also be cast to Integers (encoding `true` as `1`).
+
+```k
+  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+          =>
+            #intAsType(1, 8, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
+       andBool VAL
+      [preserves-definedness] // ensures #numTypeOf is defined
+
+  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+          =>
+            #intAsType(0, 8, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
+       andBool notBool VAL
+      [preserves-definedness] // ensures #numTypeOf is defined
+```
+
 Casts involving `Float` values are currently not implemented.
 
 ### Casts between pointer types
