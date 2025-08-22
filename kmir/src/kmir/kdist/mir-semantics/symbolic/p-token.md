@@ -362,7 +362,19 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_data_unchecked"
     [priority(30), preserves-definedness]
-  // TODO intercept call to `borrow_mut_data_unchecked`
+
+  // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
+  rule [cheatcode-borrow-mut-data]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityMut)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_mut_data_unchecked"
+    [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
 
@@ -376,9 +388,10 @@ This intermediate representation will be eliminated by an intercepted call to `l
 latter returning a reference to the second data structure within the `PAccount`-sorted value.
 While the `PAccByteRef` is generic, the `load_*` functions are specific to the contained type (instances of `Transmutable`).
 A (small) complication is that the reference is returned within a `Result` enum.
+NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same way, mutability information is already held in the `PAccountByteRef`.
 
 ```{.k .symbolic}
-  // intercept calls to `load_unchecked`
+  // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
     => #mkPAccountRef(DEST, OPERAND, PAccountIAcc)
@@ -388,9 +401,12 @@ A (small) complication is that the reference is returned within a `Result` enum.
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::account::Account>"
+     andBool (
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::account::Account>"
+        orBool
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_mut_unchecked::<spl_token_interface::state::account::Account>"
+     )
     [priority(30), preserves-definedness]
-  // TODO intercept call to `load_mut_unchecked`
 
   rule [cheatcode-mk-imint-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -401,9 +417,12 @@ A (small) complication is that the reference is returned within a `Result` enum.
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::mint::Mint>"
+     andBool (
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::mint::Mint>"
+        orBool
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_mut_unchecked::<spl_token_interface::state::mint::Mint>"
+     )
     [priority(30), preserves-definedness]
-  // TODO intercept call to `load_mut_unchecked`
 
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
   // return a reference to the second component <Thing> within this PAccount data.
