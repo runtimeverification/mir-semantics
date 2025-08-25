@@ -34,6 +34,7 @@ syntax MonoItemKind ::= monoItemFn(name: Symbol, id: DefId, body: MaybeBody)
                           [ group(mir-enum)
                           , symbol(MonoItemKind::MonoItemGlobalAsm)
                           ]
+                      | IntrinsicFunction(MIRString) [ symbol(IntrinsicFunction) ]
 syntax MonoItem ::= monoItem(symbolName: Symbol, monoItemKind: MonoItemKind)
                       [symbol(monoItemWrapper), group(mir---symbol-name--mono-item-kind)]
 syntax MonoItems ::= List {MonoItem, ""}
