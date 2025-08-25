@@ -142,4 +142,3 @@ update-smir-json: stable-mir-json
 update-smir-tests: update-smir-json update-exec-smir
 	@echo "smir.json files and execute expectations updated."
 	@echo "Proof tests might need manual updating"
-
