@@ -89,6 +89,10 @@ class KMIR(KProve, KRun, KParse):
         parsed_terms: dict[KInner, KInner] = {}
         for ty, body in self.functions(smir_info).items():
             parsed_terms[KApply('ty', [token(ty)])] = body
+        # Add intrinsic functions
+        for ty, sym in smir_info.function_symbols.items():
+            if 'IntrinsicSym' in sym and KApply('ty', [token(ty)]) not in parsed_terms:
+                parsed_terms[KApply('ty', [token(ty)])] = KApply('IntrinsicFunction', [KApply('MIRString::String', [KToken(f'"{sym["IntrinsicSym"]}"', 'String')])])
         return map_of(parsed_terms)
 
     def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
