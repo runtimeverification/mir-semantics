@@ -525,7 +525,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( MIRString, Operands, Place )
+                 | #execIntrinsic ( Symbol, Operands, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -629,7 +629,7 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(mirString("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
+  rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
 ```
 
 ### Stopping on Program Errors

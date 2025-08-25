@@ -93,7 +93,8 @@ class KMIR(KProve, KRun, KParse):
         for ty, sym in smir_info.function_symbols.items():
             if 'IntrinsicSym' in sym and KApply('ty', [token(ty)]) not in parsed_terms:
                 parsed_terms[KApply('ty', [token(ty)])] = KApply(
-                    'IntrinsicFunction', [KApply('MIRString::String', [KToken(f'{sym["IntrinsicSym"]!r}', 'String')])]
+                    'IntrinsicFunction',
+                    [KApply('symbol(_)_LIB_Symbol_String', [token(sym['IntrinsicSym'])])],
                 )
         return map_of(parsed_terms)
 
