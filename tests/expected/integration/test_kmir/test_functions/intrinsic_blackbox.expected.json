@@ -17163,6 +17163,38 @@
     "node": "KApply",
     "variable": false
   },
+  "20": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"black_box\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 1,
+    "label": {
+      "name": "IntrinsicFunction",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
   "21": {
     "args": [
       {
@@ -27916,6 +27948,38 @@
     "arity": 3,
     "label": {
       "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
+  "35": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"black_box\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 1,
+    "label": {
+      "name": "IntrinsicFunction",
       "node": "KLabel",
       "params": []
     },
