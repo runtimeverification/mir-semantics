@@ -26,6 +26,7 @@ The additional data is commonly an instance of `Transmutable` (assumed here), wh
 - `spl_token_interface::state::Multisig`, modelled as sort `IMulti`.
 
 A fourth kind of struct following the `Account` can be a "rent sysvar".
+The `Rent` sysvar holds constants that determine whether or not rent has to be paid for account storage.
 
 We model this special assumption through a special subsort of `Value` with rules to create and access the contained inner structure as an aggregate of its own.
 
@@ -36,9 +37,9 @@ We model this special assumption through a special subsort of `Value` with rules
       PAccountAccount( PAcc , IAcc )    // p::Account and iface::Account structs
     | PAccountMint( PAcc , IMint )      // p::Account and iface::Mint structs
     // | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
-    // | PAccountRent ( PAcc, Value )
+    | PAccountRent ( PAcc, PRent )      // p::Account and p::sysvars::rent::Rent
 
-  syntax PAccount2nd ::= IAcc | IMint // all sorts that can be 2nd component
+  syntax PAccount2nd ::= IAcc | IMint | PRent // all sorts that can be 2nd component
 ```
 
 ### Pinocchio Account
@@ -270,6 +271,40 @@ The code uses some helper sorts for better readability.
     rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
     rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
 ```
+### Pinocchio Rent sysvar
+
+```k
+  syntax F64 ::= F64 ( Float )
+
+  syntax PRent ::= PRent ( U64, F64 , U8 )
+                 | PRentError ( Value )
+
+  syntax PRent ::= #toPRent ( Value ) [function, total]
+  // --------------------------------------------------
+  rule #toPRent(
+          Aggregate(variantIdx(0),
+                  ListItem(Integer(LMP_PER_BYTEYEAR, 64, false))
+                  ListItem(Float(EXEMPT_THRESHOLD, 64))
+                  ListItem(Integer(BURN_PCT, 8, false))
+          )
+        ) => PRent(U64(LMP_PER_BYTEYEAR), F64(EXEMPT_THRESHOLD), U8(BURN_PCT))
+  rule #toPRent(VAL) => PRentError(VAL) [owise]
+
+  syntax Value ::= #fromPRent ( PRent ) [function, total]
+  // ----------------------------------------------------
+  rule #fromPRent(PRent(U64(LMP_PER_BYTEYEAR), F64(EXEMPT_THRESHOLD), U8(BURN_PCT)))
+      => Aggregate(variantIdx(0),
+                  ListItem(Integer(LMP_PER_BYTEYEAR, 64, false))
+                  ListItem(Float(EXEMPT_THRESHOLD, 64))
+                  ListItem(Integer(BURN_PCT, 8, false))
+          )
+  rule #fromPRent(PRentError(VAL)) => VAL
+
+  rule #fromPRent(#toPRent(VAL)) => VAL [simplification, preserves-definedness]
+  rule #toPRent(#fromPRent(RNT)) => RNT [simplification, preserves-definedness]
+
+```
+
 
 ### Access to the pinocchio `Account` struct
 
