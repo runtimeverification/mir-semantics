@@ -80,7 +80,7 @@ uv --directory kmir run kmir show proof_id --proof-dir ./proof_dir
     - `kdist/mir-semantics/` - K semantics definitions
   - `src/tests/` - Test suites
     - `integration/data/prove-rs/` - Rust test programs for prove-rs
-    - `integration/data/run-rs/` - Rust programs for execution tests
+    - `integration/data/exec-smir/` - Rust programs for execution tests
 
 ### Key K Semantics Files
 - `kmir.md` - Main execution semantics and control flow

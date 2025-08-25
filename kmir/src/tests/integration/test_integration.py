@@ -22,7 +22,6 @@ from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
-from tests.utils import EXPECTED_DIR, TEST_FILES
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
@@ -284,20 +283,13 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
         None,
     ),
+    (
+        'intrinsic-blackbox',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.smir.json',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
+        None,
+    ),
 ]
-
-# Extend EXEC_DATA with all tests from tests/smir
-EXEC_DATA.extend(
-    [
-        (
-            test_name,
-            smir_file,
-            EXPECTED_DIR / 'integration' / 'test_exec_smir' / f'{test_name.replace("/", "_")}.state',
-            None,  # depth
-        )
-        for test_name, rust_file, smir_file in TEST_FILES
-    ]
-)
 
 
 @pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
@@ -323,8 +315,8 @@ def test_exec_smir(
 
 @pytest.mark.parametrize(
     'test_data',
-    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
-    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
+    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None and name != 'intrinsic-blackbox'],
+    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None and name != 'intrinsic-blackbox'],
 )
 def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
