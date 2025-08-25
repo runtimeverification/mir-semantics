@@ -22,6 +22,7 @@ from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
+from tests.utils import EXPECTED_DIR, TEST_FILES
 
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
@@ -283,6 +284,17 @@ EXEC_DATA = [
         None,
     ),
 ]
+
+# Extend EXEC_DATA with all tests from tests/smir
+EXEC_DATA.extend([
+    (
+        test_name,
+        smir_file,
+        EXPECTED_DIR / 'integration' / 'test_exec_smir' / f'{test_name.replace("/", "_")}.state',
+        None  # depth
+    )
+    for test_name, rust_file, smir_file in TEST_FILES
+])
 
 
 @pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
