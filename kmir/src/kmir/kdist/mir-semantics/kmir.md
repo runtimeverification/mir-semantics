@@ -482,8 +482,6 @@ where the returned result should go.
 
   rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _)))) => Ty
   rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
-
-  // TODO: Intrinsic function handling - temporarily disabled for testing
 ```
 
 The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
