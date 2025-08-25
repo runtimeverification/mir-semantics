@@ -287,7 +287,7 @@ EXEC_DATA = [
         'intrinsic-blackbox',
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.smir.json',
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
-        None,
+        1000,
     ),
 ]
 
@@ -315,8 +315,8 @@ def test_exec_smir(
 
 @pytest.mark.parametrize(
     'test_data',
-    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None and name != 'intrinsic-blackbox'],
-    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None and name != 'intrinsic-blackbox'],
+    [(name, smir_json) for (name, smir_json, _, depth) in EXEC_DATA if depth is None],
+    ids=[name for (name, _, _, depth) in EXEC_DATA if depth is None],
 )
 def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
