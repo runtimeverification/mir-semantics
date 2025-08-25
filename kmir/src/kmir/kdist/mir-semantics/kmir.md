@@ -418,6 +418,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
   // other item kinds are not expected or supported
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported
+  rule #getBlocksAux(IntrinsicFunction(_)) => .List // intrinsics have no body
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
@@ -511,9 +512,20 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
+  
+  // Handle intrinsic functions - execute directly without setting up local stack frame
+  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
+        => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
+       </k>
+       <currentFrame>
+         <dest> DEST </dest>
+         <target> someBasicBlockIdx(RETURN_TARGET) </target>
+         ...
+       </currentFrame>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
+                 | #execIntrinsic ( Symbol, Operands, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -602,6 +614,23 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
        </k>
 ```
 
+### Intrinsic Functions
+
+Intrinsic functions are built-in functions provided by the compiler that don't have regular MIR bodies.
+They are handled specially in the execution semantics through the `#execIntrinsic` mechanism.
+When an intrinsic function is called, the execution bypasses the normal function call setup and directly
+executes the intrinsic-specific logic.
+
+#### Black Box (`std::hint::black_box`)
+
+The `black_box` intrinsic serves as an optimization barrier, preventing the compiler from making assumptions
+about the value passed through it. In the semantics, it acts as an identity function that simply passes
+its argument to the destination without modification.
+
+```k
+  // Black box intrinsic implementation - identity function  
+  rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
+```
 
 ### Stopping on Program Errors
 

@@ -31,10 +31,9 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
    │
-   │  (5 steps)
+   │  (7 steps)
    └─ 7 (stuck, leaf)
-       #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-       span: 52
+       #execIntrinsic ( symbol ( "cold_path" ) , .Operands , place ( ... local: local (
 
 
 

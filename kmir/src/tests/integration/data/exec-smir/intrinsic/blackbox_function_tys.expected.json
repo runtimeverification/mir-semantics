@@ -1,0 +1,16 @@
+{
+  "<&u32 as std::fmt::Debug>::fmt": -3,
+  "<() as std::process::Termination>::report": 14,
+  "<fn() as std::ops::FnOnce<()>>::call_once": 19,
+  "<{closure@std::rt::lang_start<()>::{closure#0}} as std::ops::FnOnce<()>>::call_once": 30,
+  "add_one": 43,
+  "core::fmt::num::<impl std::fmt::Debug for u32>::fmt": 21,
+  "core::panicking::assert_failed::<u32, u32>": 45,
+  "main": -1,
+  "std::hint::black_box::<u32>": 44,
+  "std::ptr::drop_in_place::<&u32>": -5,
+  "std::ptr::drop_in_place::<{closure@std::rt::lang_start<()>::{closure#0}}>": -6,
+  "std::rt::lang_start::<()>": -2,
+  "std::rt::lang_start::<()>::{closure#0}": 32,
+  "std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>": 13
+}
