@@ -114,7 +114,7 @@ The code uses some helper sorts for better readability.
 
   syntax List ::= stringToIntegers ( String ) [function, total]
   // -----------------------------------------------------------
-  rule stringToIntegers(STR) => .List 
+  rule stringToIntegers(STR) => .List
     requires lengthString(STR) <=Int 0
   rule stringToIntegers(STR) => ListItem(Integer(ordChar(substrString(STR, 0, 1)), 8, false)) stringToIntegers(substrString(STR, 1, lengthString(STR)))
     requires 1 <=Int lengthString(STR)
@@ -137,12 +137,12 @@ The code uses some helper sorts for better readability.
       Aggregate(variantIdx(0),
                 ListItem(fromKey(MINT))
                 ListItem(fromKey(OWNER))
-                ListItem(Range(fromAmount(AMT)))
+                ListItem(fromAmount(AMT))
                 ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(DLG_FLAG)) ListItem(fromKey(DLG_KEY))))
                 ListItem(Integer(STATE, 8, false))
                 ListItem(fromFlag(NATIVE_FLAG))
-                ListItem(Range(fromAmount(NATIVE_AMT)))
-                ListItem(Range(fromAmount(DLG_AMT)))
+                ListItem(fromAmount(NATIVE_AMT))
+                ListItem(fromAmount(DLG_AMT))
                 ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(CLOSE_FLAG)) ListItem(fromKey(CLOSE_KEY))))
       )
 
@@ -152,12 +152,12 @@ The code uses some helper sorts for better readability.
           Aggregate(variantIdx(0),
                 ListItem(MINT)
                 ListItem(OWNER)
-                ListItem(Range(AMT))
+                ListItem(AMT)
                 ListItem(Aggregate(variantIdx(0), ListItem(DLG_FLAG) ListItem(DLG_KEY)))
                 ListItem(Integer(STATE, 8, false))
                 ListItem(NATIVE_FLAG)
-                ListItem(Range(NATIVE_AMT))
-                ListItem(Range(DLG_AMT))
+                ListItem(NATIVE_AMT)
+                ListItem(DLG_AMT)
                 ListItem(Aggregate(variantIdx(0), ListItem(CLOSE_FLAG) ListItem(CLOSE_KEY)))
           )
         )
@@ -177,20 +177,34 @@ The code uses some helper sorts for better readability.
   rule #toIAcc(#fromIAcc(IACC)) => IACC [simplification, preserves-definedness]
   rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification]
 
-  syntax Amount ::= List{Int,""} // 8 bytes , but model as u64. From = LE bytes , to = decode(LE)
+  syntax Amount ::= Amount(Int) // 8 bytes , but model as u64. From = LE bytes , to = decode(LE)
+                  | AmountError( Value )
 
-  syntax Amount ::= toAmount ( List ) [function]
+  syntax Amount ::= toAmount ( Value) [function, total]
   // -----------------------------------------------------------
-  rule toAmount(.List) => .Amount
-  rule toAmount( ListItem(Integer(X, 8, false)) REST:List) => X toAmount(REST)
+  rule toAmount(Range(AMOUNTBYTES)) => Amount(Bytes2Int(#bytesFrom(AMOUNTBYTES), LE, Unsigned))
+    requires allBytes(AMOUNTBYTES) andBool size(AMOUNTBYTES) ==Int 8 [preserves-definedness]
+  rule toAmount(OTHER) => AmountError(OTHER) [owise]
 
-  syntax List ::= fromAmount ( Amount ) [function, total]
+  syntax Bytes ::= #bytesFrom ( List ) [function]
+  // --------------------------------------------
+  rule #bytesFrom(.List) => .Bytes
+  rule #bytesFrom(ListItem(Integer(X, 8, false)) REST) => Int2Bytes(1, X, LE) +Bytes #bytesFrom(REST)
+
+  syntax Value ::= fromAmount ( Amount ) [function, total]
   // -----------------------------------------------------------
-  rule fromAmount(.Amount) => .List
-  rule fromAmount( X:Int REST) => ListItem(Integer(X, 8, false)) fromAmount(REST)
+  rule fromAmount(Amount(X)) => Range(#asU8s(X)) [preserves-definedness]
+  rule fromAmount(AmountError(VAL)) => VAL
+
+  syntax List ::= #asU8s ( Int )            [function]
+                | #asU8List ( List , Int ) [function]
+  // -------------------------------------
+  rule #asU8s(X) => #asU8List(.List, X)
+  rule #asU8List(ACC, _) => ACC requires 8 <=Int size(ACC) [priority(40)] // always cut at 8 bytes
+  rule #asU8List(ACC, X) => #asU8List( ACC ListItem(Integer( X &Int 255, 8, false)) , X >>Int 8) [preserves-definedness]
 
   rule toAmount(fromAmount(AMT)) => AMT [simplification, preserves-definedness]
-  rule fromAmount(toAmount(VAL)) => VAL [simplification]
+  rule fromAmount(toAmount(VAL)) => VAL [simplification, preserves-definedness]
 
   syntax Flag ::= Flag ( Int )       // 4 bytes , first byte representing bool. From = 4 bytes, to = read/check all bytes
                 | FlagError ( Value ) // to make converters total, add an error constructor
@@ -227,7 +241,7 @@ The code uses some helper sorts for better readability.
   rule #toIMint(
           Aggregate(variantIdx(0),
                 ListItem(Aggregate(variantIdx(0), ListItem(MINT_AUTH_FLAG) ListItem(MINT_AUTH_KEY)))
-                ListItem(Range(SUPPLY))
+                ListItem(SUPPLY)
                 ListItem(Integer(DECIMALS, 8, false))
                 ListItem(Integer(INITIALISED, 8, false))
                 ListItem(Aggregate(variantIdx(0), ListItem(FREEZE_AUTH_FLAG) ListItem(FREEZE_AUTH_KEY)))
@@ -247,7 +261,7 @@ The code uses some helper sorts for better readability.
     rule #fromIMint(IMint(MINT_AUTH_FLAG, MINT_AUTH_KEY, SUPPLY, U8(DECIMALS), U8(INITIALISED), FREEZE_AUTH_FLAG, FREEZE_AUTH_KEY))
       => Aggregate(variantIdx(0),
                    ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(MINT_AUTH_FLAG)) ListItem(fromKey(MINT_AUTH_KEY))))
-                   ListItem(Range(fromAmount(SUPPLY)))
+                   ListItem(fromAmount(SUPPLY))
                    ListItem(Integer(DECIMALS, 8, false))
                    ListItem(Integer(INITIALISED, 8, false))
                    ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(FREEZE_AUTH_FLAG)) ListItem(fromKey(FREEZE_AUTH_KEY))))
@@ -362,15 +376,15 @@ An `AccountInfo` reference is passed to the function.
 
   rule #addAccount(Aggregate(_, _) #as P_ACC)
       => PAccountAccount(
-            #toPAcc(P_ACC), 
+            #toPAcc(P_ACC),
             IAcc(Key(?MINT),
-                 Key(?OWNER), 
-                 ?_AMOUNT, 
-                 Flag(?DELEGATEFLAG), ?_DELEGATE, 
-                 U8(?STATE), 
-                 Flag(?NATIVEFLAG), 
-                 ?_NATIVE_AMOUNT, 
-                 ?_DELEG_AMOUNT, 
+                 Key(?OWNER),
+                 Amount(?AMOUNT),
+                 Flag(?DELEGATEFLAG), ?_DELEGATE,
+                 U8(?STATE),
+                 Flag(?NATIVEFLAG),
+                 Amount(?NATIVE_AMOUNT),
+                 Amount(?DELEG_AMOUNT),
                  Flag(?CLOSEFLAG), Key(?CLOSE_AUTH)
               )
           )
@@ -381,13 +395,15 @@ An `AccountInfo` reference is passed to the function.
     andBool lengthString(?MINT) ==Int 32
     andBool lengthString(?OWNER) ==Int 32
     andBool lengthString(?CLOSE_AUTH) ==Int 32
-
+    andBool 0 <=Int ?AMOUNT andBool ?AMOUNT <Int 1 <<Int 64
+    andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
+    andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
 
   rule #addMint(Aggregate(_, _) #as P_ACC)
       => PAccountMint(
             #toPAcc(P_ACC),
             IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
-                  ?_SUPPLY,
+                  Amount(?SUPPLY),
                   U8(?DECIMALS),
                   U8(?INITIALISED),
                   Flag(?FREEZE_AUTH_FLAG), Key(?FREEZE_AUTH_KEY)
@@ -399,7 +415,7 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?FREEZE_AUTH_FLAG andBool ?FREEZE_AUTH_FLAG <=Int 1 // not allowed any other values
     andBool lengthString(?MINT_AUTH_KEY) ==Int 32
     andBool lengthString(?FREEZE_AUTH_KEY) ==Int 32
-
+    andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
