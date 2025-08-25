@@ -117,6 +117,11 @@ Tests in `kmir/src/tests/integration/data/prove-rs/` follow this pattern:
 
 ## Development Workflow
 
+### Before Starting Any Task
+1. Read README and documentation in docs/ directory first
+2. Study existing development patterns and conventions
+3. Understand the codebase structure before making changes
+
 ### Modifying K Semantics
 1. Edit `.md` files in `kmir/src/kmir/kdist/mir-semantics/`
 2. Run `make build` to compile changes
@@ -124,7 +129,7 @@ Tests in `kmir/src/tests/integration/data/prove-rs/` follow this pattern:
 
 ### Modifying Python Code
 1. Edit files in `kmir/src/kmir/`
-2. Run `make check` to verify code quality
+2. Run `make format && make check` to verify code quality and formatting
 3. Test with `make test-unit`
 
 ### Adding Intrinsic Support
