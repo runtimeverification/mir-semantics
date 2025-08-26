@@ -283,6 +283,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
         None,
     ),
+    (
+        'intrinsic-blackbox',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.smir.json',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
+        1000,
+    ),
 ]
 
 
