@@ -51,6 +51,7 @@ PROVE_RS_SHOW_SPECS = [
     'checked_arithmetic-fail',
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
+    'closure_access_struct-fail',
 ]
 
 
@@ -281,6 +282,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.smir.json',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
         None,
+    ),
+    (
+        'intrinsic-blackbox',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.smir.json',
+        EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
+        1000,
     ),
 ]
 
