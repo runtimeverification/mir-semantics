@@ -1,0 +1,66 @@
+{
+  "_ZN3std2rt10lang_start17hfd15b23c9619f4e9E": [
+    -2
+  ],
+  "_ZN3std2rt10lang_start28_$u7b$$u7b$closure$u7d$$u7d$17h4c48ca0a969f8e22E": [
+    32
+  ],
+  "_ZN3std2rt19lang_start_internal17h035df9ff6960926aE": [
+    0
+  ],
+  "_ZN3std3sys9backtrace28__rust_begin_short_backtrace17h3ed1ff55127ea908E": [
+    13
+  ],
+  "_ZN42_$LT$$RF$T$u20$as$u20$core..fmt..Debug$GT$3fmt17hc55e4b0c085adadbE": [
+    -3
+  ],
+  "_ZN4core3fmt3num3imp52_$LT$impl$u20$core..fmt..Display$u20$for$u20$u32$GT$3fmt17h3898fcbe69051268E": [
+    29
+  ],
+  "_ZN4core3fmt3num50_$LT$impl$u20$core..fmt..Debug$u20$for$u20$u32$GT$3fmt17he94224f75bb82a6dE": [
+    21
+  ],
+  "_ZN4core3fmt3num53_$LT$impl$u20$core..fmt..LowerHex$u20$for$u20$u32$GT$3fmt17hd4eb660f536230f2E": [
+    27
+  ],
+  "_ZN4core3fmt3num53_$LT$impl$u20$core..fmt..UpperHex$u20$for$u20$u32$GT$3fmt17he3174859d71fe4a2E": [
+    28
+  ],
+  "_ZN4core3ops8function6FnOnce40call_once$u7b$$u7b$vtable.shim$u7d$$u7d$17h6f2006be3d683f61E": [
+    -4
+  ],
+  "_ZN4core3ops8function6FnOnce9call_once17h01744b4cd6d989c7E": [
+    30
+  ],
+  "_ZN4core3ops8function6FnOnce9call_once17h2def94c380fcf744E": [
+    19
+  ],
+  "_ZN4core3ptr28drop_in_place$LT$$RF$u32$GT$17haf4deafb50d1edf9E": [
+    -5
+  ],
+  "_ZN4core3ptr85drop_in_place$LT$std..rt..lang_start$LT$$LP$$RP$$GT$..$u7b$$u7b$closure$u7d$$u7d$$GT$17h6b630be3185b4e89E": [
+    -6
+  ],
+  "_ZN4core4hint9black_box17h0dbb5d01a9058221E": [
+    44
+  ],
+  "_ZN4core9panicking13assert_failed17h51444cdefdc65994E": [
+    45
+  ],
+  "_ZN4core9panicking19assert_failed_inner17h45dfcec0d802af65E": [
+    36
+  ],
+  "_ZN54_$LT$$LP$$RP$$u20$as$u20$std..process..Termination$GT$6report17h9924d4cd0e9fc04cE": [
+    14
+  ],
+  "_ZN8blackbox4main17h56268fefa1135d9eE": [
+    -1
+  ],
+  "_ZN8blackbox7add_one17h19d5f3b41fdf13daE": [
+    43
+  ],
+  "black_box": [
+    20,
+    35
+  ]
+}

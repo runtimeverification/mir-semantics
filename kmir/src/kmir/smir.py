@@ -116,8 +116,10 @@ class SMIRInfo:
         tys_for_name: dict[str, list[int]] = {}
         for ty, sym in self.function_symbols.items():
             if 'NormalSym' in sym:
-                tys_for_name.setdefault(sym['NormalSym'], [])
-                tys_for_name[sym['NormalSym']].append(ty)
+                tys_for_name.setdefault(sym['NormalSym'], []).append(ty)
+            elif 'IntrinsicSym' in sym:
+                tys_for_name.setdefault(sym['IntrinsicSym'], []).append(ty)
+            # Skip other symbol types like NoOpSym for now
         return tys_for_name
 
     @cached_property
