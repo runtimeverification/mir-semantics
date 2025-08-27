@@ -670,10 +670,6 @@ which will need to be addressed when such use cases are encountered.
         => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
        ... </k>
 
-  // Generic rule for non-Reference values (commented out for now - unclear what behavior should be)
-  // rule <k> ListItem(VAL1:Value) ListItem(VAL2:Value) ~> #execIntrinsic(symbol("raw_eq"), DEST)
-  //       => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
-  //      ... </k>
 ```
 
 ### Stopping on Program Errors
