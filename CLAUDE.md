@@ -97,9 +97,11 @@ The Python layer (`kmir.py`) bridges between SMIR JSON and K semantics:
 3. Executes via K framework's `KProve`/`KRun` interfaces
 
 ### Intrinsic Functions
-Intrinsic functions (like `black_box`) don't have regular function bodies. They're handled by:
+Intrinsic functions (like `black_box`, `raw_eq`) don't have regular function bodies. They're handled by:
 1. Python: `_make_function_map` adds `IntrinsicFunction` entries to function map
 2. K: Special rules in `kmir.md` execute intrinsics via `#execIntrinsic`
+
+**See `docs/dev/adding-intrinsics.md` for detailed implementation guide.**
 
 ## Testing Patterns
 
@@ -118,9 +120,14 @@ Tests in `kmir/src/tests/integration/data/prove-rs/` follow this pattern:
 ## Development Workflow
 
 ### Before Starting Any Task
-1. Read README and documentation in docs/ directory first
-2. Study existing development patterns and conventions
-3. Understand the codebase structure before making changes
+1. **Always read relevant documentation first**:
+   - Check `docs/` directory for guides on specific topics
+   - Review existing implementations of similar features
+   - Study test patterns in `kmir/src/tests/`
+2. **Understand existing patterns**:
+   - Look at recent PRs for implementation examples
+   - Check how similar features are implemented
+   - Follow established conventions in the codebase
 
 ### Modifying K Semantics
 1. Edit `.md` files in `kmir/src/kmir/kdist/mir-semantics/`
@@ -133,10 +140,7 @@ Tests in `kmir/src/tests/integration/data/prove-rs/` follow this pattern:
 3. Test with `make test-unit`
 
 ### Adding Intrinsic Support
-1. Update `_make_function_map` in `kmir.py` to recognize intrinsic
-2. Add `IntrinsicFunction` constructor in `mono.md`
-3. Add execution rules in `kmir.md` under `#execIntrinsic`
-4. Add test in `prove-rs/` directory
+See `docs/dev/adding-intrinsics.md` for complete guide with examples.
 
 ## Debugging Tips
 
