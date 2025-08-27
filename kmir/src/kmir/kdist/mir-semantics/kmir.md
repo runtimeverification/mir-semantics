@@ -663,7 +663,6 @@ which will need to be addressed when such use cases are encountered.
              .Operands
            ) ~> #execRawEq(DEST)
        ... </k>
-    [priority(1)]
 
   // Dedicated raw_eq execution that compares dereferenced values
   syntax KItem ::= #execRawEq(Place)
