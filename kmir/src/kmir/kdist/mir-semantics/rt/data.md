@@ -166,7 +166,6 @@ In contrast to regular write operations, the value does not have to be _mutable_
     [preserves-definedness] // valid list indexing checked
 ```
 
-
 ### Setting Local Variables
 
 The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
