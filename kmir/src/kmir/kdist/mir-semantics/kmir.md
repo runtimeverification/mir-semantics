@@ -640,6 +640,16 @@ provided References to access the underlying values, then compares them using K'
 This intrinsic is typically used for low-level memory comparison operations where type-specific equality methods
 are not suitable.
 
+**Current Limitations:**
+The current implementation only handles the simple case where References point to values of the same type.
+More complex scenarios require additional testing and implementation work:
+- References to different types with the same memory representation
+- References to composite types (structs, arrays, enums)
+- References with different alignments or padding
+
+Handling different types may require converting values to their byte representations before comparison,
+which will need to be addressed when such use cases are encountered.
+
 ```k
   // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
   
