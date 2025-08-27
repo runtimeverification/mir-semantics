@@ -630,7 +630,17 @@ its argument to the destination without modification.
 ```k
   // Black box intrinsic implementation - identity function  
   rule <k> ListItem(ARG:Value) ~> #execIntrinsic(symbol("black_box"), DEST) => #setLocalValue(DEST, ARG) ... </k>
-  
+```
+
+#### Raw Eq (`std::intrinsics::raw_eq`)
+
+The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
+It returns a boolean value indicating whether the referenced values are equal. The implementation dereferences the
+provided References to access the underlying values, then compares them using K's built-in equality operator.
+This intrinsic is typically used for low-level memory comparison operations where type-specific equality methods
+are not suitable.
+
+```k
   // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
   
   // Handle Reference values by reading the referenced values directly
