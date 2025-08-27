@@ -21,9 +21,9 @@ module KMIR-P-TOKEN
 The `pinocchio::account_info::AccountInfo` type contains a (mutable) pointer to a `pinocchio::account_info::Account`.
 However, in practice the pointed-at memory is assumed to contain additional data _after_ this `Account`.
 The additional data is commonly an instance of `Transmutable` (assumed here), which limits the choices to 3 structs:
-- `spl_token_interface::state::Account`, modelled as sort `IAcc`;
-- `spl_token_interface::state::Mint`, modelled as sort `IMint`;
-- `spl_token_interface::state::Multisig`, modelled as sort `IMulti`.
+- `pinocchio_token_interface::state::Account`, modelled as sort `IAcc`;
+- `pinocchio_token_interface::state::Mint`, modelled as sort `IMint`;
+- `pinocchio_token_interface::state::Multisig`, modelled as sort `IMulti`.
 
 A fourth kind of struct following the `Account` can be a "rent sysvar".
 The `Rent` sysvar holds constants that determine whether or not rent has to be paid for account storage.
@@ -355,6 +355,7 @@ An `AccountInfo` reference is passed to the function.
   rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
   rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
   rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
+  rule #functionName(IntrinsicFunction(symbol(NAME))) => NAME
 ```
 
 ```{.k .symbolic}
@@ -529,9 +530,9 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool (
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::account::Account>"
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::account::Account>"
         orBool
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_mut_unchecked::<spl_token_interface::state::account::Account>"
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::account::Account>"
      )
     [priority(30), preserves-definedness]
 
@@ -545,9 +546,9 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool (
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_unchecked::<spl_token_interface::state::mint::Mint>"
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::mint::Mint>"
         orBool
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "spl_token_interface::state::load_mut_unchecked::<spl_token_interface::state::mint::Mint>"
+          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::mint::Mint>"
      )
     [priority(30), preserves-definedness]
 
