@@ -515,7 +515,7 @@ An operand may be a `Reference` (the only way a function could access another fu
   
   // Handle intrinsic functions - execute directly without setting up local stack frame
   rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
-        => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
+        => #readOperands(ARGS) ~> #execIntrinsic(INTRINSIC_NAME, DEST) ~> #execBlockIdx(RETURN_TARGET)
        </k>
        <currentFrame>
          <dest> DEST </dest>
@@ -525,7 +525,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( Symbol, Operands, Place )
+                 | #execIntrinsic ( Symbol, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -629,7 +629,32 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
+  rule <k> ListItem(ARG:Value) ~> #execIntrinsic(symbol("black_box"), DEST) => #setLocalValue(DEST, ARG) ... </k>
+  
+  // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
+  
+  // Handle Reference values by reading the referenced values directly
+  rule <k> ListItem(Reference(_OFFSET1, place(LOCAL1, PROJ1), _MUT1, _META1):Value) 
+           ListItem(Reference(_OFFSET2, place(LOCAL2, PROJ2), _MUT2, _META2):Value) 
+           ~> #execIntrinsic(symbol("raw_eq"), DEST)
+        => #readOperands(
+             operandCopy(place(LOCAL1, PROJ1))
+             operandCopy(place(LOCAL2, PROJ2))
+             .Operands
+           ) ~> #execRawEq(DEST)
+       ... </k>
+    [priority(1)]
+
+  // Dedicated raw_eq execution that compares dereferenced values
+  syntax KItem ::= #execRawEq(Place)
+  rule <k> ListItem(VAL1:Value) ListItem(VAL2:Value) ~> #execRawEq(DEST)
+        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+       ... </k>
+
+  // Generic rule for non-Reference values (commented out for now - unclear what behavior should be)
+  // rule <k> ListItem(VAL1:Value) ListItem(VAL2:Value) ~> #execIntrinsic(symbol("raw_eq"), DEST)
+  //       => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+  //      ... </k>
 ```
 
 ### Stopping on Program Errors
