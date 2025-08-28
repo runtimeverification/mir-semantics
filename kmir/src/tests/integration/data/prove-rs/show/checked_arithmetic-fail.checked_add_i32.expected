@@ -31,9 +31,10 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
    │
-   │  (7 steps)
+   │  (9 steps)
    └─ 7 (stuck, leaf)
-       #execIntrinsic ( symbol ( "cold_path" ) , .Operands , place ( ... local: local (
+       .List
+~> #execIntrinsic ( symbol ( "cold_path" ) , place ( ... local: local ( 6
 
 
 
