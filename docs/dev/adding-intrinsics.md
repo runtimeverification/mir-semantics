@@ -48,41 +48,18 @@ cp kmir/src/tests/integration/data/exec-smir/intrinsic/your_intrinsic.state \
 
 ### Step 4: Implement K Semantics Rule
 
-Add rules to [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md):
+Add rules to [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md). 
 
-#### For Simple Value Operations:
+To find implementation patterns for your intrinsic:
+```bash
+# Search for existing intrinsic implementations
+grep -A10 "#execIntrinsic(symbol" kmir/src/kmir/kdist/mir-semantics/kmir.md
 
-```k
-rule <k> #execIntrinsic(symbol("your_intrinsic"), ARG:Operand .Operands, PLACE) 
-      => ARG ~> #setLocalValueFromK(PLACE)
-     ... </k>
-
-syntax KItem ::= #setLocalValueFromK(Place)
-rule <k> VAL:Value ~> #setLocalValueFromK(PLACE) => #setLocalValue(PLACE, VAL) ... </k>
+# Look for helper functions and evaluation patterns
+grep -B2 -A5 "seqstrict" kmir/src/kmir/kdist/mir-semantics/kmir.md
 ```
 
-#### For Operations Requiring Dereferencing:
-
-```k
-// Use helper function to add dereferencing
-syntax Operand ::= #withDeref(Operand) [function, total]
-rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
-  => operandCopy(place(LOCAL, projectionElemDeref PROJ))
-rule #withDeref(operandMove(place(LOCAL, PROJ))) 
-  => operandMove(place(LOCAL, projectionElemDeref PROJ))
-rule #withDeref(OP) => OP [owise]
-
-// Handle intrinsic with dereferencing
-rule <k> #execIntrinsic(symbol("your_intrinsic"), ARG1:Operand ARG2:Operand .Operands, PLACE)
-      => #execYourIntrinsic(PLACE, #withDeref(ARG1), #withDeref(ARG2))
-     ... </k>
-
-// Use seqstrict for automatic operand evaluation
-syntax KItem ::= #execYourIntrinsic(Place, KItem, KItem) [seqstrict(2,3)]
-rule <k> #execYourIntrinsic(DEST, VAL1:Value, VAL2:Value)
-      => #setLocalValue(DEST, process(VAL1, VAL2))
-     ... </k>
-```
+Study existing intrinsics like `black_box` (simple value operation) and `raw_eq` (reference dereferencing with helper functions) as reference implementations.
 
 ### Step 5: Add Documentation
 
