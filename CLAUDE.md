@@ -163,6 +163,3 @@ uv --directory kmir run kmir show proof_id --full-printer --no-omit-static-info 
 - `Function not found` errors: Check if function is in `FUNCTIONS_CELL` (may be intrinsic)
 - K compilation errors: Rules must be properly formatted, check syntax
 - SMIR generation fails: Ensure using correct Rust nightly version (2024-11-29)
-
-## Code Style Guidelines
-- **Intrinsic Rules**: Keep intrinsic implementations simple - use direct `#setLocalValue(DEST, ARG)` when possible instead of creating unnecessary helper rules
