@@ -629,7 +629,51 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
+  rule <k> #execIntrinsic(symbol("black_box"), ARG:Operand .Operands, DEST) 
+        => #setLocalValue(DEST, ARG)
+       ... </k>
+```
+
+#### Raw Eq (`std::intrinsics::raw_eq`)
+
+The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
+It returns a boolean value indicating whether the referenced values are equal. The implementation dereferences the
+provided References to access the underlying values, then compares them using K's built-in equality operator.
+This intrinsic is typically used for low-level memory comparison operations where type-specific equality methods
+are not suitable.
+
+**Current Limitations:**
+The current implementation only handles the simple case where References point to values of the same type.
+More complex scenarios require additional testing and implementation work:
+- References to different types with the same memory representation
+- References to composite types (structs, arrays, enums)
+- References with different alignments or padding
+
+Handling different types may require converting values to their byte representations before comparison,
+which will need to be addressed when such use cases are encountered.
+
+```k
+  // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
+  
+  // Helper function to append projectionElemDeref to an operand
+  syntax Operand ::= #withDeref(Operand) [function, total]
+  rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
+    => operandCopy(place(LOCAL, projectionElemDeref PROJ))
+  rule #withDeref(operandMove(place(LOCAL, PROJ))) 
+    => operandMove(place(LOCAL, projectionElemDeref PROJ))
+  rule #withDeref(OP) => OP [owise]
+  
+  // Handle raw_eq intrinsic by dereferencing operands
+  rule <k> #execIntrinsic(symbol("raw_eq"), ARG1:Operand ARG2:Operand .Operands, PLACE)
+        => #execRawEq(PLACE, #withDeref(ARG1), #withDeref(ARG2))
+       ... </k>
+
+  // Execute raw_eq with operand evaluation via seqstrict
+  syntax KItem ::= #execRawEq(Place, KItem, KItem) [seqstrict(2,3)]
+  rule <k> #execRawEq(DEST, VAL1:Value, VAL2:Value)
+        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+       ... </k>
+
 ```
 
 ### Stopping on Program Errors
