@@ -289,6 +289,36 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
         1000,
     ),
+    (
+        'cse-call-add1-1time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.state',
+        50,
+    ),
+    (
+        'cse-call-add1-10time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10time.state',
+        50,
+    ),
+    (
+        'cse-call-add1-100time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_100time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_100time.state',
+        50,
+    ),
+    (
+        'cse-call-add1-1000time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1000time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1000time.state',
+        50,
+    ),
+    (
+        'cse-call-add1-10000time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10000time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10000time.state',
+        50,
+    ),
 ]
 
 
