@@ -6,10 +6,12 @@ This guide explains how to add support for new intrinsic functions in KMIR. Intr
 
 ## Architecture
 
-As of PR #665, intrinsics use a "freeze/heat" pattern:
-1. **Operand Evaluation (Freeze)**: `#readOperands(ARGS)` evaluates all arguments to values
-2. **Intrinsic Execution (Heat)**: `#execIntrinsic(symbol("name"), DEST)` executes with values on K cell
-3. **Pattern Matching**: Rules match on specific value patterns for each intrinsic
+Intrinsics are handled with direct operand passing:
+1. **Direct Operand Passing**: `#execIntrinsic(symbol("name"), ARGS, DEST)` receives operands directly
+2. **Pattern Matching**: Rules match on specific operand patterns for each intrinsic
+3. **Operand Evaluation**: Each intrinsic rule handles its own operand evaluation as needed
+
+See implementation in [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md)
 
 ## Development Workflow
 
@@ -35,7 +37,7 @@ fn main() {
 
 ### Step 2: Add Test to Integration Suite
 
-Edit `kmir/src/tests/integration/test_integration.py` and add entry to `EXEC_DATA`:
+Add entry to `EXEC_DATA` in [test_integration.py](../../kmir/src/tests/integration/test_integration.py):
 
 ```python
 (
@@ -45,8 +47,6 @@ Edit `kmir/src/tests/integration/test_integration.py` and add entry to `EXEC_DAT
     65,  # Start with small depth, increase if needed
 ),
 ```
-
-The SMIR JSON will be generated automatically when the test runs.
 
 ### Step 3: Generate Initial State (Will Show Stuck Point)
 
@@ -64,48 +64,45 @@ cp kmir/src/tests/integration/data/exec-smir/intrinsic/your_intrinsic.state \
 
 ### Step 4: Implement K Semantics Rule
 
-Edit `kmir/src/kmir/kdist/mir-semantics/kmir.md`:
+Add rules to [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md):
 
-#### For Simple Value Operations (like `black_box`):
+#### For Simple Value Operations:
 
 ```k
-rule <k> ListItem(ARG:Value) ~> #execIntrinsic(symbol("your_intrinsic"), DEST) 
-      => #setLocalValue(DEST, process(ARG)) 
+rule <k> #execIntrinsic(symbol("your_intrinsic"), ARG:Operand .Operands, PLACE) 
+      => ARG ~> #setLocalValueFromK(PLACE)
      ... </k>
+
+syntax KItem ::= #setLocalValueFromK(Place)
+rule <k> VAL:Value ~> #setLocalValueFromK(PLACE) => #setLocalValue(PLACE, VAL) ... </k>
 ```
 
-#### For Reference Operations (like `raw_eq`):
+#### For Operations Requiring Dereferencing:
 
 ```k
-// Handle Reference values
-rule <k> ListItem(Reference(_OFFSET, place(LOCAL, PROJ), _MUT, _META):Value)
-         ~> #execIntrinsic(symbol("your_intrinsic"), DEST)
-      => #readOperands(
-           operandCopy(place(LOCAL, projectionElemDeref PROJ))
-           .Operands
-         ) ~> #execYourIntrinsic(DEST)
+// Use helper function to add dereferencing
+syntax Operand ::= #withDeref(Operand) [function, total]
+rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
+  => operandCopy(place(LOCAL, projectionElemDeref PROJ))
+rule #withDeref(operandMove(place(LOCAL, PROJ))) 
+  => operandMove(place(LOCAL, projectionElemDeref PROJ))
+rule #withDeref(OP) => OP [owise]
+
+// Handle intrinsic with dereferencing
+rule <k> #execIntrinsic(symbol("your_intrinsic"), ARG1:Operand ARG2:Operand .Operands, PLACE)
+      => #execYourIntrinsic(PLACE, #withDeref(ARG1), #withDeref(ARG2))
      ... </k>
 
-// Helper function to avoid recursion
-syntax KItem ::= #execYourIntrinsic(Place)
-rule <k> ListItem(VAL:Value) ~> #execYourIntrinsic(DEST)
-      => #setLocalValue(DEST, process(VAL))
+// Use seqstrict for automatic operand evaluation
+syntax KItem ::= #execYourIntrinsic(Place, KItem, KItem) [seqstrict(2,3)]
+rule <k> #execYourIntrinsic(DEST, VAL1:Value, VAL2:Value)
+      => #setLocalValue(DEST, process(VAL1, VAL2))
      ... </k>
 ```
 
 ### Step 5: Add Documentation
 
-Add a section in `kmir.md` under "Intrinsic Functions":
-
-```markdown
-#### Your Intrinsic (`std::intrinsics::your_intrinsic`)
-
-Description of what the intrinsic does and how it's implemented.
-
-**Current Limitations:**
-- Any limitations or unhandled cases
-- Future improvements needed
-```
+Document your intrinsic in the K semantics file with its implementation.
 
 ### Step 6: Rebuild and Test
 
@@ -133,51 +130,21 @@ make test-integration TEST_ARGS="-k 'exec_smir and your_intrinsic'"
 
 ## Examples
 
-### Example 1: `black_box` (Simple Identity)
-
-```k
-// Takes one value, returns it unchanged
-rule <k> ListItem(ARG:Value) ~> #execIntrinsic(symbol("black_box"), DEST) 
-      => #setLocalValue(DEST, ARG) 
-     ... </k>
-```
-
-### Example 2: `raw_eq` (Reference Comparison)
-
-```k
-// Takes two references, compares dereferenced values
-rule <k> ListItem(Reference(_OFF1, place(L1, P1), _M1, _META1):Value) 
-         ListItem(Reference(_OFF2, place(L2, P2), _M2, _META2):Value) 
-         ~> #execIntrinsic(symbol("raw_eq"), DEST)
-      => #readOperands(
-           operandCopy(place(L1, projectionElemDeref P1))
-           operandCopy(place(L2, projectionElemDeref P2))
-           .Operands
-         ) ~> #execRawEq(DEST)
-     ... </k>
-
-syntax KItem ::= #execRawEq(Place)
-rule <k> ListItem(VAL1:Value) ListItem(VAL2:Value) ~> #execRawEq(DEST)
-      => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
-     ... </k>
-```
+For implementation examples, see existing intrinsics in [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md).
 
 ## Common Patterns
 
-### Pattern 1: Direct Value Processing
-Use when the intrinsic operates directly on values without indirection.
+### Pattern 1: Direct Operand Evaluation
+Use when the intrinsic needs to evaluate its operands directly.
 
-### Pattern 2: Reference Dereferencing
-Use `projectionElemDeref` to access values behind references.
+### Pattern 2: Reference Dereferencing with #withDeref
+Use the `#withDeref` helper function to add dereferencing to operands.
 
-### Pattern 3: Helper Functions
-Create dedicated functions like `#execYourIntrinsic` to:
-- Avoid recursion issues
-- Separate concerns
-- Make rules more readable
+### Pattern 3: seqstrict for Automatic Evaluation
+Use `[seqstrict(2,3)]` attribute to automatically evaluate operand arguments.
 
-### Pattern 4: Multiple Operands
-Pattern match multiple `ListItem` entries for multi-argument intrinsics.
+### Pattern 4: Pattern Matching on Operands
+Match specific operand patterns directly in the `#execIntrinsic` rule.
 
 ## Testing Best Practices
 
@@ -241,17 +208,17 @@ cat kmir/src/tests/integration/data/exec-smir/intrinsic/your_intrinsic.smir.json
 
 ## Important Notes
 
-### The Freeze/Heat Pattern
-The current architecture ensures all operands are evaluated before the intrinsic executes:
-- **Freeze**: `#readOperands(ARGS)` evaluates operands to values
-- **Heat**: Your rule matches on these values
-- This prevents evaluation order issues and simplifies rules
+### Direct Operand Passing
+The current architecture passes operands directly to intrinsic rules:
+- **Direct Access**: Rules receive operands directly in `#execIntrinsic`
+- **Custom Evaluation**: Each intrinsic controls its own operand evaluation
+- **Better Indexing**: K can better index rules with explicit operand patterns
 
 ### When to Use Helper Functions
-Always use a helper function (like `#execRawEq`) when:
-- You need to call `#readOperands` again (to avoid recursion)
+Always use a helper function when:
+- You need automatic operand evaluation (with `seqstrict`)
 - The logic is complex enough to benefit from separation
-- You need multiple evaluation steps
+- You want to transform operands before evaluation (like with `#withDeref`)
 
 ### Testing Strategy
 1. Write the test with expected behavior first
@@ -263,7 +230,5 @@ Always use a helper function (like `#execRawEq`) when:
 
 ## References
 
-- PR #665: `raw_eq` implementation with freeze/heat pattern refactoring
-- PR #659: `black_box` implementation  
-- Issue #666: Enhancements for complex `raw_eq` cases
+- Recent intrinsic PRs in repository history
 - [Rust Intrinsics Documentation](https://doc.rust-lang.org/std/intrinsics/)
