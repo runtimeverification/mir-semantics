@@ -629,12 +629,9 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(symbol("black_box"), ARG:Operand .Operands, PLACE) 
-        => ARG ~> #setLocalValueFromK(PLACE)
+  rule <k> #execIntrinsic(symbol("black_box"), ARG:Operand .Operands, DEST) 
+        => #setLocalValue(DEST, ARG)
        ... </k>
-  
-  syntax KItem ::= #setLocalValueFromK(Place)
-  rule <k> VAL:Value ~> #setLocalValueFromK(PLACE) => #setLocalValue(PLACE, VAL) ... </k>
 ```
 
 #### Raw Eq (`std::intrinsics::raw_eq`)
