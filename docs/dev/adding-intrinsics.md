@@ -17,23 +17,7 @@ See implementation in [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md)
 
 ### Step 1: Create Test File
 
-Create test file in `kmir/src/tests/integration/data/exec-smir/intrinsic/`:
-
-```rust
-// your_intrinsic.rs
-#![feature(core_intrinsics)]
-
-fn main() {
-    use std::intrinsics::your_intrinsic;
-    
-    // Set up test values
-    let val = 42;
-    let result = your_intrinsic(&val);
-    
-    // Add assertion to verify behavior
-    assert!(result);
-}
-```
+Create a Rust test file in `kmir/src/tests/integration/data/exec-smir/intrinsic/` that uses your intrinsic and verifies its behavior with assertions.
 
 ### Step 2: Add Test to Integration Suite
 
