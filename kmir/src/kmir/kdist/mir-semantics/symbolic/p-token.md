@@ -51,8 +51,9 @@ The code uses some helper sorts for better readability.
 ```k
   // pinocchio Account structure
   syntax PAcc ::= PAcc ( U8, U8, U8, U8, U32, Key, Key , U64, U64)
+                | PAccError ( Value )
 
-  syntax PAcc ::= #toPAcc ( Value ) [function]
+  syntax PAcc ::= #toPAcc ( Value ) [function, total]
   // -------------------------------------------------------
   rule #toPAcc(
         Aggregate(variantIdx(0),
@@ -68,6 +69,8 @@ The code uses some helper sorts for better readability.
         ))
       =>
        PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(Y))
+  rule #toPAcc(OTHER) => PAccError(OTHER) [owise]
+
 
   syntax Value ::= #fromPAcc ( PAcc ) [function, total]
   // -----------------------------------------------------------
@@ -84,6 +87,10 @@ The code uses some helper sorts for better readability.
                   ListItem(Integer(X, 64, false))
                   ListItem(Integer(Y, 64, false))
         )
+  rule #fromPAcc(PAccError(OTHER)) => OTHER
+
+  rule #toPAcc(#fromPAcc(PACC)) => PACC [simplification, preserves-definedness]
+  rule #fromPAcc(#toPAcc(PACC)) => PACC [simplification, preserves-definedness]
 
   syntax U8 ::= U8( Int )
   syntax U32 ::= U32 ( Int )
@@ -269,7 +276,7 @@ The code uses some helper sorts for better readability.
           )
 
     rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
-    rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
+    rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification]
 ```
 ### Pinocchio Rent sysvar
 
