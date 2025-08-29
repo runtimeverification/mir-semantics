@@ -6,6 +6,7 @@ requires "symbolic/kmir-symbolic-locals.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
+requires "summary/add1.k"
 ```
 
 ## Syntax of MIR in K
