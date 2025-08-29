@@ -163,15 +163,15 @@ uv --directory kmir run kmir show proof_id --full-printer --no-omit-static-info 
 ## K Framework Development Tips
 
 ### Compilation Issues
-- **Build timeouts**: K compilation should complete within 60 seconds. If builds timeout or hang indefinitely, check for leftover `.lock` files in the cache directory (`/home/user/.cache/kdist-*`)
-- **Cache cleanup**: Run `rm -rf ~/.cache/kdist-*` to clear compilation cache if experiencing persistent build issues
+- **Build timeouts**: K compilation should complete within 60 seconds. If builds timeout or hang indefinitely, check for leftover `.lock` files in the compilation cache directory
+- **Cache cleanup**: Find the specific cache directory with `uv --directory kmir run kdist which mir-semantics.llvm` (remove `/llvm` suffix), then delete only that directory to clear compilation cache
 - **Clean builds**: Use `make clean` to remove build artifacts before rebuilding
 
 ### K Semantics Patterns
-- **seqstrict attribute**: Use `seqstrict(N)` to evaluate the Nth parameter of a function before applying rules. For example, `seqstrict(5)` evaluates the 5th parameter to a `Value`
+- **seqstrict attribute**: Use `seqstrict(N)` to evaluate the Nth parameter before applying rules. The `Evaluation` sort is used for automatic evaluation ("heating" and "cooling") until `Value` is obtained. Rewrite symbols must declare `Evaluation` arguments for parameters that need evaluation.
 - **operandCopy evaluation**: Use `operandCopy(PLACE)` as an argument to `seqstrict` functions to evaluate place contents to `Value`
 - **Function vs KItem**: Functions (`[function]`) are pure and cannot access configuration; KItems can access configuration cells but require rules
-- **Pattern matching**: Rules should match specific data constructors rather than using catch-all patterns for better error detection
+- **Specific pattern matching**: Rules should match specific data constructors rather than using catch-all patterns. Execution should get stuck on unexpected data or unimplemented features rather than silently continuing
 
 ### Working with Inlined Functions
 When Rust functions are inlined, they may not appear in MIR as function calls:
