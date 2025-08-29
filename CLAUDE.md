@@ -159,3 +159,22 @@ uv --directory kmir run kmir show proof_id --full-printer --no-omit-static-info 
 - `Function not found` errors: Check if function is in `FUNCTIONS_CELL` (may be intrinsic)
 - K compilation errors: Rules must be properly formatted, check syntax
 - SMIR generation fails: Ensure using correct Rust nightly version (2024-11-29)
+
+## K Framework Development Tips
+
+### Compilation Issues
+- **Build timeouts**: K compilation should complete within 60 seconds. If builds timeout or hang indefinitely, check for leftover `.lock` files in the cache directory (`/home/user/.cache/kdist-*`)
+- **Cache cleanup**: Run `rm -rf ~/.cache/kdist-*` to clear compilation cache if experiencing persistent build issues
+- **Clean builds**: Use `make clean` to remove build artifacts before rebuilding
+
+### K Semantics Patterns
+- **seqstrict attribute**: Use `seqstrict(N)` to evaluate the Nth parameter of a function before applying rules. For example, `seqstrict(5)` evaluates the 5th parameter to a `Value`
+- **operandCopy evaluation**: Use `operandCopy(PLACE)` as an argument to `seqstrict` functions to evaluate place contents to `Value`
+- **Function vs KItem**: Functions (`[function]`) are pure and cannot access configuration; KItems can access configuration cells but require rules
+- **Pattern matching**: Rules should match specific data constructors rather than using catch-all patterns for better error detection
+
+### Working with Inlined Functions
+When Rust functions are inlined, they may not appear in MIR as function calls:
+- Look for the non-inlined version (e.g., `from_bytes_unchecked` instead of `from_bytes`)
+- Check the actual Rust source code to understand what gets inlined vs what remains as function calls
+- Inlined functions may require handling their logic (like length checks) in the semantics rather than intercepting calls
