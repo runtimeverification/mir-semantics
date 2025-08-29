@@ -40,6 +40,7 @@ dev = [
     "pytest",
     "pytest-cov",
     "pytest-mock",
+    "pytest-timeout",
     "pytest-xdist",
     "pyupgrade",
 ]
