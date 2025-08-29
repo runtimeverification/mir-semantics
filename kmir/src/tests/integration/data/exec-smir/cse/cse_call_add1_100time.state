@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 3 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 5 ) )  .Branches , otherwise: basicBlockIdx ( 2 ) ) ) , span: span ( 59 ) ) ) ~> .K
+    #EndProgram ~> .K
   </k>
   <retVal>
     noReturn
@@ -33,15 +33,16 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 0 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 0 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedValue ( BoolVal ( true ) , ty ( 25 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 100 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 100 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Integer ( 99 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
+      ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
