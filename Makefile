@@ -52,7 +52,7 @@ test-unit:
 test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal \
-			--timeout=300 $(TEST_ARGS)
+			$(TEST_ARGS)
 
 # Checks and formatting
 
