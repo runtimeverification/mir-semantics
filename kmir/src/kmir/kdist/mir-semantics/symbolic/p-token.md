@@ -517,7 +517,7 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 - the return value (DEST) is filled with a special reference to where the data is stored, derived from the pointer inside the `AccountInfo` struct. This value has Rust type `*const u8` or `*mut u8`.
 
 ```k
-  syntax Value ::= PAccByteRef ( Int , Place , Mutability )
+  syntax Value ::= PAccByteRef ( Int , Place , Mutability , Int )
 ```
 
 ```{.k .symbolic}
@@ -550,9 +550,19 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
 
   rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, PLACE, _MUT, _EMUL), MUT)
-        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT))
+        => #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, operandCopy(PLACE))
         ...
         </k>
+        
+  syntax KItem ::= #mkPAccByteRefWithLength ( Place , Int , Place , Mutability , Evaluation ) [seqstrict(5)]
+  // -------------------------------------------------------------------------------------
+  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountAccount(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IAcc length
+  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountMint(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IMint length  
+  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountRent(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17)) ... </k> // PRent length
+  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, _) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 0)) ... </k> // default/error case
+
+  // Handle PtrMetadata for PAccByteRef to return the stored length
+  rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
 ```
 
 This intermediate representation will be eliminated by an intercepted call to `load_[mut_]unchecked` , the
@@ -604,7 +614,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::Rent::from_bytes"
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::Rent::from_bytes_unchecked"
     [priority(30), preserves-definedness]
 
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
@@ -612,7 +622,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   // We could check the pointee and, if it is a different data structure, return an error (as the length check in the original code)
   syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem ) [seqstrict(2)]
 
-  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT), ACCESS_PROJ)
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ)
         => #setLocalValue(
               DEST,
               // Result type
