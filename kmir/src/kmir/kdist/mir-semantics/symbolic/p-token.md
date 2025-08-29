@@ -604,11 +604,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool (
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::load_unchecked::<pinocchio::sysvars::rent::Rent>"
-        orBool
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::load_mut_unchecked::<pinocchio::sysvars::rent::Rent>"
-     )
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::Rent::from_bytes"
     [priority(30), preserves-definedness]
 
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
