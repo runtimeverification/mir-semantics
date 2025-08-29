@@ -111,10 +111,12 @@ def verify_add1(start_symbol='add1'):
         defunc_with=kmir.definition
     )
     
-    # Save K module to file
+    # Save K module to file with proper K syntax formatting
     module_file = proof_dir / f"{apr_proof.id}.k"
     with open(module_file, 'w') as f:
-        f.write(str(k_module))
+        # Use KMIR's pretty_print to generate proper K syntax
+        k_module_text = kmir.pretty_print(k_module)
+        f.write(k_module_text)
     print(f"K module '{module_name}' saved to: {module_file}")
     
     # Generate and save minimized proof show output
