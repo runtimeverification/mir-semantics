@@ -38,6 +38,7 @@ module KMIR-CONTROL-FLOW
 
   imports KMIR-CONFIGURATION
   imports RT-DATA
+  imports ADD1
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
