@@ -293,7 +293,7 @@ EXEC_DATA = [
         'cse-call-add1-1time',
         EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.smir.json',
         EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.state',
-        None,
+        13,
     ),
     (
         'cse-call-add1-10time',

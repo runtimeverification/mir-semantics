@@ -6,7 +6,7 @@ requires "symbolic/kmir-symbolic-locals.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
-requires "summary/add1.k"
+// requires "summary/add1.k"
 ```
 
 ## Syntax of MIR in K
@@ -38,7 +38,7 @@ module KMIR-CONTROL-FLOW
 
   imports KMIR-CONFIGURATION
   imports RT-DATA
-  imports ADD1
+  // imports ADD1
 ```
 
 Execution of a program begins by creating a stack frame for the `main`
@@ -514,9 +514,9 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
-  
+
   // Handle intrinsic functions - execute directly without setting up local stack frame
-  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
+  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS)
         => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
        </k>
        <currentFrame>
@@ -630,7 +630,7 @@ about the value passed through it. In the semantics, it acts as an identity func
 its argument to the destination without modification.
 
 ```k
-  // Black box intrinsic implementation - identity function  
+  // Black box intrinsic implementation - identity function
   rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
 ```
 

@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #EndProgram ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 56 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 10 ) ) ) ) , args: operandMove ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 1 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 57 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -29,8 +29,8 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 1 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 16 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 0 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) )
     </locals>
   </currentFrame>
