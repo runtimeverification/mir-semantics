@@ -549,10 +549,15 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
 
-  rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, PLACE, _MUT, _EMUL), MUT)
-        => #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, operandCopy(PLACE))
+  // TODO additional projections not supported at the moment, assumed ref is on stack not local
+  rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, place(LOCAL, .ProjectionElems) #as PLACE, _MUT, _EMUL), MUT)
+        => #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET))
         ...
-        </k>
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
 ```
 
 ### Length validation for inlined `from_bytes` function
@@ -562,12 +567,11 @@ Since we intercept `from_bytes_unchecked` instead of the inlined `from_bytes`, w
 We determine the data type (IAcc/IMint/PRent) by examining the `PAccount` value and set the appropriate `LEN` constant in `PAccByteRef` so that `PtrMetadata` operations (which implement `bytes.len()`) return the correct length.
 
 ```k
-  syntax KItem ::= #mkPAccByteRefLen ( Place , Int , Place , Mutability , Evaluation ) [seqstrict(5)]
+  syntax KItem ::= #mkPAccByteRefLen ( Place , Int , Place , Mutability , Value )
   // -------------------------------------------------------------------------------------
-  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountAccount(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IAcc length
-  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountMint(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IMint length  
-  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, PAccountRent(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17)) ... </k> // PRent length
-  rule <k> #mkPAccByteRefWithLength(DEST, OFFSET, PLACE, MUT, _) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 0)) ... </k> // default/error case
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountAccount(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IAcc length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMint(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IMint length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17)) ... </k> // PRent length
 
   // Handle PtrMetadata for PAccByteRef to return the stored length
   rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
@@ -583,7 +587,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccountRef(DEST, OPERAND, PAccountIAcc)
+    => #mkPAccountRef(DEST, OPERAND, PAccountIAcc, true)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -599,7 +603,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
 
   rule [cheatcode-mk-imint-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccountRef(DEST, OPERAND, PAccountIMint)
+    => #mkPAccountRef(DEST, OPERAND, PAccountIMint, true)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -615,7 +619,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
 
   rule [cheatcode-mk-prent-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccountRef(DEST, OPERAND, PAccountPRent)
+    => #mkPAccountRef(DEST, OPERAND, PAccountPRent, false)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -628,15 +632,21 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
   // return a reference to the second component <Thing> within this PAccount data.
   // We could check the pointee and, if it is a different data structure, return an error (as the length check in the original code)
-  syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem ) [seqstrict(2)]
+  syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem , Bool ) [seqstrict(2)]
 
-  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ)
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, true)
         => #setLocalValue(
               DEST,
-              // Result type
               Aggregate(variantIdx(0),
-                  ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
+                ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
               )
+            )
+        ...
+       </k>
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, false)
+        => #setLocalValue(
+              DEST,
+              Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata)
             )
         ...
        </k>
