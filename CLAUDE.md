@@ -163,3 +163,22 @@ uv --directory kmir run kmir show proof_id --full-printer --no-omit-static-info 
 - `Function not found` errors: Check if function is in `FUNCTIONS_CELL` (may be intrinsic)
 - K compilation errors: Rules must be properly formatted, check syntax
 - SMIR generation fails: Ensure using correct Rust nightly version (2024-11-29)
+
+## K Framework Development Tips
+
+### Compilation Issues
+- **Build timeouts**: K compilation should complete within 60 seconds. If builds timeout or hang indefinitely, check for leftover `.lock` files in the compilation cache directory
+- **Cache cleanup**: Find the specific cache directory with `uv --directory kmir run kdist which mir-semantics.llvm` (remove `/llvm` suffix), then delete only that directory to clear compilation cache
+- **Clean builds**: Use `make clean` to remove build artifacts before rebuilding
+
+### K Semantics Patterns
+- **seqstrict attribute**: Use `seqstrict(N)` to evaluate the Nth parameter before applying rules. The `Evaluation` sort is used for automatic evaluation ("heating" and "cooling") until `Value` is obtained. Rewrite symbols must declare `Evaluation` arguments for parameters that need evaluation.
+- **operandCopy evaluation**: Use `operandCopy(PLACE)` as an argument to `seqstrict` functions to evaluate place contents to `Value`
+- **Function vs KItem**: Functions (`[function]`) are pure and cannot access configuration; KItems can access configuration cells but require rules
+- **Specific pattern matching**: Rules should match specific data constructors rather than using catch-all patterns. Execution should get stuck on unexpected data or unimplemented features rather than silently continuing
+
+### Working with Inlined Functions
+When Rust functions are inlined, they may not appear in MIR as function calls:
+- Look for the non-inlined version (e.g., `from_bytes_unchecked` instead of `from_bytes`)
+- Check the actual Rust source code to understand what gets inlined vs what remains as function calls
+- Inlined functions may require handling their logic (like length checks) in the semantics rather than intercepting calls
