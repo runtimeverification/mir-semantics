@@ -520,6 +520,12 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
   syntax Value ::= PAccByteRef ( Int , Place , Mutability , Int )
 ```
 
+The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
+
+```k
+  rule #adjustRef(PAccByteRef(HEIGHT, PLACE, MUT, LEN), OFFSET) => PAccByteRef(HEIGHT +Int OFFSET, PLACE, MUT, LEN)
+```
+
 ```{.k .symbolic}
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
