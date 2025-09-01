@@ -334,6 +334,11 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
         ...
         </k>
     [priority(30)]
+  rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PROJ PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PRENT) CTXTS)
+        ...
+        </k>
+    [priority(30)]
 
   // special context node(s) storing the second component
   syntax Context ::= CtxPAccountPAcc ( PAccount2nd )
@@ -344,6 +349,9 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
     [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPAcc(IMINT:IMint) CTXS)
     => #buildUpdate(PAccountMint(#toPAcc(VAL), IMINT), CTXS)
+    [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
+  rule #buildUpdate(VAL, CtxPAccountPAcc(PRENT:PRent) CTXS)
+    => #buildUpdate(PAccountRent(#toPAcc(VAL), PRENT), CTXS)
     [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
 
   // transforming PAccountAccount(PACC, _) to PACC is automatic, no projection required
@@ -387,10 +395,21 @@ An `AccountInfo` reference is passed to the function.
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
      andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
+  rule [cheatcode-is-rent]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkPTokenRent(PLACE) ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_rent"
+    [priority(30), preserves-definedness]
 
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
+                 | #mkPTokenRent ( Place )
                 //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
@@ -413,8 +432,17 @@ An `AccountInfo` reference is passed to the function.
       ...
     </k>
 
+  rule
+    <k> #mkPTokenRent(place(LOCAL, PROJS))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
+            #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+      ...
+    </k>
+
   syntax Evaluation ::= #addAccount ( Evaluation )  [seqstrict()]
                       | #addMint ( Evaluation )     [seqstrict()]
+                      | #addRent ( Evaluation )     [seqstrict()]
                       // | #addMultisig ( Evaluation ) [seqstrict()]
 
   rule #addAccount(Aggregate(_, _) #as P_ACC)
@@ -459,6 +487,14 @@ An `AccountInfo` reference is passed to the function.
     andBool lengthString(?MINT_AUTH_KEY) ==Int 32
     andBool lengthString(?FREEZE_AUTH_KEY) ==Int 32
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
+
+  rule #addRent(Aggregate(_, _) #as P_ACC)
+      => PAccountRent(
+            #toPAcc(P_ACC),
+            PRent(U64(?LMP_PER_BYTEYEAR), F64(?_EXEMPT_THRESHOLD), U8(?BURN_PCT))
+          )
+    ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 64
+    andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <Int 256
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
@@ -481,7 +517,7 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 - the return value (DEST) is filled with a special reference to where the data is stored, derived from the pointer inside the `AccountInfo` struct. This value has Rust type `*const u8` or `*mut u8`.
 
 ```k
-  syntax Value ::= PAccByteRef ( Int , Place , Mutability )
+  syntax Value ::= PAccByteRef ( Int , Place , Mutability , Int )
 ```
 
 ```{.k .symbolic}
@@ -513,10 +549,32 @@ which gets eliminated by the call to `load_[mut_]unchecked`.
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
 
-  rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, PLACE, _MUT, _EMUL), MUT)
-        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT))
+  // TODO additional projections not supported at the moment, assumed ref is on stack not local
+  rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, place(LOCAL, .ProjectionElems) #as PLACE, _MUT, _EMUL), MUT)
+        => #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET))
         ...
-        </k>
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+```
+
+### Length validation for inlined `from_bytes` function
+
+The Rust `from_bytes` function is inlined and contains a length check: `if bytes.len() < Self::LEN`.
+Since we intercept `from_bytes_unchecked` instead of the inlined `from_bytes`, we need to handle the length validation ourselves.
+We determine the data type (IAcc/IMint/PRent) by examining the `PAccount` value and set the appropriate `LEN` constant in `PAccByteRef` so that `PtrMetadata` operations (which implement `bytes.len()`) return the correct length.
+
+```k
+  syntax KItem ::= #mkPAccByteRefLen ( Place , Int , Place , Mutability , Value )
+  // -------------------------------------------------------------------------------------
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountAccount(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IAcc length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMint(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IMint length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17)) ... </k> // PRent length
+
+  // Handle PtrMetadata for PAccByteRef to return the stored length
+  rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
 ```
 
 This intermediate representation will be eliminated by an intercepted call to `load_[mut_]unchecked` , the
@@ -529,7 +587,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccountRef(DEST, OPERAND, PAccountIAcc)
+    => #mkPAccountRef(DEST, OPERAND, PAccountIAcc, true)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -545,7 +603,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
 
   rule [cheatcode-mk-imint-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccountRef(DEST, OPERAND, PAccountIMint)
+    => #mkPAccountRef(DEST, OPERAND, PAccountIMint, true)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -559,18 +617,36 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
      )
     [priority(30), preserves-definedness]
 
+  rule [cheatcode-mk-prent-ref]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkPAccountRef(DEST, OPERAND, PAccountPRent, false)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::Rent::from_bytes_unchecked"
+    [priority(30), preserves-definedness]
+
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
   // return a reference to the second component <Thing> within this PAccount data.
   // We could check the pointee and, if it is a different data structure, return an error (as the length check in the original code)
-  syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem ) [seqstrict(2)]
+  syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem , Bool ) [seqstrict(2)]
 
-  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT), ACCESS_PROJ)
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, true)
         => #setLocalValue(
               DEST,
-              // Result type
               Aggregate(variantIdx(0),
-                  ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
+                ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
               )
+            )
+        ...
+       </k>
+  rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, false)
+        => #setLocalValue(
+              DEST,
+              Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata)
             )
         ...
        </k>
@@ -583,7 +659,7 @@ This ensures that the data structure can be written to (by constructing and writ
 NB The projection rule must have higher priority than the one which auto-projects to the `PAcc` part of the `PAccount`.
 
 ```k
-  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint"
+  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint" | "PAccountPRent"
 
   // special traverseProjection rules that call fromPAcc on demand when needed
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)
@@ -598,16 +674,26 @@ NB The projection rule must have higher priority than the one which auto-project
         </k>
      [priority(20)] // avoid matching the default rule to access PAcc
 
+  rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PAccountPRent PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPRent(PRENT)        , PROJS, CtxPAccountPRent(PACC) CTXTS)
+        ...
+        </k>
+     [priority(20)] // avoid matching the default rule to access PAcc
+
 
   syntax Context ::= CtxPAccountIAcc( PAcc )
                    | CtxPAccountIMint( PAcc )
+                   | CtxPAccountPRent( PAcc )
 
   rule #projectionsFor(CtxPAccountIAcc(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
   rule #projectionsFor(CtxPAccountIMint(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMint PROJS)
+  rule #projectionsFor(CtxPAccountPRent(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountPRent PROJS)
 
   rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountIMint(PACC) CTXS) => #buildUpdate(PAccountMint(PACC, #toIMint(VAL)), CTXS)
+    [preserves-definedness] // by construction, VAL has the right shape from introducing the context
+  rule #buildUpdate(VAL, CtxPAccountPRent(PACC) CTXS) => #buildUpdate(PAccountRent(PACC, #toPRent(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
 ```
 
