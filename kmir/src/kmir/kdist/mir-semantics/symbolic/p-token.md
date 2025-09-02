@@ -50,7 +50,7 @@ The code uses some helper sorts for better readability.
 
 ```k
   // pinocchio Account structure
-  syntax PAcc ::= PAcc ( U8, U8, U8, U8, U32, Key, Key , U64, U64)
+  syntax PAcc ::= PAcc ( U8, U8, U8, U8, I32, Key, Key , U64, U64)
                 | PAccError ( Value )
 
   syntax PAcc ::= #toPAcc ( Value ) [function, total]
@@ -61,27 +61,27 @@ The code uses some helper sorts for better readability.
                   ListItem(Integer(B, 8, false))
                   ListItem(Integer(C, 8, false))
                   ListItem(Integer(D, 8, false))
-                  ListItem(Integer(E, 32, false))
+                  ListItem(Integer(E, 32, true))
                   ListItem(KEY1BYTES)
                   ListItem(KEY2BYTES)
                   ListItem(Integer(X, 64, false))
                   ListItem(Integer(Y, 64, false))
         ))
       =>
-       PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(Y))
+       PAcc (U8(A), U8(B), U8(C), U8(D), I32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(Y))
   rule #toPAcc(OTHER) => PAccError(OTHER) [owise]
 
 
   syntax Value ::= #fromPAcc ( PAcc ) [function, total]
   // -----------------------------------------------------------
-  rule #fromPAcc(PAcc (U8(A), U8(B), U8(C), U8(D), U32(E), KEY1, KEY2, U64(X), U64(Y)))
+  rule #fromPAcc(PAcc (U8(A), U8(B), U8(C), U8(D), I32(E), KEY1, KEY2, U64(X), U64(Y)))
       =>
         Aggregate(variantIdx(0),
                   ListItem(Integer(A, 8, false))
                   ListItem(Integer(B, 8, false))
                   ListItem(Integer(C, 8, false))
                   ListItem(Integer(D, 8, false))
-                  ListItem(Integer(E, 32, false))
+                  ListItem(Integer(E, 32, true))
                   ListItem(fromKey(KEY1))
                   ListItem(fromKey(KEY2))
                   ListItem(Integer(X, 64, false))
@@ -93,7 +93,7 @@ The code uses some helper sorts for better readability.
   rule #fromPAcc(#toPAcc(PACC)) => PACC [simplification, preserves-definedness]
 
   syntax U8 ::= U8( Int )
-  syntax U32 ::= U32 ( Int )
+  syntax I32 ::= I32 ( Int )
   syntax U64 ::= U64 ( Int )
 
   syntax Key ::= Key( String ) // 32 bytes
