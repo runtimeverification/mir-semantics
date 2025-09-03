@@ -38,10 +38,7 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 
 def id_range(smir: SMIRInfo) -> int:
-    f_max = max(0, *smir.function_symbols)
-    ty_max = max(0, *smir.types)
-    span_range = max(0, *smir.spans)
-    return max(f_max, ty_max, span_range)
+    return max(0, *smir.function_symbols, *smir.types, *smir.spans)
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
