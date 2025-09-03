@@ -1,0 +1,11 @@
+Proof ID: cse_call_add1_1000time.smir.main
+Times: 1000
+Start Symbol: main
+SMIR File: /Users/steven/Desktop/projs/mir-semantics/kmir/src/tests/integration/data/exec-smir/cse/cse_call_add1_1000time.smir.json
+Proof Passed: True
+Proof Failed: False
+Original Nodes: 3
+Original Edges: 1
+Minimized Nodes: 3
+Minimized Edges: 1
+K Module Name: MAIN-PROOF
