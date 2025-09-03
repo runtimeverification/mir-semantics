@@ -1204,6 +1204,30 @@ The original metadata is therefore already stored as `staticSize` to avoid havin
       // [preserves-definedness] // valid type map indexing and sort coercion
 ```
 
+### `Transmute` casts
+
+An unsafe `transmute` operation in Rust is an arbitrary cast between unrelated types based on assumptions that the byte
+representations of the source and target types are somewhat relatable (or else, under full consideration that they are not).
+
+Support for `castKindTransmute` in this semantics is very limited because of the high-level data model applied.
+What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
+
+```k
+  rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+
+  rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+```
+
 ### Other casts involving pointers
 
 | CastKind                     | Description |
@@ -1211,8 +1235,6 @@ The original metadata is therefore already stored as `staticSize` to avoid havin
 | PointerExposeProvenance      |             |
 | PointerWithExposedProvenance |             |
 | FnPtrToPtr                   |             |
-| Transmute                    |             |
-
 
 ## Decoding constants from their bytes representation to values
 
