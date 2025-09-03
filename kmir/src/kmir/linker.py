@@ -38,9 +38,9 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 
 def id_range(smir: SMIRInfo) -> int:
-    f_max = max([0] + list(smir.function_symbols))
-    ty_max = max([0] + list(smir.types))
-    span_range = max([0] + list(smir.spans))
+    f_max = max(0, *smir.function_symbols)
+    ty_max = max(0, *smir.types)
+    span_range = max(0, *smir.spans)
     return max(f_max, ty_max, span_range)
 
 
