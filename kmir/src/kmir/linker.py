@@ -24,7 +24,7 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
         apply_offset(smir, offset)
 
     result_dict = {
-        'name': ','.join([smir._smir['name'] for smir in smirs]),
+        'name': ','.join(smir._smir['name'] for smir in smirs),
         'crate_id': 0,  # HACK
         'allocs': [a for smir in smirs for a in smir._smir['allocs']],
         'functions': [f for smir in smirs for f in smir._smir['functions']],
