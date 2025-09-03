@@ -9,6 +9,7 @@ requires "../ty.md"
 requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
+requires "./decoding.md"
 
 module RT-DATA
   imports INT
@@ -26,6 +27,8 @@ module RT-DATA
   imports RT-NUMBERS
   imports RT-TYPES
   imports KMIR-CONFIGURATION
+
+  imports RT-DECODING
 ```
 
 ## Operations on local variables
