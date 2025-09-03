@@ -669,7 +669,7 @@ which will need to be addressed when such use cases are encountered.
        ... </k>
 
   // Execute raw_eq with operand evaluation via seqstrict
-  syntax KItem ::= #execRawEq(Place, KItem, KItem) [seqstrict(2,3)]
+  syntax KItem ::= #execRawEq(Place, Evaluation, Evaluation) [seqstrict(2,3)]
   rule <k> #execRawEq(DEST, VAL1:Value, VAL2:Value)
         => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
        ... </k>
