@@ -512,9 +512,9 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
-  
+
   // Handle intrinsic functions - execute directly without setting up local stack frame
-  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
+  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS)
         => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
        </k>
        <currentFrame>
@@ -628,7 +628,7 @@ about the value passed through it. In the semantics, it acts as an identity func
 its argument to the destination without modification.
 
 ```k
-  // Black box intrinsic implementation - identity function  
+  // Black box intrinsic implementation - identity function
   rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
 ```
 
@@ -644,6 +644,179 @@ The execution will stop with the respective error information as soon as an erro
 
   rule [program-error]:
     <k> ERR:MIRError => #ProgramError(ERR) ...</k>
+```
+
+### Experimental ADD1 function summary
+
+```
+    rule [BASIC-BLOCK-8-TO-6]:
+        <kmir>
+            <k>
+               ( #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandConstant ( constOperand ( ... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) )  .Operands , destination: place ( ... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) => #ProgramError ( AssertError ( assertMessageOverflow ( binOpAdd , operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) ) )
+               ~> #execBlockIdx ( basicBlockIdx ( 1 ) ) )
+            </k>
+            <retVal>
+            _RETVAL_CELL:RetVal
+            </retVal>
+            <currentFunc>
+            ( CURRENTFUNC_CELL:Ty => ty ( 27 ) )
+            </currentFunc>
+            <currentFrame>
+            <currentBody>
+                ( _CURRENTBODY_CELL => ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueCheckedBinaryOp ( binOpAdd , operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) ) , span: span ( 51 ) )  .Statements , terminator: terminator ( ... kind: assert ( ... cond: operandMove ( place ( ... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 1 ) , ty ( 25 ) )  .ProjectionElems ) ) , expected: false , msg: assertMessageOverflow ( binOpAdd , operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) , target: basicBlockIdx ( 1 ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) ) ) ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandMove ( place ( ... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 16 ) )  .ProjectionElems ) ) ) ) , span: span ( 51 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindReturn , span: span ( 52 ) ) ) ) )
+            </currentBody>
+            <caller>
+                ( CALLER_CELL:Ty => CURRENTFUNC_CELL:Ty )
+            </caller>
+            <dest>
+                ( DEST_CELL:Place => place ( ... local: local ( 0 ) , projection: .ProjectionElems ) )
+            </dest>
+            <target>
+                ( TARGET_CELL:MaybeBasicBlockIdx => noBasicBlockIdx )
+            </target>
+            <unwind>
+                ( UNWIND_CELL:UnwindAction => unwindActionContinue )
+            </unwind>
+            <locals>
+                ListItem ( newLocal ( ty ( ( 0 => 16 ) ) , ( mutabilityNot => mutabilityMut ) ) ) ( ListItem ( typedValue ( Integer ( ARG_INT1:Int , 32 , true ) , ty ( 16 ) , mutabilityNot ) ) => ListItem ( typedValue ( Integer ( ARG_INT1:Int , 32 , true ) , ty ( 16 ) , mutabilityNot ) ) ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( truncate ( ARG_INT1:Int +Int 1 , 32 , Signed ) , 32 , true ) ) ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) ) )
+            </locals>
+            </currentFrame>
+            <stack>
+            ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ListItem ( typedValue ( Integer ( ARG_INT1:Int , 32 , true ) , ty ( 16 ) , mutabilityNot ) ) ) ) )
+            </stack>
+            <memory>
+            _MEMORY_CELL:Map
+            </memory>
+            <functions>
+            ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) ) ty ( 27 ) |-> monoItemFn ( ... name: symbol ( "add1" ) , id: defId ( 6 ) , body: someBody ( body ( ... blocks: basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueCheckedBinaryOp ( binOpAdd , operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) ) , span: span ( 51 ) )  .Statements , terminator: terminator ( ... kind: assert ( ... cond: operandMove ( place ( ... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 1 ) , ty ( 25 ) )  .ProjectionElems ) ) , expected: false , msg: assertMessageOverflow ( binOpAdd , operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) , target: basicBlockIdx ( 1 ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) )  basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandMove ( place ( ... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 16 ) )  .ProjectionElems ) ) ) ) , span: span ( 51 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindReturn , span: span ( 52 ) ) )  .BasicBlocks , locals: localDecl ( ... ty: ty ( 16 ) , span: span ( 53 ) , mut: mutabilityMut )  localDecl ( ... ty: ty ( 16 ) , span: span ( 54 ) , mut: mutabilityNot )  localDecl ( ... ty: ty ( 26 ) , span: span ( 51 ) , mut: mutabilityMut )  .LocalDecls , argCount: 1 , varDebugInfo: varDebugInfo ( ... name: symbol ( "x" ) , sourceInfo: sourceInfo ( ... span: span ( 54 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 1 ) )  .VarDebugInfos , spreadArg: noLocal , span: span ( 55 ) ) ) )
+            </functions>
+            <types>
+            ty ( 1 ) |-> typeInfoTupleType ( .Tys ) ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<isize, !>" , adtDef ( 19 ) , Discriminant ( 0 )  Discriminant ( 1 )  .Discriminants ) ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) ) ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 11 ) , ty ( 9 )  .Tys ) ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) ) ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 9 ) , ty ( 15 )  .Tys ) ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) ) ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) ) ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) ) ty ( 25 ) |-> typeInfoPrimitiveType ( primTypeBool ) ty ( 26 ) |-> typeInfoTupleType ( ty ( 16 )  ty ( 25 )  .Tys ) ty ( 29 ) |-> typeInfoRefType ( ty ( 34 ) ) ty ( 30 ) |-> typeInfoVoidType ty ( 32 ) |-> typeInfoPtrType ( ty ( 9 ) ) ty ( 33 ) |-> typeInfoRefType ( ty ( 35 ) ) ty ( 34 ) |-> typeInfoPrimitiveType ( primTypeStr ) ty ( 35 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 23 ) , ty ( 29 )  ty ( 36 )  ty ( 36 )  .Tys ) ty ( 36 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) ) ty ( 5 ) |-> typeInfoRefType ( ty ( 31 ) ) ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) ) ty ( 8 ) |-> typeInfoPtrType ( ty ( 32 ) ) ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
+            </types>
+            <adt-to-ty>
+            adtDef ( 11 ) |-> ty ( 15 ) adtDef ( 19 ) |-> ty ( 10 ) adtDef ( 23 ) |-> ty ( 35 ) adtDef ( 9 ) |-> ty ( 17 )
+            </adt-to-ty>
+        </kmir>
+    requires ( ARG_INT1:Int <=Int 2147483647
+    andBool ( -2147483648 <=Int ARG_INT1:Int
+    andBool ( notBool truncate ( ARG_INT1:Int +Int 1 , 32 , Signed ) =/=Int ARG_INT1:Int +Int 1 ==Bool false
+            )))
+    [priority(20), label(BASIC-BLOCK-8-TO-6)]
+```
+
+```k
+syntax Int ::= toInt(Value) [function]
+// --------------------------------------
+rule toInt(Integer(VAL, _, _)) => VAL
+rule toInt(_) => 0 [owise]
+
+syntax List ::= Moved (List, Int) [function]
+// --------------------------------------
+rule Moved(ListItem(typedValue ( _ , Type , Mutability )) L:List, 0) => ListItem(typedValue ( Moved , Type , Mutability )) L
+rule Moved(ListItem(TV) L:List, N:Int) => ListItem(TV) Moved(L, N -Int 1) [owise]
+rule Moved(.List, _) => .List
+```
+
+``` 
+    rule [BASIC-BLOCK-9-TO-7]:
+            <k>
+            #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandConstant ( constOperand ( ... span: _ , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( _ ) ) ) ) , args: operandMove ( place ( ... local: local ( IDX ) , projection: .ProjectionElems ) )  .Operands , destination: DEST , target: TARGET , unwind: UNWIND ) , span: _ ) ) 
+            => #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 52 ) ) )
+            ...
+            </k>
+            <currentFunc>
+            ( CURRENTFUNC_CELL:Ty => ty ( 27 ) )
+            </currentFunc>
+            // <currentBody> is useless after the call is executed
+            <caller>
+                ( CALLER_CELL:Ty => CURRENTFUNC_CELL:Ty )
+            </caller>
+            <dest>
+                ( DEST_CELL:Place => DEST )
+            </dest>
+            <target>
+                ( TARGET_CELL:MaybeBasicBlockIdx => TARGET )
+            </target>
+            <unwind>
+                ( UNWIND_CELL:UnwindAction => UNWIND )
+            </unwind>
+            <locals>
+              LOCALS_CELL:List =>
+              ListItem ( typedValue ( Integer ( truncate ( toInt(getValue(LOCALS_CELL, IDX)) +Int 1 , 32 , Signed ) , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) 
+              ListItem ( typedValue ( Integer ( toInt(getValue(LOCALS_CELL, IDX)) , 32 , true ) , ty ( 16 ) , mutabilityNot ) ) 
+              ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved ) ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) )
+            </locals>
+            <stack>
+            ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , Moved(LOCALS_CELL, IDX) ) ) )
+            _STACK_CELL:List
+            </stack>
+            // Since all add functions from 1time to 10000time share the same type ID (27),
+            // we can safely remove these functions. Going forward,
+            // we'll ensure function type uniqueness by incorporating hash codes and path information
+            // into the semantic layer.
+    requires toInt(getValue(LOCALS_CELL, IDX)) <=Int 2147483647
+     andBool -2147483648 <=Int toInt(getValue(LOCALS_CELL, IDX))
+     andBool truncate ( toInt(getValue(LOCALS_CELL, IDX)) +Int 1 , 32 , Signed ) ==Int toInt(getValue(LOCALS_CELL, IDX)) +Int 1
+    [priority(20), label(BASIC-BLOCK-9-TO-7)]
+```
+  
+```
+    rule [BASIC-BLOCK-1-TO-3]:
+            <k>
+            #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandConstant ( constOperand ( ... span: _ , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindZeroSized , ty: ty ( -1 ) , id: mirConstId ( _ ) ) ) ) , args: .Operands , destination: place ( ... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: _ ) ) 
+            => #EndProgram ~> .K
+            </k>
+            <retVal>
+            _RETVAL_CELL:RetVal
+            </retVal>
+            <currentFunc>
+            ( CURRENTFUNC_CELL:Ty => ty ( -1 ) )
+            </currentFunc>
+            <currentFrame>
+            <currentBody>
+                ( _CURRENTBODY_CELL:List => 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand ( ... span: span ( 57 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 10 ) ) ) ) ) ) , span: span ( 57 ) )  statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand ( ... span: span ( 58 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 10 ) ) ) ) ) ) , span: span ( 58 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindGoto ( ... target: basicBlockIdx ( 1 ) ) , span: span ( 56 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 4 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place ( ... local: local ( 2 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 60 ) )  statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpLt , operandMove ( place ( ... local: local ( 4 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 61 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\xe8\x03\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 11 ) ) ) ) ) ) , span: span ( 59 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindSwitchInt ( ... discr: operandMove ( place ( ... local: local ( 3 ) , projection: .ProjectionElems ) ) , targets: switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )  .Branches , otherwise: basicBlockIdx ( 2 ) ) ) , span: span ( 59 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 6 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 64 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindCall ( ... func: operandConstant ( constOperand ( ... span: span ( 62 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 12 ) ) ) ) , args: operandMove ( place ( ... local: local ( 6 ) , projection: .ProjectionElems ) )  .Operands , destination: place ( ... local: local ( 5 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 3 ) ) , unwind: unwindActionContinue ) , span: span ( 63 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandMove ( place ( ... local: local ( 5 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 67 ) )  statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 7 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place ( ... local: local ( 2 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 68 ) )  statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 8 ) , projection: .ProjectionElems ) , rvalue: rvalueCheckedBinaryOp ( binOpAdd , operandCopy ( place ( ... local: local ( 7 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 65 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) ) , span: span ( 66 ) )  .Statements , terminator: terminator ( ... kind: assert ( ... cond: operandMove ( place ( ... local: local ( 8 ) , projection: projectionElemField ( fieldIdx ( 1 ) , ty ( 25 ) )  .ProjectionElems ) ) , expected: false , msg: assertMessageOverflow ( binOpAdd , operandMove ( place ( ... local: local ( 7 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand ( ... span: span ( 65 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 16 ) , id: mirConstId ( 9 ) ) ) ) ) , target: basicBlockIdx ( 4 ) , unwind: unwindActionContinue ) , span: span ( 66 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandMove ( place ( ... local: local ( 8 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 16 ) )  .ProjectionElems ) ) ) ) , span: span ( 69 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindGoto ( ... target: basicBlockIdx ( 1 ) ) , span: span ( 56 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: statement ( ... kind: statementKindAssign ( ... place: place ( ... local: local ( 9 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 71 ) )  .Statements , terminator: terminator ( ... kind: terminatorKindSwitchInt ( ... discr: operandMove ( place ( ... local: local ( 9 ) , projection: .ProjectionElems ) ) , targets: switchTargets ( ... branches: branch ( 1000 , basicBlockIdx ( 6 ) )  .Branches , otherwise: basicBlockIdx ( 7 ) ) ) , span: span ( 70 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: .Statements , terminator: terminator ( ... kind: terminatorKindReturn , span: span ( 72 ) ) ) ) 
+                ListItem ( basicBlock ( ... statements: .Statements , terminator: terminator ( ... kind: terminatorKindCall ( ... func: operandConstant ( constOperand ( ... span: span ( 73 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindZeroSized , ty: ty ( 28 ) , id: mirConstId ( 13 ) ) ) ) , args: operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x1b\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... provSize: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 29 ) , id: mirConstId ( 14 ) ) ) )  .Operands , destination: place ( ... local: local ( 10 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 73 ) ) ) ) )
+            </currentBody>
+            <caller>
+                ( CALLER_CELL:Ty => CURRENTFUNC_CELL:Ty )
+            </caller>
+            <dest>
+                ( DEST_CELL:Place => place ( ... local: local ( 0 ) , projection: .ProjectionElems ) )
+            </dest>
+            <target>
+                ( TARGET_CELL:MaybeBasicBlockIdx => noBasicBlockIdx )
+            </target>
+            <unwind>
+                ( UNWIND_CELL:UnwindAction => unwindActionContinue )
+            </unwind>
+            <locals>
+                ( ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) => 
+                ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Integer ( 1000 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Integer ( 1000 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Integer ( 999 , 32 , true ) , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved ) ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) ) 
+                ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) ) 
+                ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) ) )
+            </locals>
+            </currentFrame>
+            <stack>
+            ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
+            </stack>
+            // This rule summarizes the execution of main function with 1000 iterations,
+            // jumping directly from the initial call to the final state
+    [priority(20), label(BASIC-BLOCK-1-TO-3)]
 ```
 
 ```k

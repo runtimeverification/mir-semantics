@@ -289,6 +289,55 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
         1000,
     ),
+    (
+        'add1-1time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1time.state',
+        None,
+    ),
+    (
+        'add1-10time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10time.state',
+        None,
+    ),
+    (
+        'add1-100time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_100time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_100time.state',
+        None,
+    ),
+    (
+        'add1-1000time',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1000time.smir.json',
+        EXEC_DATA_DIR / 'cse' / 'cse_call_add1_1000time.state',
+        None,
+    ),
+    # (
+    #     'cse-call-add1-10000time',
+    #     EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10000time.smir.json',
+    #     EXEC_DATA_DIR / 'cse' / 'cse_call_add1_10000time.state',
+    #     None,
+    # ),
+    (
+        'all-add1-10time',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_10time.smir.json',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_10time.state',
+        # 1000, add1 summary finished, not summary not
+        None,
+    ),
+    (
+        'all-add1-100time',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_100time.smir.json',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_100time.state',
+        None,
+    ),
+    (
+        'all-add1-1000time',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_1000time.smir.json',
+        EXEC_DATA_DIR / 'all-add1' / 'all_add1_1000time.state',
+        None,
+    ),
 ]
 
 
