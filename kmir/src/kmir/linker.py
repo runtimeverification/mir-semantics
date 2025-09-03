@@ -19,7 +19,7 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
     _LOGGER.info(f'Maximum type ID (offset) is {offset}, linking {len(smirs)} smir.json files')
 
-    for smir, smir_offset in zip(smirs, [offset * i for i in range(len(smirs))], strict=True):
+    for smir, smir_offset in ((smir, offset * i) for i, smir in enumerate(smirs)):
         _LOGGER.debug(f'Offset {smir_offset} for smir {smir._smir["name"]}')
         apply_offset(smir, smir_offset)
 
