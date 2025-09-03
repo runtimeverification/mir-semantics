@@ -658,9 +658,9 @@ which will need to be addressed when such use cases are encountered.
   // Helper function to append projectionElemDeref to an operand
   syntax Operand ::= #withDeref(Operand) [function, total]
   rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
-    => operandCopy(place(LOCAL, projectionElemDeref PROJ))
+    => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
   rule #withDeref(operandMove(place(LOCAL, PROJ))) 
-    => operandMove(place(LOCAL, projectionElemDeref PROJ))
+    => operandMove(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
   rule #withDeref(OP) => OP [owise]
   
   // Handle raw_eq intrinsic by dereferencing operands
