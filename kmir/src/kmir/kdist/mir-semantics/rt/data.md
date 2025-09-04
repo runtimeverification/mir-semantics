@@ -1243,39 +1243,68 @@ What can be supported without additional layout consideration is trivial casts b
 
 The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values.
 The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value.
-This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
   syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
+```
 
-  //////////////////////////////////////////////////////////////////////////////////////
-  // decoding the correct amount of bytes depending on base type size
+For allocated constants without provenance, the decoder works directly with the bytes.
+
+```k
+  rule <k> #decodeConstant(
+              constantKindAllocated(allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _, _)),
+              _TY,
+              TYPEINFO
+            )
+        => #decodeValue(BYTES, TYPEINFO, TYPEMAP)
+        ...
+       </k>
+       <types> TYPEMAP </types>
+```
+
+Zero-sized types can be decoded trivially into their respective representation.
+
+**FIXME test the new cases for tuple and array/slice**
+
+```k
+  // zero-sized struct
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
+        => Aggregate(variantIdx(0), .List) ... </k>
+  // zero-sized tuple
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoTupleType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
+  // zero-sized array
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
+        => Range(.List) ... </k>
+```
+
+**TODO move this section to `decoding.md`. The  `Evaluation` sort must move, too, probably to `value.md`.**
+
+Recursive decoder function. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
+and arrays (where layout is trivial).
+
+```k
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total]
+                      | UnableToDecode( Bytes , TypeInfo )
 
   // Boolean: should be one byte with value one or zero
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
-        => BoolVal(false) ... </k>
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
-        => BoolVal(true) ... </k>
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operation_s
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, TYPEINFO)
-        => #decodeInteger(BYTES, #intTypeOf(TYPEINFO)) ... </k>
-    requires #isIntType(TYPEINFO)
-     andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
      [preserves-definedness]
-
-  // zero-sized struct types
-  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
-        => Aggregate(variantIdx(0), .List) ... </k>
 
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
   // TODO Float decoding: not supported natively in K
 
   // unimplemented cases stored as thunks
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
 ```
 
 ## Primitive operations on numeric data
