@@ -25,10 +25,10 @@ module RT-DATA
 
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
+  imports RT-DECODING
   imports RT-TYPES
   imports KMIR-CONFIGURATION
 
-  imports RT-DECODING
 ```
 
 ## Operations on local variables
@@ -77,19 +77,20 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
 
 ### Evaluating Items to `Value`s
 
-Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `Value`.
-The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
-Other uses of heating and cooling are to _read_ local variables as operands.
-A `TypedValue` stored as a local is trivially rewritten to `Value` by projecting out the value.
+Many rules for MIR constructs in this module use heating and cooling
+to evaluate expressions to results or read local variables as operands.
+The `Evaluation` sort gathers all constructs that can evaluate to a `Value`, defined together with `Value`.
+
+First, a `TypedValue` stored in a local is trivially rewritten to `Value` by projecting out the value.
 It is an error to read `NewLocal` or `Moved`.
 
 ```k
-  syntax Evaluation ::= TypedValue | Value // other sorts are added at the first use site
-
-  syntax KResult ::= Value
+  syntax Evaluation ::= TypedValue
 
   rule <k> typedValue(VAL, _, _) => VAL ... </k> [priority(100)]
 ```
+
+Other subsorts of `Evaluation` are defined when first used.
 
 ### `thunk`
 
@@ -1235,7 +1236,7 @@ What can be supported without additional layout consideration is trivial casts b
 
 | CastKind                     | Description |
 |------------------------------|-------------|
-| PointerExposeProvenance      |             |
+| PointerExposeAddress         |             |
 | PointerWithExposedProvenance |             |
 | FnPtrToPtr                   |             |
 
@@ -1279,33 +1280,6 @@ Zero-sized types can be decoded trivially into their respective representation.
 ```
 
 **TODO move this section to `decoding.md`. The  `Evaluation` sort must move, too, probably to `value.md`.**
-
-Recursive decoder function. This is currently only defined for `PrimitiveType`s (primitive types in MIR).
-and arrays (where layout is trivial).
-
-```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total]
-                      | UnableToDecode( Bytes , TypeInfo )
-
-  // Boolean: should be one byte with value one or zero
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
-    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(true)
-    requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
-
-  // Integer: handled in separate module for numeric operation_s
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
-    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
-     [preserves-definedness]
-
-  // TODO Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
-  // TODO Float decoding: not supported natively in K
-
-  // unimplemented cases stored as thunks
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
-```
 
 ## Primitive operations on numeric data
 

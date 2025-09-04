@@ -16,10 +16,65 @@ requires "value.md"
 requires "numbers.md"
 
 module RT-DECODING
+  imports BOOL
+  imports MAP
+
   imports TYPES
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
 ```
+
+## Element Decoding Interface to turn bytes into a `Value`
+
+This recursive decoder function checks byte length and decodes the bytes to a `Value` of the given type.
+
+This is currently only defined for `PrimitiveType`s (primitive types in MIR).
+and arrays (where layout is trivial).
+
+```k
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total]
+                      | UnableToDecode( Bytes , TypeInfo )
+
+  // Boolean: should be one byte with value one or zero
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
+    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(true)
+    requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+
+  // Integer: handled in separate module for numeric operation_s
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
+     [preserves-definedness]
+
+  // TODO Char type
+  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
+
+  // TODO Float decoding: not supported natively in K
+```
+
+All unimplemented cases will become thunks by way of this default rule:
+
+```k
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
+```
+
+## Helper function to determine the expected byte length for a type
+
+```k
+  // TODO: this function should go into the rt/types.md module
+  syntax Int ::= #elemSize ( TypeInfo ) [function]
+```
+
+Known element sizes for common types:
+
+```k
+  rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
+    requires #isIntType(TYPEINFO)
+```
+
+
 
 ## Array Allocations
 
@@ -60,40 +115,15 @@ results.
          ELEMTY, 
          ELEMTYPEINFO, 
          LEN -Int 1,
-         ACC ListItem(#decodeElement(
+         ACC ListItem(#decodeValue(
            substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO)), 
-           ELEMTY,
-           ELEMTYPEINFO
+           ELEMTYPEINFO,
+           .Map // HACK
          ))
        )
     requires LEN >Int 0
      andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO)  // enough bytes remaining
     [preserves-definedness]
-```
-
-## Element Decoding Interface
-
-The `#decodeElement` function handles decoding individual array elements from their byte 
-representation. 
-This function should be implemented to dispatch to appropriate decoders based on the element's 
-`TypeInfo` (e.g., `#decodeInteger` for integer types).
-
-```k
-  syntax Value ::= #decodeElement ( Bytes, Ty, TypeInfo ) [function]
-                   // decode a single element from its bytes
-
-  syntax Int ::= #elemSize ( TypeInfo ) [function]
-                 // size in bytes of an element of this type
-                 // TODO: this function should go into the rt/types.md module
-```
-
-Known element sizes for common types:
-
-```k
-  // Examples (to be moved to rt/types.md):
-  // rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
-  // rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
-  //   requires #isIntType(TYPEINFO)
 ```
 
 ## Slice Allocations
