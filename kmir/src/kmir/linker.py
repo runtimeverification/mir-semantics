@@ -39,7 +39,7 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 
 def id_range(smir: SMIRInfo) -> int:
-    return max(0, *smir.function_symbols, *smir.types, *smir.spans)
+    return max(0, *smir.function_symbols, *smir.types, *smir.spans, *smir.allocs)
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
@@ -56,8 +56,15 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
     ]
     info._smir['spans'] = [(i + offset, span) for i, span in info._smir['spans']]
 
-    # TODO adjust all alloc IDs (incl. alloc provenance)
-    # TODO then adjust alloc references during item traversal
+    for alloc in dic['allocs']:  # alloc: AllocInfo
+        alloc['alloc_id'] += offset
+        alloc['ty'] += offset
+        global_alloc = alloc['global_alloc']  # global_alloc: GlobalAlloc
+        match global_alloc:
+            case {'Memory': allocation}:  # global_alloc: Memory, allocation: Allocation
+                apply_offset_provenance(allocation['provenance'], offset)
+            case _:
+                raise ValueError('Unsupported or invalid GlobalAlloc data: {global_alloc}')
 
     # traverse item bodies and replace all `ty` fields
     for item in info._smir['items']:
@@ -145,8 +152,11 @@ def apply_offset_operand(op: dict, offset: int) -> None:
         apply_offset_place(op['Move'], offset)
     elif 'Constant' in op:
         op['Constant']['const_']['ty'] += offset
-        if 'Ty' in op['Constant']['const_']['kind']:
-            apply_offset_tyconst(op['Constant']['const_']['kind']['Ty']['kind'], offset)
+        match op['Constant']['const_']['kind']:
+            case {'Ty': val}:
+                apply_offset_tyconst(val['kind'], offset)
+            case {'Allocated': val}:
+                apply_offset_provenance(val['provenance'], offset)
         op['Constant']['span'] += offset
 
 
@@ -160,6 +170,11 @@ def apply_offset_tyconst(tyconst: dict, offset: int) -> None:
         tyconst['Value'][0] += offset
     elif 'ZSTValue' in tyconst:
         tyconst['ZSTValue'] += offset
+
+
+def apply_offset_provenance(provenance: dict, offset: int) -> None:
+    for i in range(len(provenance['ptrs'])):
+        provenance['ptrs'][i][1] += offset
 
 
 def apply_offset_place(place: dict, offset: int) -> None:

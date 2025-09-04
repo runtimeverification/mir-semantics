@@ -2,15 +2,19 @@ from __future__ import annotations
 
 import json
 import logging
+from abc import ABC
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
-from typing import TYPE_CHECKING, Final, NewType
+from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any, Final
 
+
+AllocId = NewType('AllocId', int)
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
 
@@ -30,6 +34,12 @@ class SMIRInfo:
 
     def dump(self, smir_json_file: Path) -> None:
         smir_json_file.write_text(json.dumps(self._smir))
+
+    @cached_property
+    def allocs(self) -> dict[AllocId, AllocInfo]:
+        return {
+            alloc_info.alloc_id: alloc_info for alloc_info in (AllocInfo.from_dict(dct) for dct in self._smir['allocs'])
+        }
 
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
@@ -369,3 +379,58 @@ def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:
             if next in edges:
                 work.extend(edges[next])
     return reached
+
+
+@dataclass
+class AllocInfo:
+    alloc_id: AllocId
+    ty: Ty
+    global_alloc: GlobalAlloc
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> AllocInfo:
+        return AllocInfo(
+            alloc_id=AllocId(dct['alloc_id']),
+            ty=Ty(dct['ty']),
+            global_alloc=GlobalAlloc.from_dict(dct['global_alloc']),
+        )
+
+
+class GlobalAlloc(ABC):  # noqa: B024
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> GlobalAlloc:
+        match dct:
+            case {'Memory': _}:
+                return Memory.from_dict(dct)
+            case _:
+                raise ValueError('Unsupported or invalid GlobalAlloc data: {dct}')
+
+
+@dataclass
+class Memory(GlobalAlloc):
+    allocation: Allocation
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Memory:
+        return Memory(
+            allocation=Allocation.from_dict(dct['Memory']),
+        )
+
+
+@dataclass
+class Allocation:
+    data: bytes  # field 'bytes'
+    # provenance
+    align: int
+    mutable: bool  # field 'mutability'
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Allocation:
+        return Allocation(
+            data=bytes(dct['bytes']),
+            align=int(dct['align']),
+            mutable={
+                'Not': False,
+                'Mut': True,
+            }[dct['mutability']],
+        )
