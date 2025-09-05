@@ -2,9 +2,10 @@
   "name": "mutableRef",
   "crate_id": 4352655527695101489,
   "allocs": [
-    [
-      2,
-      {
+    {
+      "alloc_id": 2,
+      "ty": 27,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             97,
@@ -40,10 +41,11 @@
           "mutability": "Not"
         }
       }
-    ],
-    [
-      3,
-      {
+    },
+    {
+      "alloc_id": 3,
+      "ty": 27,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             97,
@@ -79,7 +81,7 @@
           "mutability": "Not"
         }
       }
-    ]
+    }
   ],
   "functions": [
     [
@@ -137,7 +139,7 @@
       }
     ],
     [
-      32,
+      36,
       {
         "NoOpSym": ""
       }
@@ -2219,7 +2221,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 13,
+          "adt_def": 14,
           "discriminants": [
             0,
             1
@@ -2309,7 +2311,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 20,
+          "adt_def": 19,
           "fields": [
             9
           ],
@@ -2365,7 +2367,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 19,
+          "adt_def": 17,
           "fields": [
             15
           ],
@@ -2511,7 +2513,7 @@
       27,
       {
         "RefType": {
-          "pointee_type": 34,
+          "pointee_type": 33,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2638,10 +2640,10 @@
       }
     ],
     [
-      33,
+      32,
       {
         "RefType": {
-          "pointee_type": 35,
+          "pointee_type": 34,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2671,21 +2673,21 @@
       }
     ],
     [
-      34,
+      33,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      35,
+      34,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 17,
+          "adt_def": 23,
           "fields": [
             27,
-            36,
-            36
+            35,
+            35
           ],
           "layout": {
             "fields": {
@@ -2722,7 +2724,7 @@
       }
     ],
     [
-      36,
+      35,
       {
         "PrimitiveType": {
           "Uint": "U32"

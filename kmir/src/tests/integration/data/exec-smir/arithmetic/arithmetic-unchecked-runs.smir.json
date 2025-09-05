@@ -2,9 +2,10 @@
   "name": "arithmetic_unchecked_runs",
   "crate_id": 13794361957699792544,
   "allocs": [
-    [
-      2,
-      {
+    {
+      "alloc_id": 2,
+      "ty": 24,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             117,
@@ -81,10 +82,11 @@
           "mutability": "Not"
         }
       }
-    ],
-    [
-      3,
-      {
+    },
+    {
+      "alloc_id": 3,
+      "ty": 24,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             117,
@@ -161,7 +163,7 @@
           "mutability": "Not"
         }
       }
-    ]
+    }
   ],
   "functions": [
     [
@@ -237,7 +239,7 @@
       }
     ],
     [
-      38,
+      40,
       {
         "NoOpSym": ""
       }
@@ -3642,7 +3644,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 39,
+          "pointee_type": 38,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3707,7 +3709,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 40,
+          "pointee_type": 39,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3749,7 +3751,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 22,
+          "adt_def": 23,
           "discriminants": [
             0,
             1
@@ -3839,7 +3841,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 13,
+          "adt_def": 14,
           "fields": [
             9
           ],
@@ -4320,7 +4322,7 @@
       }
     ],
     [
-      40,
+      39,
       {
         "PtrType": {
           "pointee_type": 9,

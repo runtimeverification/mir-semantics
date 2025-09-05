@@ -2,9 +2,10 @@
   "name": "array_write",
   "crate_id": 8911761309688874007,
   "allocs": [
-    [
-      1,
-      {
+    {
+      "alloc_id": 1,
+      "ty": 28,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             97,
@@ -45,7 +46,7 @@
           "mutability": "Not"
         }
       }
-    ]
+    }
   ],
   "functions": [
     [
@@ -97,7 +98,7 @@
       }
     ],
     [
-      39,
+      35,
       {
         "NoOpSym": ""
       }
@@ -2671,7 +2672,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 12,
+          "adt_def": 17,
           "discriminants": [
             0,
             1
@@ -2761,7 +2762,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 14,
+          "adt_def": 10,
           "fields": [
             9
           ],
@@ -2817,7 +2818,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 13,
+          "adt_def": 8,
           "fields": [
             15
           ],
@@ -2979,7 +2980,7 @@
       28,
       {
         "RefType": {
-          "pointee_type": 36,
+          "pointee_type": 37,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3169,10 +3170,10 @@
       }
     ],
     [
-      35,
+      36,
       {
         "RefType": {
-          "pointee_type": 37,
+          "pointee_type": 38,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3202,21 +3203,21 @@
       }
     ],
     [
-      36,
+      37,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      37,
+      38,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 17,
+          "adt_def": 23,
           "fields": [
             28,
-            38,
-            38
+            39,
+            39
           ],
           "layout": {
             "fields": {
@@ -3253,7 +3254,7 @@
       }
     ],
     [
-      38,
+      39,
       {
         "PrimitiveType": {
           "Uint": "U32"
