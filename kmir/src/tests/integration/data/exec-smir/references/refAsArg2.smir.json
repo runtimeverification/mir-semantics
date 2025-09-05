@@ -2,9 +2,10 @@
   "name": "refAsArg2",
   "crate_id": 15327148825203814074,
   "allocs": [
-    [
-      1,
-      {
+    {
+      "alloc_id": 1,
+      "ty": 27,
+      "global_alloc": {
         "Memory": {
           "bytes": [
             97,
@@ -39,7 +40,7 @@
           "mutability": "Not"
         }
       }
-    ]
+    }
   ],
   "functions": [
     [
@@ -1960,7 +1961,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 33,
+          "pointee_type": 37,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2025,7 +2026,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 34,
+          "pointee_type": 38,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2067,7 +2068,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 15,
+          "adt_def": 26,
           "discriminants": [
             0,
             1
@@ -2157,7 +2158,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 18,
+          "adt_def": 14,
           "fields": [
             9
           ],
@@ -2213,7 +2214,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 17,
+          "adt_def": 12,
           "fields": [
             15
           ],
@@ -2359,7 +2360,7 @@
       27,
       {
         "RefType": {
-          "pointee_type": 36,
+          "pointee_type": 34,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2459,43 +2460,10 @@
       "VoidType"
     ],
     [
-      34,
-      {
-        "PtrType": {
-          "pointee_type": 9,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      35,
+      33,
       {
         "RefType": {
-          "pointee_type": 37,
+          "pointee_type": 35,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2525,21 +2493,21 @@
       }
     ],
     [
-      36,
+      34,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      37,
+      35,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 21,
+          "adt_def": 17,
           "fields": [
             27,
-            38,
-            38
+            36,
+            36
           ],
           "layout": {
             "fields": {
@@ -2576,10 +2544,43 @@
       }
     ],
     [
-      38,
+      36,
       {
         "PrimitiveType": {
           "Uint": "U32"
+        }
+      }
+    ],
+    [
+      38,
+      {
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
         }
       }
     ]

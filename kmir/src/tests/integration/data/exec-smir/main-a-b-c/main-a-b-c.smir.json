@@ -1762,7 +1762,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 17,
+          "adt_def": 21,
           "discriminants": [
             0,
             1
@@ -1852,7 +1852,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 11,
+          "adt_def": 13,
           "fields": [
             9
           ],
@@ -1908,7 +1908,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 10,
+          "adt_def": 11,
           "fields": [
             15
           ],

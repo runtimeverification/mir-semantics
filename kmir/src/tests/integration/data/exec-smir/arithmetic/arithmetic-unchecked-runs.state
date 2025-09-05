@@ -71,13 +71,13 @@
   <types>
     ty ( 1 ) |-> typeInfoTupleType ( .Tys )
     ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
-    ty ( 5 ) |-> typeInfoRefType ( ty ( 39 ) )
+    ty ( 5 ) |-> typeInfoRefType ( ty ( 38 ) )
     ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
-    ty ( 8 ) |-> typeInfoPtrType ( ty ( 40 ) )
+    ty ( 8 ) |-> typeInfoPtrType ( ty ( 39 ) )
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<isize, !>" , adtDef ( 22 ) , Discriminant ( 0 )  Discriminant ( 1 )  .Discriminants )
+    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<isize, !>" , adtDef ( 23 ) , Discriminant ( 0 )  Discriminant ( 1 )  .Discriminants )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 13 ) , ty ( 9 )  .Tys )
+    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 14 ) , ty ( 9 )  .Tys )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
     ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 12 ) , ty ( 15 )  .Tys )
     ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
@@ -91,11 +91,11 @@
     ty ( 35 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI16 ) )
     ty ( 36 ) |-> typeInfoTupleType ( ty ( 35 )  ty ( 21 )  .Tys )
     ty ( 37 ) |-> typeInfoPrimitiveType ( primTypeStr )
-    ty ( 40 ) |-> typeInfoPtrType ( ty ( 9 ) )
+    ty ( 39 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
   <adt-to-ty>
     adtDef ( 12 ) |-> ty ( 17 )
-    adtDef ( 13 ) |-> ty ( 15 )
-    adtDef ( 22 ) |-> ty ( 10 )
+    adtDef ( 14 ) |-> ty ( 15 )
+    adtDef ( 23 ) |-> ty ( 10 )
   </adt-to-ty>
 </kmir>
