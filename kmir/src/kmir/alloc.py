@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 AllocId = NewType('AllocId', int)
 DefId = NewType('DefId', int)
+InstanceDef = NewType('InstanceDef', int)
 
 
 @dataclass
@@ -33,12 +34,79 @@ class GlobalAlloc(ABC):  # noqa: B024
     @staticmethod
     def from_dict(dct: dict[str, Any]) -> GlobalAlloc:
         match dct:
+            case {'Function': _}:
+                return Function.from_dict(dct)
             case {'Static': _}:
                 return Static.from_dict(dct)
             case {'Memory': _}:
                 return Memory.from_dict(dct)
             case _:
                 raise ValueError(f'Unsupported or invalid GlobalAlloc data: {dct}')
+
+
+@dataclass
+class Function(GlobalAlloc):
+    instance: Instance
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Function:
+        return Function(
+            instance=Instance.from_dict(dct['Function']),
+        )
+
+
+@dataclass
+class Instance:
+    kind: InstanceKind
+    deff: InstanceDef
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Instance:
+        return Instance(
+            kind=InstanceKind.from_dict(dct['kind']),
+            deff=InstanceDef(dct['def']),
+        )
+
+
+class InstanceKind(ABC):  # noqa: B024
+    @staticmethod
+    def from_dict(obj: Any) -> InstanceKind:
+        match obj:
+            case 'Item':
+                return Item()
+            case 'Intrinsic':
+                return Intrinsic()
+            case {'Virtual': _}:
+                return Virtual.from_dict(obj)
+            case 'Shim':
+                return Shim()
+            case _:
+                raise ValueError(f'Invalid InstanceKind data: {obj}')
+
+
+@dataclass
+class Item(InstanceKind): ...
+
+
+@dataclass
+class Intrinsic(InstanceKind): ...
+
+
+@dataclass
+class Virtual(InstanceKind):
+    idx: int
+
+    @staticmethod
+    def from_dict(obj: Any) -> Virtual:
+        match obj:
+            case {'Virtual': {'idx': idx}}:
+                return Virtual(idx=idx)
+            case _:
+                raise ValueError(f'Invalid Virtual data: {obj}')
+
+
+@dataclass
+class Shim(InstanceKind): ...
 
 
 @dataclass
