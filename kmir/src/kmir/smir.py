@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 
 AllocId = NewType('AllocId', int)
+DefId = NewType('DefId', int)
 Ty = NewType('Ty', int)
 AdtDef = NewType('AdtDef', int)
 
@@ -400,10 +401,23 @@ class GlobalAlloc(ABC):  # noqa: B024
     @staticmethod
     def from_dict(dct: dict[str, Any]) -> GlobalAlloc:
         match dct:
+            case {'Static': _}:
+                return Static.from_dict(dct)
             case {'Memory': _}:
                 return Memory.from_dict(dct)
             case _:
                 raise ValueError('Unsupported or invalid GlobalAlloc data: {dct}')
+
+
+@dataclass
+class Static(GlobalAlloc):
+    def_id: DefId
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Static:
+        return Static(
+            def_id=DefId(dct['Static']),
+        )
 
 
 @dataclass
