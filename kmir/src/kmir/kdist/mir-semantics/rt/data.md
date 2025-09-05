@@ -1279,8 +1279,6 @@ Zero-sized types can be decoded trivially into their respective representation.
         => Range(.List) ... </k>
 ```
 
-**TODO move this section to `decoding.md`. The  `Evaluation` sort must move, too, probably to `value.md`.**
-
 ## Primitive operations on numeric data
 
 The `RValue:BinaryOp` performs built-in binary operations on two operands.
