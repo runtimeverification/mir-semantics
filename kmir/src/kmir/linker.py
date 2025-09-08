@@ -19,12 +19,13 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
     _LOGGER.info(f'Maximum type ID (offset) is {offset}, linking {len(smirs)} smir.json files')
 
-    for smir, offset in zip(smirs, [offset * i for i in range(len(smirs))], strict=True):
-        _LOGGER.debug(f'Offset {offset} for smir {smir._smir["name"]}')
-        apply_offset(smir, offset)
+    for i, smir in enumerate(smirs):
+        smir_offset = offset * i
+        _LOGGER.debug(f'Offset {smir_offset} for smir {smir._smir["name"]}')
+        apply_offset(smir, smir_offset)
 
     result_dict = {
-        'name': ','.join([smir._smir['name'] for smir in smirs]),
+        'name': ','.join(smir._smir['name'] for smir in smirs),
         'crate_id': 0,  # HACK
         'allocs': [a for smir in smirs for a in smir._smir['allocs']],
         'functions': [f for smir in smirs for f in smir._smir['functions']],
@@ -38,10 +39,7 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 
 def id_range(smir: SMIRInfo) -> int:
-    f_max = max([0] + list(smir.function_symbols.keys()))
-    ty_max = max([0] + list(smir.types.keys()))
-    span_range = max([0] + list(smir.spans.keys()))
-    return max(f_max, ty_max, span_range)
+    return max(0, *smir.function_symbols, *smir.types, *smir.spans, *smir.allocs)
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
@@ -58,8 +56,15 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
     ]
     info._smir['spans'] = [(i + offset, span) for i, span in info._smir['spans']]
 
-    # TODO adjust all alloc IDs (incl. alloc provenance)
-    # TODO then adjust alloc references during item traversal
+    for alloc in dic['allocs']:  # alloc: AllocInfo
+        alloc['alloc_id'] += offset
+        alloc['ty'] += offset
+        global_alloc = alloc['global_alloc']  # global_alloc: GlobalAlloc
+        match global_alloc:
+            case {'Memory': allocation}:  # global_alloc: Memory, allocation: Allocation
+                apply_offset_provenance(allocation['provenance'], offset)
+            case _:
+                raise ValueError('Unsupported or invalid GlobalAlloc data: {global_alloc}')
 
     # traverse item bodies and replace all `ty` fields
     for item in info._smir['items']:
@@ -71,21 +76,21 @@ def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
     # returns the updated (i.e., mutated) `typeinfo`` dictionary
     # 'PrimitiveType' in typeinfo:
     if 'EnumType' in typeinfo:
-        typeinfo['EnumType']['adt_def'] = typeinfo['EnumType']['adt_def'] + offset
+        typeinfo['EnumType']['adt_def'] += offset
         typeinfo['EnumType']['fields'] = [[x + offset for x in l] for l in typeinfo['EnumType']['fields']]
     elif 'StructType' in typeinfo:
         typeinfo['StructType']['fields'] = [x + offset for x in typeinfo['StructType']['fields']]
-        typeinfo['StructType']['adt_def'] = typeinfo['StructType']['adt_def'] + offset
+        typeinfo['StructType']['adt_def'] += offset
     elif 'UnionType' in typeinfo:
-        typeinfo['UnionType']['adt_def'] = typeinfo['UnionType']['adt_def'] + offset
+        typeinfo['UnionType']['adt_def'] += offset
     elif 'ArrayType' in typeinfo:
-        typeinfo['ArrayType']['elem_type'] = typeinfo['ArrayType']['elem_type'] + offset
+        typeinfo['ArrayType']['elem_type'] += offset
         if 'size' in typeinfo['ArrayType'] and typeinfo['ArrayType']['size'] is not None:
             apply_offset_tyconst(typeinfo['ArrayType']['size']['kind'], offset)
     elif 'PtrType' in typeinfo:
-        typeinfo['PtrType']['pointee_type'] = typeinfo['PtrType']['pointee_type'] + offset
+        typeinfo['PtrType']['pointee_type'] += offset
     elif 'RefType' in typeinfo:
-        typeinfo['RefType']['pointee_type'] = typeinfo['RefType']['pointee_type'] + offset
+        typeinfo['RefType']['pointee_type'] += offset
     elif 'TupleType' in typeinfo:
         typeinfo['TupleType']['types'] = [x + offset for x in typeinfo['TupleType']['types']]
     # 'FunType' in typeinfo:
@@ -100,14 +105,14 @@ def apply_offset_item(item: dict, offset: int) -> None:
     if 'MonoItemFn' in item and 'body' in item['MonoItemFn']:
         body = item['MonoItemFn']['body']
         for local in body['locals']:
-            local['ty'] = local['ty'] + offset
-            local['span'] = local['span'] + offset
+            local['ty'] += offset
+            local['span'] += offset
         for block in body['blocks']:
             for stmt in block['statements']:
                 apply_offset_stmt(stmt['kind'], offset)
-                stmt['span'] = stmt['span'] + offset
+                stmt['span'] += offset
             apply_offset_terminator(block['terminator']['kind'], offset)
-            block['terminator']['span'] = block['terminator']['span'] + offset
+            block['terminator']['span'] += offset
         # adjust span in var_debug_info, each item's source_info.span
         for thing in body['var_debug_info']:
             thing['source_info']['span'] += offset
@@ -146,10 +151,13 @@ def apply_offset_operand(op: dict, offset: int) -> None:
     elif 'Move' in op:
         apply_offset_place(op['Move'], offset)
     elif 'Constant' in op:
-        op['Constant']['const_']['ty'] = op['Constant']['const_']['ty'] + offset
-        if 'Ty' in op['Constant']['const_']['kind']:
-            apply_offset_tyconst(op['Constant']['const_']['kind']['Ty']['kind'], offset)
-        op['Constant']['span'] = op['Constant']['span'] + offset
+        op['Constant']['const_']['ty'] += offset
+        match op['Constant']['const_']['kind']:
+            case {'Ty': val}:
+                apply_offset_tyconst(val['kind'], offset)
+            case {'Allocated': val}:
+                apply_offset_provenance(val['provenance'], offset)
+        op['Constant']['span'] += offset
 
 
 def apply_offset_tyconst(tyconst: dict, offset: int) -> None:
@@ -159,9 +167,14 @@ def apply_offset_tyconst(tyconst: dict, offset: int) -> None:
         for arg in tyconst['Unevaluated'][1]:
             apply_offset_gen_arg(arg, offset)
     elif 'Value' in tyconst:
-        tyconst['Value'][0] = tyconst['Value'][0] + offset
+        tyconst['Value'][0] += offset
     elif 'ZSTValue' in tyconst:
-        tyconst['ZSTValue'] = tyconst['ZSTValue'] + offset
+        tyconst['ZSTValue'] += offset
+
+
+def apply_offset_provenance(provenance: dict, offset: int) -> None:
+    for i in range(len(provenance['ptrs'])):
+        provenance['ptrs'][i][1] += offset
 
 
 def apply_offset_place(place: dict, offset: int) -> None:
@@ -173,15 +186,15 @@ def apply_offset_place(place: dict, offset: int) -> None:
 def apply_offset_proj(proj: dict, offset: int) -> None:
     # Deref
     if 'Field' in proj:
-        proj['Field'][1] = proj['Field'][1] + offset
+        proj['Field'][1] += offset
     # Index
     # ConstantIndex
     # Subslice
     # Downcast
     elif 'OpaqueCast' in proj:
-        proj['OpaqueCast'] = proj['OpaqueCast'] + offset
+        proj['OpaqueCast'] += offset
     elif 'Subtype' in proj:
-        proj['Subtype'] = proj['Subtype'] + offset
+        proj['Subtype'] += offset
 
 
 def apply_offset_stmt(stmt: dict, offset: int) -> None:
@@ -216,10 +229,10 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
     elif 'Aggregate' in rval:
         # handle AggregateKind
         if 'Array' in rval['Aggregate'][0]:
-            rval['Aggregate'][0]['Array'] = rval['Aggregate'][0]['Array'] + offset  # ty field
+            rval['Aggregate'][0]['Array'] += offset  # ty field
         # Tuple
         elif 'Adt' in rval['Aggregate'][0]:
-            rval['Aggregate'][0]['Adt'][0] = rval['Aggregate'][0]['Adt'][0] + offset  # AdtDef field
+            rval['Aggregate'][0]['Adt'][0] += offset  # AdtDef field
             # GenericArgs can recursively contain TyConst, or Ty
             for arg in rval['Aggregate'][0]['Adt'][2]:
                 apply_offset_gen_arg(arg, offset)
@@ -231,7 +244,7 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
             for arg in rval['Aggregate'][0]['Coroutine'][1]:
                 apply_offset_gen_arg(arg, offset)
         elif 'RawPtr' in rval['Aggregate'][0]:
-            rval['Aggregate'][0]['RawPtr'][0] = rval['Aggregate'][0]['RawPtr'][0] + offset  # ty field
+            rval['Aggregate'][0]['RawPtr'][0] += offset  # ty field
         for op in rval['Aggregate'][1]:
             apply_offset_operand(op, offset)
     elif 'BinaryOp' in rval:
@@ -239,7 +252,7 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
         apply_offset_operand(rval['BinaryOp'][2], offset)
     elif 'Cast' in rval:
         apply_offset_operand(rval['Cast'][1], offset)
-        rval['Cast'][2] = rval['Cast'][2] + offset
+        rval['Cast'][2] += offset
     elif 'CheckedBinaryOp' in rval:
         apply_offset_operand(rval['CheckedBinaryOp'][1], offset)
         apply_offset_operand(rval['CheckedBinaryOp'][2], offset)
@@ -256,10 +269,10 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
         apply_offset_tyconst(rval['Repeat'][1]['kind'], offset)
     elif 'ShallowInitBox' in rval:
         apply_offset_operand(rval['ShallowInitBox'][0], offset)
-        rval['ShallowInitBox'][1] = rval['ShallowInitBox'][1] + offset
+        rval['ShallowInitBox'][1] += offset
     # ThreadLocalRef
     elif 'NullaryOp' in rval:
-        rval['NullaryOp'][1] = rval['NullaryOp'][1] + offset
+        rval['NullaryOp'][1] += offset
     elif 'UnaryOp' in rval:
         apply_offset_operand(rval['UnaryOp'][1], offset)
     elif 'Use' in rval:
@@ -269,6 +282,6 @@ def apply_offset_rvalue(rval: dict, offset: int) -> None:
 def apply_offset_gen_arg(arg: dict, offset: int) -> None:
     # GenericArg may contain a Ty or a TyConst
     if 'Type' in arg:
-        arg['Type'] = arg['Type'] + offset
+        arg['Type'] += offset
     elif 'Const' in arg:
         apply_offset_tyconst(arg['Const']['kind'], offset)
