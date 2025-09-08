@@ -7,7 +7,7 @@ from collections import deque
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
-from typing import TYPE_CHECKING, NewType
+from typing import TYPE_CHECKING, NamedTuple, NewType
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -420,7 +420,7 @@ class Memory(GlobalAlloc):
 @dataclass
 class Allocation:
     data: bytes  # field 'bytes'
-    # provenance
+    provenance: ProvenanceMap
     align: int
     mutable: bool  # field 'mutability'
 
@@ -428,9 +428,32 @@ class Allocation:
     def from_dict(dct: dict[str, Any]) -> Allocation:
         return Allocation(
             data=bytes(dct['bytes']),
+            provenance=ProvenanceMap.from_dict(dct['provenance']),
             align=int(dct['align']),
             mutable={
                 'Not': False,
                 'Mut': True,
             }[dct['mutability']],
         )
+
+
+@dataclass
+class ProvenanceMap:
+    ptrs: list[ProvenanceItem]
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> ProvenanceMap:
+        return ProvenanceMap(
+            ptrs=[
+                ProvenanceItem(
+                    size=int(size),
+                    prov=AllocId(prov),
+                )
+                for size, prov in dct['ptrs']
+            ],
+        )
+
+
+class ProvenanceItem(NamedTuple):
+    size: int
+    prov: AllocId
