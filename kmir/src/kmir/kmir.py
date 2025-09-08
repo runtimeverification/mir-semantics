@@ -129,11 +129,23 @@ class KMIR(KProve, KRun, KParse):
         locals, constraints = symbolic_locals(smir_info, args_info)
         types, adts = self._make_type_and_adt_maps(smir_info)
 
+        parser = Parser(self.definition)
+        allocs: KInner = KApply('GlobalAllocs::empty')
+        allocs_json = smir_info._smir['allocs']
+        assert isinstance(allocs_json, list)
+        allocs_json.reverse()
+        for alloc in allocs_json:
+            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
+            assert parse_result is not None
+            a, _ = parse_result
+            allocs = KApply('GlobalAllocs::append', (a, allocs))
+
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
+            'MEMORY_CELL': KApply('decodeAllocs', (allocs, types)),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
             'ADTTOTY_CELL': adts,
