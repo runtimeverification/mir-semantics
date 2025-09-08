@@ -168,6 +168,37 @@ by the element size, then uses the same element-by-element decoding approach as 
     [preserves-definedness]
 ```
 
+# Decoding the allocated constants into a memory map
+
+When the program starts, all allocated constants are stored in the `<memory>` cell in the configuration,
+as a mapping of `AllocId -> Value`, decoding the allocations to values using the above functions.
+
+Besides actual byte allocations, we often find allocations with provenance,
+as slim or fat pointers pointing to other static allocations.
+One example of this is allocated error strings, whose length is stored in a fat pointer that is itself an allocated constant.
+
+
+The basic decoding function is very similar to `#decodeConstant` but returns its result as a singleton `Map` instead of a mere value.
+
+```k
+  syntax Map ::= #decodeAlloc ( AllocId , Ty , Allocation , Map ) [function] // returns AllocId |-> Value
+  // ----------------------------------------------------------
+  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT), TYPEMAP)
+      => ID |-> #decodeValue(BYTES, {TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+
+  rule #decodeAlloc(
+          ID,
+          _TY,
+          allocation(_BYTES, provenanceMap(provenanceMapEntry(_SZ, REF_ID) ), _ALIGN, _MUT),
+          _TYPEMAP
+        )
+      => ID |-> AllocRef(REF_ID, dynamicSize(0))
+        // FIXME: if length(BYTES) ==Int 16 decode 2nd half as size.
+        // Otherwise query type information for static size and insert it.
+```
+
 ```k
 endmodule
 ```
