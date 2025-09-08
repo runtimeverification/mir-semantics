@@ -14,12 +14,14 @@ from raw bytes to typed `Value` objects according to Rust's memory layout rules.
 requires "../ty.md"
 requires "value.md"
 requires "numbers.md"
+requires "../alloc.md"
 
 module RT-DECODING
   imports BOOL
   imports MAP
 
   imports TYPES
+  imports ALLOC
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
   imports RT-TYPES
@@ -197,6 +199,33 @@ The basic decoding function is very similar to `#decodeConstant` but returns its
       => ID |-> AllocRef(REF_ID, dynamicSize(0))
         // FIXME: if length(BYTES) ==Int 16 decode 2nd half as size.
         // Otherwise query type information for static size and insert it.
+```
+
+The entire set of `GlobalAllocs` is decoded by iterating over the list.
+It is assumed that the give `Ty -> TypeInfo` map contains all types required.
+
+```k
+  syntax Map ::= #decodeAllocs ( GlobalAllocs , Map )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing
+               | #decodeAllocs ( Map , GlobalAllocs , Map ) [function, total] // accumulating version
+  // -----------------------------------------------------------------------------------------------
+  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocs(.Map, ALLOCS, TYPEMAP)
+
+  rule #decodeAllocs(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
+  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
+      => #decodeAllocs(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
+    requires TY in_keys(TYPEMAP)
+    [preserves-definedness]
+```
+
+Non-`Memory` allocs are simply stored as raw data as they cannot be handled at the moment.
+This ensures that the function is total (anyway lookups require constraining the sort).
+
+```k
+  syntax AllocData ::= Value | AllocData ( Ty , GlobalAllocKind )
+
+  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
+      => #decodeAllocs(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
+    [owise]
 ```
 
 ```k
