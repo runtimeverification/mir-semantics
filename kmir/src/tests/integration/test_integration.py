@@ -272,6 +272,12 @@ EXEC_DATA = [
         None,
     ),
     (
+        'Array-inlined',
+        EXEC_DATA_DIR / 'arrays' / 'array_inlined.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_inlined.state',
+        None,
+    ),
+    (
         'pointer-cast-length-test',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.state',

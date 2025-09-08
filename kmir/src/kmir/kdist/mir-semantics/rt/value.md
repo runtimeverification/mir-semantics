@@ -105,6 +105,17 @@ The local variables may be actual values (`typedValue`) or uninitialised (`NewLo
   rule valueOf(typedValue(V, _, _)) => V
 ```
 
+## Evaluating Items to `Value`s
+
+Many built-in operations (`RValue` or type casts) use `Operand`s that will evaluate to a value of sort `Value`.
+The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation to `Value`s.
+
+```k
+  syntax Evaluation ::= Value // other sorts are added at the first use site
+
+  syntax KResult ::= Value
+```
+
 ## A generic MIR Error sort
 
 ```k
