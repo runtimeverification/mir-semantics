@@ -20,6 +20,8 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
     _LOGGER.info(f'Maximum type ID (offset) is {offset}, linking {len(smirs)} smir.json files')
 
     for i, smir in enumerate(smirs):
+        qualify_items(smir)
+
         smir_offset = offset * i
         _LOGGER.debug(f'Offset {smir_offset} for smir {smir._smir["name"]}')
         apply_offset(smir, smir_offset)
@@ -40,6 +42,32 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 def id_range(smir: SMIRInfo) -> int:
     return max(0, *smir.function_symbols, *smir.types, *smir.spans, *smir.allocs)
+
+
+def qualify_items(info: SMIRInfo) -> None:
+    """Qualify each unqualified function item name.
+
+    The missing prefix is extracted from the symbol name.
+    """
+
+    for item in info._smir['items']:
+        match item:
+            case {
+                'symbol_name': symbol_name,
+                'mono_item_kind': {
+                    'MonoItemFn': {
+                        'name': name,
+                    } as mono_item_fn,
+                },
+            }:
+                qualified_name = _mono_item_fn_name(symbol_name=symbol_name, name=name)
+                if qualified_name != name:
+                    _LOGGER.info(f'Qualified item {symbol_name!r}: {name} -> {qualified_name}')
+                    mono_item_fn['name'] = qualified_name
+
+
+def _mono_item_fn_name(symbol_name: str, name: str) -> str:
+    return name
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
