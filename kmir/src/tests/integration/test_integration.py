@@ -299,8 +299,7 @@ EXEC_DATA = [
         'raw_eq_simple',
         EXEC_DATA_DIR / 'intrinsic' / 'raw_eq_simple.smir.json',
         EXEC_DATA_DIR / 'intrinsic' / 'raw_eq_simple.state',
-        # 1000,
-        65,
+        100,
     ),
 ]
 
