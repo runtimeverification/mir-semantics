@@ -70,6 +70,12 @@ def _mono_item_fn_name(symbol_name: str, name: str) -> str:
     return name
 
 
+def _demangle(symbol: str) -> str:
+    from rust_demangler import demangle  # type: ignore [import-untyped]
+
+    return demangle(symbol)
+
+
 def apply_offset(info: SMIRInfo, offset: int) -> None:
     # mutates the dictionary inside the SMIRInfo
     # all fields containing a `Ty` are updated, adding the given offset
