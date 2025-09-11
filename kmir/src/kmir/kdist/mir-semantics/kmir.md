@@ -718,15 +718,15 @@ in the previous implementation where `seqstrict` evaluation converted `TypedValu
   // Fallback for operands that don't match the expected patterns (constants, etc.)
   rule #extractOperandType(_, _, _) => TyUnknown [owise]
 
-  // Execute raw_eq with type compatibility checking
+  // Execute raw_eq with type equality checking
   syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
   rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
         => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
        ... </k>
-       <types> TYPEMAP </types>
-    requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
-     andBool TY1 in_keys(TYPEMAP)
-     andBool TY2 in_keys(TYPEMAP)
+    requires TY1 ==K TY2
+    // requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+    //  andBool TY1 in_keys(TYPEMAP)
+    //  andBool TY2 in_keys(TYPEMAP)
     [preserves-definedness]
 
   // Note: If types are incompatible or unknown, execution will get stuck (no matching rule),
