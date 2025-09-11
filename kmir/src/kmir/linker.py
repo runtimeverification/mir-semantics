@@ -71,9 +71,13 @@ def _mono_item_fn_name(symbol_name: str, name: str) -> str:
 
 
 def _demangle(symbol: str) -> str:
+    import re
+
     from rust_demangler import demangle  # type: ignore [import-untyped]
 
-    return demangle(symbol)
+    res = demangle(symbol)
+    res = re.sub(r'(?<!^)(?<!:)<', r'::<', res)  # insert '::' before '<' if not at the beginning or preceded by ':'
+    return res
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
