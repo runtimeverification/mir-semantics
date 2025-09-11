@@ -459,9 +459,19 @@ where the returned result should go.
 
 
 ```k
+  // Intrinsic function call - execute directly without state switching
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
+         =>
+           #execIntrinsic(MONOITEM, ARGS, DEST) ~> #continueAt(TARGET)
+       </k>
+       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
+    requires isIntrinsicFunction(MONOITEM)
+    [preserves-definedness]
+
+  // Regular function call - full state switching and stack setup  
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
-           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(MONOITEM, ARGS)
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -473,10 +483,18 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
+    requires isMonoItemKind(MONOITEM)
+     andBool notBool isIntrinsicFunction(MONOITEM)
     [preserves-definedness] // callee lookup defined
+  
+  syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
+  rule isIntrinsicFunction(IntrinsicFunction(_)) => true
+  rule isIntrinsicFunction(_) => false [owise]
+
+  syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
+  rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
+  rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
@@ -513,19 +531,10 @@ An operand may be a `Reference` (the only way a function could access another fu
        </currentFrame>
   // TODO: Haven't handled "noBody" case
   
-  // Handle intrinsic functions - execute directly without setting up local stack frame
-  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
-        => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
-       </k>
-       <currentFrame>
-         <dest> DEST </dest>
-         <target> someBasicBlockIdx(RETURN_TARGET) </target>
-         ...
-       </currentFrame>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( Symbol, Operands, Place )
+                 | #execIntrinsic ( MonoItemKind, Operands, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -629,7 +638,7 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(symbol("black_box"), ARG:Operand .Operands, DEST) 
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST) 
         => #setLocalValue(DEST, ARG)
        ... </k>
 ```
@@ -642,15 +651,26 @@ provided References to access the underlying values, then compares them using K'
 This intrinsic is typically used for low-level memory comparison operations where type-specific equality methods
 are not suitable.
 
-**Current Limitations:**
-The current implementation only handles the simple case where References point to values of the same type.
-More complex scenarios require additional testing and implementation work:
-- References to different types with the same memory representation
-- References to composite types (structs, arrays, enums)
-- References with different alignments or padding
+**Type Safety:**
+The implementation now includes comprehensive type compatibility checking using the existing `#typesCompatible` function.
+This ensures that `raw_eq` only compares values of compatible types, supporting:
+- Identical types (direct equality)
+- Array types with compatible element types (ignoring length differences)
+- Pointer types with compatible pointee types (recursive checking)
+- Pointer-to-array and pointer-to-element compatibility
 
-Handling different types may require converting values to their byte representations before comparison,
-which will need to be addressed when such use cases are encountered.
+**Error Handling:**
+- Execution gets stuck (no matching rule) when operands have incompatible types or unknown type information
+- This causes K to stop execution, which is the desired behavior for type safety violations
+
+**Implementation Details:**
+The intrinsic uses a multi-stage approach:
+1. `#execIntrinsic` → `#execRawEqWithTypes` - Extract operand type information before evaluation
+2. `#execRawEqWithTypes` → `#execRawEqTyped` - Pass both values and their types 
+3. `#execRawEqTyped` - Perform type compatibility check and comparison
+
+This approach preserves type information throughout the evaluation process, preventing the type loss that occurred
+in the previous implementation where `seqstrict` evaluation converted `TypedValue` to `Value`.
 
 ```k
   // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
@@ -663,16 +683,54 @@ which will need to be addressed when such use cases are encountered.
     => operandMove(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
   rule #withDeref(OP) => OP [owise]
   
-  // Handle raw_eq intrinsic by dereferencing operands
-  rule <k> #execIntrinsic(symbol("raw_eq"), ARG1:Operand ARG2:Operand .Operands, PLACE)
-        => #execRawEq(PLACE, #withDeref(ARG1), #withDeref(ARG2))
+  // Handle raw_eq intrinsic by dereferencing operands with type checking
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
+        => #execRawEqWithTypes(PLACE, #withDeref(ARG1), #withDeref(ARG2))
        ... </k>
 
-  // Execute raw_eq with operand evaluation via seqstrict
-  syntax KItem ::= #execRawEq(Place, Evaluation, Evaluation) [seqstrict(2,3)]
-  rule <k> #execRawEq(DEST, VAL1:Value, VAL2:Value)
+  // Execute raw_eq with type-aware operand handling
+  // NOTE: Uses parameter passing for simplification - future optimization could inline the logic
+  syntax KItem ::= #execRawEqWithTypes(Place, Operand, Operand)
+  rule <k> #execRawEqWithTypes(DEST, OP1, OP2)
+        => #execRawEqWithTypesAux(DEST, OP1, OP2, LOCALS, TYPEMAP)
+       ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+
+  syntax KItem ::= #execRawEqWithTypesAux(Place, Operand, Operand, List, Map)
+  rule <k> #execRawEqWithTypesAux(DEST, OP1, OP2, LOCALS, TYPEMAP)
+        => #execRawEqTyped(DEST, OP1, #extractOperandType(OP1, LOCALS, TYPEMAP), 
+                                 OP2, #extractOperandType(OP2, LOCALS, TYPEMAP))
+       ... </k>
+
+  // Helper function to extract type information from operands
+  syntax MaybeTy ::= #extractOperandType(Operand, List, Map) [function, total]
+  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  
+  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  
+  // Fallback for operands that don't match the expected patterns (constants, etc.)
+  rule #extractOperandType(_, _, _) => TyUnknown [owise]
+
+  // Execute raw_eq with type compatibility checking
+  syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
+  rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
         => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
        ... </k>
+       <types> TYPEMAP </types>
+    requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+     andBool TY1 in_keys(TYPEMAP)
+     andBool TY2 in_keys(TYPEMAP)
+    [preserves-definedness]
+
+  // Note: If types are incompatible or unknown, execution will get stuck (no matching rule),
+  // which causes K to stop execution - this is the desired behavior for type safety violations
 
 ```
 
