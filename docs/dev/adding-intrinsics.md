@@ -6,8 +6,8 @@ This guide explains how to add support for new intrinsic functions in KMIR. Intr
 
 ## Architecture
 
-Intrinsics are handled with direct operand passing:
-1. **Direct Operand Passing**: `#execIntrinsic(symbol("name"), ARGS, DEST)` receives operands directly
+Intrinsics use optimized execution:
+1. **Direct Execution**: `#execIntrinsic(IntrinsicFunction(symbol("name")), ARGS, DEST)` bypasses regular function call setup
 2. **Pattern Matching**: Rules match on specific operand patterns for each intrinsic
 3. **Operand Evaluation**: Each intrinsic rule handles its own operand evaluation as needed
 
@@ -39,7 +39,7 @@ Add entry to `EXEC_DATA` in [test_integration.py](../../kmir/src/tests/integrati
 make test-integration TEST_ARGS="-k 'exec_smir and your_intrinsic' --update-expected-output"
 
 # This will create your_intrinsic.state showing execution stuck at:
-# #execIntrinsic(symbol("your_intrinsic"), DEST)
+# #execIntrinsic(IntrinsicFunction(symbol("your_intrinsic")), ARGS, DEST)
 
 # Save this for comparison
 cp kmir/src/tests/integration/data/exec-smir/intrinsic/your_intrinsic.state \
@@ -53,7 +53,7 @@ Add rules to [kmir.md](../../kmir/src/kmir/kdist/mir-semantics/kmir.md).
 To find implementation patterns for your intrinsic:
 ```bash
 # Search for existing intrinsic implementations
-grep -A10 "#execIntrinsic(symbol" kmir/src/kmir/kdist/mir-semantics/kmir.md
+grep -A10 "#execIntrinsic(IntrinsicFunction" kmir/src/kmir/kdist/mir-semantics/kmir.md
 
 # Look for helper functions and evaluation patterns
 grep -B2 -A5 "seqstrict" kmir/src/kmir/kdist/mir-semantics/kmir.md
