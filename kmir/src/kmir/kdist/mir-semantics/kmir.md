@@ -484,8 +484,7 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
        <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
-    requires isMonoItemKind(MONOITEM)
-     andBool notBool isIntrinsicFunction(MONOITEM)
+    requires notBool isIntrinsicFunction(MONOITEM)
     [preserves-definedness] // callee lookup defined
   
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
