@@ -459,9 +459,19 @@ where the returned result should go.
 
 
 ```k
+  // Intrinsic function call - execute directly without state switching
+  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
+         =>
+           #execIntrinsic(MONOITEM, ARGS, DEST) ~> #continueAt(TARGET)
+       </k>
+       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
+    requires isIntrinsicFunction(MONOITEM)
+    [preserves-definedness]
+
+  // Regular function call - full state switching and stack setup  
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
-           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(MONOITEM, ARGS)
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -473,10 +483,17 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
+    requires notBool isIntrinsicFunction(MONOITEM)
     [preserves-definedness] // callee lookup defined
+  
+  syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
+  rule isIntrinsicFunction(IntrinsicFunction(_)) => true
+  rule isIntrinsicFunction(_) => false [owise]
+
+  syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
+  rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
+  rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
 
   syntax Ty ::= #tyOfCall( Operand ) [function, total]
 
@@ -513,19 +530,10 @@ An operand may be a `Reference` (the only way a function could access another fu
        </currentFrame>
   // TODO: Haven't handled "noBody" case
   
-  // Handle intrinsic functions - execute directly without setting up local stack frame
-  rule <k> #setUpCalleeData(IntrinsicFunction(INTRINSIC_NAME), ARGS) 
-        => #execIntrinsic(INTRINSIC_NAME, ARGS, DEST) ~> #execBlockIdx(RETURN_TARGET)
-       </k>
-       <currentFrame>
-         <dest> DEST </dest>
-         <target> someBasicBlockIdx(RETURN_TARGET) </target>
-         ...
-       </currentFrame>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( Symbol, Operands, Place )
+                 | #execIntrinsic ( MonoItemKind, Operands, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -629,7 +637,58 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(symbol("black_box"), ARG .Operands, DEST) => #setLocalValue(DEST, ARG) ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST) 
+        => #setLocalValue(DEST, ARG)
+       ... </k>
+```
+
+#### Raw Eq (`std::intrinsics::raw_eq`)
+
+The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
+It returns a boolean value indicating whether the referenced values are equal. The implementation dereferences the
+provided references to access the underlying values, then compares them using K's built-in equality operator.
+
+**Type Safety:**
+The implementation requires operands to have identical types (`TY1 ==K TY2`) before performing the comparison.
+Execution gets stuck (no matching rule) when operands have different types or unknown type information.
+
+```k
+  // Raw eq: dereference operands, extract types, and delegate to typed comparison
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS, TYPEMAP), 
+                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS, TYPEMAP))
+       ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+
+  // Compare values only if types are identical
+  syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
+  rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
+        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+       ... </k>
+    requires TY1 ==K TY2
+    [preserves-definedness]
+
+  // Add deref projection to operands  
+  syntax Operand ::= #withDeref(Operand) [function, total]
+  rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
+    => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
+  rule #withDeref(operandMove(place(LOCAL, PROJ))) 
+    => operandMove(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
+  rule #withDeref(OP) => OP [owise]
+  
+  // Extract type from operands (locals with projections, constants, fallback to unknown)
+  syntax MaybeTy ::= #extractOperandType(Operand, List, Map) [function, total]
+  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _, _) => TY
+  rule #extractOperandType(_, _, _) => TyUnknown [owise]
 ```
 
 ### Stopping on Program Errors
