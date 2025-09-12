@@ -5,7 +5,7 @@
 │
 │  (99 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 6 ) , thunk ( #decodeConstant ( constantKindAllo
+    #traverseProjection ( toLocal ( 6 ) , AllocRef ( allocId ( 0 ) , noMetadata ) ,
     function: main
     span: 101
 
