@@ -68,7 +68,11 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    .Map
+    allocId ( 5 ) |-> UnableToDecode ( b"assertion failed: a.a_value == 42" , typeInfoRefType ( ty ( 38 ) ) )
+    allocId ( 6 ) |-> UnableToDecode ( b"assertion failed: a.a_value == 43" , typeInfoRefType ( ty ( 38 ) ) )
+    allocId ( 7 ) |-> UnableToDecode ( b"assertion failed: vv == 43" , typeInfoRefType ( ty ( 38 ) ) )
+    allocId ( 8 ) |-> UnableToDecode ( b"assertion failed: a.another" , typeInfoRefType ( ty ( 38 ) ) )
+    allocId ( 9 ) |-> UnableToDecode ( b"assertion failed: a.a_third == 43" , typeInfoRefType ( ty ( 38 ) ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
