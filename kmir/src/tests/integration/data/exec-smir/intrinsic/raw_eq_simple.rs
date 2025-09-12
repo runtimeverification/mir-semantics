@@ -11,9 +11,17 @@ fn main() {
     let a = 42;
     let b = 42;
     
-    // Test raw_eq intrinsic with identical values
+    // Test raw_eq intrinsic with identical values (both variables)
     let result = unsafe { raw_eq(&a, &b) };
-    
-    // This assertion should pass as both values are identical
     assert!(result);
+    
+    // TODO: need alloc to be supported in the semantics
+    // // Test raw_eq with constant and variable (same type, same value)
+    // let result_const_var = unsafe { raw_eq(&42, &a) };
+    // assert!(result_const_var);
+    
+    // // Test raw_eq with constant and variable (same type, different value)
+    // let c = 24;
+    // let result_const_var_diff = unsafe { raw_eq(&42, &c) };
+    // assert!(!result_const_var_diff);
 }

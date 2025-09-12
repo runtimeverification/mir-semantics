@@ -646,35 +646,30 @@ its argument to the destination without modification.
 
 The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
 It returns a boolean value indicating whether the referenced values are equal. The implementation dereferences the
-provided References to access the underlying values, then compares them using K's built-in equality operator.
-This intrinsic is typically used for low-level memory comparison operations where type-specific equality methods
-are not suitable.
+provided references to access the underlying values, then compares them using K's built-in equality operator.
 
 **Type Safety:**
-The implementation now includes comprehensive type compatibility checking using the existing `#typesCompatible` function.
-This ensures that `raw_eq` only compares values of compatible types, supporting:
-- Identical types (direct equality)
-- Array types with compatible element types (ignoring length differences)
-- Pointer types with compatible pointee types (recursive checking)
-- Pointer-to-array and pointer-to-element compatibility
-
-**Error Handling:**
-- Execution gets stuck (no matching rule) when operands have incompatible types or unknown type information
-- This causes K to stop execution, which is the desired behavior for type safety violations
-
-**Implementation Details:**
-The intrinsic uses a multi-stage approach:
-1. `#execIntrinsic` → `#execRawEqWithTypes` - Extract operand type information before evaluation
-2. `#execRawEqWithTypes` → `#execRawEqTyped` - Pass both values and their types 
-3. `#execRawEqTyped` - Perform type compatibility check and comparison
-
-This approach preserves type information throughout the evaluation process, preventing the type loss that occurred
-in the previous implementation where `seqstrict` evaluation converted `TypedValue` to `Value`.
+The implementation requires operands to have identical types (`TY1 ==K TY2`) before performing the comparison.
+Execution gets stuck (no matching rule) when operands have different types or unknown type information.
 
 ```k
-  // Raw eq intrinsic - byte-by-byte equality comparison of referenced values  
-  
-  // Helper function to append projectionElemDeref to an operand
+  // Raw eq: dereference operands, extract types, and delegate to typed comparison
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS, TYPEMAP), 
+                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS, TYPEMAP))
+       ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPEMAP </types>
+
+  // Compare values only if types are identical
+  syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
+  rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
+        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+       ... </k>
+    requires TY1 ==K TY2
+    [preserves-definedness]
+
+  // Add deref projection to operands  
   syntax Operand ::= #withDeref(Operand) [function, total]
   rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
     => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
@@ -682,55 +677,18 @@ in the previous implementation where `seqstrict` evaluation converted `TypedValu
     => operandMove(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
   rule #withDeref(OP) => OP [owise]
   
-  // Handle raw_eq intrinsic by dereferencing operands with type checking
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
-        => #execRawEqWithTypes(PLACE, #withDeref(ARG1), #withDeref(ARG2))
-       ... </k>
-
-  // Execute raw_eq with type-aware operand handling
-  // NOTE: Uses parameter passing for simplification - future optimization could inline the logic
-  syntax KItem ::= #execRawEqWithTypes(Place, Operand, Operand)
-  rule <k> #execRawEqWithTypes(DEST, OP1, OP2)
-        => #execRawEqWithTypesAux(DEST, OP1, OP2, LOCALS, TYPEMAP)
-       ... </k>
-       <locals> LOCALS </locals>
-       <types> TYPEMAP </types>
-
-  syntax KItem ::= #execRawEqWithTypesAux(Place, Operand, Operand, List, Map)
-  rule <k> #execRawEqWithTypesAux(DEST, OP1, OP2, LOCALS, TYPEMAP)
-        => #execRawEqTyped(DEST, OP1, #extractOperandType(OP1, LOCALS, TYPEMAP), 
-                                 OP2, #extractOperandType(OP2, LOCALS, TYPEMAP))
-       ... </k>
-
-  // Helper function to extract type information from operands
+  // Extract type from operands (locals with projections, constants, fallback to unknown)
   syntax MaybeTy ::= #extractOperandType(Operand, List, Map) [function, total]
   rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP) 
        => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  
   rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP) 
        => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  
-  // Fallback for operands that don't match the expected patterns (constants, etc.)
+  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _, _) => TY
   rule #extractOperandType(_, _, _) => TyUnknown [owise]
-
-  // Execute raw_eq with type equality checking
-  syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
-  rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
-        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
-       ... </k>
-    requires TY1 ==K TY2
-    // requires #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
-    //  andBool TY1 in_keys(TYPEMAP)
-    //  andBool TY2 in_keys(TYPEMAP)
-    [preserves-definedness]
-
-  // Note: If types are incompatible or unknown, execution will get stuck (no matching rule),
-  // which causes K to stop execution - this is the desired behavior for type safety violations
-
 ```
 
 ### Stopping on Program Errors
