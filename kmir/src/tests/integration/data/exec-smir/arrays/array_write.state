@@ -59,7 +59,7 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 1 ) |-> UnableToDecode ( b"assertion failed: a[0] == a[1]" , typeInfoRefType ( ty ( 37 ) ) )
+    allocId ( 1 ) |-> UnableToDecode ( b"assertion failed: a[0] == a[1]" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
@@ -92,13 +92,13 @@
     ty ( 34 ) |-> typeInfoPtrType ( ty ( 9 ) )
     ty ( 36 ) |-> typeInfoRefType ( ty ( 38 ) )
     ty ( 37 ) |-> typeInfoPrimitiveType ( primTypeStr )
-    ty ( 38 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 23 ) , ty ( 28 )  ty ( 39 )  ty ( 39 )  .Tys )
+    ty ( 38 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 22 ) , ty ( 28 )  ty ( 39 )  ty ( 39 )  .Tys )
     ty ( 39 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
   </types>
   <adt-to-ty>
     adtDef ( 8 ) |-> ty ( 17 )
     adtDef ( 10 ) |-> ty ( 15 )
     adtDef ( 17 ) |-> ty ( 10 )
-    adtDef ( 23 ) |-> ty ( 38 )
+    adtDef ( 22 ) |-> ty ( 38 )
   </adt-to-ty>
 </kmir>

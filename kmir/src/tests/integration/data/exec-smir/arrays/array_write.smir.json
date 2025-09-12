@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 1,
-      "ty": 28,
+      "ty": 37,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -3213,7 +3213,7 @@
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 23,
+          "adt_def": 22,
           "fields": [
             28,
             39,

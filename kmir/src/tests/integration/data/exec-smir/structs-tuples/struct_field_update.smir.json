@@ -46,7 +46,7 @@
       }
     ],
     [
-      32,
+      29,
       {
         "NoOpSym": ""
       }
@@ -1877,7 +1877,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 29,
+          "pointee_type": 30,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -1942,7 +1942,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 30,
+          "pointee_type": 31,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -1984,7 +1984,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 19,
+          "adt_def": 24,
           "discriminants": [
             0,
             1
@@ -1994,7 +1994,7 @@
               6
             ],
             [
-              31
+              32
             ]
           ],
           "layout": {
@@ -2074,7 +2074,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 12,
+          "adt_def": 10,
           "fields": [
             9
           ],
@@ -2130,7 +2130,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 10,
+          "adt_def": 8,
           "fields": [
             15
           ],
@@ -2402,7 +2402,7 @@
       }
     ],
     [
-      30,
+      31,
       {
         "PtrType": {
           "pointee_type": 9,
@@ -2435,7 +2435,7 @@
       }
     ],
     [
-      31,
+      32,
       "VoidType"
     ]
   ],

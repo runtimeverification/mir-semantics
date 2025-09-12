@@ -46,7 +46,7 @@
       }
     ],
     [
-      33,
+      30,
       {
         "NoOpSym": ""
       }
@@ -2360,7 +2360,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 30,
+          "pointee_type": 31,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2425,7 +2425,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 31,
+          "pointee_type": 32,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2467,7 +2467,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 20,
+          "adt_def": 19,
           "discriminants": [
             0,
             1
@@ -2477,7 +2477,7 @@
               6
             ],
             [
-              32
+              33
             ]
           ],
           "layout": {
@@ -3090,7 +3090,7 @@
       }
     ],
     [
-      31,
+      32,
       {
         "PtrType": {
           "pointee_type": 9,
@@ -3123,7 +3123,7 @@
       }
     ],
     [
-      32,
+      33,
       "VoidType"
     ]
   ],
