@@ -45,7 +45,8 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    .Map
+    allocId ( 2 ) |-> UnableToDecode ( b"assertion failed: x == 32" , typeInfoRefType ( ty ( 33 ) ) )
+    allocId ( 3 ) |-> UnableToDecode ( b"assertion failed: x == 22" , typeInfoRefType ( ty ( 33 ) ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

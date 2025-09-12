@@ -39,7 +39,7 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    .Map
+    allocId ( 1 ) |-> UnableToDecode ( b"assertion failed: z == x" , typeInfoRefType ( ty ( 32 ) ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

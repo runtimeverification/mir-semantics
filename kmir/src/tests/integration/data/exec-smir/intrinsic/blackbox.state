@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #traverseProjection ( toLocal ( 8 ) , thunk ( #decodeConstant ( constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: provenanceMapEntry (... provSize: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty ( 25 ) , typeInfoRefType ( ty ( 26 ) ) ) ) , projectionElemDeref  .ProjectionElems , .Contexts ) ~> #readProjection ( false ) ~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_ ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ~> .K ) ~> #execStmts ( statement (... kind: statementKindAssign (... place: place (... local: local ( 9 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpEq , operandMove ( place (... local: local ( 10 ) , projection: .ProjectionElems ) ) , operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 105 ) )  .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 9 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 4 ) )  .Branches , otherwise: basicBlockIdx ( 3 ) ) ) , span: span ( 105 ) ) ) ~> .K
+    #traverseProjection ( toLocal ( 8 ) , AllocRef ( allocId ( 0 ) , noMetadata ) , projectionElemDeref  .ProjectionElems , .Contexts ) ~> #readProjection ( false ) ~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_ ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ~> .K ) ~> #execStmts ( statement (... kind: statementKindAssign (... place: place (... local: local ( 9 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpEq , operandMove ( place (... local: local ( 10 ) , projection: .ProjectionElems ) ) , operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 105 ) )  .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 9 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 4 ) )  .Branches , otherwise: basicBlockIdx ( 3 ) ) ) , span: span ( 105 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -34,11 +34,11 @@
       ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
       ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) )
-      ListItem ( thunk ( #decodeConstant ( constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: provenanceMapEntry (... provSize: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty ( 25 ) , typeInfoRefType ( ty ( 26 ) ) ) ) ) ) , ty ( 47 ) , mutabilityMut ) )
+      ListItem ( AllocRef ( allocId ( 0 ) , noMetadata ) ) ) , ty ( 47 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( thunk ( #decodeConstant ( constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: provenanceMapEntry (... provSize: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty ( 25 ) , typeInfoRefType ( ty ( 26 ) ) ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , noMetadata ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 41 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 11 , 32 , false ) , ty ( 26 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
@@ -51,7 +51,7 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    .Map
+    allocId ( 0 ) |-> UnableToDecode ( b"\x0b\x00\x00\x00" , typeInfoRefType ( ty ( 26 ) ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
