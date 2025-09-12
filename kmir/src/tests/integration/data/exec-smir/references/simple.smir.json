@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 1,
-      "ty": 26,
+      "ty": 31,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -92,7 +92,7 @@
       }
     ],
     [
-      30,
+      34,
       {
         "NoOpSym": ""
       }
@@ -1893,7 +1893,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 23,
+          "adt_def": 24,
           "discriminants": [
             0,
             1
@@ -1983,7 +1983,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 9,
+          "adt_def": 15,
           "fields": [
             9
           ],
@@ -2039,7 +2039,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 7,
+          "adt_def": 13,
           "fields": [
             15
           ],
@@ -2185,7 +2185,7 @@
       26,
       {
         "RefType": {
-          "pointee_type": 32,
+          "pointee_type": 31,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2285,10 +2285,10 @@
       "VoidType"
     ],
     [
-      31,
+      30,
       {
         "RefType": {
-          "pointee_type": 33,
+          "pointee_type": 32,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2318,21 +2318,21 @@
       }
     ],
     [
-      32,
+      31,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      33,
+      32,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 13,
+          "adt_def": 8,
           "fields": [
             26,
-            34,
-            34
+            33,
+            33
           ],
           "layout": {
             "fields": {
@@ -2369,7 +2369,7 @@
       }
     ],
     [
-      34,
+      33,
       {
         "PrimitiveType": {
           "Uint": "U32"

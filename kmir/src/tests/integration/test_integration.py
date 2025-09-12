@@ -44,14 +44,14 @@ PROVE_RS_SHOW_SPECS = [
     'interior-mut-fail',
     'interior-mut2-fail',
     'interior-mut3-fail',
-    'assert_eq_exp-fail',
-    'bitwise-not-shift-fail',
+    'assert_eq_exp',
+    'bitwise-not-shift',
     'symbolic-args-fail',
     'symbolic-structs-fail',
     'checked_arithmetic-fail',
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
-    'closure_access_struct-fail',
+    'closure_access_struct',
 ]
 
 

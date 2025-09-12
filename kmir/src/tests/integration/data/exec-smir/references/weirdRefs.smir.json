@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 5,
-      "ty": 28,
+      "ty": 39,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -52,7 +52,7 @@
     },
     {
       "alloc_id": 6,
-      "ty": 28,
+      "ty": 39,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -100,7 +100,7 @@
     },
     {
       "alloc_id": 7,
-      "ty": 28,
+      "ty": 39,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -141,7 +141,7 @@
     },
     {
       "alloc_id": 8,
-      "ty": 28,
+      "ty": 39,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -183,7 +183,7 @@
     },
     {
       "alloc_id": 9,
-      "ty": 28,
+      "ty": 39,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -280,7 +280,7 @@
       }
     ],
     [
-      43,
+      37,
       {
         "NoOpSym": ""
       }
@@ -3165,7 +3165,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 41,
+          "pointee_type": 42,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3230,7 +3230,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 42,
+          "pointee_type": 43,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3272,7 +3272,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 28,
+          "adt_def": 30,
           "discriminants": [
             0,
             1
@@ -3362,7 +3362,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 21,
+          "adt_def": 12,
           "fields": [
             9
           ],
@@ -3418,7 +3418,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 19,
+          "adt_def": 10,
           "fields": [
             15
           ],
@@ -3578,7 +3578,7 @@
       28,
       {
         "RefType": {
-          "pointee_type": 38,
+          "pointee_type": 39,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3894,10 +3894,10 @@
       }
     ],
     [
-      37,
+      38,
       {
         "RefType": {
-          "pointee_type": 39,
+          "pointee_type": 40,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3927,21 +3927,21 @@
       }
     ],
     [
-      38,
+      39,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      39,
+      40,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 10,
+          "adt_def": 17,
           "fields": [
             28,
-            40,
-            40
+            41,
+            41
           ],
           "layout": {
             "fields": {
@@ -3978,7 +3978,7 @@
       }
     ],
     [
-      40,
+      41,
       {
         "PrimitiveType": {
           "Uint": "U32"
@@ -3986,7 +3986,7 @@
       }
     ],
     [
-      42,
+      43,
       {
         "PtrType": {
           "pointee_type": 9,
