@@ -355,6 +355,7 @@ An `AccountInfo` reference is passed to the function.
   rule #functionName(monoItemFn(symbol(NAME), _, _)) => NAME
   rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
   rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
+  rule #functionName(IntrinsicFunction(symbol(NAME))) => NAME
 ```
 
 ```{.k .symbolic}
@@ -606,3 +607,6 @@ NB The projection rule must have higher priority than the one which auto-project
 ```k
 endmodule
 ```
+
+  // Handle IntrinsicFunction case for #functionName
+  rule #functionName(IntrinsicFunction(NAME)) => NAME
