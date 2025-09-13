@@ -9,6 +9,7 @@ requires "../ty.md"
 requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
+requires "./decoding.md"
 
 module RT-DATA
   imports INT
@@ -24,8 +25,10 @@ module RT-DATA
 
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
+  imports RT-DECODING
   imports RT-TYPES
   imports KMIR-CONFIGURATION
+
 ```
 
 ## Operations on local variables
@@ -74,19 +77,20 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
 
 ### Evaluating Items to `Value`s
 
-Some built-in operations (`RValue` or type casts) use constructs that will evaluate to a value of sort `Value`.
-The basic operations of reading and writing those values can use K's "heating" and "cooling" rules to describe their evaluation.
-Other uses of heating and cooling are to _read_ local variables as operands.
-A `TypedValue` stored as a local is trivially rewritten to `Value` by projecting out the value.
+Many rules for MIR constructs in this module use heating and cooling
+to evaluate expressions to results or read local variables as operands.
+The `Evaluation` sort gathers all constructs that can evaluate to a `Value`, defined together with `Value`.
+
+First, a `TypedValue` stored in a local is trivially rewritten to `Value` by projecting out the value.
 It is an error to read `NewLocal` or `Moved`.
 
 ```k
-  syntax Evaluation ::= TypedValue | Value // other sorts are added at the first use site
-
-  syntax KResult ::= Value
+  syntax Evaluation ::= TypedValue
 
   rule <k> typedValue(VAL, _, _) => VAL ... </k> [priority(100)]
 ```
+
+Other subsorts of `Evaluation` are defined when first used.
 
 ### `thunk`
 
@@ -1056,6 +1060,30 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
+Boolean values can also be cast to Integers (encoding `true` as `1`).
+
+```k
+  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+          =>
+            #intAsType(1, 8, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
+       andBool VAL
+      [preserves-definedness] // ensures #numTypeOf is defined
+
+  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+          =>
+            #intAsType(0, 8, #numTypeOf({TYPEMAP[TY]}:>TypeInfo))
+          ...
+        </k>
+        <types> TYPEMAP </types>
+      requires #isIntType({TYPEMAP[TY]}:>TypeInfo)
+       andBool notBool VAL
+      [preserves-definedness] // ensures #numTypeOf is defined
+```
+
 Casts involving `Float` values are currently not implemented.
 
 ### Casts between pointer types
@@ -1180,53 +1208,75 @@ The original metadata is therefore already stored as `staticSize` to avoid havin
       // [preserves-definedness] // valid type map indexing and sort coercion
 ```
 
+### `Transmute` casts
+
+An unsafe `transmute` operation in Rust is an arbitrary cast between unrelated types based on assumptions that the byte
+representations of the source and target types are somewhat relatable (or else, under full consideration that they are not).
+
+Support for `castKindTransmute` in this semantics is very limited because of the high-level data model applied.
+What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
+
+```k
+  rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+
+  rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+```
+
 ### Other casts involving pointers
 
 | CastKind                     | Description |
 |------------------------------|-------------|
-| PointerExposeProvenance      |             |
+| PointerExposeAddress         |             |
 | PointerWithExposedProvenance |             |
 | FnPtrToPtr                   |             |
-| Transmute                    |             |
-
 
 ## Decoding constants from their bytes representation to values
 
 The `Value` sort above operates at a higher level than the bytes representation found in the MIR syntax for constant values.
 The bytes have to be interpreted according to the given `TypeInfo` to produce the higher-level value.
-This is currently only defined for `PrimitiveType`s (primitive types in MIR).
 
 ```k
   syntax Evaluation ::= #decodeConstant ( ConstantKind, Ty, TypeInfo )
+```
 
-  //////////////////////////////////////////////////////////////////////////////////////
-  // decoding the correct amount of bytes depending on base type size
+For allocated constants without provenance, the decoder works directly with the bytes.
 
-  // Boolean: should be one byte with value one or zero
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
-        => BoolVal(false) ... </k>
-    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+```k
+  rule <k> #decodeConstant(
+              constantKindAllocated(allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _, _)),
+              _TY,
+              TYPEINFO
+            )
+        => #decodeValue(BYTES, TYPEINFO, TYPEMAP)
+        ...
+       </k>
+       <types> TYPEMAP </types>
+```
 
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, typeInfoPrimitiveType(primTypeBool))
-        => BoolVal(true) ... </k>
-    requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
+Zero-sized types can be decoded trivially into their respective representation.
 
-  // Integer: handled in separate module for numeric operation_s
-  rule <k> #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), _TY, TYPEINFO)
-        => #decodeInteger(BYTES, #intTypeOf(TYPEINFO)) ... </k>
-    requires #isIntType(TYPEINFO)
-     andBool lengthBytes(BYTES) ==K #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
-     [preserves-definedness]
+**FIXME test the new cases for tuple and array/slice**
 
-  // zero-sized struct types
+```k
+  // zero-sized struct
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
         => Aggregate(variantIdx(0), .List) ... </k>
-
-  // TODO Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
-  // TODO Float decoding: not supported natively in K
-
-  // unimplemented cases stored as thunks
+  // zero-sized tuple
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoTupleType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
+  // zero-sized array
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
+        => Range(.List) ... </k>
 ```
 
 ## Primitive operations on numeric data

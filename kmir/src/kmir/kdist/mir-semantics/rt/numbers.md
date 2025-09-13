@@ -127,7 +127,6 @@ This truncation function is instrumental in the implementation of Integer arithm
           true
         )
     requires #bitWidth(INTTYPE) <=Int WIDTH
-    [preserves-definedness] // positive shift, divisor non-zero
 
   // widening: nothing to do: VAL does not change (enough bits to represent, no sign change possible)
   rule #intAsType(VAL, WIDTH, INTTYPE:IntTy)
@@ -135,19 +134,14 @@ This truncation function is instrumental in the implementation of Integer arithm
         Integer(VAL, #bitWidth(INTTYPE), true)
     requires WIDTH <Int #bitWidth(INTTYPE)
 
-  // converting to unsigned int types
-  // truncate (if necessary), then add bias to make non-negative, then truncate again
+  // converting to unsigned int types (simple bitmask)
   rule #intAsType(VAL, _, UINTTYPE:UintTy)
       =>
         Integer(
-          (VAL %Int (1 <<Int #bitWidth(UINTTYPE) )
-            +Int (1 <<Int #bitWidth(UINTTYPE)))
-          %Int (1 <<Int #bitWidth(UINTTYPE) )
-          ,
+          truncate(VAL, #bitWidth(UINTTYPE), Unsigned),
           #bitWidth(UINTTYPE),
           false
         )
-    [preserves-definedness] // positive shift, divisor non-zero
 ```
 
 ## Alignment of Primitives

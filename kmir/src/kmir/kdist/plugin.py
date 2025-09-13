@@ -42,7 +42,6 @@ class KompileTarget(Target):
 def _default_args(src_dir: Path) -> dict[str, Any]:
     return {
         'include_dirs': [src_dir],
-        'md_selector': 'k',
         'warnings_to_errors': True,
         'syntax_module': 'KMIR-AST',
     }
@@ -54,6 +53,7 @@ __TARGETS__: Final = {
         lambda src_dir: {
             'main_file': src_dir / 'mir-semantics/kmir.md',
             'backend': PykBackend.LLVM,
+            'md_selector': 'k & ! symbolic',
             **_default_args(src_dir),
         },
     ),
@@ -62,6 +62,7 @@ __TARGETS__: Final = {
             'main_file': src_dir / 'mir-semantics/kmir.md',
             'backend': PykBackend.LLVM,
             'llvm_kompile_type': LLVMKompileType.C,
+            'md_selector': 'k & ! symbolic',
             **_default_args(src_dir),
         },
     ),
@@ -69,6 +70,7 @@ __TARGETS__: Final = {
         lambda src_dir: {
             'main_file': src_dir / 'mir-semantics/kmir.md',
             'backend': PykBackend.HASKELL,
+            'md_selector': 'k & ! concrete',
             **_default_args(src_dir),
         },
     ),

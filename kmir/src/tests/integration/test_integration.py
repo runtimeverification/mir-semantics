@@ -272,6 +272,12 @@ EXEC_DATA = [
         None,
     ),
     (
+        'Array-inlined',
+        EXEC_DATA_DIR / 'arrays' / 'array_inlined.smir.json',
+        EXEC_DATA_DIR / 'arrays' / 'array_inlined.state',
+        None,
+    ),
+    (
         'pointer-cast-length-test',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.state',
@@ -288,6 +294,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.smir.json',
         EXEC_DATA_DIR / 'intrinsic' / 'blackbox.state',
         1000,
+    ),
+    (
+        'raw_eq_simple',
+        EXEC_DATA_DIR / 'intrinsic' / 'raw_eq_simple.smir.json',
+        EXEC_DATA_DIR / 'intrinsic' / 'raw_eq_simple.state',
+        100,
     ),
 ]
 

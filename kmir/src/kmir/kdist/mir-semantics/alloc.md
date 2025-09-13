@@ -30,8 +30,8 @@ syntax GlobalAllocKind ::= globalAllocFunction(Instance)
                          | Memory(Allocation)
                              [group(mir-enum), symbol(GlobalAllocKind::Memory)]
 
-syntax GlobalAlloc ::= globalAllocEntry(MIRInt, GlobalAllocKind)
-         [symbol(globalAllocEntry), group(mir)]
+syntax GlobalAlloc ::= globalAllocEntry(MIRInt, Ty, GlobalAllocKind)
+         [symbol(globalAllocEntry), group(mir---alloc-id--ty--global-alloc)]
 
 syntax GlobalAllocs ::= List {GlobalAlloc, ""}
          [symbol(GlobalAllocs::append), terminator-symbol(GlobalAllocs::empty), group(mir-list)]
