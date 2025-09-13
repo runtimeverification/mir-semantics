@@ -607,6 +607,3 @@ NB The projection rule must have higher priority than the one which auto-project
 ```k
 endmodule
 ```
-
-  // Handle IntrinsicFunction case for #functionName
-  rule #functionName(IntrinsicFunction(NAME)) => NAME
