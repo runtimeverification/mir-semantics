@@ -17,6 +17,12 @@ class _TestData(NamedTuple):
 
 TEST_DATA: Final[tuple[_TestData, ...]] = (
     _TestData(
+        symbol='_ZN3foo3bar12do_something17h0123456789abcdefE',
+        name='baz::do_something::<&u128>',
+        expected_demangled='foo::bar::do_something::h0123456789abcdef',
+        expected_qualified='foo::baz::do_something::<&u128>',
+    ),
+    _TestData(
         symbol='_ZN14small_test_lib3add17h67a713ff87afe55cE',
         name='add',
         expected_demangled='small_test_lib::add::h67a713ff87afe55c',

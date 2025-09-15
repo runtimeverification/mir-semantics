@@ -73,10 +73,10 @@ def _mono_item_fn_name(symbol_name: str, name: str) -> str:
     Example:
         Symbol: foo :: bar :: do_something :: h0123456789abcdef
         Name:          baz :: do_something :: <&u128>
-        Result: foo :: bar :: do_something :: <&u128>
-                ^^^^^^^^^^    ^^^^^^^^^^^^^^^^^^^^^^^
-                |             |
-                |             +- kept from name
+        Result: foo :: baz :: do_something :: <&u128>
+                ^^^    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                |      |
+                |      +- kept from name
                 +- taken from symbol
     """
 
