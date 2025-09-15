@@ -193,8 +193,10 @@ The basic decoding function is very similar to `#decodeConstant` but returns its
   rule #decodeAlloc(
           ID,
           _TY,
-          allocation(_BYTES, provenanceMap(provenanceMapEntry(_SZ, REF_ID) ), _ALIGN, _MUT),
-          _TYPEMAP
+          allocation(_BYTES, provenanceMap(provenanceMapEntry(_OFFSET, REF_ID) ), _ALIGN, _MUT),
+          _TYPEMAP 
+          // FIXME this is only correct for special cases of a signle provenance map entry
+          // FIXME more general cases must consider the BYTES and insert AllocRef data where needed according to the provenance map (also considering layout of the target type)
         )
       => ID |-> AllocRef(REF_ID, dynamicSize(0))
         // FIXME: if length(BYTES) ==Int 16 decode 2nd half as size.
@@ -202,7 +204,7 @@ The basic decoding function is very similar to `#decodeConstant` but returns its
 ```
 
 The entire set of `GlobalAllocs` is decoded by iterating over the list.
-It is assumed that the give `Ty -> TypeInfo` map contains all types required.
+It is assumed that the given `Ty -> TypeInfo` map contains all types required.
 
 ```k
   syntax Map ::= #decodeAllocs ( GlobalAllocs , Map )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing

@@ -46,7 +46,7 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  // static and dynamic allocations: ID -> Value
+                  // static and dynamic allocations: AllocId -> Value
                   <memory> .Map </memory>
                   // ============ static information ============
                   // function store, Ty -> MonoItemFn

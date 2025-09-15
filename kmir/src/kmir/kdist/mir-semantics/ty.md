@@ -289,7 +289,7 @@ syntax MaybePromoted ::= promoted(Int) [group(mir-option-int)]
 
 syntax Align ::= align(Int) [group(mir-int), symbol(align)]
 
-syntax ProvenanceMapEntry ::= provenanceMapEntry(provSize: MIRInt, allocId: AllocId)
+syntax ProvenanceMapEntry ::= provenanceMapEntry(offset: MIRInt, allocId: AllocId)
                               [group(mir), symbol(provenanceMapEntry)]
 
 syntax ProvenanceMapEntries ::= List {ProvenanceMapEntry, ""}

@@ -1310,15 +1310,15 @@ Zero-sized types can be decoded trivially into their respective representation.
         => Range(.List) ... </k>
 ```
 
-Allocated constants with provenance have been decoded into the `<memory>` heap
-and a reference into it is created.
+Allocated constants of reference type with a single provenance map entry are decoded as references
+into the `<memory>` heap where all allocated constants have been decoded at program start.
 
 ```k
   rule <k> #decodeConstant(
               constantKindAllocated(
                 allocation(
                   BYTES,
-                  provenanceMap(provenanceMapEntry(_, ALLOC_ID) .ProvenanceMapEntries),
+                  provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
                   _,
                   _)),
               _TY,
@@ -1336,7 +1336,7 @@ and a reference into it is created.
               constantKindAllocated(
                 allocation(
                   BYTES,
-                  provenanceMap(provenanceMapEntry(_, ALLOC_ID) .ProvenanceMapEntries),
+                  provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
                   _,
                   _)),
               _TY,
