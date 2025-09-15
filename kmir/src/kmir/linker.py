@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from itertools import chain
 from math import ceil, log10
 from typing import TYPE_CHECKING
 
@@ -107,14 +108,12 @@ def _mono_item_fn_name(symbol_name: str, name: str) -> str:
     name_index = next((len(split_name) - i - 1 for i, s in enumerate(reversed(split_name)) if s == fn_name), None)
     assert name_index is not None
 
-    if symbol_index <= name_index:
-        # Do not add a prefix if the symbol prefix is not longer than the name prefix
+    if symbol_index < name_index:
+        # Do not add a prefix if the name prefix is longer than the symbol prefix
         return name
 
     # Construct the prefix and the result
-    prefix = '::'.join(split_symbol[: symbol_index - name_index])
-    sep = '::' if prefix else ''
-    return f'{prefix}{sep}{name}'
+    return '::'.join(chain(split_symbol[: symbol_index - name_index], split_name))
 
 
 def _demangle(symbol: str) -> str:
