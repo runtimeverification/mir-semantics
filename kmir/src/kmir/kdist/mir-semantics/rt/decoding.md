@@ -195,7 +195,7 @@ The basic decoding function is very similar to `#decodeConstant` but returns its
           _TY,
           allocation(_BYTES, provenanceMap(provenanceMapEntry(_OFFSET, REF_ID) ), _ALIGN, _MUT),
           _TYPEMAP 
-          // FIXME this is only correct for special cases of a signle provenance map entry
+          // FIXME this is only correct for special cases of a single provenance map entry
           // FIXME more general cases must consider the BYTES and insert AllocRef data where needed according to the provenance map (also considering layout of the target type)
         )
       => ID |-> AllocRef(REF_ID, dynamicSize(0))
