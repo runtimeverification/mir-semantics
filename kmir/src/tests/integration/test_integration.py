@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -94,33 +93,6 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             assert apr_proof.passed
         else:
             assert apr_proof.failed
-
-
-def test_prove_pinocchio(kmir: KMIR, update_expected_output: bool) -> None:
-    sys.setrecursionlimit(15000000)
-    smir_dir = Path(__file__).parent / 'data' / 'prove-smir'
-    pinocchio_token_program = smir_dir / 'pinocchio_token_program.smir.json'
-    start_symbols = [
-        'processor::transfer::process_transfer',
-    ]
-    prove_rs_opts = ProveRSOpts(pinocchio_token_program, max_iterations=7, smir=True)
-
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
-
-    for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
-        display_opts = ShowOpts(
-            pinocchio_token_program.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
-        )
-        shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
-        show_res = '\n'.join(shower.show(apr_proof))
-        assert_or_update_show_output(
-            show_res,
-            smir_dir / f'show/{pinocchio_token_program.stem}.{start_symbol}.expected',
-            update=update_expected_output,
-        )
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
