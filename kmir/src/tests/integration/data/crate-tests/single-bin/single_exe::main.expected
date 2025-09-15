@@ -5,7 +5,6 @@
 │  (225 steps)
 ├─ 3 (terminal)
 │   #EndProgram ~> .K
-│   function: main
 │
 ┊  constraint: true
 ┊  subst: ...
