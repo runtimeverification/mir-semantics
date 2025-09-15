@@ -156,6 +156,14 @@ def _symbol_segments(s: str) -> Iterator[str]:
                     case _:
                         buf += [':', la]
                         consume()
+            case '-':
+                consume()
+                match la:
+                    case '>':
+                        buf += ['-', la]
+                        consume()
+                    case _:
+                        buf.append('-')
             case '<':
                 buf.append(la)
                 consume()
