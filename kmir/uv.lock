@@ -516,6 +516,7 @@ version = "0.4.35"
 source = { editable = "." }
 dependencies = [
     { name = "kframework" },
+    { name = "rust-demangler" },
 ]
 
 [package.dev-dependencies]
@@ -538,7 +539,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "kframework", specifier = "==7.1.286" }]
+requires-dist = [
+    { name = "kframework", specifier = "==7.1.286" },
+    { name = "rust-demangler", specifier = "==1.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1024,6 +1028,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fe/75/af448d8e52bf1d8fa6a9d089ca6c07ff4453d86c65c145d0a300bb073b9b/rich-14.1.0.tar.gz", hash = "sha256:e497a48b844b0320d45007cdebfeaeed8db2a4f4bcf49f15e455cfc4af11eaa8", size = 224441, upload-time = "2025-07-25T07:32:58.125Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/30/3c4d035596d3cf444529e0b2953ad0466f6049528a879d27534700580395/rich-14.1.0-py3-none-any.whl", hash = "sha256:536f5f1785986d6dbdea3c75205c473f970777b4a0d6c6dd1b696aa05a3fa04f", size = 243368, upload-time = "2025-07-25T07:32:56.73Z" },
+]
+
+[[package]]
+name = "rust-demangler"
+version = "1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/86/c00e60de3bdb54de60d14719d798c3d8da874c4a37137a76bea32d1f4d88/rust_demangler-1.0.tar.gz", hash = "sha256:a3e88032e691322d14cec137f7d9afbe44ac65a84217c599bd2cfe480ec8bd0f", size = 7382, upload-time = "2021-04-24T17:43:54.263Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/63/8420c9140a5212d509534653f32a47ddd8a2d395aaeb6477f0895ad753b2/rust_demangler-1.0-py3-none-any.whl", hash = "sha256:2a2cdf400d1703dc73ae3aabb930dacb92772160b1dcb4ee2181a81878726948", size = 8271, upload-time = "2021-04-24T17:43:52.344Z" },
 ]
 
 [[package]]

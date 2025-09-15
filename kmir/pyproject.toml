@@ -9,6 +9,7 @@ description = ""
 requires-python = "~=3.10"
 dependencies = [
     "kframework==v7.1.286",
+    "rust-demangler==1.0",
 ]
 
 [[project.authors]]
