@@ -62,6 +62,10 @@ def qualify_items(info: SMIRInfo) -> None:
                     } as mono_item_fn,
                 },
             }:
+                if not symbol_name.startswith('_Z'):
+                    _LOGGER.warning(f'Symbol name is not mangled, name qualification skipped: {symbol_name}')
+                    continue
+
                 qualified_name = _mono_item_fn_name(symbol_name=symbol_name, name=name)
                 if qualified_name != name:
                     _LOGGER.info(f'Qualified item {symbol_name!r}: {name} -> {qualified_name}')
