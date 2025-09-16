@@ -49,8 +49,8 @@ and arrays (where layout is trivial).
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operation_s
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
-    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
+  rule #decodeValue(BYTES, TYPEINFO, TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO, TYPEMAP)
      [preserves-definedness]
 
   // TODO Char type
@@ -66,14 +66,14 @@ Arrays are decoded iteratively, using a known (expected) length or the length of
 
 ```k
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))), TYPEMAP)
-      => #decodeArrayAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo, readTyConstInt(LEN, TYPEMAP))
+      => #decodeArrayAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo, readTyConstInt(LEN, TYPEMAP), TYPEMAP)
   requires ELEMTY in_keys(TYPEMAP)
    andBool isTypeInfo(TYPEMAP[ELEMTY])
    andBool isInt(readTyConstInt(LEN, TYPEMAP))
   [preserves-definedness]
 
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst), TYPEMAP)
-      => #decodeSliceAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo)
+      => #decodeSliceAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo, TYPEMAP)
   requires ELEMTY in_keys(TYPEMAP)
    andBool isTypeInfo(TYPEMAP[ELEMTY])
 ```
@@ -90,17 +90,36 @@ All unimplemented cases will become thunks by way of this default rule:
 
 ```k
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo ) [function]
+  syntax Int ::= #elemSize ( TypeInfo , Map ) [function]
 ```
 
 Known element sizes for common types:
 
 ```k
-  rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
-  rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
+  rule #elemSize(typeInfoPrimitiveType(primTypeBool), _) => 1
+  rule #elemSize(TYPEINFO, _) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
     requires #isIntType(TYPEINFO)
 
-  rule 0 <=Int #elemSize(_) => true [simplification, preserves-definedness]
+  rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))), TYPEMAP)
+    => #elemSize({TYPEMAP[ELEM_TY]}:>TypeInfo, TYPEMAP) *Int readTyConstInt(LEN, TYPEMAP)
+    requires ELEM_TY in_keys(TYPEMAP)
+
+  // thin and fat pointers
+  rule #elemSize(typeInfoRefType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
+  rule #elemSize(typeInfoRefType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+    [owise]
+  rule #elemSize(typeInfoPtrType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
+  rule #elemSize(typeInfoPtrType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+    [owise]
+
+  rule #elemSize(typeInfoVoidType, _) => 0
+
+  // FIXME can only use size from layout here. Requires adding layout first.
+  // Enum, Struct, Tuple, 
+
+  rule 0 <=Int #elemSize(_, _) => true [simplification, preserves-definedness]
 ```
 
 
@@ -123,34 +142,35 @@ bytes for the declared array length, the function will get stuck rather than pro
 results.
 
 ```k
-  syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int ) [function]
-                   // bytes, element type info, array length
+  syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int , Map ) [function]
+                   // bytes, element type info, array length, type map (for recursion)
 
-  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
-    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, .List))
+  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN, TYPEMAP)
+    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, TYPEMAP, .List))
 
-  syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, List ) [function]
+  syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, Map, List ) [function]
                   // bytes, elem type info, remaining length, accumulated list
 
-  rule #decodeArrayElements(BYTES, _ELEMTYPEINFO, LEN, ACC)
+  rule #decodeArrayElements(BYTES, _ELEMTYPEINFO, LEN, _TYPEMAP, ACC)
     => ACC
     requires LEN <=Int 0
      andBool lengthBytes(BYTES) ==Int 0  // exact match - no surplus bytes
     [preserves-definedness]
 
-  rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, ACC)
+  rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, TYPEMAP, ACC)
     => #decodeArrayElements(
-         substrBytes(BYTES, #elemSize(ELEMTYPEINFO), lengthBytes(BYTES)),
+         substrBytes(BYTES, #elemSize(ELEMTYPEINFO, TYPEMAP), lengthBytes(BYTES)),
          ELEMTYPEINFO,
          LEN -Int 1,
+         TYPEMAP,
          ACC ListItem(#decodeValue(
-           substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO)),
+           substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO, TYPEMAP)),
            ELEMTYPEINFO,
-           .Map // HACK
+           TYPEMAP
          ))
        )
     requires LEN >Int 0
-     andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO)  // enough bytes remaining
+     andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO, TYPEMAP)  // enough bytes remaining
     [preserves-definedness]
 ```
 
@@ -161,13 +181,19 @@ The `#decodeSliceAllocation` function computes the array length by dividing the 
 by the element size, then uses the same element-by-element decoding approach as arrays.
 
 ```k
-  syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo ) [function]
+  syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo , Map ) [function]
   // -------------------------------------------------------------------
-  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO)
-    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO,
-                                   lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO), .List))
-    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0  // element size divides cleanly
-     andBool 0 <Int #elemSize(ELEMTYPEINFO)
+  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO, TYPEMAP)
+    => Range(#decodeArrayElements(
+                BYTES,
+                ELEMTYPEINFO,
+                lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO, TYPEMAP),
+                TYPEMAP,
+                .List
+             )
+      )
+    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO, TYPEMAP) ==Int 0  // element size divides cleanly
+     andBool 0 <Int #elemSize(ELEMTYPEINFO, TYPEMAP)
     [preserves-definedness]
 ```
 
