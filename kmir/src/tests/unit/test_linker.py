@@ -82,6 +82,12 @@ TEST_DATA: Final[tuple[_TestData, ...]] = (
         expected_demangled='core::option::Option::<T>::map::h5b7d515e7f40e720',
         expected_qualified='std::option::Option::<isize>::map::<crate1:MMyEnum, {closure@src/main.rs:19:29: 19:32}>',
     ),
+    _TestData(
+        symbol='_ZN4core3cmp6min_by17h26e6c12f90697119E',
+        name="core::cmp::min_by::<usize, for<'a, 'b> fn(&'a usize, &'b usize) -> core::cmp::Ordering {<usize as core::cmp::Ord>::cmp}>",
+        expected_demangled='core::cmp::min_by::h26e6c12f90697119',
+        expected_qualified="core::cmp::min_by::<usize, for<'a, 'b> fn(&'a usize, &'b usize) -> core::cmp::Ordering {<usize as core::cmp::Ord>::cmp}>",
+    ),
 )
 
 

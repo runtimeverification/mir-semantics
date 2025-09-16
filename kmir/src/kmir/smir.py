@@ -419,7 +419,7 @@ class Memory(GlobalAlloc):
 
 @dataclass
 class Allocation:
-    data: bytes  # field 'bytes'
+    bytez: list[int | None]  # field 'bytes'
     provenance: ProvenanceMap
     align: int
     mutable: bool  # field 'mutability'
@@ -427,7 +427,7 @@ class Allocation:
     @staticmethod
     def from_dict(dct: dict[str, Any]) -> Allocation:
         return Allocation(
-            data=bytes(dct['bytes']),
+            bytez=list(dct['bytes']),
             provenance=ProvenanceMap.from_dict(dct['provenance']),
             align=int(dct['align']),
             mutable={
