@@ -690,7 +690,7 @@ An attempt to read more elements than the length of the accessed array is undefi
     [preserves-definedness]
 ```
 
-References als0 exist into the `<memory>` heap which is populated with allocated constants.
+References also exist into the `<memory>` heap which is populated with allocated constants.
 A reference to a statically allocated constant is typically never written to,
 even though this could be supported.
 
