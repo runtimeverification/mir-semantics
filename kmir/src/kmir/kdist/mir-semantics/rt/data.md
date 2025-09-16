@@ -292,6 +292,14 @@ A `Deref` projection in the projections list changes the target of the write ope
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
      [preserves-definedness] // valid context ensured upon context construction
+
+  rule <k> #traverseProjection(toAlloc(ALLOC_ID), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeMoved
+        => .K
+        ...
+       </k>
+       <memory> MEMORY => MEMORY[ALLOC_ID <- #buildUpdate(Moved, CONTEXTS)] </memory>
+    [preserves-definedness] // valid ALLOC_ID ensured when destination set
 ```
 
 These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
@@ -301,6 +309,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   // stores the target of the write operation, which may change when references are dereferenced.
   syntax WriteTo ::= toLocal ( Int )
                    | toStack ( Int , Local )
+                   | toAlloc ( AllocId )
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
@@ -678,6 +687,32 @@ An attempt to read more elements than the length of the accessed array is undefi
         <locals> LOCALS </locals>
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
+    [preserves-definedness]
+```
+
+References also exist into the `<memory>` heap which is populated with allocated constants.
+A reference to a statically allocated constant is typically never written to,
+even though this could be supported.
+
+```k
+  rule <k> #traverseProjection(
+             _DEST,
+             AllocRef(ALLOC_ID, META),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toAlloc(ALLOC_ID),
+             {MEMORYMAP[ALLOC_ID]}:>Value,
+             .ProjectionElems, // no place projections
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
+        ...
+        </k>
+        <memory> MEMORYMAP </memory>
+    requires ALLOC_ID in_keys(MEMORYMAP)
+     andBool isValue(MEMORYMAP[ALLOC_ID])
     [preserves-definedness]
 ```
 
@@ -1206,6 +1241,12 @@ The original metadata is therefore already stored as `staticSize` to avoid havin
       //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
       // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
       // [preserves-definedness] // valid type map indexing and sort coercion
+
+  rule <k> #cast(AllocRef(ID, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+          =>
+            AllocRef(ID, dynamicSize(SIZE))
+          ...
+        </k>
 ```
 
 ### `Transmute` casts
@@ -1218,6 +1259,13 @@ What can be supported without additional layout consideration is trivial casts b
 
 ```k
   rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+
+  rule <k> #cast(AllocRef(_, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
        <types> TYPEMAP </types>
       requires TY_SOURCE in_keys(TYPEMAP)
        andBool TY_TARGET in_keys(TYPEMAP)
@@ -1265,8 +1313,6 @@ For allocated constants without provenance, the decoder works directly with the 
 
 Zero-sized types can be decoded trivially into their respective representation.
 
-**FIXME test the new cases for tuple and array/slice**
-
 ```k
   // zero-sized struct
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
@@ -1278,6 +1324,49 @@ Zero-sized types can be decoded trivially into their respective representation.
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
         => Range(.List) ... </k>
 ```
+
+Allocated constants of reference type with a single provenance map entry are decoded as references
+into the `<memory>` heap where all allocated constants have been decoded at program start.
+
+```k
+  rule <k> #decodeConstant(
+              constantKindAllocated(
+                allocation(
+                  BYTES,
+                  provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
+                  _,
+                  _)),
+              _TY,
+              typeInfoRefType(POINTEE_TY)
+            )
+        => AllocRef(ALLOC_ID, #metadata(POINTEE_TY, TYPEMAP))
+        ...
+       </k>
+       <memory> ALLOCMAP </memory>
+       <types> TYPEMAP </types>
+    requires ALLOC_ID in_keys(ALLOCMAP)
+     andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
+
+  rule <k> #decodeConstant(
+              constantKindAllocated(
+                allocation(
+                  BYTES,
+                  provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
+                  _,
+                  _)),
+              _TY,
+              typeInfoRefType(_)
+            )
+        => AllocRef(ALLOC_ID, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)) )
+                                          // assumes usize == u64
+        ...
+       </k>
+       <memory> ALLOCMAP </memory>
+    requires ALLOC_ID in_keys(ALLOCMAP)
+     andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
+    [preserves-definedness] // Byte length checked to be sufficient
+```
+
 
 ## Primitive operations on numeric data
 

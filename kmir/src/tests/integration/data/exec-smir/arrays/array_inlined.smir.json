@@ -82,7 +82,7 @@
       }
     ],
     [
-      79,
+      49,
       {
         "NoOpSym": ""
       }
@@ -4298,7 +4298,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 49,
+          "pointee_type": 79,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4363,7 +4363,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 50,
+          "pointee_type": 80,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -4405,7 +4405,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 17,
+          "adt_def": 54,
           "discriminants": [
             0,
             1
@@ -4495,7 +4495,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 22,
+          "adt_def": 15,
           "fields": [
             9
           ],
@@ -4551,7 +4551,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 20,
+          "adt_def": 13,
           "fields": [
             15
           ],
@@ -4632,7 +4632,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<(), std::fmt::Error>",
-          "adt_def": 17,
+          "adt_def": 54,
           "discriminants": [
             0,
             1
@@ -4983,7 +4983,7 @@
       36,
       {
         "RefType": {
-          "pointee_type": 80,
+          "pointee_type": 50,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5421,7 +5421,7 @@
       {
         "StructType": {
           "name": "std::fmt::Arguments<'_>",
-          "adt_def": 25,
+          "adt_def": 22,
           "fields": [
             52,
             53,
@@ -5648,39 +5648,6 @@
             "abi_align": 8,
             "size": {
               "num_bits": 128
-            }
-          }
-        }
-      }
-    ],
-    [
-      50,
-      {
-        "PtrType": {
-          "pointee_type": 9,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
             }
           }
         }
@@ -6193,7 +6160,7 @@
       {
         "StructType": {
           "name": "core::fmt::rt::Placeholder",
-          "adt_def": 29,
+          "adt_def": 26,
           "fields": [
             41,
             61,
@@ -6256,7 +6223,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::Alignment",
-          "adt_def": 36,
+          "adt_def": 33,
           "discriminants": [
             0,
             1,
@@ -6414,7 +6381,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::Count",
-          "adt_def": 37,
+          "adt_def": 34,
           "discriminants": [
             0,
             1,
@@ -6652,7 +6619,7 @@
       {
         "StructType": {
           "name": "core::fmt::rt::Argument<'_>",
-          "adt_def": 40,
+          "adt_def": 37,
           "fields": [
             66
           ],
@@ -6689,7 +6656,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::ArgumentType<'_>",
-          "adt_def": 42,
+          "adt_def": 39,
           "discriminants": [
             0,
             1
@@ -6837,7 +6804,7 @@
       {
         "StructType": {
           "name": "std::ptr::NonNull<()>",
-          "adt_def": 47,
+          "adt_def": 44,
           "fields": [
             70
           ],
@@ -6946,7 +6913,7 @@
       {
         "StructType": {
           "name": "std::fmt::Formatter<'_>",
-          "adt_def": 49,
+          "adt_def": 46,
           "fields": [
             26,
             61,
@@ -7312,6 +7279,39 @@
             "abi_align": 8,
             "size": {
               "num_bits": 192
+            }
+          }
+        }
+      }
+    ],
+    [
+      80,
+      {
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
             }
           }
         }
