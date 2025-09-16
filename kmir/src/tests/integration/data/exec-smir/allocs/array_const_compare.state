@@ -50,9 +50,15 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 0 ) |-> Moved
-    allocId ( 1 ) |-> Moved
-    allocId ( 3 ) |-> Moved
+    allocId ( 0 ) |-> Range ( ListItem ( Integer ( 1 , 8 , true ) )
+    ListItem ( Integer ( -2 , 8 , true ) )
+    ListItem ( Integer ( 3 , 8 , true ) ) )
+    allocId ( 1 ) |-> Range ( ListItem ( Integer ( 1 , 8 , true ) )
+    ListItem ( Integer ( -2 , 8 , true ) )
+    ListItem ( Integer ( 3 , 8 , true ) ) )
+    allocId ( 3 ) |-> Range ( ListItem ( Integer ( 100 , 16 , false ) )
+    ListItem ( Integer ( 200 , 16 , false ) )
+    ListItem ( Integer ( 300 , 16 , false ) ) )
     allocId ( 4 ) |-> UnableToDecode ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
