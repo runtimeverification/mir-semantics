@@ -39,6 +39,7 @@ and arrays (where layout is trivial).
 ```k
   syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total]
                       | UnableToDecode( Bytes , TypeInfo )
+                      | UnableToDecode( Bytes , Ty , ProvenanceMapEntries )
 
   // Boolean: should be one byte with value one or zero
   rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
@@ -189,18 +190,52 @@ The basic decoding function is very similar to `#decodeConstant` but returns its
       => ID |-> #decodeValue(BYTES, {TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
+```
 
+If there are entries in the provenance map, then the decoder must create references to other allocations.
+Each entry replaces a pointer starting at a certain offset in the bytes.
+The pointee of the respective pointer is determined by type _layout_ of the type to decode.
+
+Simple cases of offset 0 and reference types can be implemented here without consideration of layout.
+The reference metadata is either determined statically by type, or filled in from the bytes for fat pointers.
+
+```k
+  // if length(BYTES) ==Int 16 decode BYTES[9..16] as dynamic size.
   rule #decodeAlloc(
           ID,
-          _TY,
-          allocation(_BYTES, provenanceMap(provenanceMapEntry(_OFFSET, REF_ID) ), _ALIGN, _MUT),
-          _TYPEMAP 
-          // FIXME this is only correct for special cases of a single provenance map entry
-          // FIXME more general cases must consider the BYTES and insert AllocRef data where needed according to the provenance map (also considering layout of the target type)
+          TY,
+          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
+          TYPEMAP
         )
-      => ID |-> AllocRef(REF_ID, dynamicSize(0))
-        // FIXME: if length(BYTES) ==Int 16 decode 2nd half as size.
-        // Otherwise query type information for static size and insert it.
+      => ID |-> AllocRef(REF_ID, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
+     andBool lengthBytes(BYTES) ==Int 16 // sufficient data to decode dynamic size (assumes usize == u64)
+     andBool dynamicSize(1) ==K #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP) // expect fat pointer
+    [preserves-definedness] // valid type lookup ensured
+
+  // Otherwise query type information for static size and insert it.
+  rule #decodeAlloc(
+          ID,
+          TY,
+          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
+          TYPEMAP
+        )
+      => ID |-> AllocRef(REF_ID, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
+    requires TY in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY])
+     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
+     andBool lengthBytes(BYTES) ==Int 8 // single slim pointer (assumes usize == u64)
+    [owise, preserves-definedness] // valid type lookup ensured
+```
+
+Allocations with more than one provenance map entry or witn non-reference types remain undecoded.
+
+```k
+  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT), _TYPEMAP)
+      => ID |-> UnableToDecode(BYTES, TY, ENTRIES)
+    [owise]
 ```
 
 The entire set of `GlobalAllocs` is decoded by iterating over the list.
@@ -219,7 +254,7 @@ It is assumed that the given `Ty -> TypeInfo` map contains all types required.
     [preserves-definedness]
 ```
 
-Non-`Memory` allocs are simply stored as raw data as they cannot be handled at the moment.
+If the type of an alloc cannot be found, or for non-`Memory` allocs, the raw data is stored in a super-sort of `Value`.
 This ensures that the function is total (anyway lookups require constraining the sort).
 
 ```k
