@@ -292,6 +292,14 @@ A `Deref` projection in the projections list changes the target of the write ope
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
      [preserves-definedness] // valid context ensured upon context construction
+
+  rule <k> #traverseProjection(toAlloc(ALLOC_ID), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeMoved
+        => .K
+        ...
+       </k>
+       <memory> MEMORY => MEMORY[ALLOC_ID <- #buildUpdate(Moved, CONTEXTS)] </memory>
+    [preserves-definedness] // valid ALLOC_ID ensured when destination set
 ```
 
 These helpers mark down, as we traverse the projection, what `Place` we are currently looking up in the traversal.
@@ -1251,6 +1259,13 @@ What can be supported without additional layout consideration is trivial casts b
 
 ```k
   rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+       <types> TYPEMAP </types>
+      requires TY_SOURCE in_keys(TYPEMAP)
+       andBool TY_TARGET in_keys(TYPEMAP)
+       andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
+      [preserves-definedness] // valid map lookups checked
+
+  rule <k> #cast(AllocRef(_, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
        <types> TYPEMAP </types>
       requires TY_SOURCE in_keys(TYPEMAP)
        andBool TY_TARGET in_keys(TYPEMAP)
