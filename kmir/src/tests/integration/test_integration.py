@@ -279,6 +279,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'allocs' / 'array_const_compare.state',
         None,
     ),
+    (
+        'Alloc-enum-two-refs-fail',
+        EXEC_DATA_DIR / 'allocs' / 'enum-two-refs-fail.smir.json',
+        EXEC_DATA_DIR / 'allocs' / 'enum-two-refs-fail.state',
+        1000,
+    ),
 ]
 
 

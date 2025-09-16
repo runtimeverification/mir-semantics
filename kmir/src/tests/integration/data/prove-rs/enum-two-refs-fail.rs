@@ -1,0 +1,1 @@
+../exec-smir/allocs/enum-two-refs-fail.rs
