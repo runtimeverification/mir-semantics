@@ -46,11 +46,11 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  // static and dynamic allocations: AllocId -> Value
                   <memory> .Map </memory>
                   // ============ static information ============
                   // function store, Ty -> MonoItemFn
                   <functions> .Map </functions>
-                  // heap
                   <start-symbol> symbol($STARTSYM:String) </start-symbol>
                   // static information about the base type interning in the MIR
                   <types> .Map </types>
