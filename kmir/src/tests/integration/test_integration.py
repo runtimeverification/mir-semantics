@@ -273,6 +273,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'intrinsic' / 'raw_eq_simple.state',
         100,
     ),
+    (
+        'Alloc-array-const-compare',
+        EXEC_DATA_DIR / 'allocs' / 'array_const_compare.smir.json',
+        EXEC_DATA_DIR / 'allocs' / 'array_const_compare.state',
+        None,
+    ),
 ]
 
 
