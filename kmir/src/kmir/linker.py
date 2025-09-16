@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import logging
+from itertools import chain
 from math import ceil, log10
 from typing import TYPE_CHECKING
 
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from typing import Final
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -20,6 +22,8 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
     _LOGGER.info(f'Maximum type ID (offset) is {offset}, linking {len(smirs)} smir.json files')
 
     for i, smir in enumerate(smirs):
+        qualify_items(smir)
+
         smir_offset = offset * i
         _LOGGER.debug(f'Offset {smir_offset} for smir {smir._smir["name"]}')
         apply_offset(smir, smir_offset)
@@ -40,6 +44,135 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
 def id_range(smir: SMIRInfo) -> int:
     return max(0, *smir.function_symbols, *smir.types, *smir.spans, *smir.allocs)
+
+
+def qualify_items(info: SMIRInfo) -> None:
+    """Qualify each unqualified function item name.
+
+    The missing prefix is extracted from the symbol name.
+    """
+
+    for item in info._smir['items']:
+        match item:
+            case {
+                'symbol_name': symbol_name,
+                'mono_item_kind': {
+                    'MonoItemFn': {
+                        'name': name,
+                    } as mono_item_fn,
+                },
+            }:
+                qualified_name = _mono_item_fn_name(symbol_name=symbol_name, name=name)
+                if qualified_name != name:
+                    _LOGGER.info(f'Qualified item {symbol_name!r}: {name} -> {qualified_name}')
+                    mono_item_fn['name'] = qualified_name
+
+
+def _mono_item_fn_name(symbol_name: str, name: str) -> str:
+    """Extend ``name`` with a prefix from ``symbol_name``.
+
+    Example:
+        Symbol: foo :: bar :: do_something :: h0123456789abcdef
+        Name:          baz :: do_something :: <&u128>
+        Result: foo :: baz :: do_something :: <&u128>
+                ^^^    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                |      |
+                |      +- kept from name
+                +- taken from symbol
+    """
+
+    def extract_id(s: str) -> str | None:
+        """Extract a Rust id prefix from a string."""
+        import re
+
+        m = re.match(r'^(?P<func>[a-zA-Z_][a-zA-Z0-9_]*)', s)
+        if not m:
+            return None
+        return m['func']
+
+    symbol = _demangle(symbol_name)
+    split_symbol = list(_symbol_segments(symbol))
+    split_name = list(_symbol_segments(name))
+
+    assert len(split_symbol) >= 2, 'The symbol name should contain at least two segments, an identifier and a hash'
+    # Extract the function name from `symbol_name`.
+    # It's the last segment with a valid id as prefix that's not the hash
+    i, fn_name = next(
+        ((i, fn_name) for i, s in enumerate(reversed(split_symbol[:-1])) if (fn_name := extract_id(s))), (None, None)
+    )
+    assert i is not None
+    assert fn_name is not None
+    symbol_index = len(split_symbol) - i - 2
+
+    # Find the index of the function name segment in the `split_name`
+    name_index = next((len(split_name) - i - 1 for i, s in enumerate(reversed(split_name)) if s == fn_name), None)
+    assert name_index is not None
+
+    if symbol_index < name_index:
+        # Do not add a prefix if the name prefix is longer than the symbol prefix
+        return name
+
+    # Construct the prefix and the result
+    return '::'.join(chain(split_symbol[: symbol_index - name_index], split_name))
+
+
+def _demangle(symbol: str) -> str:
+    import re
+
+    from rust_demangler import demangle  # type: ignore [import-untyped]
+
+    res = demangle(symbol)
+    res = re.sub(r'(?<!^)(?<!:)<', r'::<', res)  # insert '::' before '<' if not at the beginning or preceded by ':'
+    return res
+
+
+def _symbol_segments(s: str) -> Iterator[str]:
+    """Split a symbol at ``'::'`` not between ``'<'`` and ``'>'``."""
+    it = iter(s)
+    la = ''
+    buf: list[str] = []
+
+    def consume() -> None:
+        nonlocal la
+        la = next(it, '')
+
+    depth = 0
+    consume()
+    while la:
+        match la:
+            case ':':
+                consume()
+                match la:
+                    case ':':
+                        consume()
+                        if depth:
+                            buf += [':', ':']
+                        else:
+                            yield ''.join(buf)
+                            buf.clear()
+                    case '':
+                        buf.append(':')
+                        break
+                    case _:
+                        buf += [':', la]
+                        consume()
+            case '<':
+                buf.append(la)
+                consume()
+                depth += 1
+            case '>':
+                buf.append(la)
+                consume()
+                depth -= 1
+            case '':
+                raise AssertionError('The outer loop should ensure this is unreachable')
+            case _:
+                buf.append(la)
+                consume()
+
+    if depth != 0:
+        raise ValueError(f'Unbalanced <> in symbol: {s}')
+    yield ''.join(buf)
 
 
 def apply_offset(info: SMIRInfo, offset: int) -> None:
