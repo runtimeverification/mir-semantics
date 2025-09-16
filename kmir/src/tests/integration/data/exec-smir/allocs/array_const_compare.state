@@ -32,12 +32,12 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , staticSize ( 3 ) ) )
-      ListItem ( AllocRef ( allocId ( 1 ) , staticSize ( 3 ) ) ) ) , ty ( 86 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 3 ) ) )
+      ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 3 ) ) ) ) , ty ( 86 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 69 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 68 ) , mutabilityNot ) )

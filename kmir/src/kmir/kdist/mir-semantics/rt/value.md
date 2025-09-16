@@ -42,8 +42,8 @@ The special `Moved` value represents values that have been used and should not b
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // first 3 fields are the same as in Reference, plus pointee metadata
-                 | AllocRef ( AllocId , Metadata )
-                   // reference to static allocation, by AllocId, carrying metadata if applicable
+                 | AllocRef ( AllocId , ProjectionElems , Metadata )
+                   // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
                  | "Moved"
                    // The value has been used and is gone now
 ```

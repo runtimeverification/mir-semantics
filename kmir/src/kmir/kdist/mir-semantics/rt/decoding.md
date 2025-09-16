@@ -233,7 +233,7 @@ The reference metadata is either determined statically by type, or filled in fro
           allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
           TYPEMAP
         )
-      => ID |-> AllocRef(REF_ID, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
+      => ID |-> AllocRef(REF_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
      andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
@@ -248,7 +248,7 @@ The reference metadata is either determined statically by type, or filled in fro
           allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
           TYPEMAP
         )
-      => ID |-> AllocRef(REF_ID, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
+      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
      andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
