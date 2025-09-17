@@ -32,12 +32,12 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , staticSize ( 3 ) ) )
-      ListItem ( AllocRef ( allocId ( 1 ) , staticSize ( 3 ) ) ) ) , ty ( 86 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 3 ) ) )
+      ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 3 ) ) ) ) , ty ( 86 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 3 ) ) , ty ( 25 ) , mutabilityNot ) )
       ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 69 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 68 ) , mutabilityNot ) )
@@ -50,9 +50,15 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 0 ) |-> Moved
-    allocId ( 1 ) |-> Moved
-    allocId ( 3 ) |-> Moved
+    allocId ( 0 ) |-> Range ( ListItem ( Integer ( 1 , 8 , true ) )
+    ListItem ( Integer ( -2 , 8 , true ) )
+    ListItem ( Integer ( 3 , 8 , true ) ) )
+    allocId ( 1 ) |-> Range ( ListItem ( Integer ( 1 , 8 , true ) )
+    ListItem ( Integer ( -2 , 8 , true ) )
+    ListItem ( Integer ( 3 , 8 , true ) ) )
+    allocId ( 3 ) |-> Range ( ListItem ( Integer ( 100 , 16 , false ) )
+    ListItem ( Integer ( 200 , 16 , false ) )
+    ListItem ( Integer ( 300 , 16 , false ) ) )
     allocId ( 4 ) |-> UnableToDecode ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>

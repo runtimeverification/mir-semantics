@@ -674,7 +674,8 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
     => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
   rule #withDeref(operandMove(place(LOCAL, PROJ))) 
-    => operandMove(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
+    => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
+       // must not overwrite the value, just the reference is moved!
   rule #withDeref(OP) => OP [owise]
   
   // Extract type from operands (locals with projections, constants, fallback to unknown)
