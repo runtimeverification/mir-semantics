@@ -697,14 +697,14 @@ even though this could be supported.
 ```k
   rule <k> #traverseProjection(
              _DEST,
-             AllocRef(ALLOC_ID, META),
+             AllocRef(ALLOC_ID, ALLOC_PROJS, META),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toAlloc(ALLOC_ID),
              {MEMORYMAP[ALLOC_ID]}:>Value,
-             .ProjectionElems, // no place projections
+             ALLOC_PROJS, // alloc projections
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
@@ -977,6 +977,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // -----------------------------------------------------------------------------------------------
   rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META) ... </k>
   rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
 
   syntax Metadata ::= #maybeDynamicSize ( Metadata , Value ) [function, total]
   // -------------------------------------------------------------------------
@@ -1242,9 +1243,9 @@ The original metadata is therefore already stored as `staticSize` to avoid havin
       // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
       // [preserves-definedness] // valid type map indexing and sort coercion
 
-  rule <k> #cast(AllocRef(ID, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(AllocRef(ID, PROJS, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            AllocRef(ID, dynamicSize(SIZE))
+            AllocRef(ID, PROJS, dynamicSize(SIZE))
           ...
         </k>
 ```
@@ -1265,7 +1266,7 @@ What can be supported without additional layout consideration is trivial casts b
        andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
       [preserves-definedness] // valid map lookups checked
 
-  rule <k> #cast(AllocRef(_, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+  rule <k> #cast(AllocRef(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
        <types> TYPEMAP </types>
       requires TY_SOURCE in_keys(TYPEMAP)
        andBool TY_TARGET in_keys(TYPEMAP)
@@ -1339,7 +1340,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
               _TY,
               typeInfoRefType(POINTEE_TY)
             )
-        => AllocRef(ALLOC_ID, #metadata(POINTEE_TY, TYPEMAP))
+        => AllocRef(ALLOC_ID, .ProjectionElems, #metadata(POINTEE_TY, TYPEMAP))
         ...
        </k>
        <memory> ALLOCMAP </memory>
@@ -1357,8 +1358,8 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
               _TY,
               typeInfoRefType(_)
             )
-        => AllocRef(ALLOC_ID, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)) )
-                                          // assumes usize == u64
+        => AllocRef(ALLOC_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)) )
+                                                            // assumes usize == u64
         ...
        </k>
        <memory> ALLOCMAP </memory>

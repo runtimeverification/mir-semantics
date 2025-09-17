@@ -285,6 +285,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'allocs' / 'enum-two-refs-fail.state',
         1000,
     ),
+    (
+        'Alloc-array-nest-compare',
+        EXEC_DATA_DIR / 'allocs' / 'array_nest_compare.smir.json',
+        EXEC_DATA_DIR / 'allocs' / 'array_nest_compare.state',
+        1000,
+    ),
 ]
 
 
