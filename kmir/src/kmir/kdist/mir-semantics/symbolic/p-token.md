@@ -383,7 +383,7 @@ An `AccountInfo` reference is passed to the function.
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_account"
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-mint]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -393,7 +393,7 @@ An `AccountInfo` reference is passed to the function.
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_mint"
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-rent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -403,7 +403,7 @@ An `AccountInfo` reference is passed to the function.
     <functions> FUNCTIONS </functions>
     requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
      andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "entrypoint::cheatcode_is_rent"
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_rent"
     [priority(30), preserves-definedness]
 
   // cheat codes and rules to create a special PTokenAccount flavour
