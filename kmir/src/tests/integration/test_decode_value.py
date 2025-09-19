@@ -21,6 +21,46 @@ TEST_DATA: Final = (
         r'#decodeValue(b"\x01", typeInfoPrimitiveType(primTypeBool), .Map)',
         'BoolVal ( true )',
     ),
+    (
+        r'#decodeValue(b"\xf1", typeInfoPrimitiveType(primTypeUint(uintTyU8)), .Map)',
+        'Integer ( 241 , 8 , false )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff", typeInfoPrimitiveType(primTypeUint(uintTyU16)), .Map)',
+        'Integer ( 65521 , 16 , false )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU32)), .Map)',
+        'Integer ( 4294967281 , 32 , false )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU64)), .Map)',
+        'Integer ( 18446744073709551601 , 64 , false )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU128)), .Map)',
+        'Integer ( 340282366920938463463374607431768211441 , 128 , false )',
+    ),
+    (
+        r'#decodeValue(b"\xf1", typeInfoPrimitiveType(primTypeInt(intTyI8)), .Map)',
+        'Integer ( -15 , 8 , true )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff", typeInfoPrimitiveType(primTypeInt(intTyI16)), .Map)',
+        'Integer ( -15 , 16 , true )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI32)), .Map)',
+        'Integer ( -15 , 32 , true )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI64)), .Map)',
+        'Integer ( -15 , 64 , true )',
+    ),
+    (
+        r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI128)), .Map)',
+        'Integer ( -15 , 128 , true )',
+    ),
 )
 
 KORE_TEMPLATE: Final = Template(
