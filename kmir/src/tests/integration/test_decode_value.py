@@ -1,0 +1,99 @@
+from __future__ import annotations
+
+from string import Template
+from typing import TYPE_CHECKING
+
+import pytest
+
+from kmir.build import LLVM_DEF_DIR
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from typing import Final
+
+
+TEST_DATA: Final = (
+    (
+        r'#decodeValue(b"\x00", typeInfoPrimitiveType(primTypeBool), .Map)',
+        'BoolVal ( false )',
+    ),
+    (
+        r'#decodeValue(b"\x01", typeInfoPrimitiveType(primTypeBool), .Map)',
+        'BoolVal ( true )',
+    ),
+)
+
+KORE_TEMPLATE: Final = Template(
+    r"""
+    Lbl'-LT-'generatedTop'-GT-'{}(
+        Lbl'-LT-'kmir'-GT-'{}(
+            Lbl'-LT-'k'-GT-'{}(kseq{}($kitem, dotk{}())),
+            Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
+            Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
+            Lbl'-LT-'currentFrame'-GT-'{}(
+                Lbl'-LT-'currentBody'-GT-'{}(Lbl'Stop'List{}()),
+                Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
+                Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
+                Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
+                Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}())
+                ,Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
+            )
+            ,Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+            Lbl'-LT-'memory'-GT-'{}(Lbl'Stop'Map{}()),
+            Lbl'-LT-'functions'-GT-'{}(Lbl'Stop'Map{}()),
+            Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}("")))
+            ,Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}()),
+            Lbl'-LT-'adt-to-ty'-GT-'{}(Lbl'Stop'Map{}())
+        ),
+        Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
+    )
+    """
+)
+
+
+@pytest.mark.parametrize(
+    'evaluation,expected',
+    TEST_DATA,
+    ids=[evaluation for evaluation, *_ in TEST_DATA],
+)
+def test_decode_value(evaluation: str, expected: str, tmp_path: Path) -> None:
+    from pyk.kore import match as km
+    from pyk.kore.parser import KoreParser
+    from pyk.kore.tools import kore_print
+    from pyk.ktool.kprint import _kast
+    from pyk.ktool.krun import llvm_interpret
+    from pyk.utils import chain
+
+    # Given
+    kitem_text = _kast(
+        definition_dir=LLVM_DEF_DIR,
+        expression=evaluation,
+        input='rule',
+        output='kore',
+        sort='Evaluation',
+        temp_dir=tmp_path,
+    ).stdout
+    kore_text = KORE_TEMPLATE.substitute(kitem=kitem_text)
+    parser = KoreParser(kore_text)
+    init_pattern = parser.pattern()
+    assert parser.eof
+
+    # When
+    final_pattern = llvm_interpret(definition_dir=LLVM_DEF_DIR, pattern=init_pattern)
+    value = (
+        chain
+        >> km.app("Lbl'-LT-'generatedTop'-GT-'")
+        >> km.arg("Lbl'-LT-'kmir'-GT-'")
+        >> km.arg("Lbl'-LT-'k'-GT-'")
+        >> km.arg('kseq')
+        >> km.arg('inj')
+        >> km.arg(0)
+    )(final_pattern)
+    actual = kore_print(
+        definition_dir=LLVM_DEF_DIR,
+        pattern=value,
+        output='pretty',
+    )
+
+    # Then
+    assert expected == actual
