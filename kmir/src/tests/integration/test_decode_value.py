@@ -20,54 +20,67 @@ def dedent(s: str) -> str:
 
 TEST_DATA: Final = (
     (
+        'bool-false',
         r'#decodeValue(b"\x00", typeInfoPrimitiveType(primTypeBool), .Map)',
         'BoolVal ( false )',
     ),
     (
+        'bool-true',
         r'#decodeValue(b"\x01", typeInfoPrimitiveType(primTypeBool), .Map)',
         'BoolVal ( true )',
     ),
     (
+        'u8',
         r'#decodeValue(b"\xf1", typeInfoPrimitiveType(primTypeUint(uintTyU8)), .Map)',
         'Integer ( 241 , 8 , false )',
     ),
     (
+        'u16',
         r'#decodeValue(b"\xf1\xff", typeInfoPrimitiveType(primTypeUint(uintTyU16)), .Map)',
         'Integer ( 65521 , 16 , false )',
     ),
     (
+        'u32',
         r'#decodeValue(b"\xf1\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU32)), .Map)',
         'Integer ( 4294967281 , 32 , false )',
     ),
     (
+        'u64',
         r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU64)), .Map)',
         'Integer ( 18446744073709551601 , 64 , false )',
     ),
     (
+        'u128',
         r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeUint(uintTyU128)), .Map)',
         'Integer ( 340282366920938463463374607431768211441 , 128 , false )',
     ),
     (
+        'i8',
         r'#decodeValue(b"\xf1", typeInfoPrimitiveType(primTypeInt(intTyI8)), .Map)',
         'Integer ( -15 , 8 , true )',
     ),
     (
+        'i16',
         r'#decodeValue(b"\xf1\xff", typeInfoPrimitiveType(primTypeInt(intTyI16)), .Map)',
         'Integer ( -15 , 16 , true )',
     ),
     (
+        'i32',
         r'#decodeValue(b"\xf1\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI32)), .Map)',
         'Integer ( -15 , 32 , true )',
     ),
     (
+        'i64',
         r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI64)), .Map)',
         'Integer ( -15 , 64 , true )',
     ),
     (
+        'i128',
         r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI128)), .Map)',
         'Integer ( -15 , 128 , true )',
     ),
     (
+        'array-u8-const-len',
         dedent(
             r"""
                 #decodeValue(
@@ -103,6 +116,7 @@ TEST_DATA: Final = (
         ),
     ),
     (
+        'array-u8-implicit-len',
         dedent(
             r"""
                 #decodeValue(
@@ -152,11 +166,11 @@ KORE_TEMPLATE: Final = Template(
 
 
 @pytest.mark.parametrize(
-    'evaluation,expected',
+    'test_id,evaluation,expected',
     TEST_DATA,
-    ids=[evaluation for evaluation, *_ in TEST_DATA],
+    ids=[test_id for test_id, *_ in TEST_DATA],
 )
-def test_decode_value(evaluation: str, expected: str, tmp_path: Path) -> None:
+def test_decode_value(test_id: str, evaluation: str, expected: str, tmp_path: Path) -> None:
     from pyk.kore import match as km
     from pyk.kore.parser import KoreParser
     from pyk.kore.tools import kore_print
