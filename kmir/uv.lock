@@ -512,7 +512,7 @@ wheels = [
 
 [[package]]
 name = "kmir"
-version = "0.4.39"
+version = "0.4.40"
 source = { editable = "." }
 dependencies = [
     { name = "kframework" },
