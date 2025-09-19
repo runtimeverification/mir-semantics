@@ -12,6 +12,12 @@ if TYPE_CHECKING:
     from typing import Final
 
 
+def dedent(s: str) -> str:
+    from textwrap import dedent
+
+    return dedent(s).strip()
+
+
 TEST_DATA: Final = (
     (
         r'#decodeValue(b"\x00", typeInfoPrimitiveType(primTypeBool), .Map)',
@@ -60,6 +66,41 @@ TEST_DATA: Final = (
     (
         r'#decodeValue(b"\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", typeInfoPrimitiveType(primTypeInt(intTyI128)), .Map)',
         'Integer ( -15 , 128 , true )',
+    ),
+    (
+        dedent(
+            r"""
+                #decodeValue(
+                    b"\x00\x01\x02\x03",
+                    typeInfoArrayType(
+                        ty(0),
+                        someTyConst(
+                            tyConst(
+                                tyConstKindValue(
+                                    ty(0),
+                                    allocation(
+                                        b"\x04",
+                                        provenanceMap(.ProvenanceMapEntries),
+                                        align(1),
+                                        mutabilityNot
+                                    )
+                                ),
+                                tyConstId(100)
+                            )
+                        )
+                    ),
+                    ty(0) |-> typeInfoPrimitiveType(primTypeUint(uintTyU8))
+                )
+            """
+        ),
+        dedent(
+            """
+                Range ( ListItem ( Integer ( 0 , 8 , false ) )
+                ListItem ( Integer ( 1 , 8 , false ) )
+                ListItem ( Integer ( 2 , 8 , false ) )
+                ListItem ( Integer ( 3 , 8 , false ) ) )
+            """
+        ),
     ),
 )
 
