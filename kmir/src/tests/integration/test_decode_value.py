@@ -102,6 +102,25 @@ TEST_DATA: Final = (
             """
         ),
     ),
+    (
+        dedent(
+            r"""
+                #decodeValue(
+                    b"\x00\x01\x02\x03",
+                    typeInfoArrayType(ty(0), noTyConst),
+                    ty(0) |-> typeInfoPrimitiveType(primTypeUint(uintTyU8))
+                )
+            """
+        ),
+        dedent(
+            """
+                Range ( ListItem ( Integer ( 0 , 8 , false ) )
+                ListItem ( Integer ( 1 , 8 , false ) )
+                ListItem ( Integer ( 2 , 8 , false ) )
+                ListItem ( Integer ( 3 , 8 , false ) ) )
+            """
+        ),
+    ),
 )
 
 KORE_TEMPLATE: Final = Template(
