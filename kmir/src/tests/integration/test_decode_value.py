@@ -164,7 +164,7 @@ KORE_TEMPLATE: Final = Template(
         r"""
             Lbl'-LT-'generatedTop'-GT-'{}(
                 Lbl'-LT-'kmir'-GT-'{}(
-                    Lbl'-LT-'k'-GT-'{}(kseq{}($kitem, dotk{}())),
+                    Lbl'-LT-'k'-GT-'{}(kseq{}(inj{SortEvaluation{}, SortKItem{}}($kitem), dotk{}())),
                     Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
                     Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
                     Lbl'-LT-'currentFrame'-GT-'{}(
