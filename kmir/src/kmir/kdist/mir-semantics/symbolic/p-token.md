@@ -96,12 +96,12 @@ The code uses some helper sorts for better readability.
   syntax I32 ::= I32 ( Int )
   syntax U64 ::= U64 ( Int )
 
-  syntax Key ::= Key( String ) // 32 bytes
+  syntax Key ::= Key( Value ) // 32 bytes
                | KeyError ( Value )
 
   syntax Key ::= toKey ( Value ) [function, total]
   // -----------------------------------------------------------
-  rule toKey(Range(ELEMS)) => Key( bytesAsString(ELEMS)) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS) [preserves-definedness]
+  rule toKey(Range(ELEMS)) => Key( Range(ELEMS) ) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS) [preserves-definedness]
   rule toKey(VAL) => KeyError(VAL) [owise]
 
   syntax Bool ::= allBytes ( List ) [function, total]
@@ -110,25 +110,11 @@ The code uses some helper sorts for better readability.
   rule allBytes( ListItem(Integer(_, 8, false)) REST:List) => allBytes(REST)
   rule allBytes( ListItem(_OTHER) _:List) => false [owise]
 
-  syntax String ::= bytesAsString ( List ) [function]
-  // ------------------------------------------------
-  rule bytesAsString(.List) => ""
-  rule bytesAsString( ListItem(Integer(X, 8, false)) REST:List) => chrChar(X) +String bytesAsString(REST)
-
   syntax Value ::= fromKey ( Key ) [function, total]
   // -----------------------------------------------------------
+  // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
-  rule fromKey(Key(BYTESTRING)) => Range(stringToIntegers(BYTESTRING)) // requires size(BYTESTRING) ==Int 32 by construction
-
-  syntax List ::= stringToIntegers ( String ) [function, total]
-  // -----------------------------------------------------------
-  rule stringToIntegers(STR) => .List
-    requires lengthString(STR) <=Int 0
-  rule stringToIntegers(STR) => ListItem(Integer(ordChar(substrString(STR, 0, 1)), 8, false)) stringToIntegers(substrString(STR, 1, lengthString(STR)))
-    requires 1 <=Int lengthString(STR)
-
-  rule fromKey(toKey(VAL)) => VAL [simplification, preserves-definedness]
-  rule toKey(fromKey(KEY)) => KEY [simplification, preserves-definedness]
+  rule fromKey(Key(VAL))      => VAL [preserves-definedness]
 ```
 
 ### SPL Token Interface Account
@@ -448,24 +434,24 @@ An `AccountInfo` reference is passed to the function.
   rule #addAccount(Aggregate(_, _) #as P_ACC)
       => PAccountAccount(
             #toPAcc(P_ACC),
-            IAcc(Key(?MINT),
-                 Key(?OWNER),
+            IAcc(Key(Range(?MINT)),
+                 Key(Range(?OWNER)),
                  Amount(?AMOUNT),
                  Flag(?DELEGATEFLAG), ?_DELEGATE,
                  U8(?STATE),
                  Flag(?NATIVEFLAG),
                  Amount(?NATIVE_AMOUNT),
                  Amount(?DELEG_AMOUNT),
-                 Flag(?CLOSEFLAG), Key(?CLOSE_AUTH)
+                 Flag(?CLOSEFLAG), Key(Range(?CLOSE_AUTH))
               )
           )
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
     andBool 0 <=Int ?DELEGATEFLAG andBool ?DELEGATEFLAG <=Int 1 // not allowed any other values
     andBool 0 <=Int ?NATIVEFLAG andBool ?NATIVEFLAG <=Int 1 // not allowed any other values
     andBool 0 <=Int ?CLOSEFLAG andBool ?CLOSEFLAG <=Int 1 // not allowed any other values
-    andBool lengthString(?MINT) ==Int 32
-    andBool lengthString(?OWNER) ==Int 32
-    andBool lengthString(?CLOSE_AUTH) ==Int 32
+    andBool size(?MINT)  ==Int 32      andBool allBytes(?MINT)
+    andBool size(?OWNER) ==Int 32      andBool allBytes(?OWNER)
+    andBool size(?CLOSE_AUTH) ==Int 32 andBool allBytes(?CLOSE_AUTH)
     andBool 0 <=Int ?AMOUNT andBool ?AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
@@ -473,19 +459,19 @@ An `AccountInfo` reference is passed to the function.
   rule #addMint(Aggregate(_, _) #as P_ACC)
       => PAccountMint(
             #toPAcc(P_ACC),
-            IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
+            IMint(Flag(?MINT_AUTH_FLAG), Key(Range(?MINT_AUTH_KEY)),
                   Amount(?SUPPLY),
                   U8(?DECIMALS),
                   U8(?INITIALISED),
-                  Flag(?FREEZE_AUTH_FLAG), Key(?FREEZE_AUTH_KEY)
+                  Flag(?FREEZE_AUTH_FLAG), Key(Range(?FREEZE_AUTH_KEY))
               )
           )
     ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
     andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 1 // not allowed any other values
     andBool 0 <=Int ?MINT_AUTH_FLAG andBool ?MINT_AUTH_FLAG <=Int 1 // not allowed any other values
     andBool 0 <=Int ?FREEZE_AUTH_FLAG andBool ?FREEZE_AUTH_FLAG <=Int 1 // not allowed any other values
-    andBool lengthString(?MINT_AUTH_KEY) ==Int 32
-    andBool lengthString(?FREEZE_AUTH_KEY) ==Int 32
+    andBool size(?MINT_AUTH_KEY)  ==Int 32  andBool allBytes(?MINT_AUTH_KEY)
+    andBool size(?FREEZE_AUTH_KEY) ==Int 32 andBool allBytes(?FREEZE_AUTH_KEY)
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
 
   rule #addRent(Aggregate(_, _) #as P_ACC)
