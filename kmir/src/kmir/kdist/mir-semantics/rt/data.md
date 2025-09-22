@@ -912,7 +912,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
                | #lookupDiscrAux ( Discriminants , Int ) [function]
   // --------------------------------------------------------------------
-  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS), variantIdx(IDX)) => #lookupDiscrAux(DISCRIMINANTS, IDX)
+  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS, _, _), variantIdx(IDX)) => #lookupDiscrAux(DISCRIMINANTS, IDX)
     requires isInt(#lookupDiscrAux(DISCRIMINANTS, IDX)) [preserves-definedness]
   rule #lookupDiscriminant(_OTHER, _) => 0 [owise, preserves-definedness] // default 0. May be undefined behaviour, though.
   // --------------------------------------------------------------------

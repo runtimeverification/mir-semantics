@@ -55,7 +55,7 @@
     ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
     ty ( 8 ) |-> typeInfoPtrType ( ty ( 31 ) )
     ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType ( "std::result::Result<isize, !>" , adtDef ( 24 ) , discriminant ( 0 )  discriminant ( 1 )  .Discriminants )
+    ty ( 10 ) |-> typeInfoEnumType (... name: "std::result::Result<isize, !>" , adtDef: adtDef ( 24 ) , discriminants: discriminant ( 0 )  discriminant ( 1 )  .Discriminants , fields: ty ( 6 )  .Tys : ty ( 32 )  .Tys : .Tyss , layout: someLayoutShape ( layoutShape (... fields: fieldsShapeArbitrary ( mk (... offsets: machineSize (... numBits: 0 )  .MachineSizes ) ) , variants: variantsShapeSingle ( mk (... index: variantIdx ( 0 ) ) ) , abi: valueAbiScalar ( scalarInitialized ( mk (... value: primitiveInt ( mk (... length: integerLengthI64 , signed: true ) ) , validRange: wrappingRange (... start: 0 , end: 18446744073709551615 ) ) ) ) , abiAlign: align ( 8 ) , size: machineSize (... numBits: 64 ) ) ) )
     ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
     ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 10 ) , ty ( 9 )  .Tys )
     ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )

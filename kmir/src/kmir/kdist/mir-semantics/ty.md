@@ -52,7 +52,8 @@ syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::Str
 syntax MIRBytes ::= mirBytes(Bytes)    [group(mir-bytes), symbol(MIRBytes::Bytes)]
                   | Bytes
 
-syntax MachineSize ::= machineSize(numBits: MIRInt) [group(mir---num-bits), symbol(MachineSize::num_bits)]
+syntax MachineSize  ::= machineSize(numBits: MIRInt) [group(mir---num-bits), symbol(MachineSize::num_bits)]
+syntax MachineSizes ::= List{MachineSize, ""}        [group(mir-list), symbol(MachineSizes::append), terminator-symbol(MachineSizes::empty)]
 
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
@@ -150,9 +151,9 @@ syntax BinderForFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableK
 syntax PolyFnSig ::= BinderForFnSig                                                         [group(mir)]
 // Not needed this way. We could just do PolyFnSig ::= binderForFnSig(value: FnSig, boundVars: BoundVariableKindList).
 
-syntax Ty ::= ty(Int)            [group(mir-int), symbol(ty)]
-
-syntax Tys ::= List {Ty, ""}     [group(mir-list), symbol(Tys::append), terminator-symbol(Tys::empty)]
+syntax Ty   ::= ty(Int)        [group(mir-int),  symbol(ty)]
+syntax Tys  ::= List {Ty, ""}  [group(mir-list), symbol(Tys::append), terminator-symbol(Tys::empty)]
+syntax Tyss ::= List{Tys, ":"} [group(mir-list), symbol(Tyss::append), terminator-symbol(Tyss::empty)]
 
 syntax Pattern ::= patternRange(start: MaybeTyConst, end: MaybeTyConst, includeEnd: MIRBool) [group(mir---start--end--includeEnd)]
 
@@ -257,23 +258,90 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                    | "rigidTyUnimplemented"                                       [group(mir-enum), symbol(RigidTy::Unimplemented), deprecated] // TODO: remove
 
   // additional sort to provide type information in stable-mir-json
-  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)               [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
-                    | typeInfoEnumType(MIRString, AdtDef, Discriminants)
-                                                                         [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants)]
-                    | typeInfoStructType(MIRString, AdtDef, Tys)         [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields)]
-                    | typeInfoUnionType(MIRString, AdtDef)               [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
-                    | typeInfoArrayType(Ty, MaybeTyConst)                [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
-                    | typeInfoPtrType(Ty)                                [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
-                    | typeInfoRefType(Ty)                                [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
-                    | typeInfoTupleType(Tys)                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
-                    | typeInfoFunType(MIRString)                         [symbol(TypeInfo::FunType)      , group(mir-enum)]
-                    | "typeInfoVoidType"                                 [symbol(TypeInfo::VoidType)     , group(mir-enum)]
+  syntax TypeInfo ::= typeInfoPrimitiveType(PrimitiveType)       [symbol(TypeInfo::PrimitiveType), group(mir-enum)]
+                    | typeInfoEnumType(
+                        name: MIRString
+                      , adtDef: AdtDef
+                      , discriminants: Discriminants
+                      , fields: Tyss
+                      , layout: MaybeLayoutShape)                [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants--fields--layout)]
+                    | typeInfoStructType(MIRString, AdtDef, Tys) [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields)]
+                    | typeInfoUnionType(MIRString, AdtDef)       [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
+                    | typeInfoArrayType(Ty, MaybeTyConst)        [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
+                    | typeInfoPtrType(Ty)                        [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
+                    | typeInfoRefType(Ty)                        [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
+                    | typeInfoTupleType(Tys)                     [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
+                    | typeInfoFunType(MIRString)                 [symbol(TypeInfo::FunType)      , group(mir-enum)]
+                    | "typeInfoVoidType"                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
 
   // discriminant information for enum types
   syntax Discriminant ::= discriminant ( MIRInt ) [group(mir-int)]
 
   syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
+
+  // layout information for enum types
+  syntax LayoutShape ::= layoutShape(
+                           fields: FieldsShape
+                         , variants: VariantsShape
+                         , abi: ValueAbi
+                         , abiAlign: Align
+                         , size: MachineSize) [group(mir---fields--variants--abi--abi-align--size)]
+
+  syntax LayoutShapes ::= List{LayoutShape, ""}     [group(mir-list), symbol(LayoutShapes::append), terminator-symbol(LayoutShapes::empty)]
+
+  syntax MaybeLayoutShape ::= someLayoutShape(LayoutShape) [group(mir-option)]
+                            | "noLayoutShape"              [group(mir-option)]
+
+  syntax FieldsShape ::= "fieldsShapePrimitive"                     [group(mir-enum), symbol(FieldsShape::Primitive)]
+                       | fieldsShapeUnion(/* TODO */)               [group(mir-enum), symbol(FieldsSape::Union)]
+                       | fieldsShapeArray(/* TODO */)               [group(mir-enum), symbol(FieldsSape::Array)]
+                       | fieldsShapeArbitrary(FieldsShapeArbitrary) [group(mir-enum), symbol(FieldsShape::Arbitrary)]
+
+  syntax FieldsShapeArbitrary ::= mk(offsets: MachineSizes) [group(mir---offsets)]
+
+  syntax VariantsShape ::= variantsShapeSingle(VariantsShapeSingle)     [group(mir-enum), symbol(VariantsShape::Single)]
+                         | variantsShapeMultiple(VariantsShapeMultiple) [group(mir-enum), symbol(VariantsShape::Multiple)]
+
+  syntax VariantsShapeSingle ::= mk(index: VariantIdx) [group(mir---index)]
+
+  syntax VariantsShapeMultiple ::= mk (
+                                     tag: Scalar
+                                   , tagEncoding: TagEncoding
+                                   , tagField: MIRInt
+                                   , variants: LayoutShapes) [group(mir---tag--tag-encoding--tag-field--variants)]
+
+  syntax Scalar ::= scalarInitialized(ScalarInitialized) [group(mir-enum), symbol(Scalar::Initialized)]
+                  | scalarUnion(/* TODO */)              [group(mir-enum), symbol(Scalar::Union)]
+
+  syntax ScalarInitialized ::= mk(value: Primitive, validRange: WrappingRange) [group(mir---value--valid-range)]
+
+  syntax Primitive ::= primitiveInt(PrimitiveInt)     [group(mir-enum), symbol(Primitive::Int)]
+                     | primitiveFloat(/* TODO */)     [group(mir-enum), symbol(Primitive::Float)]
+                     | primitivePointer(AddressSpace) [group(mir-enum), symbol(Primitive::Pointer)]
+
+  syntax PrimitiveInt ::= mk(length: IntegerLength, signed: MIRBool)  [group(mir---length--signed)]
+
+  syntax IntegerLength ::= "integerLengthI8"   [group(mir-enum), symbol(IntegerLength::I8)]
+                         | "integerLengthI16"  [group(mir-enum), symbol(IntegerLength::I16)]
+                         | "integerLengthI32"  [group(mir-enum), symbol(IntegerLength::I32)]
+                         | "integerLengthI64"  [group(mir-enum), symbol(IntegerLength::I64)]
+                         | "integerLengthI128" [group(mir-enum), symbol(IntegerLength::I128)]
+
+  syntax AddressSpace ::= addressSpace(Int) [group(mir-int), symbol(addressSpace)]
+
+  syntax WrappingRange ::= wrappingRange(start: MIRInt, end: MIRInt) [group(mir---start--end)]
+
+  syntax TagEncoding ::= "tagEncodingDirect"          [group(mir-enum), symbol(TagEncoding::Direct)]
+                       | tagEncodingNiche(/* TODO */) [group(mir-enum), symbol(TagEncoding::Niche)]
+
+  syntax ValueAbi ::= "valueAbiUninhabited"                [group(mir-enum), symbol(ValueAbi::Uninhabited)]
+                    | valueAbiScalar(Scalar)               [group(mir-enum), symbol(ValueAbi::Scalar)]
+                    | valueAbiScalarPair(/* TODO */)       [group(mir-enum), symbol(ValueAbi::ScalarPair)]
+                    | valueAbiVector(/* TODO */)           [group(mir-enum), symbol(ValueAbi::Vector)]
+                    | valueAbiAggregate(ValueAbiAggregate) [group(mir-enum), symbol(ValueAbi::Aggregate)]
+
+  syntax ValueAbiAggregate ::= mk(sized: MIRBool) [group(mir---sized)]
 
 syntax TyKind ::= tyKindRigidTy(RigidTy)          [group(mir-enum), symbol(TyKind::RigidTy)]
                 | tyKindAlias(AliasKind, AliasTy) [group(mir-enum), symbol(TyKind::Alias)]
@@ -513,6 +581,17 @@ endmodule
 - [ClosureKind hir](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_hir/src/hir.rs#L1014-L1028) [ClosureKind ir](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_type_ir/src/lib.rs#L389-L401)
 - [ImplPolarity ast](https://github.com/runtimeverification/rust/blob/master/compiler/rustc_ast/src/ast.rs#L2578) [ImplPolarity ir](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_type_ir/src/predicate.rs#L176-L188)
 - [PredicatePolarity](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_type_ir/src/predicate.rs#L200-L210)
+- [LayoutS](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1553-L1594)
+- [FieldsShape](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1162-L1204)
+- [Variants](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1421-L1440)
+- [Abi](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1297-L1313)
+- [TagEncoding](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1442-L1465)
+- [Scalar](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1068-L1088)
+- [Primitive](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L957-L971)
+- [Integer](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L797-L806)
+- [Float](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L922-L930)
+- [AddressSpace](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1285-L1290)
+- [WrappingRange](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L1003-L1017)
 
 #### SMIR (Bridge)
 - [MachineSize as Size](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L221-L227)
@@ -610,6 +689,17 @@ endmodule
 - [ClosureKind](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/ty.rs#L694-L705)
 - [ImplPolarity](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/ty.rs#L773-L784)
 - [PredicatePolarity](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/ty.rs#L786-L796)
+- [LayoutShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L51-L65)
+- [FieldsShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L147-L162)
+- [VariantsShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L164-L184)
+- [ValueAbi](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L203-L219)
+- [TagEncoding](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L186-L201)
+- [Scalar](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L237-L249)
+- [Primitive](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L251-L265)
+- [IntegerLength](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L275-L287)
+- [FloatLength](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L289-L300)
+- [AddressSpace](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L267-L273)
+- [WrappingRange](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L302-L308)
 
 #### Stable MIR
 - [MachineSize](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/target.rs#L33-L37)
@@ -707,3 +797,14 @@ endmodule
 - [ClosureKind](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L1495-L1500)
 - [ImplPolarity](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L1538-L1543)
 - [PredicatePolarity](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L1545-L1549)
+- [LayoutShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L70-L92)
+- [FieldsShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L130-L156)
+- [VariantsShape](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L181-L198)
+- [ValueAbi](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L223-L238)
+- [TagEncoding](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L200-L221)
+- [Scalar](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L253-L270)
+- [Primitive](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L283-L301)
+- [IntegerLength](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L313-L321)
+- [FloatLength](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L323-L330)
+- [AddressSpace](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L355-L359)
+- [WrappingRange](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/abi.rs#L366-L377)
