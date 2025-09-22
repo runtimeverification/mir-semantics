@@ -96,12 +96,12 @@ The code uses some helper sorts for better readability.
   syntax I32 ::= I32 ( Int )
   syntax U64 ::= U64 ( Int )
 
-  syntax Key ::= Key( Value ) // 32 bytes
+  syntax Key ::= Key( List ) // 32 bytes
                | KeyError ( Value )
 
   syntax Key ::= toKey ( Value ) [function, total]
   // -----------------------------------------------------------
-  rule toKey(Range(ELEMS)) => Key( Range(ELEMS) ) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS) [preserves-definedness]
+  rule toKey(Range(ELEMS)) => Key( ELEMS ) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS) [preserves-definedness]
   rule toKey(VAL) => KeyError(VAL) [owise]
 
   syntax Bool ::= allBytes ( List ) [function, total]
@@ -114,7 +114,7 @@ The code uses some helper sorts for better readability.
   // -----------------------------------------------------------
   // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
-  rule fromKey(Key(VAL))      => VAL [preserves-definedness]
+  rule fromKey(Key(VAL))      => Range(VAL) [preserves-definedness]
 ```
 
 ### SPL Token Interface Account
@@ -434,15 +434,15 @@ An `AccountInfo` reference is passed to the function.
   rule #addAccount(Aggregate(_, _) #as P_ACC)
       => PAccountAccount(
             #toPAcc(P_ACC),
-            IAcc(Key(Range(?MINT)),
-                 Key(Range(?OWNER)),
+            IAcc(Key(?MINT),
+                 Key(?OWNER),
                  Amount(?AMOUNT),
                  Flag(?DELEGATEFLAG), ?_DELEGATE,
                  U8(?STATE),
                  Flag(?NATIVEFLAG),
                  Amount(?NATIVE_AMOUNT),
                  Amount(?DELEG_AMOUNT),
-                 Flag(?CLOSEFLAG), Key(Range(?CLOSE_AUTH))
+                 Flag(?CLOSEFLAG), Key(?CLOSE_AUTH)
               )
           )
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
@@ -459,11 +459,11 @@ An `AccountInfo` reference is passed to the function.
   rule #addMint(Aggregate(_, _) #as P_ACC)
       => PAccountMint(
             #toPAcc(P_ACC),
-            IMint(Flag(?MINT_AUTH_FLAG), Key(Range(?MINT_AUTH_KEY)),
+            IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
                   Amount(?SUPPLY),
                   U8(?DECIMALS),
                   U8(?INITIALISED),
-                  Flag(?FREEZE_AUTH_FLAG), Key(Range(?FREEZE_AUTH_KEY))
+                  Flag(?FREEZE_AUTH_FLAG), Key(?FREEZE_AUTH_KEY)
               )
           )
     ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
