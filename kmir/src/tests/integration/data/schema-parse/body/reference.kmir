@@ -1,13 +1,9 @@
 body
 (
-  basicBlock
-  (
-    ,
-    terminator(terminatorKindReturn, span(3))
-  ),
-  localDecl(ty(3), span(12), mutabilityMut),
+  basicBlock(.Statements, terminator(terminatorKindReturn, span(3))) .BasicBlocks,
+  localDecl(ty(3), span(12), mutabilityMut) .LocalDecls,
   0,
-  ,
+  .VarDebugInfos,
   noLocal,
   span(17)
 )
