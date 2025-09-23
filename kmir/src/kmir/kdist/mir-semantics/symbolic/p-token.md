@@ -193,9 +193,17 @@ The code uses some helper sorts for better readability.
   syntax List ::= #asU8s ( Int )            [function]
                 | #asU8List ( List , Int ) [function]
   // -------------------------------------
-  rule #asU8s(X) => #asU8List(.List, X)
+  rule #asU8s(X) => #asU8List(.List, X) [concrete]
   rule #asU8List(ACC, _) => ACC requires 8 <=Int size(ACC) [priority(40)] // always cut at 8 bytes
   rule #asU8List(ACC, X) => #asU8List( ACC ListItem(Integer( X &Int 255, 8, false)) , X >>Int 8) [preserves-definedness]
+
+  // mapping an offset over bytes produced by #asU8s has no effect
+  rule #mapOffset(#asU8s(X), _) => #asU8s(X) [simplification, preserves-definedness]
+
+  // Shortcut transmute: [u8; 8] (from #asU8s) to u64
+  rule castAux(Range(#asU8s(X)), castKindTransmute, _TY_SOURCE, TY_TARGET) => Integer(X, 64, false)
+    requires TY_TARGET ==K typeInfoPrimitiveType(primTypeUint(uintTyU64))
+    [simplification, preserves-definedness]
 
   rule toAmount(fromAmount(AMT)) => AMT [simplification, preserves-definedness]
   rule fromAmount(toAmount(VAL)) => VAL [simplification, preserves-definedness]

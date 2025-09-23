@@ -119,9 +119,17 @@ power of two but the semantics will always operate with these particular ones.
   rule bitmask32  => ( 1 <<Int 32 ) -Int 1
   rule bitmask64  => ( 1 <<Int 64 ) -Int 1
   rule bitmask128 => ( 1 <<Int 128) -Int 1
-
 ```
 
+
+## Simplifications for `Int` Inequalities
+
+The following simplifications are useful for conditions in overflow checks and bitwise operations.
+
+```k
+rule [int-and-255-geq-0]: 0 <=Int _ &Int 255 => true [simplification, smt-lemma]
+rule [int-and-255-lt-256]: _ &Int 255 <Int 256 => true [simplification, smt-lemma]
+```
 
 ```k
 endmodule

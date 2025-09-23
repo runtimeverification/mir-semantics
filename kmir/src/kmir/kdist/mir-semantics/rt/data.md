@@ -1067,6 +1067,30 @@ Type casts between a number of different types exist in MIR.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, MaybeTy, Ty ) [strict(1)]
+  syntax Evaluation ::= castAux ( Value, CastKind, MaybeTypeInfo, TypeInfo ) [function]
+  syntax MaybeTypeInfo ::= "Maybe" "(" TypeInfo ")" | "TypeInfoUnknown" 
+  // ----------------------------------------------------------------
+  rule <k> #cast(VAL, CASTKIND, TyUnknown, TY_TARGET)
+        => castAux(VAL, CASTKIND, TypeInfoUnknown, {TYPEMAP[TY_TARGET]}:>TypeInfo)
+           // castAux handles the actual casting
+       ...
+       </k>
+       <types> TYPEMAP </types>
+    requires TY_TARGET in_keys(TYPEMAP)
+     andBool isTypeInfo(TYPEMAP[TY_TARGET])
+    [priority(160), preserves-definedness] 
+    // low priority, because this is only for writing simplification rules for now
+    // valid map lookups checked
+  rule <k> #cast(VAL, CASTKIND, TY_SOURCE:Ty, TY_TARGET)
+        => castAux(VAL, CASTKIND, Maybe({TYPEMAP[TY_SOURCE]}:>TypeInfo), {TYPEMAP[TY_TARGET]}:>TypeInfo)
+           // castAux handles the actual casting
+       ...
+       </k>
+       <types> TYPEMAP </types>
+    requires TY_SOURCE in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+     andBool TY_TARGET in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_TARGET])
+    [priority(160), preserves-definedness]
+
 ```
 
 ### Number Type Casts
@@ -1279,6 +1303,35 @@ What can be supported without additional layout consideration is trivial casts b
        andBool TY_TARGET in_keys(TYPEMAP)
        andBool TYPEMAP[TY_SOURCE] ==K TYPEMAP[TY_TARGET]
       [preserves-definedness] // valid map lookups checked
+
+  // Transmute from [u8; 8] to u64
+  rule <k> #cast(Range(ListItem(Integer(B0:Int, 8, false))
+                       ListItem(Integer(B1:Int, 8, false))
+                       ListItem(Integer(B2:Int, 8, false))
+                       ListItem(Integer(B3:Int, 8, false))
+                       ListItem(Integer(B4:Int, 8, false))
+                       ListItem(Integer(B5:Int, 8, false))
+                       ListItem(Integer(B6:Int, 8, false))
+                       ListItem(Integer(B7:Int, 8, false))),
+                 castKindTransmute,
+                 _TY_SOURCE,
+                 TY_TARGET)
+           => Integer(B0 +Int (B1 <<Int 8) +Int (B2 <<Int 16) +Int (B3 <<Int 24) +Int
+                     (B4 <<Int 32) +Int (B5 <<Int 40) +Int (B6 <<Int 48) +Int (B7 <<Int 56),
+                     64, false)
+           ...
+       </k>
+       <types> TYPEMAP </types>
+      requires TY_TARGET in_keys(TYPEMAP)
+       andBool {TYPEMAP[TY_TARGET]}:>TypeInfo ==K typeInfoPrimitiveType(primTypeUint(uintTyU64))
+       andBool 0 <=Int B0 andBool B0 <Int 256
+       andBool 0 <=Int B1 andBool B1 <Int 256
+       andBool 0 <=Int B2 andBool B2 <Int 256
+       andBool 0 <=Int B3 andBool B3 <Int 256
+       andBool 0 <=Int B4 andBool B4 <Int 256
+       andBool 0 <=Int B5 andBool B5 <Int 256
+       andBool 0 <=Int B6 andBool B6 <Int 256
+       andBool 0 <=Int B7 andBool B7 <Int 256
 ```
 
 ### Other casts involving pointers
