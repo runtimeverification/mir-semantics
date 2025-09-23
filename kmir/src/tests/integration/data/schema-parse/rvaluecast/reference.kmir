@@ -1,6 +1,6 @@
 rvalueCast
 (
   castKindIntToInt,
-  operandMove(place(local(4), )),
+  operandMove(place(local(4), .ProjectionElems)),
   ty(2)
 )
