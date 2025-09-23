@@ -3,14 +3,15 @@ statement
 (
   statementKindAssign
   (
-    place(local(3), ),
+    place(local(3), .ProjectionElems),
     rvalueCast
     (
       castKindIntToInt,
-      operandMove(place(local(4), )),
+      operandMove(place(local(4), .ProjectionElems)),
       ty(2)
     )
   ),
   span(6)
 )
 statement(statementKindStorageDead(local(3)), span(2))
+.Statements

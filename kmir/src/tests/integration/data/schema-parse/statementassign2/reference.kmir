@@ -2,11 +2,11 @@ statement
 (
   statementKindAssign
   (
-    place(local(6), ),
+    place(local(6), .ProjectionElems),
     rvalueAggregate
     (
       aggregateKindTuple,
-      operandCopy(place(local(3), )) operandCopy(place(local(5), ))
+      operandCopy(place(local(3), .ProjectionElems)) operandCopy(place(local(5), .ProjectionElems))
     )
   ),
   span(9)
