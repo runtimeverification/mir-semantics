@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
-from kmir.build import LLVM_DEF_DIR
-
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
@@ -198,20 +196,21 @@ def test_decode_value(test_data: _TestData, tmp_path: Path) -> None:
     from pyk.kore import match as km
     from pyk.kore.parser import KoreParser
     from pyk.kore.tools import kore_print
-    from pyk.ktool.kprint import _kast
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
 
+    from kmir.build import LLVM_DEF_DIR
+    from kmir.kmir import KMIR
+
     # Given
-    kitem_text = _kast(
-        definition_dir=LLVM_DEF_DIR,
-        expression=test_data.evaluation,
-        input='rule',
-        output='kore',
+    kmir = KMIR(LLVM_DEF_DIR)
+    input_file = tmp_path / 'term.pretty'
+    input_file.write_text(test_data.evaluation)
+    _returncode, kitem = kmir.kparse_into_kore(
+        input_file=input_file,
         sort='Evaluation',
-        temp_dir=tmp_path,
-    ).stdout
-    kore_text = KORE_TEMPLATE.substitute(kitem=kitem_text)
+    )
+    kore_text = KORE_TEMPLATE.substitute(kitem=kitem.text)
     parser = KoreParser(kore_text)
     init_pattern = parser.pattern()
     assert parser.eof
