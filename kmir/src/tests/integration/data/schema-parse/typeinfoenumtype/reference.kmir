@@ -1,0 +1,5 @@
+typeInfoEnumType(
+  "AccountState"
+, adtDef(1)
+, discriminant(0) discriminant(1) discriminant(2) .Discriminants
+)
