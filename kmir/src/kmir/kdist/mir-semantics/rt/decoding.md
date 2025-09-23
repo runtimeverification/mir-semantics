@@ -253,7 +253,7 @@ The reference metadata is either determined statically by type, or filled in fro
      andBool isTypeInfo(TYPEMAP[TY])
      andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 8 // single slim pointer (assumes usize == u64)
-    [owise, preserves-definedness] // valid type lookup ensured
+    [priority(60), preserves-definedness] // valid type lookup ensured
 ```
 
 Allocations with more than one provenance map entry or witn non-reference types remain undecoded.
