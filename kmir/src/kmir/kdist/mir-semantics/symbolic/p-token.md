@@ -57,15 +57,15 @@ The code uses some helper sorts for better readability.
   // -------------------------------------------------------
   rule #toPAcc(
         Aggregate(variantIdx(0),
-                  ListItem(Integer(A, 8, false))
-                  ListItem(Integer(B, 8, false))
-                  ListItem(Integer(C, 8, false))
-                  ListItem(Integer(D, 8, false))
-                  ListItem(Integer(E, 32, true))
-                  ListItem(KEY1BYTES)
-                  ListItem(KEY2BYTES)
-                  ListItem(Integer(X, 64, false))
-                  ListItem(Integer(Y, 64, false))
+                  ListItem(Integer(A, 8, false))  // borrow_state (custom solution to manage read/write borrows)
+                  ListItem(Integer(B, 8, false))  // is_signer (comment: whether transaction was signed by this account)
+                  ListItem(Integer(C, 8, false))  // is_writable
+                  ListItem(Integer(D, 8, false))  // executable (comment: whether this account represents a program)
+                  ListItem(Integer(E, 32, true))  // resize_delta (comment: "guaranteed to be zero at start")
+                  ListItem(KEY1BYTES)             // account key
+                  ListItem(KEY2BYTES)             // owner key
+                  ListItem(Integer(X, 64, false)) // lamports
+                  ListItem(Integer(Y, 64, false)) // data_len (dependent on 2nd component, must be ensured)
         ))
       =>
        PAcc (U8(A), U8(B), U8(C), U8(D), I32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(Y))
@@ -431,7 +431,8 @@ An `AccountInfo` reference is passed to the function.
                       | #addRent ( Evaluation )     [seqstrict()]
                       // | #addMultisig ( Evaluation ) [seqstrict()]
 
-  rule #addAccount(Aggregate(_, _) #as P_ACC)
+  // NB these rewrites also ensure the data_len field in PAcc is set correctly for the given data
+  rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountAccount(
             #toPAcc(P_ACC),
             IAcc(Key(?MINT),
@@ -455,8 +456,9 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?AMOUNT andBool ?AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
+    andBool DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
 
-  rule #addMint(Aggregate(_, _) #as P_ACC)
+  rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMint(
             #toPAcc(P_ACC),
             IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
@@ -473,14 +475,16 @@ An `AccountInfo` reference is passed to the function.
     andBool size(?MINT_AUTH_KEY)  ==Int 32  andBool allBytes(?MINT_AUTH_KEY)
     andBool size(?FREEZE_AUTH_KEY) ==Int 32 andBool allBytes(?FREEZE_AUTH_KEY)
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
+    andBool DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
 
-  rule #addRent(Aggregate(_, _) #as P_ACC)
+  rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountRent(
             #toPAcc(P_ACC),
             PRent(U64(?LMP_PER_BYTEYEAR), F64(?_EXEMPT_THRESHOLD), U8(?BURN_PCT))
           )
     ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 64
     andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <Int 256
+    andBool DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
@@ -555,15 +559,32 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 ### Length validation for inlined `from_bytes` function
 
 The Rust `from_bytes` function is inlined and contains a length check: `if bytes.len() < Self::LEN`.
-Since we intercept `from_bytes_unchecked` instead of the inlined `from_bytes`, we need to handle the length validation ourselves.
-We determine the data type (IAcc/IMint/PRent) by examining the `PAccount` value and set the appropriate `LEN` constant in `PAccByteRef` so that `PtrMetadata` operations (which implement `bytes.len()`) return the correct length.
+Since we intercept `from_bytes_unchecked` instead of the inlined `from_bytes`,
+we need to handle the length validation ourselves.
+We determine the data type (IAcc/IMint/PRent) by examining the `PAccount` value and
+set an appropriate `LEN` constant in `PAccByteRef` so that `PtrMetadata` operations
+(which implement `bytes.len()`) return the correct length.
+The expected length is also stored inside the PAcc data structure (last field),
+this field is expected to be constrained accordingly in the path condition.
 
 ```k
   syntax KItem ::= #mkPAccByteRefLen ( Place , Int , Place , Mutability , Value )
   // -------------------------------------------------------------------------------------
-  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountAccount(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IAcc length
-  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMint(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82)) ... </k> // IMint length
-  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(_, _)) => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17)) ... </k> // PRent length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountAccount(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 165))
+        ...
+       </k>
+    requires DATA_LEN ==Int 165 // IAcc length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMint(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 82))
+        ...
+       </k>
+    requires DATA_LEN ==Int 82 // IMint length
+    rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17))
+        ...
+       </k>
+    requires DATA_LEN ==Int 17 // PRent length
 
   // Handle PtrMetadata for PAccByteRef to return the stored length
   rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
