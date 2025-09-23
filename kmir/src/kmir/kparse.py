@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from pathlib import Path
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Callable, Iterable
-
-if TYPE_CHECKING:
-    from subprocess import CompletedProcess
-    from pyk.kore.syntax import Pattern
-    from pyk.kast.inner import KInner
-    from pyk.kast.outer import KFlatModule
-    from pyk.kast.pretty import SymbolTable
-    from pyk.utils import BugReport
 
 from pyk.kore.parser import KoreParser
 from pyk.ktool.kprint import KPrint
 from pyk.utils import run_process
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from subprocess import CompletedProcess
+
+    from pyk.kast.inner import KInner
+    from pyk.kast.outer import KFlatModule
+    from pyk.kast.pretty import SymbolTable
+    from pyk.utils import BugReport
 
 
 class KParse(KPrint):
@@ -37,32 +37,6 @@ class KParse(KPrint):
             patch_symbol_table=patch_symbol_table,
         )
         self.parser = command
-
-    def parse_process(
-        self,
-        program: str,
-        *,
-        sort: str,
-    ) -> CompletedProcess:
-        with self._temp_file() as ntf:
-            ntf.write(program)
-            ntf.flush()
-
-            return _kparse(
-                command=self.parser,
-                input_file=Path(ntf.name),
-                definition_dir=self.definition_dir,
-                sort=sort,
-            )
-
-    def parse_pattern(self, program: str, *, sort: str) -> Pattern:
-        result = self.parse_process(program, sort=sort)
-        result.check_returncode()
-
-        parser = KoreParser(result.stdout)
-        res = parser.pattern()
-        assert parser.eof
-        return res
 
     def kparse(self, input_file: Path, *, sort: str) -> tuple[int, KInner]:
         result = _kparse(input_file=input_file, definition_dir=self.definition_dir, sort=sort)
