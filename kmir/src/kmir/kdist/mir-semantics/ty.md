@@ -271,7 +271,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
 
 
   // discriminant information for enum types
-  syntax Discriminant ::= Discriminant ( MIRInt ) [group(mir-int)]
+  syntax Discriminant ::= discriminant ( MIRInt ) [group(mir-int)]
 
   syntax Discriminants ::= List{Discriminant, ""} [group(mir-list), symbol(Discriminants::append), terminator-symbol(Discriminants::empty)]
 
