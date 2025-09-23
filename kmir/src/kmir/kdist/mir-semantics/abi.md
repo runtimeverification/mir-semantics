@@ -5,7 +5,6 @@ requires "ty.md"
 
 module ABI
   imports LIB-SORTS
-  imports TARGET-SORTS
   imports TYPES-SORTS
   imports INT
 

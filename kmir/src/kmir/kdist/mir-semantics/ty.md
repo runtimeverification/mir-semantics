@@ -52,6 +52,8 @@ syntax MIRString ::= mirString(String) [group(mir-string), symbol(MIRString::Str
 syntax MIRBytes ::= mirBytes(Bytes)    [group(mir-bytes), symbol(MIRBytes::Bytes)]
                   | Bytes
 
+syntax MachineSize ::= machineSize(numBits: MIRInt) [group(mir---num-bits), symbol(MachineSize::num_bits)]
+
 syntax LineInfo ::= lineInfo(startLine: MIRInt, startCol: MIRInt, endLine: MIRInt, endCol: MIRInt)
 syntax InitMaskMaterialized ::= List {MIRInt, ""}
 
@@ -417,6 +419,7 @@ endmodule
 ### Index
 
 #### Internal MIR
+- [Size](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_abi/src/lib.rs#L421-L426)
 - [AdtDef](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_middle/src/ty/adt.rs#L172-L174)
 - [AliasDef]()
 - [BrNamedDef]()
@@ -512,6 +515,7 @@ endmodule
 - [PredicatePolarity](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/rustc_type_ir/src/predicate.rs#L200-L210)
 
 #### SMIR (Bridge)
+- [MachineSize as Size](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/abi.rs#L221-L227)
 - [AdtDef]()
 - [AliasDef]()
 - [BrNamedDef]()
@@ -608,6 +612,7 @@ endmodule
 - [PredicatePolarity](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/rustc_smir/src/rustc_smir/convert/ty.rs#L786-L796)
 
 #### Stable MIR
+- [MachineSize](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/target.rs#L33-L37)
 - [AdtDef](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L801) [crate_def](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/stable_mir/src/crate_def.rs#L55-L69)
 - [AliasDef](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L939) [crate_def](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/stable_mir/src/crate_def.rs#L55-L69)
 - [BrNamedDef](https://github.com/runtimeverification/rust/blob/9131ddf5faba14fab225a7bf8ef5ee5dafe12e3b/compiler/stable_mir/src/ty.rs#L796) [crate_def](https://github.com/runtimeverification/rust/blob/85f90a461262f7ca37a6e629933d455fa9c3ee48/compiler/stable_mir/src/crate_def.rs#L55-L69)
