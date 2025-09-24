@@ -1,0 +1,115 @@
+{
+  "bytes": [
+    16
+  ],
+  "types": [],
+  "typeInfo": {
+    "EnumType": {
+      "name": "Foo",
+      "adt_def": 1,
+      "discriminants": [
+        255,
+        16
+      ],
+      "fields": [
+        [],
+        []
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 0
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Multiple": {
+            "tag": {
+              "Initialized": {
+                "value": {
+                  "Int": {
+                    "length": "I8",
+                    "signed": false
+                  }
+                },
+                "valid_range": {
+                  "start": 0,
+                  "end": 1
+                }
+              }
+            },
+            "tag_encoding": "Direct",
+            "tag_field": 0,
+            "variants": [
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": []
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 0
+                  }
+                },
+                "abi": {
+                  "Aggregate": {
+                    "sized": true
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              },
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": []
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 1
+                  }
+                },
+                "abi": {
+                  "Aggregate": {
+                    "sized": true
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              }
+            ]
+          }
+        },
+        "abi": {
+          "Scalar": {
+            "Initialized": {
+              "value": {
+                "Int": {
+                  "length": "I8",
+                  "signed": false
+                }
+              },
+              "valid_range": {
+                "start": 0,
+                "end": 1
+              }
+            }
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 8
+        }
+      }
+    }
+  }
+}

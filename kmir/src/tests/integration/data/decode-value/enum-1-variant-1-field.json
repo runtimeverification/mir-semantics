@@ -1,0 +1,68 @@
+{
+  "bytes": [
+    255,
+    0,
+    0,
+    0
+  ],
+  "types": [
+    [
+      0,
+      {
+        "PrimitiveType": {
+          "Int": "I32"
+        }
+      }
+    ]
+  ],
+  "typeInfo": {
+    "EnumType": {
+      "name": "Foo",
+      "adt_def": 1,
+      "discriminants": [
+        0
+      ],
+      "fields": [
+        [
+          0
+        ]
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 0
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Single": {
+            "index": 0
+          }
+        },
+        "abi": {
+          "Scalar": {
+            "Initialized": {
+              "value": {
+                "Int": {
+                  "length": "I32",
+                  "signed": true
+                }
+              },
+              "valid_range": {
+                "start": 0,
+                "end": 4294967295
+              }
+            }
+          }
+        },
+        "abi_align": 4,
+        "size": {
+          "num_bits": 32
+        }
+      }
+    }
+  }
+}
