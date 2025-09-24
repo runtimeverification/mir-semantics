@@ -294,8 +294,8 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                             | "noLayoutShape"              [group(mir-option)]
 
   syntax FieldsShape ::= "fieldsShapePrimitive"                     [group(mir-enum), symbol(FieldsShape::Primitive)]
-                       | fieldsShapeUnion(/* TODO */)               [group(mir-enum), symbol(FieldsSape::Union)]
-                       | fieldsShapeArray(/* TODO */)               [group(mir-enum), symbol(FieldsSape::Array)]
+                       | fieldsShapeUnion(/* TODO */)               [group(mir-enum), symbol(FieldsShape::Union)]
+                       | fieldsShapeArray(/* TODO */)               [group(mir-enum), symbol(FieldsShape::Array)]
                        | fieldsShapeArbitrary(FieldsShapeArbitrary) [group(mir-enum), symbol(FieldsShape::Arbitrary)]
 
   syntax FieldsShapeArbitrary ::= mk(offsets: MachineSizes) [group(mir---offsets)]
