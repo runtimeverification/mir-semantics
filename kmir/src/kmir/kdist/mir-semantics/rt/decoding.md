@@ -123,6 +123,432 @@ Known element sizes for common types:
 ```
 
 
+### Enum decoding
+
+```k
+  syntax Evaluation ::= #evalDecodeEnum ( DecodeEnum ) [function, total]
+                      | unableToDecodeEnum ( DecodeEnum )
+
+  syntax DecodeEnum ::= deMatchLayout(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layout: MaybeLayoutShape // -> layoutFields layoutVariants layoutSize
+                        , types: Map
+                        )
+
+                      | deMatchLayoutFields(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFields: FieldsShape // -> layoutFieldOffsets
+                        , layoutVariants: VariantsShape
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMatchLayoutVariants(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFieldOffsets: MachineSizes
+                        , layoutVariants: VariantsShape // -> variantIndex | variantTag variantTagEncoding variantTagField variantLayouts
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+                        
+                      | deSingle(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFieldOffsets: MachineSizes
+                        , variantIndex: Int
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleMatchTagType(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFieldOffsets: MachineSizes
+                        , variantTag: Scalar // -> tagType
+                        , variantTagEncoding: TagEncoding
+                        , variantTagField: Int
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleMatchTagType(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFieldOffsets: MachineSizes
+                        , variantTag: Scalar // -> tagType
+                        , variantTagEncoding: TagEncoding
+                        , variantTagField: Int
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleMatchTagOffset(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , layoutFieldOffsets: MachineSizes // -> tagOffset
+                        , tagType: TypeInfo
+                        , variantTagEncoding: TagEncoding
+                        , variantTagField: Int  // -> .
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleDecodeTag(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , tagOffset: MachineSize
+                        , tagType: TypeInfo
+                        , variantTagEncoding: TagEncoding // -> .
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleDecodeTagDirect(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , tagOffset: MachineSize
+                        , tagType: TypeInfo
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleMatchTag(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , tagValue: Evaluation
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+                      | deMultipleFindVariantIndex(
+                          bytes: Bytes
+                        , discriminants: Discriminants
+                        , fieldTypes: Tyss
+                        , tag: Int
+                        , variantLayouts: LayoutShapes
+                        , layoutSize: MachineSize
+                        , types: Map
+                        )
+
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: DISCRIMINANTS
+         , fields: FIELD_TYPES
+         , layout: LAYOUT
+         )
+       , TYPES
+       )
+    => #evalDecodeEnum(
+         deMatchLayout(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layout: LAYOUT
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(DECODE_ENUM) => unableToDecodeEnum(DECODE_ENUM) [owise]
+
+  rule #evalDecodeEnum(
+         deMatchLayout(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layout: someLayoutShape(
+             layoutShape(...
+               fields: LAYOUT_FIELDS
+             , variants: LAYOUT_VARIANTS
+             , abi: _
+             , abiAlign: _
+             , size: LAYOUT_SIZE
+             )
+           )
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMatchLayoutFields(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFields: LAYOUT_FIELDS
+         , layoutVariants: LAYOUT_VARIANTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMatchLayoutFields(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFields: fieldsShapeArbitrary(mk(... offsets: LAYOUT_FIELD_OFFSETS))
+         , layoutVariants: LAYOUT_VARIANTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMatchLayoutVariants(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , layoutVariants: LAYOUT_VARIANTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMatchLayoutVariants(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , layoutVariants: variantsShapeSingle(mk(... index: variantIdx(VARIANT_INDEX)))
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deSingle(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , variantIndex: VARIANT_INDEX
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMatchLayoutVariants(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , layoutVariants: variantsShapeMultiple(
+             mk(...
+               tag: VARIANT_TAG
+             , tagEncoding: VARIANT_TAG_ENCODING
+             , tagField: VARIANT_TAG_FIELD
+             , variants: VARIANT_LAYOUTS
+             )
+           )
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleMatchTagType(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , variantTag: VARIANT_TAG
+         , variantTagEncoding: VARIANT_TAG_ENCODING
+         , variantTagField: VARIANT_TAG_FIELD
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMultipleMatchTagType(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , variantTag: scalarInitialized(mk(... value: primitiveInt(PRIMITIVE_INT_TAG)))
+         , variantTagEncoding: VARIANT_TAG_ENCODING
+         , variantTagField: VARIANT_TAG_FIELD
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleMatchTagOffset(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
+         , tagType: #primitiveIntToTypeInfo(PRIMITIVE_INT_TAG)
+         , variantTagEncoding: VARIANT_TAG_ENCODING
+         , variantTagField: VARIANT_TAG_FIELD
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMultipleMatchTagOffset(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , layoutFieldOffsets: TAG_OFFSET .MachineSizes
+         , tagType: TAG_TYPE
+         , variantTagEncoding: VARIANT_TAG_ENCODING
+         , variantTagField: 0
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleDecodeTag(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagOffset: TAG_OFFSET
+         , tagType: TAG_TYPE
+         , variantTagEncoding: VARIANT_TAG_ENCODING
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMultipleDecodeTag(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagOffset: TAG_OFFSET
+         , tagType: TAG_TYPE
+         , variantTagEncoding: tagEncodingDirect
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleDecodeTagDirect(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagOffset: TAG_OFFSET
+         , tagType: TAG_TYPE
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+
+  rule #evalDecodeEnum(
+         deMultipleDecodeTagDirect(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagOffset: machineSize(... numBits: TAG_OFFSET_NUM_BITS)
+         , tagType: TAG_TYPE
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleMatchTag(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagValue: #decodeValue(
+             substrBytes(
+               BYTES
+             , TAG_OFFSET_NUM_BITS /Int 8
+             , (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE, .Map)
+             )
+           , TAG_TYPE
+           , .Map
+           )
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    requires TAG_OFFSET_NUM_BITS >=Int 0
+     andBool #elemSize(TAG_TYPE, .Map) >Int 0
+     andBool lengthBytes(BYTES) >=Int (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE, .Map)
+     andBool #isIntType (TAG_TYPE)
+    [preserves-definedness]
+
+  rule #evalDecodeEnum(
+         deMultipleMatchTag(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tagValue: Integer(TAG, _BIT_WIDTH, _SIGNED)
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+    => #evalDecodeEnum(
+         deMultipleFindVariantIndex(...
+           bytes: BYTES
+         , discriminants: DISCRIMINANTS
+         , fieldTypes: FIELD_TYPES
+         , tag: TAG
+         , variantLayouts: VARIANT_LAYOUTS
+         , layoutSize: LAYOUT_SIZE
+         , types: TYPES
+         )
+       )
+```
+
+
+```k
+  syntax TypeInfo ::= #primitiveIntToTypeInfo(PrimitiveInt) [function, total]
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI8   , signed: false)) => typeInfoPrimitiveType(primTypeUint(uintTyU8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI16  , signed: false)) => typeInfoPrimitiveType(primTypeUint(uintTyU16 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI32  , signed: false)) => typeInfoPrimitiveType(primTypeUint(uintTyU32 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI64  , signed: false)) => typeInfoPrimitiveType(primTypeUint(uintTyU64 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI128 , signed: false)) => typeInfoPrimitiveType(primTypeUint(uintTyU128))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI8   , signed: true )) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI16  , signed: true )) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI32  , signed: true )) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI64  , signed: true )) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI128 , signed: true )) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI8   , signed: mirBool(false))) => typeInfoPrimitiveType(primTypeUint(uintTyU8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI16  , signed: mirBool(false))) => typeInfoPrimitiveType(primTypeUint(uintTyU16 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI32  , signed: mirBool(false))) => typeInfoPrimitiveType(primTypeUint(uintTyU32 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI64  , signed: mirBool(false))) => typeInfoPrimitiveType(primTypeUint(uintTyU64 ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI128 , signed: mirBool(false))) => typeInfoPrimitiveType(primTypeUint(uintTyU128))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI8   , signed: mirBool(true ))) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI16  , signed: mirBool(true ))) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI32  , signed: mirBool(true ))) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI64  , signed: mirBool(true ))) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+  rule #primitiveIntToTypeInfo(mk(... length: integerLengthI128 , signed: mirBool(true ))) => typeInfoPrimitiveType(primTypeInt ( intTyI8  ))
+```
+
 
 ## Array Allocations
 
