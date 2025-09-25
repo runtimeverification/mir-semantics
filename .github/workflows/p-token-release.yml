@@ -1,0 +1,69 @@
+name: "Release P-Token KMIR"
+
+on:
+  push:
+    branches:
+      - feature/p-token
+
+jobs:
+  release-docker:
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: 'Setup Docker Buildx'
+        uses: docker/setup-buildx-action@v3.10.0
+
+      - name: 'Login to Docker Hub'
+        uses: docker/login-action@v3.4.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Set Image Name
+        id: set-image-name
+        run: |
+          echo "image-name=runtimeverificationinc/kmir" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
+          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build Kmir Container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.kmir
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            K_VERSION=${{ steps.set-image-name.outputs.k-version }}
+          tags: ${{ steps.set-image-name.outputs.image-name }}:p-token-${{ steps.set-image-name.outputs.short-sha }}
+
+  tag-release:
+    runs-on: [ self-hosted, linux ]
+    needs: [ release-docker ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: 'Configure GitHub user'
+        run: |
+          git config user.name devops
+          git config user.email devops@runtimeverification.com
+      - name: Tag Release Branch
+        run: |
+          git tag "v$(cat package/version)" origin/release
+          git push origin "v$(cat package/version)"
+      - name: 'Update dependents'
+        run: |
+          set -x
+          VERSION=$(cat package/version)
+          curl --fail                                                          \
+            -X POST                                                            \
+            -H "Accept: application/vnd.github+json"                           \
+            -H "Authorization: Bearer ${{ secrets.JENKINS_GITHUB_PAT }}"       \
+            -H "X-GitHub-Api-Version: 2022-11-28"                              \
+            https://api.github.com/repos/runtimeverification/devops/dispatches \
+            -d '{"event_type":"on-demand-test","client_payload":{"repo":"runtimeverification/mir-semantics","version":"'${VERSION}'"}}'
