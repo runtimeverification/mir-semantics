@@ -1068,7 +1068,7 @@ Type casts between a number of different types exist in MIR.
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, MaybeTy, Ty ) [strict(1)]
   syntax Evaluation ::= castAux ( Value, CastKind, MaybeTypeInfo, TypeInfo ) [function, no-evaluators]
-  syntax MaybeTypeInfo ::= "Maybe" "(" TypeInfo ")" | "TypeInfoUnknown" 
+  syntax MaybeTypeInfo ::= TypeInfo | "TypeInfoUnknown" 
   // ----------------------------------------------------------------
   rule <k> #cast(VAL, CASTKIND, TyUnknown, TY_TARGET)
         => castAux(VAL, CASTKIND, TypeInfoUnknown, {TYPEMAP[TY_TARGET]}:>TypeInfo)
@@ -1082,7 +1082,7 @@ Type casts between a number of different types exist in MIR.
     // low priority, because this is only for writing simplification rules for now
     // valid map lookups checked
   rule <k> #cast(VAL, CASTKIND, TY_SOURCE:Ty, TY_TARGET)
-        => castAux(VAL, CASTKIND, Maybe({TYPEMAP[TY_SOURCE]}:>TypeInfo), {TYPEMAP[TY_TARGET]}:>TypeInfo)
+        => castAux(VAL, CASTKIND, {TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo)
            // castAux handles the actual casting
        ...
        </k>
