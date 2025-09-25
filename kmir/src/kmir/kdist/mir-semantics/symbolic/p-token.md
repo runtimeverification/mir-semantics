@@ -438,7 +438,7 @@ An `AccountInfo` reference is passed to the function.
             IAcc(Key(?MINT),
                  Key(?OWNER),
                  Amount(?AMOUNT),
-                 Flag(?DELEGATEFLAG), ?_DELEGATE,
+                 Flag(?DELEGATEFLAG), Key(?DELEGATE),
                  U8(?STATE),
                  Flag(?NATIVEFLAG),
                  Amount(?NATIVE_AMOUNT),
@@ -452,6 +452,7 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?CLOSEFLAG andBool ?CLOSEFLAG <=Int 1 // not allowed any other values
     andBool size(?MINT)  ==Int 32      andBool allBytes(?MINT)
     andBool size(?OWNER) ==Int 32      andBool allBytes(?OWNER)
+    andBool size(?DELEGATE) ==Int 32   andBool allBytes(?DELEGATE)
     andBool size(?CLOSE_AUTH) ==Int 32 andBool allBytes(?CLOSE_AUTH)
     andBool 0 <=Int ?AMOUNT andBool ?AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
