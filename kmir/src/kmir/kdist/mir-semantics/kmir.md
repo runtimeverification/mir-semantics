@@ -91,7 +91,7 @@ Another type-related `Map` is required to associate an `AdtDef` ID with its corr
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)
 
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _)) MORE:TypeMappings)
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _, _, _)) MORE:TypeMappings)
       =>
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)

@@ -383,6 +383,7 @@ SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'body',
     SCHEMA_PARSE_DATA / 'monoitem',
     SCHEMA_PARSE_DATA / 'testsort2',
+    SCHEMA_PARSE_DATA / 'typeinfoenumtype',
 ]
 
 
