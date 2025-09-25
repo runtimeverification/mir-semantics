@@ -1067,7 +1067,7 @@ Type casts between a number of different types exist in MIR.
 
 ```k
   syntax Evaluation ::= #cast( Evaluation, CastKind, MaybeTy, Ty ) [strict(1)]
-  syntax Evaluation ::= castAux ( Value, CastKind, MaybeTypeInfo, TypeInfo ) [function]
+  syntax Evaluation ::= castAux ( Value, CastKind, MaybeTypeInfo, TypeInfo ) [function, no-evaluators]
   syntax MaybeTypeInfo ::= "Maybe" "(" TypeInfo ")" | "TypeInfoUnknown" 
   // ----------------------------------------------------------------
   rule <k> #cast(VAL, CASTKIND, TyUnknown, TY_TARGET)
