@@ -1078,7 +1078,7 @@ Type casts between a number of different types exist in MIR.
        <types> TYPEMAP </types>
     requires TY_TARGET in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY_TARGET])
-    [priority(160), preserves-definedness, symbolic] 
+    [priority(160), preserves-definedness, symbolic(VAL)] 
     // low priority, because this is only for writing simplification rules for now
     // valid map lookups checked
   rule <k> #cast(VAL, CASTKIND, TY_SOURCE:Ty, TY_TARGET)
@@ -1089,7 +1089,7 @@ Type casts between a number of different types exist in MIR.
        <types> TYPEMAP </types>
     requires TY_SOURCE in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_SOURCE])
      andBool TY_TARGET in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_TARGET])
-    [priority(160), preserves-definedness, symbolic]
+    [priority(160), preserves-definedness, symbolic(VAL)]
 
 ```
 
