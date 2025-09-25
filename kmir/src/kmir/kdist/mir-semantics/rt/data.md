@@ -1332,6 +1332,7 @@ What can be supported without additional layout consideration is trivial casts b
        andBool 0 <=Int B5 andBool B5 <Int 256
        andBool 0 <=Int B6 andBool B6 <Int 256
        andBool 0 <=Int B7 andBool B7 <Int 256
+      [concrete(B0,B1,B2,B3,B4,B5,B6,B7), preserves-definedness]
 ```
 
 ### Other casts involving pointers
