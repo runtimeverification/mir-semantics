@@ -54,8 +54,12 @@
       kOverlay = final: prev: {
         k = k-framework.packages.${final.system}.k;
       };
-      stable-mir-json-overlay = final: prev: {
-        stable-mir-json = stable-mir-json-flake.packages.${final.system}.stable-mir-json;
+      stable-mir-json-overlay = final: prev:
+      let
+        stable-mir-json-packages = stable-mir-json-flake.packages.${final.system};
+      in {
+        inherit (stable-mir-json-packages) stable-mir-json;
+        stable-mir-json-rust = stable-mir-json-packages.rustToolchain;
       };
       kmir-overlay = final: prev:
       let
@@ -88,7 +92,8 @@
         name = "uv and rust develop shell";
         # we use the stable-mir-json nix develop shell as a basis
         # because the mir-semantics Makefile builds stable-mir-json in a submodule directory
-        buildInputs = (stable-mir-json-shell.buildInputs or []) ++ [
+        buildInputs = (stable-mir-json-shell.buildInputs or []);
+        packages = (stable-mir-json-shell.packages or []) ++ [
           python
           pkgs.uv
         ];
@@ -101,6 +106,7 @@
           unset PYTHONPATH
         '';
       };
+
       packages = rec {
         inherit (pkgs) kmir-pyk kmir;
         default = kmir;
