@@ -7,6 +7,7 @@
 
   k,
   which,
+  stable-mir-json,
 
   kmir-pyk,
   rev ? null
@@ -40,6 +41,7 @@ stdenv.mkDerivation {
       lib.makeBinPath [
         which
         k
+        stable-mir-json
       ]
     } --set KDIST_DIR $out
   '';
