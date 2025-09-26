@@ -15,14 +15,6 @@ if TYPE_CHECKING:
     from kmir.parse.parser import JSON
 
 
-# Wrap the definition to avoid flooding the output with text from the fixture __repr__ on test failure
-class _KDefinition(NamedTuple):
-    defn: KDefinition
-
-    def __repr__(self) -> str:
-        return repr('KMIR LLVM definition')
-
-
 @pytest.fixture(scope='module')
 def definition_dir() -> Path:
     from kmir.build import LLVM_DEF_DIR
@@ -31,11 +23,18 @@ def definition_dir() -> Path:
 
 
 @pytest.fixture(scope='module')
-def definition(definition_dir: Path) -> _KDefinition:
+def definition(definition_dir: Path) -> KDefinition:
     from pyk.kast.outer import read_kast_definition
 
-    defn = read_kast_definition(definition_dir / 'compiled.json')
-    return _KDefinition(defn)
+    res = read_kast_definition(definition_dir / 'compiled.json')
+
+    # Monkey patch __repr__ on the fixture to avoid flooding the output on test failure
+    cls = res.__class__
+    new_repr = lambda self: repr('KMIR LLVM definition')
+    new_cls = type(f'{cls.__name__}WithCustomRepr', (cls,), {'__repr__': new_repr})
+    object.__setattr__(res, '__class__', new_cls)
+
+    return res
 
 
 def dedent(s: str) -> str:
@@ -150,7 +149,7 @@ TEST_DATA: Final = load_test_data()
 def test_decode_value(
     test_data: _TestData,
     definition_dir: Path,
-    definition: _KDefinition,
+    definition: KDefinition,
     tmp_path: Path,
 ) -> None:
     from pyk.kore import match as km
@@ -160,7 +159,7 @@ def test_decode_value(
     from pyk.utils import chain
 
     # Given
-    evaluation = test_data.to_pattern(definition.defn)
+    evaluation = test_data.to_pattern(definition)
     kore_text = KORE_TEMPLATE.substitute(evaluation=evaluation.text)
     parser = KoreParser(kore_text)
     init_pattern = parser.pattern()
