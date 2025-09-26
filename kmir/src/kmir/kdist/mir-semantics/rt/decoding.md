@@ -37,7 +37,7 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total]
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total, symbol(decodeValue)]
                       | UnableToDecode( Bytes , TypeInfo )
                       | UnableToDecode( Bytes , Ty , ProvenanceMapEntries )
 
