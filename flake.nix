@@ -2,7 +2,7 @@
   description = "kmir - ";
   inputs = {
     rv-nix-tools.follows = "k-framework/rv-nix-tools";
-    nixpkgs.url = "nixpkgs/nixos-25.05";
+    nixpkgs.follows = "rv-nix-tools/nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
 
@@ -57,11 +57,18 @@
       stable-mir-json-overlay = final: prev: {
         stable-mir-json = stable-mir-json-flake.packages.${final.system}.stable-mir-json;
       };
-      mir-semantics-overlay = final: prev: {
-        mir-semantics = final.callPackage ./nix/mir-semantics {
+      kmir-overlay = final: prev:
+      let
+        kmir-pyk = final.callPackage ./nix/kmir-pyk {
           inherit pyproject-nix pyproject-build-systems uv2nix;
           python = final."python${pythonVer}";
         };
+        kmir = final.callPackage ./nix/kmir {
+          inherit kmir-pyk;
+          rev = self.rev or null;
+        };
+      in {
+        inherit kmir-pyk kmir;
       };
       pkgs = import nixpkgs {
         inherit system;
@@ -69,7 +76,7 @@
           uvOverlay
           kOverlay
           stable-mir-json-overlay
-          mir-semantics-overlay
+          kmir-overlay
         ];
       };
       python = pkgs."python${pythonVer}";
@@ -78,7 +85,9 @@
       let
         stable-mir-json-shell = stable-mir-json-flake.devShells.${system}.default;
       in pkgs.mkShell {
-        name = "uv develop shell";
+        name = "uv and rust develop shell";
+        # we use the stable-mir-json nix develop shell as a basis
+        # because the mir-semantics Makefile builds stable-mir-json in a submodule directory
         buildInputs = (stable-mir-json-shell.buildInputs or []) ++ [
           python
           pkgs.uv
@@ -93,12 +102,12 @@
         '';
       };
       packages = rec {
-        inherit (pkgs) mir-semantics;
-        default = mir-semantics;
+        inherit (pkgs) kmir-pyk kmir;
+        default = kmir;
       };
     }) // {
       overlays.default = final: prev: {
-        inherit (self.packages.${final.system}) mir-semantics;
+        inherit (self.packages.${final.system}) kmir;
       };
     };
 }

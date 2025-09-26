@@ -15,19 +15,11 @@ let
     inherit python;
   };
 
+  src = callPackage ../kmir-source { };
+
   # load a uv workspace from a workspace root
   workspace = uv2nix.lib.workspace.loadWorkspace {
-    workspaceRoot = lib.cleanSource (nix-gitignore.gitignoreSourcePure [
-        ../../.gitignore
-        ".github/"
-        "result*"
-        # do not include submodule directories that might be initilized empty or non-existent due to nix/git
-        # otherwise cachix build might not match the version that is requested by `kup`
-        # TODO: for new projects, add your submodule directories that are not required for nix builds here!
-        # e.g., `"/docs/external-computation"` with `external-computation` being a git submodule directory
-        # "/docs/external-computation"
-      ] ../..
-    );
+    workspaceRoot = "${src}/kmir";
   };
 
   # create overlay
@@ -50,6 +42,6 @@ let
   ]);
 in pyproject-util.mkApplication {
   # default dependancy group enables no optional dependencies and no dependency-groups
-  venv = pythonSet.mkVirtualEnv "mir-semantics-env" workspace.deps.default;
-  package = pythonSet.mir-semantics;
+  venv = pythonSet.mkVirtualEnv "kmir-pyk-env" workspace.deps.default;
+  package = pythonSet.kmir;
 }
