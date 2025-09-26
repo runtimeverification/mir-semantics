@@ -1078,19 +1078,20 @@ Type casts between a number of different types exist in MIR.
        <types> TYPEMAP </types>
     requires TY_TARGET in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY_TARGET])
-    [priority(160), preserves-definedness, symbolic(VAL)] 
+    [priority(160), preserves-definedness] 
     // low priority, because this is only for writing simplification rules for now
     // valid map lookups checked
-  // rule <k> #cast(VAL, CASTKIND, TY_SOURCE:Ty, TY_TARGET)
-  //       => castAux(VAL, CASTKIND, {TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo)
-  //          // castAux handles the actual casting
-  //      ...
-  //      </k>
-  //      <types> TYPEMAP </types>
-  //   requires TY_SOURCE in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_SOURCE])
-  //    andBool TY_TARGET in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_TARGET])
-  //   [priority(160), preserves-definedness, symbolic(VAL)]
-
+  rule <k> #cast(VAL, CASTKIND, TY_SOURCE:Ty, TY_TARGET)
+        => castAux(VAL, CASTKIND, {TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo)
+           // castAux handles the actual casting
+       ...
+       </k>
+       <types> TYPEMAP </types>
+    requires TY_SOURCE in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_SOURCE])
+     andBool TY_TARGET in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY_TARGET])
+    [priority(160), preserves-definedness]
+  rule castAux(VAL, CASTKIND, TYPE_SOURCE, TYPE_TARGET) => thunk(castAux(VAL, CASTKIND, TYPE_SOURCE, TYPE_TARGET)) [concrete]
+    // thunk to avoid re-evaluation of castAux
 ```
 
 ### Number Type Casts
