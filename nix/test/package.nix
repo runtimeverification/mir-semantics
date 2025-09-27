@@ -5,7 +5,7 @@
   which,
 
   kmir,
-  rev ? null
+  rev ? null,
 }:
 
 stdenv.mkDerivation {

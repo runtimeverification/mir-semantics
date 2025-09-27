@@ -1,7 +1,4 @@
-{
-  lib,
-  nix-gitignore,
-}:
+{ lib, nix-gitignore }:
 
 lib.cleanSource (
   nix-gitignore.gitignoreSourcePure [

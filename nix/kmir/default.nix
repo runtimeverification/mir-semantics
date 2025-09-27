@@ -13,7 +13,7 @@
   kmir-pyk,
   rev ? null,
   kmir-rust ? null,
-} @ args:
+}@args:
 
 stdenv.mkDerivation {
   pname = "kmir";
@@ -40,18 +40,23 @@ stdenv.mkDerivation {
     cp -r ./kdist-*/* $out/
     mkdir -p $out/bin
     makeWrapper ${kmir-pyk}/bin/kmir $out/bin/kmir --prefix PATH : ${
-      lib.makeBinPath ([
-        which
-        k
-        stable-mir-json
-      ] ++ lib.optionals (kmir-rust != null) [
-        kmir-rust
-      ])
+      lib.makeBinPath (
+        [
+          which
+          k
+          stable-mir-json
+        ]
+        ++ lib.optionals (kmir-rust != null) [ kmir-rust ]
+      )
     } --set KDIST_DIR $out
   '';
 
-  passthru = if kmir-rust == null then {
-    # list all supported solc versions here
-    rust = callPackage ./default.nix (args // { kmir-rust = stable-mir-json-rust; });
-  } else { };
+  passthru =
+    if kmir-rust == null then
+      {
+        # list all supported solc versions here
+        rust = callPackage ./default.nix (args // { kmir-rust = stable-mir-json-rust; });
+      }
+    else
+      { };
 }
