@@ -118,6 +118,10 @@
       checks = {
         inherit (pkgs) kmir-package-test;
       };
+
+      # note: this package will be renamed to `nixfmt` in probably 25.11
+      #       and already was renamed in unstable
+      formatter = pkgs.nixfmt-rfc-style;
     }) // {
       overlays.default = final: prev: {
         inherit (self.packages.${final.system}) kmir;
