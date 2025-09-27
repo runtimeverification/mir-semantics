@@ -21,5 +21,7 @@ RUN rustup default nightly-2024-11-29-x86_64-unknown-linux-gnu
 RUN mkdir /home/${USER}/workspace
 WORKDIR /home/${USER}/workspace
 
+ARG UV_VERSION
 ENV PATH=/home/${USER}/.local/bin:${PATH}
-RUN curl -LsSf https://astral.sh/uv/0.7.2/install.sh  | sh && uv --version
+RUN    curl -LsSf https://astral.sh/uv/$UV_VERSION/install.sh | sh \
+    && uv --version

@@ -52,7 +52,7 @@ echo "📁 Output directory: $OUTPUT_DIR"
 # Create output directory (if it doesn't exist)
 mkdir -p "$OUTPUT_DIR"
 
-# Run stable-mir-json tool
+# Run stable_mir_json tool
 # Get absolute paths (macOS compatible)
 ABS_OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 ABS_RUST_FILE="$(cd "$(dirname "$RUST_FILE")" && pwd)/$(basename "$RUST_FILE")"

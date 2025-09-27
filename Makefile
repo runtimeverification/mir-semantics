@@ -1,9 +1,11 @@
 UV     := uv --directory kmir
-UV_RUN := $(UV) run
+UV_RUN := $(UV) run --
 
 PARALLEL := 4
 
 TOP_DIR    := $(shell pwd)
+
+NIX_SRCS := $(shell bash -O globstar -c 'ls **/*.nix')
 
 default: check build
 
@@ -55,8 +57,8 @@ test-integration: stable-mir-json build
 
 # Checks and formatting
 
-format: autoflake isort black
-check: check-flake8 check-mypy check-autoflake check-isort check-black
+format: autoflake isort black nix-fmt
+check: check-flake8 check-mypy check-autoflake check-isort check-black check-nix-fmt
 
 check-flake8:
 	$(UV_RUN) flake8 src
@@ -81,6 +83,12 @@ black:
 
 check-black:
 	$(UV_RUN) black --check src
+
+nix-fmt:
+	nix fmt $(NIX_SRCS)
+
+check-nix-fmt:
+	nix fmt $(NIX_SRCS) -- --check
 
 # Coverage
 

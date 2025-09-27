@@ -9,7 +9,7 @@ Also included is the `kmir` tool, a python script that acts as a front-end to th
 
 ### KMIR Setup
 
-Pre-requisites: `python >= 3.10`, `pip >= 20.0.2`, `uv >= 0.7.11`, `gcc >= 11.4.0`, `cargo == nightly-2024-11-29`, `k >= v7.1.205`. To install K, follow the steps available in [K's Quick Start instructions](https://github.com/runtimeverification/k?tab=readme-ov-file#quick-start). 
+Pre-requisites: `python >= 3.10`, [`uv`](https://docs.astral.sh/uv/), `pip >= 20.0.2`, `gcc >= 11.4.0`, `cargo == nightly-2024-11-29`, `k >= v7.1.205`. To install K, follow the steps available in [K's Quick Start instructions](https://github.com/runtimeverification/k?tab=readme-ov-file#quick-start). 
 
 ```bash
 make build
