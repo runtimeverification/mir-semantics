@@ -21,6 +21,13 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           version: ${{ steps.uv_release.outputs.uv_version }}
+      - name: 'Install Nix'
+        uses: cachix/install-nix-action@v31.5.1
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.30.1/install
+          extra_nix_config: |
+            substituters = https://cache.nixos.org
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
       - name: 'Run code quality checks'
         run: make check
 
