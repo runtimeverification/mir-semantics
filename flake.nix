@@ -1,12 +1,12 @@
 {
   description = "kmir - ";
   inputs = {
-    rv-nix-tools.follows = "k-framework/rv-nix-tools";
+    rv-nix-tools.url = "github:runtimeverification/rv-nix-tools/854d4f05ea78547d46e807b414faad64cea10ae4";
     nixpkgs.follows = "rv-nix-tools/nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/8dcacda4d94f10ea102884887e56da335e4d161c";
+    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/b54152a3099c4756c31fea1a126c20167ae42798";
     stable-mir-json-flake = {
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";

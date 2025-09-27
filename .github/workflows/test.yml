@@ -13,10 +13,14 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
+      - name: 'Get uv release'
+        id: uv_release
+        run: |
+          echo uv_version=$(cat deps/uv_release) >> "${GITHUB_OUTPUT}"
       - name: 'Install uv'
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
-          version: 0.7.2
+          version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Run code quality checks'
         run: make check
 
@@ -27,10 +31,14 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
+      - name: 'Get uv release'
+        id: uv_release
+        run: |
+          echo uv_version=$(cat deps/uv_release) >> "${GITHUB_OUTPUT}"
       - name: 'Install uv'
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v6
         with:
-          version: 0.7.2
+          version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Run unit tests'
         run: make test-unit
 
