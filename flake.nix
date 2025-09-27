@@ -63,16 +63,19 @@
       };
       kmir-overlay = final: prev:
       let
+        rev = self.rev or null;
         kmir-pyk = final.callPackage ./nix/kmir-pyk {
           inherit pyproject-nix pyproject-build-systems uv2nix;
           python = final."python${pythonVer}";
         };
         kmir = final.callPackage ./nix/kmir {
-          inherit kmir-pyk;
-          rev = self.rev or null;
+          inherit kmir-pyk rev;
+        };
+        kmir-package-test = final.callPackage ./nix/test/package.nix {
+          inherit rev;
         };
       in {
-        inherit kmir-pyk kmir;
+        inherit kmir-pyk kmir kmir-package-test;
       };
       pkgs = import nixpkgs {
         inherit system;
@@ -110,6 +113,10 @@
       packages = rec {
         inherit (pkgs) kmir-pyk kmir;
         default = kmir;
+      };
+
+      checks = {
+        inherit (pkgs) kmir-package-test;
       };
     }) // {
       overlays.default = final: prev: {
