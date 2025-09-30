@@ -5,10 +5,14 @@ This is the base module for all data in KMIR at runtime. It defines how values a
 ```k
 requires "../ty.md"
 requires "../body.md"
+requires "../lib.md"
+requires "../mono.md"
 
 module RT-VALUE-SYNTAX
   imports TYPES
   imports BODY
+  imports LIB
+  imports MONO
 ```
 
 ## Values in MIR
@@ -123,6 +127,35 @@ The basic operations of reading and writing those values can use K's "heating" a
 ```k
   syntax MIRError
 
+```
+
+# Static data
+
+These functions are global static data  accessed from many places, and will be extended for the particular program.
+
+**TODO find a better home for these definitions.**
+
+```k
+  // // function store, Ty -> MonoItemFn
+  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total]
+  // ------------------------------------------------------------
+  rule lookupFunction(ty(TY)) => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(TY), noBody) [owise] // HACK
+  // cannot be total without a default "error" element. `Ty` is key for both functions and data.
+
+  // // static allocations: AllocId -> AllocData (Value or error)
+  syntax Value ::= lookupAlloc ( AllocId ) [function, total]
+  // -----------------------------------------------------------
+  rule lookupAlloc(_ID) => Moved [owise] // HACK
+
+  // // static information about the base type interning in the MIR: Ty -> TypeInfo
+  syntax TypeInfo ::= lookupTy ( Ty )    [function, total]
+  // -----------------------------------------------------
+  rule lookupTy(_TY) => typeInfoVoidType [owise] // HACK
+
+  // // static information about ADTs: adtDef -> Ty
+  syntax Ty ::= lookupAdtTy ( AdtDef ) [function, total]
+  // ---------------------------------------------------
+  rule lookupAdtTy(adtDef(ID)) => ty( 0 -Int ID ) [owise] // HACK
 ```
 
 ```k

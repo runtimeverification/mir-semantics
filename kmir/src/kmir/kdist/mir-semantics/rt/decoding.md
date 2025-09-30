@@ -37,20 +37,20 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total, symbol(decodeValue)]
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo ) [function, total, symbol(decodeValue)]
                       | UnableToDecode( Bytes , TypeInfo )
                       | UnableToDecode( Bytes , Ty , ProvenanceMapEntries )
 
   // Boolean: should be one byte with value one or zero
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(true)
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operation_s
-  rule #decodeValue(BYTES, TYPEINFO, TYPEMAP) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
-    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO, TYPEMAP)
+  rule #decodeValue(BYTES, TYPEINFO) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
      [preserves-definedness]
 
   // TODO Char type
@@ -65,17 +65,13 @@ and arrays (where layout is trivial).
 Arrays are decoded iteratively, using a known (expected) length or the length of the byte array.
 
 ```k
-rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))), TYPEMAP)
-      => #decodeArrayAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo, readTyConstInt(LEN, TYPEMAP), TYPEMAP)
-  requires ELEMTY in_keys(TYPEMAP)
-   andBool isTypeInfo(TYPEMAP[ELEMTY])
-   andBool isInt(readTyConstInt(LEN, TYPEMAP))
+rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
+      => #decodeArrayAllocation(BYTES, lookupTy(ELEMTY), readTyConstInt(LEN))
+  requires isInt(readTyConstInt(LEN))
   [preserves-definedness]
 
-rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst), TYPEMAP)
-      => #decodeSliceAllocation(BYTES, {TYPEMAP[ELEMTY]}:>TypeInfo, TYPEMAP)
-  requires ELEMTY in_keys(TYPEMAP)
-   andBool isTypeInfo(TYPEMAP[ELEMTY])
+rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
+      => #decodeSliceAllocation(BYTES, lookupTy(ELEMTY))
 ```
 
 ### Error marker (becomes thunk) for other (unimplemented) cases
@@ -83,43 +79,42 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst), TYPEMAP)
 All unimplemented cases will become thunks by way of this default rule:
 
 ```k
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
+  rule #decodeValue(BYTES, TYPEINFO) => UnableToDecode(BYTES, TYPEINFO) [owise]
 ```
 
 ## Helper function to determine the expected byte length for a type
 
 ```k
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo , Map ) [function]
+  syntax Int ::= #elemSize ( TypeInfo ) [function]
 ```
 
 Known element sizes for common types:
 
 ```k
-  rule #elemSize(typeInfoPrimitiveType(primTypeBool), _) => 1
-  rule #elemSize(TYPEINFO, _) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
+  rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
     requires #isIntType(TYPEINFO)
 
-  rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))), TYPEMAP)
-    => #elemSize({TYPEMAP[ELEM_TY]}:>TypeInfo, TYPEMAP) *Int readTyConstInt(LEN, TYPEMAP)
-    requires ELEM_TY in_keys(TYPEMAP)
+  rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
+    => #elemSize(lookupTy(ELEM_TY)) *Int readTyConstInt(LEN)
 
   // thin and fat pointers
-  rule #elemSize(typeInfoRefType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
-    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
-  rule #elemSize(typeInfoRefType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+  rule #elemSize(typeInfoRefType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+    requires dynamicSize(1) ==K #metadata(TY)
+  rule #elemSize(typeInfoRefType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
-  rule #elemSize(typeInfoPtrType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
-    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
-  rule #elemSize(typeInfoPtrType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
+  rule #elemSize(typeInfoPtrType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+    requires dynamicSize(1) ==K #metadata(TY)
+  rule #elemSize(typeInfoPtrType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
 
-  rule #elemSize(typeInfoVoidType, _) => 0
+  rule #elemSize(typeInfoVoidType) => 0
 
   // FIXME can only use size from layout here. Requires adding layout first.
   // Enum, Struct, Tuple,
 
-  rule 0 <=Int #elemSize(_, _) => true [simplification, preserves-definedness]
+  rule 0 <=Int #elemSize(_) => true [simplification, preserves-definedness]
 ```
 
 
@@ -138,7 +133,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , discriminants: Discriminants
                         , fieldTypess: Tyss
                         , layout: MaybeLayoutShape // -> layoutFields layoutVariants layoutSize
-                        , types: Map
                         )
 
                       | deMatchLayoutFields(
@@ -148,7 +142,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , layoutFields: FieldsShape // -> layoutFieldOffsets
                         , layoutVariants: VariantsShape
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMatchLayoutVariants(
@@ -158,7 +151,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , layoutFieldOffsets: MachineSizes
                         , layoutVariants: VariantsShape // -> variantIndex | variantTag variantTagEncoding variantTagField variantLayouts
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deSingle(
@@ -168,7 +160,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , layoutFieldOffsets: MachineSizes
                         , variantIndex: Int
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchTagType(
@@ -181,7 +172,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantTagField: Int
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchTagType(
@@ -194,7 +184,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantTagField: Int
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchTagOffset(
@@ -207,7 +196,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantTagField: Int  // -> .
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleDecodeTag(
@@ -219,7 +207,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantTagEncoding: TagEncoding // -> .
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleDecodeTagDirect(
@@ -230,7 +217,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , tagType: TypeInfo
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchTag(
@@ -240,7 +226,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , tagValue: Evaluation
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleFindVariantIdx(
@@ -250,7 +235,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , tag: Int
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchFindVariantIdxResult(
@@ -259,7 +243,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , findVariantIdxResult: FindVariantIdxResult
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleSelectVariant(
@@ -268,7 +251,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantIndex: Int
                         , variantLayouts: LayoutShapes
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultipleMatchSelectVariantResult(
@@ -277,7 +259,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantIndex: Int
                         , selectVariantLayoutResult: SelectVariantLayoutResult
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
                       | deMultiple(
@@ -286,7 +267,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
                         , variantIndex: Int
                         , variantLayout: LayoutShape
                         , layoutSize: MachineSize
-                        , types: Map
                         )
 
   rule #decodeValue(
@@ -298,7 +278,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , fields: FIELD_TYPESS
          , layout: LAYOUT
          )
-       , TYPES
        )
     => #evalDecodeEnum(
          deMatchLayout(...
@@ -306,7 +285,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , discriminants: DISCRIMINANTS
          , fieldTypess: FIELD_TYPESS
          , layout: LAYOUT
-         , types: TYPES
          )
        )
 
@@ -326,7 +304,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
              , size: LAYOUT_SIZE
              )
            )
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -337,7 +314,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , layoutFields: LAYOUT_FIELDS
          , layoutVariants: LAYOUT_VARIANTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -349,7 +325,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , layoutFields: fieldsShapeArbitrary(mk(... offsets: LAYOUT_FIELD_OFFSETS))
          , layoutVariants: LAYOUT_VARIANTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -360,7 +335,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
          , layoutVariants: LAYOUT_VARIANTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -372,7 +346,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
          , layoutVariants: variantsShapeSingle(mk(... index: variantIdx(VARIANT_INDEX)))
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -383,7 +356,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , layoutFieldOffsets: LAYOUT_FIELD_OFFSETS
          , variantIndex: VARIANT_INDEX
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -402,7 +374,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
              )
            )
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -416,7 +387,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagField: VARIANT_TAG_FIELD
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -431,7 +401,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagField: VARIANT_TAG_FIELD
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -445,7 +414,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagField: VARIANT_TAG_FIELD
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -460,7 +428,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagField: 0
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -473,7 +440,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagEncoding: VARIANT_TAG_ENCODING
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -487,7 +453,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantTagEncoding: tagEncodingDirect
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -499,7 +464,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , tagType: TAG_TYPE
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -512,7 +476,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , tagType: TAG_TYPE
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -524,19 +487,17 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
              substrBytes(
                BYTES
              , TAG_OFFSET_NUM_BITS /Int 8
-             , (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE, .Map)
+             , (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE)
              )
            , TAG_TYPE
-           , .Map
            )
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     requires TAG_OFFSET_NUM_BITS >=Int 0
-     andBool #elemSize(TAG_TYPE, .Map) >Int 0
-     andBool lengthBytes(BYTES) >=Int (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE, .Map)
+     andBool #elemSize(TAG_TYPE) >Int 0
+     andBool lengthBytes(BYTES) >=Int (TAG_OFFSET_NUM_BITS /Int 8) +Int #elemSize(TAG_TYPE)
      andBool #isIntType (TAG_TYPE)
     [preserves-definedness]
 
@@ -548,7 +509,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , tagValue: Integer(TAG, _BIT_WIDTH, _SIGNED)
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -559,7 +519,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , tag: TAG
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -571,7 +530,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , tag: TAG
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -581,7 +539,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , findVariantIdxResult: #findVariantIdx(... tag: TAG, discriminants: DISCRIMINANTS)
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -592,7 +549,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , findVariantIdxResult: ok(VARIANT_INDEX)
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -602,7 +558,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantIndex: VARIANT_INDEX
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -613,7 +568,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantIndex: VARIANT_INDEX
          , variantLayouts: VARIANT_LAYOUTS
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -629,7 +583,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
            , index: VARIANT_INDEX
            )
          , layoutSize: LAYOUT_SIZE
-         , types: TYPES
          )
        )
 
@@ -640,7 +593,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantIndex: VARIANT_INDEX
          , selectVariantLayoutResult: ok(VARIANT_LAYOUT)
          , layoutSize: MACHINE_SIZE
-         , types: TYPES
          )
        )
     => #evalDecodeEnum(
@@ -650,7 +602,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantIndex: VARIANT_INDEX
          , variantLayout: VARIANT_LAYOUT
          , layoutSize: MACHINE_SIZE
-         , types: TYPES
          )
        )
 
@@ -661,7 +612,6 @@ where `DECODE_ENUM` is a data structure representing the step in the decoding pr
          , variantIndex: VARIANT_INDEX
          , variantLayout: _VARIANT_LAYOUT
          , layoutSize: _MACHINE_SIZE
-         , types: _TYPES
          )
        )
        => Aggregate(variantIdx(VARIANT_INDEX), .List)
@@ -842,35 +792,33 @@ bytes for the declared array length, the function will get stuck rather than pro
 results.
 
 ```k
-  syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int , Map ) [function]
+  syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int ) [function]
                    // bytes, element type info, array length, type map (for recursion)
 
-  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN, TYPEMAP)
-    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, TYPEMAP, .List))
+  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
+    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, .List))
 
-  syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, Map, List ) [function]
+  syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, List ) [function]
                   // bytes, elem type info, remaining length, accumulated list
 
-  rule #decodeArrayElements(BYTES, _ELEMTYPEINFO, LEN, _TYPEMAP, ACC)
+  rule #decodeArrayElements(BYTES, _ELEMTYPEINFO, LEN, ACC)
     => ACC
     requires LEN <=Int 0
      andBool lengthBytes(BYTES) ==Int 0  // exact match - no surplus bytes
     [preserves-definedness]
 
-  rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, TYPEMAP, ACC)
+  rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, ACC)
     => #decodeArrayElements(
-         substrBytes(BYTES, #elemSize(ELEMTYPEINFO, TYPEMAP), lengthBytes(BYTES)),
+         substrBytes(BYTES, #elemSize(ELEMTYPEINFO), lengthBytes(BYTES)),
          ELEMTYPEINFO,
          LEN -Int 1,
-         TYPEMAP,
          ACC ListItem(#decodeValue(
-           substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO, TYPEMAP)),
-           ELEMTYPEINFO,
-           TYPEMAP
+           substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO)),
+           ELEMTYPEINFO
          ))
        )
     requires LEN >Int 0
-     andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO, TYPEMAP)  // enough bytes remaining
+     andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO)  // enough bytes remaining
     [preserves-definedness]
 ```
 
@@ -881,19 +829,18 @@ The `#decodeSliceAllocation` function computes the array length by dividing the 
 by the element size, then uses the same element-by-element decoding approach as arrays.
 
 ```k
-  syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo , Map ) [function]
+  syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo ) [function]
   // -------------------------------------------------------------------
-  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO, TYPEMAP)
+  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO)
     => Range(#decodeArrayElements(
                 BYTES,
                 ELEMTYPEINFO,
-                lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO, TYPEMAP),
-                TYPEMAP,
+                lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO),
                 .List
              )
       )
-    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO, TYPEMAP) ==Int 0  // element size divides cleanly
-     andBool 0 <Int #elemSize(ELEMTYPEINFO, TYPEMAP)
+    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0  // element size divides cleanly
+     andBool 0 <Int #elemSize(ELEMTYPEINFO)
     [preserves-definedness]
 ```
 
@@ -910,12 +857,10 @@ One example of this is allocated error strings, whose length is stored in a fat 
 The basic decoding function is very similar to `#decodeConstant` but returns its result as a singleton `Map` instead of a mere value.
 
 ```k
-  syntax Map ::= #decodeAlloc ( AllocId , Ty , Allocation , Map ) [function] // returns AllocId |-> Value
+  syntax Map ::= #decodeAlloc ( AllocId , Ty , Allocation ) [function] // returns AllocId |-> Value
   // ----------------------------------------------------------
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT), TYPEMAP)
-      => ID |-> #decodeValue(BYTES, {TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
+  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT))
+      => ID |-> #decodeValue(BYTES, lookupTy(TY))
 ```
 
 If there are entries in the provenance map, then the decoder must create references to other allocations.
@@ -930,28 +875,22 @@ The reference metadata is either determined statically by type, or filled in fro
   rule #decodeAlloc(
           ID,
           TY,
-          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
-          TYPEMAP
+          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT)
         )
       => ID |-> AllocRef(REF_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
+    requires isTy(pointeeTy(lookupTy(TY))) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 16 // sufficient data to decode dynamic size (assumes usize == u64)
-     andBool dynamicSize(1) ==K #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP) // expect fat pointer
+     andBool dynamicSize(1) ==K #metadata(pointeeTy(lookupTy(TY))) // expect fat pointer
     [preserves-definedness] // valid type lookup ensured
 
   // Otherwise query type information for static size and insert it.
   rule #decodeAlloc(
           ID,
           TY,
-          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
-          TYPEMAP
+          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT)
         )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
+      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy(lookupTy(TY))))
+    requires isTy(pointeeTy(lookupTy(TY))) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 8 // single slim pointer (assumes usize == u64)
     [priority(60), preserves-definedness] // valid type lookup ensured
 ```
@@ -959,7 +898,7 @@ The reference metadata is either determined statically by type, or filled in fro
 Allocations with more than one provenance map entry or witn non-reference types remain undecoded.
 
 ```k
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT), _TYPEMAP)
+  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT))
       => ID |-> UnableToDecode(BYTES, TY, ENTRIES)
     [owise]
 ```
@@ -967,9 +906,11 @@ Allocations with more than one provenance map entry or witn non-reference types 
 The entire set of `GlobalAllocs` is decoded by iterating over the list.
 It is assumed that the given `Ty -> TypeInfo` map contains all types required.
 
-```k
-  syntax Map ::= #decodeAllocs ( GlobalAllocs , Map )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing
-               | #decodeAllocs ( Map , GlobalAllocs , Map ) [function, total] // accumulating version
+This code is disabled
+
+```
+  syntax Map ::= #decodeAllocs ( GlobalAllocs )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing
+               | #decodeAllocs ( Map , GlobalAllocs ) [function, total] // accumulating version
   // -----------------------------------------------------------------------------------------------
   rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocs(.Map, ALLOCS, TYPEMAP)
 
@@ -983,7 +924,7 @@ It is assumed that the given `Ty -> TypeInfo` map contains all types required.
 If the type of an alloc cannot be found, or for non-`Memory` allocs, the raw data is stored in a super-sort of `Value`.
 This ensures that the function is total (anyway lookups require constraining the sort).
 
-```k
+```
   syntax AllocData ::= Value | AllocData ( Ty , GlobalAllocKind )
 
   rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
