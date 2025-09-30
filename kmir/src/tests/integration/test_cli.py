@@ -69,6 +69,33 @@ def test_cli_show_printers_snapshot(
     )
 
 
+def test_cli_show_statistics_and_leaves(
+    kmir: KMIR, tmp_path: Path, capsys: pytest.CaptureFixture[str], update_expected_output: bool
+) -> None:
+    rs_file = PROVE_RS_DIR / 'symbolic-args-fail.rs'
+    start_symbol = 'main'
+    apr_proof = _prove_and_store(kmir, rs_file, tmp_path, start_symbol=start_symbol, is_smir=False)
+
+    show_opts = ShowOpts(
+        proof_dir=tmp_path,
+        id=apr_proof.id,
+        full_printer=False,
+        smir_info=None,
+        omit_current_body=False,
+        use_default_printer=False,
+        statistics=True,
+        leaves=True,
+    )
+    _kmir_show(show_opts)
+    out = capsys.readouterr().out.rstrip()
+
+    assert_or_update_show_output(
+        out,
+        PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-stats-leaves.expected',
+        update=update_expected_output,
+    )
+
+
 def test_cli_info_snapshot(capsys: pytest.CaptureFixture[str], update_expected_output: bool) -> None:
     smir_json = PROVE_RS_DIR / 'arith.smir.json'
     smir_info = SMIRInfo.from_file(smir_json)
