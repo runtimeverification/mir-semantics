@@ -31,7 +31,7 @@ from .options import (
 )
 from .parse.parser import parse_json
 from .smir import SMIRInfo, Ty
-from .utils import render_rules
+from .utils import render_leaf_k_cells, render_rules, render_statistics
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -166,9 +166,17 @@ def _kmir_show(opts: ShowOpts) -> None:
         node_deltas=effective_node_deltas,
         omit_cells=tuple(all_omit_cells),
     )
+    if opts.statistics:
+        if lines and lines[-1] != '':
+            lines.append('')
+        lines.extend(render_statistics(proof))
     if effective_rule_edges:
         lines.append('# Rules: ')
         lines.extend(render_rules(proof, effective_rule_edges))
+    if opts.leaves:
+        if lines and lines[-1] != '':
+            lines.append('')
+        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show))
 
     print('\n'.join(lines))
 
@@ -327,6 +335,16 @@ def _arg_parser() -> ArgumentParser:
         default=False,
         help='Use standard PrettyPrinter instead of custom KMIR printer',
     )
+    show_parser.add_argument(
+        '--statistics',
+        action='store_true',
+        help='Display aggregate statistics about the proof graph',
+    )
+    show_parser.add_argument(
+        '--leaves',
+        action='store_true',
+        help='Print the <k> cell for each leaf node in the proof graph',
+    )
 
     show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
 
@@ -404,6 +422,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 omit_cells=ns.omit_cells,
                 omit_static_info=ns.omit_static_info,
                 use_default_printer=ns.use_default_printer,
+                statistics=ns.statistics,
+                leaves=ns.leaves,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)
