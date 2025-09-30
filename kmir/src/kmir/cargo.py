@@ -65,9 +65,9 @@ class CargoProject:
         return messages
 
     def smir_for_project(self, clean: bool = False) -> SMIRInfo:
-        # run a cargo build command with stable-mir-json as the rustc compiler
+        # run a cargo build command with stable_mir_json as the rustc compiler
         # and run cargo clean before (optional)
-        # assumes cargo and stable-mir-json are on the path (with these names)
+        # assumes cargo and stable_mir_json are on the path (with these names)
 
         # TODO check if linked file present (not present => rebuild unconditionally)
 
@@ -79,7 +79,7 @@ class CargoProject:
             for l in command_result.stderr.splitlines():
                 _LOGGER.info(l)
 
-        _LOGGER.info(f'Running "cargo build" with stable-mir-json in {self.working_directory}')
+        _LOGGER.info(f'Running "cargo build" with stable_mir_json in {self.working_directory}')
         env = {**os.environ, 'RUSTC': str(self.stable_mir_json)}
         cmd = ['cargo', 'build', '--message-format=json']
         command_result = subprocess.run(cmd, env=env, capture_output=True, text=True, cwd=self.working_directory)
@@ -187,8 +187,8 @@ def stable_mir_json() -> Path:
         IN_TREE_SMIR_JSON_DIR / 'release.sh',
         IN_TREE_SMIR_JSON_DIR / 'debug.sh',
     ]
-    # otherwise try to find `stable-mir-json` on the path (in a docker container)
-    stable_mir_on_path = shutil.which('stable-mir-json')
+    # otherwise try to find `stable_mir_json` on the path (in a docker container)
+    stable_mir_on_path = shutil.which('stable_mir_json')
     on_path = [Path(stable_mir_on_path)] if stable_mir_on_path is not None else []
     # otherwise try to use `$HOME/.stable-mir-json/{release,debug}.sh`
     in_home = [
@@ -201,11 +201,11 @@ def stable_mir_json() -> Path:
     existing = [cand for cand in candidates if cand.exists()]
 
     if len(existing) < 1:
-        _LOGGER.error('Cannot build: Unable to find stable-mir-json executable. Tried')
+        _LOGGER.error('Cannot build: Unable to find stable_mir_json executable. Tried')
         for p in candidates:
             _LOGGER.error(f'Path {p}')
-        _LOGGER.error('Please install into $HOME or ensure you have an executable `stable-mir-json` on the path.')
-        raise FileNotFoundError('stable-mir-json not installed.')
+        _LOGGER.error('Please install into $HOME or ensure you have an executable `stable_mir_json` on the path.')
+        raise FileNotFoundError('stable_mir_json not installed.')
     else:
-        _LOGGER.debug(f'Using stable-mir-json from {existing[0]}')
+        _LOGGER.debug(f'Using stable_mir_json from {existing[0]}')
         return existing[0]
