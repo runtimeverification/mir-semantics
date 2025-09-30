@@ -47,14 +47,14 @@ RUN cd /kmir && \
     rm -rf $(kdist which mir-semantics.llvm)/dt
 # NB cannot remove the `llvm-library` one
 
-# build stable-mir-json and install into home
+# build stable_mir_json and install into home
 # NB this will modify the default rust toolchain!
 # NB assumes submodule has been checked out!
 RUN cd /deps/stable-mir-json && \
     cargo build && \
     cargo build --release && \
     cargo run --bin cargo_stable_mir_json -- $PWD && \
-    ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable-mir-json && \
+    ln -s /home/kmir/.stable-mir-json/release.sh /home/kmir/.local/bin/stable_mir_json && \
     cargo clean
 
 RUN bash -c 'rustup toolchain list && rustup default $(rustup toolchain list)'
@@ -73,7 +73,7 @@ CMD ["printf", "%s\n" \
     , " * K backend tools (kore-*)" \
     , " * the pyk library to interact with K programmatically " \
     , "" \
-    , "as well as a pre-installed kmir tool and stable-mir-json" \
+    , "as well as a pre-installed kmir tool and stable_mir_json" \
     , "" \
     , "To use this docker image, start a container with an interactive shell and" \
     , "a working directory with your working directory mounted into it, like so:" \

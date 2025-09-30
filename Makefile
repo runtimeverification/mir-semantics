@@ -1,9 +1,11 @@
-UV     := uv --directory kmir
-UV_RUN := $(UV) run
+UV     := uv --project kmir
+UV_RUN := $(UV) run --
 
 PARALLEL := 4
 
 TOP_DIR    := $(shell pwd)
+
+NIX_SRCS := $(shell bash -O globstar -c 'ls **/*.nix')
 
 default: check build
 
@@ -55,32 +57,38 @@ test-integration: stable-mir-json build
 
 # Checks and formatting
 
-format: autoflake isort black
-check: check-flake8 check-mypy check-autoflake check-isort check-black
+format: autoflake isort black nix-fmt
+check: check-flake8 check-mypy check-autoflake check-isort check-black check-nix-fmt
 
 check-flake8:
-	$(UV_RUN) flake8 src
+	$(UV_RUN) flake8 kmir/src
 
 check-mypy:
-	$(UV_RUN) mypy src
+	$(UV_RUN) mypy kmir/src
 
 autoflake:
-	$(UV_RUN) autoflake --quiet --in-place src
+	$(UV_RUN) autoflake --quiet --in-place kmir/src
 
 check-autoflake:
-	$(UV_RUN) autoflake --quiet --check src
+	$(UV_RUN) autoflake --quiet --check kmir/src
 
 isort:
-	$(UV_RUN) isort src
+	$(UV_RUN) isort kmir/src
 
 check-isort:
-	$(UV_RUN) isort --check src
+	$(UV_RUN) isort --check kmir/src
 
 black:
-	$(UV_RUN) black src
+	$(UV_RUN) black kmir/src
 
 check-black:
-	$(UV_RUN) black --check src
+	$(UV_RUN) black --check kmir/src
+
+nix-fmt:
+	nix fmt $(NIX_SRCS)
+
+check-nix-fmt:
+	nix fmt $(NIX_SRCS) -- --check
 
 # Coverage
 
