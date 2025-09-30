@@ -1,0 +1,41 @@
+{
+  "bytes": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "types": [
+    [
+      0,
+      {
+        "PrimitiveType": {
+          "Uint": "U8"
+        }
+      }
+    ]
+  ],
+  "typeInfo": {
+    "ArrayType": {
+      "elem_type": 0,
+      "size": {
+        "id": 100,
+        "kind": {
+          "Value": [
+            0,
+            {
+              "bytes": [
+                4
+              ],
+              "provenance": {
+                "ptrs": []
+              },
+              "align": 1,
+              "mutability": "Not"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
