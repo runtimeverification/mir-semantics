@@ -1764,7 +1764,19 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 
 
 
-`binOpOffset`
+#### Pointer Artithmetic
+Currently only supporting a trivial case where `binOpOffset` applies an offset of `0`, returning the same pointer.
+
+```k
+ rule #applyBinOp(
+         binOpOffset,
+         PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA ),
+         Integer(0, _WIDTH, _SIGNED), // Trivial case when adding 0
+         _CHECKED)
+   =>
+         PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
+   [preserves-definedness]
+```
 
 ```k
 endmodule
