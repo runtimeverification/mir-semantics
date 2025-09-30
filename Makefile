@@ -5,7 +5,7 @@ PARALLEL := 4
 
 TOP_DIR    := $(shell pwd)
 
-NIX_SRCS := $(shell bash -O globstar -c 'ls **/*.nix')
+NIX_SRCS := $(shell git ls-files | grep -e '.*\.nix$$')
 
 default: check build
 
