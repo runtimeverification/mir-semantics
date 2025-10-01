@@ -940,12 +940,12 @@ pub fn test_process_burn(accounts: &[AccountInfo; 3], instruction_data: &[u8; 8]
     let src_is_native = get_account(&accounts[0]).is_native();
     let src_mint = get_account(&accounts[0]).mint;
     let src_owned_sys_inc = get_account(&accounts[0]).is_owned_by_system_program_or_incinerator();
-    let src_owner = get_account(&accounts[0]).owner;
+    let src_owner = *accounts[0].owner();
     let old_src_delgate = get_account(&accounts[0]).delegate().cloned();
     let old_src_delgated_amount = get_account(&accounts[0]).delegated_amount();
     let mint_initialised = get_mint(&accounts[1]).is_initialized();
     let mint_init_supply = get_mint(&accounts[1]).supply();
-    let mint_owner = get_account(&accounts[1]).owner;
+    let mint_owner = *accounts[1].owner();
     #[cfg(feature="multisig")]
     let multisig_is_initialised = get_multisig(&accounts[2]).is_initialized();
 
@@ -1515,13 +1515,13 @@ pub fn test_process_burn_checked(accounts: &[AccountInfo; 3], instruction_data: 
     let src_is_native = get_account(&accounts[0]).is_native();
     let src_mint = get_account(&accounts[0]).mint;
     let src_owned_sys_inc = get_account(&accounts[0]).is_owned_by_system_program_or_incinerator();
-    let src_owner = get_account(&accounts[0]).owner;
+    let src_owner = *accounts[0].owner();
     let old_src_delgate = get_account(&accounts[0]).delegate().cloned();
     let old_src_delgated_amount = get_account(&accounts[0]).delegated_amount();
     let mint_initialised = get_mint(&accounts[1]).is_initialized();
     let mint_init_supply = get_mint(&accounts[1]).supply();
     let mint_decimals = get_mint(&accounts[1]).decimals;
-    let mint_owner = get_account(&accounts[1]).owner;
+    let mint_owner = *accounts[1].owner();
     #[cfg(feature="multisig")]
     let multisig_is_initialised = get_multisig(&accounts[2]).is_initialized();
 
