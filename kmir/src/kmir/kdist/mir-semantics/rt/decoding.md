@@ -857,10 +857,10 @@ One example of this is allocated error strings, whose length is stored in a fat 
 The basic decoding function is very similar to `#decodeConstant` but returns its result as a singleton `Map` instead of a mere value.
 
 ```k
-  syntax Map ::= #decodeAlloc ( AllocId , Ty , Allocation ) [function] // returns AllocId |-> Value
+  syntax Evaluation ::= #decodeAlloc ( AllocId , Ty , Allocation ) [function]
   // ----------------------------------------------------------
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT))
-      => ID |-> #decodeValue(BYTES, lookupTy(TY))
+  rule #decodeAlloc(_ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT))
+      => #decodeValue(BYTES, lookupTy(TY))
 ```
 
 If there are entries in the provenance map, then the decoder must create references to other allocations.
@@ -873,11 +873,11 @@ The reference metadata is either determined statically by type, or filled in fro
 ```k
   // if length(BYTES) ==Int 16 decode BYTES[9..16] as dynamic size.
   rule #decodeAlloc(
-          ID,
+          _ID,
           TY,
           allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT)
         )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
+      => AllocRef(REF_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
     requires isTy(pointeeTy(lookupTy(TY))) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 16 // sufficient data to decode dynamic size (assumes usize == u64)
      andBool dynamicSize(1) ==K #metadata(pointeeTy(lookupTy(TY))) // expect fat pointer
@@ -885,11 +885,11 @@ The reference metadata is either determined statically by type, or filled in fro
 
   // Otherwise query type information for static size and insert it.
   rule #decodeAlloc(
-          ID,
+          _ID,
           TY,
           allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT)
         )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy(lookupTy(TY))))
+      => AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy(lookupTy(TY))))
     requires isTy(pointeeTy(lookupTy(TY))) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 8 // single slim pointer (assumes usize == u64)
     [priority(60), preserves-definedness] // valid type lookup ensured
@@ -898,8 +898,8 @@ The reference metadata is either determined statically by type, or filled in fro
 Allocations with more than one provenance map entry or witn non-reference types remain undecoded.
 
 ```k
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT))
-      => ID |-> UnableToDecode(BYTES, TY, ENTRIES)
+  rule #decodeAlloc(_ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT))
+      => UnableToDecode(BYTES, TY, ENTRIES)
     [owise]
 ```
 

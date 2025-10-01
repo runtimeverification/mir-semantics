@@ -694,14 +694,14 @@ even though this could be supported.
            )
         => #traverseProjection(
              toAlloc(ALLOC_ID),
-             lookupAlloc(ALLOC_ID),
+             {lookupAlloc(ALLOC_ID)}:>Value,
              ALLOC_PROJS, // alloc projections
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(META, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
-    requires Moved =/=K lookupAlloc(ALLOC_ID)
+    requires isValue(lookupAlloc(ALLOC_ID))
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
@@ -1298,7 +1298,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
         => AllocRef(ALLOC_ID, .ProjectionElems, #metadata(POINTEE_TY))
         ...
        </k>
-    requires lookupAlloc(ALLOC_ID) =/=K Moved
+    requires isValue(lookupAlloc(ALLOC_ID))
      andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
 
   rule <k> #decodeConstant(
@@ -1315,8 +1315,8 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
                                                             // assumes usize == u64
         ...
        </k>
-    requires lookupAlloc(ALLOC_ID) =/=K Moved
-     andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
+    requires isValue(lookupAlloc(ALLOC_ID))
+    andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
     [preserves-definedness] // Byte length checked to be sufficient
 ```
 
