@@ -206,7 +206,7 @@ class ArgGenerator:
                     case Uint(info):
                         int_vars = [elem_var.args[0] for elem_var in elem_vars if type(elem_var) is KApply]
                         assert len(int_vars) == len(elem_vars)
-                        int_list = build_cons(KApply('Value::IntsEmpty'), 'Value::IntsCons', elem_vars)
+                        int_list = build_cons(KApply('Value::IntsEmpty'), 'Value::IntsCons', int_vars)
                         return (
                             KApply(
                                 'Value::RangeInteger',
