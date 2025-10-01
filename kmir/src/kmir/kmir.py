@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, build_rule, free_vars, split_config_from
 from pyk.kast.outer import KDefinition, KFlatModule, KImport, KRequire
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
@@ -99,11 +99,37 @@ class KMIR(KProve, KRun, KParse):
 
     def make_program_module(self, smir_info: SMIRInfo) -> KDefinition:
         equations = []
-        for fty, body in self.functions(smir_info).items():
+
+        # the LLVM backend does not like the `@` character in function names at all (ld.lld: undefined version)
+        def _mangle_name(kind: KInner) -> KInner:
+            # mono_item_kind: {MonoItemFn: { name: "8-@", id: ... , body: ...}}
+            match kind:
+                case KApply(
+                    label=KLabel('MonoItemKind::MonoItemFn'),
+                    args=(
+                        KApply(label=KLabel('symbol(_)_LIB_Symbol_String'), args=(KToken(token=name, sort=s),)),
+                        id,
+                        body,
+                    ),
+                ):
+                    return KApply(
+                        'monoItemFn',
+                        (
+                            KApply('symbol', (KToken(name.replace('@', '_AT_'), s),)),
+                            id,
+                            body,
+                        ),
+                    )
+                case KApply(label=KLabel('IntrinsicFunction'), args=_):
+                    return kind
+                case _:
+                    raise Exception(f'Unexpected {kind}')
+
+        for fty, kind in self.functions(smir_info).items():
             rule, _ = build_rule(
                 f'lookupFunction-{fty}',
                 KApply('lookupFunction', (KApply('ty', (token(fty),)),)),
-                body,
+                _mangle_name(kind),
             )
             equations.append(rule)
 
