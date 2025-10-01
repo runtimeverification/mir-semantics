@@ -12,7 +12,7 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
-    k-framework.url = "github:runtimeverification/k/v7.1.286";
+    k-framework.url = "github:runtimeverification/k/v7.1.288";
     k-framework = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
