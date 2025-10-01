@@ -36,6 +36,10 @@ class SMIRInfo:
         smir_json_file.write_text(json.dumps(self._smir))
 
     @cached_property
+    def name(self) -> str:
+        return self._smir['name']
+
+    @cached_property
     def allocs(self) -> dict[AllocId, AllocInfo]:
         return {
             alloc_info.alloc_id: alloc_info for alloc_info in (AllocInfo.from_dict(dct) for dct in self._smir['allocs'])

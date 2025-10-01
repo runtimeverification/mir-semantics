@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
+from pyk.kast.manip import abstract_term_safely, build_rule, free_vars, split_config_from
+from pyk.kast.outer import KFlatModule, KImport
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
@@ -95,6 +96,65 @@ class KMIR(KProve, KRun, KParse):
                 )
 
         return functions
+
+    def make_program_module(self, smir_info: SMIRInfo) -> KFlatModule:
+        equations = []
+        for fty, body in self.functions(smir_info).items():
+            rule, _ = build_rule(
+                f'lookupFunction-{fty}',
+                KApply('lookupFunction', (KApply('ty', (token(fty),)),)),
+                body,
+            )
+            equations.append(rule)
+
+        parser = Parser(self.definition)
+        types: set[KInner] = set()
+        for type in smir_info._smir['types']:
+            parse_result = parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
+            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+            ty, tyinfo = type_mapping.args
+            if ty in types:
+                raise ValueError(f'Key collision in type map: {ty}')
+            types.add(ty)
+            assert isinstance(ty, KApply) and len(ty.args) == 1 and isinstance(ty.args[0], KToken)
+            rule, _ = build_rule(
+                f'lookupTy-{ty.args[0].token}',
+                KApply('lookupTy', (ty,)),
+                tyinfo,
+            )
+            equations.append(rule)
+            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
+                adt_def = tyinfo.args[1]
+                assert isinstance(adt_def, KApply) and len(adt_def.args) == 1 and isinstance(adt_def.args[0], KToken)
+                rule, _ = build_rule(
+                    f'lookupAdtTy-{adt_def.args[0].token}',
+                    KApply('lookupAdtTy', (adt_def,)),
+                    ty,
+                )
+                equations.append(rule)
+
+        for alloc in smir_info._smir['allocs']:
+            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
+            assert parse_result is not None
+            if 'Memory' in alloc['global_alloc']:
+                alloc_info, _ = parse_result
+                assert isinstance(alloc_info, KApply) and len(alloc_info.args) == 3
+                id, aty, alloc_data = alloc_info.args
+                assert isinstance(alloc_data, KApply) and len(alloc_data.args) == 1
+                the_alloc = alloc_data.args[0]
+                assert isinstance(id, KApply) and len(id.args) == 1 and isinstance(id.args[0], KToken)
+                rule, _ = build_rule(
+                    f'lookupAlloc-{id.args[0].token}',
+                    KApply('lookupAlloc', (id,)),
+                    KApply('decodeAlloc', (id, aty, the_alloc)),
+                )
+                equations.append(rule)
+
+        name = smir_info.name.replace('_', '-')
+
+        return KFlatModule(f'KMIR-PROGRAM-{name}', equations, (KImport('KMIR'),))
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}

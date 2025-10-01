@@ -61,6 +61,17 @@ def _kmir_run(opts: RunOpts) -> None:
     print(kmir.kore_to_pretty(result))
 
 
+def _kmir_gen_mod(opts: GenSpecOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+
+    result = kmir.make_program_module(SMIRInfo.from_file(opts.input_file))
+
+    if opts.output_file is not None:
+        opts.output_file.write_text(kmir.pretty_print(result))
+    else:
+        print(kmir.pretty_print(result))
+
+
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
     proof = kmir.prove_rs(opts)
@@ -203,7 +214,7 @@ def kmir(args: Sequence[str]) -> None:
         case RunOpts():
             _kmir_run(opts)
         case GenSpecOpts():
-            _kmir_gen_spec(opts)
+            _kmir_gen_mod(opts)
         case InfoOpts():
             _kmir_info(opts)
         case ProveRawOpts():
@@ -375,6 +386,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 haskell_backend=ns.haskell_backend,
             )
         case 'gen-spec':
+            return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
+        case 'gen-mod':
             return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
