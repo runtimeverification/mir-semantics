@@ -95,6 +95,7 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
 
     with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
         prog_mod_file.write(kmir.pretty_print(prog_module))
+    _LOGGER.info(f'Program module written to {prog_mod_file.name}')
 
     # kompile the module, for Haskell and for LLVM-library
     # code using KompileTarget from kmir.kdist.plugin
@@ -121,7 +122,7 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
     }
     hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
 
-    print(f'LLVM: {llvm_out}\nHS:   {hs_out}\n')
+    _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
 
     import os
 
