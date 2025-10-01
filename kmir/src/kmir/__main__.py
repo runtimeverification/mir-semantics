@@ -89,18 +89,19 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
     with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
         prog_mod_file.write(kmir.pretty_print(prog_module))
 
-
     # kompile the module, for Haskell and for LLVM-library
     # code using KompileTarget from kmir.kdist.plugin
     from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
-    from kmir.kdist.plugin import KompileTarget, __TARGETS__, _default_args
+
+    from kmir.kdist.plugin import _default_args
+
     llvm_args = {
         'main_file': prog_mod_file.name,
         'main_module': prog_module.main_module_name,
         'backend': PykBackend.LLVM,
         'llvm_kompile_type': LLVMKompileType.C,
         'md_selector': 'k & ! symbolic',
-        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics')
+        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
     }
     llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
 
@@ -109,13 +110,14 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
         'main_module': prog_module.main_module_name,
         'backend': PykBackend.HASKELL,
         'md_selector': 'k & ! concrete',
-        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics')
+        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
     }
     hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
 
     print(f'LLVM: {llvm_out}\nHS:   {hs_out}\n')
 
     import os
+
     if os.path.exists(prog_mod_file.name):
         os.remove(prog_mod_file.name)
 
@@ -131,9 +133,7 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
         _LOGGER.info(f'Constructing initial proof: {label}')
         smir_info = SMIRInfo.from_file(opts.rs_file)
 
-        apr_proof = kmir.apr_proof_from_smir(
-            label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
-        )
+        apr_proof = kmir.apr_proof_from_smir(label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir)
         # if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
         #     smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
     if not apr_proof.passed:
