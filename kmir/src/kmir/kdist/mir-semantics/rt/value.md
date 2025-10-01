@@ -40,6 +40,8 @@ The special `Moved` value represents values that have been used and should not b
                    // stack depth (initially 0), place, borrow kind, dynamic size if applicable
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
+                 | RangeInteger( Int, Int, Bool, ListInt ) [symbol(Value::RangeInteger)]
+                   // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, PtrEmulation )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
@@ -49,6 +51,9 @@ The special `Moved` value represents values that have been used and should not b
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
                  | "Moved"
                    // The value has been used and is gone now
+
+    syntax ListInt ::= ".Ints"     [symbol(Value::IntsEmpty)]
+                     | Int ListInt [symbol(Value::IntsCons)]
 ```
 
 ### Metadata for References and Pointers
