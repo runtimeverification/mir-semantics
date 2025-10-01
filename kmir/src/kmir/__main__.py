@@ -82,7 +82,14 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
 
 def _kmir_prove_x(opts: ProveRSOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR)
-    prog_module = kmir.make_program_module(SMIRInfo.from_file(opts.rs_file))
+
+    # modules get too big for the compiler to handle them, reduce items here
+    # (prevents reuse of the generated definition, though)
+    all_smir = SMIRInfo.from_file(opts.rs_file)
+    reduced = all_smir.reduce_to(opts.start_symbol)
+    _LOGGER.info(f'Reduced items table size from {len(all_smir.items)} to {len(reduced.items)}.')
+
+    prog_module = kmir.make_program_module(reduced)
 
     import tempfile
 
