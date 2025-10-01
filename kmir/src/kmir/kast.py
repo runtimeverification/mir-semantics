@@ -415,18 +415,36 @@ class _ArgGenerator:
                     new_var, new_constraints, _ = self._symbolic_value(element_type, mutable)
                     elem_vars.append(new_var)
                     elem_constraints += new_constraints
-                return (
-                    KApply('Value::Range', (list_of(elem_vars),)),
-                    elem_constraints,
-                    KApply(
-                        'Metadata',
-                        (
+                match self.types.get(element_type):
+                    case UintT(info):
+                        int_list = build_cons(KApply('Value::IntsEmpty'), 'Value::IntsCons', elem_vars)
+                        return (
+                            KApply(
+                                'Value::RangeInteger',
+                                (
+                                    token(size),
+                                    token(info.value),
+                                    token(False),
+                                    int_list,
+                                ),
+                            ),
+                            elem_constraints,
+                            # TODO: Should be token(size) * len(elem_vars)?
+                            KApply(
+                                'Metadata',
+                                (
+                                    KApply('staticSize', (token(size),)),
+                                    token(0),
+                                    KApply('staticSize', (token(size),)),
+                                ),
+                            ),
+                        )
+                    case other:
+                        return (
+                            KApply('Value::Range', (list_of(elem_vars),)),
+                            elem_constraints,
                             KApply('staticSize', (token(size),)),
-                            token(0),
-                            KApply('staticSize', (token(size),)),
-                        ),
-                    ),
-                )
+                        )
 
             case TupleT(components=components):
                 elem_vars = []
