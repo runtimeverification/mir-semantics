@@ -2,11 +2,11 @@ statement
 (
   statementKindAssign
   (
-    place(local(3), ),
+    place(local(3), .ProjectionElems),
     rvalueCast
     (
       castKindIntToInt,
-      operandMove(place(local(4), )),
+      operandMove(place(local(4), .ProjectionElems)),
       ty(2)
     )
   ),

@@ -1,0 +1,24 @@
+{
+  "bytes": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "types": [
+    [
+      0,
+      {
+        "PrimitiveType": {
+          "Uint": "U8"
+        }
+      }
+    ]
+  ],
+  "typeInfo": {
+    "ArrayType": {
+      "elem_type": 0,
+      "size": null
+    }
+  }
+}

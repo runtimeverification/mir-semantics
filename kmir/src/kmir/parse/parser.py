@@ -117,9 +117,19 @@ def _list_symbols(sort: str) -> tuple[str, str]:
 @cache
 def _element_sort(sort: KSort) -> KSort:
     name = sort.name
+
+    special_cases = {
+        'Indices': 'Index',
+        'Sizes': 'Size',
+    }
+    for special_case in special_cases:
+        if name.endswith(special_case):
+            return KSort(name[: -len(special_case)] + special_cases[special_case])
+
     if name.endswith('ies'):  # Entries, ...
         return KSort(name[:-3] + 'y')
-    elif (  # -es for words ending in 's', 'ch', 'sh', 'ss', 'x' or 'z'
+
+    if (  # -es for words ending in 's', 'ch', 'sh', 'ss', 'x' or 'z'
         name.endswith('ses')
         or name.endswith('ches')
         or name.endswith('shes')
@@ -128,8 +138,7 @@ def _element_sort(sort: KSort) -> KSort:
         or name.endswith('zes')
     ):
         return KSort(name[:-2])
-    elif name.endswith('Indices'):
-        return KSort(name[:-7] + 'Index')
+
     # If the name is not lsted above, we assume it has a regular plural form.
     # Simply remove trailing 's' to get the singular for element sort name.
     assert name.endswith('s')

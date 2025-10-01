@@ -1,0 +1,43 @@
+typeInfoEnumType(...
+  name: "AccountState"
+, adtDef: adtDef(1)
+, discriminants: discriminant(0) discriminant(1) discriminant(2) .Discriminants
+, fields: .Tys : .Tys : .Tys : .Tyss
+, layout: someLayoutShape(
+    layoutShape(...
+      fields: fieldsShapeArbitrary(mk(... offsets: machineSize(... numBits: 0) .MachineSizes))
+    , variants: variantsShapeMultiple(
+        mk(...
+          tag: scalarInitialized(
+            mk(...
+              value: primitiveInt(mk(... length: integerLengthI8, signed: false))
+            , validRange: wrappingRange(... start: 0, end: 2)))
+        , tagEncoding: tagEncodingDirect
+        , tagField: 0
+        , variants:
+            layoutShape(...
+              fields: fieldsShapeArbitrary(mk(... offsets: .MachineSizes))
+            , variants: variantsShapeSingle(mk(... index: variantIdx(0)))
+            , abi: valueAbiAggregate(mk(... sized: true))
+            , abiAlign: align(1)
+            , size: machineSize(... numBits: 8))
+            layoutShape(...
+              fields: fieldsShapeArbitrary(mk(... offsets: .MachineSizes))
+            , variants: variantsShapeSingle(mk(... index: variantIdx(1)))
+            , abi: valueAbiAggregate(mk(... sized: true))
+            , abiAlign: align (1)
+            , size: machineSize(... numBits: 8))
+            layoutShape(...
+              fields: fieldsShapeArbitrary(mk(... offsets: .MachineSizes))
+            , variants: variantsShapeSingle(mk(... index: variantIdx(2)))
+            , abi: valueAbiAggregate(mk(... sized: true))
+            , abiAlign: align(1)
+            , size: machineSize(... numBits: 8))
+            .LayoutShapes))
+    , abi: valueAbiScalar(
+        scalarInitialized(
+          mk(...
+            value: primitiveInt(mk(... length: integerLengthI8, signed: false))
+          , validRange: wrappingRange(... start: 0 , end: 2))))
+    , abiAlign: align(1)
+    , size: machineSize(... numBits: 8))))

@@ -89,7 +89,7 @@ Another type-related `Map` is required to associate an `AdtDef` ID with its corr
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)
 
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _)) MORE:TypeMappings)
+  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _, _, _)) MORE:TypeMappings)
       =>
        #mkAdtMap(ACC[ADTDEF <- TY], MORE)
     requires notBool TY in_keys(ACC)
@@ -462,16 +462,18 @@ where the returned result should go.
   // Intrinsic function call - execute directly without state switching
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
          =>
-           #execIntrinsic(MONOITEM, ARGS, DEST) ~> #continueAt(TARGET)
+           #execIntrinsic({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS, DEST) ~> #continueAt(TARGET)
        </k>
-       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
-    requires isIntrinsicFunction(MONOITEM)
-    [preserves-definedness]
+       <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool isIntrinsicFunction({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind)
+    [preserves-definedness] // callee lookup defined
 
-  // Regular function call - full state switching and stack setup  
+  // Regular function call - full state switching and stack setup
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
-           #setUpCalleeData(MONOITEM, ARGS)
+           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -483,10 +485,12 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> ... #tyOfCall(FUNC) |-> MONOITEM:MonoItemKind ... </functions>
-    requires notBool isIntrinsicFunction(MONOITEM)
+       <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool notBool isIntrinsicFunction({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind)
     [preserves-definedness] // callee lookup defined
-  
+
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
@@ -529,7 +533,7 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
-  
+
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
@@ -636,8 +640,8 @@ about the value passed through it. In the semantics, it acts as an identity func
 its argument to the destination without modification.
 
 ```k
-  // Black box intrinsic implementation - identity function  
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST) 
+  // Black box intrinsic implementation - identity function
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST)
         => #setLocalValue(DEST, ARG)
        ... </k>
 ```
@@ -655,7 +659,7 @@ Execution gets stuck (no matching rule) when operands have different types or un
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
-        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS, TYPEMAP), 
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS, TYPEMAP),
                                   #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS, TYPEMAP))
        ... </k>
        <locals> LOCALS </locals>
@@ -669,22 +673,22 @@ Execution gets stuck (no matching rule) when operands have different types or un
     requires TY1 ==K TY2
     [preserves-definedness]
 
-  // Add deref projection to operands  
+  // Add deref projection to operands
   syntax Operand ::= #withDeref(Operand) [function, total]
-  rule #withDeref(operandCopy(place(LOCAL, PROJ))) 
+  rule #withDeref(operandCopy(place(LOCAL, PROJ)))
     => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
-  rule #withDeref(operandMove(place(LOCAL, PROJ))) 
+  rule #withDeref(operandMove(place(LOCAL, PROJ)))
     => operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)))
        // must not overwrite the value, just the reference is moved!
   rule #withDeref(OP) => OP [owise]
-  
+
   // Extract type from operands (locals with projections, constants, fallback to unknown)
   syntax MaybeTy ::= #extractOperandType(Operand, List, Map) [function, total]
-  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP)
        => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP) 
+  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP)
        => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
