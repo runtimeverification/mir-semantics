@@ -14,7 +14,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, KMIR_SOURCE_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -77,6 +77,72 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     proof = kmir.prove_rs(opts)
     print(str(proof.summary))
     if not proof.passed:
+        sys.exit(1)
+
+
+def _kmir_prove_x(opts: ProveRSOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR)
+    prog_module = kmir.make_program_module(SMIRInfo.from_file(opts.rs_file))
+
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
+        prog_mod_file.write(kmir.pretty_print(prog_module))
+
+
+    # kompile the module, for Haskell and for LLVM-library
+    # code using KompileTarget from kmir.kdist.plugin
+    from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
+    from kmir.kdist.plugin import KompileTarget, __TARGETS__, _default_args
+    llvm_args = {
+        'main_file': prog_mod_file.name,
+        'main_module': prog_module.main_module_name,
+        'backend': PykBackend.LLVM,
+        'llvm_kompile_type': LLVMKompileType.C,
+        'md_selector': 'k & ! symbolic',
+        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics')
+    }
+    llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
+
+    hs_args = {
+        'main_file': prog_mod_file.name,
+        'main_module': prog_module.main_module_name,
+        'backend': PykBackend.HASKELL,
+        'md_selector': 'k & ! concrete',
+        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics')
+    }
+    hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
+
+    print(f'LLVM: {llvm_out}\nHS:   {hs_out}\n')
+
+    import os
+    if os.path.exists(prog_mod_file.name):
+        os.remove(prog_mod_file.name)
+
+    # make a new KMIR with these paths
+    kmir = KMIR(hs_out, llvm_out, bug_report=opts.bug_report)
+
+    # run a modified prove_rs (inlined here) with this
+    label = str(opts.rs_file.stem) + '.' + opts.start_symbol
+    if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+        _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+        apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+    else:
+        _LOGGER.info(f'Constructing initial proof: {label}')
+        smir_info = SMIRInfo.from_file(opts.rs_file)
+
+        apr_proof = kmir.apr_proof_from_smir(
+            label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+        )
+        # if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
+        #     smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+    if not apr_proof.passed:
+        with kmir.kcfg_explore(label) as kcfg_explore:
+            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
+
+    print(str(apr_proof.summary))
+    if not apr_proof.passed:
         sys.exit(1)
 
 
@@ -226,7 +292,10 @@ def kmir(args: Sequence[str]) -> None:
         case PruneOpts():
             _kmir_prune(opts)
         case ProveRSOpts():
-            _kmir_prove_rs(opts)
+            if ns.command == 'prove-x':
+                _kmir_prove_x(opts)
+            else:
+                _kmir_prove_rs(opts)
         case LinkOpts():
             _kmir_link(opts)
         case _:
@@ -364,6 +433,16 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
+    prove_x_parser = command_parser.add_parser(
+        'prove-x',
+        help='prove a smir file using a compiled module for static data',
+        parents=[kcli_args.logging_args, prove_args],
+    )
+    prove_x_parser.add_argument('smir_file', type=Path, metavar='SMIR', help='SMIR JSON file to work with')
+    prove_x_parser.add_argument(
+        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+    )
+
     link_parser = command_parser.add_parser(
         'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
     )
@@ -386,8 +465,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 haskell_backend=ns.haskell_backend,
             )
         case 'gen-spec':
-            return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
-        case 'gen-mod':
             return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
@@ -440,6 +517,18 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 reload=ns.reload,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
+                start_symbol=ns.start_symbol,
+            )
+        case 'prove-x':
+            return ProveRSOpts(
+                rs_file=Path(ns.smir_file),
+                proof_dir=ns.proof_dir,
+                bug_report=ns.bug_report,
+                max_depth=ns.max_depth,
+                max_iterations=ns.max_iterations,
+                reload=ns.reload,
+                save_smir=False,
+                smir=True,
                 start_symbol=ns.start_symbol,
             )
         case 'link':
