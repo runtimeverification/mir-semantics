@@ -8,7 +8,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, build_rule, free_vars, split_config_from
-from pyk.kast.outer import KFlatModule, KImport
+from pyk.kast.outer import KDefinition, KFlatModule, KImport, KRequire
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
@@ -97,7 +97,7 @@ class KMIR(KProve, KRun, KParse):
 
         return functions
 
-    def make_program_module(self, smir_info: SMIRInfo) -> KFlatModule:
+    def make_program_module(self, smir_info: SMIRInfo) -> KDefinition:
         equations = []
         for fty, body in self.functions(smir_info).items():
             rule, _ = build_rule(
@@ -109,6 +109,7 @@ class KMIR(KProve, KRun, KParse):
 
         parser = Parser(self.definition)
         types: set[KInner] = set()
+        adts: set[KInner] = set()
         for type in smir_info._smir['types']:
             parse_result = parser.parse_mir_json(type, 'TypeMapping')
             assert parse_result is not None
@@ -127,13 +128,17 @@ class KMIR(KProve, KRun, KParse):
             equations.append(rule)
             if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
                 adt_def = tyinfo.args[1]
-                assert isinstance(adt_def, KApply) and len(adt_def.args) == 1 and isinstance(adt_def.args[0], KToken)
-                rule, _ = build_rule(
-                    f'lookupAdtTy-{adt_def.args[0].token}',
-                    KApply('lookupAdtTy', (adt_def,)),
-                    ty,
-                )
-                equations.append(rule)
+                if not adt_def in adts:
+                    adts.add(adt_def)
+                    assert (
+                        isinstance(adt_def, KApply) and len(adt_def.args) == 1 and isinstance(adt_def.args[0], KToken)
+                    )
+                    rule, _ = build_rule(
+                        f'lookupAdtTy-{adt_def.args[0].token}',
+                        KApply('lookupAdtTy', (adt_def,)),
+                        ty,
+                    )
+                    equations.append(rule)
 
         for alloc in smir_info._smir['allocs']:
             parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
@@ -148,13 +153,15 @@ class KMIR(KProve, KRun, KParse):
                 rule, _ = build_rule(
                     f'lookupAlloc-{id.args[0].token}',
                     KApply('lookupAlloc', (id,)),
-                    KApply('decodeAlloc', (id, aty, the_alloc)),
+                    KApply('#decodeAlloc', (id, aty, the_alloc)),
                 )
                 equations.append(rule)
 
         name = smir_info.name.replace('_', '-')
 
-        return KFlatModule(f'KMIR-PROGRAM-{name}', equations, (KImport('KMIR'),))
+        module = KFlatModule(f'KMIR-PROGRAM-{name}', equations, (KImport('KMIR'),))
+
+        return KDefinition(f'KMIR-PROGRAM-{name}', (module,), (KRequire('kmir.md'),))
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
