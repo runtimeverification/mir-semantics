@@ -23,3 +23,21 @@ class BoolValue(Value):
         from pyk.kast.prelude.kbool import boolToken
 
         return KApply('Value::BoolVal', boolToken(self.value))
+
+
+@dataclass
+class IntValue(Value):
+    value: int
+    nbits: int
+    signed: bool
+
+    def to_kast(self):
+        from pyk.kast.prelude.kbool import boolToken
+        from pyk.kast.prelude.kint import intToken
+
+        return KApply(
+            'Value::Integer',
+            intToken(self.value),
+            intToken(self.nbits),
+            boolToken(self.signed),
+        )
