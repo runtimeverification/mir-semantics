@@ -482,11 +482,11 @@ wheels = [
 
 [[package]]
 name = "isort"
-version = "6.0.1"
+version = "6.1.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b8/21/1e2a441f74a653a144224d7d21afe8f4169e6c7c20bb13aec3a2dc3815e0/isort-6.0.1.tar.gz", hash = "sha256:1cb5df28dfbc742e490c5e41bad6da41b805b0a8be7bc93cd0fb2a8a890ac450", size = 821955, upload-time = "2025-02-26T21:13:16.955Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/82/fa43935523efdfcce6abbae9da7f372b627b27142c3419fcf13bf5b0c397/isort-6.1.0.tar.gz", hash = "sha256:9b8f96a14cfee0677e78e941ff62f03769a06d412aabb9e2a90487b3b7e8d481", size = 824325, upload-time = "2025-10-01T16:26:45.027Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/11/114d0a5f4dabbdcedc1125dee0888514c3c3b16d3e9facad87ed96fad97c/isort-6.0.1-py3-none-any.whl", hash = "sha256:2dc5d7f65c9678d94c88dfc29161a320eec67328bc97aad576874cb4be1e9615", size = 94186, upload-time = "2025-02-26T21:13:14.911Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/cc/9b681a170efab4868a032631dea1e8446d8ec718a7f657b94d49d1a12643/isort-6.1.0-py3-none-any.whl", hash = "sha256:58d8927ecce74e5087aef019f778d4081a3b6c98f15a80ba35782ca8a2097784", size = 94329, upload-time = "2025-10-01T16:26:43.291Z" },
 ]
 
 [[package]]
@@ -1148,7 +1148,7 @@ wheels = [
 
 [[package]]
 name = "textual"
-version = "6.2.0"
+version = "6.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify", "plugins"] },
@@ -1157,9 +1157,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/18/e6/5b3aa6cc30a40246af587f3802f219f326981491a1a6b0623f07f0c4029f/textual-6.2.0.tar.gz", hash = "sha256:1561aeea3a6e9d8fa7bc3e2fcb2bb1d0c7a04e2661c0bb9fa5021cc9f1e905da", size = 1570354, upload-time = "2025-09-30T14:23:01.793Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/30/38b615f7d4b16f6fdd73e4dcd8913e2d880bbb655e68a076e3d91181a7ee/textual-6.2.1.tar.gz", hash = "sha256:4699d8dfae43503b9c417bd2a6fb0da1c89e323fe91c4baa012f9298acaa83e1", size = 1570645, upload-time = "2025-10-01T16:11:24.467Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ca/97/1e6fad473147f825b1d3bec807cbf34c0c24aa6b61478df8d630cc664a44/textual-6.2.0-py3-none-any.whl", hash = "sha256:d9bb3b997a8a37687faeb0201978e7b7baf0e4644f39468f34a7bbad659bbbae", size = 710628, upload-time = "2025-09-30T14:23:00.056Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/93/02c7adec57a594af28388d85da9972703a4af94ae1399542555cd9581952/textual-6.2.1-py3-none-any.whl", hash = "sha256:3c7190633cd4d8bfe6049ae66808b98da91ded2edb85cef54e82bf77b03d2a54", size = 710702, upload-time = "2025-10-01T16:11:22.161Z" },
 ]
 
 [[package]]
