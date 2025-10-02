@@ -54,13 +54,9 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs-unstable = import nixpkgs-unstable {
-          inherit system;
-        };
+        pkgs-unstable = import nixpkgs-unstable { inherit system; };
         # for uv2nix, remove this once we updated to a newer version of nixpkgs
-        staleNixpkgsOverlay = final: prev: {
-          inherit (pkgs-unstable) replaceVars;
-        };
+        staleNixpkgsOverlay = final: prev: { inherit (pkgs-unstable) replaceVars; };
         uvOverlay = final: prev: { uv = uv2nix.packages.${final.system}.uv-bin; };
         # create custom overlay for k, because the overlay in k-framework currently also includes a lot of other stuff instead of only k
         kOverlay = final: prev: { k = k-framework.packages.${final.system}.k; };
