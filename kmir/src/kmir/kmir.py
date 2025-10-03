@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from enum import Enum
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
@@ -63,6 +64,10 @@ class KMIR(KProve, KRun, KParse):
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
 
+    @cached_property
+    def parser(self) -> Parser:
+        return Parser(self.definition)
+
     @contextmanager
     def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
@@ -76,7 +81,6 @@ class KMIR(KProve, KRun, KParse):
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
     def functions(self, smir_info: SMIRInfo) -> dict[int, KInner]:
-        parser = Parser(self.definition)
         functions: dict[int, KInner] = {}
 
         # Parse regular functions
@@ -84,7 +88,7 @@ class KMIR(KProve, KRun, KParse):
             if not item_name in smir_info.function_symbols_reverse:
                 _LOGGER.warning(f'Item not found in SMIR: {item_name}')
                 continue
-            parsed_item = parser.parse_mir_json(item, 'MonoItem')
+            parsed_item = self.parser.parse_mir_json(item, 'MonoItem')
             if not parsed_item:
                 raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
             parsed_item_kinner, _ = parsed_item
@@ -153,13 +157,11 @@ class KMIR(KProve, KRun, KParse):
 
         from pyk.kast.prelude.collections import map_of
 
-        parser = Parser(self.definition)
-
         done: dict[KInner, KInner] = {}
         rest: list[KInner] = []
 
         for raw_alloc in smir_info._smir['allocs']:
-            parse_res = parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
+            parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
             assert parse_res is not None
             kast_alloc, _ = parse_res
             rest.append(kast_alloc)
@@ -173,10 +175,9 @@ class KMIR(KProve, KRun, KParse):
         return map_of(parsed_terms)
 
     def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
-        parser = Parser(self.definition)
         types: dict[KInner, KInner] = {}
         for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
+            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
             assert parse_result is not None
             type_mapping, _ = parse_result
             assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
