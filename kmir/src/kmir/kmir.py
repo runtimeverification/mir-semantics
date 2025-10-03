@@ -191,10 +191,24 @@ class KMIR(KProve, KRun, KParse):
         return map_of(dict(done)), global_allocs(rest)
 
     def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
+        err: Exception | None = None
+
+        if mode is not DecodeMode.NONE:
+            decode_res = self._decode_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
+            match decode_res:
+                case Decoded():
+                    return decode_res
+                case Exception():
+                    if mode is DecodeMode.FULL:
+                        raise ValueError('TODO - implement this case - return UndableToDecode term')
+                    err = decode_res
+                case _:
+                    raise AssertionError('Unhandled case')
+
         parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
         assert parse_res is not None
-        res, _ = parse_res
-        return Undecoded(alloc=res, err=None)
+        alloc, _ = parse_res
+        return Undecoded(alloc=alloc, err=err)
 
     def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded | Exception:
         from pyk.kast.prelude.kint import intToken
