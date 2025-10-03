@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
@@ -38,6 +39,12 @@ if TYPE_CHECKING:
     from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+class DecodeMode(Enum):
+    FULL = 'full'
+    PARTIAL = 'partial'
+    NONE = 'none'
 
 
 class KMIR(KProve, KRun, KParse):
@@ -111,7 +118,7 @@ class KMIR(KProve, KRun, KParse):
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': self._make_memory_term(smir_info, types),
+            'MEMORY_CELL': self._make_memory_term(smir_info, types, mode=DecodeMode.NONE),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
         }
@@ -130,11 +137,11 @@ class KMIR(KProve, KRun, KParse):
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
 
-    def _make_memory_term(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        done, rest = self._decode_allocs(smir_info)
+    def _make_memory_term(self, smir_info: SMIRInfo, types: KInner, *, mode: DecodeMode) -> KInner:
+        done, rest = self._decode_allocs(smir_info, mode=mode)
         return KApply('decodeAllocsAux', done, rest, types)
 
-    def _decode_allocs(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
+    def _decode_allocs(self, smir_info: SMIRInfo, *, mode: DecodeMode) -> tuple[KInner, KInner]:
         from pyk.kast.prelude.collections import map_empty
 
         parser = Parser(self.definition)
