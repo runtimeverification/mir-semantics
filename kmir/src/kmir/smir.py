@@ -8,13 +8,11 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, NamedTuple, NewType
 
-from .ty import EnumT, RefT, StructT, Ty, UnionT, metadata_from_json
+from .ty import EnumT, RefT, StructT, Ty, TypeMetadata, UnionT
 
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any, Final
-
-    from .ty import TypeMetadata
 
 
 AllocId = NewType('AllocId', int)
@@ -45,7 +43,7 @@ class SMIRInfo:
 
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
-        return {Ty(id): metadata_from_json(type) for id, type in self._smir['types']}
+        return {Ty(id): TypeMetadata.from_raw(type) for id, type in self._smir['types']}
 
     def unref_type(self, ty: Ty) -> TypeMetadata | None:
         """Recursively resolve type until reaching a non-reference type."""
