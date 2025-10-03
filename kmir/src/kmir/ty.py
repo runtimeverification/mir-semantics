@@ -1,7 +1,14 @@
+from __future__ import annotations
+
+from abc import ABC
 from dataclasses import dataclass
 from enum import Enum
 from functools import reduce
-from typing import NewType
+from typing import TYPE_CHECKING, NewType
+
+if TYPE_CHECKING:
+    from typing import Any
+
 
 Ty = NewType('Ty', int)
 
@@ -31,12 +38,53 @@ class FloatTy(Enum):
     F128 = 16
 
 
-@dataclass
-class TypeMetadata: ...
+def _cannot_parse_as(name: str, data: Any) -> ValueError:
+    return ValueError(f'Cannot parse as {name}: {data}')
 
 
-@dataclass
-class PrimitiveType(TypeMetadata): ...
+class TypeMetadata(ABC):  # noqa: B024
+    @staticmethod
+    def from_raw(data: Any) -> TypeMetadata:
+        ((variant, _),) = data.items()
+
+        variants: dict[str, Any] = {
+            'PrimitiveType': PrimitiveType,
+            'EnumType': EnumT,
+            'StructType': StructT,
+            'UnionType': UnionT,
+            'ArrayType': ArrayT,
+            'PtrType': PtrT,
+            'RefType': RefT,
+            'TupleType': TupleT,
+            'FunType': FunT,
+        }
+
+        try:
+            cls = variants[variant].from_raw(data)
+        except KeyError as err:
+            raise _cannot_parse_as('TypeMetadata', data) from err
+
+        return cls.from_raw(data)
+
+
+class PrimitiveType(TypeMetadata, ABC):
+    @staticmethod
+    def from_raw(data: Any) -> PrimitiveType:
+        match data['PrimitiveType']:
+            case 'Bool':
+                return Bool()
+            case 'Char':
+                return Char()
+            case 'Str':
+                return Str()
+            case {'Uint': uint_ty}:
+                return Uint(UintTy[uint_ty])
+            case {'Int': int_ty}:
+                return Int(IntTy[int_ty])
+            case {'Float': float_ty}:
+                return Float(FloatTy[float_ty])
+            case _:
+                raise _cannot_parse_as('PrimitiveType', data)
 
 
 @dataclass
@@ -66,29 +114,29 @@ class Uint(PrimitiveType):
     info: UintTy
 
 
-def _primty_from_json(typeinfo: str | dict) -> PrimitiveType:
-    if typeinfo == 'Bool':
-        return Bool()
-    elif typeinfo == 'Char':
-        return Char()
-    elif typeinfo == 'Str':
-        return Str()
-
-    assert isinstance(typeinfo, dict)
-    if 'Uint' in typeinfo:
-        return Uint(UintTy.__members__[typeinfo['Uint']])
-    if 'Int' in typeinfo:
-        return Int(IntTy.__members__[typeinfo['Int']])
-    if 'Float' in typeinfo:
-        return Float(FloatTy.__members__[typeinfo['Float']])
-    return NotImplemented
-
-
 @dataclass
 class EnumT(TypeMetadata):
     name: str
     adt_def: int
     discriminants: list[int]
+
+    @staticmethod
+    def from_raw(data: Any) -> EnumT:
+        match data:
+            case {
+                'EnumType': {
+                    'name': name,
+                    'adt_def': adt_def,
+                    'discriminants': discriminants,
+                }
+            }:
+                return EnumT(
+                    name=name,
+                    adt_def=adt_def,
+                    discriminants=list(discriminants),
+                )
+            case _:
+                raise _cannot_parse_as('EnumT', data)
 
 
 @dataclass
@@ -97,11 +145,45 @@ class StructT(TypeMetadata):
     adt_def: int
     fields: list[Ty]
 
+    @staticmethod
+    def from_raw(data: Any) -> StructT:
+        match data:
+            case {
+                'StructType': {
+                    'name': name,
+                    'adt_def': adt_def,
+                    'fields': fields,
+                }
+            }:
+                return StructT(
+                    name=name,
+                    adt_def=adt_def,
+                    fields=list(fields),
+                )
+            case _:
+                raise _cannot_parse_as('StructT', data)
+
 
 @dataclass
 class UnionT(TypeMetadata):
     name: str
     adt_def: int
+
+    @staticmethod
+    def from_raw(data: Any) -> UnionT:
+        match data:
+            case {
+                'UnionType': {
+                    'name': name,
+                    'adt_def': adt_def,
+                }
+            }:
+                return UnionT(
+                    name=name,
+                    adt_def=adt_def,
+                )
+            case _:
+                raise _cannot_parse_as('UnionT', data)
 
 
 @dataclass
@@ -109,58 +191,89 @@ class ArrayT(TypeMetadata):
     element_type: Ty
     length: int | None
 
+    @staticmethod
+    def from_raw(data: Any) -> ArrayT:
+        match data:
+            case {
+                'ArrayType': {
+                    'elem_type': element_type,
+                    'size': size,
+                }
+            }:
+                length: int | None
+                if size is None:
+                    length = None
+                else:
+                    bs = reversed(size['kind']['Value'][1]['bytes'])  # assume little-endian
+                    length = reduce(lambda x, y: x * 256 + y, bs)
+
+                return ArrayT(
+                    element_type=element_type,
+                    length=length,
+                )
+            case _:
+                raise _cannot_parse_as('ArrayT', data)
+
 
 @dataclass
 class PtrT(TypeMetadata):
     pointee_type: Ty
+
+    @staticmethod
+    def from_raw(data: Any) -> PtrT:
+        match data:
+            case {
+                'PtrType': {
+                    'pointee_type': int() as pointee_type,
+                }
+            }:
+                return PtrT(Ty(pointee_type))
+            case _:
+                raise _cannot_parse_as('PtrT', data)
 
 
 @dataclass
 class RefT(TypeMetadata):
     pointee_type: Ty
 
+    @staticmethod
+    def from_raw(data: Any) -> RefT:
+        match data:
+            case {
+                'RefType': {
+                    'pointee_type': pointee_type,
+                }
+            }:
+                return RefT(Ty(pointee_type))
+            case _:
+                raise _cannot_parse_as('RefT', data)
+
 
 @dataclass
 class TupleT(TypeMetadata):
     components: list[Ty]
+
+    @staticmethod
+    def from_raw(data: Any) -> TupleT:
+        match data:
+            case {
+                'TupleType': {
+                    'types': types,
+                }
+            }:
+                return TupleT(list(types))
+            case _:
+                raise _cannot_parse_as('TupleT', data)
 
 
 @dataclass
 class FunT(TypeMetadata):
     type_str: str
 
-
-def metadata_from_json(typeinfo: dict) -> TypeMetadata:
-    if 'PrimitiveType' in typeinfo:
-        return _primty_from_json(typeinfo['PrimitiveType'])
-    elif 'EnumType' in typeinfo:
-        info = typeinfo['EnumType']
-        discriminants = list(info['discriminants'])
-        return EnumT(name=info['name'], adt_def=info['adt_def'], discriminants=discriminants)
-    elif 'StructType' in typeinfo:
-        return StructT(
-            typeinfo['StructType']['name'], typeinfo['StructType']['adt_def'], typeinfo['StructType']['fields']
-        )
-    elif 'UnionType' in typeinfo:
-        return UnionT(typeinfo['UnionType']['name'], typeinfo['UnionType']['adt_def'])
-    elif 'ArrayType' in typeinfo:
-        info = typeinfo['ArrayType']
-        length = None if info['size'] is None else _decode(info['size']['kind']['Value'][1]['bytes'])
-        return ArrayT(info['elem_type'], length)
-    elif 'PtrType' in typeinfo:
-        return PtrT(typeinfo['PtrType']['pointee_type'])
-    elif 'RefType' in typeinfo:
-        return RefT(typeinfo['RefType']['pointee_type'])
-    elif 'TupleType' in typeinfo:
-        return TupleT(typeinfo['TupleType']['types'])
-    elif 'FunType' in typeinfo:
-        return FunT(typeinfo['FunType'])
-
-    return NotImplemented
-
-
-def _decode(bytes: list[int]) -> int:
-    # assume little-endian: reverse the bytes
-    bs = bytes.copy()
-    bs.reverse()
-    return reduce(lambda x, y: x * 256 + y, bs)
+    @staticmethod
+    def from_raw(data: Any) -> FunT:
+        match data:
+            case {'FunType': type_str}:
+                return FunT(type_str)
+            case _:
+                raise _cannot_parse_as('FunT', data)
