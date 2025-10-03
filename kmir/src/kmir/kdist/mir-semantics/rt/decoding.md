@@ -241,7 +241,9 @@ results.
 
   syntax ListInt ::= #decodeUints ( Bytes , Int , Int , Int ) [function]
   rule #decodeUints(_, _, _, _) => .Ints [owise]
-  rule #decodeUints(BYTES:Bytes, N, LEN, WIDTH) => Bytes2Int(substrBytes(BYTES, N *Int WIDTH, WIDTH), LE, Signed) #decodeUints(BYTES, N +Int 1, LEN, WIDTH)
+  rule #decodeUints(BYTES:Bytes, N, LEN, WIDTH)
+    => Bytes2Int(substrBytes(BYTES, N *Int WIDTH, (N +Int 1) *Int WIDTH), LE, Signed)
+       #decodeUints(BYTES, N +Int 1, LEN, WIDTH)
     requires 0 <=Int N andBool 0 <Int WIDTH andBool (N +Int 1) *Int WIDTH <=Int lengthBytes(BYTES)
     [preserves-definedness]
 
