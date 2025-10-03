@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass
 from enum import Enum
-from functools import reduce
 from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
@@ -199,8 +198,8 @@ class ArrayT(TypeMetadata):
                 if size is None:
                     length = None
                 else:
-                    bs = reversed(size['kind']['Value'][1]['bytes'])  # assume little-endian
-                    length = reduce(lambda x, y: x * 256 + y, bs)
+                    bs = bytes(size['kind']['Value'][1]['bytes'])
+                    length = int.from_bytes(bs, byteorder='little', signed=False)
 
                 return ArrayT(
                     element_type=element_type,
