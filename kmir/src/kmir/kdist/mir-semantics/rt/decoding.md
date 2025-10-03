@@ -354,14 +354,14 @@ The entire set of `GlobalAllocs` is decoded by iterating over the list.
 It is assumed that the given `Ty -> TypeInfo` map contains all types required.
 
 ```k
-  syntax Map ::= #decodeAllocs ( GlobalAllocs , Map )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing
-               | #decodeAllocs ( Map , GlobalAllocs , Map ) [function, total] // accumulating version
+  syntax Map ::= #decodeAllocs    (       GlobalAllocs , Map ) [function, total, symbol("decodeAllocs")   ] // AllocId |-> Thing
+               | #decodeAllocsAux ( Map , GlobalAllocs , Map ) [function, total, symbol("decodeAllocsAux")] // accumulating version
   // -----------------------------------------------------------------------------------------------
-  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocs(.Map, ALLOCS, TYPEMAP)
+  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocsAux(.Map, ALLOCS, TYPEMAP)
 
-  rule #decodeAllocs(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
-  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
-      => #decodeAllocs(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
+  rule #decodeAllocsAux(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
+  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
+      => #decodeAllocsAux(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
     requires TY in_keys(TYPEMAP)
     [preserves-definedness]
 ```
@@ -372,8 +372,8 @@ This ensures that the function is total (anyway lookups require constraining the
 ```k
   syntax AllocData ::= Value | AllocData ( Ty , GlobalAllocKind )
 
-  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
-      => #decodeAllocs(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
+  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
+      => #decodeAllocsAux(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
     [owise]
 ```
 
