@@ -105,17 +105,7 @@ class KMIR(KProve, KRun, KParse):
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
         types = self._make_type_map(smir_info)
-
-        parser = Parser(self.definition)
-        allocs: KInner = KApply('GlobalAllocs::empty')
-        allocs_json = smir_info._smir['allocs']
-        assert isinstance(allocs_json, list)
-        allocs_json.reverse()
-        for alloc in allocs_json:
-            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
-            assert parse_result is not None
-            a, _ = parse_result
-            allocs = KApply('GlobalAllocs::append', (a, allocs))
+        allocs = self._make_allocs_map(smir_info)
 
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
@@ -140,6 +130,19 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
+
+    def _make_allocs_map(self, smir_info: SMIRInfo) -> KInner:
+        parser = Parser(self.definition)
+        allocs: KInner = KApply('GlobalAllocs::empty')
+        allocs_json = smir_info._smir['allocs']
+        assert isinstance(allocs_json, list)
+        allocs_json.reverse()
+        for alloc in allocs_json:
+            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
+            assert parse_result is not None
+            a, _ = parse_result
+            allocs = KApply('GlobalAllocs::append', (a, allocs))
+        return allocs
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
