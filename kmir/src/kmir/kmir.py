@@ -105,14 +105,13 @@ class KMIR(KProve, KRun, KParse):
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
         types = self._make_type_map(smir_info)
-        allocs = self._make_allocs_map(smir_info)
 
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': KApply('decodeAllocs', (allocs, types)),
+            'MEMORY_CELL': self._make_memory_term(smir_info, types),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
         }
@@ -130,6 +129,10 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
+
+    def _make_memory_term(self, smir_info: SMIRInfo, types: KInner) -> KInner:
+        allocs = self._make_allocs_map(smir_info)
+        return KApply('decodeAllocs', (allocs, types))
 
     def _make_allocs_map(self, smir_info: SMIRInfo) -> KInner:
         parser = Parser(self.definition)
