@@ -196,6 +196,40 @@ class KMIR(KProve, KRun, KParse):
         res, _ = parse_res
         return Undecoded(alloc=res, err=None)
 
+    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded | Exception:
+        from pyk.kast.prelude.kint import intToken
+
+        from .decoding import decode_value
+        from .smir import Allocation, AllocInfo, Memory, ProvenanceMap
+
+        alloc_id = raw_alloc['alloc_id']
+        alloc = smir_info.allocs[alloc_id]
+        match alloc:
+            case AllocInfo(
+                alloc_id=alloc_id,
+                ty=ty,
+                global_alloc=Memory(
+                    allocation=Allocation(
+                        bytez=bytez,
+                        provenance=ProvenanceMap(
+                            ptrs=[],  # TODO generalize to lists with at most one entry
+                        ),
+                    ),
+                ),
+            ):
+                data = bytes(n or 0 for n in bytez)
+                type_info = smir_info.types[ty]
+                try:
+                    value = decode_value(data=data, type_info=type_info, types=smir_info.types)
+                    return Decoded(
+                        alloc_id=KApply('allocId', intToken(alloc_id)),
+                        value=value.to_kast(),
+                    )
+                except Exception as err:
+                    return err
+            case _:
+                return Exception(f'Unhandled alloc: {alloc}')
+
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
         for ty, body in self.functions(smir_info).items():
