@@ -188,6 +188,7 @@ class KMIR(KProve, KRun, KParse):
                 case _:
                     raise AssertionError('Unhandled case')
 
+        _LOGGER.info(f'Allocations processed: {len(done)} decoded, {len(rest)} undecoded')
         return map_of(dict(done)), global_allocs(rest)
 
     def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
