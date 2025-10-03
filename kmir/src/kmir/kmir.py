@@ -156,10 +156,10 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def _make_memory_term(self, smir_info: SMIRInfo, types: KInner, *, mode: DecodeMode) -> KInner:
-        done, rest = self._decode_allocs(smir_info, mode=mode)
+        done, rest = self._process_allocs(smir_info, mode=mode)
         return KApply('decodeAllocsAux', done, rest, types)
 
-    def _decode_allocs(self, smir_info: SMIRInfo, *, mode: DecodeMode) -> tuple[KInner, KInner]:
+    def _process_allocs(self, smir_info: SMIRInfo, *, mode: DecodeMode) -> tuple[KInner, KInner]:
         def global_allocs(allocs: list[KInner]) -> KInner:
             from pyk.kast.inner import build_cons
 
@@ -175,7 +175,7 @@ class KMIR(KProve, KRun, KParse):
         rest: list[KInner] = []
 
         for raw_alloc in smir_info._smir['allocs']:
-            decode_res = self._decode_alloc(
+            decode_res = self._process_alloc(
                 smir_info=smir_info,
                 raw_alloc=raw_alloc,
                 mode=mode,
@@ -190,7 +190,7 @@ class KMIR(KProve, KRun, KParse):
 
         return map_of(dict(done)), global_allocs(rest)
 
-    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
+    def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
         parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
         assert parse_res is not None
         res, _ = parse_res
