@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 
 
 class KParse(KPrint):
-    parser: str
-
     def __init__(
         self,
         definition_dir: Path,
@@ -25,7 +23,6 @@ class KParse(KPrint):
         bug_report: BugReport | None = None,
         extra_unparsing_modules: Iterable[KFlatModule] = (),
         patch_symbol_table: Callable[[SymbolTable], None] | None = None,
-        command: str = 'kparse',
     ):
         super().__init__(
             definition_dir,
@@ -34,7 +31,6 @@ class KParse(KPrint):
             extra_unparsing_modules=extra_unparsing_modules,
             patch_symbol_table=patch_symbol_table,
         )
-        self.parser = command
 
     def kparse(self, input_file: Path, *, sort: str) -> tuple[int, KInner]:
         returncode, kore = self.kparse_into_kore(input_file, sort=sort)
