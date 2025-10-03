@@ -158,11 +158,11 @@ class KMIR(KProve, KRun, KParse):
         done: dict[KInner, KInner] = {}
         rest: list[KInner] = []
 
-        for alloc in smir_info._smir['allocs']:
-            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
-            assert parse_result is not None
-            a, _ = parse_result
-            rest.append(a)
+        for raw_alloc in smir_info._smir['allocs']:
+            parse_res = parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
+            assert parse_res is not None
+            kast_alloc, _ = parse_res
+            rest.append(kast_alloc)
 
         return map_of(done), global_allocs(rest)
 
