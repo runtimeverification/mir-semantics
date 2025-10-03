@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 def decode_value(data: bytes, type_info: TypeMetadata, types: dict[Ty, TypeMetadata]) -> Value:
-    from .ty import ArrayT, Bool, Int, Uint
+    from .ty import ArrayT, Bool, EnumT, Int, Uint
 
     match type_info:
         case Bool():
@@ -17,6 +17,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: dict[Ty, TypeMetad
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
             return _decode_array(data, elem_ty, length, types)
+        case EnumT(discriminants=discriminants, fields=fields):
+            return _decode_enum(data, discriminants, fields)
         case _:
             raise ValueError(f'Unsupported type: {type_info}')
 
@@ -76,3 +78,23 @@ def _decode_array(
         raise ValueError(f'Expected {length} elements, got: {len(elems)}')
 
     return RangeValue(elems)
+
+
+def _decode_enum(
+    data: bytes,
+    discriminants: list[int],
+    fields: list[list[Ty]],
+) -> Value:
+    from .value import AggregateValue
+
+    # The only supported case for now is when there are no fields
+    if any(tys for tys in fields):
+        raise ValueError('TODO - implement this case')
+
+    tag = int.from_bytes(data, byteorder='little', signed=False)
+    try:
+        variant_idx = discriminants.index(tag)
+    except ValueError as err:
+        raise ValueError(f'Tag not found: {tag}') from err
+
+    return AggregateValue(variant_idx, ())

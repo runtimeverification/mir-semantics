@@ -124,6 +124,7 @@ class EnumT(TypeMetadata):
     name: str
     adt_def: int
     discriminants: list[int]
+    fields: list[list[Ty]]
 
     @staticmethod
     def from_raw(data: Any) -> EnumT:
@@ -133,12 +134,14 @@ class EnumT(TypeMetadata):
                     'name': name,
                     'adt_def': adt_def,
                     'discriminants': discriminants,
+                    'fields': fields,
                 }
             }:
                 return EnumT(
                     name=name,
                     adt_def=adt_def,
                     discriminants=list(discriminants),
+                    fields=[list(tys) for tys in fields],
                 )
             case _:
                 raise _cannot_parse_as('EnumT', data)

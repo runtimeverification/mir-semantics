@@ -56,3 +56,23 @@ class RangeValue(Value):
         from pyk.kast.prelude.collections import list_of
 
         return KApply('Value::Range', list_of(elem.to_kast() for elem in self.elems))
+
+
+@dataclass
+class AggregateValue(Value):
+    variant_idx: int
+    fields: tuple[Value, ...]
+
+    def __init__(self, variant_idx: int, fields: Iterable[Value]):
+        self.variant_idx = variant_idx
+        self.fields = tuple(fields)
+
+    def to_kast(self):
+        from pyk.kast.prelude.collections import list_of
+        from pyk.kast.prelude.kint import intToken
+
+        return KApply(
+            'Value::Aggregate',
+            KApply('variantIdx', intToken(self.variant_idx)),
+            list_of(field.to_kast() for field in self.fields),
+        )
