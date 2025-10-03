@@ -466,10 +466,11 @@ results.
     requires notBool #isIntType(ELEMTYPEINFO)
 
   rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
-    => RangeInteger(LEN, #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, #decodeUints(BYTES, 0, LEN, #elemSize(ELEMTYPEINFO)))
+    => RangeInteger(LEN, #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, BYTES)
     requires #isIntType(ELEMTYPEINFO)
      andBool isUintTy(#intTypeOf(ELEMTYPEINFO))
      andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0
+     andBool lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO) ==Int LEN
 
   syntax ListInt ::= #decodeUints ( Bytes , Int , Int , Int ) [function]
   rule #decodeUints(_, _, _, _) => .Ints [owise]
