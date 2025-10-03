@@ -3193,7 +3193,7 @@ fn test_process_get_account_data_size(accounts: &[AccountInfo; 1]) -> ProgramRes
     } else if accounts[0].data_len() != Mint::LEN {
         assert_eq!(result, Err(ProgramError::Custom(2)))
     } else if mint_initialised.is_err() {
-        assert_eq!(result, Err(ProgramError::InvalidAccountData))
+        assert_eq!(result, Err(ProgramError::Custom(2)))
     } else if !mint_initialised.unwrap() {
         assert_eq!(result, Err(ProgramError::Custom(2)))
     } else {
