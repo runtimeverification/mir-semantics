@@ -7,7 +7,7 @@ from functools import reduce
 from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Final
 
 
 Ty = NewType('Ty', int)
@@ -45,8 +45,10 @@ def _cannot_parse_as(name: str, data: Any) -> ValueError:
 class TypeMetadata(ABC):  # noqa: B024
     @staticmethod
     def from_raw(data: Any) -> TypeMetadata:
-        ((variant, _),) = data.items()
+        if data == 'VoidType':
+            return VOID_T
 
+        ((variant, _),) = data.items()
         variants: dict[str, Any] = {
             'PrimitiveType': PrimitiveType,
             'EnumType': EnumT,
@@ -277,3 +279,10 @@ class FunT(TypeMetadata):
                 return FunT(type_str)
             case _:
                 raise _cannot_parse_as('FunT', data)
+
+
+@dataclass
+class VoidT(TypeMetadata): ...
+
+
+VOID_T: Final = VoidT()
