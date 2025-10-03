@@ -21,7 +21,7 @@ class Value(ABC):
 class BoolValue(Value):
     value: bool
 
-    def to_kast(self):
+    def to_kast(self) -> KInner:
         from pyk.kast.prelude.kbool import boolToken
 
         return KApply('Value::BoolVal', boolToken(self.value))
@@ -33,7 +33,7 @@ class IntValue(Value):
     nbits: int
     signed: bool
 
-    def to_kast(self):
+    def to_kast(self) -> KInner:
         from pyk.kast.prelude.kbool import boolToken
         from pyk.kast.prelude.kint import intToken
 
@@ -52,7 +52,7 @@ class RangeValue(Value):
     def __init__(self, elems: Iterable[Value]):
         self.elems = tuple(elems)
 
-    def to_kast(self):
+    def to_kast(self) -> KInner:
         from pyk.kast.prelude.collections import list_of
 
         return KApply('Value::Range', list_of(elem.to_kast() for elem in self.elems))
@@ -67,7 +67,7 @@ class AggregateValue(Value):
         self.variant_idx = variant_idx
         self.fields = tuple(fields)
 
-    def to_kast(self):
+    def to_kast(self) -> KInner:
         from pyk.kast.prelude.collections import list_of
         from pyk.kast.prelude.kint import intToken
 
