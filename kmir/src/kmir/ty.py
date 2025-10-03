@@ -49,29 +49,22 @@ class TypeMetadata(ABC):  # noqa: B024
             return VOID_T
 
         ((variant, _),) = data.items()
-        variants: dict[str, Any] = {
-            'PrimitiveType': PrimitiveType,
-            'EnumType': EnumT,
-            'StructType': StructT,
-            'UnionType': UnionT,
-            'ArrayType': ArrayT,
-            'PtrType': PtrT,
-            'RefType': RefT,
-            'TupleType': TupleT,
-            'FunType': FunT,
-        }
 
+        if not variant.endswith('Type'):
+            raise ValueError(f'Unknown TypeMetadata variant: {variant}')
+
+        cls_name = variant[:-3]  # 'FooType' -> 'FooT'
         try:
-            cls = variants[variant].from_raw(data)
+            cls = globals()[cls_name]
         except KeyError as err:
             raise _cannot_parse_as('TypeMetadata', data) from err
 
         return cls.from_raw(data)
 
 
-class PrimitiveType(TypeMetadata, ABC):
+class PrimitiveT(TypeMetadata, ABC):
     @staticmethod
-    def from_raw(data: Any) -> PrimitiveType:
+    def from_raw(data: Any) -> PrimitiveT:
         match data['PrimitiveType']:
             case 'Bool':
                 return Bool()
@@ -90,29 +83,29 @@ class PrimitiveType(TypeMetadata, ABC):
 
 
 @dataclass
-class Bool(PrimitiveType): ...
+class Bool(PrimitiveT): ...
 
 
 @dataclass
-class Char(PrimitiveType): ...
+class Char(PrimitiveT): ...
 
 
 @dataclass
-class Str(PrimitiveType): ...
+class Str(PrimitiveT): ...
 
 
 @dataclass
-class Float(PrimitiveType):
+class Float(PrimitiveT):
     info: FloatTy
 
 
 @dataclass
-class Int(PrimitiveType):
+class Int(PrimitiveT):
     info: IntTy
 
 
 @dataclass
-class Uint(PrimitiveType):
+class Uint(PrimitiveT):
     info: UintTy
 
 
