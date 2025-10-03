@@ -4,7 +4,7 @@ import logging
 from contextlib import contextmanager
 from enum import Enum
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
@@ -46,6 +46,19 @@ class DecodeMode(Enum):
     FULL = 'full'
     PARTIAL = 'partial'
     NONE = 'none'
+
+
+class Decoded(NamedTuple):
+    alloc_id: KInner
+    value: KInner
+
+
+class Undecoded(NamedTuple):
+    alloc: KInner
+    err: Exception | None
+
+
+DecodeRes = Decoded | Undecoded
 
 
 class KMIR(KProve, KRun, KParse):
@@ -158,20 +171,30 @@ class KMIR(KProve, KRun, KParse):
 
         from pyk.kast.prelude.collections import map_of
 
-        done: dict[KInner, KInner] = {}
+        done: list[tuple[KInner, KInner]] = []
         rest: list[KInner] = []
 
         for raw_alloc in smir_info._smir['allocs']:
-            kast_alloc = self._decode_alloc(raw_alloc=raw_alloc)
-            rest.append(kast_alloc)
+            decode_res = self._decode_alloc(
+                smir_info=smir_info,
+                raw_alloc=raw_alloc,
+                mode=mode,
+            )
+            match decode_res:
+                case Decoded():
+                    done.append(decode_res)
+                case Undecoded(alloc):
+                    rest.append(alloc)
+                case _:
+                    raise AssertionError('Unhandled case')
 
-        return map_of(done), global_allocs(rest)
+        return map_of(dict(done)), global_allocs(rest)
 
-    def _decode_alloc(self, raw_alloc: Any) -> KInner:
+    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
         parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
         assert parse_res is not None
         res, _ = parse_res
-        return res
+        return Undecoded(alloc=res, err=None)
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
