@@ -29,7 +29,7 @@ from .smir import SMIRInfo
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-    from typing import Final
+    from typing import Any, Final
 
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
@@ -160,12 +160,17 @@ class KMIR(KProve, KRun, KParse):
         rest: list[KInner] = []
 
         for raw_alloc in smir_info._smir['allocs']:
-            parse_res = parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
-            assert parse_res is not None
-            kast_alloc, _ = parse_res
+            kast_alloc = self._decode_alloc(parser, raw_alloc=raw_alloc)
             rest.append(kast_alloc)
 
         return map_of(done), global_allocs(rest)
+
+    @staticmethod
+    def _decode_alloc(parser: Parser, raw_alloc: Any) -> KInner:
+        parse_res = parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
+        assert parse_res is not None
+        res, _ = parse_res
+        return res
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
