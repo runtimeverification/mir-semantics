@@ -4,13 +4,14 @@ import logging
 from contextlib import contextmanager
 from enum import Enum
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
+from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -30,7 +31,7 @@ from .smir import SMIRInfo
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-    from typing import Final
+    from typing import Any, Final
 
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
@@ -46,6 +47,18 @@ class DecodeMode(Enum):
     FULL = 'full'
     PARTIAL = 'partial'
     NONE = 'none'
+
+
+class Decoded(NamedTuple):
+    alloc_id: KInner
+    value: KInner
+
+
+class Undecoded(NamedTuple):
+    alloc: KInner
+
+
+DecodeRes = Decoded | Undecoded
 
 
 class KMIR(KProve, KRun, KParse):
@@ -142,10 +155,10 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def _make_memory_term(self, smir_info: SMIRInfo, types: KInner, *, mode: DecodeMode) -> KInner:
-        done, rest = self._decode_allocs(smir_info, mode=mode)
+        done, rest = self._process_allocs(smir_info, mode=mode)
         return KApply('decodeAllocsAux', done, rest, types)
 
-    def _decode_allocs(self, smir_info: SMIRInfo, *, mode: DecodeMode) -> tuple[KInner, KInner]:
+    def _process_allocs(self, smir_info: SMIRInfo, *, mode: DecodeMode) -> tuple[KInner, KInner]:
         def global_allocs(allocs: list[KInner]) -> KInner:
             from pyk.kast.inner import build_cons
 
@@ -155,18 +168,46 @@ class KMIR(KProve, KRun, KParse):
                 terms=allocs,
             )
 
-        from pyk.kast.prelude.collections import map_of
-
-        done: dict[KInner, KInner] = {}
+        done: list[tuple[KInner, KInner]] = []
         rest: list[KInner] = []
 
         for raw_alloc in smir_info._smir['allocs']:
-            parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
-            assert parse_res is not None
-            kast_alloc, _ = parse_res
-            rest.append(kast_alloc)
+            processed = self._process_alloc(
+                smir_info=smir_info,
+                raw_alloc=raw_alloc,
+                mode=mode,
+            )
+            match processed:
+                case Decoded():
+                    done.append(processed)
+                case Undecoded(alloc):
+                    rest.append(alloc)
+                case _:
+                    raise AssertionError('Unhandled case')
 
-        return map_of(done), global_allocs(rest)
+        _LOGGER.info(f'Allocations processed: {len(done)} decoded, {len(rest)} undecoded')
+        return map_of(dict(done)), global_allocs(rest)
+
+    def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, mode: DecodeMode) -> DecodeRes:
+        from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
+
+        if mode in [DecodeMode.PARTIAL, DecodeMode.FULL]:
+            alloc_id = raw_alloc['alloc_id']
+            alloc_info = smir_info.allocs[alloc_id]
+            value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
+
+            if mode is DecodeMode.FULL or not isinstance(value, (UnableToDecodeValue, UnableToDecodeAlloc)):
+                alloc_id_term = KApply('allocId', intToken(alloc_id))
+                return Decoded(alloc_id=alloc_id_term, value=value.to_kast())
+
+        alloc_term = self._parse_alloc(raw_alloc=raw_alloc)
+        return Undecoded(alloc=alloc_term)
+
+    def _parse_alloc(self, raw_alloc: Any) -> KInner:
+        parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
+        assert parse_res is not None
+        res, _ = parse_res
+        return res
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
