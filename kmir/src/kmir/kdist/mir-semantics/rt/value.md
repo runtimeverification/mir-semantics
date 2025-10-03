@@ -9,6 +9,7 @@ requires "../body.md"
 module RT-VALUE-SYNTAX
   imports TYPES
   imports BODY
+  imports BOOL
 ```
 
 ## Values in MIR
@@ -54,6 +55,15 @@ The special `Moved` value represents values that have been used and should not b
 
     syntax ListInt ::= ".Ints"     [symbol(Value::IntsEmpty)]
                      | Int ListInt [symbol(Value::IntsCons)]
+
+    syntax ListInt ::= rangeInts ( ListInt , Int , Int ) [function, total]
+    rule rangeInts(_, _, _) => .Ints [owise]
+    rule rangeInts(I1 IS, 0, N) => I1 rangeInts(IS, 0,        N -Int 1) requires 0 <Int N
+    rule rangeInts( _ IS, M, N) =>    rangeInts(IS, M -Int 1, N -Int 1) requires 0 <Int M andBool M <=Int N
+
+    syntax Int ::= sizeInts ( ListInt ) [function, total]
+    rule sizeInts ( .Ints ) => 0
+    rule sizeInts ( _ IS  ) => 1 +Int sizeInts(IS)
 ```
 
 ### Metadata for References and Pointers
