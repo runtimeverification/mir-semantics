@@ -591,16 +591,21 @@ An attempt to read more elements than the length of the accessed array is undefi
   syntax KItem ::= #derefTruncate ( Metadata , ProjectionElems )
   // ----------------------------------------------------------------------------------------
   // no metadata, no change to the value
-  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS)
+  rule <k> #traverseProjection(DEST, VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadata, PROJS)
         => #traverseProjection(DEST, VAL, PROJS, CTXTS)
         ...
        </k>
   // staticSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+  rule <k> #traverseProjection(DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+  rule <k> #traverseProjection(DEST, RangeInteger(LEN, WIDTH, SIGNED, ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+        => #traverseProjection(DEST, RangeInteger(LEN -Int SIZE, WIDTH, SIGNED, rangeInts(ELEMS, 0, sizeInts(ELEMS) -Int SIZE)), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int sizeInts(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
   rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
