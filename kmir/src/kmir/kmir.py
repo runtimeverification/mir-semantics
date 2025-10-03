@@ -151,13 +151,13 @@ class KMIR(KProve, KRun, KParse):
                 terms=allocs,
             )
 
-        from pyk.kast.prelude.collections import map_empty
+        from pyk.kast.prelude.collections import map_of
 
         parser = Parser(self.definition)
 
-        done = map_empty()
-
+        done: dict[KInner, KInner] = {}
         rest: list[KInner] = []
+
         allocs_json = smir_info._smir['allocs']
         assert isinstance(allocs_json, list)
         for alloc in allocs_json:
@@ -166,7 +166,7 @@ class KMIR(KProve, KRun, KParse):
             a, _ = parse_result
             rest.append(a)
 
-        return done, global_allocs(rest)
+        return map_of(done), global_allocs(rest)
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
