@@ -137,14 +137,11 @@ class KMIR(KProve, KRun, KParse):
     def _decode_allocs(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
         from pyk.kast.prelude.collections import map_empty
 
-        done = map_empty()
-        rest = self._make_allocs_map(smir_info)
-
-        return done, rest
-
-    def _make_allocs_map(self, smir_info: SMIRInfo) -> KInner:
         parser = Parser(self.definition)
-        allocs: KInner = KApply('GlobalAllocs::empty')
+
+        done = map_empty()
+
+        rest: KInner = KApply('GlobalAllocs::empty')
         allocs_json = smir_info._smir['allocs']
         assert isinstance(allocs_json, list)
         allocs_json.reverse()
@@ -152,8 +149,9 @@ class KMIR(KProve, KRun, KParse):
             parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
             assert parse_result is not None
             a, _ = parse_result
-            allocs = KApply('GlobalAllocs::append', (a, allocs))
-        return allocs
+            rest = KApply('GlobalAllocs::append', (a, rest))
+
+        return done, rest
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
