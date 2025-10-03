@@ -60,6 +60,9 @@ class TypeMetadata(ABC):  # noqa: B024
 
         return cls.from_raw(data)
 
+    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+        raise ValueError(f'Method nbytes() is unsupported for type: {self}')
+
 
 class PrimitiveT(TypeMetadata, ABC):
     @staticmethod
@@ -82,7 +85,9 @@ class PrimitiveT(TypeMetadata, ABC):
 
 
 @dataclass
-class Bool(PrimitiveT): ...
+class Bool(PrimitiveT):
+    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+        return 1
 
 
 @dataclass
@@ -102,10 +107,16 @@ class Float(PrimitiveT):
 class Int(PrimitiveT):
     info: IntTy
 
+    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+        return self.info.value
+
 
 @dataclass
 class Uint(PrimitiveT):
     info: UintTy
+
+    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+        return self.info.value
 
 
 @dataclass
@@ -113,6 +124,7 @@ class EnumT(TypeMetadata):
     name: str
     adt_def: int
     discriminants: list[int]
+    fields: list[list[Ty]]
 
     @staticmethod
     def from_raw(data: Any) -> EnumT:
@@ -122,12 +134,14 @@ class EnumT(TypeMetadata):
                     'name': name,
                     'adt_def': adt_def,
                     'discriminants': discriminants,
+                    'fields': fields,
                 }
             }:
                 return EnumT(
                     name=name,
                     adt_def=adt_def,
                     discriminants=list(discriminants),
+                    fields=[list(tys) for tys in fields],
                 )
             case _:
                 raise _cannot_parse_as('EnumT', data)
@@ -207,6 +221,17 @@ class ArrayT(TypeMetadata):
                 )
             case _:
                 raise _cannot_parse_as('ArrayT', data)
+
+    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+        if self.length is None:
+            raise ValueError(f'Method nbytes() is unsupported for array of unknown length: {self}')
+
+        try:
+            elem_info = types[self.element_type]
+        except KeyError as err:
+            raise ValueError(f'Unknown element type: {self.element_type}') from err
+
+        return elem_info.nbytes(types) * self.length
 
 
 @dataclass
