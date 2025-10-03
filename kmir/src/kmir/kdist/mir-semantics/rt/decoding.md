@@ -234,15 +234,15 @@ results.
     requires notBool #isIntType(ELEMTYPEINFO)
 
   rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN, TYPEMAP)
-    => RangeInteger(LEN, #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, #decodeUints(BYTES, LEN, lengthBytes(BYTES) /Int LEN))
+    => RangeInteger(LEN, #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, #decodeUints(BYTES, 0, LEN, #elemSize(ELEMTYPEINFO, TYPEMAP)))
     requires #isIntType(ELEMTYPEINFO)
      andBool isUintTy(#intTypeOf(ELEMTYPEINFO))
      andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO, TYPEMAP) ==Int 0
 
-  syntax ListInt ::= #decodeUints ( Bytes , Int , Int ) [function]
-  rule #decodeUints(_, 0, _) => .Ints
-  rule #decodeUints(BYTES:Bytes, N, W) => Bytes2Int(substrBytes(BYTES, N *Int W, W), LE, Signed) #decodeUints(BYTES, N +Int 1, W)
-    requires 0 <Int N andBool 0 <Int W andBool (N +Int 1) *Int W <=Int lengthBytes(BYTES)
+  syntax ListInt ::= #decodeUints ( Bytes , Int , Int , Int ) [function]
+  rule #decodeUints(_, _, _, _) => .Ints [owise]
+  rule #decodeUints(BYTES:Bytes, N, LEN, WIDTH) => Bytes2Int(substrBytes(BYTES, N *Int WIDTH, WIDTH), LE, Signed) #decodeUints(BYTES, N +Int 1, LEN, WIDTH)
+    requires 0 <=Int N andBool 0 <Int WIDTH andBool (N +Int 1) *Int WIDTH <=Int lengthBytes(BYTES)
     [preserves-definedness]
 
   syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, Map, List ) [function]
