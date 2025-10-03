@@ -131,8 +131,16 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def _make_memory_term(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        allocs = self._make_allocs_map(smir_info)
-        return KApply('decodeAllocs', (allocs, types))
+        done, rest = self._decode_allocs(smir_info)
+        return KApply('decodeAllocsAux', done, rest, types)
+
+    def _decode_allocs(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
+        from pyk.kast.prelude.collections import map_empty
+
+        done = map_empty()
+        rest = self._make_allocs_map(smir_info)
+
+        return done, rest
 
     def _make_allocs_map(self, smir_info: SMIRInfo) -> KInner:
         parser = Parser(self.definition)
