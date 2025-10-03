@@ -35,6 +35,12 @@ def bool_var(var: KVariable) -> tuple[KInner, Iterable[KInner]]:
     return term, ()
 
 
+def bytes_var(var: KVariable, num_bytes: int) -> tuple[KInner, Iterable[KInner]]:
+    size_bytes = KApply('lengthBytes(_)_BYTES-HOOKED_Int_Bytes', (var,))
+    constraint = mlEqualsTrue(eqInt(size_bytes, token(num_bytes)))
+    return var, (constraint,)
+
+
 def mk_call_terminator(target: int, arg_count: int) -> KInner:
     operands = [
         KApply(
@@ -204,9 +210,7 @@ class ArgGenerator:
                     elem_constraints += new_constraints
                 match self.smir_info.types.get(element_type):
                     case Uint(info):
-                        int_vars = [elem_var.args[0] for elem_var in elem_vars if type(elem_var) is KApply]
-                        assert len(int_vars) == len(elem_vars)
-                        int_list = build_cons(KApply('Value::IntsEmpty'), 'Value::IntsCons', int_vars)
+                        b_var, b_constraints = bytes_var(self._fresh_var('ARG_RANGEINT'), size * info.value)
                         return (
                             KApply(
                                 'Value::RangeInteger',
@@ -214,10 +218,10 @@ class ArgGenerator:
                                     token(size),
                                     token(info.value),
                                     token(False),
-                                    int_list,
+                                    b_var,
                                 ),
                             ),
-                            elem_constraints,
+                            list(elem_constraints) + list(b_constraints),
                             KApply('staticSize', (token(size),)),  # TODO: Should be token(size) * len(elem_vars)?
                         )
                     case other:
