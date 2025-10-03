@@ -158,9 +158,7 @@ class KMIR(KProve, KRun, KParse):
         done: dict[KInner, KInner] = {}
         rest: list[KInner] = []
 
-        allocs_json = smir_info._smir['allocs']
-        assert isinstance(allocs_json, list)
-        for alloc in allocs_json:
+        for alloc in smir_info._smir['allocs']:
             parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
             assert parse_result is not None
             a, _ = parse_result
