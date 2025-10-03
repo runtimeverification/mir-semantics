@@ -96,26 +96,6 @@ class KMIR(KProve, KRun, KParse):
 
         return functions
 
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
-        parsed_terms: dict[KInner, KInner] = {}
-        for ty, body in self.functions(smir_info).items():
-            parsed_terms[KApply('ty', [token(ty)])] = body
-        return map_of(parsed_terms)
-
-    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
-        parser = Parser(self.definition)
-        types: dict[KInner, KInner] = {}
-        for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types[ty] = tyinfo
-        return map_of(types)
-
     def make_call_config(
         self, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell', init: bool = False
     ) -> tuple[KInner, list[KInner]]:
@@ -160,6 +140,26 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
+
+    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+        parsed_terms: dict[KInner, KInner] = {}
+        for ty, body in self.functions(smir_info).items():
+            parsed_terms[KApply('ty', [token(ty)])] = body
+        return map_of(parsed_terms)
+
+    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
+        parser = Parser(self.definition)
+        types: dict[KInner, KInner] = {}
+        for type in smir_info._smir['types']:
+            parse_result = parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
+            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+            ty, tyinfo = type_mapping.args
+            if ty in types:
+                raise ValueError(f'Key collision in type map: {ty}')
+            types[ty] = tyinfo
+        return map_of(types)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
