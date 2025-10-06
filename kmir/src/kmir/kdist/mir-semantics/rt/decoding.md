@@ -37,9 +37,9 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total, symbol(decodeValue)]
-                      | UnableToDecode( Bytes , TypeInfo )
-                      | UnableToDecode( Bytes , Ty , ProvenanceMapEntries )
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map )                  [function, total, symbol(decodeValue)]
+                      | UnableToDecodeValue( Bytes , TypeInfo )                  [symbol(Evaluation::UnableToDecodeValue)]
+                      | UnableToDecodeAlloc( Bytes , Ty , ProvenanceMapEntries ) [symbol(Evaluation::UnableToDecodeAlloc)]
 
   // Boolean: should be one byte with value one or zero
   rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
@@ -83,7 +83,7 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst), TYPEMAP)
 All unimplemented cases will become thunks by way of this default rule:
 
 ```k
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecodeValue(BYTES, TYPEINFO) [owise]
 ```
 
 ## Helper function to determine the expected byte length for a type
@@ -346,7 +346,7 @@ Allocations with more than one provenance map entry or witn non-reference types 
 
 ```k
   rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT), _TYPEMAP)
-      => ID |-> UnableToDecode(BYTES, TY, ENTRIES)
+      => ID |-> UnableToDecodeAlloc(BYTES, TY, ENTRIES)
     [owise]
 ```
 
@@ -354,14 +354,14 @@ The entire set of `GlobalAllocs` is decoded by iterating over the list.
 It is assumed that the given `Ty -> TypeInfo` map contains all types required.
 
 ```k
-  syntax Map ::= #decodeAllocs ( GlobalAllocs , Map )       [function, total, symbol("decodeAllocs")] // AllocId |-> Thing
-               | #decodeAllocs ( Map , GlobalAllocs , Map ) [function, total] // accumulating version
+  syntax Map ::= #decodeAllocs    (       GlobalAllocs , Map ) [function, total, symbol("decodeAllocs")   ] // AllocId |-> Thing
+               | #decodeAllocsAux ( Map , GlobalAllocs , Map ) [function, total, symbol("decodeAllocsAux")] // accumulating version
   // -----------------------------------------------------------------------------------------------
-  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocs(.Map, ALLOCS, TYPEMAP)
+  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocsAux(.Map, ALLOCS, TYPEMAP)
 
-  rule #decodeAllocs(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
-  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
-      => #decodeAllocs(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
+  rule #decodeAllocsAux(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
+  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
+      => #decodeAllocsAux(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
     requires TY in_keys(TYPEMAP)
     [preserves-definedness]
 ```
@@ -372,8 +372,8 @@ This ensures that the function is total (anyway lookups require constraining the
 ```k
   syntax AllocData ::= Value | AllocData ( Ty , GlobalAllocKind )
 
-  rule #decodeAllocs(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
-      => #decodeAllocs(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
+  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
+      => #decodeAllocsAux(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
     [owise]
 ```
 

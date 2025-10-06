@@ -77,13 +77,13 @@
   </stack>
   <memory>
     allocId ( 0 ) |-> Range ( .List )
-    allocId ( 1 ) |-> UnableToDecode ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 99 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 10 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 11 ) )  .ProvenanceMapEntries )
-    allocId ( 2 ) |-> UnableToDecode ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 99 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 12 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 13 ) )  .ProvenanceMapEntries )
-    allocId ( 3 ) |-> UnableToDecode ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 108 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 14 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 15 ) )  .ProvenanceMapEntries )
-    allocId ( 4 ) |-> UnableToDecode ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 108 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 16 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 17 ) )  .ProvenanceMapEntries )
-    allocId ( 5 ) |-> UnableToDecode ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x16\x00\x00\x00\x00\x00\x00\x00" , ty ( 126 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 18 ) )  .ProvenanceMapEntries )
-    allocId ( 8 ) |-> UnableToDecode ( b"Thing" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 9 ) |-> UnableToDecode ( b"Another" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 1 ) |-> UnableToDecodeAlloc ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 99 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 10 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 11 ) )  .ProvenanceMapEntries )
+    allocId ( 2 ) |-> UnableToDecodeAlloc ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 99 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 12 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 13 ) )  .ProvenanceMapEntries )
+    allocId ( 3 ) |-> UnableToDecodeAlloc ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 108 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 14 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 15 ) )  .ProvenanceMapEntries )
+    allocId ( 4 ) |-> UnableToDecodeAlloc ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" , ty ( 108 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 16 ) )  provenanceMapEntry (... offset: 8 , allocId: allocId ( 17 ) )  .ProvenanceMapEntries )
+    allocId ( 5 ) |-> UnableToDecodeAlloc ( b"\x00\x00\x00\x00\x00\x00\x00\x00\x16\x00\x00\x00\x00\x00\x00\x00" , ty ( 126 ) , provenanceMapEntry (... offset: 0 , allocId: allocId ( 18 ) )  .ProvenanceMapEntries )
+    allocId ( 8 ) |-> UnableToDecodeValue ( b"Thing" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 9 ) |-> UnableToDecodeValue ( b"Another" , typeInfoPrimitiveType ( primTypeStr ) )
     allocId ( 10 ) |-> AllocData ( ty ( 0 ) , Memory ( allocation (... bytes: b"\x01\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityNot ) ) )
     allocId ( 11 ) |-> AllocData ( ty ( 0 ) , Memory ( allocation (... bytes: b"\x02\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityNot ) ) )
     allocId ( 12 ) |-> AllocData ( ty ( 0 ) , Memory ( allocation (... bytes: b"\x01\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityNot ) ) )
@@ -92,7 +92,7 @@
     allocId ( 15 ) |-> Integer ( 2 , 32 , false )
     allocId ( 16 ) |-> Integer ( 1 , 32 , true )
     allocId ( 17 ) |-> Integer ( 2 , 32 , false )
-    allocId ( 18 ) |-> UnableToDecode ( b"All assertions passed\n" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 18 ) |-> UnableToDecodeValue ( b"All assertions passed\n" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
