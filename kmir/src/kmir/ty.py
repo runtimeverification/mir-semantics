@@ -6,6 +6,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, NewType
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Any, Final
 
 
@@ -60,7 +61,7 @@ class TypeMetadata(ABC):  # noqa: B024
 
         return cls.from_raw(data)
 
-    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         raise ValueError(f'Method nbytes() is unsupported for type: {self}')
 
 
@@ -86,7 +87,7 @@ class PrimitiveT(TypeMetadata, ABC):
 
 @dataclass
 class Bool(PrimitiveT):
-    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return 1
 
 
@@ -107,7 +108,7 @@ class Float(PrimitiveT):
 class Int(PrimitiveT):
     info: IntTy
 
-    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
 
 
@@ -115,7 +116,7 @@ class Int(PrimitiveT):
 class Uint(PrimitiveT):
     info: UintTy
 
-    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
 
 
@@ -222,7 +223,7 @@ class ArrayT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('ArrayT', data)
 
-    def nbytes(self, types: dict[Ty, TypeMetadata]) -> int:
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         if self.length is None:
             raise ValueError(f'Method nbytes() is unsupported for array of unknown length: {self}')
 
