@@ -1,23 +1,33 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.bytes import bytesToken
 from pyk.kast.prelude.kint import intToken
 
-from .alloc import Allocation, AllocInfo, Memory, ProvenanceMap
-from .ty import ArrayT, Bool, EnumT, Int, IntTy, Uint
-from .value import AggregateValue, BoolValue, IntValue, RangeValue, Value
+from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
+from .ty import ArrayT, Bool, EnumT, Int, IntTy, PtrT, RefT, Uint
+from .value import (
+    NO_METADATA,
+    AggregateValue,
+    AllocRefValue,
+    BoolValue,
+    DynamicSize,
+    IntValue,
+    RangeValue,
+    StaticSize,
+    Value,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from pyk.kast import KInner
 
-    from .alloc import AllocId
     from .ty import Ty, TypeMetadata, UintTy
+    from .value import Metadata
 
 
 @dataclass
@@ -47,11 +57,6 @@ class UnableToDecodeAlloc(Value):
         )
 
 
-class ProvenanceMapEntry(NamedTuple):
-    offset: int
-    alloc_id: AllocId
-
-
 def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadata]) -> Value:
     match alloc_info:
         case AllocInfo(
@@ -66,14 +71,50 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             ),
         ):
             data = bytes(n or 0 for n in bytez)
+            type_info = types[ty]
 
-            if not ptrs:  # TODO generalize to lists with at most one entry
-                type_info = types[ty]
-                return decode_value_or_unable(data=data, type_info=type_info, types=types)
+            match ptrs:
+                case []:
+                    return decode_value_or_unable(data=data, type_info=type_info, types=types)
+
+                case [ProvenanceEntry(0, alloc_id)]:
+                    if (pointee_ty := _pointee_ty(type_info)) is not None:  # ensures this is a reference type
+                        pointee_type_info = types[pointee_ty]
+                        metadata = _metadata(pointee_type_info)
+
+                        if len(data) == 8:
+                            # single slim pointer (assumes usize == u64)
+                            return AllocRefValue(alloc_id=alloc_id, metadata=metadata)
+
+                        if len(data) == 16 and metadata == DynamicSize(1):
+                            # sufficient data to decode dynamic size (assumes usize == u64)
+                            # expect fat pointer
+                            return AllocRefValue(
+                                alloc_id=alloc_id,
+                                metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
+                            )
 
             return UnableToDecodeAlloc(data=data, ty=ty)
         case _:
             raise AssertionError('Unhandled case')
+
+
+def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
+    match type_info:
+        case PtrT(ty) | RefT(ty):
+            return ty
+        case _:
+            return None
+
+
+def _metadata(type_info: TypeMetadata) -> Metadata:
+    match type_info:
+        case ArrayT(length=None):
+            return DynamicSize(1)
+        case ArrayT(length=int() as length):
+            return StaticSize(length)
+        case _:
+            return NO_METADATA
 
 
 def decode_value_or_unable(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:
