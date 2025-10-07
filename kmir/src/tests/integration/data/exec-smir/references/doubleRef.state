@@ -90,10 +90,4 @@
     ty ( 38 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
     ty ( 41 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 11 ) |-> ty ( 37 )
-    adtDef ( 16 ) |-> ty ( 17 )
-    adtDef ( 18 ) |-> ty ( 15 )
-    adtDef ( 26 ) |-> ty ( 10 )
-  </adt-to-ty>
 </kmir>

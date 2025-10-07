@@ -102,10 +102,9 @@ class KMIR(KProve, KRun, KParse):
             parsed_terms[KApply('ty', [token(ty)])] = body
         return map_of(parsed_terms)
 
-    def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
+    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
         parser = Parser(self.definition)
         types: dict[KInner, KInner] = {}
-        adts: dict[KInner, KInner] = {}
         for type in smir_info._smir['types']:
             parse_result = parser.parse_mir_json(type, 'TypeMapping')
             assert parse_result is not None
@@ -115,9 +114,7 @@ class KMIR(KProve, KRun, KParse):
             if ty in types:
                 raise ValueError(f'Key collision in type map: {ty}')
             types[ty] = tyinfo
-            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
-                adts[tyinfo.args[1]] = ty
-        return (map_of(types), map_of(adts))
+        return map_of(types)
 
     def make_call_config(
         self, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell', init: bool = False
@@ -127,7 +124,7 @@ class KMIR(KProve, KRun, KParse):
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-        types, adts = self._make_type_and_adt_maps(smir_info)
+        types = self._make_type_map(smir_info)
 
         parser = Parser(self.definition)
         allocs: KInner = KApply('GlobalAllocs::empty')
@@ -148,7 +145,6 @@ class KMIR(KProve, KRun, KParse):
             'MEMORY_CELL': KApply('decodeAllocs', (allocs, types)),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
-            'ADTTOTY_CELL': adts,
         }
 
         _init_subst: dict[str, KInner] = {}
