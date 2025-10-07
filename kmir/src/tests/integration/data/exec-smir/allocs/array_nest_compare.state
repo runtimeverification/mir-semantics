@@ -205,26 +205,4 @@
     ty ( 138 ) |-> typeInfoStructType ( "core::fmt::builders::DebugInner<'_, '_>" , adtDef ( 75 ) , ty ( 24 )  ty ( 22 )  ty ( 30 )  .Tys )
     ty ( 144 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 5 ) |-> ty ( 125 )
-    adtDef ( 6 ) |-> ty ( 53 )
-    adtDef ( 17 ) |-> ty ( 131 )
-    adtDef ( 19 ) |-> ty ( 85 )
-    adtDef ( 23 ) |-> ty ( 103 )
-    adtDef ( 27 ) |-> ty ( 117 )
-    adtDef ( 34 ) |-> ty ( 119 )
-    adtDef ( 35 ) |-> ty ( 121 )
-    adtDef ( 38 ) |-> ty ( 123 )
-    adtDef ( 40 ) |-> ty ( 124 )
-    adtDef ( 46 ) |-> ty ( 130 )
-    adtDef ( 54 ) |-> ty ( 22 )
-    adtDef ( 57 ) |-> ty ( 134 )
-    adtDef ( 58 ) |-> ty ( 127 )
-    adtDef ( 59 ) |-> ty ( 136 )
-    adtDef ( 65 ) |-> ty ( 78 )
-    adtDef ( 66 ) |-> ty ( 17 )
-    adtDef ( 68 ) |-> ty ( 15 )
-    adtDef ( 73 ) |-> ty ( 40 )
-    adtDef ( 75 ) |-> ty ( 138 )
-  </adt-to-ty>
 </kmir>

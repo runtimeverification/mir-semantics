@@ -137,10 +137,4 @@
     ty ( 48 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 24 ) , ty ( 34 )  ty ( 49 )  ty ( 49 )  .Tys )
     ty ( 49 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 14 ) |-> ty ( 10 )
-    adtDef ( 18 ) |-> ty ( 17 )
-    adtDef ( 20 ) |-> ty ( 15 )
-    adtDef ( 24 ) |-> ty ( 48 )
-  </adt-to-ty>
 </kmir>

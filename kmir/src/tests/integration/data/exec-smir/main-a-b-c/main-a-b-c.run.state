@@ -62,9 +62,4 @@
     ty ( 29 ) |-> typeInfoPtrType ( ty ( 9 ) )
     ty ( 30 ) |-> typeInfoVoidType
   </types>
-  <adt-to-ty>
-    adtDef ( 11 ) |-> ty ( 17 )
-    adtDef ( 13 ) |-> ty ( 15 )
-    adtDef ( 21 ) |-> ty ( 10 )
-  </adt-to-ty>
 </kmir>
