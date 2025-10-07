@@ -202,7 +202,18 @@ class KMIR(KProve, KRun, KParse):
             alloc_info = smir_info.allocs[alloc_id]
             value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
 
-            if decode_mode is DecodeMode.FULL or not isinstance(value, (UnableToDecodeValue, UnableToDecodeAlloc)):
+            success: bool
+            match value:
+                case UnableToDecodeValue(data, type_info):
+                    _LOGGER.debug(f'Unable to decode value: {data!r}; of type: {type_info}')
+                    success = False
+                case UnableToDecodeAlloc():
+                    _LOGGER.debug(f'Unable to decode allocation: {alloc_info}')
+                    success = False
+                case _:
+                    success = True
+
+            if success or decode_mode is DecodeMode.FULL:
                 alloc_id_term = KApply('allocId', intToken(alloc_id))
                 return Decoded(alloc_id=alloc_id_term, value=value.to_kast())
 
