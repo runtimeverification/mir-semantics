@@ -666,6 +666,67 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
        </k>
 ```
 
+### Loading the `Rent` Sysvar From the System
+
+The `Rent` sysvar is sometimes provided to processing functions as an account payload.
+At other times, it is loaded directly from the system using a solana system call via `pinocchio::sysvars::rent::Rent::get()`.
+The following code intercepts this call to provide suitable symbolic data directly.
+
+Only the system Rent will be stored as a value directly. The `SysRent` wrapper is used to make it a value.
+```k
+  syntax Value ::= SysRent ( PRent )
+```
+
+```{.k .symbolic}
+  rule [cheatcode-get-sys-prent]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #setLocalValue(
+          DEST,
+          Aggregate(variantIdx(0), // returns a Result type
+            ListItem(SysRent(PRent(U64(?SYS_LMP_PER_BYTEYEAR), F64(?_SYS_EXEMPT_THRESHOLD), U8(?SYS_BURN_PCT))))
+          )
+        )
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    <functions> FUNCTIONS </functions>
+    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
+     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
+     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+    ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 64
+     andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <Int 256
+    [priority(30), preserves-definedness]
+```
+
+### Access to the `Rent` struct
+
+When accessing the `SysRent`, the data structure is transformed to a normal `Aggregate` struct on the fly
+in order to avoid having to encode each field access individually.
+Similar code exists for the `PAccount*` access but this time it operates on an individual `Rent`.
+
+Read access will only happen in the `traverseProjection` operation (reading fields of the struct).
+Write access (as well as moving reads) uses `traverseProjection` and also requires a special context node to reconstruct the custom value.
+
+```k
+  // special traverseProjection rules that call fromPRent on demand when needed.
+  // NB Only applies when more projections follow.
+  rule <k> #traverseProjection(DEST, SysRent(PRent(_, _, _) #as PRENT), PROJ PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPRent(PRENT), PROJ PROJS, CtxPRent CTXTS)
+        ...
+        </k>
+    [priority(30)]
+
+  // special context node(s) to mark the auto-conversion
+  syntax Context ::= "CtxPRent"
+
+  // restore the custom value in #buildUpdate
+  rule #buildUpdate(VAL, CtxPRent CTXS) => #buildUpdate(SysRent(#toPRent(VAL)), CTXS)
+    [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
+
+  // transforming SysRent(PRent) to an aggregate is automatic, no projection required
+  rule #projectionsFor(CtxPRent CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
+```
+
 ### Reading and Writing the Second Component
 
 The access to the second component of the `PAccount` value is implemented with a special projection.
