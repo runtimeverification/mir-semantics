@@ -71,32 +71,41 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             ),
         ):
             data = bytes(n or 0 for n in bytez)
-            type_info = types[ty]
-
-            match ptrs:
-                case []:
-                    return decode_value_or_unable(data=data, type_info=type_info, types=types)
-
-                case [ProvenanceEntry(0, alloc_id)]:
-                    if (pointee_ty := _pointee_ty(type_info)) is not None:  # ensures this is a reference type
-                        pointee_type_info = types[pointee_ty]
-                        metadata = _metadata(pointee_type_info)
-
-                        if len(data) == 8:
-                            # single slim pointer (assumes usize == u64)
-                            return AllocRefValue(alloc_id=alloc_id, metadata=metadata)
-
-                        if len(data) == 16 and metadata == DynamicSize(1):
-                            # sufficient data to decode dynamic size (assumes usize == u64)
-                            # expect fat pointer
-                            return AllocRefValue(
-                                alloc_id=alloc_id,
-                                metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
-                            )
-
-            return UnableToDecodeAlloc(data=data, ty=ty)
+            return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
         case _:
             raise AssertionError('Unhandled case')
+
+
+def _decode_memory_alloc_or_unable(
+    data: bytes,
+    ptrs: list[ProvenanceEntry],
+    ty: Ty,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    type_info = types[ty]
+
+    match ptrs:
+        case []:
+            return decode_value_or_unable(data=data, type_info=type_info, types=types)
+
+        case [ProvenanceEntry(0, alloc_id)]:
+            if (pointee_ty := _pointee_ty(type_info)) is not None:  # ensures this is a reference type
+                pointee_type_info = types[pointee_ty]
+                metadata = _metadata(pointee_type_info)
+
+                if len(data) == 8:
+                    # single slim pointer (assumes usize == u64)
+                    return AllocRefValue(alloc_id=alloc_id, metadata=metadata)
+
+                if len(data) == 16 and metadata == DynamicSize(1):
+                    # sufficient data to decode dynamic size (assumes usize == u64)
+                    # expect fat pointer
+                    return AllocRefValue(
+                        alloc_id=alloc_id,
+                        metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
+                    )
+
+    return UnableToDecodeAlloc(data=data, ty=ty)
 
 
 def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
