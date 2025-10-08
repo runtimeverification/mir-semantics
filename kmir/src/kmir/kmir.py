@@ -146,10 +146,6 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def _make_memory_map(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        done = self._process_allocs(smir_info)
-        return done
-
-    def _process_allocs(self, smir_info: SMIRInfo) -> KInner:
         done: list[tuple[KInner, KInner]] = []
         for raw_alloc in smir_info._smir['allocs']:
             processed = self._process_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
