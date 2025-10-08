@@ -59,7 +59,7 @@
     allocId ( 3 ) |-> Range ( ListItem ( Integer ( 100 , 16 , false ) )
     ListItem ( Integer ( 200 , 16 , false ) )
     ListItem ( Integer ( 300 , 16 , false ) ) )
-    allocId ( 4 ) |-> UnableToDecode ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 4 ) |-> UnableToDecodeValue ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
@@ -161,26 +161,4 @@
     ty ( 122 ) |-> typeInfoRefType ( ty ( 1 ) )
     ty ( 123 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 93 ) , ty ( 85 )  ty ( 45 )  ty ( 45 )  .Tys )
   </types>
-  <adt-to-ty>
-    adtDef ( 5 ) |-> ty ( 117 )
-    adtDef ( 6 ) |-> ty ( 40 )
-    adtDef ( 18 ) |-> ty ( 106 )
-    adtDef ( 20 ) |-> ty ( 69 )
-    adtDef ( 25 ) |-> ty ( 90 )
-    adtDef ( 32 ) |-> ty ( 92 )
-    adtDef ( 35 ) |-> ty ( 22 )
-    adtDef ( 38 ) |-> ty ( 96 )
-    adtDef ( 39 ) |-> ty ( 63 )
-    adtDef ( 41 ) |-> ty ( 39 )
-    adtDef ( 43 ) |-> ty ( 97 )
-    adtDef ( 48 ) |-> ty ( 119 )
-    adtDef ( 60 ) |-> ty ( 17 )
-    adtDef ( 62 ) |-> ty ( 15 )
-    adtDef ( 72 ) |-> ty ( 83 )
-    adtDef ( 76 ) |-> ty ( 112 )
-    adtDef ( 83 ) |-> ty ( 113 )
-    adtDef ( 86 ) |-> ty ( 115 )
-    adtDef ( 88 ) |-> ty ( 116 )
-    adtDef ( 93 ) |-> ty ( 123 )
-  </adt-to-ty>
 </kmir>

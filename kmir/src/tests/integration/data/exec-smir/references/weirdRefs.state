@@ -68,11 +68,11 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 5 ) |-> UnableToDecode ( b"assertion failed: a.a_value == 42" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 6 ) |-> UnableToDecode ( b"assertion failed: a.a_value == 43" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 7 ) |-> UnableToDecode ( b"assertion failed: vv == 43" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 8 ) |-> UnableToDecode ( b"assertion failed: a.another" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 9 ) |-> UnableToDecode ( b"assertion failed: a.a_third == 43" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 5 ) |-> UnableToDecodeValue ( b"assertion failed: a.a_value == 42" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 6 ) |-> UnableToDecodeValue ( b"assertion failed: a.a_value == 43" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 7 ) |-> UnableToDecodeValue ( b"assertion failed: vv == 43" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 8 ) |-> UnableToDecodeValue ( b"assertion failed: a.another" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 9 ) |-> UnableToDecodeValue ( b"assertion failed: a.a_third == 43" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
@@ -113,12 +113,4 @@
     ty ( 41 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
     ty ( 43 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 7 ) |-> ty ( 30 )
-    adtDef ( 8 ) |-> ty ( 34 )
-    adtDef ( 10 ) |-> ty ( 17 )
-    adtDef ( 12 ) |-> ty ( 15 )
-    adtDef ( 17 ) |-> ty ( 40 )
-    adtDef ( 30 ) |-> ty ( 10 )
-  </adt-to-ty>
 </kmir>

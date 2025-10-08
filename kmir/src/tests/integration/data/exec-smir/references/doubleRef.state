@@ -50,8 +50,8 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 2 ) |-> UnableToDecode ( b"assertion failed: **z == x" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 3 ) |-> UnableToDecode ( b"assertion failed: z == &&x" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 2 ) |-> UnableToDecodeValue ( b"assertion failed: **z == x" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 3 ) |-> UnableToDecodeValue ( b"assertion failed: z == &&x" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
@@ -90,10 +90,4 @@
     ty ( 38 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
     ty ( 41 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 11 ) |-> ty ( 37 )
-    adtDef ( 16 ) |-> ty ( 17 )
-    adtDef ( 18 ) |-> ty ( 15 )
-    adtDef ( 26 ) |-> ty ( 10 )
-  </adt-to-ty>
 </kmir>

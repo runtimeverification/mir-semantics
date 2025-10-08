@@ -55,8 +55,8 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 2 ) |-> UnableToDecode ( b"unsafe precondition(s) violated: u8::unchecked_add cannot overflow" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 3 ) |-> UnableToDecode ( b"unsafe precondition(s) violated: i8::unchecked_sub cannot overflow" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 2 ) |-> UnableToDecodeValue ( b"unsafe precondition(s) violated: u8::unchecked_add cannot overflow" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 3 ) |-> UnableToDecodeValue ( b"unsafe precondition(s) violated: i8::unchecked_sub cannot overflow" , typeInfoPrimitiveType ( primTypeStr ) )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
@@ -94,9 +94,4 @@
     ty ( 37 ) |-> typeInfoPrimitiveType ( primTypeStr )
     ty ( 40 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 14 ) |-> ty ( 17 )
-    adtDef ( 16 ) |-> ty ( 15 )
-    adtDef ( 24 ) |-> ty ( 10 )
-  </adt-to-ty>
 </kmir>

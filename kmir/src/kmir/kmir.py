@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
-from typing import TYPE_CHECKING
+from enum import Enum
+from functools import cached_property
+from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
+from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -28,7 +31,7 @@ from .smir import SMIRInfo
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-    from typing import Final
+    from typing import Any, Final
 
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
@@ -38,6 +41,24 @@ if TYPE_CHECKING:
     from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+class DecodeMode(Enum):
+    FULL = 'full'
+    PARTIAL = 'partial'
+    NONE = 'none'
+
+
+class Decoded(NamedTuple):
+    alloc_id: KInner
+    value: KInner
+
+
+class Undecoded(NamedTuple):
+    alloc: KInner
+
+
+DecodeRes = Decoded | Undecoded
 
 
 class KMIR(KProve, KRun, KParse):
@@ -56,6 +77,10 @@ class KMIR(KProve, KRun, KParse):
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
 
+    @cached_property
+    def parser(self) -> Parser:
+        return Parser(self.definition)
+
     @contextmanager
     def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
@@ -69,7 +94,6 @@ class KMIR(KProve, KRun, KParse):
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
     def functions(self, smir_info: SMIRInfo) -> dict[int, KInner]:
-        parser = Parser(self.definition)
         functions: dict[int, KInner] = {}
 
         # Parse regular functions
@@ -77,7 +101,7 @@ class KMIR(KProve, KRun, KParse):
             if not item_name in smir_info.function_symbols_reverse:
                 _LOGGER.warning(f'Item not found in SMIR: {item_name}')
                 continue
-            parsed_item = parser.parse_mir_json(item, 'MonoItem')
+            parsed_item = self.parser.parse_mir_json(item, 'MonoItem')
             if not parsed_item:
                 raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
             parsed_item_kinner, _ = parsed_item
@@ -96,59 +120,30 @@ class KMIR(KProve, KRun, KParse):
 
         return functions
 
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
-        parsed_terms: dict[KInner, KInner] = {}
-        for ty, body in self.functions(smir_info).items():
-            parsed_terms[KApply('ty', [token(ty)])] = body
-        return map_of(parsed_terms)
-
-    def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
-        parser = Parser(self.definition)
-        types: dict[KInner, KInner] = {}
-        adts: dict[KInner, KInner] = {}
-        for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types[ty] = tyinfo
-            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
-                adts[tyinfo.args[1]] = ty
-        return (map_of(types), map_of(adts))
-
     def make_call_config(
-        self, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell', init: bool = False
+        self,
+        smir_info: SMIRInfo,
+        *,
+        start_symbol: str = 'main',
+        sort: str = 'GeneratedTopCell',
+        init: bool = False,
+        decode_mode: DecodeMode = DecodeMode.NONE,
     ) -> tuple[KInner, list[KInner]]:
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-        types, adts = self._make_type_and_adt_maps(smir_info)
-
-        parser = Parser(self.definition)
-        allocs: KInner = KApply('GlobalAllocs::empty')
-        allocs_json = smir_info._smir['allocs']
-        assert isinstance(allocs_json, list)
-        allocs_json.reverse()
-        for alloc in allocs_json:
-            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
-            assert parse_result is not None
-            a, _ = parse_result
-            allocs = KApply('GlobalAllocs::append', (a, allocs))
+        types = self._make_type_map(smir_info)
 
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': KApply('decodeAllocs', (allocs, types)),
+            'MEMORY_CELL': self._make_memory_term(smir_info, types, decode_mode=decode_mode),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
-            'ADTTOTY_CELL': adts,
         }
 
         _init_subst: dict[str, KInner] = {}
@@ -164,6 +159,91 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
+
+    def _make_memory_term(self, smir_info: SMIRInfo, types: KInner, *, decode_mode: DecodeMode) -> KInner:
+        done, rest = self._process_allocs(smir_info, decode_mode=decode_mode)
+        return KApply('decodeAllocsAux', done, rest, types)
+
+    def _process_allocs(self, smir_info: SMIRInfo, *, decode_mode: DecodeMode) -> tuple[KInner, KInner]:
+        def global_allocs(allocs: list[KInner]) -> KInner:
+            from pyk.kast.inner import build_cons
+
+            return build_cons(
+                unit=KApply('GlobalAllocs::empty'),
+                label='GlobalAllocs::append',
+                terms=allocs,
+            )
+
+        done: list[tuple[KInner, KInner]] = []
+        rest: list[KInner] = []
+
+        for raw_alloc in smir_info._smir['allocs']:
+            processed = self._process_alloc(
+                smir_info=smir_info,
+                raw_alloc=raw_alloc,
+                decode_mode=decode_mode,
+            )
+            match processed:
+                case Decoded():
+                    done.append(processed)
+                case Undecoded(alloc):
+                    rest.append(alloc)
+                case _:
+                    raise AssertionError('Unhandled case')
+
+        _LOGGER.info(f'Allocations processed: {len(done)} decoded, {len(rest)} undecoded')
+        return map_of(dict(done)), global_allocs(rest)
+
+    def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any, decode_mode: DecodeMode) -> DecodeRes:
+        from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
+
+        if decode_mode in [DecodeMode.PARTIAL, DecodeMode.FULL]:
+            alloc_id = raw_alloc['alloc_id']
+            alloc_info = smir_info.allocs[alloc_id]
+            value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
+
+            success: bool
+            match value:
+                case UnableToDecodeValue(data, type_info):
+                    _LOGGER.debug(f'Unable to decode value: {data!r}; of type: {type_info}')
+                    success = False
+                case UnableToDecodeAlloc():
+                    _LOGGER.debug(f'Unable to decode allocation: {alloc_info}')
+                    success = False
+                case _:
+                    success = True
+
+            if success or decode_mode is DecodeMode.FULL:
+                alloc_id_term = KApply('allocId', intToken(alloc_id))
+                return Decoded(alloc_id=alloc_id_term, value=value.to_kast())
+
+        alloc_term = self._parse_alloc(raw_alloc=raw_alloc)
+        return Undecoded(alloc=alloc_term)
+
+    def _parse_alloc(self, raw_alloc: Any) -> KInner:
+        parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
+        assert parse_res is not None
+        res, _ = parse_res
+        return res
+
+    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
+        parsed_terms: dict[KInner, KInner] = {}
+        for ty, body in self.functions(smir_info).items():
+            parsed_terms[KApply('ty', [token(ty)])] = body
+        return map_of(parsed_terms)
+
+    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
+        types: dict[KInner, KInner] = {}
+        for type in smir_info._smir['types']:
+            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
+            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+            ty, tyinfo = type_mapping.args
+            if ty in types:
+                raise ValueError(f'Key collision in type map: {ty}')
+            types[ty] = tyinfo
+        return map_of(types)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
@@ -181,6 +261,8 @@ class KMIR(KProve, KRun, KParse):
         start_symbol: str = 'main',
         sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
+        *,
+        decode_mode: DecodeMode = DecodeMode.NONE,
     ) -> APRProof:
         lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol, sort=sort)
         lhs = CTerm(lhs_config, constraints)
