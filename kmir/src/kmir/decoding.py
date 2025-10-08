@@ -110,7 +110,7 @@ def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
 def _metadata(type_info: TypeMetadata) -> Metadata:
     match type_info:
         case ArrayT(length=None):
-            return DynamicSize(1)
+            return DynamicSize(1)  # 1 is a placeholder, the actual size is inferred from the slice data
         case ArrayT(length=int() as length):
             return StaticSize(length)
         case _:
