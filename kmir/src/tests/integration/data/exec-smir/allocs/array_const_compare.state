@@ -59,7 +59,7 @@
     allocId ( 3 ) |-> Range ( ListItem ( Integer ( 100 , 16 , false ) )
     ListItem ( Integer ( 200 , 16 , false ) )
     ListItem ( Integer ( 300 , 16 , false ) ) )
-    allocId ( 4 ) |-> UnableToDecodeValue ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 4 ) |-> UnableToDecodeValue ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoVoidType )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
