@@ -1765,9 +1765,13 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 
 
 #### Pointer Artithmetic
-Currently only supporting a trivial case where `binOpOffset` applies an offset of `0`, returning the same pointer.
+Addding an offset is currently restricted to unsigned values of an length, this may be too restrictive TODO Check.
+A pointer is offset by adding the magnitude of the `Integer` provided, as along as it is within the bounds of the pointer.
+It is valid to offset to the end of the pointer, however I believe it in not valid to read from there TODO: Check.
+A trivial case where `binOpOffset` applies an offset of `0` is added with higher priority as it is returning the same pointer.
 
 ```k
+  // Trivial case when adding 0 - valid for any pointer
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA ),
@@ -1775,6 +1779,30 @@ Currently only supporting a trivial case where `binOpOffset` applies an offset o
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
+   [preserves-definedness, priority(40)]
+
+  // For pointers to slices/ranges with dynamicSize metadata
+  rule #applyBinOp(
+          binOpOffset,
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(dynamicSize(SLICE_LENGTH), CURRENT_OFFSET) ),
+          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          _CHECKED)
+    =>
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(dynamicSize(SLICE_LENGTH), CURRENT_OFFSET +Int OFFSET_VAL) )
+    requires OFFSET_VAL >=Int 0
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int SLICE_LENGTH
+   [preserves-definedness]
+
+  // For pointers to arrays with staticSize metadata
+  rule #applyBinOp(
+          binOpOffset,
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(staticSize(ARRAY_LENGTH), CURRENT_OFFSET) ),
+          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          _CHECKED)
+    =>
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(staticSize(ARRAY_LENGTH), CURRENT_OFFSET +Int OFFSET_VAL) )
+    requires OFFSET_VAL >=Int 0
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ARRAY_LENGTH
    [preserves-definedness]
 ```
 
