@@ -148,11 +148,11 @@ class KMIR(KProve, KRun, KParse):
     def _make_memory_map(self, smir_info: SMIRInfo, types: KInner) -> KInner:
         done: list[tuple[KInner, KInner]] = []
         for raw_alloc in smir_info._smir['allocs']:
-            processed = self._process_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
-            done.append(processed)
+            decoded = self._decode_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
+            done.append(decoded)
         return map_of(dict(done))
 
-    def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded:
+    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded:
         from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
 
         alloc_id = raw_alloc['alloc_id']
