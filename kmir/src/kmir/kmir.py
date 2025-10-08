@@ -146,28 +146,15 @@ class KMIR(KProve, KRun, KParse):
         return (subst.apply(config), constraints)
 
     def _make_memory_term(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        done, rest = self._process_allocs(smir_info)
-        return KApply('decodeAllocsAux', done, rest, types)
+        done = self._process_allocs(smir_info)
+        return done
 
-    def _process_allocs(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
-        def global_allocs(allocs: list[KInner]) -> KInner:
-            from pyk.kast.inner import build_cons
-
-            return build_cons(
-                unit=KApply('GlobalAllocs::empty'),
-                label='GlobalAllocs::append',
-                terms=allocs,
-            )
-
+    def _process_allocs(self, smir_info: SMIRInfo) -> KInner:
         done: list[tuple[KInner, KInner]] = []
-        rest: list[KInner] = []
-
         for raw_alloc in smir_info._smir['allocs']:
             processed = self._process_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
             done.append(processed)
-
-        _LOGGER.info(f'Allocations processed: {len(done)} decoded, {len(rest)} undecoded')
-        return map_of(dict(done)), global_allocs(rest)
+        return map_of(dict(done))
 
     def _process_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded:
         from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
