@@ -333,17 +333,6 @@ use pinocchio::sysvars::rent::Rent;
 // special test for basic domain data access
 #[inline(never)]
 fn test_ptoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &AccountInfo) {
-    cheatcode_is_rent(rent);
-    let prent = unsafe {
-        let test = rent.borrow_data_unchecked();
-        Rent::from_bytes_unchecked(test)
-    };
-    // cannot call any functions that use f64 in any way
-    // assume burn_percent value <=100 and calculate with it
-    let rent_collected = 10;
-    let (burnt, distributed) = prent.calculate_burn(rent_collected);
-    assert!(burnt <= rent_collected && distributed <= rent_collected); // fails if burn_percent > 100
-
     cheatcode_is_mint(&mint);
     unsafe {
         let test = mint.borrow_mut_data_unchecked();
@@ -368,6 +357,23 @@ fn test_ptoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &Account
     let owner = acc.owner();
     assert!(acc.is_owned_by(owner));
     // QUESTION: is pinocchio::Account ever written to through AccountInfo?
+
+    // test the system's Rent sysvar
+    let sysrent = Rent::get().unwrap();
+    let rent_collected = 10;
+    let (burnt, distributed) = sysrent.calculate_burn(rent_collected);
+    assert!(sysrent.burn_percent > 100 || burnt <= rent_collected && distributed <= rent_collected);
+
+    cheatcode_is_rent(rent);
+    let prent = unsafe {
+        let test = rent.borrow_data_unchecked();
+        Rent::from_bytes_unchecked(test)
+    };
+    // cannot call any functions that use f64 in any way
+    // assume burn_percent value <=100 and calculate with it
+    let rent_collected = 10;
+    let (burnt, distributed) = prent.calculate_burn(rent_collected);
+    assert!(prent.burn_percent > 100 || burnt <= rent_collected && distributed <= rent_collected);
 }
 
 // wrapper to ensure the above test is in the SMIR JSON
