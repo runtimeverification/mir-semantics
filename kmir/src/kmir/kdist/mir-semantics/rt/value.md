@@ -68,11 +68,11 @@ Other types without metadata use `noMetadata`.
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
 ```
 
-A pointer in Rust carries the same metadata.
+A pointer in Rust carries the same metadata. Pointers can be offset with `BinOpOffset` we track the offset as an integer.
 
 
 ```k
-  syntax PtrEmulation ::= ptrEmulation ( Metadata ) [symbol(PtrEmulation)]
+  syntax PtrEmulation ::= ptrEmulation ( Metadata , Int ) [symbol(PtrEmulation)]
 ```
 
 ## Local variables
