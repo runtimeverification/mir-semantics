@@ -71,14 +71,14 @@ class Allocation:
 
 @dataclass
 class ProvenanceMap:
-    ptrs: list[ProvenanceItem]
+    ptrs: list[ProvenanceEntry]
 
     @staticmethod
     def from_dict(dct: dict[str, Any]) -> ProvenanceMap:
         return ProvenanceMap(
             ptrs=[
-                ProvenanceItem(
-                    size=int(size),
+                ProvenanceEntry(
+                    offset=int(size),
                     prov=AllocId(prov),
                 )
                 for size, prov in dct['ptrs']
@@ -86,6 +86,6 @@ class ProvenanceMap:
         )
 
 
-class ProvenanceItem(NamedTuple):
-    size: int
+class ProvenanceEntry(NamedTuple):
+    offset: int
     prov: AllocId
