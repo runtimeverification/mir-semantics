@@ -200,12 +200,6 @@ class KMIR(KProve, KRun, KParse):
         alloc_id_term = KApply('allocId', intToken(alloc_id))
         return Decoded(alloc_id=alloc_id_term, value=value.to_kast())
 
-    def _parse_alloc(self, raw_alloc: Any) -> KInner:
-        parse_res = self.parser.parse_mir_json(raw_alloc, 'GlobalAlloc')
-        assert parse_res is not None
-        res, _ = parse_res
-        return res
-
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
         for ty, body in self.functions(smir_info).items():
