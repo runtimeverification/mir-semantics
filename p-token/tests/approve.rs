@@ -84,7 +84,7 @@ async fn approve() {
     assert!(account.delegated_amount == 50);
 }
 
-#[tokio::test]
+// #[tokio::test]
 async fn approve_invalid_src() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()

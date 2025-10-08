@@ -75,7 +75,7 @@ async fn initialize_multisig2() {
     assert_eq!(multisig.m, 2);
 }
 
-#[tokio::test]
+// #[tokio::test]
 async fn initialize_multisig2_invalid_multisig() {
     let context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()

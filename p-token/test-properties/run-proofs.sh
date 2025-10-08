@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# Run all start symbols given as arguments (or read them from tests.md
+# Run all start symbols given as arguments (or read them from proofs.md
 # table if -a given) with given run options (-o) and timeout (-t).
 # Options and defaults:
-#   -t NUM   : timeout in seconds (default 1200)
-#   -o STRING: prove-rs options. Default "--max-iterations 30 --max-depth 200 "
-#   -a       : run all start symbols from table in `tests.md` (1st column)
+#   -t NUM   : timeout in seconds (default 7200)
+#   -o STRING: prove-rs options. Default "--max-iterations 100 --max-depth 500 "
+#   -a       : run all start symbols from table in `proofs.md` (1st column)
 #   -c       : continue existing proofs instead of reloading (which is default)
 #
 # Always runs verbosely, always uses artefacts/proof
@@ -13,10 +13,10 @@
 #
 #######################################################################
 
-ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' tests.md)
+ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
-TIMEOUT=1200
-PROVE_OPTS="--max-iterations 30 --max-depth 200"
+TIMEOUT=7200
+PROVE_OPTS="--max-iterations 100 --max-depth 500"
 RELOAD_OPT="--reload"
 
 while getopts ":t:o:ac" opt; do
