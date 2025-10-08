@@ -35,9 +35,9 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map )                  [function, total, symbol(decodeValue)]
-                      | UnableToDecodeValue( Bytes , TypeInfo )                  [symbol(Evaluation::UnableToDecodeValue)]
-                      | UnableToDecodeAlloc( Bytes , Ty , ProvenanceMapEntries ) [symbol(Evaluation::UnableToDecodeAlloc)]
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo , Map ) [function, total, symbol(decodeValue)]
+                      | UnableToDecode  ( Bytes , TypeInfo )    [symbol(Evaluation::UnableToDecode)]
+                      | UnableToDecodePy ( msg: String )        [symbol(Evaluation::UnableToDecodePy)]
 
   // Boolean: should be one byte with value one or zero
   rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool), _TYPEMAP) => BoolVal(false)
@@ -81,7 +81,7 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst), TYPEMAP)
 All unimplemented cases will become thunks by way of this default rule:
 
 ```k
-  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecodeValue(BYTES, TYPEINFO) [owise]
+  rule #decodeValue(BYTES, TYPEINFO, _TYPEMAP) => UnableToDecode(BYTES, TYPEINFO) [owise]
 ```
 
 ## Helper function to determine the expected byte length for a type

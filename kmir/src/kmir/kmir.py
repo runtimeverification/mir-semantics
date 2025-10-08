@@ -151,17 +151,15 @@ class KMIR(KProve, KRun, KParse):
         )
 
     def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
-        from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
+        from .decoding import UnableToDecodeValue, decode_alloc_or_unable
 
         alloc_id = raw_alloc['alloc_id']
         alloc_info = smir_info.allocs[alloc_id]
         value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
 
         match value:
-            case UnableToDecodeValue(data, type_info):
-                _LOGGER.debug(f'Unable to decode value: {data!r}; of type: {type_info}')
-            case UnableToDecodeAlloc():
-                _LOGGER.debug(f'Unable to decode allocation: {alloc_info}')
+            case UnableToDecodeValue(msg):
+                _LOGGER.debug(f'Decoding failed: {msg}')
             case _:
                 pass
 

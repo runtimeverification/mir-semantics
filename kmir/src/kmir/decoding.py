@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply
-from pyk.kast.prelude.bytes import bytesToken
-from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
 from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
 from .ty import ArrayT, Bool, EnumT, Int, IntTy, PtrT, RefT, Uint
@@ -32,28 +31,12 @@ if TYPE_CHECKING:
 
 @dataclass
 class UnableToDecodeValue(Value):
-    data: bytes
-    type_info: TypeMetadata
+    msg: str
 
     def to_kast(self) -> KInner:
         return KApply(
-            'Evaluation::UnableToDecodeValue',
-            bytesToken(self.data),
-            KApply('TypeInfo::VoidType'),  # TODO: TypeInfo -> KAST transformation
-        )
-
-
-@dataclass
-class UnableToDecodeAlloc(Value):
-    data: bytes
-    ty: Ty
-
-    def to_kast(self) -> KInner:
-        return KApply(
-            'Evaluation::UnableToDecodeAlloc',
-            bytesToken(self.data),
-            KApply('ty', intToken(self.ty)),
-            KApply('ProvenanceMapEntries::empty'),  # TODO
+            'Evaluation::UnableToDecodePy',
+            stringToken(self.msg),
         )
 
 
@@ -105,7 +88,7 @@ def _decode_memory_alloc_or_unable(
                         metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
                     )
 
-    return UnableToDecodeAlloc(data=data, ty=ty)
+    return UnableToDecodeValue(f'Unable to decode alloc: {data!r}, of type: {type_info}')
 
 
 def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
@@ -130,7 +113,7 @@ def decode_value_or_unable(data: bytes, type_info: TypeMetadata, types: Mapping[
     try:
         return decode_value(data=data, type_info=type_info, types=types)
     except ValueError:
-        return UnableToDecodeValue(data=data, type_info=type_info)
+        return UnableToDecodeValue(f'Unable to decode value: {data!r}, of type: {type_info}')
 
 
 def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:
