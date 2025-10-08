@@ -14,14 +14,12 @@ from raw bytes to typed `Value` objects according to Rust's memory layout rules.
 requires "../ty.md"
 requires "value.md"
 requires "numbers.md"
-requires "../alloc.md"
 
 module RT-DECODING
   imports BOOL
   imports MAP
 
   imports TYPES
-  imports ALLOC
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
   imports RT-TYPES
@@ -281,100 +279,6 @@ by the element size, then uses the same element-by-element decoding approach as 
     requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO, TYPEMAP) ==Int 0  // element size divides cleanly
      andBool 0 <Int #elemSize(ELEMTYPEINFO, TYPEMAP)
     [preserves-definedness]
-```
-
-# Decoding the allocated constants into a memory map
-
-When the program starts, all allocated constants are stored in the `<memory>` cell in the configuration,
-as a mapping of `AllocId -> Value`, decoding the allocations to values using the above functions.
-
-Besides actual byte allocations, we often find allocations with provenance,
-as slim or fat pointers pointing to other static allocations.
-One example of this is allocated error strings, whose length is stored in a fat pointer that is itself an allocated constant.
-
-
-The basic decoding function is very similar to `#decodeConstant` but returns its result as a singleton `Map` instead of a mere value.
-
-```k
-  syntax Map ::= #decodeAlloc ( AllocId , Ty , Allocation , Map ) [function] // returns AllocId |-> Value
-  // ----------------------------------------------------------
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(.ProvenanceMapEntries), _ALIGN, _MUT), TYPEMAP)
-      => ID |-> #decodeValue(BYTES, {TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-```
-
-If there are entries in the provenance map, then the decoder must create references to other allocations.
-Each entry replaces a pointer starting at a certain offset in the bytes.
-The pointee of the respective pointer is determined by type _layout_ of the type to decode.
-
-Simple cases of offset 0 and reference types can be implemented here without consideration of layout.
-The reference metadata is either determined statically by type, or filled in from the bytes for fat pointers.
-
-```k
-  // if length(BYTES) ==Int 16 decode BYTES[9..16] as dynamic size.
-  rule #decodeAlloc(
-          ID,
-          TY,
-          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
-          TYPEMAP
-        )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)))
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
-     andBool lengthBytes(BYTES) ==Int 16 // sufficient data to decode dynamic size (assumes usize == u64)
-     andBool dynamicSize(1) ==K #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP) // expect fat pointer
-    [preserves-definedness] // valid type lookup ensured
-
-  // Otherwise query type information for static size and insert it.
-  rule #decodeAlloc(
-          ID,
-          TY,
-          allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
-          TYPEMAP
-        )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
-    requires TY in_keys(TYPEMAP)
-     andBool isTypeInfo(TYPEMAP[TY])
-     andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
-     andBool lengthBytes(BYTES) ==Int 8 // single slim pointer (assumes usize == u64)
-    [priority(60), preserves-definedness] // valid type lookup ensured
-```
-
-Allocations with more than one provenance map entry or witn non-reference types remain undecoded.
-
-```k
-  rule #decodeAlloc(ID, TY, allocation(BYTES, provenanceMap(ENTRIES), _ALIGN, _MUT), _TYPEMAP)
-      => ID |-> UnableToDecodeAlloc(BYTES, TY, ENTRIES)
-    [owise]
-```
-
-The entire set of `GlobalAllocs` is decoded by iterating over the list.
-It is assumed that the given `Ty -> TypeInfo` map contains all types required.
-
-```k
-  syntax Map ::= #decodeAllocs    (       GlobalAllocs , Map ) [function, total, symbol("decodeAllocs")   ] // AllocId |-> Thing
-               | #decodeAllocsAux ( Map , GlobalAllocs , Map ) [function, total, symbol("decodeAllocsAux")] // accumulating version
-  // -----------------------------------------------------------------------------------------------
-  rule #decodeAllocs(ALLOCS, TYPEMAP) => #decodeAllocsAux(.Map, ALLOCS, TYPEMAP)
-
-  rule #decodeAllocsAux(ACCUM, .GlobalAllocs, _TYPEMAP) => ACCUM
-  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, Memory(ALLOC)) ALLOCS, TYPEMAP)
-      => #decodeAllocsAux(ACCUM #decodeAlloc(ID, TY, ALLOC, TYPEMAP), ALLOCS, TYPEMAP)
-    requires TY in_keys(TYPEMAP)
-    [preserves-definedness]
-```
-
-If the type of an alloc cannot be found, or for non-`Memory` allocs, the raw data is stored in a super-sort of `Value`.
-This ensures that the function is total (anyway lookups require constraining the sort).
-
-```k
-  syntax AllocData ::= Value | AllocData ( Ty , GlobalAllocKind )
-
-  rule #decodeAllocsAux(ACCUM, globalAllocEntry(ID, TY, OTHER) ALLOCS, TYPEMAP)
-      => #decodeAllocsAux(ACCUM ID |-> AllocData(TY, OTHER), ALLOCS, TYPEMAP)
-    [owise]
 ```
 
 ```k
