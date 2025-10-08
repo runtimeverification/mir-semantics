@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from functools import cached_property
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
@@ -40,11 +40,6 @@ if TYPE_CHECKING:
     from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
-
-
-class Decoded(NamedTuple):
-    alloc_id: KInner
-    value: KInner
 
 
 class KMIR(KProve, KRun, KParse):
@@ -155,7 +150,7 @@ class KMIR(KProve, KRun, KParse):
             for raw_alloc in raw_allocs
         )
 
-    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> Decoded:
+    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
         from .decoding import UnableToDecodeAlloc, UnableToDecodeValue, decode_alloc_or_unable
 
         alloc_id = raw_alloc['alloc_id']
@@ -171,7 +166,7 @@ class KMIR(KProve, KRun, KParse):
                 pass
 
         alloc_id_term = KApply('allocId', intToken(alloc_id))
-        return Decoded(alloc_id=alloc_id_term, value=value.to_kast())
+        return alloc_id_term, value.to_kast()
 
     def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
         parsed_terms: dict[KInner, KInner] = {}
