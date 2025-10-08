@@ -126,7 +126,7 @@ class KMIR(KProve, KRun, KParse):
             'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': self._make_memory_term(smir_info, types),
+            'MEMORY_CELL': self._make_memory_map(smir_info, types),
             'FUNCTIONS_CELL': self._make_function_map(smir_info),
             'TYPES_CELL': types,
         }
@@ -145,7 +145,7 @@ class KMIR(KProve, KRun, KParse):
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
 
-    def _make_memory_term(self, smir_info: SMIRInfo, types: KInner) -> KInner:
+    def _make_memory_map(self, smir_info: SMIRInfo, types: KInner) -> KInner:
         done = self._process_allocs(smir_info)
         return done
 
