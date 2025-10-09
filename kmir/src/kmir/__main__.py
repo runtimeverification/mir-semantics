@@ -16,7 +16,7 @@ from pyk.proof.tui import APRProofViewer
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
-from .kmir import KMIR, DecodeMode, KMIRAPRNodePrinter
+from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
     GenSpecOpts,
@@ -352,13 +352,6 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    prove_rs_parser.add_argument(
-        '--decode-mode',
-        type=DecodeMode,
-        metavar='DECODE_MODE',
-        default=DecodeMode.NONE,
-        help='Allocation decoding mode: NONE (default), PARTIAL, or FULL',
-    )
 
     link_parser = command_parser.add_parser(
         'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
@@ -435,7 +428,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
-                decode_mode=ns.decode_mode,
             )
         case 'link':
             return LinkOpts(

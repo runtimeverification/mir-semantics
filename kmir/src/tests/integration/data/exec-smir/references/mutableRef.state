@@ -45,8 +45,8 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 2 ) |-> UnableToDecodeValue ( b"assertion failed: x == 32" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 3 ) |-> UnableToDecodeValue ( b"assertion failed: x == 22" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 2 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: x == 32', of type: Str(): Unsupported type: Str()" )
+    allocId ( 3 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: x == 22', of type: Str(): Unsupported type: Str()" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

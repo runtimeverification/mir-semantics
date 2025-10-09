@@ -79,7 +79,7 @@ class ProvenanceMap:
             ptrs=[
                 ProvenanceEntry(
                     offset=int(size),
-                    prov=AllocId(prov),
+                    alloc_id=AllocId(prov),
                 )
                 for size, prov in dct['ptrs']
             ],
@@ -88,4 +88,4 @@ class ProvenanceMap:
 
 class ProvenanceEntry(NamedTuple):
     offset: int
-    prov: AllocId
+    alloc_id: AllocId
