@@ -87,10 +87,10 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 4 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: arr.len() >= 4', of type: Str(): Unsupported type: Str()" )
-    allocId ( 5 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: arr4.len() == 4', of type: Str(): Unsupported type: Str()" )
-    allocId ( 6 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: l4 == 4', of type: Str(): Unsupported type: Str()" )
-    allocId ( 7 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: arr9.len() == 9', of type: Str(): Unsupported type: Str()" )
+    allocId ( 4 ) |-> StringVal ( "assertion failed: arr.len() >= 4" )
+    allocId ( 5 ) |-> StringVal ( "assertion failed: arr4.len() == 4" )
+    allocId ( 6 ) |-> StringVal ( "assertion failed: l4 == 4" )
+    allocId ( 7 ) |-> StringVal ( "assertion failed: arr9.len() == 9" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

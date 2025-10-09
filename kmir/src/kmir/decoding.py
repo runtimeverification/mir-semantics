@@ -7,7 +7,7 @@ from pyk.kast.inner import KApply
 from pyk.kast.prelude.string import stringToken
 
 from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
-from .ty import ArrayT, Bool, EnumT, Int, IntTy, PtrT, RefT, Uint
+from .ty import ArrayT, Bool, EnumT, Int, IntTy, PtrT, RefT, Str, Uint
 from .value import (
     NO_METADATA,
     AggregateValue,
@@ -17,6 +17,7 @@ from .value import (
     IntValue,
     RangeValue,
     StaticSize,
+    StrValue,
     Value,
 )
 
@@ -127,6 +128,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
     match type_info:
         case Bool():
             return _decode_bool(data)
+        case Str():
+            return _decode_str(data)
         case Uint(int_ty) | Int(int_ty):
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
@@ -145,6 +148,10 @@ def _decode_bool(data: bytes) -> Value:
             return BoolValue(True)
         case _:
             raise ValueError(f'Cannot decode as Bool: {data!r}')
+
+
+def _decode_str(data: bytes) -> Value:
+    return StrValue(data.decode('utf-8'))
 
 
 def _decode_int(data: bytes, int_ty: IntTy | UintTy) -> Value:

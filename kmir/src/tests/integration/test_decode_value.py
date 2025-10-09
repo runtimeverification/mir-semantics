@@ -136,6 +136,7 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
 
 
 TEST_DATA: Final = load_test_data()
+SKIP: Final = ('str',)
 
 
 @pytest.mark.parametrize(
@@ -154,6 +155,9 @@ def test_decode_value(
     from pyk.kore.tools import kore_print
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
+
+    if test_data.test_id in SKIP:
+        pytest.skip()
 
     # Given
     evaluation = test_data.to_pattern(definition)

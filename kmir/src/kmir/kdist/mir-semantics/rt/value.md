@@ -29,6 +29,8 @@ The special `Moved` value represents values that have been used and should not b
                    // value, bit-width, signedness   for un/signed int
                  | BoolVal( Bool )                        [symbol(Value::BoolVal)]
                    // boolean
+                 | StringVal( String )                    [symbol(Value::StringVal)]
+                   // UTF-8 encoded Unicode string
                  | Aggregate( VariantIdx , List )         [symbol(Value::Aggregate)]
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
