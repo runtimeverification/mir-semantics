@@ -76,14 +76,14 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 0 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'', of type: ArrayT(element_type=113, length=0)" )
+    allocId ( 0 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'', of type: ArrayT(element_type=113, length=0): Method nbytes() is unsupported for type: StructT(name=\"core::fmt::rt::Argument<'_>\", adt_def=51, fields=[114])" )
     allocId ( 1 ) |-> UnableToDecodePy (... msg: "Unable to decode alloc: b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', of type: EnumT(name=\"Thing<'_>\", adt_def=25, discriminants=[0], fields=[[37, 45]])" )
     allocId ( 2 ) |-> UnableToDecodePy (... msg: "Unable to decode alloc: b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', of type: EnumT(name=\"Thing<'_>\", adt_def=25, discriminants=[0], fields=[[37, 45]])" )
     allocId ( 3 ) |-> UnableToDecodePy (... msg: "Unable to decode alloc: b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', of type: StructT(name=\"Another<'_>\", adt_def=44, fields=[28, 42])" )
     allocId ( 4 ) |-> UnableToDecodePy (... msg: "Unable to decode alloc: b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', of type: StructT(name=\"Another<'_>\", adt_def=44, fields=[28, 42])" )
     allocId ( 5 ) |-> UnableToDecodePy (... msg: "Unable to decode alloc: b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x16\\x00\\x00\\x00\\x00\\x00\\x00\\x00', of type: ArrayT(element_type=96, length=1)" )
-    allocId ( 8 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'Thing', of type: Str()" )
-    allocId ( 9 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'Another', of type: Str()" )
+    allocId ( 8 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'Thing', of type: Str(): Unsupported type: Str()" )
+    allocId ( 9 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'Another', of type: Str(): Unsupported type: Str()" )
     allocId ( 10 ) |-> UnableToDecodePy (... msg: "Unknown type: 0" )
     allocId ( 11 ) |-> UnableToDecodePy (... msg: "Unknown type: 0" )
     allocId ( 12 ) |-> UnableToDecodePy (... msg: "Unknown type: 0" )
@@ -92,7 +92,7 @@
     allocId ( 15 ) |-> Integer ( 2 , 32 , false )
     allocId ( 16 ) |-> Integer ( 1 , 32 , true )
     allocId ( 17 ) |-> Integer ( 2 , 32 , false )
-    allocId ( 18 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'All assertions passed\\n', of type: Str()" )
+    allocId ( 18 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'All assertions passed\\n', of type: Str(): Unsupported type: Str()" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

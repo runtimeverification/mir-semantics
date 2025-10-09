@@ -41,7 +41,7 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 1 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: result', of type: Str()" )
+    allocId ( 1 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'assertion failed: result', of type: Str(): Unsupported type: Str()" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

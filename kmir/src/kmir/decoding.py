@@ -119,8 +119,8 @@ def _metadata(type_info: TypeMetadata) -> Metadata:
 def decode_value_or_unable(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:
     try:
         return decode_value(data=data, type_info=type_info, types=types)
-    except ValueError:
-        return UnableToDecodeValue(f'Unable to decode value: {data!r}, of type: {type_info}')
+    except ValueError as err:
+        return UnableToDecodeValue(f'Unable to decode value: {data!r}, of type: {type_info}: {err}')
 
 
 def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:

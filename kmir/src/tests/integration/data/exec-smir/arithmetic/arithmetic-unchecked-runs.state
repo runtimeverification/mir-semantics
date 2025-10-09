@@ -55,8 +55,8 @@
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
-    allocId ( 2 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'unsafe precondition(s) violated: u8::unchecked_add cannot overflow', of type: Str()" )
-    allocId ( 3 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'unsafe precondition(s) violated: i8::unchecked_sub cannot overflow', of type: Str()" )
+    allocId ( 2 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'unsafe precondition(s) violated: u8::unchecked_add cannot overflow', of type: Str(): Unsupported type: Str()" )
+    allocId ( 3 ) |-> UnableToDecodePy (... msg: "Unable to decode value: b'unsafe precondition(s) violated: i8::unchecked_sub cannot overflow', of type: Str(): Unsupported type: Str()" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
