@@ -65,7 +65,10 @@ def _decode_memory_alloc_or_unable(
     ty: Ty,
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
-    type_info = types[ty]
+    try:
+        type_info = types[ty]
+    except KeyError:
+        return UnableToDecodeValue(f'Unknown type: {ty}')
 
     match ptrs:
         case []:
@@ -73,7 +76,11 @@ def _decode_memory_alloc_or_unable(
 
         case [ProvenanceEntry(0, alloc_id)]:
             if (pointee_ty := _pointee_ty(type_info)) is not None:  # ensures this is a reference type
-                pointee_type_info = types[pointee_ty]
+                try:
+                    pointee_type_info = types[pointee_ty]
+                except KeyError:
+                    return UnableToDecodeValue(f'Unknown pointee type: {pointee_ty}')
+
                 metadata = _metadata(pointee_type_info)
 
                 if len(data) == 8:
