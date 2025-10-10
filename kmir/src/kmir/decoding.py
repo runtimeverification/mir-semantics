@@ -134,8 +134,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
             return _decode_array(data, elem_ty, length, types)
-        case EnumT(discriminants=discriminants, fields=fields):
-            return _decode_enum(data, discriminants, fields)
+        case EnumT(discriminants=discriminants, fields=fields, layout=layout):
+            return _decode_enum(data, discriminants, fields, layout)
         case _:
             raise ValueError(f'Unsupported type: {type_info}')
 
@@ -198,10 +198,39 @@ def _decode_enum(
     data: bytes,
     discriminants: list[int],
     fields: list[list[Ty]],
+    layout: LayoutShape | None,
+) -> Value:
+    if not layout:
+        raise ValueError('Enum layout not provided')
+
+    variants = layout.variants
+
+    match layout.fields:
+        case PrimitiveFields():
+            raise ValueError('TODO: support decoding for FieldsShape::Primitive')
+        case ArbitraryFields(offsets=_offsets):
+            offsets = [offset.num_bits for offset in _offsets]
+            return _decode_enum_arbitrary(
+                data=data,
+                discriminants=discriminants,
+                fields=fields,
+                offsets=offsets,
+                variants=variants,
+            )
+        case _:
+            raise AssertionError('Undhandle case')
+
+
+def _decode_enum_arbitrary(
+    data: bytes,
+    discriminants: list[int],
+    fields: list[list[Ty]],
+    offsets: list[int],
+    variants: VariantsShape,
 ) -> Value:
     # The only supported case for now is when there are no fields
     if any(tys for tys in fields):
-        raise ValueError('TODO - implement this case')
+        raise ValueError(f'TODO - implement this case')
 
     tag = int.from_bytes(data, byteorder='little', signed=False)
     try:
