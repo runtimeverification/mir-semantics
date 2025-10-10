@@ -68,7 +68,7 @@ This truncation function is instrumental in the implementation of Integer arithm
 
 ```k
   // helper function to truncate int values
-  syntax Int ::= truncate(Int, Int, Signedness) [function, total]
+  syntax Int ::= truncate(Int, Int, Signedness) [function, total, smtlib(smt_truncate)]
   // -------------------------------------------------------------
   rule truncate(_, WIDTH, _) => 0
     requires WIDTH <=Int 0

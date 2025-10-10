@@ -81,14 +81,16 @@ Therefore, its value range should be simplified for symbolic input asserted to b
 
 ```k
   rule truncate(VAL, WIDTH, Unsigned) => VAL
-    requires VAL <Int (1 <<Int WIDTH)
+    requires 0 <Int WIDTH
+     andBool VAL <Int (1 <<Int WIDTH)
      andBool 0 <=Int VAL
-     [simplification]
+     [simplification, preserves-definedness] // , smt-lemma], but `Unsigned` needs to be smtlib
 
   rule truncate(VAL, WIDTH, Signed) => VAL
-    requires VAL <Int (1 <<Int (WIDTH -Int 1))
+    requires 0 <Int WIDTH
+     andBool VAL <Int (1 <<Int (WIDTH -Int 1))
      andBool 0 -Int (1 <<Int (WIDTH -Int 1)) <=Int VAL
-     [simplification]
+     [simplification, preserves-definedness] // , smt-lemma], but `Signed` needs to be smtlib
 ```
 
 However, `truncate` gets evaluated and is therefore not present any more for this simplification.
@@ -97,17 +99,6 @@ The following simplification rules operate on the expression created by evaluati
 power of two but the semantics will always operate with these particular ones.
 
 ```k
-  rule VAL &Int MASK => VAL 
-    requires 0   <=Int VAL 
-     andBool VAL <=Int MASK
-     andBool ( MASK ==Int bitmask8
-        orBool MASK ==Int bitmask16
-        orBool MASK ==Int bitmask32
-        orBool MASK ==Int bitmask64
-        orBool MASK ==Int bitmask128
-     )
-    [simplification, preserves-definedness]
-
   syntax Int ::= "bitmask8"    [macro]
                | "bitmask16"   [macro]
                | "bitmask32"   [macro]
@@ -120,6 +111,11 @@ power of two but the semantics will always operate with these particular ones.
   rule bitmask64  => ( 1 <<Int 64 ) -Int 1
   rule bitmask128 => ( 1 <<Int 128) -Int 1
 
+  rule VAL &Int bitmask8   => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask8   [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int bitmask16  => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask16  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int bitmask32  => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask32  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int bitmask64  => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask64  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
 

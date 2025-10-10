@@ -326,7 +326,7 @@ will be `129`.
 
   rule #switchMatch(0, BoolVal(B)           ) => notBool B
   rule #switchMatch(1, BoolVal(B)           ) => B
-  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
+  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned)
 ```
 
 `Return` simply returns from a function call, using the information
