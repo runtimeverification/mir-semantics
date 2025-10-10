@@ -70,42 +70,42 @@ class PrimitiveT(TypeMetadata, ABC):
     def from_raw(data: Any) -> PrimitiveT:
         match data['PrimitiveType']:
             case 'Bool':
-                return Bool()
+                return BoolT()
             case 'Char':
-                return Char()
+                return CharT()
             case 'Str':
-                return Str()
+                return StrT()
             case {'Uint': uint_ty}:
-                return Uint(UintTy[uint_ty])
+                return UintT(UintTy[uint_ty])
             case {'Int': int_ty}:
-                return Int(IntTy[int_ty])
+                return IntT(IntTy[int_ty])
             case {'Float': float_ty}:
-                return Float(FloatTy[float_ty])
+                return FloatT(FloatTy[float_ty])
             case _:
-                raise _cannot_parse_as('PrimitiveType', data)
+                raise _cannot_parse_as('PrimitiveT', data)
 
 
 @dataclass
-class Bool(PrimitiveT):
+class BoolT(PrimitiveT):
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return 1
 
 
 @dataclass
-class Char(PrimitiveT): ...
+class CharT(PrimitiveT): ...
 
 
 @dataclass
-class Str(PrimitiveT): ...
+class StrT(PrimitiveT): ...
 
 
 @dataclass
-class Float(PrimitiveT):
+class FloatT(PrimitiveT):
     info: FloatTy
 
 
 @dataclass
-class Int(PrimitiveT):
+class IntT(PrimitiveT):
     info: IntTy
 
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
@@ -113,7 +113,7 @@ class Int(PrimitiveT):
 
 
 @dataclass
-class Uint(PrimitiveT):
+class UintT(PrimitiveT):
     info: UintTy
 
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
