@@ -29,6 +29,8 @@ The special `Moved` value represents values that have been used and should not b
                    // value, bit-width, signedness   for un/signed int
                  | BoolVal( Bool )                        [symbol(Value::BoolVal)]
                    // boolean
+                 | StringVal( String )                    [symbol(Value::StringVal)]
+                   // UTF-8 encoded Unicode string
                  | Aggregate( VariantIdx , List )         [symbol(Value::Aggregate)]
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
@@ -43,6 +45,7 @@ The special `Moved` value represents values that have been used and should not b
                    // pointer to a local TypedValue (on the stack)
                    // first 3 fields are the same as in Reference, plus pointee metadata
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
+                                                          [symbol(Value::AllocRef)]
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
                  | "Moved"
                    // The value has been used and is gone now
