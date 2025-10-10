@@ -1,55 +1,44 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply
-from pyk.kast.prelude.bytes import bytesToken
-from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
-from .alloc import Allocation, AllocInfo, Memory, ProvenanceMap
-from .ty import ArrayT, Bool, EnumT, Int, IntTy, Uint
-from .value import AggregateValue, BoolValue, IntValue, RangeValue, Value
+from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
+from .ty import ArrayT, Bool, EnumT, Int, IntTy, PtrT, RefT, Str, Uint
+from .value import (
+    NO_METADATA,
+    AggregateValue,
+    AllocRefValue,
+    BoolValue,
+    DynamicSize,
+    IntValue,
+    RangeValue,
+    StaticSize,
+    StrValue,
+    Value,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from pyk.kast import KInner
 
-    from .alloc import AllocId
     from .ty import Ty, TypeMetadata, UintTy
+    from .value import Metadata
 
 
 @dataclass
 class UnableToDecodeValue(Value):
-    data: bytes
-    type_info: TypeMetadata
+    msg: str
 
     def to_kast(self) -> KInner:
         return KApply(
-            'Evaluation::UnableToDecodeValue',
-            bytesToken(self.data),
-            KApply('TypeInfo::VoidType'),  # TODO: TypeInfo -> KAST transformation
+            'Evaluation::UnableToDecodePy',
+            stringToken(self.msg),
         )
-
-
-@dataclass
-class UnableToDecodeAlloc(Value):
-    data: bytes
-    ty: Ty
-
-    def to_kast(self) -> KInner:
-        return KApply(
-            'Evaluation::UnableToDecodeAlloc',
-            bytesToken(self.data),
-            KApply('ty', intToken(self.ty)),
-            KApply('ProvenanceMapEntries::empty'),  # TODO
-        )
-
-
-class ProvenanceMapEntry(NamedTuple):
-    offset: int
-    alloc_id: AllocId
 
 
 def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadata]) -> Value:
@@ -66,27 +55,81 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             ),
         ):
             data = bytes(n or 0 for n in bytez)
-
-            if not ptrs:  # TODO generalize to lists with at most one entry
-                type_info = types[ty]
-                return decode_value_or_unable(data=data, type_info=type_info, types=types)
-
-            return UnableToDecodeAlloc(data=data, ty=ty)
+            return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
         case _:
             raise AssertionError('Unhandled case')
+
+
+def _decode_memory_alloc_or_unable(
+    data: bytes,
+    ptrs: list[ProvenanceEntry],
+    ty: Ty,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    try:
+        type_info = types[ty]
+    except KeyError:
+        return UnableToDecodeValue(f'Unknown type: {ty}')
+
+    match ptrs:
+        case []:
+            return decode_value_or_unable(data=data, type_info=type_info, types=types)
+
+        case [ProvenanceEntry(0, alloc_id)]:
+            if (pointee_ty := _pointee_ty(type_info)) is not None:  # ensures this is a reference type
+                try:
+                    pointee_type_info = types[pointee_ty]
+                except KeyError:
+                    return UnableToDecodeValue(f'Unknown pointee type: {pointee_ty}')
+
+                metadata = _metadata(pointee_type_info)
+
+                if len(data) == 8:
+                    # single slim pointer (assumes usize == u64)
+                    return AllocRefValue(alloc_id=alloc_id, metadata=metadata)
+
+                if len(data) == 16 and metadata == DynamicSize(1):
+                    # sufficient data to decode dynamic size (assumes usize == u64)
+                    # expect fat pointer
+                    return AllocRefValue(
+                        alloc_id=alloc_id,
+                        metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
+                    )
+
+    return UnableToDecodeValue(f'Unable to decode alloc: {data!r}, of type: {type_info}')
+
+
+def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
+    match type_info:
+        case PtrT(ty) | RefT(ty):
+            return ty
+        case _:
+            return None
+
+
+def _metadata(type_info: TypeMetadata) -> Metadata:
+    match type_info:
+        case ArrayT(length=None):
+            return DynamicSize(1)  # 1 is a placeholder, the actual size is inferred from the slice data
+        case ArrayT(length=int() as length):
+            return StaticSize(length)
+        case _:
+            return NO_METADATA
 
 
 def decode_value_or_unable(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:
     try:
         return decode_value(data=data, type_info=type_info, types=types)
-    except ValueError:
-        return UnableToDecodeValue(data=data, type_info=type_info)
+    except ValueError as err:
+        return UnableToDecodeValue(f'Unable to decode value: {data!r}, of type: {type_info}: {err}')
 
 
 def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMetadata]) -> Value:
     match type_info:
         case Bool():
             return _decode_bool(data)
+        case Str():
+            return _decode_str(data)
         case Uint(int_ty) | Int(int_ty):
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
@@ -105,6 +148,10 @@ def _decode_bool(data: bytes) -> Value:
             return BoolValue(True)
         case _:
             raise ValueError(f'Cannot decode as Bool: {data!r}')
+
+
+def _decode_str(data: bytes) -> Value:
+    return StrValue(data.decode('utf-8'))
 
 
 def _decode_int(data: bytes, int_ty: IntTy | UintTy) -> Value:
