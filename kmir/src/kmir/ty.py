@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass
 from enum import Enum
+from functools import cached_property
 from typing import TYPE_CHECKING, NamedTuple, NewType
 
 if TYPE_CHECKING:
@@ -268,6 +269,12 @@ class MachineSize:
                 return MachineSize(num_bits=num_bits)
             case _:
                 raise _cannot_parse_as('MachineSize', data)
+
+    @cached_property
+    def in_bytes(self) -> int:
+        if self.num_bits % 8 != 0:
+            raise ValueError('Expected an even number of bytes, got: {self.num_bits} bits')
+        return self.num_bits // 8
 
 
 class Scalar(ABC):  # noqa: B024

@@ -7,7 +7,21 @@ from pyk.kast.inner import KApply
 from pyk.kast.prelude.string import stringToken
 
 from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
-from .ty import ArrayT, BoolT, EnumT, IntT, IntTy, PtrT, RefT, StrT, UintT
+from .ty import (
+    ArbitraryFields,
+    ArrayT,
+    BoolT,
+    EnumT,
+    IntT,
+    IntTy,
+    Multiple,
+    PrimitiveFields,
+    PtrT,
+    RefT,
+    Single,
+    StrT,
+    UintT,
+)
 from .value import (
     NO_METADATA,
     AggregateValue,
@@ -26,7 +40,7 @@ if TYPE_CHECKING:
 
     from pyk.kast import KInner
 
-    from .ty import Ty, TypeMetadata, UintTy
+    from .ty import LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy, VariantsShape
     from .value import Metadata
 
 
@@ -134,8 +148,18 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
             return _decode_array(data, elem_ty, length, types)
-        case EnumT(discriminants=discriminants, fields=fields):
-            return _decode_enum(data, discriminants, fields)
+        case EnumT(
+            discriminants=discriminants,
+            fields=fields,
+            layout=layout,
+        ):
+            return _decode_enum(
+                data=data,
+                discriminants=discriminants,
+                fields=fields,
+                layout=layout,
+                types=types,
+            )
         case _:
             raise ValueError(f'Unsupported type: {type_info}')
 
@@ -195,18 +219,127 @@ def _decode_array(
 
 
 def _decode_enum(
+    *,
     data: bytes,
     discriminants: list[int],
     fields: list[list[Ty]],
+    layout: LayoutShape | None,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    if not layout:
+        raise ValueError('Enum layout not provided')
+
+    match layout.fields:
+        case PrimitiveFields():
+            raise ValueError('TODO: support decoding for FieldsShape::Primitive')
+        case ArbitraryFields(offsets=offsets):
+            return _decode_enum_arbitrary(
+                data=data,
+                discriminants=discriminants,
+                fields=fields,
+                layout_offsets=offsets,
+                layout_variants=layout.variants,
+                types=types,
+            )
+        case _:
+            raise AssertionError('Undhandle case')
+
+
+def _decode_enum_arbitrary(
+    *,
+    data: bytes,
+    discriminants: list[int],
+    fields: list[list[Ty]],
+    layout_offsets: list[MachineSize],
+    layout_variants: VariantsShape,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    match layout_variants:
+        case Single(index):
+            return _decode_enum_arbitrary_single(
+                data=data,
+                discriminants=discriminants,
+                fields=fields,
+                layout_offsets=layout_offsets,
+                # ---
+                tag_index=index,
+                # ---
+                types=types,
+            )
+        case Multiple(
+            tag=tag,
+            tag_encoding=tag_encoding,
+            tag_field=tag_field,
+            variants=variants,
+        ):
+            return _decode_enum_arbitrary_multiple(
+                data=data,
+                discriminants=discriminants,
+                fields=fields,
+                layout_offsets=layout_offsets,
+                # ---
+                tag=tag,
+                tag_encoding=tag_encoding,
+                tag_field=tag_field,
+                variant_layouts=variants,
+                # ---
+                types=types,
+            )
+        case _:
+            raise AssertionError('Undhandled case')
+
+
+def _decode_enum_arbitrary_single(
+    *,
+    data: bytes,
+    discriminants: list[int],
+    fields: list[list[Ty]],
+    layout_offsets: list[MachineSize],
+    tag_index: int,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    assert len(fields) == 1, 'Expected a single list of field types for single-variant enum'
+    tys = fields[0]
+
+    assert len(discriminants) == 1, 'Expected a single discriminant for single-variant enum'
+    discriminant = discriminants[0]
+    assert tag_index == discriminant, 'Assumed tag_index to be the same as the discriminant'
+
+    field_values: list[Value] = []
+
+    assert len(tys) == len(layout_offsets), 'Expected as many field offsets as field types'
+    for ty, offset in zip(tys, layout_offsets, strict=True):
+        field_type_info = types[ty]
+        field_nbytes = field_type_info.nbytes(types)
+        field_data = data[offset.in_bytes : offset.in_bytes + field_nbytes]
+        field_value = decode_value(field_data, field_type_info, types)
+        field_values.append(field_value)
+
+    return AggregateValue(0, field_values)
+
+
+def _decode_enum_arbitrary_multiple(
+    *,
+    data: bytes,
+    discriminants: list[int],
+    fields: list[list[Ty]],
+    layout_offsets: list[MachineSize],
+    # ---
+    tag: Scalar,
+    tag_encoding: TagEncoding,
+    tag_field: int,
+    variant_layouts: list[LayoutShape],
+    # ---
+    types: Mapping[Ty, TypeMetadata],
 ) -> Value:
     # The only supported case for now is when there are no fields
     if any(tys for tys in fields):
         raise ValueError('TODO - implement this case')
 
-    tag = int.from_bytes(data, byteorder='little', signed=False)
+    tag_value = int.from_bytes(data, byteorder='little', signed=False)
     try:
-        variant_idx = discriminants.index(tag)
+        variant_idx = discriminants.index(tag_value)
     except ValueError as err:
-        raise ValueError(f'Tag not found: {tag}') from err
+        raise ValueError(f'Tag not found: {tag_value}') from err
 
     return AggregateValue(variant_idx, ())
