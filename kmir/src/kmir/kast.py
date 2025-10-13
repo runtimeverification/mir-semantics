@@ -9,7 +9,7 @@ from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .smir import ArrayT, Bool, EnumT, Int, PtrT, RefT, StructT, TupleT, Uint, UnionT
+from .ty import ArrayT, Bool, EnumT, Int, PtrT, RefT, StructT, TupleT, Uint, UnionT
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

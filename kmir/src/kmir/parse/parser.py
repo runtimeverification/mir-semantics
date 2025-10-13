@@ -462,6 +462,7 @@ class Parser:
                         return ESCAPE_CHARS[char]
                     else:
                         return char
+
                 bytes = ''.join([format_printable_byte(i) for i in json])
             else:
                 # otherwise convert to hexadecimal representation \xCA\xFE

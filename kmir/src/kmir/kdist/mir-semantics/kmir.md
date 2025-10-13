@@ -75,33 +75,6 @@ It maps `Ty` IDs to `TypeInfo` that can be supplied to decoding and casting func
     [owise]
 ```
 
-Another type-related `Map` is required to associate an `AdtDef` ID with its corresponding `Ty` ID for `struct`s and `enum`s when creating or using `Aggregate` values.
-
-```
-  syntax Map ::= #mkAdtMap ( Map , TypeMappings ) [function, total, symbol("mkAdtMap")]
-  // --------------------------------------------------------------
-  rule #mkAdtMap(ACC, .TypeMappings) => ACC
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoStructType(_, ADTDEF, _)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _, _, _)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoUnionType(_, ADTDEF)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-  rule #mkAdtMap(ACC, TypeMapping(_, _) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC, MORE)
-    [owise]
-```
-
 The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
 composed with a secondary lookup of `Item`s via `symbolName`. This composed map will
 only be populated for `MonoItemFn` items that are indeed _called_ in the code (i.e.,
@@ -339,7 +312,7 @@ will be `129`.
 
   rule #switchMatch(0, BoolVal(B)           ) => notBool B
   rule #switchMatch(1, BoolVal(B)           ) => B
-  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
+  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned)
 ```
 
 `Return` simply returns from a function call, using the information

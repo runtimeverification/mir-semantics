@@ -256,6 +256,12 @@ EXEC_DATA = [
         1000,
     ),
     (
+        'ref-ptr-cases',
+        EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.state',
+        1000,
+    ),
+    (
         'Ref-array-elem-ref',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.smir.json',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',

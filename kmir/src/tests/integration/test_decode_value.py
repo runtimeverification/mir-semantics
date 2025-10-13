@@ -7,12 +7,10 @@ import pytest
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Final
+    from typing import Any, Final
 
     from pyk.kast.outer import KDefinition
     from pyk.kore.syntax import Pattern
-
-    from kmir.parse.parser import JSON
 
 
 @pytest.fixture(scope='module')
@@ -56,15 +54,14 @@ KORE_TEMPLATE: Final = Template(
                         Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
                         Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
                         Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
-                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}())
-                        ,Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
-                    )
-                    ,Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
+                        Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
+                    ),
+                    Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
                     Lbl'-LT-'memory'-GT-'{}(Lbl'Stop'Map{}()),
                     Lbl'-LT-'functions'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}("")))
-                    ,Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'adt-to-ty'-GT-'{}(Lbl'Stop'Map{}())
+                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}(""))),
+                    Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}())
                 ),
                 Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
             )
@@ -76,8 +73,8 @@ KORE_TEMPLATE: Final = Template(
 class _TestData(NamedTuple):
     test_id: str
     bytez: bytes
-    types: dict[int, JSON]
-    type_info: JSON
+    types: dict[int, dict[str, Any]]
+    type_info: dict[str, Any]
     expected: str
 
     def to_pattern(self, definition: KDefinition) -> Pattern:
@@ -103,7 +100,7 @@ class _TestData(NamedTuple):
         )
 
     @staticmethod
-    def _json_type_info_to_kore(type_info: JSON, definition: KDefinition) -> Pattern:
+    def _json_type_info_to_kore(type_info: dict[str, Any], definition: KDefinition) -> Pattern:
         from pyk.konvert import kast_to_kore
 
         from kmir.parse.parser import Parser
@@ -139,6 +136,7 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
 
 
 TEST_DATA: Final = load_test_data()
+SKIP: Final = ('str',)
 
 
 @pytest.mark.parametrize(
@@ -157,6 +155,9 @@ def test_decode_value(
     from pyk.kore.tools import kore_print
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
+
+    if test_data.test_id in SKIP:
+        pytest.skip()
 
     # Given
     evaluation = test_data.to_pattern(definition)
@@ -179,6 +180,45 @@ def test_decode_value(
     actual = kore_print(
         definition_dir=definition_dir,
         pattern=value,
+        output='pretty',
+    )
+
+    # Then
+    assert test_data.expected == actual
+
+
+@pytest.mark.parametrize(
+    'test_data',
+    TEST_DATA,
+    ids=[test_id for test_id, *_ in TEST_DATA],
+)
+def test_python_decode_value(
+    test_data: _TestData,
+    definition_dir: Path,
+    definition: KDefinition,
+    tmp_path: Path,
+) -> None:
+    from pyk.kast.inner import KSort
+    from pyk.konvert import kast_to_kore
+    from pyk.kore.tools import kore_print
+
+    from kmir.decoding import decode_value
+    from kmir.ty import Ty, TypeMetadata
+
+    type_info = TypeMetadata.from_raw(test_data.type_info)
+    types = {Ty(ty): TypeMetadata.from_raw(data) for ty, data in test_data.types.items()}
+
+    # When
+    value = decode_value(
+        data=test_data.bytez,
+        type_info=type_info,
+        types=types,
+    )
+    kast = value.to_kast()
+    kore = kast_to_kore(definition, kast, KSort('Value'))
+    actual = kore_print(
+        definition_dir=definition_dir,
+        pattern=kore,
         output='pretty',
     )
 

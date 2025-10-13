@@ -1712,6 +1712,39 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
   // could add a rule for cases without metadata
 ```
 
+#### Pointer equality
+
+Raw pointer comparisons ignore mutability, but require the address and metadata to match.
+
+```k
+  syntax Bool ::= #ptrLocalEq(Value, Value) [function, total]
+
+  rule #ptrLocalEq(
+          PtrLocal(OFFSET1, PLACE1, _, PTRMETA1),
+          PtrLocal(OFFSET2, PLACE2, _, PTRMETA2)
+       )
+    =>  OFFSET1 ==Int OFFSET2
+     andBool PLACE1 ==K PLACE2
+     andBool PTRMETA1 ==K PTRMETA2
+  rule #ptrLocalEq(_, _) => false [owise]
+
+  rule #applyBinOp(
+          binOpEq,
+          PtrLocal(_, _, _, _) #as PTR1,
+          PtrLocal(_, _, _, _) #as PTR2,
+          _
+       )
+    => BoolVal(#ptrLocalEq(PTR1, PTR2))
+
+  rule #applyBinOp(
+          binOpNe,
+          PtrLocal(_, _, _, _) #as PTR1,
+          PtrLocal(_, _, _, _) #as PTR2,
+          _
+       )
+    => BoolVal(notBool #ptrLocalEq(PTR1, PTR2))
+```
+
 
 
 #### Pointer Artithmetic
