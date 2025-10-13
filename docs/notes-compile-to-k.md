@@ -62,3 +62,14 @@ To run a program/function or prove a property, we still generate a call configur
 but the configuration does not have any static fields any more.
 The configuration is executed with the compiled module.
 
+# Obstacles
+
+1. LLVM backend is confused about symbol versions when an `@` char is in a string or binary data (`\x40h`).
+   This was caused by the LLVM backend using the literal kore string as a symbol name. Fixed in llvm backend, open PR.
+2. Compilation fails because of "long" lists (>100 elements) causing problems in the rule parser.
+   Work-arounds considered: 
+   - generate kore instead , and insert it into the `definition.kore`
+     - need to do this manually as there are no helper functions to make `kore` rules directly. 
+   - generate `kast` syntax and splice into the K code. 
+     - need to extend `pyk` with a `kast` pretty-printer. The `kast` format specification is somewhat tricky and incomplete, as I was told.
+
