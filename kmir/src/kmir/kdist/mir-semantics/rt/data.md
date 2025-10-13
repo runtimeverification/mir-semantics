@@ -651,7 +651,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrEmulation(META, 0)),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrEmulation(META, 0, _ORIGIN)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -671,7 +671,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrEmulation(META, 0)),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrEmulation(META, 0, _ORIGIN)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -872,12 +872,12 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 
 ```k
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(dynamicSize(LENGTH), 0))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(dynamicSize(LENGTH), 0, NoOrigin))
         ...
        </k>
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata, 0))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata, 0, NoOrigin))
         ...
        </k>
 ```
@@ -1029,8 +1029,8 @@ The operation typically creates a pointer with empty metadata.
 
   syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, ptrEmulation(META, 0)) ... </k>
-  rule <k> #mkPtr(toStack(OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(OFFSET, place(  LOCAL , PROJS), MUT, ptrEmulation(META, 0)) ... </k>
+  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, ptrEmulation(META, 0, NoOrigin)) ... </k>
+  rule <k> #mkPtr(toStack(OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(OFFSET, place(  LOCAL , PROJS), MUT, ptrEmulation(META, 0, NoOrigin)) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1058,7 +1058,7 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META, 0))
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META, 0, NoOrigin))
 ```
 
 ## Type casts
@@ -1136,10 +1136,12 @@ the `Value` sort.
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
 
+TODO: This is weird with the #convertPtrEmul - the Origin component store the original PtrEmulation - maybe that's fine but seems off
+
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL) #as ORIG_PTR, castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP))
+            PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP, ORIG_PTR))
           ...
         </k>
         <types> TYPEMAP </types>
@@ -1150,16 +1152,16 @@ which have the same representation `Value::Range`.
        andBool #typesCompatible({TYPEMAP[TY_SOURCE]}:>TypeInfo, {TYPEMAP[TY_TARGET]}:>TypeInfo, TYPEMAP)
       [preserves-definedness] // valid map lookups checked
 
-  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map ) [function, total]
+  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo , Map , Value ) [function, total]
   // ----------------------------------------------------------------------------------
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
 ```k
-  rule #convertPtrEmul(     ptrEmulation(_, OFFSET)           , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata, OFFSET)
-    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                                [priority(60)]
-  rule #convertPtrEmul(     ptrEmulation(_, OFFSET)           , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(noMetadata, OFFSET)
-    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                                [priority(60)]
+  rule #convertPtrEmul(     ptrEmulation(_, OFFSET, _) , typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(noMetadata, OFFSET, NEW_ORIGIN)
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                      [priority(60)]
+  rule #convertPtrEmul(     ptrEmulation(_, OFFSET, _) , typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(noMetadata, OFFSET, NEW_ORIGIN)
+    requires #metadata(POINTEE_TY, TYPEMAP) ==K noMetadata                                                      [priority(60)]
 ```
 
 Conversely, when casting a pointer to an element to a pointer to a slice or array,
@@ -1169,16 +1171,16 @@ the original allocation size must be checked to be sufficient.
 
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
-  rule #convertPtrEmul(   ptrEmulation(noMetadata, OFFSET)    , typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
-  rule #convertPtrEmul(   ptrEmulation(noMetadata, OFFSET)    , typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
+  rule #convertPtrEmul(   ptrEmulation(noMetadata, OFFSET, _)    , typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
+  rule #convertPtrEmul(   ptrEmulation(noMetadata, OFFSET, _)    , typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
 ```k
   // convert static length to dynamic length
-  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE), OFFSET), typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(dynamicSize(SIZE), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
-  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE), OFFSET), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(staticSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(dynamicSize(SIZE), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
 ```
 
@@ -1188,29 +1190,29 @@ It may however be illegal to _dereference_ (i.e., access) the created pointer, d
 **TODO** we can mark cases of insufficient original length as "InvalidCast" in the future, similar to the above future work.
 
 ```k
-  rule #convertPtrEmul(ptrEmulation(staticSize(_), OFFSET), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(staticSize(_), OFFSET, _), typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
-  rule #convertPtrEmul(ptrEmulation(staticSize(_), OFFSET), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(staticSize(_), OFFSET, _), typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
 
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(_), OFFSET), typeInfoRefType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_), OFFSET, _), typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(_), OFFSET), typeInfoPtrType(POINTEE_TY), TYPEMAP ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(_), OFFSET, _), typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN ) => ptrEmulation(#metadata(POINTEE_TY, TYPEMAP), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) =/=K dynamicSize(1)
 ```
 
 For a cast bwetween two pointer types with `dynamicSize` metadata (unlikely to occur), the dynamic size value is retained.
 
 ```k
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE), OFFSET), typeInfoRefType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(dynamicSize(SIZE), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
-  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE), OFFSET), typeInfoPtrType(POINTEE_TY), TYPEMAP) => ptrEmulation(dynamicSize(SIZE), OFFSET)
+  rule #convertPtrEmul(ptrEmulation(dynamicSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY), TYPEMAP, NEW_ORIGIN) => ptrEmulation(dynamicSize(SIZE), OFFSET, NEW_ORIGIN)
     requires #metadata(POINTEE_TY, TYPEMAP) ==K dynamicSize(1)
 ```
 
 ```k
   // non-pointer and non-ref target type (should not happen!)
-  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     ) => ptrEmulation(noMetadata, 0)        [priority(100)]
+  rule #convertPtrEmul(      _                        ,   _OTHER_INFO              ,   _     , _NEW_ORIGIN ) => ptrEmulation(noMetadata, 0, NoOrigin)        [priority(100)]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
@@ -1757,7 +1759,7 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 
 ```k
   rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE)))              => Integer(SIZE, 64, false) ... </k>
-  rule <k> #applyUnOp(unOpPtrMetadata, PtrLocal(_, _, _, ptrEmulation(dynamicSize(SIZE), _))) => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, PtrLocal(_, _, _, ptrEmulation(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
 
   // could add a rule for cases without metadata
 ```
@@ -1781,28 +1783,32 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
    [preserves-definedness, priority(40)]
 
-  // For pointers to slices/ranges with dynamicSize metadata
+  // Check offset bounds against origin pointer with dynamicSize metadata
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(dynamicSize(SLICE_LENGTH), CURRENT_OFFSET) ),
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(CURRENT_META, CURRENT_OFFSET, 
+                    PtrLocal(ORIG_DEPTH, ORIG_PLACE, ORIG_MUT, ptrEmulation(dynamicSize(ORIG_LENGTH), ORIG_OFFSET, ORIG_ORIGIN))) ),
           Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(dynamicSize(SLICE_LENGTH), CURRENT_OFFSET +Int OFFSET_VAL) )
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(CURRENT_META, CURRENT_OFFSET +Int OFFSET_VAL, 
+                    PtrLocal(ORIG_DEPTH, ORIG_PLACE, ORIG_MUT, ptrEmulation(dynamicSize(ORIG_LENGTH), ORIG_OFFSET, ORIG_ORIGIN))) )
     requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int SLICE_LENGTH
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIG_LENGTH
    [preserves-definedness]
 
-  // For pointers to arrays with staticSize metadata
+  // Check offset bounds against origin pointer with staticSize metadata
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(staticSize(ARRAY_LENGTH), CURRENT_OFFSET) ),
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(CURRENT_META, CURRENT_OFFSET, 
+                    PtrLocal(ORIG_DEPTH, ORIG_PLACE, ORIG_MUT, ptrEmulation(staticSize(ORIG_LENGTH), ORIG_OFFSET, ORIG_ORIGIN))) ),
           Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(staticSize(ARRAY_LENGTH), CURRENT_OFFSET +Int OFFSET_VAL) )
+          PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulation(CURRENT_META, CURRENT_OFFSET +Int OFFSET_VAL, 
+                    PtrLocal(ORIG_DEPTH, ORIG_PLACE, ORIG_MUT, ptrEmulation(staticSize(ORIG_LENGTH), ORIG_OFFSET, ORIG_ORIGIN))) )
     requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ARRAY_LENGTH
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIG_LENGTH
    [preserves-definedness]
 ```
 

@@ -46,6 +46,8 @@ The special `Moved` value represents values that have been used and should not b
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
                  | "Moved"
                    // The value has been used and is gone now
+                 | "NoOrigin" [symbol(Value::NoOrigin)]
+                   // Sentinel value for pointers without an origin (not created from a cast)
 ```
 
 ### Metadata for References and Pointers
@@ -69,10 +71,12 @@ Other types without metadata use `noMetadata`.
 ```
 
 A pointer in Rust carries the same metadata. Pointers can be offset with `BinOpOffset` we track the offset as an integer.
+Additionally, we track the origin pointer when a pointer is created via a `PtrToPtr` cast, to preserve provenance information.
 
 
 ```k
-  syntax PtrEmulation ::= ptrEmulation ( Metadata , Int ) [symbol(PtrEmulation)]
+  syntax PtrEmulation ::= ptrEmulation ( Metadata , Int , Value ) [symbol(PtrEmulation)]
+  // metadata, offset, origin
 ```
 
 ## Local variables

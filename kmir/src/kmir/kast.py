@@ -251,7 +251,7 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            KApply('PtrEmulation', (metadata if metadata is not None else KApply('noMetadata', ()), token(0))),
+                            KApply('PtrEmulation', (metadata if metadata is not None else KApply('noMetadata', ()), token(0), KApply('Value::NoOrigin', ()))),
                         ),
                     ),
                     pointee_constraints,

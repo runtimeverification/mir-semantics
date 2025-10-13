@@ -37,7 +37,7 @@
       ListItem ( typedValue ( Integer ( 3 , 64 , false ) , ty ( 31 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 31 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedValue ( PtrLocal ( 0 , place (... local: local ( 1 ) , projection: projectionElemConstantIndex (... offset: 3 , minLength: 0 , fromEnd: false )  .ProjectionElems ) , mutabilityNot , ptrEmulation ( noMetadata , 0 ) ) , ty ( 30 ) , mutabilityNot ) )
+      ListItem ( typedValue ( PtrLocal ( 0 , place (... local: local ( 1 ) , projection: projectionElemConstantIndex (... offset: 3 , minLength: 0 , fromEnd: false )  .ProjectionElems ) , mutabilityNot , ptrEmulation ( noMetadata , 0 , NoOrigin ) ) , ty ( 30 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     </locals>
