@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+import os
+import tempfile
 from contextlib import contextmanager
 from functools import cached_property
 from typing import TYPE_CHECKING
-from xml.dom.minidom import TypeInfo
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
@@ -18,13 +19,16 @@ from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
+from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
+from .build import HASKELL_DEF_DIR, KMIR_SOURCE_DIR
 from .cargo import cargo_get_smir_json
 from .kast import mk_call_terminator, symbolic_locals
+from .kdist.plugin import _default_args
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -56,6 +60,45 @@ class KMIR(KProve, KRun, KParse):
         KRun.__init__(self, definition_dir, bug_report=self.bug_report)
         KParse.__init__(self, definition_dir)
         self.llvm_library_dir = llvm_library_dir
+
+    @staticmethod
+    def from_kompiled_program(smir_info: SMIRInfo, bug_report: Path | None = None) -> KMIR:
+        kmir = KMIR(HASKELL_DEF_DIR)
+
+        prog_module = kmir.make_program_module(smir_info)
+
+        with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
+            prog_mod_file.write(kmir.pretty_print(prog_module))
+        _LOGGER.info(f'Program module written to {prog_mod_file.name}')
+
+        # kompile the module, for Haskell and for LLVM-library
+        # code using KompileTarget from kmir.kdist.plugin
+        llvm_args = {
+            'main_file': prog_mod_file.name,
+            'main_module': prog_module.main_module_name,
+            'backend': PykBackend.LLVM,
+            'llvm_kompile_type': LLVMKompileType.C,
+            'md_selector': 'k & ! symbolic',
+            **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
+        }
+        llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
+
+        hs_args = {
+            'main_file': prog_mod_file.name,
+            'main_module': prog_module.main_module_name,
+            'backend': PykBackend.HASKELL,
+            'md_selector': 'k & ! concrete',
+            **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
+        }
+        hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
+
+        _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
+
+        if os.path.exists(prog_mod_file.name):
+            os.remove(prog_mod_file.name)
+
+        # make a new KMIR with these paths
+        return KMIR(hs_out, llvm_out, bug_report=bug_report)
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
@@ -135,6 +178,7 @@ class KMIR(KProve, KRun, KParse):
 
         for alloc in smir_info._smir['allocs']:
             alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+            assert isinstance(alloc_id, KApply) and isinstance(alloc_id.args[0], KToken)
             rule, _ = build_rule(
                 f'lookupAlloc-{alloc_id.args[0].token}',
                 alloc_id,

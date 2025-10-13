@@ -61,6 +61,18 @@ def _kmir_run(opts: RunOpts) -> None:
     print(kmir.kore_to_pretty(result))
 
 
+def _kmir_run_x(opts: RunOpts) -> None:
+    assert opts.file is not None
+    # produce and compile a module and re-load a KMIR object with it
+    smir_info = SMIRInfo.from_file(Path(opts.file))
+
+    # see prove_x, should share code later
+    kmir = KMIR.from_kompiled_program(smir_info)
+
+    result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
+    print(kmir.kore_to_pretty(result))
+
+
 def _kmir_gen_mod(opts: GenSpecOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
 
