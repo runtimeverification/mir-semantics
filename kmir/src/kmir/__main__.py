@@ -9,9 +9,12 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
+from pyk.kast.inner import KApply, KRewrite
 from pyk.kast.pretty import PrettyPrinter
 from pyk.kdist import kdist
-from pyk.proof.reachability import APRProof
+from pyk.proof import Prover
+from pyk.proof.implies import EqualityProof, ImpliesProver
+from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
@@ -22,6 +25,7 @@ from .options import (
     InfoOpts,
     LinkOpts,
     ProveOpts,
+    ProveRawOpts,
     PruneOpts,
     ReduceOpts,
     RunOpts,
@@ -36,6 +40,8 @@ if TYPE_CHECKING:
     from argparse import Namespace
     from collections.abc import Iterable, Sequence
     from typing import Final
+
+    from pyk.kast.outer import KClaim
 
     from .options import KMirOpts
 
@@ -97,6 +103,59 @@ def _kmir_prove(opts: ProveOpts) -> None:
             any_failed = True
     if any_failed:
         sys.exit(1)
+
+
+def _kmir_prove_raw(opts: ProveRawOpts) -> None:
+    def is_functional(claim: KClaim) -> bool:
+        claim_lhs = claim.body
+        if type(claim_lhs) is KRewrite:
+            claim_lhs = claim_lhs.lhs
+        return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
+
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+        bug_report=opts.bug_report,
+    )
+    claim_index = kmir.get_claim_index(opts.spec_file)
+    labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
+
+    def proof_from_claim(claim: KClaim) -> APRProof | EqualityProof:
+        _LOGGER.info(f'Constructing initial proof: {claim.label}')
+        if is_functional(claim):
+            return EqualityProof.from_claim(claim, kmir.definition, proof_dir=opts.proof_dir)
+        else:
+            return APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+
+    def load_proof(claim: KClaim, proof_dir: Path | None, reload: bool) -> APRProof | EqualityProof:
+        if reload or not proof_dir:
+            return proof_from_claim(claim)
+        if (is_functional(claim) and not EqualityProof.proof_data_exists(claim.label, proof_dir)) or (
+            not is_functional(claim) and not APRProof.proof_data_exists(claim.label, proof_dir)
+        ):
+            return proof_from_claim(claim)
+        _LOGGER.info(f'Reading proof from disk: {proof_dir}, {label}')
+        if is_functional(claim):
+            return EqualityProof.read_proof_data(proof_dir, claim.label)
+        else:
+            return APRProof.read_proof_data(proof_dir, claim.label)
+
+    for label in labels:
+        print(f'Proving {label}')
+        claim = claim_index[label]
+        proof = load_proof(claim, opts.proof_dir, opts.reload)
+        with kmir.kcfg_explore(label) as kcfg_explore:
+            prover: Prover
+            if is_functional(claim):
+                assert type(proof) is EqualityProof
+                prover = ImpliesProver(proof, kcfg_explore, assume_defined=False)
+                prover.advance_proof(proof, max_iterations=opts.max_iterations)
+            else:
+                assert type(proof) is APRProof
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover.advance_proof(proof)
+        summary = proof.summary
+        print(f'{summary}')
 
 
 def _kmir_view(opts: ViewOpts) -> None:
@@ -484,6 +543,17 @@ def _arg_parser() -> ArgumentParser:
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to operate on')
     proof_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
 
+    prove_raw_parser = command_parser.add_parser(
+        'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args, prove_args]
+    )
+    prove_raw_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
+    prove_raw_parser.add_argument(
+        '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
+    )
+    prove_raw_parser.add_argument(
+        '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
+    )
+
     display_args = ArgumentParser(add_help=False)
     display_args.add_argument(
         '--full-printer',
@@ -666,6 +736,18 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
+        case 'prove':
+            proof_dir = Path(ns.proof_dir)
+            return ProveRawOpts(
+                spec_file=Path(ns.input_file),
+                proof_dir=ns.proof_dir,
+                include_labels=ns.include_labels,
+                exclude_labels=ns.exclude_labels,
+                bug_report=ns.bug_report,
+                max_depth=ns.max_depth,
+                reload=ns.reload,
+                max_iterations=ns.max_iterations,
+            )
         case 'show':
             return ShowOpts(
                 proof_dir=Path(ns.proof_dir),
