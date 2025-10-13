@@ -4,6 +4,7 @@ import logging
 from contextlib import contextmanager
 from functools import cached_property
 from typing import TYPE_CHECKING
+from xml.dom.minidom import TypeInfo
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
@@ -133,21 +134,13 @@ class KMIR(KProve, KRun, KParse):
             equations.append(rule)
 
         for alloc in smir_info._smir['allocs']:
-            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
-            assert parse_result is not None
-            if 'Memory' in alloc['global_alloc']:
-                alloc_info, _ = parse_result
-                assert isinstance(alloc_info, KApply) and len(alloc_info.args) == 3
-                id, aty, alloc_data = alloc_info.args
-                assert isinstance(alloc_data, KApply) and len(alloc_data.args) == 1
-                the_alloc = alloc_data.args[0]
-                assert isinstance(id, KApply) and len(id.args) == 1 and isinstance(id.args[0], KToken)
-                rule, _ = build_rule(
-                    f'lookupAlloc-{id.args[0].token}',
-                    KApply('lookupAlloc', (id,)),
-                    KApply('#decodeAlloc', (id, aty, the_alloc)),
-                )
-                equations.append(rule)
+            alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+            rule, _ = build_rule(
+                f'lookupAlloc-{alloc_id.args[0].token}',
+                alloc_id,
+                value,
+            )
+            equations.append(rule)
 
         name = smir_info.name.replace('_', '-')
 
