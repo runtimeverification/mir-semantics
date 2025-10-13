@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import struct
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply
+from pyk.kast.prelude.bytes import bytesToken
 from pyk.kast.prelude.collections import list_of
 from pyk.kast.prelude.kbool import boolToken
 from pyk.kast.prelude.kint import intToken
@@ -66,6 +68,25 @@ class RangeValue(Value):
         self.elems = tuple(elems)
 
     def to_kast(self) -> KInner:
+        if len(self.elems) > 0 and all(isinstance(e, IntValue) and not e.signed for e in self.elems):
+            int_vals = [e for e in self.elems if isinstance(e, IntValue)]
+            bit_width = int_vals[0].nbits
+            if (
+                bit_width % 8 == 0
+                and all(e.nbits == bit_width for e in int_vals)
+                and all(0 <= e.value and e.value < 2**bit_width for e in int_vals)
+            ):
+                byte_width = int(bit_width / 8)
+                fmts = {1: '<B', 2: '<H', 4: '<I', 8: '<Q'}
+                if byte_width in fmts:
+                    b_val = b''.join(struct.pack(fmts[byte_width], e.value) for e in int_vals)
+                    return KApply(
+                        'Value::RangeInteger',
+                        intToken(len(int_vals)),
+                        intToken(bit_width),
+                        boolToken(False),
+                        bytesToken(b_val),
+                    )
         return KApply('Value::Range', list_of(elem.to_kast() for elem in self.elems))
 
 
