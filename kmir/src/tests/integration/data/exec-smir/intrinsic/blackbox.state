@@ -120,22 +120,4 @@
     ty ( 76 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 56 ) , ty ( 61 )  ty ( 26 )  ty ( 26 )  .Tys )
     ty ( 80 ) |-> typeInfoPtrType ( ty ( 9 ) )
   </types>
-  <adt-to-ty>
-    adtDef ( 12 ) |-> ty ( 39 )
-    adtDef ( 13 ) |-> ty ( 58 )
-    adtDef ( 15 ) |-> ty ( 48 )
-    adtDef ( 22 ) |-> ty ( 50 )
-    adtDef ( 25 ) |-> ty ( 22 )
-    adtDef ( 28 ) |-> ty ( 55 )
-    adtDef ( 32 ) |-> ty ( 46 )
-    adtDef ( 36 ) |-> ty ( 65 )
-    adtDef ( 43 ) |-> ty ( 66 )
-    adtDef ( 46 ) |-> ty ( 68 )
-    adtDef ( 48 ) |-> ty ( 69 )
-    adtDef ( 53 ) |-> ty ( 70 )
-    adtDef ( 55 ) |-> ty ( 72 )
-    adtDef ( 56 ) |-> ty ( 76 )
-    adtDef ( 62 ) |-> ty ( 17 )
-    adtDef ( 64 ) |-> ty ( 15 )
-  </adt-to-ty>
 </kmir>

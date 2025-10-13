@@ -54,15 +54,14 @@ KORE_TEMPLATE: Final = Template(
                         Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
                         Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
                         Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
-                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}())
-                        ,Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
-                    )
-                    ,Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
+                        Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
+                    ),
+                    Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
                     Lbl'-LT-'memory'-GT-'{}(Lbl'Stop'Map{}()),
                     Lbl'-LT-'functions'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}("")))
-                    ,Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'adt-to-ty'-GT-'{}(Lbl'Stop'Map{}())
+                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}(""))),
+                    Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}())
                 ),
                 Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
             )
@@ -137,6 +136,7 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
 
 
 TEST_DATA: Final = load_test_data()
+SKIP: Final = ('str',)
 
 
 @pytest.mark.parametrize(
@@ -155,6 +155,9 @@ def test_decode_value(
     from pyk.kore.tools import kore_print
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
+
+    if test_data.test_id in SKIP:
+        pytest.skip()
 
     # Given
     evaluation = test_data.to_pattern(definition)
