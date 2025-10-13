@@ -66,8 +66,8 @@ def _kmir_run_x(opts: RunOpts) -> None:
     # produce and compile a module and re-load a KMIR object with it
     smir_info = SMIRInfo.from_file(Path(opts.file))
 
-    # see prove_x, should share code later
-    kmir = KMIR.from_kompiled_program(smir_info)
+    # code from prove_x factored into a constructor. Should share code later
+    kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend)
 
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
@@ -298,7 +298,10 @@ def kmir(args: Sequence[str]) -> None:
     logging.basicConfig(level=_loglevel(ns), format=_LOG_FORMAT)
     match opts:
         case RunOpts():
-            _kmir_run(opts)
+            if ns.command == 'run-x':
+                _kmir_run_x(opts)
+            else:
+                _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_mod(opts)
         case InfoOpts():
@@ -337,6 +340,14 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
     run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
+
+    run_parser = command_parser.add_parser('run-x', help='run stable MIR programs', parents=[kcli_args.logging_args])
+    run_parser.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
+    run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
+    run_parser.add_argument(
+        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+    )
+    run_parser.add_argument('--symbolic', action='store_true', help='Run with the haskell backend')
 
     gen_spec_parser = command_parser.add_parser(
         'gen-spec', help='Generate a k spec from a SMIR json', parents=[kcli_args.logging_args]
@@ -483,6 +494,14 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
+            )
+        case 'run-x':
+            return RunOpts(
+                bin=None,
+                file=ns.file,
+                depth=ns.depth,
+                start_symbol=ns.start_symbol,
+                haskell_backend=ns.symbolic,
             )
         case 'gen-spec':
             return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)

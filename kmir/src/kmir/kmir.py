@@ -62,7 +62,7 @@ class KMIR(KProve, KRun, KParse):
         self.llvm_library_dir = llvm_library_dir
 
     @staticmethod
-    def from_kompiled_program(smir_info: SMIRInfo, bug_report: Path | None = None) -> KMIR:
+    def from_kompiled_program(smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = False) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
         try:
@@ -83,6 +83,9 @@ class KMIR(KProve, KRun, KParse):
                 **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
             }
             llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
+
+            if not symbolic:
+                raise Exception('non-symbolic compiled module: not implemented yet')
 
             hs_args = {
                 'main_file': prog_mod_file.name,
