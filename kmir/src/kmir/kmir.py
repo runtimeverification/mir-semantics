@@ -65,37 +65,41 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_program(smir_info: SMIRInfo, bug_report: Path | None = None) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
-        prog_module = kmir.make_program_module(smir_info)
+        try:
+            prog_module = kmir.make_program_module(smir_info)
 
-        with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
-            prog_mod_file.write(kmir.pretty_print(prog_module))
-        _LOGGER.info(f'Program module written to {prog_mod_file.name}')
+            with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
+                prog_mod_file.write(kmir.pretty_print(prog_module))
+            _LOGGER.info(f'Program module written to {prog_mod_file.name}')
 
-        # kompile the module, for Haskell and for LLVM-library
-        # code using KompileTarget from kmir.kdist.plugin
-        llvm_args = {
-            'main_file': prog_mod_file.name,
-            'main_module': prog_module.main_module_name,
-            'backend': PykBackend.LLVM,
-            'llvm_kompile_type': LLVMKompileType.C,
-            'md_selector': 'k & ! symbolic',
-            **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-        }
-        llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
+            # kompile the module, for Haskell and for LLVM-library
+            # code using KompileTarget from kmir.kdist.plugin
+            llvm_args = {
+                'main_file': prog_mod_file.name,
+                'main_module': prog_module.main_module_name,
+                'backend': PykBackend.LLVM,
+                'llvm_kompile_type': LLVMKompileType.C,
+                'md_selector': 'k & ! symbolic',
+                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
+            }
+            llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
 
-        hs_args = {
-            'main_file': prog_mod_file.name,
-            'main_module': prog_module.main_module_name,
-            'backend': PykBackend.HASKELL,
-            'md_selector': 'k & ! concrete',
-            **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-        }
-        hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
+            hs_args = {
+                'main_file': prog_mod_file.name,
+                'main_module': prog_module.main_module_name,
+                'backend': PykBackend.HASKELL,
+                'md_selector': 'k & ! concrete',
+                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
+            }
+            hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
 
-        _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
-
-        if os.path.exists(prog_mod_file.name):
-            os.remove(prog_mod_file.name)
+            _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
+        except Exception as e:
+            _LOGGER.error(f'Exception during kompile phase: {e}')
+            raise e
+        finally:
+            if os.path.exists(prog_mod_file.name):
+                os.remove(prog_mod_file.name)
 
         # make a new KMIR with these paths
         return KMIR(hs_out, llvm_out, bug_report=bug_report)
