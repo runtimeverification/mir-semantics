@@ -8,8 +8,11 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
+from pyk.kast.inner import KApply, KRewrite
 from pyk.kast.outer import KFlatModule, KImport
 from pyk.kast.pretty import PrettyPrinter
+from pyk.proof import Prover
+from pyk.proof.implies import EqualityProof, ImpliesProver
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
@@ -37,6 +40,8 @@ if TYPE_CHECKING:
     from argparse import Namespace
     from collections.abc import Sequence
     from typing import Final
+
+    from pyk.kast.outer import KClaim
 
     from .options import KMirOpts
 
@@ -99,21 +104,50 @@ def _kmir_gen_spec(opts: GenSpecOpts) -> None:
 
 
 def _kmir_prove_raw(opts: ProveRawOpts) -> None:
+    def is_functional(claim: KClaim) -> bool:
+        claim_lhs = claim.body
+        if type(claim_lhs) is KRewrite:
+            claim_lhs = claim_lhs.lhs
+        return not (type(claim_lhs) is KApply and claim_lhs.label.name == '<generatedTop>')
+
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
     claim_index = kmir.get_claim_index(opts.spec_file)
     labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
+
+    def proof_from_claim(claim: KClaim) -> APRProof | EqualityProof:
+        _LOGGER.info(f'Constructing initial proof: {claim.label}')
+        if is_functional(claim):
+            return EqualityProof.from_claim(claim, kmir.definition, proof_dir=opts.proof_dir)
+        else:
+            return APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+
+    def load_proof(claim: KClaim, proof_dir: Path | None, reload: bool) -> APRProof | EqualityProof:
+        if reload or not proof_dir:
+            return proof_from_claim(claim)
+        if (is_functional(claim) and not EqualityProof.proof_data_exists(claim.label, proof_dir)) or (
+            not is_functional(claim) and not APRProof.proof_data_exists(claim.label, proof_dir)
+        ):
+            return proof_from_claim(claim)
+        _LOGGER.info(f'Reading proof from disk: {proof_dir}, {label}')
+        if is_functional(claim):
+            return EqualityProof.read_proof_data(proof_dir, claim.label)
+        else:
+            return APRProof.read_proof_data(proof_dir, claim.label)
+
     for label in labels:
         print(f'Proving {label}')
         claim = claim_index[label]
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            proof = APRProof.read_proof_data(opts.proof_dir, label)
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
+        proof = load_proof(claim, opts.proof_dir, opts.reload)
         with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(proof, max_iterations=opts.max_iterations)
+            prover: Prover
+            if is_functional(claim):
+                assert type(proof) is EqualityProof
+                prover = ImpliesProver(proof, kcfg_explore, assume_defined=False)
+                prover.advance_proof(proof, max_iterations=opts.max_iterations)
+            else:
+                assert type(proof) is APRProof
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover.advance_proof(proof)
         summary = proof.summary
         print(f'{summary}')
 
