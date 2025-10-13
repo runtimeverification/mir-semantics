@@ -11,11 +11,13 @@ from .ty import (
     ArbitraryFields,
     ArrayT,
     BoolT,
+    Direct,
     EnumT,
+    Initialized,
     IntT,
     IntTy,
     Multiple,
-    PrimitiveFields,
+    PrimitiveInt,
     PtrT,
     RefT,
     Single,
@@ -40,7 +42,7 @@ if TYPE_CHECKING:
 
     from pyk.kast import KInner
 
-    from .ty import LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy, VariantsShape
+    from .ty import FieldsShape, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
     from .value import Metadata
 
 
@@ -229,38 +231,15 @@ def _decode_enum(
     if not layout:
         raise ValueError('Enum layout not provided')
 
-    match layout.fields:
-        case PrimitiveFields():
-            raise ValueError('TODO: support decoding for FieldsShape::Primitive')
-        case ArbitraryFields(offsets=offsets):
-            return _decode_enum_arbitrary(
-                data=data,
-                discriminants=discriminants,
-                fields=fields,
-                layout_offsets=offsets,
-                layout_variants=layout.variants,
-                types=types,
-            )
-        case _:
-            raise AssertionError('Undhandle case')
+    offsets = _extract_offsets(layout.fields)
 
-
-def _decode_enum_arbitrary(
-    *,
-    data: bytes,
-    discriminants: list[int],
-    fields: list[list[Ty]],
-    layout_offsets: list[MachineSize],
-    layout_variants: VariantsShape,
-    types: Mapping[Ty, TypeMetadata],
-) -> Value:
-    match layout_variants:
+    match layout.variants:
         case Single(index):
-            return _decode_enum_arbitrary_single(
+            return _decode_enum_single(
                 data=data,
                 discriminants=discriminants,
                 fields=fields,
-                layout_offsets=layout_offsets,
+                offsets=offsets,
                 # ---
                 tag_index=index,
                 # ---
@@ -272,11 +251,11 @@ def _decode_enum_arbitrary(
             tag_field=tag_field,
             variants=variants,
         ):
-            return _decode_enum_arbitrary_multiple(
+            return _decode_enum_multiple(
                 data=data,
                 discriminants=discriminants,
                 fields=fields,
-                layout_offsets=layout_offsets,
+                offsets=offsets,
                 # ---
                 tag=tag,
                 tag_encoding=tag_encoding,
@@ -289,12 +268,20 @@ def _decode_enum_arbitrary(
             raise AssertionError('Undhandled case')
 
 
-def _decode_enum_arbitrary_single(
+def _extract_offsets(fields_shape: FieldsShape) -> list[MachineSize]:
+    match fields_shape:
+        case ArbitraryFields(offsets=offsets):
+            return offsets
+        case _:
+            raise ValueError(f'Unsupported fields shape: {fields_shape}')
+
+
+def _decode_enum_single(
     *,
     data: bytes,
     discriminants: list[int],
     fields: list[list[Ty]],
-    layout_offsets: list[MachineSize],
+    offsets: list[MachineSize],
     tag_index: int,
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
@@ -305,25 +292,16 @@ def _decode_enum_arbitrary_single(
     discriminant = discriminants[0]
     assert tag_index == discriminant, 'Assumed tag_index to be the same as the discriminant'
 
-    field_values: list[Value] = []
-
-    assert len(tys) == len(layout_offsets), 'Expected as many field offsets as field types'
-    for ty, offset in zip(tys, layout_offsets, strict=True):
-        field_type_info = types[ty]
-        field_nbytes = field_type_info.nbytes(types)
-        field_data = data[offset.in_bytes : offset.in_bytes + field_nbytes]
-        field_value = decode_value(field_data, field_type_info, types)
-        field_values.append(field_value)
-
+    field_values = _decode_fields(data=data, tys=tys, offsets=offsets, types=types)
     return AggregateValue(0, field_values)
 
 
-def _decode_enum_arbitrary_multiple(
+def _decode_enum_multiple(
     *,
     data: bytes,
     discriminants: list[int],
     fields: list[list[Ty]],
-    layout_offsets: list[MachineSize],
+    offsets: list[MachineSize],
     # ---
     tag: Scalar,
     tag_encoding: TagEncoding,
@@ -332,14 +310,56 @@ def _decode_enum_arbitrary_multiple(
     # ---
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
-    # The only supported case for now is when there are no fields
-    if any(tys for tys in fields):
-        raise ValueError('TODO - implement this case')
+    if not isinstance(tag_encoding, Direct):
+        raise ValueError(f'Unsupported encoding: {tag_encoding}')
 
-    tag_value = int.from_bytes(data, byteorder='little', signed=False)
+    assert tag_field == 0, 'Assumed tag field to be zero'
+    assert len(offsets) == 1, 'Assumed offsets to only contain the tag offset'
+    tag_offset = offsets[0]
+    tag_value = _extract_tag_value(data=data, tag_offset=tag_offset, tag=tag)
+
     try:
         variant_idx = discriminants.index(tag_value)
     except ValueError as err:
         raise ValueError(f'Tag not found: {tag_value}') from err
 
-    return AggregateValue(variant_idx, ())
+    tys = fields[variant_idx]
+
+    variant_layout = variant_layouts[variant_idx]
+    field_offsets = _extract_offsets(variant_layout.fields)
+    assert isinstance(variant_layout.variants, Single)
+
+    field_values = _decode_fields(data=data, tys=tys, offsets=field_offsets, types=types)
+    return AggregateValue(variant_idx, field_values)
+
+
+def _decode_fields(
+    *,
+    data: bytes,
+    tys: list[Ty],
+    offsets: list[MachineSize],
+    types: Mapping[Ty, TypeMetadata],
+) -> list[Value]:
+    res: list[Value] = []
+    for ty, offset in zip(tys, offsets, strict=True):
+        type_info = types[ty]
+        size_in_bytes = type_info.nbytes(types)
+        field_data = data[offset.in_bytes : offset.in_bytes + size_in_bytes]
+        value = decode_value(field_data, type_info, types)
+        res.append(value)
+    return res
+
+
+def _extract_tag_value(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> int:
+    match tag:
+        case Initialized(
+            value=PrimitiveInt(
+                length=length,
+                signed=signed,
+            ),
+            valid_range=_,
+        ):
+            tag_data = data[tag_offset.in_bytes : tag_offset.in_bytes + length.value]
+            return int.from_bytes(tag_data, byteorder='little', signed=signed)
+        case _:
+            raise ValueError('Unsupported tag: {tag}')
