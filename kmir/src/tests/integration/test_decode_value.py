@@ -139,6 +139,7 @@ TEST_DATA: Final = load_test_data()
 SKIP: Final = (
     'enum-1-variant-1-field',
     'enum-1-variant-2-fields',
+    'enum-2-variants-1-field',
     'str',
 )
 

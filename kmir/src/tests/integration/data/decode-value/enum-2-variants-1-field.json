@@ -1,0 +1,165 @@
+{
+  "bytes": [
+    1,
+    1
+  ],
+  "types": [
+    [
+      1,
+      {
+        "PrimitiveType": {
+          "Uint": "U8"
+        }
+      }
+    ],
+    [
+      2,
+      {
+        "PrimitiveType": "Bool"
+      }
+    ]
+  ],
+  "typeInfo": {
+    "EnumType": {
+      "name": "core::result::Result<u8, bool>",
+      "adt_def": 100,
+      "discriminants": [
+        0,
+        1
+      ],
+      "fields": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 0
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Multiple": {
+            "tag": {
+              "Initialized": {
+                "value": {
+                  "Int": {
+                    "length": "I8",
+                    "signed": false
+                  }
+                },
+                "valid_range": {
+                  "start": 0,
+                  "end": 1
+                }
+              }
+            },
+            "tag_encoding": "Direct",
+            "tag_field": 0,
+            "variants": [
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": [
+                      {
+                        "num_bits": 8
+                      }
+                    ]
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 0
+                  }
+                },
+                "abi": {
+                  "Scalar": {
+                    "Initialized": {
+                      "value": {
+                        "Int": {
+                          "length": "I8",
+                          "signed": false
+                        }
+                      },
+                      "valid_range": {
+                        "start": 0,
+                        "end": 255
+                      }
+                    }
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              },
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": [
+                      {
+                        "num_bits": 8
+                      }
+                    ]
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 1
+                  }
+                },
+                "abi": {
+                  "Scalar": {
+                    "Initialized": {
+                      "value": {
+                        "Int": {
+                          "length": "I8",
+                          "signed": false
+                        }
+                      },
+                      "valid_range": {
+                        "start": 0,
+                        "end": 1
+                      }
+                    }
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              }
+            ]
+          }
+        },
+        "abi": {
+          "Scalar": {
+            "Initialized": {
+              "value": {
+                "Int": {
+                  "length": "I8",
+                  "signed": false
+                }
+              },
+              "valid_range": {
+                "start": 0,
+                "end": 1
+              }
+            }
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 8
+        }
+      }
+    }
+  }
+}
