@@ -76,12 +76,12 @@ def _kmir_run_x(opts: RunOpts) -> None:
 def _kmir_gen_mod(opts: GenSpecOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
 
-    result = kmir.make_program_module(SMIRInfo.from_file(opts.input_file))
+    result = kmir.make_kore_rules(SMIRInfo.from_file(opts.input_file))
 
     if opts.output_file is not None:
-        opts.output_file.write_text(kmir.pretty_print(result))
+        opts.output_file.write_text('\n\n'.join(result))
     else:
-        print(kmir.pretty_print(result))
+        print('\n\n'.join(result))
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:

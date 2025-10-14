@@ -208,6 +208,42 @@ class KMIR(KProve, KRun, KParse):
 
         return KDefinition(f'KMIR-PROGRAM-{name}', (module,), (KRequire('kmir.md'),))
 
+    def make_kore_rules(self, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
+        equations = []
+
+        for fty, kind in self.functions(smir_info).items():
+            equations.append(self._mk_equation('lookupFunction', KApply('ty', (token(fty),)), kind))
+
+        types: set[KInner] = set()
+        for type in smir_info._smir['types']:
+            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
+            assert parse_result is not None
+            type_mapping, _ = parse_result
+            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+            ty, tyinfo = type_mapping.args
+            if ty in types:
+                raise ValueError(f'Key collision in type map: {ty}')
+            types.add(ty)
+            equations.append(self._mk_equation('lookupTy', ty, tyinfo))
+
+        for alloc in smir_info._smir['allocs']:
+            alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+            equations.append(self._mk_equation('lookupAlloc', alloc_id, value))
+
+        return equations
+
+    def _mk_equation(self, fun: str, arg: KInner, result: KInner) -> str:
+        # use a template here. Assumes we can render KInner as valid kore.
+        arg_kore = self.kast_to_kore(arg).text
+        result_kore = self.kast_to_kore(result).text
+
+        from pyk.kore.rule import FunctionRule
+        from pyk.kore.syntax import App
+
+        fun_app = App(fun, (), (arg_kore,))
+
+        return f'implement me: {fun_app} = {result_kore} as kore'
+
     def make_call_config(
         self,
         smir_info: SMIRInfo,
