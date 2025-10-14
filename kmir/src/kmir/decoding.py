@@ -241,7 +241,7 @@ def _decode_enum(
                 fields=fields,
                 offsets=offsets,
                 # ---
-                tag_index=index,
+                index=index,
                 # ---
                 types=types,
             )
@@ -282,15 +282,15 @@ def _decode_enum_single(
     discriminants: list[int],
     fields: list[list[Ty]],
     offsets: list[MachineSize],
-    tag_index: int,
+    index: int,
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
+    assert index == 0, 'Assumed index to always be 0 for Single(index)'
+
     assert len(fields) == 1, 'Expected a single list of field types for single-variant enum'
     tys = fields[0]
 
     assert len(discriminants) == 1, 'Expected a single discriminant for single-variant enum'
-    discriminant = discriminants[0]
-    assert tag_index == discriminant, 'Assumed tag_index to be the same as the discriminant'
 
     field_values = _decode_fields(data=data, tys=tys, offsets=offsets, types=types)
     return AggregateValue(0, field_values)
@@ -313,9 +313,9 @@ def _decode_enum_multiple(
     if not isinstance(tag_encoding, Direct):
         raise ValueError(f'Unsupported encoding: {tag_encoding}')
 
-    assert tag_field == 0, 'Assumed tag field to be zero'
     assert len(offsets) == 1, 'Assumed offsets to only contain the tag offset'
-    tag_offset = offsets[0]
+    assert tag_field == 0, 'Assumed tag field to be zero accordingly'
+    tag_offset = offsets[tag_field]
     tag_value = _extract_tag_value(data=data, tag_offset=tag_offset, tag=tag)
 
     try:
