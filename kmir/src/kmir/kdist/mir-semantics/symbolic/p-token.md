@@ -172,7 +172,7 @@ The code uses some helper sorts for better readability.
   rule #toIAcc(OTHER) => IAccError(OTHER) [owise]
 
   rule #toIAcc(#fromIAcc(IACC)) => IACC [simplification, preserves-definedness]
-  rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification]
+  rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification, preserves-definedness]
 
   syntax Amount ::= Amount(Int) // 8 bytes , but model as u64. From = LE bytes , to = decode(LE)
                   | AmountError( Value )
@@ -183,11 +183,10 @@ The code uses some helper sorts for better readability.
     requires allBytes(AMOUNTBYTES) andBool size(AMOUNTBYTES) ==Int 8 [preserves-definedness]
   rule toAmount(OTHER) => AmountError(OTHER) [owise]
 
-  syntax Bytes ::= #bytesFrom ( List ) [function, total]
+  syntax Bytes ::= #bytesFrom ( List ) [function]
   // --------------------------------------------
   rule #bytesFrom(.List) => .Bytes
   rule #bytesFrom(ListItem(Integer(X, 8, false)) REST) => Int2Bytes(1, X, LE) +Bytes #bytesFrom(REST)
-  rule #bytesFrom(_VAL) => .Bytes [owise]
 
   syntax Value ::= fromAmount ( Amount ) [function, total]
   // -----------------------------------------------------------
@@ -270,7 +269,7 @@ The code uses some helper sorts for better readability.
   rule #fromIMint(IMintError(VAL)) => VAL
 
   rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
-  rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification]
+  rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
 ```
 ### Pinocchio Rent sysvar
 
