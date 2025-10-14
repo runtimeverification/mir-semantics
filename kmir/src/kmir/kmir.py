@@ -238,8 +238,9 @@ class KMIR(KProve, KRun, KParse):
         from pyk.kore.rule import FunctionRule
         from pyk.kore.syntax import App, SortApp
 
-        fun_app = self.kast_to_kore(KApply(fun, (arg,)))
-        result_kore = self.kast_to_kore(result)
+        arg_kore = self.kast_to_kore(arg, KSort(arg_sort))
+        fun_app = App('Lbl' + fun, (), (arg_kore,))
+        result_kore = self.kast_to_kore(result, KSort(result_sort))
 
         assert isinstance(fun_app, App)
         rule = FunctionRule(
@@ -247,8 +248,8 @@ class KMIR(KProve, KRun, KParse):
             rhs=result_kore,
             req=None,
             ens=None,
-            sort=SortApp(result_sort),
-            arg_sorts=(SortApp(arg_sort),),
+            sort=SortApp('Sort' + result_sort),
+            arg_sorts=(SortApp('Sort' + arg_sort),),
             anti_left=None,
             priority=50,
             uid='fubar',

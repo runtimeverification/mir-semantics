@@ -101,7 +101,12 @@ def _kmir_gen_mod(opts: GenSpecOpts) -> None:
     rules = kmir.make_kore_rules(SMIRInfo.from_file(opts.input_file))
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
-    out_dir = opts.output_file if opts.output_file is not None else Path('out/')
+    if opts.output_file is None:
+        print('\n//////////////////////\n'.join(rules))
+        return
+    assert isinstance(opts.output_file, Path)
+
+    out_dir = opts.output_file
 
     # Create output directories
     out_llvm_dir = out_dir / 'llvm'
@@ -123,7 +128,17 @@ def _kmir_gen_mod(opts: GenSpecOpts) -> None:
     subprocess.run(['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(out_llvmdt_dir), '1/2'], check=True)
     _LOGGER.info('Running llvm-kompile')
     subprocess.run(
-        ['llvm-kompile', str(llvm_def_output), str(out_llvmdt_dir), 'c', '-O2', '--', '-o', out_llvm_dir / 'interpreter'], check=True
+        [
+            'llvm-kompile',
+            str(llvm_def_output),
+            str(out_llvmdt_dir),
+            'c',
+            '-O2',
+            '--',
+            '-o',
+            out_llvm_dir / 'interpreter',
+        ],
+        check=True,
     )
 
     # Process Haskell definition
