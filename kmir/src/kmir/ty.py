@@ -349,6 +349,11 @@ class IntegerLength(Enum):
     I64 = 8
     I128 = 16
 
+    def wrapping_sub(self, x: int, y: int) -> int:
+        bit_width = 8 * self.value
+        mask = (1 << bit_width) - 1
+        return (x - y) & mask
+
 
 @dataclass
 class Float(Primitive): ...
@@ -386,6 +391,7 @@ class TagEncoding(ABC):  # noqa: B024
 @dataclass
 class Direct(TagEncoding):
     def decode(self, tag: int, *, width: IntegerLength) -> int:
+        # The tag directly stores the discriminant.
         return tag
 
 
@@ -396,7 +402,14 @@ class Niche(TagEncoding):
     niche_start: int
 
     def decode(self, tag: int, *, width: IntegerLength) -> int:
-        raise ValueError(f'Unsupported tag encoding: {self}')
+        # For this encoding, the discriminant and variant index of each variant coincide.
+        # To recover the variant index i from tag:
+        # i = tag.wrapping_sub(niche_start) + niche_variants.start
+        # If i ends up outside niche_variants, the tag must have encoded the untagged_variant.
+        i = width.wrapping_sub(tag, self.niche_start) + self.niche_variants.start
+        if not i in self.niche_variants:
+            return self.untagged_variant
+        return i
 
 
 class RangeInclusive(NamedTuple):
@@ -416,6 +429,11 @@ class RangeInclusive(NamedTuple):
                 )
             case _:
                 raise _cannot_parse_as('RangeInclusive', data)
+
+    def __contains__(self, x: object) -> bool:
+        if isinstance(x, int):
+            return self.start <= x <= self.end
+        raise TypeError('Method RangeInclusive.__contains__ is only supported for int, got: {x}')
 
 
 class WrappingRange(NamedTuple):
