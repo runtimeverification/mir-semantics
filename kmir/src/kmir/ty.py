@@ -364,8 +364,18 @@ class TagEncoding(ABC):  # noqa: B024
         match data:
             case 'Direct':
                 return Direct()
-            case {'Niche': _}:
-                return Niche()
+            case {
+                'Niche': {
+                    'untagged_variant': untagged_variant,
+                    'niche_variants': niche_variants,
+                    'niche_start': niche_start,
+                },
+            }:
+                return Niche(
+                    untagged_variant=int(untagged_variant),
+                    niche_variants=RangeInclusive.from_raw(niche_variants),
+                    niche_start=int(niche_start),
+                )
             case _:
                 raise _cannot_parse_as('TagEncoding', data)
 
@@ -375,7 +385,29 @@ class Direct(TagEncoding): ...
 
 
 @dataclass
-class Niche(TagEncoding): ...
+class Niche(TagEncoding):
+    untagged_variant: int
+    niche_variants: RangeInclusive
+    niche_start: int
+
+
+class RangeInclusive(NamedTuple):
+    start: int
+    end: int
+
+    @staticmethod
+    def from_raw(data: Any) -> RangeInclusive:
+        match data:
+            case {
+                'start': start,
+                'end': end,
+            }:
+                return RangeInclusive(
+                    start=int(start),
+                    end=int(end),
+                )
+            case _:
+                raise _cannot_parse_as('RangeInclusive', data)
 
 
 class WrappingRange(NamedTuple):
