@@ -65,6 +65,9 @@ if git -C mir-semantics status --porcelain 1>/dev/null 2>&1 && \
     MIR_COMMIT="${MIR_COMMIT}-dirty"
 fi
 
+PROOF_DIR="artefacts/proof-${REPO_COMMIT}-${MIR_COMMIT}"
+mkdir -p "${PROOF_DIR}"
+
 if [ -z "${RELOAD_OPT}" ]; then
     MODE="Continuing"
 else
@@ -84,7 +87,7 @@ for name in $TESTS; do
     timeout --preserve-status -v ${TIMEOUT} \
             uv --project mir-semantics/kmir run -- \
             kmir prove-rs --smir artefacts/p-token.smir.json \
-            --proof-dir artefacts/proof --verbose --start-symbol $start ${RELOAD_OPT} ${PROVE_OPTS}
+            --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${PROVE_OPTS}
     prove_rc=$?
 
     end_time=$(date +%s)
@@ -118,10 +121,10 @@ for name in $TESTS; do
     } > "${status_file}"
 
     uv --project mir-semantics/kmir run -- \
-       kmir show --proof-dir artefacts/proof p-token.smir.$start \
-       --full-printer > artefacts/proof/${name}-full.txt
+       kmir show --proof-dir "${PROOF_DIR}" p-token.smir.$start \
+       --full-printer > "${PROOF_DIR}/${name}-full.txt"
     uv --project mir-semantics/kmir run -- \
-       kmir show --dir artefacts/proof p-token.smir.$start \
+       kmir show --proof-dir "${PROOF_DIR}" p-token.smir.$start \
        --statistics --leaves >> "${status_file}"
     echo "==========================================================================="
 done

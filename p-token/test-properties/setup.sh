@@ -51,6 +51,14 @@ if [ "$SKIP_SUBMODULES" = false ]; then
     echo "Refreshing git submodules..."
     git submodule update --init --recursive
     git submodule status --recursive
+
+    echo "Checking out mir-semantics at origin/feature/p-token..."
+    if git -C mir-semantics status --porcelain | grep -v '^?? ' >/dev/null; then
+        echo "Skipping checkout: tracked local changes detected."
+    else
+        git -C mir-semantics fetch origin feature/p-token
+        git -C mir-semantics checkout --quiet origin/feature/p-token
+    fi
 else
     echo "Skipping git submodule refresh..."
 fi
