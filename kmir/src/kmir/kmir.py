@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
 import tempfile
 from contextlib import contextmanager
 from functools import cached_property
@@ -62,7 +63,9 @@ class KMIR(KProve, KRun, KParse):
         self.llvm_library_dir = llvm_library_dir
 
     @staticmethod
-    def from_kompiled_program(smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = False) -> KMIR:
+    def from_kompiled_program(
+        smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = False, keep_module: bool = False
+    ) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
         try:
@@ -102,7 +105,13 @@ class KMIR(KProve, KRun, KParse):
             raise e
         finally:
             if os.path.exists(prog_mod_file.name):
-                os.remove(prog_mod_file.name)
+                if keep_module:
+                    shutil.move(prog_mod_file.name, 'out/program_module.k')
+                    _LOGGER.info('Compiled module kept as file out/program_module.k.')
+                else:
+                    os.remove(prog_mod_file.name)
+            else:
+                raise Exception('Unable to provide module file')
 
         # make a new KMIR with these paths
         return KMIR(hs_out, llvm_out, bug_report=bug_report)
@@ -188,7 +197,7 @@ class KMIR(KProve, KRun, KParse):
             assert isinstance(alloc_id, KApply) and isinstance(alloc_id.args[0], KToken)
             rule, _ = build_rule(
                 f'lookupAlloc-{alloc_id.args[0].token}',
-                alloc_id,
+                KApply('lookupAlloc', (alloc_id,)),
                 value,
             )
             equations.append(rule)

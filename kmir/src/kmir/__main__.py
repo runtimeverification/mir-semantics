@@ -14,7 +14,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, KMIR_SOURCE_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -67,7 +67,7 @@ def _kmir_run_x(opts: RunOpts) -> None:
     smir_info = SMIRInfo.from_file(Path(opts.file))
 
     # code from prove_x factored into a constructor. Should share code later
-    kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend)
+    kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend, keep_module=True)
 
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
@@ -93,7 +93,6 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
 
 
 def _kmir_prove_x(opts: ProveRSOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR)
 
     # modules get too big for the compiler to handle them, reduce items here
     # (prevents reuse of the generated definition, though)
@@ -101,48 +100,8 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
     reduced = all_smir.reduce_to(opts.start_symbol)
     _LOGGER.info(f'Reduced items table size from {len(all_smir.items)} to {len(reduced.items)}.')
 
-    prog_module = kmir.make_program_module(reduced)
-
-    import tempfile
-
-    with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
-        prog_mod_file.write(kmir.pretty_print(prog_module))
-    _LOGGER.info(f'Program module written to {prog_mod_file.name}')
-
-    # kompile the module, for Haskell and for LLVM-library
-    # code using KompileTarget from kmir.kdist.plugin
-    from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
-
-    from kmir.kdist.plugin import _default_args
-
-    llvm_args = {
-        'main_file': prog_mod_file.name,
-        'main_module': prog_module.main_module_name,
-        'backend': PykBackend.LLVM,
-        'llvm_kompile_type': LLVMKompileType.C,
-        'md_selector': 'k & ! symbolic',
-        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-    }
-    llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
-
-    hs_args = {
-        'main_file': prog_mod_file.name,
-        'main_module': prog_module.main_module_name,
-        'backend': PykBackend.HASKELL,
-        'md_selector': 'k & ! concrete',
-        **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-    }
-    hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
-
-    _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
-
-    import os
-
-    if os.path.exists(prog_mod_file.name):
-        os.remove(prog_mod_file.name)
-
-    # make a new KMIR with these paths
-    kmir = KMIR(hs_out, llvm_out, bug_report=opts.bug_report)
+    # produce a KMIR object with a compiled module for the program
+    kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True)
 
     # run a modified prove_rs (inlined here) with this
     label = str(opts.rs_file.stem) + '.' + opts.start_symbol
