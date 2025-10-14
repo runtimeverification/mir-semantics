@@ -122,6 +122,7 @@ The code uses some helper sorts for better readability.
 ```k
   // interface account structure
   syntax IAcc ::= IAcc ( Key, Key, Amount, Flag, Key, U8, Flag, Amount, Amount, Flag, Key )
+                | IAccError ( Value )
 
   // fromIAcc function to create an Aggregate, used when dereferencing the data pointer
   syntax Value ::= #fromIAcc ( IAcc ) [function, total]
@@ -139,8 +140,9 @@ The code uses some helper sorts for better readability.
                 ListItem(fromAmount(DLG_AMT))
                 ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(CLOSE_FLAG)) ListItem(fromKey(CLOSE_KEY))))
       )
+  rule #fromIAcc(IAccError(VAL)) => VAL
 
-  syntax IAcc ::= #toIAcc ( Value ) [function]
+  syntax IAcc ::= #toIAcc ( Value ) [function, total]
   // --------------------------------------------------
   rule #toIAcc(
           Aggregate(variantIdx(0),
@@ -167,9 +169,10 @@ The code uses some helper sorts for better readability.
               toFlag(CLOSE_FLAG),
               toKey(CLOSE_KEY)
           )
+  rule #toIAcc(OTHER) => IAccError(OTHER) [owise]
 
   rule #toIAcc(#fromIAcc(IACC)) => IACC [simplification, preserves-definedness]
-  rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification]
+  rule #fromIAcc(#toIAcc(VAL)) => VAL   [simplification, preserves-definedness]
 
   syntax Amount ::= Amount(Int) // 8 bytes , but model as u64. From = LE bytes , to = decode(LE)
                   | AmountError( Value )
@@ -190,8 +193,8 @@ The code uses some helper sorts for better readability.
   rule fromAmount(Amount(X)) => Range(#asU8s(X)) [preserves-definedness]
   rule fromAmount(AmountError(VAL)) => VAL
 
-  syntax List ::= #asU8s ( Int )            [function]
-                | #asU8List ( List , Int ) [function]
+  syntax List ::= #asU8s ( Int )            [function, total]
+                | #asU8List ( List , Int ) [function, total]
   // -------------------------------------
   rule #asU8s(X) => #asU8List(.List, X)
   rule #asU8List(ACC, _) => ACC requires 8 <=Int size(ACC) [priority(40)] // always cut at 8 bytes
@@ -229,8 +232,9 @@ The code uses some helper sorts for better readability.
 ```k
   // Mint struct: optional mint authority, supply, decimals, initialised flag, optional freeze authority
   syntax IMint ::= IMint ( Flag, Key , Amount , U8 , U8 , Flag , Key )
+                | IMintError ( Value )
 
-  syntax IMint ::= #toIMint ( Value ) [function]
+  syntax IMint ::= #toIMint ( Value ) [function, total]
   // ------------------------------------------
   rule #toIMint(
           Aggregate(variantIdx(0),
@@ -250,19 +254,22 @@ The code uses some helper sorts for better readability.
                toKey(FREEZE_AUTH_KEY)
           )
 
-    syntax Value ::= #fromIMint ( IMint ) [function, total]
-    // ----------------------------------------------------
-    rule #fromIMint(IMint(MINT_AUTH_FLAG, MINT_AUTH_KEY, SUPPLY, U8(DECIMALS), U8(INITIALISED), FREEZE_AUTH_FLAG, FREEZE_AUTH_KEY))
-      => Aggregate(variantIdx(0),
+  rule #toIMint(OTHER) => IMintError(OTHER) [owise]
+
+  syntax Value ::= #fromIMint ( IMint ) [function, total]
+  // ----------------------------------------------------
+  rule #fromIMint(IMint(MINT_AUTH_FLAG, MINT_AUTH_KEY, SUPPLY, U8(DECIMALS), U8(INITIALISED), FREEZE_AUTH_FLAG, FREEZE_AUTH_KEY))
+    => Aggregate(variantIdx(0),
                    ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(MINT_AUTH_FLAG)) ListItem(fromKey(MINT_AUTH_KEY))))
                    ListItem(fromAmount(SUPPLY))
                    ListItem(Integer(DECIMALS, 8, false))
                    ListItem(Integer(INITIALISED, 8, false))
                    ListItem(Aggregate(variantIdx(0), ListItem(fromFlag(FREEZE_AUTH_FLAG)) ListItem(fromKey(FREEZE_AUTH_KEY))))
           )
+  rule #fromIMint(IMintError(VAL)) => VAL
 
-    rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
-    rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification]
+  rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
+  rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
 ```
 ### Pinocchio Rent sysvar
 
