@@ -140,20 +140,20 @@ These functions are global static data  accessed from many places, and will be e
 
 ```k
   // // function store, Ty -> MonoItemFn
-  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total]
+  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction)]
   // ------------------------------------------------------------
   rule lookupFunction(ty(TY)) => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(TY), noBody) [owise] // HACK
   // cannot be total without a default "error" element. `Ty` is key for both functions and data.
 
   // // static allocations: AllocId -> AllocData (Value or error)
-  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total]
+  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc)]
   // -----------------------------------------------------------
   rule lookupAlloc(ID) => InvalidAlloc(ID) [owise]
 
   syntax Evaluation ::= InvalidAlloc ( AllocId )
 
   // // static information about the base type interning in the MIR: Ty -> TypeInfo
-  syntax TypeInfo ::= lookupTy ( Ty )    [function, total]
+  syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy)]
   // -----------------------------------------------------
   rule lookupTy(_TY) => typeInfoVoidType [owise] // HACK
 ```

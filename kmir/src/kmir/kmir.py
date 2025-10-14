@@ -212,7 +212,9 @@ class KMIR(KProve, KRun, KParse):
         equations = []
 
         for fty, kind in self.functions(smir_info).items():
-            equations.append(self._mk_equation('lookupFunction', KApply('ty', (token(fty),)), kind))
+            equations.append(
+                self._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind')
+            )
 
         types: set[KInner] = set()
         for type in smir_info._smir['types']:
@@ -224,25 +226,43 @@ class KMIR(KProve, KRun, KParse):
             if ty in types:
                 raise ValueError(f'Key collision in type map: {ty}')
             types.add(ty)
-            equations.append(self._mk_equation('lookupTy', ty, tyinfo))
+            equations.append(self._mk_equation('lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
         for alloc in smir_info._smir['allocs']:
             alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-            equations.append(self._mk_equation('lookupAlloc', alloc_id, value))
+            equations.append(self._mk_equation('lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
         return equations
 
-    def _mk_equation(self, fun: str, arg: KInner, result: KInner) -> str:
-        # use a template here. Assumes we can render KInner as valid kore.
-        arg_kore = self.kast_to_kore(arg).text
-        result_kore = self.kast_to_kore(result).text
-
+    def _mk_equation(self, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
         from pyk.kore.rule import FunctionRule
-        from pyk.kore.syntax import App
+        from pyk.kore.syntax import App, SortApp
 
-        fun_app = App(fun, (), (arg_kore,))
+        fun_app = self.kast_to_kore(KApply(fun, (arg,)))
+        result_kore = self.kast_to_kore(result)
 
-        return f'implement me: {fun_app} = {result_kore} as kore'
+        assert isinstance(fun_app, App)
+        rule = FunctionRule(
+            lhs=fun_app,
+            rhs=result_kore,
+            req=None,
+            ens=None,
+            sort=SortApp(result_sort),
+            arg_sorts=(SortApp(arg_sort),),
+            anti_left=None,
+            priority=50,
+            uid='fubar',
+            label='fubaz',
+        )
+        return '\n'.join(
+            [
+                (
+                    f'// {fun}({self.pretty_print(arg)})'
+                    + (f' => {self.pretty_print(result)}' if len(self.pretty_print(result)) < 1000 else '')
+                ),
+                rule.to_axiom().text,
+            ]
+        )
 
     def make_call_config(
         self,
