@@ -84,8 +84,8 @@
     ListItem ( Range ( ListItem ( Integer ( 100 , 16 , false ) )
     ListItem ( Integer ( 200 , 16 , false ) )
     ListItem ( Integer ( 300 , 16 , false ) ) ) ) )
-    allocId ( 5 ) |-> UnableToDecodeValue ( b"assertion failed: compare_to_stored(U16_ARRAY)" , typeInfoPrimitiveType ( primTypeStr ) )
-    allocId ( 6 ) |-> UnableToDecodeValue ( b"assertion failed: compare_to_stored(NESTED[0])" , typeInfoPrimitiveType ( primTypeStr ) )
+    allocId ( 5 ) |-> StringVal ( "assertion failed: compare_to_stored(U16_ARRAY)" )
+    allocId ( 6 ) |-> StringVal ( "assertion failed: compare_to_stored(NESTED[0])" )
   </memory>
   <functions>
     ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )

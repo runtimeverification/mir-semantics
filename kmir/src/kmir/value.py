@@ -8,6 +8,7 @@ from pyk.kast.inner import KApply
 from pyk.kast.prelude.collections import list_of
 from pyk.kast.prelude.kbool import boolToken
 from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -43,6 +44,17 @@ class IntValue(Value):
             intToken(self.value),
             intToken(self.nbits),
             boolToken(self.signed),
+        )
+
+
+@dataclass
+class StrValue(Value):
+    value: str
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Value::StringVal',
+            stringToken(self.value),
         )
 
 

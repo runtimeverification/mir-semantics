@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.args import LoggingOptions
 
-from .kmir import DecodeMode
-
 if TYPE_CHECKING:
     from typing import Final
 
@@ -79,7 +77,6 @@ class ProveRSOpts(ProveOpts):
     save_smir: bool
     smir: bool
     start_symbol: str
-    decode_mode: DecodeMode
 
     def __init__(
         self,
@@ -92,7 +89,6 @@ class ProveRSOpts(ProveOpts):
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
-        decode_mode: DecodeMode = DecodeMode.NONE,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -103,7 +99,6 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
-        self.decode_mode = decode_mode
 
 
 @dataclass
@@ -163,6 +158,8 @@ class ShowOpts(DisplayOpts):
     omit_cells: tuple[str, ...] | None
     omit_static_info: bool
     use_default_printer: bool
+    statistics: bool
+    leaves: bool
 
     def __init__(
         self,
@@ -178,10 +175,14 @@ class ShowOpts(DisplayOpts):
         omit_cells: str | None = None,
         omit_static_info: bool = True,
         use_default_printer: bool = False,
+        statistics: bool = False,
+        leaves: bool = False,
     ) -> None:
         super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
+        self.statistics = statistics
+        self.leaves = leaves
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
 
         def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:

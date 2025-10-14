@@ -16,7 +16,7 @@ from pyk.proof.tui import APRProofViewer
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
-from .kmir import KMIR, DecodeMode, KMIRAPRNodePrinter
+from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
     GenSpecOpts,
@@ -31,7 +31,7 @@ from .options import (
 )
 from .parse.parser import parse_json
 from .smir import SMIRInfo, Ty
-from .utils import render_rules
+from .utils import render_leaf_k_cells, render_rules, render_statistics
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -166,9 +166,17 @@ def _kmir_show(opts: ShowOpts) -> None:
         node_deltas=effective_node_deltas,
         omit_cells=tuple(all_omit_cells),
     )
+    if opts.statistics:
+        if lines and lines[-1] != '':
+            lines.append('')
+        lines.extend(render_statistics(proof))
     if effective_rule_edges:
         lines.append('# Rules: ')
         lines.extend(render_rules(proof, effective_rule_edges))
+    if opts.leaves:
+        if lines and lines[-1] != '':
+            lines.append('')
+        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show))
 
     print('\n'.join(lines))
 
@@ -327,6 +335,16 @@ def _arg_parser() -> ArgumentParser:
         default=False,
         help='Use standard PrettyPrinter instead of custom KMIR printer',
     )
+    show_parser.add_argument(
+        '--statistics',
+        action='store_true',
+        help='Display aggregate statistics about the proof graph',
+    )
+    show_parser.add_argument(
+        '--leaves',
+        action='store_true',
+        help='Print the <k> cell for each leaf node in the proof graph',
+    )
 
     show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
 
@@ -351,13 +369,6 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
-    )
-    prove_rs_parser.add_argument(
-        '--decode-mode',
-        type=DecodeMode,
-        metavar='DECODE_MODE',
-        default=DecodeMode.NONE,
-        help='Allocation decoding mode: NONE (default), PARTIAL, or FULL',
     )
 
     link_parser = command_parser.add_parser(
@@ -411,6 +422,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 omit_cells=ns.omit_cells,
                 omit_static_info=ns.omit_static_info,
                 use_default_printer=ns.use_default_printer,
+                statistics=ns.statistics,
+                leaves=ns.leaves,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)
@@ -435,7 +448,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
-                decode_mode=ns.decode_mode,
             )
         case 'link':
             return LinkOpts(
