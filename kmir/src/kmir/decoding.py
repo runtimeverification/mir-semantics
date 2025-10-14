@@ -360,4 +360,4 @@ def _extract_tag(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> tuple[
             tag_value = int.from_bytes(tag_data, byteorder='little', signed=False)
             return tag_value, length
         case _:
-            raise ValueError('Unsupported tag: {tag}')
+            raise ValueError(f'Unsupported tag: {tag}')
