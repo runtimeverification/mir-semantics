@@ -11,7 +11,6 @@ from .ty import (
     ArbitraryFields,
     ArrayT,
     BoolT,
-    Direct,
     EnumT,
     Initialized,
     IntT,
@@ -42,7 +41,7 @@ if TYPE_CHECKING:
 
     from pyk.kast import KInner
 
-    from .ty import FieldsShape, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
+    from .ty import FieldsShape, IntegerLength, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
     from .value import Metadata
 
 
@@ -310,18 +309,16 @@ def _decode_enum_multiple(
     # ---
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
-    if not isinstance(tag_encoding, Direct):
-        raise ValueError(f'Unsupported encoding: {tag_encoding}')
-
     assert len(offsets) == 1, 'Assumed offsets to only contain the tag offset'
     assert tag_field == 0, 'Assumed tag field to be zero accordingly'
     tag_offset = offsets[tag_field]
-    tag_value = _extract_tag_value(data=data, tag_offset=tag_offset, tag=tag)
+    tag_value, width = _extract_tag(data=data, tag_offset=tag_offset, tag=tag)
+    discriminant = tag_encoding.decode(tag_value, width=width)
 
     try:
-        variant_idx = discriminants.index(tag_value)
+        variant_idx = discriminants.index(discriminant)
     except ValueError as err:
-        raise ValueError(f'Tag not found: {tag_value}') from err
+        raise ValueError(f'Discriminant not found: {discriminant}') from err
 
     tys = fields[variant_idx]
 
@@ -350,16 +347,17 @@ def _decode_fields(
     return res
 
 
-def _extract_tag_value(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> int:
+def _extract_tag(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> tuple[int, IntegerLength]:
     match tag:
         case Initialized(
             value=PrimitiveInt(
                 length=length,
-                signed=signed,
+                signed=False,
             ),
             valid_range=_,
         ):
             tag_data = data[tag_offset.in_bytes : tag_offset.in_bytes + length.value]
-            return int.from_bytes(tag_data, byteorder='little', signed=signed)
+            tag_value = int.from_bytes(tag_data, byteorder='little', signed=False)
+            return tag_value, length
         case _:
             raise ValueError('Unsupported tag: {tag}')

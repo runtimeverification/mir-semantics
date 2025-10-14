@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
@@ -379,9 +379,14 @@ class TagEncoding(ABC):  # noqa: B024
             case _:
                 raise _cannot_parse_as('TagEncoding', data)
 
+    @abstractmethod
+    def decode(self, tag: int, *, width: IntegerLength) -> int: ...
+
 
 @dataclass
-class Direct(TagEncoding): ...
+class Direct(TagEncoding):
+    def decode(self, tag: int, *, width: IntegerLength) -> int:
+        return tag
 
 
 @dataclass
@@ -389,6 +394,9 @@ class Niche(TagEncoding):
     untagged_variant: int
     niche_variants: RangeInclusive
     niche_start: int
+
+    def decode(self, tag: int, *, width: IntegerLength) -> int:
+        raise ValueError(f'Unsupported tag encoding: {self}')
 
 
 class RangeInclusive(NamedTuple):
