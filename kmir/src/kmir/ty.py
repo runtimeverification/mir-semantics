@@ -151,6 +151,13 @@ class EnumT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('EnumT', data)
 
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
+        match self.layout:
+            case None:
+                raise ValueError(f'Cannot determine size, layout is missing for: {self}')
+            case LayoutShape(size=size):
+                return size.in_bytes
+
 
 @dataclass
 class LayoutShape:
