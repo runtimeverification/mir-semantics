@@ -73,15 +73,72 @@ def _kmir_run_x(opts: RunOpts) -> None:
     print(kmir.kore_to_pretty(result))
 
 
+def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
+    with open(input_file, 'r') as f:
+        lines = f.readlines()
+
+    # last line must start with 'endmodule'
+    last_line = lines[-1]
+    assert last_line.startswith('endmodule')
+    new_lines = lines[:-1]
+
+    # Insert rules before the endmodule line
+    new_lines.append(f'\n// Generated from file {input_file}\n\n')
+    new_lines.extend(rules)
+    new_lines.append('\n' + last_line)
+
+    # Write to output file
+    with open(output_file, 'w') as f:
+        f.writelines(new_lines)
+
+
 def _kmir_gen_mod(opts: GenSpecOpts) -> None:
+    import shutil
+    import subprocess
+
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
 
-    result = kmir.make_kore_rules(SMIRInfo.from_file(opts.input_file))
+    rules = kmir.make_kore_rules(SMIRInfo.from_file(opts.input_file))
+    _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
-    if opts.output_file is not None:
-        opts.output_file.write_text('\n\n'.join(result))
-    else:
-        print('\n\n'.join(result))
+    out_dir = opts.output_file if opts.output_file is not None else Path('out/')
+
+    # Create output directories
+    out_llvm_dir = out_dir / 'llvm'
+    out_llvmdt_dir = out_llvm_dir / 'dt'
+    out_hs_dir = out_dir / 'hs'
+
+    _LOGGER.info(f'Creating directories {out_llvmdt_dir} and {out_hs_dir}')
+    out_llvmdt_dir.mkdir(parents=True, exist_ok=True)
+    out_hs_dir.mkdir(parents=True, exist_ok=True)
+
+    # Process LLVM definition
+    _LOGGER.info('Writing LLVM definition file')
+    llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+    llvm_def_output = out_llvm_dir / 'definition.kore'
+    _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+
+    # Run llvm-kompile-matching and llvm-kompile for LLVM
+    _LOGGER.info('Running llvm-kompile-matching')
+    subprocess.run(['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(out_llvmdt_dir), '1/2'], check=True)
+    _LOGGER.info('Running llvm-kompile')
+    subprocess.run(
+        ['llvm-kompile', str(llvm_def_output), str(out_llvmdt_dir), 'c', '-O2', '--', '-o', out_llvm_dir / 'interpreter'], check=True
+    )
+
+    # Process Haskell definition
+    _LOGGER.info('Writing Haskell definition file')
+    hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
+    _insert_rules_and_write(hs_def_file, rules, out_hs_dir / 'definition.kore')
+
+    # Copy all files except definition.kore from HASKELL_DEF_DIR to out/hs
+    _LOGGER.info('Copying other artefacts into HS output directory')
+    for file_path in HASKELL_DEF_DIR.iterdir():
+        if file_path.name != 'definition.kore':
+            if file_path.is_file():
+                shutil.copy2(file_path, out_hs_dir / file_path.name)
+            elif file_path.is_dir():
+                shutil.copytree(file_path, out_hs_dir / file_path.name, dirs_exist_ok=True)
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
@@ -101,7 +158,7 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
     _LOGGER.info(f'Reduced items table size from {len(all_smir.items)} to {len(reduced.items)}.')
 
     # produce a KMIR object with a compiled module for the program
-    kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True)
+    kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True, bug_report=opts.bug_report)
 
     # run a modified prove_rs (inlined here) with this
     label = str(opts.rs_file.stem) + '.' + opts.start_symbol

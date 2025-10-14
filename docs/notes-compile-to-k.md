@@ -72,4 +72,5 @@ The configuration is executed with the compiled module.
      - need to do this manually as there are no helper functions to make `kore` rules directly. 
    - generate `kast` syntax and splice into the K code. 
      - need to extend `pyk` with a `kast` pretty-printer. The `kast` format specification is somewhat tricky and incomplete, as I was told.
-
+   Work-around 1 appears to work, code developed on new branch extending the other.
+   
