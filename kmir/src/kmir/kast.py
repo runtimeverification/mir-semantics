@@ -230,7 +230,7 @@ class ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            token(0), # Stack OFFSET field
+                            token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else KApply('noMetadata', ()),
@@ -252,7 +252,14 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            KApply('PtrEmulation', (metadata if metadata is not None else KApply('noMetadata', ()), token(0), KApply('Value::NoOrigin', ()))),
+                            KApply(
+                                'PtrEmulation',
+                                (
+                                    metadata if metadata is not None else KApply('noMetadata', ()),
+                                    token(0),
+                                    KApply('Value::NoOrigin', ()),
+                                ),
+                            ),
                         ),
                     ),
                     pointee_constraints,
