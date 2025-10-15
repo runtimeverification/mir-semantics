@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import logging
-import os
 import shutil
-import tempfile
 from contextlib import contextmanager
 from functools import cached_property
 from pathlib import Path
@@ -12,8 +10,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, build_rule, free_vars, split_config_from
-from pyk.kast.outer import KDefinition, KFlatModule, KImport, KRequire
+from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
@@ -21,16 +18,14 @@ from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
-from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
-from .build import HASKELL_DEF_DIR, KMIR_SOURCE_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import cargo_get_smir_json
 from .kast import mk_call_terminator, symbolic_locals
-from .kdist.plugin import _default_args
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -63,61 +58,7 @@ class KMIR(KProve, KRun, KParse):
         self.llvm_library_dir = llvm_library_dir
 
     @staticmethod
-    def from_kompiled_program(
-        smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = True, keep_module: bool = False
-    ) -> KMIR:
-        kmir = KMIR(HASKELL_DEF_DIR)
-
-        try:
-            prog_module = kmir.make_program_module(smir_info)
-
-            with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
-                prog_mod_file.write(kmir.pretty_print(prog_module))
-            _LOGGER.info(f'Program module written to {prog_mod_file.name}')
-
-            if not symbolic:
-                raise Exception('non-symbolic compiled module: not implemented yet')
-
-            # kompile the module, for Haskell and for LLVM-library
-            # code using KompileTarget from kmir.kdist.plugin
-            llvm_args = {
-                'main_file': prog_mod_file.name,
-                'main_module': prog_module.main_module_name,
-                'backend': PykBackend.LLVM,
-                'llvm_kompile_type': LLVMKompileType.C,
-                'md_selector': 'k & ! symbolic',
-                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-            }
-            llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
-
-            hs_args = {
-                'main_file': prog_mod_file.name,
-                'main_module': prog_module.main_module_name,
-                'backend': PykBackend.HASKELL,
-                'md_selector': 'k & ! concrete',
-                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-            }
-            hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
-
-            _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
-        except Exception as e:
-            _LOGGER.error(f'Exception during kompile phase: {e}')
-            raise e
-        finally:
-            if os.path.exists(prog_mod_file.name):
-                if keep_module:
-                    shutil.move(prog_mod_file.name, 'out/program_module.k')
-                    _LOGGER.info('Compiled module kept as file out/program_module.k.')
-                else:
-                    os.remove(prog_mod_file.name)
-            else:
-                raise Exception('Unable to provide module file')
-
-        # make a new KMIR with these paths
-        return KMIR(hs_out, llvm_out, bug_report=bug_report)
-
-    @staticmethod
-    def from_kompiled_via_kore(
+    def from_kompiled_kore(
         smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = True, target_dir: str = 'out-kore'
     ) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
@@ -251,52 +192,6 @@ class KMIR(KProve, KRun, KParse):
                 )
 
         return functions
-
-    def make_program_module(self, smir_info: SMIRInfo) -> KDefinition:
-        equations = []
-
-        for fty, kind in self.functions(smir_info).items():
-            rule, _ = build_rule(
-                f'lookupFunction-{fty}',
-                KApply('lookupFunction', (KApply('ty', (token(fty),)),)),
-                kind,
-            )
-            equations.append(rule)
-
-        parser = Parser(self.definition)
-        types: set[KInner] = set()
-        for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types.add(ty)
-            assert isinstance(ty, KApply) and len(ty.args) == 1 and isinstance(ty.args[0], KToken)
-            rule, _ = build_rule(
-                f'lookupTy-{ty.args[0].token}',
-                KApply('lookupTy', (ty,)),
-                tyinfo,
-            )
-            equations.append(rule)
-
-        for alloc in smir_info._smir['allocs']:
-            alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-            assert isinstance(alloc_id, KApply) and isinstance(alloc_id.args[0], KToken)
-            rule, _ = build_rule(
-                f'lookupAlloc-{alloc_id.args[0].token}',
-                KApply('lookupAlloc', (alloc_id,)),
-                value,
-            )
-            equations.append(rule)
-
-        name = smir_info.name.replace('_', '-')
-
-        module = KFlatModule(f'KMIR-PROGRAM-{name}', equations, (KImport('KMIR'),))
-
-        return KDefinition(f'KMIR-PROGRAM-{name}', (module,), (KRequire('kmir.md'),))
 
     def make_kore_rules(self, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
         equations = []

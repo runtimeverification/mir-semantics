@@ -67,16 +67,12 @@ def _kmir_run_x(opts: RunOpts) -> None:
     # produce and compile a module and re-load a KMIR object with it
     smir_info = SMIRInfo.from_file(Path(opts.file))
 
-    # kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend, keep_module=True)
-    # result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
-    # print(kmir.kore_to_pretty(result))
-
     # with tempfile.TemporaryDirectory() as work_dir:
     #     kmir = KMIR.from_kompiled_via_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
     #     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     #     print(kmir.kore_to_pretty(result))
 
-    kmir = KMIR.from_kompiled_via_kore(smir_info, symbolic=opts.haskell_backend)  # leaves out-kore behind
+    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend)  # leaves out-kore behind
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
 
@@ -85,12 +81,12 @@ def _kmir_gen_mod(opts: GenSpecOpts) -> None:
 
     if opts.output_file is None:
         with tempfile.TemporaryDirectory() as target_dir:
-            _ = KMIR.from_kompiled_via_kore(
+            _ = KMIR.from_kompiled_kore(
                 SMIRInfo.from_file(opts.input_file), bug_report=None, symbolic=True, target_dir=target_dir
             )
             print((Path(target_dir) / 'haskell' / 'definition.kore').read_text())
     else:
-        _ = KMIR.from_kompiled_via_kore(
+        _ = KMIR.from_kompiled_kore(
             SMIRInfo.from_file(opts.input_file), bug_report=None, symbolic=True, target_dir=str(opts.output_file)
         )
         _LOGGER.info(f'Created program-specific artefacts in {opts.output_file}.')
@@ -114,8 +110,7 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
 
     # produce a KMIR object with a compiled module for the program
 
-    # kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True, bug_report=opts.bug_report)
-    kmir = KMIR.from_kompiled_via_kore(reduced, symbolic=True, bug_report=opts.bug_report)  # TODO use proof dir/label!
+    kmir = KMIR.from_kompiled_kore(reduced, symbolic=True, bug_report=opts.bug_report)  # TODO use proof dir/label!
 
     # run a modified prove_rs (inlined here) with this
     label = str(opts.rs_file.stem) + '.' + opts.start_symbol
