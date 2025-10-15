@@ -46,15 +46,21 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  // static and dynamic allocations: AllocId -> Value
-                  <memory> .Map </memory>
-                  // ============ static information ============
-                  // function store, Ty -> MonoItemFn
-                  <functions> .Map </functions>
-                  <start-symbol> symbol($STARTSYM:String) </start-symbol>
-                  // static information about the base type interning in the MIR
-                  <types> .Map </types>
                 </kmir>
+```
 
+Additional fields of the configuration contain _static_ information.
+
+* The function store mapping `Ty` to `MonoItemFn` (and `IntrinsicFn`). This is essentially the entire program.
+* The allocation store, mapping `AllocId` to `Value` (or error markers if undecoded)
+* The type metadata map, associating `Ty` with a `TypeInfo` (which may contain more `Ty`s)
+* The mapping from `AdtDef` ID to `Ty`
+
+For better performance, this information is reified to K functions,
+rather than carrying static `Map` structures with the configuration.
+
+The functions are defined in the `RT-VALUE` module for now but should have their own module.
+
+```k
 endmodule
 ```

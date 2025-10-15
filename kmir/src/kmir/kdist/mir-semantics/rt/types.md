@@ -28,38 +28,32 @@ values, and pointers to them, can be converted from one type to the other.
 The `#typesCompatible` function determines this compatibility, and is by default `false`.
 
 ```k
-  syntax Bool ::= #typesCompatible ( TypeInfo , TypeInfo , Map ) [function, total]
+  syntax Bool ::= #typesCompatible ( TypeInfo , TypeInfo ) [function, total]
 
   // by default, only identical types are compatible
-  rule #typesCompatible (             T            ,           T              ,   _    ) => true  [priority(60)] 
-  rule #typesCompatible (             _            ,           _              ,   _    ) => false [owise] 
+  rule #typesCompatible (             T            ,           T              ) => true  [priority(60)] 
+  rule #typesCompatible (             _            ,           _              ) => false [owise] 
 ```
 
 Arrays and slices are compatible if their element type is (ignoring length)
 ```k
-  rule #typesCompatible ( typeInfoArrayType(TY1, _), typeInfoArrayType(TY2, _), TYPEMAP) => #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
-    requires isTypeInfo(TYPEMAP[TY1])
-     andBool isTypeInfo(TYPEMAP[TY2])
+  rule #typesCompatible ( typeInfoArrayType(TY1, _), typeInfoArrayType(TY2, _)) => #typesCompatible(lookupTy(TY1), lookupTy(TY2))
 ```
 
 Pointers are compatible if their pointee types are
 ```k
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     , TYPEMAP) => true
-    requires isTypeInfo(TYPEMAP[TY1])
-     andBool isTypeInfo(TYPEMAP[TY2])
-     andBool #typesCompatible({TYPEMAP[TY1]}:>TypeInfo, {TYPEMAP[TY2]}:>TypeInfo, TYPEMAP)
+  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
+    requires #typesCompatible(lookupTy(TY1), lookupTy(TY2))
      [priority(59)]
 ```
 
 Pointers to arrays/slices are compatible with pointers to the element type
 ```k
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     , TYPEMAP) => true
-    requires isTypeInfo(TYPEMAP[TY1])
-     andBool #isArrayOf({TYPEMAP[TY1]}:>TypeInfo, TY2)
+  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
+    requires #isArrayOf(lookupTy(TY1), TY2)
 
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     , TYPEMAP) => true
-    requires isTypeInfo(TYPEMAP[TY2])
-     andBool #isArrayOf({TYPEMAP[TY2]}:>TypeInfo, TY1)
+  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
+    requires #isArrayOf(lookupTy(TY2), TY1)
 
   syntax Bool ::= #isArrayOf ( TypeInfo , Ty ) [function, total]
 
@@ -76,28 +70,25 @@ To make this function total, an optional `MaybeTy` is used.
   syntax MaybeTy ::= Ty
                    | "TyUnknown"
 
-  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ,  Map ) [function, total]
+  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total]
   // -----------------------------------------------------------
-  rule getTyOf(TyUnknown,             _                      ,     _    ) => TyUnknown
-  rule getTyOf(TY,                    .ProjectionElems       ,     _    ) => TY
+  rule getTyOf(TyUnknown,             _                      ) => TyUnknown
+  rule getTyOf(TY,                    .ProjectionElems       ) => TY
 
-  rule getTyOf(TY, projectionElemDeref                  PROJS, TYPEMAP ) => getTyOf(pointeeTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf( _, projectionElemField(_, TY)           PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // could also look it up
+  rule getTyOf(TY, projectionElemDeref                  PROJS ) => getTyOf(pointeeTy(lookupTy(TY)), PROJS)
+  rule getTyOf( _, projectionElemField(_, TY)           PROJS ) => getTyOf(TY, PROJS) // could also look it up
   
-  rule getTyOf(TY, projectionElemIndex(_)               PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS, TYPEMAP ) => getTyOf(elemTy({TYPEMAP[TY]}:>TypeInfo), PROJS, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY])
-  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // TODO assumes TY is already a slice type
+  rule getTyOf(TY, projectionElemIndex(_)               PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
+  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
+  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TY, PROJS) // TODO assumes TY is already a slice type
 
-  rule getTyOf(TY, projectionElemDowncast(_)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP) // unchanged type, just setting variantIdx
+  rule getTyOf(TY, projectionElemDowncast(_)            PROJS) => getTyOf(TY, PROJS) // unchanged type, just setting variantIdx
 
-  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TY, PROJS)
 
-  rule getTyOf( _, projectionElemSubtype(TY)            PROJS, TYPEMAP ) => getTyOf(TY, PROJS, TYPEMAP)
+  rule getTyOf( _, projectionElemSubtype(TY)            PROJS) => getTyOf(TY, PROJS)
   // -----------------------------------------------------------
-  rule getTyOf(_, _, _) => TyUnknown [owise]
+  rule getTyOf(_, _) => TyUnknown [owise]
 
 
   syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
@@ -122,34 +113,33 @@ A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
 ```k
-  syntax Metadata ::= #metadata    ( Ty , ProjectionElems , Map ) [function, total]
-                    | #metadata    (  MaybeTy , Map )             [function, total]
-                    | #metadataAux ( TypeInfo , Map )             [function, total]
+  syntax Metadata ::= #metadata    ( Ty , ProjectionElems ) [function, total]
+                    | #metadata    (  MaybeTy )             [function, total]
+                    | #metadataAux ( TypeInfo )             [function, total]
   // ------------------------------------------------------------
-  rule #metadata(TY, PROJS, TYPEMAP) => #metadata(getTyOf(TY, PROJS, TYPEMAP), TYPEMAP)
+  rule #metadata(TY, PROJS) => #metadata(getTyOf(TY, PROJS))
 
-  rule #metadata(TY, TYPEMAP) => #metadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
-    requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
-  rule #metadata( _,       _) => noMetadata [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
+  rule #metadata(TyUnknown) => noMetadata
+  rule #metadata(TY) => #metadataAux(lookupTy(TY))
 
-  rule #metadataAux(typeInfoArrayType(_, noTyConst                     ),    _   ) => dynamicSize(1)
-  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP))
-  rule #metadataAux(    _OTHER                                          ,    _   ) => noMetadata     [owise]
+  rule #metadataAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
+  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
+  rule #metadataAux(    _OTHER                                          ) => noMetadata     [owise]
 ```
 
 
 ```k
   // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind , Map ) [function]
+  syntax Int ::= readTyConstInt ( TyConstKind ) [function]
   // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Unsigned)
-    requires isUintTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf(lookupTy(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
     [preserves-definedness]
 
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _)), TYPEMAP) => Bytes2Int(BYTES, LE, Signed  )
-    requires isIntTy(#numTypeOf({TYPEMAP[TY]}:>TypeInfo))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf({TYPEMAP[TY]}:>TypeInfo)) /Int 8
+  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf(lookupTy(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
     [preserves-definedness]
 ```
 
