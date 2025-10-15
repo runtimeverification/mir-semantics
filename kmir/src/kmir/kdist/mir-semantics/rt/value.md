@@ -33,9 +33,9 @@ The special `Moved` value represents values that have been used and should not b
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability , Metadata )
+                 | Reference( Int , Place , Mutability , Metadata , Int )
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable
+                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable, pointer offset (for references made from offset raw pointers)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, PtrEmulation )

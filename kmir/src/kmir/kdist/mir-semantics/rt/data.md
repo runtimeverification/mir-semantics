@@ -360,8 +360,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   syntax Value ::= #adjustRef (Value, Int ) [function, total]
   // --------------------------------------------------------
-  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
-    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
+  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META, PTR_OFFSET), OFFSET)
+    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META, PTR_OFFSET)
   rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, EMULATION), OFFSET)
     => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, EMULATION)
   rule #adjustRef(Aggregate(IDX, ARGS), OFFSET)
@@ -610,7 +610,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META),
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, META, _PTR_OFFSET),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -630,7 +630,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, META),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, META, _PTR_OFFSET),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -969,15 +969,20 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, META)
-        => #mkRef(DEST, #projectionsFor(CTXTS), MUT, #maybeDynamicSize(META, VAL))
+        => #mkRef(DEST, #projectionsFor(CTXTS), MUT, #maybeDynamicSize(META, VAL), 0) // TODO This needs to be changed
         ...
       </k>
 
-  syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) // [function, total]
+  syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata , Int ) // [function, total]
   // -----------------------------------------------------------------------------------------------
-  rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META) ... </k>
-  rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
-  rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
+  // Create Reference for local variable (stack depth 0, no offset)
+  rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META, PTR_OFFSET) => Reference(   0  , place(local(I), PROJS), MUT, META, PTR_OFFSET) ... </k>
+
+  // Create Reference for stack frame variable (stack depth OFFSET, with pointer offset)
+  rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META, PTR_OFFSET) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META, PTR_OFFSET) ... </k>
+
+  // Create AllocRef for heap allocation (no offset concept for heap)
+  rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META, _PTR_OFFSET) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
 
   syntax Metadata ::= #maybeDynamicSize ( Metadata , Value ) [function, total]
   // -------------------------------------------------------------------------
@@ -1053,12 +1058,12 @@ a special rule for this case is applied with higher priority.
 
   syntax Bool ::= isRef ( Value ) [function, total]
   // -----------------------------------------------------
-  rule isRef(Reference(_, _, _, _)) => true
+  rule isRef(Reference(_, _, _, _, _)) => true
   rule isRef(     _OTHER          ) => false [owise]
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META, 0, NoOrigin))
+  rule refToPtrLocal(Reference(OFFSET, PLACE, _, META, PTR_OFFSET), MUT) => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(META, PTR_OFFSET, NoOrigin))
 ```
 
 ## Type casts
@@ -1233,9 +1238,9 @@ Specifically, pointers to arrays of statically-known length are cast to pointers
 The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
-  rule <k> #cast(Reference(OFFSET, PLACE, MUT, staticSize(SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(Reference(OFFSET, PLACE, MUT, staticSize(SIZE), PTR_OFFSET), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            Reference(OFFSET, PLACE, MUT, dynamicSize(SIZE))
+            Reference(OFFSET, PLACE, MUT, dynamicSize(SIZE), PTR_OFFSET)
           ...
         </k>
       //   <types> TYPEMAP </types>
@@ -1261,7 +1266,7 @@ Support for `castKindTransmute` in this semantics is very limited because of the
 What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
 
 ```k
-  rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+  rule <k> #cast(Reference(_, _, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
        <types> TYPEMAP </types>
       requires TY_SOURCE in_keys(TYPEMAP)
        andBool TY_TARGET in_keys(TYPEMAP)
@@ -1758,7 +1763,7 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 * For values with statically-known size, this operation returns a _unit_ value. However, these calls should not occur in practical programs.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE)))              => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, dynamicSize(SIZE), _))              => Integer(SIZE, 64, false) ... </k>
   rule <k> #applyUnOp(unOpPtrMetadata, PtrLocal(_, _, _, ptrEmulation(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
 
   // could add a rule for cases without metadata

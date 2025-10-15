@@ -41,7 +41,7 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , dynamicSize ( 8 ) ) , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , dynamicSize ( 8 ) , 0 ) , ty ( 26 ) , mutabilityNot ) )
       ListItem ( typedValue ( Moved , ty ( 38 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 29 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 39 ) , mutabilityMut ) )
@@ -64,8 +64,8 @@
       ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 41 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 39 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , dynamicSize ( 4 ) ) , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , staticSize ( 4 ) ) , ty ( 41 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , dynamicSize ( 4 ) , 0 ) , ty ( 26 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , staticSize ( 4 ) , 0 ) , ty ( 41 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 42 ) , mutabilityNot ) )
       ListItem ( typedValue ( PtrLocal ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , ptrEmulation ( staticSize ( 9 ) , 0 , PtrLocal ( 0 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , ptrEmulation ( noMetadata , 0 , PtrLocal ( 1 , place (... local: local ( 5 ) , projection: .ProjectionElems ) , mutabilityNot , ptrEmulation ( dynamicSize ( 4 ) , 0 , NoOrigin ) ) ) ) ) ) , ty ( 37 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
@@ -83,7 +83,7 @@
     ListItem ( Integer ( 42 , 8 , false ) ) ) , ty ( 30 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , staticSize ( 8 ) ) , ty ( 31 ) , mutabilityNot ) ) ) )
+    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , staticSize ( 8 ) , 0 ) , ty ( 31 ) , mutabilityNot ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
   <memory>
