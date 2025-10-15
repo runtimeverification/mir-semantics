@@ -67,9 +67,16 @@ def _kmir_run_x(opts: RunOpts) -> None:
     # produce and compile a module and re-load a KMIR object with it
     smir_info = SMIRInfo.from_file(Path(opts.file))
 
-    # code from prove_x factored into a constructor. Should share code later
-    kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend, keep_module=True)
+    # kmir = KMIR.from_kompiled_program(smir_info, symbolic=opts.haskell_backend, keep_module=True)
+    # result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
+    # print(kmir.kore_to_pretty(result))
 
+    # with tempfile.TemporaryDirectory() as work_dir:
+    #     kmir = KMIR.from_kompiled_via_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
+    #     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
+    #     print(kmir.kore_to_pretty(result))
+
+    kmir = KMIR.from_kompiled_via_kore(smir_info, symbolic=opts.haskell_backend)  # leaves out-kore behind
     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
     print(kmir.kore_to_pretty(result))
 
@@ -106,7 +113,9 @@ def _kmir_prove_x(opts: ProveRSOpts) -> None:
     _LOGGER.info(f'Reduced items table size from {len(all_smir.items)} to {len(reduced.items)}.')
 
     # produce a KMIR object with a compiled module for the program
-    kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True, bug_report=opts.bug_report)
+
+    # kmir = KMIR.from_kompiled_program(reduced, symbolic=True, keep_module=True, bug_report=opts.bug_report)
+    kmir = KMIR.from_kompiled_via_kore(reduced, symbolic=True, bug_report=opts.bug_report)  # TODO use proof dir/label!
 
     # run a modified prove_rs (inlined here) with this
     label = str(opts.rs_file.stem) + '.' + opts.start_symbol
