@@ -301,6 +301,10 @@ class KMIR(KProve, KRun, KParse):
     def make_kore_rules(self, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
         equations = []
 
+        # kprint tool is too chatty
+        kprint_logger = logging.getLogger('pyk.ktool.kprint')
+        kprint_logger.setLevel(logging.WARNING)
+
         for fty, kind in self.functions(smir_info).items():
             equations.append(
                 self._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind')
