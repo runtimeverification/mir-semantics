@@ -360,7 +360,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
-  syntax List ::= #getBlocks( Ty )               [function]
+  syntax List ::= #getBlocks( Ty )               [function, total]
                 | #getBlocksAux( MonoItemKind )  [function, total]
 
   rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))

@@ -702,6 +702,7 @@ even though this could be supported.
         ...
         </k>
     requires isValue(lookupAlloc(ALLOC_ID))
+    [preserves-definedness] // sort projection checked
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
