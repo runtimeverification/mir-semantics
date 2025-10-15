@@ -94,43 +94,16 @@ def _kmir_gen_mod(opts: GenSpecOpts) -> None:
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rs(opts)
+    proof = kmir.prove_rss(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
 
 
 def _kmir_prove_x(opts: ProveRSOpts) -> None:
-
-    # modules get too big for the compiler to handle them, reduce items here
-    # (prevents reuse of the generated definition, though)
-    all_smir = SMIRInfo.from_file(opts.rs_file)
-    reduced = all_smir.reduce_to(opts.start_symbol)
-    _LOGGER.info(f'Reduced items table size from {len(all_smir.items)} to {len(reduced.items)}.')
-
-    # produce a KMIR object with a compiled module for the program
-
-    kmir = KMIR.from_kompiled_kore(reduced, symbolic=True, bug_report=opts.bug_report)  # TODO use proof dir/label!
-
-    # run a modified prove_rs (inlined here) with this
-    label = str(opts.rs_file.stem) + '.' + opts.start_symbol
-    if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-        _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-        apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
-    else:
-        _LOGGER.info(f'Constructing initial proof: {label}')
-        smir_info = SMIRInfo.from_file(opts.rs_file)
-
-        apr_proof = kmir.apr_proof_from_smir(label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir)
-        # if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-        #     smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
-    if not apr_proof.passed:
-        with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
-
-    print(str(apr_proof.summary))
-    if not apr_proof.passed:
+    proof = KMIR.prove_rs(opts)
+    print(str(proof.summary))
+    if not proof.passed:
         sys.exit(1)
 
 
