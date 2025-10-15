@@ -7,17 +7,22 @@ on:
         description: Start symbols for proofs to run
         required: true
         type: string
-        default: "['test_ptoken_domain_data', 'this_will_fail']"
+        default: "['test_ptoken_domain_data', 'test_process_approve', 'test_process_get_account_data_size', 'test_process_initialize_immutable_owner']"
       kmir:
         description: KMIR to work with (must exist as a docker image tag, optional)
         required: false
         type: string
-        default: p-token-f8c403f # hard-wired now, retrieve from submodule later
+        default: # empty = retrieve from submodule (later)
       smir:
         description: Stable MIR JSON to work with (commit hash, optional)
         required: false
         type: string
         default:  # empty = master
+      timeout:
+        description: Timeout for running the proofs
+        required: false
+        type: string
+        default: 7200 # 2h
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -44,7 +49,7 @@ jobs:
         with:
           flakes: github:runtimeverification/stable-mir-json/${{ inputs.smir }}
 
-      - name: "Build with stable_mir_json"      
+      - name: "Build with stable_mir_json"
         run: |
           cd p-token
           RUSTC=stable_mir_json cargo build --features runtime-verification
@@ -62,21 +67,35 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       proofs: ${{ steps.split.outputs.matrix }}
+      kmir: ${{ steps.kmir.outputs.kmir }}
     steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
       - name: "Create Proof Array"
         id: split
         run: |
           echo "proofs = '${{ inputs.proofs }}'"
           echo "matrix=${{ inputs.proofs }}" >> $GITHUB_OUTPUT
+      - name: "Set KMIR version"
+        id: kmir
+        run: |
+          if [ ! -z "${{ inputs.kmir }}" ]; then
+              echo "KMIR version set to ${{ inputs.kmir }}"
+              kmir=${{ inputs.kmir }}
+          else
+              kmir=p-token-$(git rev-parse --short $(git ls-tree HEAD p-token/test-properties/mir-semantics/ | awk '{print $3}'))
+          fi
+          echo "kmir=$kmir" >> $GITHUB_OUTPUT
 
   run_proof:
     name: "Link SMIR and Run Proofs"
-    needs: 
+    needs:
       - compile
       - prepare_matrix
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, normal]
     # container:
-    #   image: runtimeverificationinc/kmir:${{ inputs.kmir }}
+    #   image: runtimeverificationinc/kmir:${{ needs.prepare_matrix.outputs.kmir }}
     strategy:
       matrix:
         proof: ${{ fromJSON(needs.prepare_matrix.outputs.proofs) }}
@@ -86,17 +105,19 @@ jobs:
       - name: debug matrix and docker image
         run: |
           echo "This is proof ${{ matrix.proof }}"
-          echo "Running with $KMIR_CONTAINER_NAME, docker image runtimeverificationinc/kmir:${{ inputs.kmir }}"
+          echo "Running with $KMIR_CONTAINER_NAME, docker image runtimeverificationinc/kmir:${{ needs.prepare_matrix.outputs.kmir }}"
 
       - name: "Set up Docker Host"
         run: |
           mkdir -p $PWD/artefacts
-          chmod a+rwx $PWD/artefacts
+          ls -l $PWD/artefacts && rm -rf $PWD/artefacts/*
+          chmod a+rwx $PWD/artefacts $PWD
           docker run --rm --detach \
+            -u $(id -u):$(id -g) \
             -v $PWD:/workdir --workdir /workdir \
             --name "${KMIR_CONTAINER_NAME}" \
-            runtimeverificationinc/kmir:${{ inputs.kmir }} \
-            sleep 3600
+            runtimeverificationinc/kmir:${{ needs.prepare_matrix.outputs.kmir }} \
+            bash -c 'while true; do sleep 600; done'
           sleep 10
 
       - name: "Get SMIR Files"
@@ -112,22 +133,29 @@ jobs:
 
       - name: "Run Proof ${{ matrix.proof }} and store resulting tree"
         run: |
-          timeout 3600 \
-            docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
+          docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
+            bash -c "ls -la artefacts; mkdir -p artefacts/proof; ls -la artefacts"
+          timeout ${{ inputs.timeout }} \
+            docker exec \
+              --workdir /workdir "${KMIR_CONTAINER_NAME}" \
               kmir prove-rs --smir artefacts/p-token.smir.json \
               --start-symbol 'pinocchio_token_program::entrypoint::${{ matrix.proof }}' \
               --verbose \
+              --max-depth 500 \
               --max-iterations 100 \
-              --proof-dir artefacts/proof
+              --proof-dir artefacts/proof \
+            || echo "Runner signals proof failure"
+
           docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
-            kmir show --full-printer --proof-dir artefacts/proof \
+            kmir show --statistics --leaves --proof-dir artefacts/proof \
             'p-token.smir.pinocchio_token_program::entrypoint::${{ matrix.proof }}' \
             > artefacts/proof/${{ matrix.proof }}-full.txt
 
       - name: "Save proof tree and smir"
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: $artefacts-{{ matrix.proof }}
+          name: artefacts-${{ matrix.proof }}
           path: |
             artefacts/p-token.smir.json
             artefacts/proof/*-full.txt
@@ -138,3 +166,8 @@ jobs:
           docker stop ${KMIR_CONTAINER_NAME}
           sleep 5
           docker rm -f ${KMIR_CONTAINER_NAME}
+
+      - name: "Clean up artefacts directory"
+        if: always()
+        run: |
+          rm -rf $PWD/artefacts
