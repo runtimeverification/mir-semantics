@@ -871,13 +871,13 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(dynamicSize(LENGTH), 0, NoOrigin))
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, ptrEmulation(_META, PTR_OFFSET, _ORIGIN)) #as ORIG_PTR) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(dynamicSize(LENGTH), PTR_OFFSET, ORIG_PTR))
         ...
        </k>
 
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, _)) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata, 0, NoOrigin))
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, ptrEmulation(_META, PTR_OFFSET, _ORIGIN)) #as ORIG_PTR) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, ptrEmulation(noMetadata, PTR_OFFSET, ORIG_PTR))
         ...
        </k>
 ```
