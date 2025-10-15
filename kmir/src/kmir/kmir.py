@@ -11,7 +11,7 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of, map_of
+from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
@@ -269,16 +269,11 @@ class KMIR(KProve, KRun, KParse):
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-        types = self._make_type_map(smir_info)
 
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': self._make_memory_map(smir_info, types),
-            'FUNCTIONS_CELL': self._make_function_map(smir_info),
-            'TYPES_CELL': types,
         }
 
         _init_subst: dict[str, KInner] = {}
@@ -295,16 +290,6 @@ class KMIR(KProve, KRun, KParse):
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
 
-    def _make_memory_map(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        raw_allocs = smir_info._smir['allocs']
-        return map_of(
-            self._decode_alloc(
-                smir_info=smir_info,
-                raw_alloc=raw_alloc,
-            )
-            for raw_alloc in raw_allocs
-        )
-
     def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
         from .decoding import UnableToDecodeValue, decode_alloc_or_unable
 
@@ -320,25 +305,6 @@ class KMIR(KProve, KRun, KParse):
 
         alloc_id_term = KApply('allocId', intToken(alloc_id))
         return alloc_id_term, value.to_kast()
-
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
-        parsed_terms: dict[KInner, KInner] = {}
-        for ty, body in self.functions(smir_info).items():
-            parsed_terms[KApply('ty', [token(ty)])] = body
-        return map_of(parsed_terms)
-
-    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
-        types: dict[KInner, KInner] = {}
-        for type in smir_info._smir['types']:
-            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types[ty] = tyinfo
-        return map_of(types)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
