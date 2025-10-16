@@ -408,31 +408,33 @@ class KMIR(KProve, KRun, KParse):
             raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
         label = str(opts.rs_file.stem) + '.' + opts.start_symbol
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
-            # TODO avoid compilation, use compilation output from the proof directory
-            # kmir = KMIR(opts.proof_dir / label / haskell, opts.proof_dir / label / llvm-library) if they exist
-            # or else implement this in the `from_kompiled_kore` constructor
-            target_path = opts.proof_dir / label
-            smir_info = SMIRInfo.from_file(target_path / 'smir.json')
-            kmir = KMIR.from_kompiled_kore(
-                smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
-            )
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            if opts.smir:
-                smir_info = SMIRInfo.from_file(opts.rs_file)
-            else:
-                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-            smir_info = smir_info.reduce_to(opts.start_symbol)
-            _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target_path = opts.proof_dir / label if opts.proof_dir is not None else Path(tmp_dir)
 
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                target_dir = str(opts.proof_dir / label) if opts.proof_dir is not None else tmp_dir
+            if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+                _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+                apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+
+                # TODO avoid compilation, use compilation output from the proof directory
+                # kmir = KMIR(opts.proof_dir / label / haskell, opts.proof_dir / label / llvm-library) if they exist
+                # or else implement this in the `from_kompiled_kore` constructor
+                smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                )
+            else:
+                _LOGGER.info(f'Constructing initial proof: {label}')
+                if opts.smir:
+                    smir_info = SMIRInfo.from_file(opts.rs_file)
+                else:
+                    smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+
+                smir_info = smir_info.reduce_to(opts.start_symbol)
+                _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
                 )
 
                 apr_proof = kmir.apr_proof_from_smir(
@@ -440,13 +442,14 @@ class KMIR(KProve, KRun, KParse):
                 )
                 if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
                     smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
-        if apr_proof.passed:
-            return apr_proof
 
-        with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
-            return apr_proof
+            if apr_proof.passed:
+                return apr_proof
+
+            with kmir.kcfg_explore(label) as kcfg_explore:
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
+                return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):
