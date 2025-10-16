@@ -32,34 +32,4 @@
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <memory>
-    .Map
-  </memory>
-  <functions>
-    ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
-    ty ( 25 ) |-> monoItemFn (... name: symbol ( "a" ) , id: defId ( 7 ) , body: someBody ( body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 55 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 26 ) , id: mirConstId ( 10 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 56 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 57 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 58 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 59 ) ) ) )
-    ty ( 26 ) |-> monoItemFn (... name: symbol ( "b" ) , id: defId ( 8 ) , body: someBody ( body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 60 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 11 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 61 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 62 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 63 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 64 ) ) ) )
-    ty ( 27 ) |-> monoItemFn (... name: symbol ( "c" ) , id: defId ( 9 ) , body: someBody ( body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 66 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 67 ) ) ) )
-    ty ( -1 ) |-> monoItemFn (... name: symbol ( "main" ) , id: defId ( 6 ) , body: someBody ( body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 25 ) , id: mirConstId ( 9 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 52 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 53 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 54 ) ) ) )
-  </functions>
-  <start-symbol>
-    symbol ( "main" )
-  </start-symbol>
-  <types>
-    ty ( 1 ) |-> typeInfoTupleType ( .Tys )
-    ty ( 5 ) |-> typeInfoRefType ( ty ( 28 ) )
-    ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
-    ty ( 8 ) |-> typeInfoPtrType ( ty ( 29 ) )
-    ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType (... name: "std::result::Result<isize, !>" , adtDef: adtDef ( 21 ) , discriminants: discriminant ( 0 )  discriminant ( 1 )  .Discriminants , fields: ty ( 6 )  .Tys : ty ( 30 )  .Tys : .Tyss , layout: someLayoutShape ( layoutShape (... fields: fieldsShapeArbitrary ( mk (... offsets: machineSize (... numBits: 0 )  .MachineSizes ) ) , variants: variantsShapeSingle ( mk (... index: variantIdx ( 0 ) ) ) , abi: valueAbiScalar ( scalarInitialized ( mk (... value: primitiveInt ( mk (... length: integerLengthI64 , signed: true ) ) , validRange: wrappingRange (... start: 0 , end: 18446744073709551615 ) ) ) ) , abiAlign: align ( 8 ) , size: machineSize (... numBits: 64 ) ) ) )
-    ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 13 ) , ty ( 9 )  .Tys )
-    ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 11 ) , ty ( 15 )  .Tys )
-    ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
-    ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
-    ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 29 ) |-> typeInfoPtrType ( ty ( 9 ) )
-    ty ( 30 ) |-> typeInfoVoidType
-  </types>
 </kmir>

@@ -14,7 +14,6 @@ from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
 from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
-from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.cargo import CargoProject
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
@@ -307,7 +306,7 @@ EXEC_DATA = [
 ]
 
 
-@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
+@pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -315,17 +314,18 @@ EXEC_DATA = [
 )
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
-    kmir_backend: KMIR,
+    symbolic: bool,
     update_expected_output: bool,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
     smir_info = SMIRInfo.from_file(input_json)
 
-    result = kmir_backend.run_smir(smir_info, depth=depth)
-
-    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
-    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=temp_dir, symbolic=symbolic)
+        result = kmir_backend.run_smir(smir_info, depth=depth)
+        result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
+        assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
 
 
 @pytest.mark.parametrize(

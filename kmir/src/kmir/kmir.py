@@ -24,7 +24,7 @@ from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import cargo_get_smir_json
 from .kast import mk_call_terminator, symbolic_locals
 from .kparse import KParse
@@ -166,6 +166,7 @@ class KMIR(KProve, KRun, KParse):
                     'llvm-kompile',
                     str(llvm_def_output),
                     str(target_llvmdt_path),
+                    'main',
                     '-O2',
                     '--',
                     '-o',
@@ -173,6 +174,12 @@ class KMIR(KProve, KRun, KParse):
                 ],
                 check=True,
             )
+            #            for file in ['mainModule.txt', 'mainSyntaxModule.txt', 'backend.txt', 'compiled.json', 'scanner']:
+            blacklist = ['definition.kore', 'interpreter', 'dt']
+            to_copy = [file.name for file in LLVM_DEF_DIR.iterdir() if file.name not in blacklist]
+            for file in to_copy:
+                _LOGGER.info(f'Copying file {file}')
+                shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
             return KMIR(target_llvm_path, None, bug_report=bug_report)
 
     class Symbols:

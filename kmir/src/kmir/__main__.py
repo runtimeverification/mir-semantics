@@ -234,7 +234,7 @@ def kmir(args: Sequence[str]) -> None:
     logging.basicConfig(level=_loglevel(ns), format=_LOG_FORMAT)
     match opts:
         case RunOpts():
-             _kmir_run(opts)
+            _kmir_run(opts)
         case GenSpecOpts():
             _kmir_gen_mod(opts)
         case InfoOpts():
