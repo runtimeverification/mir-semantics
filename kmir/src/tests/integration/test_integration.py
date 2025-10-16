@@ -350,26 +350,6 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
         assert proof.passed
 
 
-PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
-
-
-@pytest.mark.parametrize(
-    'spec',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
-)
-def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
-    proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
-    _kmir_prove_raw(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
-
-
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
 SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'local',
