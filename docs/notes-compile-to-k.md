@@ -74,3 +74,65 @@ The configuration is executed with the compiled module.
      - need to extend `pyk` with a `kast` pretty-printer. The `kast` format specification is somewhat tricky and incomplete, as I was told.
    Work-around 1 appears to work, code developed on new branch extending the other.
    
+
+# Technical work to prepare the change
+
+## Integration tests
+- [ ] `test_decode_value`: need to replace type map by definition contents (non-python tests only)
+  - pre-compile an LLVM interpreter with the types fixed to a standard table (covering all test cases)
+  - alternative is compiling once per test, bad.
+- [ ] `exec_smir`: needs an implementation of `kmir run` for concrete execution, LLVM and Haskell
+  - KMIR.run_smir should just be a static method, preparing the definition beforehand
+  - BTW the _binary_ format is the problem for `kmir run` with `--backend haskell`
+- [ ] `prove_rs`:
+  - [X] turned `KMIR.prove_rs` into a static method, preparing the definition beforehand
+  - [ ] proof failures: 
+    ```
+    FAILED test_prove_termination[Ref-weirdRefs] - assert False
+    FAILED test_prove_termination[Array-indexing] - assert False
+    FAILED test_prove_termination[Array-index-writes] - assert False
+    FAILED test_prove_termination[Array-inlined] - assert False
+    FAILED test_prove_termination[Alloc-array-const-compare] - assert False
+    FAILED test_prove_termination[niche-enum] - assert False
+    FAILED test_prove_termination[main-a-b-c] - assert False
+    FAILED test_prove_termination[assign-cast] - assert False
+    FAILED test_prove_termination[struct-field-update] - assert False
+    FAILED test_prove_termination[arithmetic] - assert False
+    FAILED test_prove_termination[arithmetic-unchecked] - assert False
+    FAILED test_prove_termination[unary] - assert False
+    FAILED test_prove_termination[Ref-simple] - assert False
+    FAILED test_prove_termination[Ref-refAsArg] - assert False
+    FAILED test_prove_termination[Ref-doubleRef] - assert False
+    ```
+    - `test_prove_termination` for all failing tests.
+    - uses `gen-spec` and `prove-raw`
+    - should instead use `prove-rs --smir`
+
+  - [ ] compilation failures (non-deterministic):
+    ```
+    FAILED test_prove_rs[double-ref-deref] - subprocess.CalledProcessError: Command '['llvm-kompile', 'out-kore/llvm-library/definition.kore', 'out-kore/llvm-library/dt', 'c', '-O2', '--', '-o', PosixPath('out-kore/llvm-library/interpreter')]'...
+    FAILED test_prove_rs[array_nest_compare] - subprocess.CalledProcessError: Command '['llvm-kompile', 'out-kore/llvm-library/definition.kore', 'out-kore/llvm-library/dt', 'c', '-O2', '--', '-o', PosixPath('out-kore/llvm-library/interpreter')]'...
+    FAILED test_prove_rs[branch-negative] - subprocess.CalledProcessError: Command '['llvm-kompile', 'out-kore/llvm-library/definition.kore', 'out-kore/llvm-library/dt', 'c', '-O2', '--', '-o', PosixPath('out-kore/llvm-library/interpreter')]'...
+    FAILED test_prove_rs[bitwise-not-shift] - subprocess.CalledProcessError: Command '['llvm-kompile', 'out-kore/llvm-library/definition.kore', 'out-kore/llvm-library/dt', 'c', '-O2', '--', '-o', PosixPath('out-kore/llvm-library/interpreter')]'...
+    FAILED test_prove_rs[pointer-cast] - subprocess.CalledProcessError: Command '['llvm-kompile', 'out-kore/llvm-library/definition.kore', 'out-kore/llvm-library/dt', 'c', '-O2', '--', '-o', PosixPath('out-kore/llvm-library/interpreter')]'...
+    ```
+    - caused by concurrent access to the same files. Need to compile into temp directory or proof-dir
+  - [ ] Unexpected output: Probably always an additional step to an unknown function
+    ```
+    FAILED kmir/src/tests/integration/test_cli.py::test_cli_show_statistics_and_leaves - AssertionError: The actual output does not match the expected output:
+    FAILED test_prove_rs[symbolic-structs-fail] - AssertionError: The actual output does not match the expected output:
+    FAILED test_crate_examples[single-lib] - AssertionError: The actual output does not match the expected output:
+    FAILED test_prove_rs[symbolic-args-fail] - AssertionError: The actual output does not match the expected output:
+    FAILED test_prove_rs[pointer-cast-length-test-fail] - AssertionError: The actual output does not match the expected output:
+    ```
+    - could extend the function lookup and provide the symbol name for functions not present in the items table.
+    - or just leave things as they are, not much difference to before (getting stuck one step later now)
+- [ ] `test_prove`: single test with a checked-in spec file. Delete this test!
+
+1. use temp directory or proof directory for prove-rs DONE
+2. do not copy the bin file for HS backend DONE
+3. implement LLVM backend compilation for concrete execution 
+4. implement KMIR.run_rs static (with the above)
+   - or rather factor out the compilation method and revert prove_rs change
+5. delete `test_prove` test
+6. re-test (without `test_decode_value`)

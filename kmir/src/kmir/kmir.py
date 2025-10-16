@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import shutil
+import tempfile
 from contextlib import contextmanager
 from functools import cached_property
 from pathlib import Path
@@ -59,7 +60,7 @@ class KMIR(KProve, KRun, KParse):
 
     @staticmethod
     def from_kompiled_kore(
-        smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = True, target_dir: str | None = None
+        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
@@ -81,7 +82,7 @@ class KMIR(KProve, KRun, KParse):
             with open(output_file, 'w') as f:
                 f.writelines(new_lines)
 
-        target_path = Path(target_dir) if target_dir is not None else Path('out-kore')
+        target_path = Path(target_dir)
         # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
         # to decide whether or not to recompile. For now we always recompile.
         target_path.mkdir(parents=True, exist_ok=True)
@@ -89,63 +90,90 @@ class KMIR(KProve, KRun, KParse):
         rules = kmir.make_kore_rules(smir_info)
         _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
-        if not symbolic:
-            raise Exception('Non-symbolic (LLVM) kore-module not implemented')
-
         # Create output directories
         target_llvm_path = target_path / 'llvm-library'
         target_llvmdt_path = target_llvm_path / 'dt'
         target_hs_path = target_path / 'haskell'
 
-        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-        target_hs_path.mkdir(parents=True, exist_ok=True)
+        if symbolic:
+            _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
+            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+            target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        # Process LLVM definition
-        _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+            # Process LLVM definition
+            _LOGGER.info('Writing LLVM definition file')
+            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+            llvm_def_output = target_llvm_path / 'definition.kore'
+            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
-        # Run llvm-kompile-matching and llvm-kompile for LLVM
-        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-        # TODO align compilation options to what we use in plugin.py
-        import subprocess
+            # Run llvm-kompile-matching and llvm-kompile for LLVM
+            # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
+            # TODO align compilation options to what we use in plugin.py
+            import subprocess
 
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'c',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_path / 'interpreter',
-            ],
-            check=True,
-        )
+            _LOGGER.info('Running llvm-kompile-matching')
+            subprocess.run(
+                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
+            )
+            _LOGGER.info('Running llvm-kompile')
+            subprocess.run(
+                [
+                    'llvm-kompile',
+                    str(llvm_def_output),
+                    str(target_llvmdt_path),
+                    'c',
+                    '-O2',
+                    '--',
+                    '-o',
+                    target_llvm_path / 'interpreter',
+                ],
+                check=True,
+            )
 
-        # Process Haskell definition
-        _LOGGER.info('Writing Haskell definition file')
-        hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
-        _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
+            # Process Haskell definition
+            _LOGGER.info('Writing Haskell definition file')
+            hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
+            _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
 
-        # Copy all files except definition.kore from HASKELL_DEF_DIR to out/hs
-        _LOGGER.info('Copying other artefacts into HS output directory')
-        for file_path in HASKELL_DEF_DIR.iterdir():
-            if file_path.name != 'definition.kore':
-                if file_path.is_file():
-                    shutil.copy2(file_path, target_hs_path / file_path.name)
-                elif file_path.is_dir():
-                    shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+            # Copy all files except definition.kore and binary from HASKELL_DEF_DIR to out/hs
+            _LOGGER.info('Copying other artefacts into HS output directory')
+            for file_path in HASKELL_DEF_DIR.iterdir():
+                if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
+                    if file_path.is_file():
+                        shutil.copy2(file_path, target_hs_path / file_path.name)
+                    elif file_path.is_dir():
+                        shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+            return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
+        else:
+            import subprocess
 
-        return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
+            _LOGGER.info(f'Creating directory {target_llvmdt_path}')
+            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+
+            # Process LLVM definition
+            _LOGGER.info('Writing LLVM definition file')
+            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+            llvm_def_output = target_llvm_path / 'definition.kore'
+            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+
+            _LOGGER.info('Running llvm-kompile-matching')
+            subprocess.run(
+                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
+            )
+            _LOGGER.info('Running llvm-kompile')
+            subprocess.run(
+                [
+                    'llvm-kompile',
+                    str(llvm_def_output),
+                    str(target_llvmdt_path),
+                    '-O2',
+                    '--',
+                    '-o',
+                    target_llvm_path / 'interpreter',
+                ],
+                check=True,
+            )
+            return KMIR(target_llvm_path, None, bug_report=bug_report)
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
@@ -370,7 +398,7 @@ class KMIR(KProve, KRun, KParse):
     @staticmethod
     def prove_rs(opts: ProveRSOpts) -> APRProof:
         if not opts.rs_file.is_file():
-            raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
+            raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
         label = str(opts.rs_file.stem) + '.' + opts.start_symbol
         if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
@@ -394,14 +422,17 @@ class KMIR(KProve, KRun, KParse):
             smir_info = smir_info.reduce_to(opts.start_symbol)
             _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
 
-            target_dir = str(opts.proof_dir / label) if opts.proof_dir is not None else None
-            kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir)
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                target_dir = str(opts.proof_dir / label) if opts.proof_dir is not None else tmp_dir
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
+                )
 
-            apr_proof = kmir.apr_proof_from_smir(
-                label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
-            )
-            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+                apr_proof = kmir.apr_proof_from_smir(
+                    label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                )
+                if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
+                    smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
         if apr_proof.passed:
             return apr_proof
 

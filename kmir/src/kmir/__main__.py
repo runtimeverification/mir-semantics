@@ -67,14 +67,10 @@ def _kmir_run_x(opts: RunOpts) -> None:
     # produce and compile a module and re-load a KMIR object with it
     smir_info = SMIRInfo.from_file(Path(opts.file))
 
-    # with tempfile.TemporaryDirectory() as work_dir:
-    #     kmir = KMIR.from_kompiled_via_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
-    #     result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
-    #     print(kmir.kore_to_pretty(result))
-
-    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend)  # leaves out-kore behind
-    result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
-    print(kmir.kore_to_pretty(result))
+    with tempfile.TemporaryDirectory() as work_dir:
+        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
+        result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
+        print(kmir.kore_to_pretty(result))
 
 
 def _kmir_gen_mod(opts: GenSpecOpts) -> None:
