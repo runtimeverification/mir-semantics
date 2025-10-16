@@ -1,1 +1,2 @@
-Aggregate ( variantIdx ( 0 ) , Integer ( 255 , 2 , true ) BoolVal(true) .List )
+Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 255 , 16 , true ) )
+ListItem ( BoolVal ( true ) ) )

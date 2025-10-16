@@ -9,7 +9,7 @@ from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .ty import ArrayT, Bool, EnumT, Int, PtrT, RefT, StructT, TupleT, Uint, UnionT
+from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, UintT, UnionT
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -146,15 +146,15 @@ class ArgGenerator:
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
         match self.smir_info.types.get(ty):
-            case Int(info):
+            case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
                 return val, constraints, None
 
-            case Uint(info):
+            case UintT(info):
                 val, constraints = int_var(self._fresh_var('ARG_UINT'), info.value, False)
                 return val, constraints, None
 
-            case Bool():
+            case BoolT():
                 val, constraints = bool_var(self._fresh_var('ARG_BOOL'))
                 return val, constraints, None
 

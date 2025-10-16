@@ -51,6 +51,7 @@ PROVE_RS_SHOW_SPECS = [
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
     'closure_access_struct',
+    'niche-enum',
 ]
 
 
@@ -296,6 +297,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'allocs' / 'array_nest_compare.smir.json',
         EXEC_DATA_DIR / 'allocs' / 'array_nest_compare.state',
         1000,
+    ),
+    (
+        'niche-enum',
+        EXEC_DATA_DIR / 'niche-enum' / 'niche-enum.smir.json',
+        EXEC_DATA_DIR / 'niche-enum' / 'niche-enum.state',
+        None,
     ),
 ]
 
