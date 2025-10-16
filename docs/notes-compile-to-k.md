@@ -131,7 +131,7 @@ The configuration is executed with the compiled module.
 
 1. use temp directory or proof directory for prove-rs DONE
 2. do not copy the bin file for HS backend DONE
-3. implement LLVM backend compilation for concrete execution 
+3. implement LLVM backend compilation for concrete execution DONE
 4. implement KMIR.run_rs static (with the above)
    - or rather factor out the compilation method and revert prove_rs change
 5. delete `test_prove` test
