@@ -32,8 +32,8 @@
       ListItem ( typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
       ListItem ( typedValue ( BoolVal ( true ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 29 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 29 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata , 0 ) , ty ( 29 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata , 0 ) , ty ( 29 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) )
     </locals>
   </currentFrame>

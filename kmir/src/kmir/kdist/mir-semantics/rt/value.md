@@ -35,9 +35,9 @@ The special `Moved` value represents values that have been used and should not b
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability , Metadata )
+                 | Reference( Int , Place , Mutability , Metadata , Int )
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable
+                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable, pointer offset (for references made from offset raw pointers)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, PtrEmulation )
@@ -49,6 +49,8 @@ The special `Moved` value represents values that have been used and should not b
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
                  | "Moved"
                    // The value has been used and is gone now
+                 | "NoOrigin" [symbol(Value::NoOrigin)]
+                   // Sentinel value for pointers without an origin (not created from a cast)
 ```
 
 ### Metadata for References and Pointers
@@ -71,11 +73,13 @@ Other types without metadata use `noMetadata`.
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
 ```
 
-A pointer in Rust carries the same metadata.
+A pointer in Rust carries the same metadata. Pointers can be offset with `BinOpOffset` we track the offset as an integer.
+Additionally, we track the origin pointer when a pointer is created via a `PtrToPtr` cast, to preserve provenance information.
 
 
 ```k
-  syntax PtrEmulation ::= ptrEmulation ( Metadata ) [symbol(PtrEmulation)]
+  syntax PtrEmulation ::= ptrEmulation ( Metadata , Int , Value ) [symbol(PtrEmulation)]
+  // metadata, offset, origin
 ```
 
 ## Local variables
