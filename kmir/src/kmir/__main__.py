@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
 from pyk.kast.pretty import PrettyPrinter
-from pyk.proof.reachability import APRProof, APRProver
+from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
@@ -21,7 +21,6 @@ from .linker import link
 from .options import (
     InfoOpts,
     LinkOpts,
-    ProveRawOpts,
     ProveRSOpts,
     PruneOpts,
     RunOpts,
@@ -66,26 +65,6 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
-
-
-def _kmir_prove_raw(opts: ProveRawOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    claim_index = kmir.get_claim_index(opts.spec_file)
-    labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
-    for label in labels:
-        print(f'Proving {label}')
-        claim = claim_index[label]
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            proof = APRProof.read_proof_data(opts.proof_dir, label)
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
-        with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(proof, max_iterations=opts.max_iterations)
-        summary = proof.summary
-        print(f'{summary}')
 
 
 def _kmir_view(opts: ViewOpts) -> None:
@@ -182,8 +161,6 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_run(opts)
         case InfoOpts():
             _kmir_info(opts)
-        case ProveRawOpts():
-            _kmir_prove_raw(opts)
         case ViewOpts():
             _kmir_view(opts)
         case ShowOpts():
@@ -232,17 +209,6 @@ def _arg_parser() -> ArgumentParser:
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     proof_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
-
-    prove_raw_parser = command_parser.add_parser(
-        'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args, prove_args]
-    )
-    prove_raw_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
-    prove_raw_parser.add_argument(
-        '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
-    )
-    prove_raw_parser.add_argument(
-        '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
-    )
 
     display_args = ArgumentParser(add_help=False)
     display_args.add_argument(
@@ -353,18 +319,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             )
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
-        case 'prove':
-            proof_dir = Path(ns.proof_dir)
-            return ProveRawOpts(
-                spec_file=Path(ns.input_file),
-                proof_dir=ns.proof_dir,
-                include_labels=ns.include_labels,
-                exclude_labels=ns.exclude_labels,
-                bug_report=ns.bug_report,
-                max_depth=ns.max_depth,
-                reload=ns.reload,
-                max_iterations=ns.max_iterations,
-            )
         case 'show':
             return ShowOpts(
                 proof_dir=Path(ns.proof_dir),
