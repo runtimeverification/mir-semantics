@@ -90,12 +90,12 @@ class KMIR(KProve, KRun, KParse):
         rules = kmir.make_kore_rules(smir_info)
         _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
-        # Create output directories
-        target_llvm_path = target_path / 'llvm-library'
-        target_llvmdt_path = target_llvm_path / 'dt'
-        target_hs_path = target_path / 'haskell'
-
         if symbolic:
+            # Create output directories
+            target_llvm_path = target_path / 'llvm-library'
+            target_llvmdt_path = target_llvm_path / 'dt'
+            target_hs_path = target_path / 'haskell'
+
             _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
             target_llvmdt_path.mkdir(parents=True, exist_ok=True)
             target_hs_path.mkdir(parents=True, exist_ok=True)
@@ -145,8 +145,9 @@ class KMIR(KProve, KRun, KParse):
                         shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
             return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
         else:
-            import subprocess
 
+            target_llvm_path = target_path / 'llvm'
+            target_llvmdt_path = target_llvm_path / 'dt'
             _LOGGER.info(f'Creating directory {target_llvmdt_path}')
             target_llvmdt_path.mkdir(parents=True, exist_ok=True)
 
@@ -156,6 +157,7 @@ class KMIR(KProve, KRun, KParse):
             llvm_def_output = target_llvm_path / 'definition.kore'
             _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
+            import subprocess
             _LOGGER.info('Running llvm-kompile-matching')
             subprocess.run(
                 ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
@@ -174,7 +176,6 @@ class KMIR(KProve, KRun, KParse):
                 ],
                 check=True,
             )
-            #            for file in ['mainModule.txt', 'mainSyntaxModule.txt', 'backend.txt', 'compiled.json', 'scanner']:
             blacklist = ['definition.kore', 'interpreter', 'dt']
             to_copy = [file.name for file in LLVM_DEF_DIR.iterdir() if file.name not in blacklist]
             for file in to_copy:
