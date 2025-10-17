@@ -113,7 +113,7 @@ To make this function total, an optional `MaybeTy` is used.
 ## Static and Dynamic Metadata for Types
 
 References to data on the heap or stack may require metadata, most commonly the size of slices, which is not statically known.
-The helper function `#metadata` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `Metadata` sort in `value.md`).
+The helper function `#metadataSize` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `MetadataSize` sort in `value.md`).
 To avoid repeated lookups, static array sizes are also stored as metadata (for `Unsize` casts).
 
 NB that the need for metadata is determined for the _pointee_ type, not the pointer type.
@@ -122,19 +122,19 @@ A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
 ```k
-  syntax Metadata ::= #metadata    ( Ty , ProjectionElems , Map ) [function, total]
-                    | #metadata    (  MaybeTy , Map )             [function, total]
-                    | #metadataAux ( TypeInfo , Map )             [function, total]
-  // ------------------------------------------------------------
-  rule #metadata(TY, PROJS, TYPEMAP) => #metadata(getTyOf(TY, PROJS, TYPEMAP), TYPEMAP)
+  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems , Map ) [function, total]
+                        | #metadataSize    (  MaybeTy , Map )             [function, total]
+                        | #metadataSizeAux ( TypeInfo , Map )             [function, total]
+  // --------------------------------------------------------------------------------------
+  rule #metadataSize(TY, PROJS, TYPEMAP) => #metadataSize(getTyOf(TY, PROJS, TYPEMAP), TYPEMAP)
 
-  rule #metadata(TY, TYPEMAP) => #metadataAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
+  rule #metadataSize(TY, TYPEMAP) => #metadataSizeAux({TYPEMAP[TY]}:>TypeInfo, TYPEMAP)
     requires TY in_keys(TYPEMAP) andBool isTypeInfo(TYPEMAP[TY]) [preserves-definedness] // valid map key and sort coercion
-  rule #metadata( _,       _) => noMetadata [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
+  rule #metadataSize( _,       _) => noMetadataSize [owise, preserves-definedness]  // if the type is not known, assume no metadata is required
 
-  rule #metadataAux(typeInfoArrayType(_, noTyConst                     ),    _   ) => dynamicSize(1)
-  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP))
-  rule #metadataAux(    _OTHER                                          ,    _   ) => noMetadata     [owise]
+  rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     ),    _   ) => dynamicSize(1)
+  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _))), TYPEMAP) => staticSize(readTyConstInt(CONST, TYPEMAP))
+  rule #metadataSizeAux(    _OTHER                                          ,    _   ) => noMetadataSize     [owise]
 ```
 
 

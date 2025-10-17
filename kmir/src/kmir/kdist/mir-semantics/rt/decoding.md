@@ -106,11 +106,11 @@ Known element sizes for common types:
 
   // thin and fat pointers
   rule #elemSize(typeInfoRefType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
-    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
+    requires dynamicSize(1) ==K #metadataSize(TY, TYPEMAP)
   rule #elemSize(typeInfoRefType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
     [owise]
   rule #elemSize(typeInfoPtrType(TY), TYPEMAP) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
-    requires dynamicSize(1) ==K #metadata(TY, TYPEMAP)
+    requires dynamicSize(1) ==K #metadataSize(TY, TYPEMAP)
   rule #elemSize(typeInfoPtrType(_), _TYPEMAP) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)), .Map)
     [owise]
 
@@ -324,7 +324,7 @@ The reference metadata is either determined statically by type, or filled in fro
      andBool isTypeInfo(TYPEMAP[TY])
      andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type
      andBool lengthBytes(BYTES) ==Int 16 // sufficient data to decode dynamic size (assumes usize == u64)
-     andBool dynamicSize(1) ==K #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP) // expect fat pointer
+     andBool dynamicSize(1) ==K #metadataSize(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP) // expect fat pointer
     [preserves-definedness] // valid type lookup ensured
 
   // Otherwise query type information for static size and insert it.
@@ -334,7 +334,7 @@ The reference metadata is either determined statically by type, or filled in fro
           allocation(BYTES, provenanceMap(provenanceMapEntry(0, REF_ID) ), _ALIGN, _MUT),
           TYPEMAP
         )
-      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadata(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
+      => ID |-> AllocRef(REF_ID, .ProjectionElems, #metadataSize(pointeeTy({TYPEMAP[TY]}:>TypeInfo), TYPEMAP))
     requires TY in_keys(TYPEMAP)
      andBool isTypeInfo(TYPEMAP[TY])
      andBool isTy(pointeeTy({TYPEMAP[TY]}:>TypeInfo)) // ensures this is a reference type

@@ -33,21 +33,19 @@ The special `Moved` value represents values that have been used and should not b
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability , Metadata , Int )
+                 | Reference( Int , Place , Mutability , Metadata)
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable, pointer offset (for references made from offset raw pointers)
+                   // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability, PtrEmulation )
+                 | PtrLocal( Int , Place , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
-                   // first 3 fields are the same as in Reference, plus pointee metadata
-                 | AllocRef ( AllocId , ProjectionElems , Metadata )
-                   // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
+                   // fields are the same as a Reference
+                 | AllocRef ( AllocId , ProjectionElems , MetadataSize )
+                   // reference to static allocation, by AllocId, possibly projected, carrying metadata about size if applicable
                  | "Moved"
                    // The value has been used and is gone now
-                 | "NoOrigin" [symbol(Value::NoOrigin)]
-                   // Sentinel value for pointers without an origin (not created from a cast)
 ```
 
 ### Metadata for References and Pointers
@@ -60,23 +58,18 @@ A _thin pointer_ in Rust is simply an address of data in the heap or on the stac
 A _fat pointer_ in Rust is a pair of an address and [additional metadata about the pointee](https://doc.rust-lang.org/std/ptr/trait.Pointee.html#associatedtype.Metadata).
 This is necessary for dynamically-sized pointee types (most prominently slices) and dynamic trait objects.
 
-References to arrays and slices carry `Metadata`.
-For array types with statically-known size, the metadata is set to `staticSize` to avoid repeated type lookups.
-Other types without metadata use `noMetadata`.
+References to arrays and slices carry `Metadata`. In Rust `Metadata` is only a size, but we need more information to detect UB, so we track `(Size, Ptr Offset, Origin Size)`
+For array types with statically-known size, the metadata size is set to `staticSize` to avoid repeated type lookups.
+Other types without metadata use `noMetadataSize`.
 
 ```k
-  syntax Metadata ::= "noMetadata"         [symbol(noMetadata)]
-                    | staticSize ( Int )   [symbol(staticSize)]
+  // Origin size is since a pointer might not have size iteself but should be in bounds of an aggregate origin
+  syntax Metadata ::= metadata ( MetadataSize, Int, MetadataSize) [symbol(Metadata)]
+                            // ( Size, Pointer Offset, Origin Size )
+
+  syntax MetadataSize ::= "noMetadataSize" [symbol(noMetadataSize)]
+                    | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
-```
-
-A pointer in Rust carries the same metadata. Pointers can be offset with `BinOpOffset` we track the offset as an integer.
-Additionally, we track the origin pointer when a pointer is created via a `PtrToPtr` cast, to preserve provenance information.
-
-
-```k
-  syntax PtrEmulation ::= ptrEmulation ( Metadata , Int , Value ) [symbol(PtrEmulation)]
-  // metadata, offset, origin
 ```
 
 ## Local variables
