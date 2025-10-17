@@ -12,7 +12,6 @@ from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of
-from pyk.kast.prelude.kint import intToken
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -30,7 +29,7 @@ from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from typing import Any, Final
+    from typing import Final
 
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
@@ -121,22 +120,6 @@ class KMIR(KProve, KRun, KParse):
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
-
-    def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
-        from .decoding import UnableToDecodeValue, decode_alloc_or_unable
-
-        alloc_id = raw_alloc['alloc_id']
-        alloc_info = smir_info.allocs[alloc_id]
-        value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
-
-        match value:
-            case UnableToDecodeValue(msg):
-                _LOGGER.debug(f'Decoding failed: {msg}')
-            case _:
-                pass
-
-        alloc_id_term = KApply('allocId', intToken(alloc_id))
-        return alloc_id_term, value.to_kast()
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)

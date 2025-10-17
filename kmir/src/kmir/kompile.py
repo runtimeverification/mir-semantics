@@ -8,13 +8,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KSort
-from pyk.kast.prelude.utils import token
+from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
-    from typing import Final
+    from typing import Any, Final
 
     from pyk.kast import KInner
 
@@ -193,7 +194,9 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
     kprint_logger.setLevel(logging.WARNING)
 
     for fty, kind in _functions(kmir, smir_info).items():
-        equations.append(_mk_equation(kmir, 'lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind'))
+        equations.append(
+            _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
+        )
 
     types: set[KInner] = set()
     for type in smir_info._smir['types']:
@@ -208,7 +211,7 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
         equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
     for alloc in smir_info._smir['allocs']:
-        alloc_id, value = kmir._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+        alloc_id, value = _decode_alloc(smir_info=smir_info, raw_alloc=alloc)
         equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     return equations
@@ -236,7 +239,7 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
         if 'IntrinsicSym' in sym and ty not in functions:
             functions[ty] = KApply(
                 'IntrinsicFunction',
-                [KApply('symbol(_)_LIB_Symbol_String', [token(sym['IntrinsicSym'])])],
+                [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
 
     return functions
@@ -274,3 +277,20 @@ def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInne
             rule.to_axiom().text,
         ]
     )
+
+
+def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
+    from .decoding import UnableToDecodeValue, decode_alloc_or_unable
+
+    alloc_id = raw_alloc['alloc_id']
+    alloc_info = smir_info.allocs[alloc_id]
+    value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
+
+    match value:
+        case UnableToDecodeValue(msg):
+            _LOGGER.debug(f'Decoding failed: {msg}')
+        case _:
+            pass
+
+    alloc_id_term = KApply('allocId', intToken(alloc_id))
+    return alloc_id_term, value.to_kast()
