@@ -10,14 +10,11 @@ import pytest
 from pyk.cterm.show import CTermShow
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
-from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
-from kmir.__main__ import _kmir_gen_spec, _kmir_prove_raw
-from kmir.build import HASKELL_DEF_DIR, LLVM_DEF_DIR
 from kmir.cargo import CargoProject
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.options import GenSpecOpts, ProveRawOpts, ProveRSOpts, ShowOpts
+from kmir.options import ProveRSOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
@@ -307,7 +304,7 @@ EXEC_DATA = [
 ]
 
 
-@pytest.mark.parametrize('kmir_backend', [KMIR(LLVM_DEF_DIR), KMIR(HASKELL_DEF_DIR)], ids=['llvm', 'haskell'])
+@pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
     EXEC_DATA,
@@ -315,17 +312,18 @@ EXEC_DATA = [
 )
 def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
-    kmir_backend: KMIR,
+    symbolic: bool,
     update_expected_output: bool,
 ) -> None:
 
     (_, input_json, output_kast, depth) = test_case
     smir_info = SMIRInfo.from_file(input_json)
 
-    result = kmir_backend.run_smir(smir_info, depth=depth)
-
-    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
-    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=temp_dir, symbolic=symbolic)
+        result = kmir_backend.run_smir(smir_info, depth=depth)
+        result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
+        assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
 
 
 @pytest.mark.parametrize(
@@ -335,39 +333,11 @@ def test_exec_smir(
 )
 def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
-    spec_file = tmp_path / f'{testname}.k'
-    gen_opts = GenSpecOpts(smir_json, spec_file, 'main')
 
-    proof_dir = tmp_path / 'proof'
-    prove_opts = ProveRawOpts(spec_file, proof_dir=proof_dir)
+    prove_rs_opts = ProveRSOpts(rs_file=smir_json, smir=True)
 
-    _kmir_gen_spec(gen_opts)
-    _kmir_prove_raw(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec_file).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
-
-
-PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
-PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
-
-
-@pytest.mark.parametrize(
-    'spec',
-    PROVING_FILES,
-    ids=[spec.stem for spec in PROVING_FILES],
-)
-def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
-    proof_dir = tmp_path / (spec.stem + 'proofs')
-    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
-    _kmir_prove_raw(prove_opts)
-
-    claim_labels = kmir.get_claim_index(spec).labels()
-    for label in claim_labels:
-        proof = Proof.read_proof_data(proof_dir, label)
-        assert proof.passed
+    proof = KMIR.prove_rs(prove_rs_opts)
+    assert proof.passed
 
 
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
