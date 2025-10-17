@@ -132,7 +132,12 @@ The configuration is executed with the compiled module.
 1. use temp directory or proof directory for prove-rs DONE
 2. do not copy the bin file for HS backend DONE
 3. implement LLVM backend compilation for concrete execution DONE
-4. implement KMIR.run_rs static (with the above)
-   - or rather factor out the compilation method and revert prove_rs change
-5. delete `test_prove` test
-6. re-test (without `test_decode_value`)
+4. delete `test_prove` test DONE
+5. re-test (without `test_decode_value`) DONE
+
+1. factor out the compilation method and revert prove_rs change (remove `KMIR.from_compiled_kore`)
+2. use `run_process2`
+3. implement KMIR.run_rs (with the above)
+4. implement fixed type lookup table for `test_decode_value` (per session recompiled fixture)
+5. remove helper constructs and commands
+6. re-test 
