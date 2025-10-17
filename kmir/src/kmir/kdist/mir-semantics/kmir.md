@@ -30,7 +30,6 @@ module KMIR-CONTROL-FLOW
   imports MAP
   imports K-EQUAL
 
-  imports KMIR-AST
   imports MONO
   imports TYPES
 
@@ -537,6 +536,7 @@ The top-level module `KMIR` includes both the control flow constructs (and trans
 
 ```k
 module KMIR
+  imports KMIR-AST // Necessary for the external Python parser
   imports KMIR-CONTROL-FLOW
   imports KMIR-LEMMAS
 endmodule
