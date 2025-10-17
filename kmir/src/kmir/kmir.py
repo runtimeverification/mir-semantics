@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
+    from .kompile import KompiledSMIR
     from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -62,17 +63,20 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_kore(
         smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
-        return KMIR.kompile_smir(
+        kompiled_smir = KMIR.kompile_smir(
             smir_info=smir_info,
             target_dir=target_dir,
             bug_report=bug_report,
             symbolic=symbolic,
         )
+        return kompiled_smir.create_kmir(bug_report_file=bug_report)
 
     @staticmethod
     def kompile_smir(
         smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
-    ) -> KMIR:
+    ) -> KompiledSMIR:
+        from .kompile import KompiledConcrete, KompiledSymbolic
+
         kmir = KMIR(HASKELL_DEF_DIR)
 
         def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
@@ -154,7 +158,10 @@ class KMIR(KProve, KRun, KParse):
                         shutil.copy2(file_path, target_hs_path / file_path.name)
                     elif file_path.is_dir():
                         shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
-            return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
+            return KompiledSymbolic(
+                haskell_dir=target_hs_path,
+                llvm_lib_dir=target_llvm_path,
+            )
         else:
 
             target_llvm_path = target_path / 'llvm'
@@ -193,7 +200,7 @@ class KMIR(KProve, KRun, KParse):
             for file in to_copy:
                 _LOGGER.info(f'Copying file {file}')
                 shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
-            return KMIR(target_llvm_path, None, bug_report=bug_report)
+            return KompiledConcrete(llvm_dir=target_llvm_path)
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
