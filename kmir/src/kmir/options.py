@@ -57,21 +57,6 @@ class ProveOpts(KMirOpts):
 
 
 @dataclass
-class GenSpecOpts(KMirOpts):
-    input_file: Path
-    output_file: Path | None
-    start_symbol: str
-
-    def __init__(self, input_file: Path, output_file: Path | str | None, start_symbol: str) -> None:
-        self.input_file = input_file
-        if output_file is None:
-            self.output_file = None
-        else:
-            self.output_file = Path(output_file).resolve()
-        self.start_symbol = start_symbol
-
-
-@dataclass
 class ProveRSOpts(ProveOpts):
     rs_file: Path
     save_smir: bool
