@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import shutil
 import tempfile
 from contextlib import contextmanager
 from functools import cached_property
@@ -24,7 +23,6 @@ from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
-from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import cargo_get_smir_json
 from .kast import mk_call_terminator, symbolic_locals
 from .kparse import KParse
@@ -40,7 +38,6 @@ if TYPE_CHECKING:
     from pyk.kore.syntax import Pattern
     from pyk.utils import BugReport
 
-    from .kompile import KompiledSMIR
     from .options import DisplayOpts, ProveRSOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -63,144 +60,15 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_kore(
         smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
-        kompiled_smir = KMIR.kompile_smir(
+        from .kompile import kompile_smir
+
+        kompiled_smir = kompile_smir(
             smir_info=smir_info,
             target_dir=target_dir,
             bug_report=bug_report,
             symbolic=symbolic,
         )
         return kompiled_smir.create_kmir(bug_report_file=bug_report)
-
-    @staticmethod
-    def kompile_smir(
-        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
-    ) -> KompiledSMIR:
-        from .kompile import KompiledConcrete, KompiledSymbolic
-
-        kmir = KMIR(HASKELL_DEF_DIR)
-
-        def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
-            with open(input_file, 'r') as f:
-                lines = f.readlines()
-
-            # last line must start with 'endmodule'
-            last_line = lines[-1]
-            assert last_line.startswith('endmodule')
-            new_lines = lines[:-1]
-
-            # Insert rules before the endmodule line
-            new_lines.append(f'\n// Generated from file {input_file}\n\n')
-            new_lines.extend(rules)
-            new_lines.append('\n' + last_line)
-
-            # Write to output file
-            with open(output_file, 'w') as f:
-                f.writelines(new_lines)
-
-        target_path = Path(target_dir)
-        # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
-        # to decide whether or not to recompile. For now we always recompile.
-        target_path.mkdir(parents=True, exist_ok=True)
-
-        rules = kmir.make_kore_rules(smir_info)
-        _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
-
-        if symbolic:
-            # Create output directories
-            target_llvm_path = target_path / 'llvm-library'
-            target_llvmdt_path = target_llvm_path / 'dt'
-            target_hs_path = target_path / 'haskell'
-
-            _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-            target_hs_path.mkdir(parents=True, exist_ok=True)
-
-            # Process LLVM definition
-            _LOGGER.info('Writing LLVM definition file')
-            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-            llvm_def_output = target_llvm_path / 'definition.kore'
-            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
-
-            # Run llvm-kompile-matching and llvm-kompile for LLVM
-            # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-            # TODO align compilation options to what we use in plugin.py
-            import subprocess
-
-            _LOGGER.info('Running llvm-kompile-matching')
-            subprocess.run(
-                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-            )
-            _LOGGER.info('Running llvm-kompile')
-            subprocess.run(
-                [
-                    'llvm-kompile',
-                    str(llvm_def_output),
-                    str(target_llvmdt_path),
-                    'c',
-                    '-O2',
-                    '--',
-                    '-o',
-                    target_llvm_path / 'interpreter',
-                ],
-                check=True,
-            )
-
-            # Process Haskell definition
-            _LOGGER.info('Writing Haskell definition file')
-            hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
-            _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
-
-            # Copy all files except definition.kore and binary from HASKELL_DEF_DIR to out/hs
-            _LOGGER.info('Copying other artefacts into HS output directory')
-            for file_path in HASKELL_DEF_DIR.iterdir():
-                if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
-                    if file_path.is_file():
-                        shutil.copy2(file_path, target_hs_path / file_path.name)
-                    elif file_path.is_dir():
-                        shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
-            return KompiledSymbolic(
-                haskell_dir=target_hs_path,
-                llvm_lib_dir=target_llvm_path,
-            )
-        else:
-
-            target_llvm_path = target_path / 'llvm'
-            target_llvmdt_path = target_llvm_path / 'dt'
-            _LOGGER.info(f'Creating directory {target_llvmdt_path}')
-            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-
-            # Process LLVM definition
-            _LOGGER.info('Writing LLVM definition file')
-            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-            llvm_def_output = target_llvm_path / 'definition.kore'
-            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
-
-            import subprocess
-
-            _LOGGER.info('Running llvm-kompile-matching')
-            subprocess.run(
-                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-            )
-            _LOGGER.info('Running llvm-kompile')
-            subprocess.run(
-                [
-                    'llvm-kompile',
-                    str(llvm_def_output),
-                    str(target_llvmdt_path),
-                    'main',
-                    '-O2',
-                    '--',
-                    '-o',
-                    target_llvm_path / 'interpreter',
-                ],
-                check=True,
-            )
-            blacklist = ['definition.kore', 'interpreter', 'dt']
-            to_copy = [file.name for file in LLVM_DEF_DIR.iterdir() if file.name not in blacklist]
-            for file in to_copy:
-                _LOGGER.info(f'Copying file {file}')
-                shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
-            return KompiledConcrete(llvm_dir=target_llvm_path)
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
