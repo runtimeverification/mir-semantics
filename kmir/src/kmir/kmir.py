@@ -116,36 +116,6 @@ class KMIR(KProve, KRun, KParse):
 
         return functions
 
-    def make_kore_rules(self, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
-        equations = []
-
-        # kprint tool is too chatty
-        kprint_logger = logging.getLogger('pyk.ktool.kprint')
-        kprint_logger.setLevel(logging.WARNING)
-
-        for fty, kind in self.functions(smir_info).items():
-            equations.append(
-                self._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind')
-            )
-
-        types: set[KInner] = set()
-        for type in smir_info._smir['types']:
-            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types.add(ty)
-            equations.append(self._mk_equation('lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
-
-        for alloc in smir_info._smir['allocs']:
-            alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-            equations.append(self._mk_equation('lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
-
-        return equations
-
     def _mk_equation(self, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
         from pyk.kore.rule import FunctionRule
         from pyk.kore.syntax import App, SortApp

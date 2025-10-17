@@ -7,11 +7,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyk.kast.inner import KApply
+from pyk.kast.prelude.utils import token
+
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
     from typing import Final
+
+    from pyk.kast import KInner
 
     from .smir import SMIRInfo
 
@@ -79,7 +84,7 @@ def kompile_smir(
     # to decide whether or not to recompile. For now we always recompile.
     target_path.mkdir(parents=True, exist_ok=True)
 
-    rules = kmir.make_kore_rules(smir_info)
+    rules = _make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
@@ -178,3 +183,32 @@ def kompile_smir(
             _LOGGER.info(f'Copying file {file}')
             shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
         return KompiledConcrete(llvm_dir=target_llvm_path)
+
+
+def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
+    equations = []
+
+    # kprint tool is too chatty
+    kprint_logger = logging.getLogger('pyk.ktool.kprint')
+    kprint_logger.setLevel(logging.WARNING)
+
+    for fty, kind in kmir.functions(smir_info).items():
+        equations.append(kmir._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind'))
+
+    types: set[KInner] = set()
+    for type in smir_info._smir['types']:
+        parse_result = kmir.parser.parse_mir_json(type, 'TypeMapping')
+        assert parse_result is not None
+        type_mapping, _ = parse_result
+        assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+        ty, tyinfo = type_mapping.args
+        if ty in types:
+            raise ValueError(f'Key collision in type map: {ty}')
+        types.add(ty)
+        equations.append(kmir._mk_equation('lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
+
+    for alloc in smir_info._smir['allocs']:
+        alloc_id, value = kmir._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+        equations.append(kmir._mk_equation('lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
+
+    return equations
