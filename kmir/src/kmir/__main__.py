@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
-from pyk.kast.outer import KFlatModule, KImport
 from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofShow
@@ -20,7 +19,6 @@ from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
-    GenSpecOpts,
     InfoOpts,
     LinkOpts,
     ProveRawOpts,
@@ -30,7 +28,6 @@ from .options import (
     ShowOpts,
     ViewOpts,
 )
-from .parse.parser import parse_json
 from .smir import SMIRInfo, Ty
 from .utils import render_leaf_k_cells, render_rules, render_statistics
 
@@ -69,35 +66,6 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
-
-
-def _kmir_gen_spec(opts: GenSpecOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
-
-    parse_result = parse_json(kmir.definition, opts.input_file, 'Pgm')
-    if parse_result is None:
-        print('Parse error!', file=sys.stderr)
-        sys.exit(1)
-
-    smir_info = SMIRInfo.from_file(opts.input_file).reduce_to(opts.start_symbol)
-    apr_proof = kmir.apr_proof_from_smir(
-        str(opts.input_file.stem.replace('_', '-')),
-        smir_info,
-        start_symbol=opts.start_symbol,
-        sort='KmirCell',
-    )
-    claim = apr_proof.as_claim()
-
-    output_file = opts.output_file
-    if output_file is None:
-        suffixes = ''.join(opts.input_file.suffixes)
-        base = opts.input_file.name.removesuffix(suffixes).replace('_', '-')
-        output_file = Path(f'{base}-spec.k')
-
-    module_name = output_file.stem.upper().replace('_', '-')
-    spec_module = KFlatModule(module_name, (claim,), (KImport('KMIR'),))
-
-    output_file.write_text(kmir.pretty_print(spec_module))
 
 
 def _kmir_prove_raw(opts: ProveRawOpts) -> None:
@@ -212,8 +180,6 @@ def kmir(args: Sequence[str]) -> None:
     match opts:
         case RunOpts():
             _kmir_run(opts)
-        case GenSpecOpts():
-            _kmir_gen_spec(opts)
         case InfoOpts():
             _kmir_info(opts)
         case ProveRawOpts():
@@ -247,15 +213,6 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
     run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
-
-    gen_spec_parser = command_parser.add_parser(
-        'gen-spec', help='Generate a k spec from a SMIR json', parents=[kcli_args.logging_args]
-    )
-    gen_spec_parser.add_argument('input_file', metavar='FILE', help='MIR program to generate a spec for')
-    gen_spec_parser.add_argument('--output-file', metavar='FILE', help='Output file')
-    gen_spec_parser.add_argument(
-        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
-    )
 
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
@@ -394,8 +351,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
             )
-        case 'gen-spec':
-            return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
         case 'prove':
