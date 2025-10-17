@@ -3,6 +3,9 @@ from __future__ import annotations
 from string import Template
 from typing import TYPE_CHECKING, NamedTuple
 
+from kmir.build import LLVM_DEF_DIR
+from kmir.smir import SMIRInfo
+
 import pytest
 
 if TYPE_CHECKING:
@@ -13,14 +16,23 @@ if TYPE_CHECKING:
     from pyk.kore.syntax import Pattern
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def definition_dir() -> Path:
-    from kmir.build import LLVM_DEF_DIR
+    import shutil
+    from .utils import TEST_DATA_DIR
+    from kmir.kmir import KMIR
 
-    return LLVM_DEF_DIR
+    target_dir = TEST_DATA_DIR / 'decode-value' / '.tmp'
+
+    # generate and compile an LLVM interpreter with the type-table
+    _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=str(target_dir), symbolic=False)
+
+    yield target_dir / 'llvm'
+    print (f'Should now remove {target_dir}')
+    # shutil.rmtree(target_dir, ignore_errors=True)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def definition(definition_dir: Path) -> KDefinition:
     from pyk.kast.outer import read_kast_definition
 
@@ -78,8 +90,8 @@ class _TestData(NamedTuple):
     expected: str
 
     def to_pattern(self, definition: KDefinition) -> Pattern:
-        from pyk.kore.prelude import SORT_K_ITEM, bytes_dv, inj, int_dv, map_pattern
-        from pyk.kore.syntax import App, SortApp
+        from pyk.kore.prelude import bytes_dv
+        from pyk.kore.syntax import App
 
         return App(
             'LbldecodeValue',
@@ -87,15 +99,6 @@ class _TestData(NamedTuple):
             (
                 bytes_dv(self.bytez),
                 self._json_type_info_to_kore(self.type_info, definition),
-                map_pattern(
-                    *(
-                        (
-                            inj(SortApp('SortTy'), SORT_K_ITEM, App('Lblty', (), (int_dv(key),))),
-                            inj(SortApp('SortTypeInfo'), SORT_K_ITEM, self._json_type_info_to_kore(value, definition)),
-                        )
-                        for key, value in self.types.items()
-                    )
-                ),
             ),
         )
 
@@ -134,8 +137,30 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
         expected=expected,
     )
 
+def load_test_types():
+    import json
+    from .utils import TEST_DATA_DIR
+
+    types = json.loads( (TEST_DATA_DIR / 'decode-value' / 'type-table').read_text())
+    assert isinstance(types, list)
+
+    smir = {
+        'name': 'decode_value',
+        'crate-id': 0,
+        'allocs': [],
+        'debug': None,
+        'functions': [],
+        'items': [],
+        'machine': None,
+        'spans': [],
+        'uneval_consts': [],
+        'types': types,
+    }
+    return SMIRInfo(smir)
+
 
 TEST_DATA: Final = load_test_data()
+TEST_SMIR: Final = load_test_types()
 SKIP: Final = (
     'enum-1-variant-1-field',
     'enum-1-variant-2-fields',
