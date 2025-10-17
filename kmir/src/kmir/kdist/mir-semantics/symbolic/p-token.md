@@ -373,30 +373,21 @@ An `AccountInfo` reference is passed to the function.
       => #mkPTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_account"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_program::entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-mint]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkPTokenMint(PLACE) ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-rent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkPTokenRent(PLACE) ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_program::entrypoint::cheatcode_is_rent"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_program::entrypoint::cheatcode_is_rent"
     [priority(30), preserves-definedness]
 
   // cheat codes and rules to create a special PTokenAccount flavour
@@ -532,10 +523,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_data_unchecked"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio::account_info::AccountInfo::borrow_data_unchecked"
     [priority(30), preserves-definedness]
 
   // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
@@ -545,10 +533,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::account_info::AccountInfo::borrow_mut_data_unchecked"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio::account_info::AccountInfo::borrow_mut_data_unchecked"
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
@@ -612,13 +597,10 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool (
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::account::Account>"
+    requires (
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::account::Account>"
         orBool
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::account::Account>"
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::account::Account>"
      )
     [priority(30), preserves-definedness]
 
@@ -628,13 +610,10 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool (
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::mint::Mint>"
+    requires (
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::mint::Mint>"
         orBool
-          #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::mint::Mint>"
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::mint::Mint>"
      )
     [priority(30), preserves-definedness]
 
@@ -644,10 +623,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "pinocchio::sysvars::rent::Rent::from_bytes_unchecked"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio::sysvars::rent::Rent::from_bytes_unchecked"
     [priority(30), preserves-definedness]
 
   // expect the Evaluation to return a `PAccByteRef` referring to a `PAccount<Thing>` (not checked)
@@ -696,10 +672,7 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
       ~> #execBlockIdx(TARGET)
     ...
     </k>
-    <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool #functionName({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
     ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 64
      andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <Int 256
     [priority(30), preserves-definedness]
