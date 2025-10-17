@@ -39,40 +39,4 @@
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <memory>
-    allocId ( 1 ) |-> UnableToDecodeValue ( b"assertion failed: z == x" , typeInfoPrimitiveType ( primTypeStr ) )
-  </memory>
-  <functions>
-    ty ( 20 ) |-> IntrinsicFunction ( symbol ( "black_box" ) )
-    ty ( 25 ) |-> monoItemFn (... name: symbol ( "f" ) , id: defId ( 7 ) , body: someBody ( body (... blocks: basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 1 ) , projection: projectionElemDeref  .ProjectionElems ) ) ) ) , span: span ( 62 ) )  .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 61 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 2 ) , span: span ( 63 ) , mut: mutabilityMut )  localDecl (... ty: ty ( 28 ) , span: span ( 64 ) , mut: mutabilityNot )  .LocalDecls , argCount: 1 , varDebugInfo: varDebugInfo (... name: symbol ( "y" ) , sourceInfo: sourceInfo (... span: span ( 64 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 1 ) )  .VarDebugInfos , spreadArg: noLocal , span: span ( 65 ) ) ) )
-    ty ( -1 ) |-> monoItemFn (... name: symbol ( "main" ) , id: defId ( 6 ) , body: someBody ( body (... blocks: basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand (... span: span ( 52 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"*" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 1 ) , mutability: mutabilityMut ) ) , ty: ty ( 2 ) , id: mirConstId ( 10 ) ) ) ) ) ) , span: span ( 52 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) , span: span ( 53 ) )  .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 25 ) , id: mirConstId ( 9 ) ) ) ) , args: operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 2 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) )  basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 4 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpEq , operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 54 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 4 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 3 ) )  .Branches , otherwise: basicBlockIdx ( 2 ) ) ) , span: span ( 54 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 55 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 56 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 26 ) , id: mirConstId ( 11 ) ) ) ) , args: operandConstant ( constOperand (... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x18\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: provenanceMapEntry (... offset: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 27 ) , id: mirConstId ( 12 ) ) ) )  .Operands , destination: place (... local: local ( 5 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 56 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 57 ) , mut: mutabilityMut )  localDecl (... ty: ty ( 2 ) , span: span ( 58 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 2 ) , span: span ( 59 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 28 ) , span: span ( 53 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 29 ) , span: span ( 54 ) , mut: mutabilityMut )  localDecl (... ty: ty ( 30 ) , span: span ( 56 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: varDebugInfo (... name: symbol ( "x" ) , sourceInfo: sourceInfo (... span: span ( 58 ) , scope: sourceScope ( 1 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) , argumentIndex: noInt )  varDebugInfo (... name: symbol ( "z" ) , sourceInfo: sourceInfo (... span: span ( 59 ) , scope: sourceScope ( 2 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , argumentIndex: noInt )  .VarDebugInfos , spreadArg: noLocal , span: span ( 60 ) ) ) )
-  </functions>
-  <start-symbol>
-    symbol ( "main" )
-  </start-symbol>
-  <types>
-    ty ( 1 ) |-> typeInfoTupleType ( .Tys )
-    ty ( 2 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI8 ) )
-    ty ( 5 ) |-> typeInfoRefType ( ty ( 36 ) )
-    ty ( 6 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyIsize ) )
-    ty ( 8 ) |-> typeInfoPtrType ( ty ( 37 ) )
-    ty ( 9 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU8 ) )
-    ty ( 10 ) |-> typeInfoEnumType (... name: "std::result::Result<isize, !>" , adtDef: adtDef ( 25 ) , discriminants: discriminant ( 0 )  discriminant ( 1 )  .Discriminants , fields: ty ( 6 )  .Tys : ty ( 30 )  .Tys : .Tyss , layout: someLayoutShape ( layoutShape (... fields: fieldsShapeArbitrary ( mk (... offsets: machineSize (... numBits: 0 )  .MachineSizes ) ) , variants: variantsShapeSingle ( mk (... index: variantIdx ( 0 ) ) ) , abi: valueAbiScalar ( scalarInitialized ( mk (... value: primitiveInt ( mk (... length: integerLengthI64 , signed: true ) ) , validRange: wrappingRange (... start: 0 , end: 18446744073709551615 ) ) ) ) , abiAlign: align ( 8 ) , size: machineSize (... numBits: 64 ) ) ) )
-    ty ( 11 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 15 ) |-> typeInfoStructType ( "std::sys::pal::unix::process::process_common::ExitCode" , adtDef ( 17 ) , ty ( 9 )  .Tys )
-    ty ( 16 ) |-> typeInfoPrimitiveType ( primTypeInt ( intTyI32 ) )
-    ty ( 17 ) |-> typeInfoStructType ( "std::process::ExitCode" , adtDef ( 15 ) , ty ( 15 )  .Tys )
-    ty ( 18 ) |-> typeInfoRefType ( ty ( 15 ) )
-    ty ( 22 ) |-> typeInfoPtrType ( ty ( 12 ) )
-    ty ( 24 ) |-> typeInfoRefType ( ty ( 12 ) )
-    ty ( 27 ) |-> typeInfoRefType ( ty ( 32 ) )
-    ty ( 28 ) |-> typeInfoRefType ( ty ( 2 ) )
-    ty ( 29 ) |-> typeInfoPrimitiveType ( primTypeBool )
-    ty ( 30 ) |-> typeInfoVoidType
-    ty ( 31 ) |-> typeInfoRefType ( ty ( 33 ) )
-    ty ( 32 ) |-> typeInfoPrimitiveType ( primTypeStr )
-    ty ( 33 ) |-> typeInfoStructType ( "std::panic::Location<'_>" , adtDef ( 10 ) , ty ( 27 )  ty ( 34 )  ty ( 34 )  .Tys )
-    ty ( 34 ) |-> typeInfoPrimitiveType ( primTypeUint ( uintTyU32 ) )
-    ty ( 37 ) |-> typeInfoPtrType ( ty ( 9 ) )
-  </types>
 </kmir>

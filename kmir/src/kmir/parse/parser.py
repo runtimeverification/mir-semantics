@@ -445,15 +445,29 @@ class Parser:
             for i in json:
                 # null values are allowed and taken to mean \x00
                 assert isinstance(i, int) or i is None
+
             import string
+
+            # Characters that need special escaping (using hex encoding)
+            ESCAPE_CHARS = {'\n': '\\x0a', '@': '\\x40', '"': '\\x34'}
 
             # TODO: Handle uninitialized bytes instead of defaulting to 0
             if all((chr(int(i)) if i is not None else chr(0)) in string.printable for i in json):
-                # if all elements are ascii printable, use simple characters
-                bytes = ''.join([chr(int(i)) for i in json])
+                # if all elements are ascii printable, use characters with escaping
+                def format_printable_byte(byte_val):
+                    if byte_val is None:
+                        return '\\x00'
+                    char = chr(byte_val)
+                    if char in ESCAPE_CHARS:
+                        return ESCAPE_CHARS[char]
+                    else:
+                        return char
+
+                bytes = ''.join([format_printable_byte(i) for i in json])
             else:
                 # otherwise convert to hexadecimal representation \xCA\xFE
                 bytes = ''.join([f'\\x{i:02x}' if i is not None else '\\x00' for i in json])
+
         symbol = _get_label(prod)
         if symbol == 'MIRBytes::Bytes':
             return KToken('b"' + str(bytes) + '"', KSort('Bytes')), KSort('Bytes')
