@@ -1,0 +1,97 @@
+digraph {
+  label="simple";
+  node [shape=rectangle];
+  Xc987e5ecea6cc82b_0 [label="_ZN3std2rt19lang_start_in\nternal17h018b8394ba015d86\nE", color=red];
+  X3c6542d96320ad67_0 [label="Intr: \nblack_box", color=red];
+  Xac08878333d72e42_0 [label="_ZN4core9panicking5panic1\n7h941160ead03e2d54E", color=red];
+  X8b0ac2e54b9a91_0 [label="NoOp: ", color=red];
+  subgraph cluster_0 {
+    label="<() \nas \nstd::process::Termination\n>::report";
+    style="filled";
+    color=lightgray;
+    X4af6e702c49b2819_0 [label="0 <- Use(const :: std::process::ExitCode)\lReturn\l"];
+  }
+  subgraph cluster_1 {
+    label="std::rt::lang_start::<()>";
+    style="filled";
+    color=lightgray;
+    Xd4751a0bfa93e011_0 -> Xd4751a0bfa93e011_1 [label="5"];
+    Xd4751a0bfa93e011_0 [label="Storage Live _5\lStorage Live _6\lStorage Live _8\l8 <- Closure (cp(1))\l7 <- & 8\l6 <- Cast-PointerCoercion(Unsize) cp(7)\lCall\l"];
+    Xd4751a0bfa93e011_1 [label="Storage Dead _6\l0 <- Use(cp(5 as VariantIdx(0).0))\lStorage Dead _8\lStorage Dead _5\lReturn\l"];
+  }
+  Xd4751a0bfa93e011_0 -> Xc987e5ecea6cc82b_0 [label="mv(6),mv(2),mv(3),mv(4)"];
+  subgraph cluster_2 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    Xa9b61f901a7d3753_0 -> Xa9b61f901a7d3753_3 [label="Cleanup"];
+    Xa9b61f901a7d3753_0 -> Xa9b61f901a7d3753_1 [label="0"];
+    Xa9b61f901a7d3753_0 [label="3 <- &mut 1\lCall\l"];
+    Xa9b61f901a7d3753_1 -> Xa9b61f901a7d3753_2;
+    Xa9b61f901a7d3753_1 [label="Drop 1\l"];
+    Xa9b61f901a7d3753_2 [label="Return\l"];
+    Xa9b61f901a7d3753_3 -> Xa9b61f901a7d3753_4;
+    Xa9b61f901a7d3753_3 [label="Drop 1\l"];
+    Xa9b61f901a7d3753_4 [label="Resume\l"];
+  }
+  Xa9b61f901a7d3753_0 -> X6478806ef92408be_0 [label="mv(3),mv(2)"];
+  subgraph cluster_3 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    Xdbf5b6a01188feab_0 -> Xdbf5b6a01188feab_1 [label="0"];
+    Xdbf5b6a01188feab_0 [label="Call\l"];
+    Xdbf5b6a01188feab_1 [label="Return\l"];
+  }
+  Xdbf5b6a01188feab_0 -> Xa9b61f901a7d3753_0 [label="mv(*1),mv(2)"];
+  subgraph cluster_4 {
+    label="std::sys::backtrace::__ru\nst_begin_short_backtrace:\n:<fn(), \n()>";
+    style="filled";
+    color=lightgray;
+    Xdfbfd33c57cd4b42_0 -> Xdfbfd33c57cd4b42_1 [label="0"];
+    Xdfbfd33c57cd4b42_0 [label="Call\l"];
+    Xdfbfd33c57cd4b42_1 -> Xdfbfd33c57cd4b42_2 [label="2"];
+    Xdfbfd33c57cd4b42_1 [label="Call\l"];
+    Xdfbfd33c57cd4b42_2 [label="Return\l"];
+  }
+  Xdfbfd33c57cd4b42_0 -> Xa4d0dcc36c9c8ee4_0 [label="mv(1),const :: ()"];
+  Xdfbfd33c57cd4b42_1 -> X3c6542d96320ad67_0 [label="const :: ()"];
+  subgraph cluster_5 {
+    label="<fn() \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    Xa4d0dcc36c9c8ee4_0 -> Xa4d0dcc36c9c8ee4_1 [label="0"];
+    Xa4d0dcc36c9c8ee4_0 [label="Call\l"];
+    Xa4d0dcc36c9c8ee4_1 [label="Return\l"];
+  }
+  Xa4d0dcc36c9c8ee4_0 -> Xa4d0dcc36c9c8ee4_0: 1 [label=""];
+  subgraph cluster_6 {
+    label="std::rt::lang_start::<()>\n::{closure#0}";
+    style="filled";
+    color=lightgray;
+    X6478806ef92408be_0 -> X6478806ef92408be_1 [label="3"];
+    X6478806ef92408be_0 [label="Storage Live _2\lStorage Live _3\lStorage Live _4\l4 <- Use(cp(*1.0))\lCall\l"];
+    X6478806ef92408be_1 -> X6478806ef92408be_2 [label="2"];
+    X6478806ef92408be_1 [label="Storage Dead _4\lCall\l"];
+    X6478806ef92408be_2 [label="Storage Dead _3\lStorage Live _5\l5 <- & 2.0\lStorage Live _6\l6 <- Use(cp(2.0.0))\l0 <- Cast-IntToInt mv(6)\lStorage Dead _6\lStorage Dead _5\lStorage Dead _2\lReturn\l"];
+  }
+  X6478806ef92408be_0 -> Xdfbfd33c57cd4b42_0 [label="mv(4)"];
+  X6478806ef92408be_1 -> X4af6e702c49b2819_0 [label="mv(3)"];
+  subgraph cluster_7 {
+    label="std::ptr::drop_in_place::\n<{closure@std::rt::lang_s\ntart<()>::{closure#0}}>";
+    style="filled";
+    color=lightgray;
+    Xac9ab9d11a60e24b_0 [label="Return\l"];
+  }
+  subgraph cluster_8 {
+    label="main";
+    style="filled";
+    color=palegreen;
+    Xed5b6cb48ca16c6d_0 -> Xed5b6cb48ca16c6d_2 [label="0"];
+    Xed5b6cb48ca16c6d_0 -> Xed5b6cb48ca16c6d_1 [label="other"];
+    Xed5b6cb48ca16c6d_0 [label="1 <- Use(const :: i8)\l2 <- & 1\l3 <- Use(cp(*2))\l4 <- Eq(cp(3), cp(1))\lSwitchInt mv(4)\l"];
+    Xed5b6cb48ca16c6d_1 [label="Return\l"];
+    Xed5b6cb48ca16c6d_2 [label="Call\l"];
+  }
+  Xed5b6cb48ca16c6d_2 -> Xac08878333d72e42_0 [label="const :: &str"];
+}

@@ -10,3 +10,4 @@ if TYPE_CHECKING:
 LLVM_DEF_DIR: Final = kdist.which('mir-semantics.llvm')
 LLVM_LIB_DIR: Final = kdist.which('mir-semantics.llvm-library')
 HASKELL_DEF_DIR: Final = kdist.which('mir-semantics.haskell')
+KMIR_SOURCE_DIR: Final = kdist.which('mir-semantics.source')

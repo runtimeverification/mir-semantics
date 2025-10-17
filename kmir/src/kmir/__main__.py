@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import tempfile
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -57,13 +58,14 @@ def _kmir_run(opts: RunOpts) -> None:
         # target = opts.bin if opts.bin else cargo.default_target
         smir_info = cargo.smir_for_project(clean=False)
 
-    result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
-    print(kmir.kore_to_pretty(result))
+    with tempfile.TemporaryDirectory() as work_dir:
+        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
+        result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
+        print(kmir.kore_to_pretty(result))
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rs(opts)
+    proof = KMIR.prove_rs(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
