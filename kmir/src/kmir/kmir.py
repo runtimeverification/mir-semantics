@@ -62,6 +62,17 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_kore(
         smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
+        return KMIR.kompile_smir(
+            smir_info=smir_info,
+            target_dir=target_dir,
+            bug_report=bug_report,
+            symbolic=symbolic,
+        )
+
+    @staticmethod
+    def kompile_smir(
+        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
+    ) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
         def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
