@@ -64,30 +64,7 @@ def _kmir_run(opts: RunOpts) -> None:
         print(kmir.kore_to_pretty(result))
 
 
-def _kmir_gen_mod(opts: GenSpecOpts) -> None:
-
-    if opts.output_file is None:
-        with tempfile.TemporaryDirectory() as target_dir:
-            _ = KMIR.from_kompiled_kore(
-                SMIRInfo.from_file(opts.input_file), bug_report=None, symbolic=True, target_dir=target_dir
-            )
-            print((Path(target_dir) / 'haskell' / 'definition.kore').read_text())
-    else:
-        _ = KMIR.from_kompiled_kore(
-            SMIRInfo.from_file(opts.input_file), bug_report=None, symbolic=True, target_dir=str(opts.output_file)
-        )
-        _LOGGER.info(f'Created program-specific artefacts in {opts.output_file}.')
-
-
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    proof = kmir.prove_rss(opts)
-    print(str(proof.summary))
-    if not proof.passed:
-        sys.exit(1)
-
-
-def _kmir_prove_x(opts: ProveRSOpts) -> None:
     proof = KMIR.prove_rs(opts)
     print(str(proof.summary))
     if not proof.passed:
@@ -236,7 +213,7 @@ def kmir(args: Sequence[str]) -> None:
         case RunOpts():
             _kmir_run(opts)
         case GenSpecOpts():
-            _kmir_gen_mod(opts)
+            _kmir_gen_spec(opts)
         case InfoOpts():
             _kmir_info(opts)
         case ProveRawOpts():
@@ -248,10 +225,7 @@ def kmir(args: Sequence[str]) -> None:
         case PruneOpts():
             _kmir_prune(opts)
         case ProveRSOpts():
-            if ns.command == 'prove-x':
-                _kmir_prove_x(opts)
-            else:
-                _kmir_prove_rs(opts)
+            _kmir_prove_rs(opts)
         case LinkOpts():
             _kmir_link(opts)
         case _:
@@ -399,16 +373,6 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
 
-    prove_x_parser = command_parser.add_parser(
-        'prove-x',
-        help='prove a smir file using a compiled module for static data',
-        parents=[kcli_args.logging_args, prove_args],
-    )
-    prove_x_parser.add_argument('smir_file', type=Path, metavar='SMIR', help='SMIR JSON file to work with')
-    prove_x_parser.add_argument(
-        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
-    )
-
     link_parser = command_parser.add_parser(
         'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
     )
@@ -485,18 +449,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 reload=ns.reload,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
-                start_symbol=ns.start_symbol,
-            )
-        case 'prove-x':
-            return ProveRSOpts(
-                rs_file=Path(ns.smir_file),
-                proof_dir=ns.proof_dir,
-                bug_report=ns.bug_report,
-                max_depth=ns.max_depth,
-                max_iterations=ns.max_iterations,
-                reload=ns.reload,
-                save_smir=False,
-                smir=True,
                 start_symbol=ns.start_symbol,
             )
         case 'link':
