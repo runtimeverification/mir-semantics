@@ -1,0 +1,149 @@
+digraph {
+  label="pointer_cast_length_test";
+  node [shape=rectangle];
+  Xac08878333d72e42_0 [label="_ZN4core9panicking5panic1\n7h941160ead03e2d54E", color=red];
+  Xc987e5ecea6cc82b_0 [label="_ZN3std2rt19lang_start_in\nternal17h018b8394ba015d86\nE", color=red];
+  X3c6542d96320ad67_0 [label="Intr: \nblack_box", color=red];
+  X8b0ac2e54b9a91_0 [label="NoOp: ", color=red];
+  subgraph cluster_0 {
+    label="array_cast_test";
+    style="filled";
+    color=palegreen;
+    node_1 [label="LOCALS\l0 = ()\l1 = &[u8]\l2 = bool\l3 = usize\l4 = !\l5 = [u8; 4]\l6 = *const [u8; 4]\l7 = *const u8\l8 = usize\l9 = &[u8]\l10 = &[u8; 4]\l11 = !\l12 = *mut [u8; 4]\l13 = *const u8\l14 = usize\l15 = usize\l16 = bool\l17 = usize\l18 = &[u8]\l19 = &[u8; 4]\l20 = !\l21 = &[u8]\l22 = &[u8; 4]\l23 = [u8; 9]\l24 = *const [u8; 9]\l25 = *const u8\l26 = usize\l27 = &[u8]\l28 = &[u8; 9]\l29 = !\l", style="filled", color=palegreen3];
+    X6f0ac4e7275d1318_0 -> X6f0ac4e7275d1318_2 [label="0"];
+    X6f0ac4e7275d1318_0 -> X6f0ac4e7275d1318_1 [label="other"];
+    X6f0ac4e7275d1318_0 [label="3 <- PtrMetadata(cp(1))\l2 <- Ge(mv(3), const ?_usize)\lSwitchInt mv(2)\l"];
+    X6f0ac4e7275d1318_1 -> X6f0ac4e7275d1318_3 [label="7"];
+    X6f0ac4e7275d1318_1 [label="Call\l"];
+    X6f0ac4e7275d1318_2 [label="Call\l"];
+    X6f0ac4e7275d1318_3 -> X6f0ac4e7275d1318_4 [label="4"];
+    X6f0ac4e7275d1318_3 -> X6f0ac4e7275d1318_5 [label="other"];
+    X6f0ac4e7275d1318_3 [label="6 <- Cast-PtrToPtr mv(7)\l5 <- Use(cp((*6)))\l10 <- & 5\l9 <- Cast-PointerCoercion(Unsize) mv(10)\l8 <- PtrMetadata(mv(9))\lSwitchInt mv(8)\l"];
+    X6f0ac4e7275d1318_4 -> X6f0ac4e7275d1318_6 [label="13"];
+    X6f0ac4e7275d1318_4 [label="Call\l"];
+    X6f0ac4e7275d1318_5 [label="Call\l"];
+    X6f0ac4e7275d1318_6 -> X6f0ac4e7275d1318_7;
+    X6f0ac4e7275d1318_6 [label="12 <- Cast-PtrToPtr mv(13)\l14 <- Use(const ?_usize)\l15 <- Use(const ?_usize)\l16 <- Lt(cp(14), cp(15))\lAssert mv(16) == true\l"];
+    X6f0ac4e7275d1318_7 -> X6f0ac4e7275d1318_8 [label="4"];
+    X6f0ac4e7275d1318_7 -> X6f0ac4e7275d1318_9 [label="other"];
+    X6f0ac4e7275d1318_7 [label="(*12)[_14] <- Use(const ?_u8)\l19 <- & (*12)\l18 <- Cast-PointerCoercion(Unsize) mv(19)\l17 <- PtrMetadata(mv(18))\lSwitchInt cp(17)\l"];
+    X6f0ac4e7275d1318_8 -> X6f0ac4e7275d1318_10 [label="25"];
+    X6f0ac4e7275d1318_8 [label="22 <- & 5\l21 <- Cast-PointerCoercion(Unsize) cp(22)\lCall\l"];
+    X6f0ac4e7275d1318_9 [label="Call\l"];
+    X6f0ac4e7275d1318_10 -> X6f0ac4e7275d1318_11 [label="9"];
+    X6f0ac4e7275d1318_10 -> X6f0ac4e7275d1318_12 [label="other"];
+    X6f0ac4e7275d1318_10 [label="24 <- Cast-PtrToPtr mv(25)\l23 <- Use(cp((*24)))\l28 <- & 23\l27 <- Cast-PointerCoercion(Unsize) mv(28)\l26 <- PtrMetadata(mv(27))\lSwitchInt mv(26)\l"];
+    X6f0ac4e7275d1318_11 [label="Return\l"];
+    X6f0ac4e7275d1318_12 [label="Call\l"];
+  }
+  X6f0ac4e7275d1318_1 -> X6d807aad28e61610_0 [label="cp(1)"];
+  X6f0ac4e7275d1318_2 -> Xac08878333d72e42_0 [label="const &str"];
+  X6f0ac4e7275d1318_4 -> X6d807aad28e61610_0 [label="cp(1)"];
+  X6f0ac4e7275d1318_5 -> Xac08878333d72e42_0 [label="const &str"];
+  X6f0ac4e7275d1318_8 -> X6d807aad28e61610_0 [label="cp(21)"];
+  X6f0ac4e7275d1318_9 -> Xac08878333d72e42_0 [label="const &str"];
+  X6f0ac4e7275d1318_12 -> Xac08878333d72e42_0 [label="const &str"];
+  subgraph cluster_2 {
+    label="main";
+    style="filled";
+    color=palegreen;
+    node_3 [label="LOCALS\l0 = ()\l1 = [u8; 8]\l2 = ()\l3 = &[u8]\l4 = &[u8; 8]\l", style="filled", color=palegreen3];
+    Xd4948713ce89e77b_0 -> Xd4948713ce89e77b_1 [label="2"];
+    Xd4948713ce89e77b_0 [label="1 <- Repeat const ?_u8\l4 <- & 1\l3 <- Cast-PointerCoercion(Unsize) cp(4)\lCall\l"];
+    Xd4948713ce89e77b_1 [label="Return\l"];
+  }
+  Xd4948713ce89e77b_0 -> X6f0ac4e7275d1318_0 [label="mv(3)"];
+  subgraph cluster_4 {
+    label="std::rt::lang_start::<()>";
+    style="filled";
+    color=lightgray;
+    node_5 [label="LOCALS\l0 = isize\l1 = fn()\l2 = isize\l3 = *const *const u8\l4 = u8\l5 = std::result::Result<isize, !>\l6 = &dyn std::ops::Fn() -> i32 + std::marker::Sync + std::panic::RefUnwindSafe\l7 = &{closure@std::rt::lang_start<()>::{closure#0}}\l8 = {closure@std::rt::lang_start<()>::{closure#0}}\l", style="filled", color=palegreen3];
+    X5af0172d73504fdf_0 -> X5af0172d73504fdf_1 [label="5"];
+    X5af0172d73504fdf_0 [label="Storage Live _5\lStorage Live _6\lStorage Live _8\l8 <- Closure (cp(1))\l7 <- & 8\l6 <- Cast-PointerCoercion(Unsize) cp(7)\lCall\l"];
+    X5af0172d73504fdf_1 [label="Storage Dead _6\l0 <- Use(cp((5 as variant 0).0))\lStorage Dead _8\lStorage Dead _5\lReturn\l"];
+  }
+  X5af0172d73504fdf_0 -> Xc987e5ecea6cc82b_0 [label="mv(6),mv(2),mv(3),mv(4)"];
+  subgraph cluster_6 {
+    label="std::rt::lang_start::<()>\n::{closure#0}";
+    style="filled";
+    color=lightgray;
+    node_7 [label="LOCALS\l0 = i32\l1 = &{closure@std::rt::lang_start<()>::{closure#0}}\l2 = std::process::ExitCode\l3 = ()\l4 = fn()\l5 = &std::sys::pal::unix::process::process_common::ExitCode\l6 = u8\l", style="filled", color=palegreen3];
+    Xa9f4d9a3cbdeae96_0 -> Xa9f4d9a3cbdeae96_1 [label="3"];
+    Xa9f4d9a3cbdeae96_0 [label="Storage Live _2\lStorage Live _3\lStorage Live _4\l4 <- Use(cp((*1).0))\lCall\l"];
+    Xa9f4d9a3cbdeae96_1 -> Xa9f4d9a3cbdeae96_2 [label="2"];
+    Xa9f4d9a3cbdeae96_1 [label="Storage Dead _4\lCall\l"];
+    Xa9f4d9a3cbdeae96_2 [label="Storage Dead _3\lStorage Live _5\l5 <- & 2.0\lStorage Live _6\l6 <- Use(cp(2.0.0))\l0 <- Cast-IntToInt mv(6)\lStorage Dead _6\lStorage Dead _5\lStorage Dead _2\lReturn\l"];
+  }
+  Xa9f4d9a3cbdeae96_0 -> X4444e554f994172e_0 [label="mv(4)"];
+  Xa9f4d9a3cbdeae96_1 -> Xe45df593c5cbfb8f_0 [label="mv(3)"];
+  subgraph cluster_8 {
+    label="std::sys::backtrace::__ru\nst_begin_short_backtrace:\n:<fn(), \n()>";
+    style="filled";
+    color=lightgray;
+    node_9 [label="LOCALS\l0 = ()\l1 = fn()\l2 = ()\l", style="filled", color=palegreen3];
+    X4444e554f994172e_0 -> X4444e554f994172e_1 [label="0"];
+    X4444e554f994172e_0 [label="Call\l"];
+    X4444e554f994172e_1 -> X4444e554f994172e_2 [label="2"];
+    X4444e554f994172e_1 [label="Call\l"];
+    X4444e554f994172e_2 [label="Return\l"];
+  }
+  X4444e554f994172e_0 -> Xf701bffc7f99646f_0 [label="mv(1),const ()"];
+  X4444e554f994172e_1 -> X3c6542d96320ad67_0 [label="const ()"];
+  subgraph cluster_10 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    node_11 [label="LOCALS\l0 = i32\l1 = *mut {closure@std::rt::lang_start<()>::{closure#0}}\l2 = ()\l", style="filled", color=palegreen3];
+    X9b2936d3ff0691ed_0 -> X9b2936d3ff0691ed_1 [label="0"];
+    X9b2936d3ff0691ed_0 [label="Call\l"];
+    X9b2936d3ff0691ed_1 [label="Return\l"];
+  }
+  X9b2936d3ff0691ed_0 -> Xbc7ae6075430b623_0 [label="mv((*1)),mv(2)"];
+  subgraph cluster_12 {
+    label="<{closure@std::rt::lang_s\ntart<()>::{closure#0}} \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    node_13 [label="LOCALS\l0 = i32\l1 = {closure@std::rt::lang_start<()>::{closure#0}}\l2 = ()\l3 = &mut {closure@std::rt::lang_start<()>::{closure#0}}\l", style="filled", color=palegreen3];
+    Xbc7ae6075430b623_0 -> Xbc7ae6075430b623_3 [label="Cleanup"];
+    Xbc7ae6075430b623_0 -> Xbc7ae6075430b623_1 [label="0"];
+    Xbc7ae6075430b623_0 [label="3 <- &mut 1\lCall\l"];
+    Xbc7ae6075430b623_1 -> Xbc7ae6075430b623_2;
+    Xbc7ae6075430b623_1 [label="Drop 1\l"];
+    Xbc7ae6075430b623_2 [label="Return\l"];
+    Xbc7ae6075430b623_3 -> Xbc7ae6075430b623_4;
+    Xbc7ae6075430b623_3 [label="Drop 1\l"];
+    Xbc7ae6075430b623_4 [label="Resume\l"];
+  }
+  Xbc7ae6075430b623_0 -> Xa9f4d9a3cbdeae96_0 [label="mv(3),mv(2)"];
+  subgraph cluster_14 {
+    label="<fn() \nas \nstd::ops::FnOnce<()>>::ca\nll_once";
+    style="filled";
+    color=lightgray;
+    node_15 [label="LOCALS\l0 = ()\l1 = fn()\l2 = ()\l", style="filled", color=palegreen3];
+    Xf701bffc7f99646f_0 -> Xf701bffc7f99646f_1 [label="0"];
+    Xf701bffc7f99646f_0 [label="Call\l"];
+    Xf701bffc7f99646f_1 [label="Return\l"];
+  }
+  Xf701bffc7f99646f_0 -> Xf701bffc7f99646f_0: 1 [label=""];
+  subgraph cluster_16 {
+    label="std::ptr::drop_in_place::\n<{closure@std::rt::lang_s\ntart<()>::{closure#0}}>";
+    style="filled";
+    color=lightgray;
+    node_17 [label="LOCALS\l0 = ()\l1 = *mut {closure@std::rt::lang_start<()>::{closure#0}}\l", style="filled", color=palegreen3];
+    X4a3a9878cdeeab7a_0 [label="Return\l"];
+  }
+  subgraph cluster_18 {
+    label="core::slice::<impl \n[u8]>::as_ptr";
+    style="filled";
+    color=lightgray;
+    node_19 [label="LOCALS\l0 = *const u8\l1 = &[u8]\l2 = *const [u8]\l", style="filled", color=palegreen3];
+    X6d807aad28e61610_0 [label="Storage Live _2\l2 <- &raw (*1)\l0 <- Cast-PtrToPtr mv(2)\lStorage Dead _2\lReturn\l"];
+  }
+  subgraph cluster_20 {
+    label="<() \nas \nstd::process::Termination\n>::report";
+    style="filled";
+    color=lightgray;
+    node_21 [label="LOCALS\l0 = std::process::ExitCode\l1 = ()\l", style="filled", color=palegreen3];
+    Xe45df593c5cbfb8f_0 [label="0 <- Use(const std::process::ExitCode)\lReturn\l"];
+  }
+}
