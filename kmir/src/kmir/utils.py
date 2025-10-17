@@ -191,17 +191,34 @@ def render_statistics(proof: APRProof) -> list[str]:
         return node_ids
 
     for leaf in sorted(leaves, key=lambda n: n.id):
-        path = kcfg.shortest_path_between(proof.init, leaf.id)
-        if path is None:
+        paths = kcfg.paths_between(proof.init, leaf.id)
+        if not paths:
             leaf_lines.append(f'  leaf {leaf.id}: unreachable from init')
             continue
 
-        steps = kcfg.path_length(path)
-        total_steps += steps
+        path_infos: list[tuple[int, tuple[int, ...]]] = []
+        seen_sequences: set[tuple[int, ...]] = set()
+
+        for path in paths:
+            steps = kcfg.path_length(path)
+            node_seq = tuple(_path_nodes(proof.init, path))
+            if node_seq in seen_sequences:
+                continue
+            seen_sequences.add(node_seq)
+            path_infos.append((steps, node_seq))
+
+        if not path_infos:
+            leaf_lines.append(f'  leaf {leaf.id}: unreachable from init')
+            continue
+
+        total_steps += min(steps for steps, _ in path_infos)
         reachable_leaf_count += 1
-        node_seq = _path_nodes(proof.init, path)
-        seq_str = ' -> '.join(str(nid) for nid in node_seq)
-        leaf_lines.append(f'  leaf {leaf.id}: steps {steps}, path {seq_str}')
+        path_infos.sort(key=lambda info: (info[0], info[1]))
+
+        for idx, (steps, node_seq) in enumerate(path_infos, start=1):
+            suffix = '' if len(path_infos) == 1 else f' (path {idx}/{len(path_infos)})'
+            seq_str = ' -> '.join(str(nid) for nid in node_seq)
+            leaf_lines.append(f'  leaf {leaf.id}{suffix}: steps {steps}, path {seq_str}')
 
     lines.append(f'  total leaves (non-root): {len(leaves)}')
     lines.append(f'  reachable leaves       : {reachable_leaf_count}')
