@@ -87,33 +87,6 @@ class ProveRSOpts(ProveOpts):
 
 
 @dataclass
-class ProveRawOpts(ProveOpts):
-    spec_file: Path
-    include_labels: tuple[str, ...] | None
-    exclude_labels: tuple[str, ...] | None
-
-    def __init__(
-        self,
-        spec_file: Path,
-        proof_dir: Path | str | None,
-        include_labels: str | None = None,
-        exclude_labels: str | None = None,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-        reload: bool = False,
-    ) -> None:
-        self.spec_file = spec_file
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
-        self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-        self.reload = reload
-
-
-@dataclass
 class DisplayOpts(ProofOpts):
     full_printer: bool
     smir_info: Path | None
