@@ -17,7 +17,6 @@ Besides the `caller` (to return to) and `dest` and `target` to specify where the
 requires "./value.md"
 
 module KMIR-CONFIGURATION
-  imports KMIR-AST
   imports INT-SYNTAX
   imports BOOL-SYNTAX
   imports RT-VALUE-SYNTAX
@@ -32,7 +31,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm) </k>
+                  <k> $PGM:KItem </k>
                   <retVal> noReturn </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
