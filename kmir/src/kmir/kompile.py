@@ -192,7 +192,7 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
     kprint_logger.setLevel(logging.WARNING)
 
-    for fty, kind in kmir.functions(smir_info).items():
+    for fty, kind in _functions(kmir, smir_info).items():
         equations.append(kmir._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind'))
 
     types: set[KInner] = set()
@@ -212,3 +212,31 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
         equations.append(kmir._mk_equation('lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     return equations
+
+
+def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
+    functions: dict[int, KInner] = {}
+
+    # Parse regular functions
+    for item_name, item in smir_info.items.items():
+        if not item_name in smir_info.function_symbols_reverse:
+            _LOGGER.warning(f'Item not found in SMIR: {item_name}')
+            continue
+        parsed_item = kmir.parser.parse_mir_json(item, 'MonoItem')
+        if not parsed_item:
+            raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
+        parsed_item_kinner, _ = parsed_item
+        assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
+        # each item can have several entries in the function table for linked SMIR JSON
+        for ty in smir_info.function_symbols_reverse[item_name]:
+            functions[ty] = parsed_item_kinner.args[1]
+
+    # Add intrinsic functions
+    for ty, sym in smir_info.function_symbols.items():
+        if 'IntrinsicSym' in sym and ty not in functions:
+            functions[ty] = KApply(
+                'IntrinsicFunction',
+                [KApply('symbol(_)_LIB_Symbol_String', [token(sym['IntrinsicSym'])])],
+            )
+
+    return functions

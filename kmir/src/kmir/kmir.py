@@ -13,7 +13,6 @@ from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kast.prelude.kint import intToken
-from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -88,33 +87,6 @@ class KMIR(KProve, KRun, KParse):
             interim_simplification=50,  # working around memory problems in LLVM backend calls
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
-
-    def functions(self, smir_info: SMIRInfo) -> dict[int, KInner]:
-        functions: dict[int, KInner] = {}
-
-        # Parse regular functions
-        for item_name, item in smir_info.items.items():
-            if not item_name in smir_info.function_symbols_reverse:
-                _LOGGER.warning(f'Item not found in SMIR: {item_name}')
-                continue
-            parsed_item = self.parser.parse_mir_json(item, 'MonoItem')
-            if not parsed_item:
-                raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
-            parsed_item_kinner, _ = parsed_item
-            assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
-            # each item can have several entries in the function table for linked SMIR JSON
-            for ty in smir_info.function_symbols_reverse[item_name]:
-                functions[ty] = parsed_item_kinner.args[1]
-
-        # Add intrinsic functions
-        for ty, sym in smir_info.function_symbols.items():
-            if 'IntrinsicSym' in sym and ty not in functions:
-                functions[ty] = KApply(
-                    'IntrinsicFunction',
-                    [KApply('symbol(_)_LIB_Symbol_String', [token(sym['IntrinsicSym'])])],
-                )
-
-        return functions
 
     def _mk_equation(self, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
         from pyk.kore.rule import FunctionRule
