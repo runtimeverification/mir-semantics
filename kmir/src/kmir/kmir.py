@@ -158,6 +158,7 @@ class KMIR(KProve, KRun, KParse):
             _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
             import subprocess
+
             _LOGGER.info('Running llvm-kompile-matching')
             subprocess.run(
                 ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
