@@ -88,39 +88,6 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def _mk_equation(self, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
-        from pyk.kore.rule import FunctionRule
-        from pyk.kore.syntax import App, SortApp
-
-        arg_kore = self.kast_to_kore(arg, KSort(arg_sort))
-        fun_app = App('Lbl' + fun, (), (arg_kore,))
-        result_kore = self.kast_to_kore(result, KSort(result_sort))
-
-        assert isinstance(fun_app, App)
-        rule = FunctionRule(
-            lhs=fun_app,
-            rhs=result_kore,
-            req=None,
-            ens=None,
-            sort=SortApp('Sort' + result_sort),
-            arg_sorts=(SortApp('Sort' + arg_sort),),
-            anti_left=None,
-            priority=50,
-            uid='fubar',
-            label='fubaz',
-        )
-        return '\n'.join(
-            [
-                '',
-                '',
-                (
-                    f'// {fun}({self.pretty_print(arg)})'
-                    + (f' => {self.pretty_print(result)}' if len(self.pretty_print(result)) < 1000 else '')
-                ),
-                rule.to_axiom().text,
-            ]
-        )
-
     def make_call_config(
         self,
         smir_info: SMIRInfo,

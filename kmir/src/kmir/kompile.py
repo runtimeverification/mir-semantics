@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KApply
+from pyk.kast.inner import KApply, KSort
 from pyk.kast.prelude.utils import token
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
@@ -193,7 +193,7 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
     kprint_logger.setLevel(logging.WARNING)
 
     for fty, kind in _functions(kmir, smir_info).items():
-        equations.append(kmir._mk_equation('lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind'))
+        equations.append(_mk_equation(kmir, 'lookupFunction', KApply('ty', (token(fty),)), 'Ty', kind, 'MonoItemKind'))
 
     types: set[KInner] = set()
     for type in smir_info._smir['types']:
@@ -205,11 +205,11 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
         if ty in types:
             raise ValueError(f'Key collision in type map: {ty}')
         types.add(ty)
-        equations.append(kmir._mk_equation('lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
+        equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
     for alloc in smir_info._smir['allocs']:
         alloc_id, value = kmir._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-        equations.append(kmir._mk_equation('lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
+        equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     return equations
 
@@ -240,3 +240,37 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
             )
 
     return functions
+
+
+def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
+    from pyk.kore.rule import FunctionRule
+    from pyk.kore.syntax import App, SortApp
+
+    arg_kore = kmir.kast_to_kore(arg, KSort(arg_sort))
+    fun_app = App('Lbl' + fun, (), (arg_kore,))
+    result_kore = kmir.kast_to_kore(result, KSort(result_sort))
+
+    assert isinstance(fun_app, App)
+    rule = FunctionRule(
+        lhs=fun_app,
+        rhs=result_kore,
+        req=None,
+        ens=None,
+        sort=SortApp('Sort' + result_sort),
+        arg_sorts=(SortApp('Sort' + arg_sort),),
+        anti_left=None,
+        priority=50,
+        uid='fubar',
+        label='fubaz',
+    )
+    return '\n'.join(
+        [
+            '',
+            '',
+            (
+                f'// {fun}({kmir.pretty_print(arg)})'
+                + (f' => {kmir.pretty_print(result)}' if len(kmir.pretty_print(result)) < 1000 else '')
+            ),
+            rule.to_axiom().text,
+        ]
+    )
