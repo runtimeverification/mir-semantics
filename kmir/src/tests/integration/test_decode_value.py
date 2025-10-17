@@ -3,10 +3,9 @@ from __future__ import annotations
 from string import Template
 from typing import TYPE_CHECKING, NamedTuple
 
-from kmir.build import LLVM_DEF_DIR
-from kmir.smir import SMIRInfo
-
 import pytest
+
+from kmir.smir import SMIRInfo
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -17,19 +16,35 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(scope='session')
-def definition_dir() -> Path:
-    import shutil
-    from .utils import TEST_DATA_DIR
+def definition_dir():  # -> Path:
+    import time
+
     from kmir.kmir import KMIR
 
-    target_dir = TEST_DATA_DIR / 'decode-value' / '.tmp'
+    from .utils import TEST_DATA_DIR
 
-    # generate and compile an LLVM interpreter with the type-table
-    _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=str(target_dir), symbolic=False)
+    target_dir = TEST_DATA_DIR / 'decode-value' / 'tmp'
+
+    # prevent other processes from concurrently trying to compile
+    # (the scope='session' above does not actually work in pytest-xdist)
+    lock_file = TEST_DATA_DIR / 'decode-value' / 'tmp.lock'
+    try:
+        with open(lock_file, 'x') as _:
+            # generate and compile an LLVM interpreter with the type-table
+            _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=str(target_dir), symbolic=False)
+        lock_file.unlink()
+    except FileExistsError:
+        # wait loop until interpreter exists, max 1min
+        secs = 0
+        while lock_file.exists() and secs < 60:
+            time.sleep(1)
+        if not (target_dir / 'llvm' / 'interpreter').exists():
+            raise Exception('Waited in vain for interpreter to arise. Exiting') from None
 
     yield target_dir / 'llvm'
-    print (f'Should now remove {target_dir}')
-    # shutil.rmtree(target_dir, ignore_errors=True)
+
+    # should remove the target_dir but other processes are probably still using it
+    print(f'Remove {target_dir} if you want to clean up')
 
 
 @pytest.fixture(scope='session')
@@ -70,10 +85,6 @@ KORE_TEMPLATE: Final = Template(
                         Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
                     ),
                     Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
-                    Lbl'-LT-'memory'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'functions'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}(""))),
-                    Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}())
                 ),
                 Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
             )
@@ -137,11 +148,13 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
         expected=expected,
     )
 
+
 def load_test_types():
     import json
+
     from .utils import TEST_DATA_DIR
 
-    types = json.loads( (TEST_DATA_DIR / 'decode-value' / 'type-table').read_text())
+    types = json.loads((TEST_DATA_DIR / 'decode-value' / 'type-table').read_text())
     assert isinstance(types, list)
 
     smir = {
