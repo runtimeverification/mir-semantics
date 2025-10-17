@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import shutil
 import tempfile
 from contextlib import contextmanager
@@ -12,25 +11,22 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, build_rule, free_vars, split_config_from
-from pyk.kast.outer import KDefinition, KFlatModule, KImport, KRequire
-from pyk.kast.prelude.collections import list_empty, list_of, map_of
+from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
+from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
-from pyk.ktool.kompile import LLVMKompileType, PykBackend, kompile
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
-from .build import HASKELL_DEF_DIR, KMIR_SOURCE_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .cargo import cargo_get_smir_json
 from .kast import mk_call_terminator, symbolic_locals
-from .kdist.plugin import _default_args
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -63,62 +59,8 @@ class KMIR(KProve, KRun, KParse):
         self.llvm_library_dir = llvm_library_dir
 
     @staticmethod
-    def from_kompiled_program(
-        smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = True, keep_module: bool = False
-    ) -> KMIR:
-        kmir = KMIR(HASKELL_DEF_DIR)
-
-        try:
-            prog_module = kmir.make_program_module(smir_info)
-
-            with tempfile.NamedTemporaryFile(mode='w+t', delete=False) as prog_mod_file:
-                prog_mod_file.write(kmir.pretty_print(prog_module))
-            _LOGGER.info(f'Program module written to {prog_mod_file.name}')
-
-            if not symbolic:
-                raise Exception('non-symbolic compiled module: not implemented yet')
-
-            # kompile the module, for Haskell and for LLVM-library
-            # code using KompileTarget from kmir.kdist.plugin
-            llvm_args = {
-                'main_file': prog_mod_file.name,
-                'main_module': prog_module.main_module_name,
-                'backend': PykBackend.LLVM,
-                'llvm_kompile_type': LLVMKompileType.C,
-                'md_selector': 'k & ! symbolic',
-                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-            }
-            llvm_out = kompile(output_dir='out/llvm', verbose=True, **llvm_args)
-
-            hs_args = {
-                'main_file': prog_mod_file.name,
-                'main_module': prog_module.main_module_name,
-                'backend': PykBackend.HASKELL,
-                'md_selector': 'k & ! concrete',
-                **_default_args(KMIR_SOURCE_DIR / 'mir-semantics'),
-            }
-            hs_out = kompile(output_dir='out/hs/', verbose=True, **hs_args)
-
-            _LOGGER.info(f'Kompile output: LLVM: {llvm_out},HS:   {hs_out}')
-        except Exception as e:
-            _LOGGER.error(f'Exception during kompile phase: {e}')
-            raise e
-        finally:
-            if os.path.exists(prog_mod_file.name):
-                if keep_module:
-                    shutil.move(prog_mod_file.name, 'out/program_module.k')
-                    _LOGGER.info('Compiled module kept as file out/program_module.k.')
-                else:
-                    os.remove(prog_mod_file.name)
-            else:
-                raise Exception('Unable to provide module file')
-
-        # make a new KMIR with these paths
-        return KMIR(hs_out, llvm_out, bug_report=bug_report)
-
-    @staticmethod
-    def from_kompiled_via_kore(
-        smir_info: SMIRInfo, bug_report: Path | None = None, symbolic: bool = True, target_dir: str = 'out-kore'
+    def from_kompiled_kore(
+        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
         kmir = KMIR(HASKELL_DEF_DIR)
 
@@ -148,63 +90,99 @@ class KMIR(KProve, KRun, KParse):
         rules = kmir.make_kore_rules(smir_info)
         _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
-        if not symbolic:
-            raise Exception('Non-symbolic (LLVM) kore-module not implemented')
+        if symbolic:
+            # Create output directories
+            target_llvm_path = target_path / 'llvm-library'
+            target_llvmdt_path = target_llvm_path / 'dt'
+            target_hs_path = target_path / 'haskell'
 
-        # Create output directories
-        target_llvm_path = target_path / 'llvm-library'
-        target_llvmdt_path = target_llvm_path / 'dt'
-        target_hs_path = target_path / 'haskell'
+            _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
+            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+            target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-        target_hs_path.mkdir(parents=True, exist_ok=True)
+            # Process LLVM definition
+            _LOGGER.info('Writing LLVM definition file')
+            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+            llvm_def_output = target_llvm_path / 'definition.kore'
+            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
-        # Process LLVM definition
-        _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+            # Run llvm-kompile-matching and llvm-kompile for LLVM
+            # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
+            # TODO align compilation options to what we use in plugin.py
+            import subprocess
 
-        # Run llvm-kompile-matching and llvm-kompile for LLVM
-        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-        # TODO align compilation options to what we use in plugin.py
-        import subprocess
+            _LOGGER.info('Running llvm-kompile-matching')
+            subprocess.run(
+                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
+            )
+            _LOGGER.info('Running llvm-kompile')
+            subprocess.run(
+                [
+                    'llvm-kompile',
+                    str(llvm_def_output),
+                    str(target_llvmdt_path),
+                    'c',
+                    '-O2',
+                    '--',
+                    '-o',
+                    target_llvm_path / 'interpreter',
+                ],
+                check=True,
+            )
 
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'c',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_path / 'interpreter',
-            ],
-            check=True,
-        )
+            # Process Haskell definition
+            _LOGGER.info('Writing Haskell definition file')
+            hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
+            _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
 
-        # Process Haskell definition
-        _LOGGER.info('Writing Haskell definition file')
-        hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
-        _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
+            # Copy all files except definition.kore and binary from HASKELL_DEF_DIR to out/hs
+            _LOGGER.info('Copying other artefacts into HS output directory')
+            for file_path in HASKELL_DEF_DIR.iterdir():
+                if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
+                    if file_path.is_file():
+                        shutil.copy2(file_path, target_hs_path / file_path.name)
+                    elif file_path.is_dir():
+                        shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+            return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
+        else:
 
-        # Copy all files except definition.kore from HASKELL_DEF_DIR to out/hs
-        _LOGGER.info('Copying other artefacts into HS output directory')
-        for file_path in HASKELL_DEF_DIR.iterdir():
-            if file_path.name != 'definition.kore':
-                if file_path.is_file():
-                    shutil.copy2(file_path, target_hs_path / file_path.name)
-                elif file_path.is_dir():
-                    shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+            target_llvm_path = target_path / 'llvm'
+            target_llvmdt_path = target_llvm_path / 'dt'
+            _LOGGER.info(f'Creating directory {target_llvmdt_path}')
+            target_llvmdt_path.mkdir(parents=True, exist_ok=True)
 
-        return KMIR(target_hs_path, target_llvm_path, bug_report=bug_report)
+            # Process LLVM definition
+            _LOGGER.info('Writing LLVM definition file')
+            llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+            llvm_def_output = target_llvm_path / 'definition.kore'
+            _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+
+            import subprocess
+
+            _LOGGER.info('Running llvm-kompile-matching')
+            subprocess.run(
+                ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
+            )
+            _LOGGER.info('Running llvm-kompile')
+            subprocess.run(
+                [
+                    'llvm-kompile',
+                    str(llvm_def_output),
+                    str(target_llvmdt_path),
+                    'main',
+                    '-O2',
+                    '--',
+                    '-o',
+                    target_llvm_path / 'interpreter',
+                ],
+                check=True,
+            )
+            blacklist = ['definition.kore', 'interpreter', 'dt']
+            to_copy = [file.name for file in LLVM_DEF_DIR.iterdir() if file.name not in blacklist]
+            for file in to_copy:
+                _LOGGER.info(f'Copying file {file}')
+                shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
+            return KMIR(target_llvm_path, None, bug_report=bug_report)
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
@@ -252,54 +230,12 @@ class KMIR(KProve, KRun, KParse):
 
         return functions
 
-    def make_program_module(self, smir_info: SMIRInfo) -> KDefinition:
-        equations = []
-
-        for fty, kind in self.functions(smir_info).items():
-            rule, _ = build_rule(
-                f'lookupFunction-{fty}',
-                KApply('lookupFunction', (KApply('ty', (token(fty),)),)),
-                kind,
-            )
-            equations.append(rule)
-
-        parser = Parser(self.definition)
-        types: set[KInner] = set()
-        for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types.add(ty)
-            assert isinstance(ty, KApply) and len(ty.args) == 1 and isinstance(ty.args[0], KToken)
-            rule, _ = build_rule(
-                f'lookupTy-{ty.args[0].token}',
-                KApply('lookupTy', (ty,)),
-                tyinfo,
-            )
-            equations.append(rule)
-
-        for alloc in smir_info._smir['allocs']:
-            alloc_id, value = self._decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-            assert isinstance(alloc_id, KApply) and isinstance(alloc_id.args[0], KToken)
-            rule, _ = build_rule(
-                f'lookupAlloc-{alloc_id.args[0].token}',
-                KApply('lookupAlloc', (alloc_id,)),
-                value,
-            )
-            equations.append(rule)
-
-        name = smir_info.name.replace('_', '-')
-
-        module = KFlatModule(f'KMIR-PROGRAM-{name}', equations, (KImport('KMIR'),))
-
-        return KDefinition(f'KMIR-PROGRAM-{name}', (module,), (KRequire('kmir.md'),))
-
     def make_kore_rules(self, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
         equations = []
+
+        # kprint tool is too chatty
+        kprint_logger = logging.getLogger('pyk.ktool.kprint')
+        kprint_logger.setLevel(logging.WARNING)
 
         for fty, kind in self.functions(smir_info).items():
             equations.append(
@@ -370,16 +306,11 @@ class KMIR(KProve, KRun, KParse):
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-        types = self._make_type_map(smir_info)
 
         _subst = {
             'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': self._make_memory_map(smir_info, types),
-            'FUNCTIONS_CELL': self._make_function_map(smir_info),
-            'TYPES_CELL': types,
         }
 
         _init_subst: dict[str, KInner] = {}
@@ -396,16 +327,6 @@ class KMIR(KProve, KRun, KParse):
         config = self.definition.empty_config(KSort(sort))
         return (subst.apply(config), constraints)
 
-    def _make_memory_map(self, smir_info: SMIRInfo, types: KInner) -> KInner:
-        raw_allocs = smir_info._smir['allocs']
-        return map_of(
-            self._decode_alloc(
-                smir_info=smir_info,
-                raw_alloc=raw_alloc,
-            )
-            for raw_alloc in raw_allocs
-        )
-
     def _decode_alloc(self, smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
         from .decoding import UnableToDecodeValue, decode_alloc_or_unable
 
@@ -421,25 +342,6 @@ class KMIR(KProve, KRun, KParse):
 
         alloc_id_term = KApply('allocId', intToken(alloc_id))
         return alloc_id_term, value.to_kast()
-
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
-        parsed_terms: dict[KInner, KInner] = {}
-        for ty, body in self.functions(smir_info).items():
-            parsed_terms[KApply('ty', [token(ty)])] = body
-        return map_of(parsed_terms)
-
-    def _make_type_map(self, smir_info: SMIRInfo) -> KInner:
-        types: dict[KInner, KInner] = {}
-        for type in smir_info._smir['types']:
-            parse_result = self.parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types[ty] = tyinfo
-        return map_of(types)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
@@ -472,35 +374,54 @@ class KMIR(KProve, KRun, KParse):
         target_node = kcfg.create_node(rhs)
         return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
-    def prove_rs(self, opts: ProveRSOpts) -> APRProof:
+    @staticmethod
+    def prove_rs(opts: ProveRSOpts) -> APRProof:
         if not opts.rs_file.is_file():
-            raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
+            raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
         label = str(opts.rs_file.stem) + '.' + opts.start_symbol
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            if opts.smir:
-                smir_info = SMIRInfo.from_file(opts.rs_file)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target_path = opts.proof_dir / label if opts.proof_dir is not None else Path(tmp_dir)
+
+            if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+                _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+                apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+
+                # TODO avoid compilation, use compilation output from the proof directory
+                # kmir = KMIR(opts.proof_dir / label / haskell, opts.proof_dir / label / llvm-library) if they exist
+                # or else implement this in the `from_kompiled_kore` constructor
+                smir_info = SMIRInfo.from_file(target_path / 'smir.json')
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                )
             else:
-                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+                _LOGGER.info(f'Constructing initial proof: {label}')
+                if opts.smir:
+                    smir_info = SMIRInfo.from_file(opts.rs_file)
+                else:
+                    smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-            smir_info = smir_info.reduce_to(opts.start_symbol)
+                smir_info = smir_info.reduce_to(opts.start_symbol)
+                _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
 
-            _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
-            apr_proof = self.apr_proof_from_smir(
-                label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
-            )
-            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
-        if apr_proof.passed:
-            return apr_proof
-        with self.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
-            return apr_proof
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                )
+
+                apr_proof = kmir.apr_proof_from_smir(
+                    label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                )
+                if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
+                    smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+
+            if apr_proof.passed:
+                return apr_proof
+
+            with kmir.kcfg_explore(label) as kcfg_explore:
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
+                return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):

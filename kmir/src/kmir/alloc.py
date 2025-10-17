@@ -35,7 +35,7 @@ class GlobalAlloc(ABC):  # noqa: B024
             case {'Memory': _}:
                 return Memory.from_dict(dct)
             case _:
-                raise ValueError('Unsupported or invalid GlobalAlloc data: {dct}')
+                raise ValueError(f'Unsupported or invalid GlobalAlloc data: {dct}')
 
 
 @dataclass

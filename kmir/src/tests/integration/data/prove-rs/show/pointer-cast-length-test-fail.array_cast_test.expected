@@ -15,10 +15,10 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (4 steps)
+┃  │  (5 steps)
 ┃  └─ 6 (stuck, leaf)
-┃      #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-┃      span: 72
+┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+┃      span: 32
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
