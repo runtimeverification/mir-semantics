@@ -136,6 +136,9 @@ The configuration is executed with the compiled module.
 5. re-test (without `test_decode_value`) DONE
 
 1. factor out the compilation method and revert prove_rs change (remove `KMIR.from_compiled_kore`)
+    Unfortunately this does not work. It would mean to move logic from `prove_rs` out of `KMIR`
+    to the call sites because we need the SMIRInfo to produce the modified KMIR object.
+    Instead, `KMIR.run_smir` becomes a static method with the same techniques.
 2. use `run_process2`
 3. implement KMIR.run_rs (with the above)
 4. implement fixed type lookup table for `test_decode_value` (per session recompiled fixture)
