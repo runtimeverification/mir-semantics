@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, NamedTuple, NewType
+from typing import TYPE_CHECKING, Any, NamedTuple, NewType
 
 from .ty import Ty
 
@@ -34,6 +34,12 @@ class GlobalAlloc(ABC):  # noqa: B024
         match dct:
             case {'Memory': _}:
                 return Memory.from_dict(dct)
+            case {'Static': alloc_id}:
+                return Static.from_dict(dct)
+            case {'Function': _}:
+                return Function.from_dict(dct)
+            case {'VTable': _}:
+                return VTable.from_dict(dct)
             case _:
                 raise ValueError(f'Unsupported or invalid GlobalAlloc data: {dct}')
 
@@ -47,6 +53,37 @@ class Memory(GlobalAlloc):
         return Memory(
             allocation=Allocation.from_dict(dct['Memory']),
         )
+
+
+@dataclass
+class Static(GlobalAlloc):
+    alloc_id: AllocId
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Static:
+        return Static(
+            alloc_id=AllocId(dct['Static']),
+        )
+
+
+@dataclass
+class Function(GlobalAlloc):
+    instance: dict[str, Any]
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> Function:
+        # Pass through instance payload as-is; KMIR currently does not execute via function allocs
+        return Function(instance=dict(dct['Function']))
+
+
+@dataclass
+class VTable(GlobalAlloc):
+    data: Any
+
+    @staticmethod
+    def from_dict(dct: dict[str, Any]) -> VTable:
+        # Preserve raw representation; currently not interpreted by KMIR
+        return VTable(data=dct['VTable'])
 
 
 @dataclass
