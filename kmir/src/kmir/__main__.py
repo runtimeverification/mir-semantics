@@ -9,9 +9,8 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
-from pyk.kast.outer import KFlatModule, KImport
 from pyk.kast.pretty import PrettyPrinter
-from pyk.proof.reachability import APRProof, APRProver
+from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
@@ -20,17 +19,14 @@ from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
-    GenSpecOpts,
     InfoOpts,
     LinkOpts,
-    ProveRawOpts,
     ProveRSOpts,
     PruneOpts,
     RunOpts,
     ShowOpts,
     ViewOpts,
 )
-from .parse.parser import parse_json
 from .smir import SMIRInfo, Ty
 from .utils import render_leaf_k_cells, render_rules, render_statistics
 
@@ -69,55 +65,6 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
-
-
-def _kmir_gen_spec(opts: GenSpecOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
-
-    parse_result = parse_json(kmir.definition, opts.input_file, 'Pgm')
-    if parse_result is None:
-        print('Parse error!', file=sys.stderr)
-        sys.exit(1)
-
-    smir_info = SMIRInfo.from_file(opts.input_file).reduce_to(opts.start_symbol)
-    apr_proof = kmir.apr_proof_from_smir(
-        str(opts.input_file.stem.replace('_', '-')),
-        smir_info,
-        start_symbol=opts.start_symbol,
-        sort='KmirCell',
-    )
-    claim = apr_proof.as_claim()
-
-    output_file = opts.output_file
-    if output_file is None:
-        suffixes = ''.join(opts.input_file.suffixes)
-        base = opts.input_file.name.removesuffix(suffixes).replace('_', '-')
-        output_file = Path(f'{base}-spec.k')
-
-    module_name = output_file.stem.upper().replace('_', '-')
-    spec_module = KFlatModule(module_name, (claim,), (KImport('KMIR'),))
-
-    output_file.write_text(kmir.pretty_print(spec_module))
-
-
-def _kmir_prove_raw(opts: ProveRawOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
-    claim_index = kmir.get_claim_index(opts.spec_file)
-    labels = claim_index.labels(include=opts.include_labels, exclude=opts.exclude_labels)
-    for label in labels:
-        print(f'Proving {label}')
-        claim = claim_index[label]
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            proof = APRProof.read_proof_data(opts.proof_dir, label)
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            proof = APRProof.from_claim(kmir.definition, claim, {}, proof_dir=opts.proof_dir)
-        with kmir.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(proof, max_iterations=opts.max_iterations)
-        summary = proof.summary
-        print(f'{summary}')
 
 
 def _kmir_view(opts: ViewOpts) -> None:
@@ -212,12 +159,8 @@ def kmir(args: Sequence[str]) -> None:
     match opts:
         case RunOpts():
             _kmir_run(opts)
-        case GenSpecOpts():
-            _kmir_gen_spec(opts)
         case InfoOpts():
             _kmir_info(opts)
-        case ProveRawOpts():
-            _kmir_prove_raw(opts)
         case ViewOpts():
             _kmir_view(opts)
         case ShowOpts():
@@ -248,15 +191,6 @@ def _arg_parser() -> ArgumentParser:
     )
     run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
 
-    gen_spec_parser = command_parser.add_parser(
-        'gen-spec', help='Generate a k spec from a SMIR json', parents=[kcli_args.logging_args]
-    )
-    gen_spec_parser.add_argument('input_file', metavar='FILE', help='MIR program to generate a spec for')
-    gen_spec_parser.add_argument('--output-file', metavar='FILE', help='Output file')
-    gen_spec_parser.add_argument(
-        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
-    )
-
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
     )
@@ -275,17 +209,6 @@ def _arg_parser() -> ArgumentParser:
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
     proof_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
-
-    prove_raw_parser = command_parser.add_parser(
-        'prove', help='Utilities for working with proofs over SMIR', parents=[kcli_args.logging_args, prove_args]
-    )
-    prove_raw_parser.add_argument('input_file', metavar='FILE', help='K File with the spec module')
-    prove_raw_parser.add_argument(
-        '--include-labels', metavar='LABELS', help='Comma separated list of claim labels to include'
-    )
-    prove_raw_parser.add_argument(
-        '--exclude-labels', metavar='LABELS', help='Comma separated list of claim labels to exclude'
-    )
 
     display_args = ArgumentParser(add_help=False)
     display_args.add_argument(
@@ -394,22 +317,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
             )
-        case 'gen-spec':
-            return GenSpecOpts(input_file=Path(ns.input_file), output_file=ns.output_file, start_symbol=ns.start_symbol)
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
-        case 'prove':
-            proof_dir = Path(ns.proof_dir)
-            return ProveRawOpts(
-                spec_file=Path(ns.input_file),
-                proof_dir=ns.proof_dir,
-                include_labels=ns.include_labels,
-                exclude_labels=ns.exclude_labels,
-                bug_report=ns.bug_report,
-                max_depth=ns.max_depth,
-                reload=ns.reload,
-                max_iterations=ns.max_iterations,
-            )
         case 'show':
             return ShowOpts(
                 proof_dir=Path(ns.proof_dir),

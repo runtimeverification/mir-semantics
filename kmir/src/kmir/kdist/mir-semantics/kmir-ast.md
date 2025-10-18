@@ -33,7 +33,5 @@ module KMIR-AST
 
   syntax TypeMappings ::= List{TypeMapping, ""} [group(mir-list), symbol(TypeMappings::append), terminator-symbol(TypeMappings::empty)]
 
-  syntax KItem ::= #init( Pgm )
-
 endmodule
 ```
