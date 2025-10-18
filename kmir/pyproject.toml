@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kmir"
-version = "0.4.75"
+version = "0.4.76"
 description = ""
 requires-python = ">=3.10"
 dependencies = [
