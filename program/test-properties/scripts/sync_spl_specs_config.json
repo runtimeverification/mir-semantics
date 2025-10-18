@@ -1,0 +1,184 @@
+{
+  "source": "p-token/src/entrypoint-runtime-verification.rs",
+  "template": "program/test-properties/templates/runtime_entrypoint.rs",
+  "target": "program/src/entrypoint-rvo.rs",
+  "placeholders": {
+    "match_arms": "        // === AUTO-GENERATED MATCH ARMS ===",
+    "harnesses": "// === AUTO-GENERATED HARNESS FUNCTIONS ==="
+  },
+  "sections": {
+    "match_arms": {
+      "separator": "\n",
+      "trailing_newline": false
+    },
+    "harnesses": {
+      "separator": "\n\n",
+      "trailing_newline": true
+    }
+  },
+  "presets": {
+    "comment_out_cheatcode_validations": {
+      "comment_out": [
+        "regex:cheatcode_is_account\\(&accounts\\[[0-9]+\\]\\);",
+        "regex:cheatcode_is_mint\\(&accounts\\[[0-9]+\\]\\);",
+        "regex:cheatcode_is_multisig\\(&accounts\\[[0-9]+\\]\\);",
+        "regex:#\\[cfg\\(.*multisig.*\\)\\]"
+      ]
+    },
+    "replace_pinocchio_imports": {
+      "replacements": [
+        {
+          "from": "use pinocchio_token_interface::program::ID;",
+          "to": ""
+        },
+        {
+          "from": "use pinocchio_token_interface::state::account_state;",
+          "to": "use spl_token_interface::state::AccountState;"
+        }
+      ]
+    },
+    "rewrite_instruction_amount_helper": {
+      "replacements": [
+        {
+          "from": "let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };",
+          "to": "let amount = u64::from_le_bytes(*instruction_data);"
+        }
+      ]
+    },
+    "route_instructions_through_processor": {
+      "replacements": [
+        {
+          "from": "regex:let result = process_[A-Za-z0-9_]+\\(accounts, instruction_data\\);",
+          "to": "let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);"
+        },
+        {
+          "from": "regex:let result = process_[A-Za-z0-9_]+\\(accounts\\);",
+          "to": "let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);"
+        }
+      ]
+    },
+    "shorten_accountstate_path": {
+      "replacements": [
+        {
+          "from": "account_state::AccountState::",
+          "to": "AccountState::"
+        }
+      ]
+    },
+    "migrate_account_owner_access": {
+      "replacements": [
+        {
+          "from": "regex:accounts\\[(\\d+)\\]\\.owner\\(\\)",
+          "to": "accounts[\\1].owner"
+        },
+        {
+          "from": "&pinocchio_token_interface::program::ID",
+          "to": "&crate::id()"
+        }
+      ]
+    },
+    "migrate_get_account_accessors": {
+      "replacements": [
+        {
+          "from": "regex:get_account\\(&accounts\\[(\\d+)\\]\\)\\.owner\\b(?!\\()",
+          "to": "get_account(&accounts[\\1]).owner()"
+        },
+        {
+          "from": "regex:get_account\\(&accounts\\[(\\d+)\\]\\)\\.mint\\b(?!\\()",
+          "to": "get_account(&accounts[\\1]).mint()"
+        }
+      ]
+    },
+    "compare_accounts_by_key": {
+      "replacements": [
+        {
+          "from": "regex:accounts\\[(\\d+)\\] == accounts\\[(\\d+)\\]",
+          "to": "accounts[\\1].key == accounts[\\2].key"
+        },
+        {
+          "from": "regex:accounts\\[(\\d+)\\] != accounts\\[(\\d+)\\]",
+          "to": "accounts[\\1].key != accounts[\\2].key"
+        }
+      ]
+    },
+    "migrate_signer_accessors": {
+      "replacements": [
+        {
+          "from": "regex:accounts\\[(\\d+)\\]\\.is_signer\\(\\)",
+          "to": "accounts[\\1].is_signer"
+        },
+        {
+          "from": "regex:accounts\\[(\\d+)\\]\\.key\\(\\)",
+          "to": "accounts[\\1].key"
+        },
+        {
+          "from": "potential_signer.key()",
+          "to": "potential_signer.key"
+        },
+        {
+          "from": "potential_signer.is_signer()",
+          "to": "potential_signer.is_signer"
+        }
+      ]
+    },
+    "migrate_multisig_accessors": {
+      "replacements": [
+        {
+          "from": "regex:multisig\\.signers(?!\\()",
+          "to": "multisig.signers()"
+        },
+        {
+          "from": "regex:multisig\\.m(?!\\()",
+          "to": "multisig.m()"
+        }
+      ]
+    },
+    "normalize_multisig_owner_guard": {
+      "replacements": [
+        {
+          "from": "regex:accounts\\[(\\d+)\\]\\.is_owned_by\\(&ID\\)",
+          "to": "accounts[\\1].owner == &crate::id()"
+        }
+      ]
+    }
+  },
+  "functions": [
+    {
+      "name": "test_process_transfer",
+      "discriminator": 3,
+      "harness": {
+        "presets": [
+          "comment_out_cheatcode_validations",
+          "replace_pinocchio_imports",
+          "rewrite_instruction_amount_helper",
+          "route_instructions_through_processor",
+          "shorten_accountstate_path",
+          "migrate_account_owner_access",
+          "migrate_get_account_accessors",
+          "compare_accounts_by_key",
+          "migrate_signer_accessors",
+          "migrate_multisig_accessors",
+          "normalize_multisig_owner_guard"
+        ],
+        "replacements": [
+          {
+            "from": "accounts: &[AccountInfo; 3],",
+            "to": "accounts: &[AccountInfo], // CHANGE P-Token: accounts: &[AccountInfo; 3]"
+          }
+        ]
+      }
+    },
+    {
+      "name": "test_process_get_account_data_size",
+      "discriminator": 21,
+      "harness": {
+        "presets": [
+          "comment_out_cheatcode_validations",
+          "replace_pinocchio_imports",
+          "route_instructions_through_processor",
+          "migrate_account_owner_access"
+        ]
+      }
+    }
+  ]
+}

@@ -330,6 +330,42 @@ use pinocchio_token_interface::state::multisig::Multisig;
 use pinocchio_token_interface::state::{load_mut_unchecked, load_unchecked};
 use pinocchio::sysvars::rent::Rent;
 
+fn get_account(account_info: &AccountInfo) -> &Account {
+    unsafe {
+        let byte_ptr = account_info.borrow_data_unchecked();
+        let acc_ref = load_unchecked::<Account>(byte_ptr).unwrap();
+        acc_ref
+    }
+}
+
+fn get_mint(account_info: &AccountInfo) -> &Mint {
+    unsafe {
+        let byte_ptr = account_info.borrow_data_unchecked();
+        let acc_ref = load_unchecked::<Mint>(byte_ptr).unwrap();
+        acc_ref
+    }
+}
+
+fn get_multisig(account_info: &AccountInfo) -> &Multisig {
+    unsafe {
+        let byte_ptr = account_info.borrow_data_unchecked();
+        let multisig_ref = load_unchecked::<Multisig>(byte_ptr).unwrap();
+        multisig_ref
+    }
+}
+
+fn get_rent(account_info: &AccountInfo) -> &Rent {
+    unsafe {
+        Rent::from_bytes_unchecked(account_info.borrow_data_unchecked())
+    }
+}
+
+// wrapper to ensure the test below is in the SMIR JSON
+#[no_mangle]
+pub unsafe extern "C" fn use_tests(acc: &AccountInfo) {
+    test_ptoken_domain_data(&acc, &acc, &acc);
+}
+
 // special test for basic domain data access
 #[inline(never)]
 fn test_ptoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &AccountInfo) {
@@ -374,42 +410,6 @@ fn test_ptoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &Account
     let rent_collected = 10;
     let (burnt, distributed) = prent.calculate_burn(rent_collected);
     assert!(prent.burn_percent > 100 || burnt <= rent_collected && distributed <= rent_collected);
-}
-
-// wrapper to ensure the above test is in the SMIR JSON
-#[no_mangle]
-pub unsafe extern "C" fn use_tests(acc: &AccountInfo) {
-    test_ptoken_domain_data(&acc, &acc, &acc);
-}
-
-fn get_account(account_info: &AccountInfo) -> &Account {
-    unsafe {
-        let byte_ptr = account_info.borrow_data_unchecked();
-        let acc_ref = load_unchecked::<Account>(byte_ptr).unwrap();
-        acc_ref
-    }
-}
-
-fn get_mint(account_info: &AccountInfo) -> &Mint {
-    unsafe {
-        let byte_ptr = account_info.borrow_data_unchecked();
-        let acc_ref = load_unchecked::<Mint>(byte_ptr).unwrap();
-        acc_ref
-    }
-}
-
-fn get_multisig(account_info: &AccountInfo) -> &Multisig {
-    unsafe {
-        let byte_ptr = account_info.borrow_data_unchecked();
-        let multisig_ref = load_unchecked::<Multisig>(byte_ptr).unwrap();
-        multisig_ref
-    }
-}
-
-fn get_rent(account_info: &AccountInfo) -> &Rent {
-    unsafe {
-        Rent::from_bytes_unchecked(account_info.borrow_data_unchecked())
-    }
 }
 
 // Hack Tests For Stable MIR JSON ---------------------------------------------

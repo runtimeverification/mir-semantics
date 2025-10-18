@@ -10,7 +10,15 @@ pub mod native_mint;
 pub mod processor;
 pub mod state;
 
-#[cfg(not(feature = "no-entrypoint"))]
+#[cfg(all(not(feature = "no-entrypoint"), not(feature = "runtime-verification"), not(feature = "rvo")))]
+mod entrypoint;
+
+#[cfg(all(not(feature = "no-entrypoint"), not(feature = "runtime-verification"), feature = "rvo"))]
+#[path = "entrypoint-rvo.rs"]
+mod entrypoint;
+
+#[cfg(all(not(feature = "no-entrypoint"), feature = "runtime-verification", not(feature = "rvo")))]
+#[path = "entrypoint-runtime-verification.rs"]
 mod entrypoint;
 
 #[cfg(feature = "test-against-pinocchio")]

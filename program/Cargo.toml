@@ -11,6 +11,8 @@ edition = { workspace = true}
 no-entrypoint = []
 test-sbf = []
 test-against-pinocchio = ["pinocchio-token-interface"]
+runtime-verification = []
+rvo = []
 
 [dependencies]
 arrayref = "0.3.9"
