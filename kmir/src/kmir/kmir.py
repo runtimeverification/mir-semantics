@@ -113,10 +113,7 @@ class KMIR(KProve, KRun, KParse):
 
         if init:
             _subst['LOCALS_CELL'] = list_empty()
-            _init_subst = init_subst()
-            for key in _init_subst:
-                if key not in _subst:
-                    _subst[key] = _init_subst[key]
+            _subst = {**init_subst(), **_subst}
 
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort('GeneratedTopCell'))
