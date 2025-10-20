@@ -94,6 +94,11 @@ class KMIR(KProve, KRun, KParse):
         start_symbol: str = 'main',
         init: bool = False,
     ) -> tuple[KInner, list[KInner]]:
+        def init_subst() -> dict[str, KInner]:
+            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
+            _, res = split_config_from(init_config)
+            return res
+
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
@@ -108,9 +113,7 @@ class KMIR(KProve, KRun, KParse):
 
         if init:
             _subst['LOCALS_CELL'] = list_empty()
-            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
-            _, _init_subst = split_config_from(init_config)
-
+            _init_subst = init_subst()
             for key in _init_subst:
                 if key not in _subst:
                     _subst[key] = _init_subst[key]
