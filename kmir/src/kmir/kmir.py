@@ -106,15 +106,14 @@ class KMIR(KProve, KRun, KParse):
             'LOCALS_CELL': list_of(locals),
         }
 
-        _init_subst: dict[str, KInner] = {}
         if init:
             _subst['LOCALS_CELL'] = list_empty()
             init_config = self.definition.init_config(KSort('GeneratedTopCell'))
             _, _init_subst = split_config_from(init_config)
 
-        for key in _init_subst:
-            if key not in _subst:
-                _subst[key] = _init_subst[key]
+            for key in _init_subst:
+                if key not in _subst:
+                    _subst[key] = _init_subst[key]
 
         subst = Subst(_subst)
         config = self.definition.empty_config(KSort('GeneratedTopCell'))
