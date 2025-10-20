@@ -112,7 +112,12 @@ class KMIR(KProve, KRun, KParse):
             }
         )
         config = self.definition.empty_config(KSort('GeneratedTopCell'))
-        return (subst.apply(config), constraints)
+        config = subst.apply(config)
+
+        if constraints or free_vars(config):
+            raise ValueError(f'Not a concrete call configuration: {start_symbol} - {free_vars(config)}')
+
+        return (config, constraints)
 
     def make_call_config(
         self,
@@ -138,8 +143,6 @@ class KMIR(KProve, KRun, KParse):
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
         init_config, init_constraints = self.make_concrete_call_config(smir_info, start_symbol=start_symbol)
-        if init_constraints or free_vars(init_config):
-            raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
