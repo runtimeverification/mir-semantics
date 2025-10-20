@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.string import stringToken
 
-from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap, Static, Function, VTable
+from .alloc import Allocation, AllocInfo, Function, Memory, ProvenanceEntry, ProvenanceMap, Static, VTable
 from .ty import (
     ArbitraryFields,
     ArrayT,

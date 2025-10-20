@@ -210,10 +210,10 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
                 apply_offset_provenance(allocation['provenance'], offset)
             case {'Static': alloc_id}:  # global_alloc: Static
                 alloc['global_alloc']['Static'] = alloc_id + offset
-            case {'Function': _instance}:  # global_alloc: Function
+            case {'Function': _}:  # global_alloc: Function
                 # Quick-compat: leave function instance as-is; not used for offset computations
                 pass
-            case {'VTable': _vtable}:  # global_alloc: VTable
+            case {'VTable': _}:  # global_alloc: VTable
                 # Quick-compat: keep as-is (if present). We do not offset embedded types here.
                 pass
             case _:
@@ -258,6 +258,7 @@ def apply_offset_item(item: dict, offset: int) -> None:
     if 'MonoItemFn' in item and 'body' in item['MonoItemFn']:
         body = item['MonoItemFn']['body']
         if body is None:
+            _LOGGER.warning(f"MonoItemFn {item['MonoItemFn'].get('name', '<unknown>')!r} has no body; skipping offsets")
             return
         for local in body.get('locals', []):
             local['ty'] += offset

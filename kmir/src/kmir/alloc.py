@@ -8,10 +8,8 @@ from typing import TYPE_CHECKING, Any, NamedTuple, NewType
 from .ty import Ty
 
 if TYPE_CHECKING:
-    from typing import Any, Final
-
-
-_LOGGER: Final = logging.getLogger(__name__)
+    # No conditional typing-only imports needed currently
+    pass
 
 
 AllocId = NewType('AllocId', int)
@@ -46,7 +44,7 @@ class GlobalAlloc(ABC):  # noqa: B024
                 return Static.from_dict(dct)
             case {'Memory': _}:
                 return Memory.from_dict(dct)
-            case {'Static': alloc_id}:
+            case {'Static': _}:
                 return Static.from_dict(dct)
             case {'Function': _}:
                 return Function.from_dict(dct)
