@@ -92,7 +92,6 @@ class KMIR(KProve, KRun, KParse):
         smir_info: SMIRInfo,
         *,
         start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell',
         init: bool = False,
     ) -> tuple[KInner, list[KInner]]:
         if not start_symbol in smir_info.function_tys:
@@ -110,7 +109,7 @@ class KMIR(KProve, KRun, KParse):
         _init_subst: dict[str, KInner] = {}
         if init:
             _subst['LOCALS_CELL'] = list_empty()
-            init_config = self.definition.init_config(KSort(sort))
+            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
             _, _init_subst = split_config_from(init_config)
 
         for key in _init_subst:
@@ -118,7 +117,7 @@ class KMIR(KProve, KRun, KParse):
                 _subst[key] = _init_subst[key]
 
         subst = Subst(_subst)
-        config = self.definition.empty_config(KSort(sort))
+        config = self.definition.empty_config(KSort('GeneratedTopCell'))
         return (subst.apply(config), constraints)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
@@ -135,10 +134,9 @@ class KMIR(KProve, KRun, KParse):
         id: str,
         smir_info: SMIRInfo,
         start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol, sort=sort)
+        lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
