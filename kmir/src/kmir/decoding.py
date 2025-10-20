@@ -74,9 +74,8 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
         case AllocInfo(
             ty=_,
-            global_alloc=Static(
-                alloc_id=_,
-            ),
+            # `Static` currently only carries `def_id`; we ignore it here.
+            global_alloc=Static(),
         ):
             # Static global alloc does not carry raw bytes here; leave as unable-to-decode placeholder
             return UnableToDecodeValue('Static global allocation not decoded')
@@ -90,9 +89,8 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             return UnableToDecodeValue('Function global allocation not decoded')
         case AllocInfo(
             ty=_,
-            global_alloc=VTable(
-                data=_,
-            ),
+            # `VTable` carries `ty` and optional `binder`; we ignore both here.
+            global_alloc=VTable(),
         ):
             # VTable alloc currently not decoded to a runtime value
             return UnableToDecodeValue('VTable global allocation not decoded')
