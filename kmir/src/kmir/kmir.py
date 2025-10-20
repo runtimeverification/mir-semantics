@@ -87,12 +87,11 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def make_call_config(
+    def make_concrete_call_config(
         self,
         smir_info: SMIRInfo,
         *,
         start_symbol: str = 'main',
-        init: bool = False,
     ) -> tuple[KInner, list[KInner]]:
         def init_subst() -> dict[str, KInner]:
             init_config = self.definition.init_config(KSort('GeneratedTopCell'))
@@ -104,29 +103,41 @@ class KMIR(KProve, KRun, KParse):
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-
-        k_cell = mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info))
-
-        _subst: dict[str, KInner]
-        if init:
-            _subst = {
-                'K_CELL': k_cell,
+        subst = Subst(
+            {
+                **init_subst(),
+                **{
+                    'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                },
             }
-            _subst = {**init_subst(), **_subst}
-        else:
-            _subst = {
-                'K_CELL': k_cell,
+        )
+        config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        return (subst.apply(config), constraints)
+
+    def make_call_config(
+        self,
+        smir_info: SMIRInfo,
+        *,
+        start_symbol: str = 'main',
+    ) -> tuple[KInner, list[KInner]]:
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
+
+        args_info = smir_info.function_arguments[start_symbol]
+        locals, constraints = symbolic_locals(smir_info, args_info)
+        subst = Subst(
+            {
+                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
                 'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
                 'LOCALS_CELL': list_of(locals),
-            }
-
-        subst = Subst(_subst)
+            },
+        )
         config = self.definition.empty_config(KSort('GeneratedTopCell'))
         return (subst.apply(config), constraints)
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol, init=True)
+        init_config, init_constraints = self.make_concrete_call_config(smir_info, start_symbol=start_symbol)
         if init_constraints or free_vars(init_config):
             raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
