@@ -102,7 +102,10 @@ class KMIR(KProve, KRun, KParse):
             raise KeyError(f'{start_symbol} not found in program')
 
         args_info = smir_info.function_arguments[start_symbol]
-        locals, constraints = symbolic_locals(smir_info, args_info)
+        if args_info:
+            raise ValueError(
+                f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
+            )
 
         # The configuration is the default initial configuration, with the K cell updated with the call terminator
         # TODO: see if this can be expressed in more simple terms
@@ -116,12 +119,7 @@ class KMIR(KProve, KRun, KParse):
         )
         config = self.definition.empty_config(KSort('GeneratedTopCell'))
         config = subst.apply(config)
-
         assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
-
-        if constraints:
-            raise ValueError(f'Not a concrete call configuration: {start_symbol}')
-
         return config
 
     def make_call_config(
