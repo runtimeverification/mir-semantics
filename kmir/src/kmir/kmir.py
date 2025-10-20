@@ -109,8 +109,6 @@ class KMIR(KProve, KRun, KParse):
         if init:
             _subst = {
                 'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-                'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-                'LOCALS_CELL': list_empty(),
             }
             _subst = {**init_subst(), **_subst}
         else:
