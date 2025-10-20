@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from kmir.kompile import _functions
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
@@ -23,7 +24,7 @@ def test_functions(smir_file: Path, kmir: KMIR, update_expected_output: bool) ->
     # Given
     smir_info = SMIRInfo.from_file(smir_file)
     # When
-    result = kmir.functions(smir_info)
+    result = _functions(kmir, smir_info)
     result_dict = {ty: body.to_dict() for ty, body in result.items()}
     # Then
     result_str = json.dumps(result_dict, indent=2, sort_keys=True)
