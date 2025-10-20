@@ -12,22 +12,11 @@ from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
-    import pytest
     from pyk.proof import APRProof
 
     from kmir.kmir import KMIR
 
 PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-
-
-def _has_stable_mir_json() -> bool:
-    try:
-        from kmir.cargo import stable_mir_json  # type: ignore
-
-        stable_mir_json()
-        return True
-    except Exception:
-        return False
 
 
 def _prove_and_store(
@@ -89,12 +78,9 @@ def test_cli_show_printers_snapshot(
             'main',
             False,
             id='symbolic-args-fail.main',
-            marks=pytest.mark.skipif(not _has_stable_mir_json(), reason='stable_mir_json not installed'),
         ),
         pytest.param(
-            (Path(__file__).parent / 'data' / 'exec-smir' / 'niche-enum' / 'niche-enum.smir.json').resolve(
-                strict=True
-            ),
+            (Path(__file__).parent / 'data' / 'exec-smir' / 'niche-enum' / 'niche-enum.smir.json').resolve(strict=True),
             'foo',
             True,
             id='niche-enum.smir.foo',
