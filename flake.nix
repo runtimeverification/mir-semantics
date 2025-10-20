@@ -129,7 +129,7 @@
           };
 
         packages = rec {
-          inherit (pkgs) kmir-pyk kmir kmir-pyk-pyproject;
+          inherit (pkgs) kmir-pyk kmir;
           default = kmir;
         };
 
