@@ -143,8 +143,8 @@
       }
     )
     // {
-      overlays = {
-        default = final: prev: { inherit (self.packages.${final.system}) kmir; };
+      overlays.default = final: prev: { inherit (self.packages.${final.system}) kmir; };
+      pyprojectOverlays = {
         # this pyproject-nix overlay allows for overriding the python packages that are otherwise locked in `uv.lock`
         # by using this overlay in dependant nix flakes, you ensure that nix overrides also override the python package     
         pyk-pyproject = system: final: prev: {
