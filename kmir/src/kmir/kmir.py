@@ -117,7 +117,12 @@ class KMIR(KProve, KRun, KParse):
         assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
         return config
 
-    def _make_call_config(self, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> tuple[KInner, list[KInner]]:
+    def _make_symbolic_call_config(
+        self,
+        smir_info: SMIRInfo,
+        *,
+        start_symbol: str = 'main',
+    ) -> tuple[KInner, list[KInner]]:
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
@@ -147,7 +152,7 @@ class KMIR(KProve, KRun, KParse):
         start_symbol: str = 'main',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = self._make_call_config(smir_info, start_symbol=start_symbol)
+        lhs_config, constraints = self._make_symbolic_call_config(smir_info, start_symbol=start_symbol)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
