@@ -112,8 +112,8 @@ class KMIR(KProve, KRun, KParse):
                 },
             }
         )
-        config = self.definition.empty_config(KSort('GeneratedTopCell'))
-        config = subst.apply(config)
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
         assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
         return config
 
@@ -135,8 +135,9 @@ class KMIR(KProve, KRun, KParse):
                 'LOCALS_CELL': list_of(locals),
             },
         )
-        config = self.definition.empty_config(KSort('GeneratedTopCell'))
-        return (subst.apply(config), constraints)
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
+        return config, constraints
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
