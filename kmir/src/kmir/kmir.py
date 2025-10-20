@@ -105,15 +105,17 @@ class KMIR(KProve, KRun, KParse):
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
 
+        k_cell = mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info))
+
         _subst: dict[str, KInner]
         if init:
             _subst = {
-                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                'K_CELL': k_cell,
             }
             _subst = {**init_subst(), **_subst}
         else:
             _subst = {
-                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                'K_CELL': k_cell,
                 'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
                 'LOCALS_CELL': list_of(locals),
             }
