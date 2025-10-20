@@ -8,7 +8,7 @@ version = "0.4.78"
 description = ""
 requires-python = ">=3.10"
 dependencies = [
-    "kframework==v7.1.299",
+    "kframework==v7.1.300",
     "rust-demangler==1.0",
 ]
 
