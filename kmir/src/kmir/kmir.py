@@ -92,7 +92,7 @@ class KMIR(KProve, KRun, KParse):
         smir_info: SMIRInfo,
         *,
         start_symbol: str = 'main',
-    ) -> tuple[KInner, list[KInner]]:
+    ) -> KInner:
         def init_subst() -> dict[str, KInner]:
             init_config = self.definition.init_config(KSort('GeneratedTopCell'))
             _, res = split_config_from(init_config)
@@ -122,7 +122,7 @@ class KMIR(KProve, KRun, KParse):
         if constraints:
             raise ValueError(f'Not a concrete call configuration: {start_symbol}')
 
-        return (config, constraints)
+        return config
 
     def make_call_config(
         self,
@@ -147,7 +147,7 @@ class KMIR(KProve, KRun, KParse):
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config, init_constraints = self.make_concrete_call_config(smir_info, start_symbol=start_symbol)
+        init_config = self.make_concrete_call_config(smir_info, start_symbol=start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
