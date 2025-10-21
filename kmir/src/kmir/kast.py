@@ -53,8 +53,8 @@ def make_call_config(
         case CallConfigMode.SYMBOLIC:
             config, constraints = _make_symbolic_call_config(
                 definition=definition,
-                smir_info=smir_info,
                 fn_data=fn_data,
+                types=smir_info.types,
             )
             return CallConfig(config=config, constraints=tuple(constraints))
 
@@ -128,10 +128,10 @@ def _make_concrete_call_config(
 def _make_symbolic_call_config(
     *,
     definition: KDefinition,
-    smir_info: SMIRInfo,
     fn_data: _FunctionData,
+    types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
-    locals, constraints = _symbolic_locals(smir_info, fn_data.args)
+    locals, constraints = _symbolic_locals(fn_data.args, types)
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
@@ -217,13 +217,13 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
     )
 
 
-def _symbolic_locals(smir_info: SMIRInfo, local_types: Sequence[_Local]) -> tuple[list[KInner], list[KInner]]:
-    locals, constraints = _ArgGenerator(smir_info).run(local_types)
-    return ([LOCAL_0] + locals, constraints)
+def _symbolic_locals(args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]) -> tuple[list[KInner], list[KInner]]:
+    localvars, constraints = _ArgGenerator(types).run(args)
+    return ([LOCAL_0] + localvars, constraints)
 
 
 class _ArgGenerator:
-    smir_info: SMIRInfo
+    types: Mapping[Ty, TypeMetadata]
     locals: list[KInner]
     pointees: list[KInner]
     constraints: list[KInner]
@@ -233,8 +233,8 @@ class _ArgGenerator:
     if TYPE_CHECKING:
         from .smir import Ty
 
-    def __init__(self, smir_info: SMIRInfo) -> None:
-        self.smir_info = smir_info
+    def __init__(self, types: Mapping[Ty, TypeMetadata]) -> None:
+        self.types = types
         self.locals = []
         self.pointees = []
         self.constraints = []
@@ -260,7 +260,7 @@ class _ArgGenerator:
 
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
-        match self.smir_info.types.get(ty):
+        match self.types.get(ty):
             case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
                 return val, constraints, None
