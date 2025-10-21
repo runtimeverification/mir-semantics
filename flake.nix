@@ -73,15 +73,22 @@
           final: prev:
           let
             rev = self.rev or null;
+            kmir-pyk-pyproject = final.callPackage ./nix/kmir-pyk-pyproject { inherit uv2nix; };
             kmir-pyk = final.callPackage ./nix/kmir-pyk {
-              inherit pyproject-nix pyproject-build-systems uv2nix;
+              inherit pyproject-nix pyproject-build-systems kmir-pyk-pyproject;
               python = final."python${pythonVer}";
+              pyproject-overlays = [ (k-framework.overlays.pyk-pyproject system) ];
             };
             kmir = final.callPackage ./nix/kmir { inherit kmir-pyk rev; };
             kmir-package-test = final.callPackage ./nix/test/package.nix { inherit rev; };
           in
           {
-            inherit kmir-pyk kmir kmir-package-test;
+            inherit
+              kmir-pyk
+              kmir
+              kmir-package-test
+              kmir-pyk-pyproject
+              ;
           };
         pkgs = import nixpkgs {
           inherit system;
@@ -137,5 +144,12 @@
     )
     // {
       overlays.default = final: prev: { inherit (self.packages.${final.system}) kmir; };
+      pyprojectOverlays = {
+        # this pyproject-nix overlay allows for overriding the python packages that are otherwise locked in `uv.lock`
+        # by using this overlay in dependant nix flakes, you ensure that nix overrides also override the python package     
+        pyk-pyproject = system: final: prev: {
+          inherit (self.packages.${system}.kmir-pyk-pyproject.lockFileOverlay final prev) kmir-pyk;
+        };
+      };
     };
 }
