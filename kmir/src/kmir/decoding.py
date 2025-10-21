@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.string import stringToken
 
-from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
+from .alloc import Allocation, AllocInfo, Function, Memory, ProvenanceEntry, ProvenanceMap, Static, VTable
 from .ty import (
     ArbitraryFields,
     ArrayT,
@@ -72,6 +72,28 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
         ):
             data = bytes(n or 0 for n in bytez)
             return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
+        case AllocInfo(
+            ty=_,
+            # `Static` currently only carries `def_id`; we ignore it here.
+            global_alloc=Static(),
+        ):
+            # Static global alloc does not carry raw bytes here; leave as unable-to-decode placeholder
+            return UnableToDecodeValue('Static global allocation not decoded')
+        case AllocInfo(
+            ty=_,
+            global_alloc=Function(
+                instance=_,
+            ),
+        ):
+            # Function alloc currently not decoded to a runtime value
+            return UnableToDecodeValue('Function global allocation not decoded')
+        case AllocInfo(
+            ty=_,
+            # `VTable` carries `ty` and optional `binder`; we ignore both here.
+            global_alloc=VTable(),
+        ):
+            # VTable alloc currently not decoded to a runtime value
+            return UnableToDecodeValue('VTable global allocation not decoded')
         case _:
             raise AssertionError('Unhandled case')
 
