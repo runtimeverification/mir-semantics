@@ -41,42 +41,52 @@ def make_call_config(
     start_symbol: str,
     mode: CallConfigMode,
 ) -> CallConfig:
+    fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
     match mode:
         case CallConfigMode.CONCRETE:
-            config = _make_concrete_call_config(
-                definition=definition,
-                smir_info=smir_info,
-                start_symbol=start_symbol,
-            )
+            config = _make_concrete_call_config(definition=definition, fn_data=fn_data)
             return CallConfig(config=config, constraints=())
         case CallConfigMode.SYMBOLIC:
             config, constraints = _make_symbolic_call_config(
                 definition=definition,
                 smir_info=smir_info,
-                start_symbol=start_symbol,
+                fn_data=fn_data,
             )
             return CallConfig(config=config, constraints=tuple(constraints))
+
+
+class _FunctionData(NamedTuple):
+    symbol: str
+    target: int
+    args_info: list[dict]
+
+    @staticmethod
+    def load(*, smir_info: SMIRInfo, start_symbol: str) -> _FunctionData:
+        try:
+            target = smir_info.function_tys[start_symbol]
+        except KeyError as err:
+            raise ValueError(f'{start_symbol} not found in program') from err
+
+        args_info = smir_info.function_arguments[start_symbol]
+        return _FunctionData(symbol=start_symbol, target=target, args_info=args_info)
+
+    @property
+    def call_terminator(self) -> KInner:
+        return mk_call_terminator(target=self.target, arg_count=len(self.args_info))
 
 
 def _make_concrete_call_config(
     *,
     definition: KDefinition,
-    smir_info: SMIRInfo,
-    start_symbol: str,
+    fn_data: _FunctionData,
 ) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
         _, res = split_config_from(init_config)
         return res
 
-    if not start_symbol in smir_info.function_tys:
-        raise KeyError(f'{start_symbol} not found in program')
-
-    args_info = smir_info.function_arguments[start_symbol]
-    if args_info:
-        raise ValueError(
-            f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
-        )
+    if fn_data.args_info:
+        raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
 
     # The configuration is the default initial configuration, with the K cell updated with the call terminator
     # TODO: see if this can be expressed in more simple terms
@@ -84,7 +94,7 @@ def _make_concrete_call_config(
         {
             **init_subst(),
             **{
-                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                'K_CELL': fn_data.call_terminator,
             },
         }
     )
@@ -98,16 +108,12 @@ def _make_symbolic_call_config(
     *,
     definition: KDefinition,
     smir_info: SMIRInfo,
-    start_symbol: str,
+    fn_data: _FunctionData,
 ) -> tuple[KInner, list[KInner]]:
-    if not start_symbol in smir_info.function_tys:
-        raise KeyError(f'{start_symbol} not found in program')
-
-    args_info = smir_info.function_arguments[start_symbol]
-    locals, constraints = symbolic_locals(smir_info, args_info)
+    locals, constraints = symbolic_locals(smir_info, fn_data.args_info)
     subst = Subst(
         {
-            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+            'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
         },
