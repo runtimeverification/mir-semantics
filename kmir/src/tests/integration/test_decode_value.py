@@ -52,14 +52,16 @@ def definition(definition_dir: Path) -> KDefinition:
     from pyk.kast.outer import read_kast_definition
 
     res = read_kast_definition(definition_dir / 'compiled.json')
+    _patch_definition(res)
+    return res
 
+
+def _patch_definition(definition: KDefinition) -> None:
     # Monkey patch __repr__ on the fixture to avoid flooding the output on test failure
-    cls = res.__class__
+    cls = definition.__class__
     new_repr = lambda self: repr('KMIR LLVM definition')
     new_cls = type(f'{cls.__name__}WithCustomRepr', (cls,), {'__repr__': new_repr})
-    object.__setattr__(res, '__class__', new_cls)
-
-    return res
+    object.__setattr__(definition, '__class__', new_cls)
 
 
 def dedent(s: str) -> str:
@@ -181,6 +183,7 @@ SKIP: Final = (
     'enum-option-nonzero-none',
     'enum-option-nonzero-some',
     'str',
+    'struct-simple-permuted-fields',
 )
 
 
@@ -232,6 +235,22 @@ def test_decode_value(
     assert test_data.expected == actual
 
 
+@pytest.fixture(scope='module')
+def kmir_definition_dir() -> Path:
+    from kmir.build import LLVM_DEF_DIR
+
+    return LLVM_DEF_DIR
+
+
+@pytest.fixture(scope='module')
+def kmir_definition(kmir_definition_dir: Path) -> KDefinition:
+    from pyk.kast.outer import read_kast_definition
+
+    res = read_kast_definition(kmir_definition_dir / 'compiled.json')
+    _patch_definition(res)
+    return res
+
+
 @pytest.mark.parametrize(
     'test_data',
     TEST_DATA,
@@ -239,8 +258,8 @@ def test_decode_value(
 )
 def test_python_decode_value(
     test_data: _TestData,
-    definition_dir: Path,
-    definition: KDefinition,
+    kmir_definition_dir: Path,
+    kmir_definition: KDefinition,
     tmp_path: Path,
 ) -> None:
     from pyk.kast.inner import KSort
@@ -260,9 +279,9 @@ def test_python_decode_value(
         types=types,
     )
     kast = value.to_kast()
-    kore = kast_to_kore(definition, kast, KSort('Value'))
+    kore = kast_to_kore(kmir_definition, kast, KSort('Value'))
     actual = kore_print(
-        definition_dir=definition_dir,
+        definition_dir=kmir_definition_dir,
         pattern=kore,
         output='pretty',
     )

@@ -21,6 +21,7 @@ from .ty import (
     RefT,
     Single,
     StrT,
+    StructT,
     UintT,
 )
 from .value import (
@@ -149,6 +150,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
             return _decode_array(data, elem_ty, length, types)
+        case StructT(fields=fields, layout=layout):
+            return _decode_struct(data=data, fields=fields, layout=layout, types=types)
         case EnumT(
             discriminants=discriminants,
             fields=fields,
@@ -217,6 +220,28 @@ def _decode_array(
         raise ValueError(f'Expected {length} elements, got: {len(elems)}')
 
     return RangeValue(elems)
+
+
+def _decode_struct(
+    *,
+    data: bytes,
+    fields: list[Ty],
+    layout: LayoutShape | None,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    if not layout:
+        raise ValueError('Struct layout not provided')
+
+    offsets = _extract_offsets(layout.fields)
+
+    match layout.variants:
+        case Single(index=0):
+            pass
+        case _:
+            raise ValueError(f'Unexpected layout variants in struct: {layout.variants}')
+
+    field_values = _decode_fields(data=data, tys=fields, offsets=offsets, types=types)
+    return AggregateValue(0, field_values)
 
 
 def _decode_enum(

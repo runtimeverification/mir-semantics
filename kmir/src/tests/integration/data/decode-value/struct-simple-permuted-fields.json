@@ -1,0 +1,65 @@
+{
+  "bytes": [
+    1,
+    15,
+    31
+  ],
+  "types": [
+    [
+      0,
+      {
+        "PrimitiveType": {
+          "Uint": "U8"
+        }
+      }
+    ],
+    [
+      1,
+      {
+        "PrimitiveType": "Bool"
+      }
+    ]
+  ],
+  "typeInfo": {
+    "StructType": {
+      "name": "core::ops::RangeInclusive<u8>",
+      "adt_def": 100,
+      "fields": [
+        0,
+        0,
+        1
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 8
+              },
+              {
+                "num_bits": 16
+              },
+              {
+                "num_bits": 0
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Single": {
+            "index": 0
+          }
+        },
+        "abi": {
+          "Aggregate": {
+            "sized": true
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 24
+        }
+      }
+    }
+  }
+}
