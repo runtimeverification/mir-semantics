@@ -14,13 +14,17 @@ from pyk.kast.prelude.utils import token
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Iterable, Mapping, Sequence
+    from random import Random
     from typing import Any, Final
 
     from pyk.kast import KInner
     from pyk.kast.outer import KDefinition
 
     from .smir import SMIRInfo
+    from .ty import TypeMetadata
+    from .value import Metadata, Value
+
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -101,13 +105,41 @@ def _make_concrete_call_config(
     definition: KDefinition,
     fn_data: _FunctionData,
 ) -> KInner:
+    if fn_data.args:
+        raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
+
+    return _make_concrete_call_config_with_locals(
+        definition=definition,
+        fn_data=fn_data,
+        localvars=[],
+    )
+
+
+def _make_random_call_config(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+    types: Mapping[Ty, TypeMetadata],
+    random: Random,
+) -> KInner:
+    localvars = _random_locals(random, fn_data.args, types)
+    return _make_concrete_call_config_with_locals(
+        definition=definition,
+        fn_data=fn_data,
+        localvars=localvars,
+    )
+
+
+def _make_concrete_call_config_with_locals(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+    localvars: list[KInner],
+) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
         _, res = split_config_from(init_config)
         return res
-
-    if fn_data.args:
-        raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
 
     # The configuration is the default initial configuration, with the K cell updated with the call terminator
     # TODO: see if this can be expressed in more simple terms
@@ -116,6 +148,7 @@ def _make_concrete_call_config(
             **init_subst(),
             **{
                 'K_CELL': fn_data.call_terminator,
+                'LOCALS_CELL': list_of(localvars),
             },
         }
     )
@@ -384,3 +417,68 @@ def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
         'typedValue',
         (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
     )
+
+
+class TypedValue(NamedTuple):
+    value: Value
+    ty: Ty
+    mut: bool
+
+    def to_kast(self) -> KInner:
+        return _typed_value(value=self.value.to_kast(), ty=self.ty, mutable=self.mut)
+
+
+def _random_locals(random: Random, args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]) -> list[KInner]:
+    res: list[KInner] = [LOCAL_0]
+    pointees: list[KInner] = []
+
+    next_ref = len(args) + 1
+    for arg in args:
+        rvres = _random_value(
+            random=random,
+            local=arg,
+            types=types,
+            next_ref=next_ref,
+        )
+        res.append(rvres.value.to_kast())
+        match rvres:
+            case PointerRes(pointee=pointee):
+                pointees.append(pointee.to_kast())
+                next_ref += 1
+
+    res += pointees
+    return res
+
+
+class SimpleRes(NamedTuple):
+    value: TypedValue
+
+
+class ArrayRes(NamedTuple):
+    value: TypedValue
+    metadata: Metadata
+
+
+class PointerRes(NamedTuple):
+    value: TypedValue
+    pointee: TypedValue
+
+
+RandomValueRes = SimpleRes | ArrayRes | PointerRes
+
+
+def _random_value(
+    *,
+    random: Random,
+    local: _Local,
+    types: Mapping[Ty, TypeMetadata],
+    next_ref: int,
+) -> RandomValueRes:
+    try:
+        type_info = types[local.ty]
+    except KeyError as err:
+        raise ValueError(f'Unknown type: {local.ty}') from err
+
+    match type_info:
+        case _:
+            raise ValueError(f'Type unsupported for random value generator: {type_info}')
