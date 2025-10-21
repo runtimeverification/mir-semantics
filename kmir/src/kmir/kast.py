@@ -113,7 +113,7 @@ def _make_symbolic_call_config(
     smir_info: SMIRInfo,
     fn_data: _FunctionData,
 ) -> tuple[KInner, list[KInner]]:
-    locals, constraints = symbolic_locals(smir_info, fn_data.args_info)
+    locals, constraints = _symbolic_locals(smir_info, fn_data.args_info)
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
@@ -199,7 +199,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
     )
 
 
-def symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+def _symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
     locals, constraints = ArgGenerator(smir_info).run(local_types)
     return ([LOCAL_0] + locals, constraints)
 
