@@ -208,6 +208,14 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
         match global_alloc:
             case {'Memory': allocation}:  # global_alloc: Memory, allocation: Allocation
                 apply_offset_provenance(allocation['provenance'], offset)
+            case {'Static': alloc_id}:  # global_alloc: Static
+                alloc['global_alloc']['Static'] = alloc_id + offset
+            case {'Function': _}:  # global_alloc: Function
+                # Quick-compat: leave function instance as-is; not used for offset computations
+                pass
+            case {'VTable': _}:  # global_alloc: VTable
+                # Quick-compat: keep as-is (if present). We do not offset embedded types here.
+                pass
             case _:
                 raise ValueError('Unsupported or invalid GlobalAlloc data: {global_alloc}')
 
@@ -249,17 +257,20 @@ def apply_offset_item(item: dict, offset: int) -> None:
     # * traverses function locals and debug information to add `offset` to all `span` fields
     if 'MonoItemFn' in item and 'body' in item['MonoItemFn']:
         body = item['MonoItemFn']['body']
-        for local in body['locals']:
+        if body is None:
+            _LOGGER.warning(f"MonoItemFn {item['MonoItemFn'].get('name', '<unknown>')!r} has no body; skipping offsets")
+            return
+        for local in body.get('locals', []):
             local['ty'] += offset
             local['span'] += offset
-        for block in body['blocks']:
+        for block in body.get('blocks', []):
             for stmt in block['statements']:
                 apply_offset_stmt(stmt['kind'], offset)
                 stmt['span'] += offset
             apply_offset_terminator(block['terminator']['kind'], offset)
             block['terminator']['span'] += offset
         # adjust span in var_debug_info, each item's source_info.span
-        for thing in body['var_debug_info']:
+        for thing in body.get('var_debug_info', []):
             thing['source_info']['span'] += offset
             if 'Constant' in thing['value']:
                 apply_offset_operand({'Constant': thing['value']}, offset)

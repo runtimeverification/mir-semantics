@@ -196,7 +196,18 @@ class KMIR(KProve, KRun, KParse):
                     smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
                 smir_info = smir_info.reduce_to(opts.start_symbol)
+                # Report whether the reduced call graph includes any functions without MIR bodies
+                missing_body_syms = [
+                    sym
+                    for sym, item in smir_info.items.items()
+                    if 'MonoItemFn' in item['mono_item_kind']
+                    and item['mono_item_kind']['MonoItemFn'].get('body') is None
+                ]
+                has_missing = len(missing_body_syms) > 0
                 _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+                if has_missing:
+                    _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
+                    _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
                 kmir = KMIR.from_kompiled_kore(
                     smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)

@@ -104,8 +104,15 @@ class SMIRInfo:
 
             mono_item_fn = item['mono_item_kind']['MonoItemFn']
             name = mono_item_fn['name']
-            arg_count = mono_item_fn['body']['arg_count']
-            local_args = mono_item_fn['body']['locals'][1 : arg_count + 1]
+            body = mono_item_fn.get('body')
+            if body is None:
+                # Functions without a MIR body (e.g., externs/const shims) have no arguments to inspect.
+                # Skip adding entries for them; callers should not rely on args for such symbols.
+                _LOGGER.debug(f'Skipping function_arguments for {name}: missing body')
+                continue
+
+            arg_count = body['arg_count']
+            local_args = body['locals'][1 : arg_count + 1]
             res[name] = local_args
         return res
 
@@ -195,12 +202,16 @@ class SMIRInfo:
             # skip functions not present in the `function_symbols_reverse` table
             if not sym in self.function_symbols_reverse:
                 continue
-            called_funs = [
-                b['terminator']['kind']['Call']['func']
-                for b in item['mono_item_kind']['MonoItemFn']['body']['blocks']
-                if 'Call' in b['terminator']['kind']
-            ]
-            called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
+            body = item['mono_item_kind']['MonoItemFn'].get('body')
+            if body is None or 'blocks' not in body:
+                # No MIR body means we cannot extract call edges; treat as having no outgoing edges.
+                _LOGGER.debug(f'Skipping call edge extraction for {sym}: missing body')
+                called_tys: set[Ty] = set()
+            else:
+                called_funs = [
+                    b['terminator']['kind']['Call']['func'] for b in body['blocks'] if 'Call' in b['terminator']['kind']
+                ]
+                called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
             # TODO also add any constant operands used as arguments whose ty refer to a function
             # the semantics currently does not support this, see issue #488 and stable-mir-json issue #55
             for ty in self.function_symbols_reverse[sym]:
