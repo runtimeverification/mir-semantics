@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from enum import Enum
 from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
@@ -33,9 +32,17 @@ _LOGGER: Final = logging.getLogger(__name__)
 LOCAL_0: Final = KApply('newLocal', KApply('ty', token(0)), KApply('Mutability::Not'))
 
 
-class CallConfigMode(Enum):
-    CONCRETE = 'concrete'
-    SYMBOLIC = 'symbolic'
+class ConcreteMode(NamedTuple): ...
+
+
+class SymbolicMode(NamedTuple): ...
+
+
+class RandomMode(NamedTuple):
+    random: Random
+
+
+CallConfigMode = ConcreteMode | SymbolicMode | RandomMode
 
 
 class CallConfig(NamedTuple):
@@ -52,16 +59,27 @@ def make_call_config(
 ) -> CallConfig:
     fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
     match mode:
-        case CallConfigMode.CONCRETE:
-            config = _make_concrete_call_config(definition=definition, fn_data=fn_data)
+        case ConcreteMode():
+            config = _make_concrete_call_config(
+                definition=definition,
+                fn_data=fn_data,
+            )
             return CallConfig(config=config, constraints=())
-        case CallConfigMode.SYMBOLIC:
+        case SymbolicMode():
             config, constraints = _make_symbolic_call_config(
                 definition=definition,
                 fn_data=fn_data,
                 types=smir_info.types,
             )
             return CallConfig(config=config, constraints=tuple(constraints))
+        case RandomMode(random):
+            config = _make_random_call_config(
+                definition=definition,
+                fn_data=fn_data,
+                types=smir_info.types,
+                random=random,
+            )
+            return CallConfig(config=config, constraints=())
 
 
 class _FunctionData(NamedTuple):

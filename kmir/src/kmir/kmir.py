@@ -21,13 +21,14 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
-from .kast import CallConfigMode, make_call_config
+from .kast import ConcreteMode, RandomMode, SymbolicMode, make_call_config
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from random import Random
     from typing import Final
 
     from pyk.cterm.show import CTermShow
@@ -86,13 +87,21 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
+    def run_smir(
+        self,
+        smir_info: SMIRInfo,
+        *,
+        start_symbol: str = 'main',
+        depth: int | None = None,
+        random: Random | None = None,
+    ) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
+        mode = RandomMode(random) if random else ConcreteMode()
         init_config, _ = make_call_config(
             self.definition,
             smir_info=smir_info,
             start_symbol=start_symbol,
-            mode=CallConfigMode.CONCRETE,
+            mode=mode,
         )
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
@@ -109,7 +118,7 @@ class KMIR(KProve, KRun, KParse):
             self.definition,
             smir_info=smir_info,
             start_symbol=start_symbol,
-            mode=CallConfigMode.SYMBOLIC,
+            mode=SymbolicMode(),
         )
         lhs = CTerm(lhs_config, constraints)
 
