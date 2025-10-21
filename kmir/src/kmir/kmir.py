@@ -83,49 +83,65 @@ class KMIR(KProve, KRun, KParse):
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
-            interim_simplification=50,  # working around memory problems in LLVM backend calls
+            simplify_each=30,
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def make_call_config(
+    def _make_concrete_call_config(self, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> KInner:
+        def init_subst() -> dict[str, KInner]:
+            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
+            _, res = split_config_from(init_config)
+            return res
+
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
+
+        args_info = smir_info.function_arguments[start_symbol]
+        if args_info:
+            raise ValueError(
+                f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
+            )
+
+        # The configuration is the default initial configuration, with the K cell updated with the call terminator
+        # TODO: see if this can be expressed in more simple terms
+        subst = Subst(
+            {
+                **init_subst(),
+                **{
+                    'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                },
+            }
+        )
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
+        assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
+        return config
+
+    def _make_symbolic_call_config(
         self,
         smir_info: SMIRInfo,
         *,
         start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell',
-        init: bool = False,
     ) -> tuple[KInner, list[KInner]]:
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-
-        _subst = {
-            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-            'LOCALS_CELL': list_of(locals),
-        }
-
-        _init_subst: dict[str, KInner] = {}
-        if init:
-            _subst['LOCALS_CELL'] = list_empty()
-            init_config = self.definition.init_config(KSort(sort))
-            _, _init_subst = split_config_from(init_config)
-
-        for key in _init_subst:
-            if key not in _subst:
-                _subst[key] = _init_subst[key]
-
-        subst = Subst(_subst)
-        config = self.definition.empty_config(KSort(sort))
-        return (subst.apply(config), constraints)
+        subst = Subst(
+            {
+                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+                'LOCALS_CELL': list_of(locals),
+            },
+        )
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
+        return config, constraints
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol, init=True)
-        if len(free_vars(init_config)) > 0 or len(init_constraints) > 0:
-            raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
+        init_config = self._make_concrete_call_config(smir_info, start_symbol=start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
@@ -135,10 +151,9 @@ class KMIR(KProve, KRun, KParse):
         id: str,
         smir_info: SMIRInfo,
         start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol, sort=sort)
+        lhs_config, constraints = self._make_symbolic_call_config(smir_info, start_symbol=start_symbol)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
@@ -181,7 +196,18 @@ class KMIR(KProve, KRun, KParse):
                     smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
                 smir_info = smir_info.reduce_to(opts.start_symbol)
+                # Report whether the reduced call graph includes any functions without MIR bodies
+                missing_body_syms = [
+                    sym
+                    for sym, item in smir_info.items.items()
+                    if 'MonoItemFn' in item['mono_item_kind']
+                    and item['mono_item_kind']['MonoItemFn'].get('body') is None
+                ]
+                has_missing = len(missing_body_syms) > 0
                 _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+                if has_missing:
+                    _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
+                    _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
                 kmir = KMIR.from_kompiled_kore(
                     smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
