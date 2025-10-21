@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Final
+from enum import Enum
+from typing import TYPE_CHECKING, Final, NamedTuple
 
 from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
@@ -23,7 +24,33 @@ if TYPE_CHECKING:
 _LOGGER: Final = logging.getLogger(__name__)
 
 
-def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> KInner:
+class CallConfigMode(Enum):
+    CONCRETE = 'concrete'
+    SYMBOLIC = 'symbolic'
+
+
+class CallConfig(NamedTuple):
+    config: KInner
+    constraints: tuple[KInner, ...]
+
+
+def make_call_config(
+    definition: KDefinition,
+    *,
+    mode: CallConfigMode,
+    smir_info: SMIRInfo,
+    start_symbol: str = 'main',
+) -> CallConfig:
+    match mode:
+        case CallConfigMode.CONCRETE:
+            config = _make_concrete_call_config(definition, smir_info, start_symbol=start_symbol)
+            return CallConfig(config=config, constraints=())
+        case CallConfigMode.SYMBOLIC:
+            config, constraints = _make_symbolic_call_config(definition, smir_info, start_symbol=start_symbol)
+            return CallConfig(config=config, constraints=tuple(constraints))
+
+
+def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, start_symbol) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
         _, res = split_config_from(init_config)

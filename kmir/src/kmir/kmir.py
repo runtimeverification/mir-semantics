@@ -21,7 +21,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
-from .kast import _make_concrete_call_config, _make_symbolic_call_config
+from .kast import CallConfigMode, make_call_config
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -88,7 +88,12 @@ class KMIR(KProve, KRun, KParse):
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config = _make_concrete_call_config(self.definition, smir_info, start_symbol=start_symbol)
+        init_config, _ = make_call_config(
+            self.definition,
+            mode=CallConfigMode.CONCRETE,
+            smir_info=smir_info,
+            start_symbol=start_symbol,
+        )
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
@@ -100,7 +105,12 @@ class KMIR(KProve, KRun, KParse):
         start_symbol: str = 'main',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = _make_symbolic_call_config(self.definition, smir_info, start_symbol=start_symbol)
+        lhs_config, constraints = make_call_config(
+            self.definition,
+            mode=CallConfigMode.SYMBOLIC,
+            smir_info=smir_info,
+            start_symbol=start_symbol,
+        )
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
