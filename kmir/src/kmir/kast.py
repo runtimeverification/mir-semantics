@@ -37,20 +37,33 @@ class CallConfig(NamedTuple):
 def make_call_config(
     definition: KDefinition,
     *,
-    mode: CallConfigMode,
     smir_info: SMIRInfo,
-    start_symbol: str = 'main',
+    start_symbol: str,
+    mode: CallConfigMode,
 ) -> CallConfig:
     match mode:
         case CallConfigMode.CONCRETE:
-            config = _make_concrete_call_config(definition, smir_info, start_symbol=start_symbol)
+            config = _make_concrete_call_config(
+                definition=definition,
+                smir_info=smir_info,
+                start_symbol=start_symbol,
+            )
             return CallConfig(config=config, constraints=())
         case CallConfigMode.SYMBOLIC:
-            config, constraints = _make_symbolic_call_config(definition, smir_info, start_symbol=start_symbol)
+            config, constraints = _make_symbolic_call_config(
+                definition=definition,
+                smir_info=smir_info,
+                start_symbol=start_symbol,
+            )
             return CallConfig(config=config, constraints=tuple(constraints))
 
 
-def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, start_symbol) -> KInner:
+def _make_concrete_call_config(
+    *,
+    definition: KDefinition,
+    smir_info: SMIRInfo,
+    start_symbol: str,
+) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
         _, res = split_config_from(init_config)
@@ -82,10 +95,10 @@ def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, 
 
 
 def _make_symbolic_call_config(
+    *,
     definition: KDefinition,
     smir_info: SMIRInfo,
-    *,
-    start_symbol: str = 'main',
+    start_symbol: str,
 ) -> tuple[KInner, list[KInner]]:
     if not start_symbol in smir_info.function_tys:
         raise KeyError(f'{start_symbol} not found in program')

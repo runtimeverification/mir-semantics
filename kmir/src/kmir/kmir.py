@@ -90,9 +90,9 @@ class KMIR(KProve, KRun, KParse):
         smir_info = smir_info.reduce_to(start_symbol)
         init_config, _ = make_call_config(
             self.definition,
-            mode=CallConfigMode.CONCRETE,
             smir_info=smir_info,
             start_symbol=start_symbol,
+            mode=CallConfigMode.CONCRETE,
         )
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
@@ -107,9 +107,9 @@ class KMIR(KProve, KRun, KParse):
     ) -> APRProof:
         lhs_config, constraints = make_call_config(
             self.definition,
-            mode=CallConfigMode.SYMBOLIC,
             smir_info=smir_info,
             start_symbol=start_symbol,
+            mode=CallConfigMode.SYMBOLIC,
         )
         lhs = CTerm(lhs_config, constraints)
 
