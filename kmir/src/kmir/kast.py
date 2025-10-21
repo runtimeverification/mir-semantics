@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
-from pyk.kast.prelude.collections import list_of
+from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
@@ -52,6 +52,29 @@ def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, 
     config = subst(empty_config)
     assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
     return config
+
+
+def _make_symbolic_call_config(
+    definition: KDefinition,
+    smir_info: SMIRInfo,
+    *,
+    start_symbol: str = 'main',
+) -> tuple[KInner, list[KInner]]:
+    if not start_symbol in smir_info.function_tys:
+        raise KeyError(f'{start_symbol} not found in program')
+
+    args_info = smir_info.function_arguments[start_symbol]
+    locals, constraints = symbolic_locals(smir_info, args_info)
+    subst = Subst(
+        {
+            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'LOCALS_CELL': list_of(locals),
+        },
+    )
+    empty_config = definition.empty_config(KSort('GeneratedTopCell'))
+    config = subst(empty_config)
+    return config, constraints
 
 
 def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:

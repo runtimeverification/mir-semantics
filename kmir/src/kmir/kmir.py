@@ -11,7 +11,6 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -22,7 +21,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
-from .kast import _make_concrete_call_config, mk_call_terminator, symbolic_locals
+from .kast import _make_concrete_call_config, _make_symbolic_call_config
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -87,28 +86,6 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def _make_symbolic_call_config(
-        self,
-        smir_info: SMIRInfo,
-        *,
-        start_symbol: str = 'main',
-    ) -> tuple[KInner, list[KInner]]:
-        if not start_symbol in smir_info.function_tys:
-            raise KeyError(f'{start_symbol} not found in program')
-
-        args_info = smir_info.function_arguments[start_symbol]
-        locals, constraints = symbolic_locals(smir_info, args_info)
-        subst = Subst(
-            {
-                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-                'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-                'LOCALS_CELL': list_of(locals),
-            },
-        )
-        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
-        config = subst(empty_config)
-        return config, constraints
-
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
         init_config = _make_concrete_call_config(self.definition, smir_info, start_symbol=start_symbol)
@@ -123,7 +100,7 @@ class KMIR(KProve, KRun, KParse):
         start_symbol: str = 'main',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = self._make_symbolic_call_config(smir_info, start_symbol=start_symbol)
+        lhs_config, constraints = _make_symbolic_call_config(self.definition, smir_info, start_symbol=start_symbol)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
