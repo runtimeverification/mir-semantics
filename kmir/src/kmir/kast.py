@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from enum import Enum
-from typing import TYPE_CHECKING, Final, NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
@@ -11,10 +11,11 @@ from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, UintT, UnionT
+from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
+    from typing import Any, Final
 
     from pyk.kast import KInner
     from pyk.kast.outer import KDefinition
@@ -61,7 +62,7 @@ def make_call_config(
 class _FunctionData(NamedTuple):
     symbol: str
     target: int
-    args_info: list[dict]
+    args: tuple[_Local, ...]
 
     @staticmethod
     def load(*, smir_info: SMIRInfo, start_symbol: str) -> _FunctionData:
@@ -70,12 +71,29 @@ class _FunctionData(NamedTuple):
         except KeyError as err:
             raise ValueError(f'{start_symbol} not found in program') from err
 
-        args_info = smir_info.function_arguments[start_symbol]
-        return _FunctionData(symbol=start_symbol, target=target, args_info=args_info)
+        raw_args = smir_info.function_arguments[start_symbol]
+        args = tuple(_Local.from_raw(arg) for arg in raw_args)
+        return _FunctionData(symbol=start_symbol, target=target, args=args)
 
     @property
     def call_terminator(self) -> KInner:
-        return mk_call_terminator(target=self.target, arg_count=len(self.args_info))
+        return mk_call_terminator(target=self.target, arg_count=len(self.args))
+
+
+class _Local(NamedTuple):
+    ty: Ty
+    mut: bool
+
+    @staticmethod
+    def from_raw(data: Any) -> _Local:
+        match data:
+            case {
+                'ty': ty,
+                'mutability': 'Mut' | 'Not' as mut,
+            }:
+                return _Local(ty=Ty(ty), mut=mut == 'Mut')
+            case _:
+                raise ValueError(f'Cannot parse as _Local: {data}')
 
 
 def _make_concrete_call_config(
@@ -88,7 +106,7 @@ def _make_concrete_call_config(
         _, res = split_config_from(init_config)
         return res
 
-    if fn_data.args_info:
+    if fn_data.args:
         raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
 
     # The configuration is the default initial configuration, with the K cell updated with the call terminator
@@ -113,7 +131,7 @@ def _make_symbolic_call_config(
     smir_info: SMIRInfo,
     fn_data: _FunctionData,
 ) -> tuple[KInner, list[KInner]]:
-    locals, constraints = _symbolic_locals(smir_info, fn_data.args_info)
+    locals, constraints = _symbolic_locals(smir_info, fn_data.args)
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
@@ -199,7 +217,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
     )
 
 
-def _symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+def _symbolic_locals(smir_info: SMIRInfo, local_types: Sequence[_Local]) -> tuple[list[KInner], list[KInner]]:
     locals, constraints = _ArgGenerator(smir_info).run(local_types)
     return ([LOCAL_0] + locals, constraints)
 
@@ -223,10 +241,10 @@ class _ArgGenerator:
         self.counter = 1
         self.ref_offset = 0
 
-    def run(self, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+    def run(self, local_types: Sequence[_Local]) -> tuple[list[KInner], list[KInner]]:
         self.ref_offset = len(local_types) + 1
-        for ty, mut in [(t['ty'], t['mutability']) for t in local_types]:
-            self._add_local(ty, mut == 'Mut')
+        for ty, mut in local_types:
+            self._add_local(ty, mut)
         return (self.locals + self.pointees, self.constraints)
 
     def _add_local(self, ty: Ty, mutable: bool) -> None:
