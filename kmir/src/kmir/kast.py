@@ -204,13 +204,6 @@ def _symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list
     return ([LOCAL_0] + locals, constraints)
 
 
-def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
-    return KApply(
-        'typedValue',
-        (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
-    )
-
-
 class _ArgGenerator:
     smir_info: SMIRInfo
     locals: list[KInner]
@@ -366,3 +359,10 @@ class _ArgGenerator:
                 # missing type information, but can assert that this is a value
                 var = self._fresh_var('ARG')
                 return var, [mlEqualsTrue(KApply('isValue', (var,)))], None
+
+
+def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
+    return KApply(
+        'typedValue',
+        (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
+    )
