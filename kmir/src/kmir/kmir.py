@@ -204,11 +204,9 @@ class KMIR(KProve, KRun, KParse):
                     and item['mono_item_kind']['MonoItemFn'].get('body') is None
                 ]
                 has_missing = len(missing_body_syms) > 0
-                _LOGGER.info(
-                    f'Reduced items table size {len(smir_info.items)}; '
-                    f'missing-bodies-present={has_missing} count={len(missing_body_syms)}'
-                )
+                _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
                 if has_missing:
+                    _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
                     _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
                 kmir = KMIR.from_kompiled_kore(
