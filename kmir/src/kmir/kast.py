@@ -24,6 +24,9 @@ if TYPE_CHECKING:
 _LOGGER: Final = logging.getLogger(__name__)
 
 
+LOCAL_0: Final = KApply('newLocal', KApply('ty', token(0)), KApply('Mutability::Not'))
+
+
 class CallConfigMode(Enum):
     CONCRETE = 'concrete'
     SYMBOLIC = 'symbolic'
@@ -198,8 +201,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
 
 def symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
     locals, constraints = ArgGenerator(smir_info).run(local_types)
-    local0 = KApply('newLocal', (KApply('ty', (token(0),)), KApply('Mutability::Not', ())))
-    return ([local0] + locals, constraints)
+    return ([LOCAL_0] + locals, constraints)
 
 
 def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
