@@ -12,6 +12,7 @@ from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
+from .value import IntValue
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
@@ -424,6 +425,10 @@ class TypedValue(NamedTuple):
     ty: Ty
     mut: bool
 
+    @staticmethod
+    def from_local(value: Value, local: _Local) -> TypedValue:
+        return TypedValue(value=value, ty=local.ty, mut=local.mut)
+
     def to_kast(self) -> KInner:
         return _typed_value(value=self.value.to_kast(), ty=self.ty, mutable=self.mut)
 
@@ -480,5 +485,20 @@ def _random_value(
         raise ValueError(f'Unknown type: {local.ty}') from err
 
     match type_info:
+        case IntT() | UintT():
+            return SimpleRes(
+                TypedValue.from_local(
+                    value=_random_int_value(random, type_info),
+                    local=local,
+                ),
+            )
         case _:
             raise ValueError(f'Type unsupported for random value generator: {type_info}')
+
+
+def _random_int_value(random: Random, type_info: IntT | UintT) -> IntValue:
+    return IntValue(
+        value=random.randint(type_info.min, type_info.max),
+        nbits=type_info.nbits,
+        signed=isinstance(type_info, IntT),
+    )
