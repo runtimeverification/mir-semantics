@@ -146,7 +146,7 @@ class EnumT(TypeMetadata):
                     adt_def=adt_def,
                     discriminants=list(discriminants),
                     fields=[list(tys) for tys in fields],
-                    layout=LayoutShape.from_raw(layout),
+                    layout=LayoutShape.from_raw(layout) if layout is not None else None,
                 )
             case _:
                 raise _cannot_parse_as('EnumT', data)
@@ -467,6 +467,7 @@ class StructT(TypeMetadata):
     name: str
     adt_def: int
     fields: list[Ty]
+    layout: LayoutShape | None
 
     @staticmethod
     def from_raw(data: Any) -> StructT:
@@ -476,12 +477,14 @@ class StructT(TypeMetadata):
                     'name': name,
                     'adt_def': adt_def,
                     'fields': fields,
+                    'layout': layout,
                 }
             }:
                 return StructT(
                     name=name,
                     adt_def=adt_def,
                     fields=list(fields),
+                    layout=LayoutShape.from_raw(layout) if layout is not None else None,
                 )
             case _:
                 raise _cannot_parse_as('StructT', data)
