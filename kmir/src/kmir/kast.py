@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Final
 
-from pyk.kast.inner import KApply, KVariable, build_cons
+from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
+from pyk.kast.manip import free_vars, split_config_from
 from pyk.kast.prelude.collections import list_of
 from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
@@ -14,11 +15,43 @@ from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, UintT, 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from pyk.kast.inner import KInner
+    from pyk.kast import KInner
+    from pyk.kast.outer import KDefinition
 
     from .smir import SMIRInfo
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+def _make_concrete_call_config(definition: KDefinition, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> KInner:
+    def init_subst() -> dict[str, KInner]:
+        init_config = definition.init_config(KSort('GeneratedTopCell'))
+        _, res = split_config_from(init_config)
+        return res
+
+    if not start_symbol in smir_info.function_tys:
+        raise KeyError(f'{start_symbol} not found in program')
+
+    args_info = smir_info.function_arguments[start_symbol]
+    if args_info:
+        raise ValueError(
+            f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
+        )
+
+    # The configuration is the default initial configuration, with the K cell updated with the call terminator
+    # TODO: see if this can be expressed in more simple terms
+    subst = Subst(
+        {
+            **init_subst(),
+            **{
+                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+            },
+        }
+    )
+    empty_config = definition.empty_config(KSort('GeneratedTopCell'))
+    config = subst(empty_config)
+    assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
+    return config
 
 
 def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:

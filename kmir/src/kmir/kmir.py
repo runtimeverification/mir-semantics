@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
+from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -22,7 +22,7 @@ from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
 from .cargo import cargo_get_smir_json
-from .kast import mk_call_terminator, symbolic_locals
+from .kast import _make_concrete_call_config, mk_call_terminator, symbolic_locals
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -87,36 +87,6 @@ class KMIR(KProve, KRun, KParse):
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def _make_concrete_call_config(self, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> KInner:
-        def init_subst() -> dict[str, KInner]:
-            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
-            _, res = split_config_from(init_config)
-            return res
-
-        if not start_symbol in smir_info.function_tys:
-            raise KeyError(f'{start_symbol} not found in program')
-
-        args_info = smir_info.function_arguments[start_symbol]
-        if args_info:
-            raise ValueError(
-                f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
-            )
-
-        # The configuration is the default initial configuration, with the K cell updated with the call terminator
-        # TODO: see if this can be expressed in more simple terms
-        subst = Subst(
-            {
-                **init_subst(),
-                **{
-                    'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-                },
-            }
-        )
-        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
-        config = subst(empty_config)
-        assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
-        return config
-
     def _make_symbolic_call_config(
         self,
         smir_info: SMIRInfo,
@@ -141,7 +111,7 @@ class KMIR(KProve, KRun, KParse):
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config = self._make_concrete_call_config(smir_info, start_symbol=start_symbol)
+        init_config = _make_concrete_call_config(self.definition, smir_info, start_symbol=start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
