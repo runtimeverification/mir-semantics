@@ -200,7 +200,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
 
 
 def _symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
-    locals, constraints = ArgGenerator(smir_info).run(local_types)
+    locals, constraints = _ArgGenerator(smir_info).run(local_types)
     return ([LOCAL_0] + locals, constraints)
 
 
@@ -211,7 +211,7 @@ def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
     )
 
 
-class ArgGenerator:
+class _ArgGenerator:
     smir_info: SMIRInfo
     locals: list[KInner]
     pointees: list[KInner]
