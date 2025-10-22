@@ -57,21 +57,6 @@ class ProveOpts(KMirOpts):
 
 
 @dataclass
-class GenSpecOpts(KMirOpts):
-    input_file: Path
-    output_file: Path | None
-    start_symbol: str
-
-    def __init__(self, input_file: Path, output_file: Path | str | None, start_symbol: str) -> None:
-        self.input_file = input_file
-        if output_file is None:
-            self.output_file = None
-        else:
-            self.output_file = Path(output_file).resolve()
-        self.start_symbol = start_symbol
-
-
-@dataclass
 class ProveRSOpts(ProveOpts):
     rs_file: Path
     save_smir: bool
@@ -99,33 +84,6 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
-
-
-@dataclass
-class ProveRawOpts(ProveOpts):
-    spec_file: Path
-    include_labels: tuple[str, ...] | None
-    exclude_labels: tuple[str, ...] | None
-
-    def __init__(
-        self,
-        spec_file: Path,
-        proof_dir: Path | str | None,
-        include_labels: str | None = None,
-        exclude_labels: str | None = None,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-        reload: bool = False,
-    ) -> None:
-        self.spec_file = spec_file
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
-        self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-        self.reload = reload
 
 
 @dataclass
@@ -158,6 +116,8 @@ class ShowOpts(DisplayOpts):
     omit_cells: tuple[str, ...] | None
     omit_static_info: bool
     use_default_printer: bool
+    statistics: bool
+    leaves: bool
 
     def __init__(
         self,
@@ -173,10 +133,14 @@ class ShowOpts(DisplayOpts):
         omit_cells: str | None = None,
         omit_static_info: bool = True,
         use_default_printer: bool = False,
+        statistics: bool = False,
+        leaves: bool = False,
     ) -> None:
         super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
+        self.statistics = statistics
+        self.leaves = leaves
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
 
         def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:

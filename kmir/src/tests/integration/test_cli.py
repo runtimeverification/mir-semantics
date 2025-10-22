@@ -4,13 +4,14 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import pytest
+
 from kmir.__main__ import _kmir_info, _kmir_link, _kmir_prune, _kmir_show
 from kmir.options import InfoOpts, LinkOpts, ProveRSOpts, PruneOpts, ShowOpts
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
 if TYPE_CHECKING:
-    import pytest
     from pyk.proof import APRProof
 
     from kmir.kmir import KMIR
@@ -65,6 +66,54 @@ def test_cli_show_printers_snapshot(
     assert_or_update_show_output(
         out_default,
         PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-default-printer.expected',
+        update=update_expected_output,
+    )
+
+
+@pytest.mark.parametrize(
+    'src,start_symbol,is_smir',
+    [
+        pytest.param(
+            (PROVE_RS_DIR / 'symbolic-args-fail.rs'),
+            'main',
+            False,
+            id='symbolic-args-fail.main',
+        ),
+        pytest.param(
+            (Path(__file__).parent / 'data' / 'exec-smir' / 'niche-enum' / 'niche-enum.smir.json').resolve(strict=True),
+            'foo',
+            True,
+            id='niche-enum.smir.foo',
+        ),
+    ],
+)
+def test_cli_show_statistics_and_leaves(
+    src: Path,
+    start_symbol: str,
+    is_smir: bool,
+    kmir: KMIR,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    update_expected_output: bool,
+) -> None:
+    apr_proof = _prove_and_store(kmir, src, tmp_path, start_symbol=start_symbol, is_smir=is_smir)
+
+    show_opts = ShowOpts(
+        proof_dir=tmp_path,
+        id=apr_proof.id,
+        full_printer=False,
+        smir_info=None,
+        omit_current_body=False,
+        use_default_printer=False,
+        statistics=True,
+        leaves=True,
+    )
+    _kmir_show(show_opts)
+    out = capsys.readouterr().out.rstrip()
+
+    assert_or_update_show_output(
+        out,
+        PROVE_RS_DIR / f'show/{src.stem}.{start_symbol}.cli-stats-leaves.expected',
         update=update_expected_output,
     )
 

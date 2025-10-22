@@ -5,11 +5,18 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply
+from pyk.kast.prelude.collections import list_of
+from pyk.kast.prelude.kbool import boolToken
+from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from typing import Final
 
     from pyk.kast import KInner
+
+    from .alloc import AllocId
 
 
 class Value(ABC):
@@ -22,8 +29,6 @@ class BoolValue(Value):
     value: bool
 
     def to_kast(self) -> KInner:
-        from pyk.kast.prelude.kbool import boolToken
-
         return KApply('Value::BoolVal', boolToken(self.value))
 
 
@@ -34,14 +39,22 @@ class IntValue(Value):
     signed: bool
 
     def to_kast(self) -> KInner:
-        from pyk.kast.prelude.kbool import boolToken
-        from pyk.kast.prelude.kint import intToken
-
         return KApply(
             'Value::Integer',
             intToken(self.value),
             intToken(self.nbits),
             boolToken(self.signed),
+        )
+
+
+@dataclass
+class StrValue(Value):
+    value: str
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Value::StringVal',
+            stringToken(self.value),
         )
 
 
@@ -53,8 +66,6 @@ class RangeValue(Value):
         self.elems = tuple(elems)
 
     def to_kast(self) -> KInner:
-        from pyk.kast.prelude.collections import list_of
-
         return KApply('Value::Range', list_of(elem.to_kast() for elem in self.elems))
 
 
@@ -68,11 +79,53 @@ class AggregateValue(Value):
         self.fields = tuple(fields)
 
     def to_kast(self) -> KInner:
-        from pyk.kast.prelude.collections import list_of
-        from pyk.kast.prelude.kint import intToken
-
         return KApply(
             'Value::Aggregate',
             KApply('variantIdx', intToken(self.variant_idx)),
             list_of(field.to_kast() for field in self.fields),
         )
+
+
+@dataclass
+class AllocRefValue(Value):
+    alloc_id: AllocId
+    # projection_elems: tuple[ProjectionElem, ...]
+    metadata: Metadata
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Value::AllocRef',
+            KApply('allocId', intToken(self.alloc_id)),
+            KApply('ProjectionElems::empty'),  # TODO
+            self.metadata.to_kast(),
+        )
+
+
+class Metadata(ABC):
+    @abstractmethod
+    def to_kast(self) -> KInner: ...
+
+
+@dataclass
+class NoMetadata(Metadata):
+    def to_kast(self) -> KInner:
+        return KApply('noMetadata')
+
+
+NO_METADATA: Final = NoMetadata()
+
+
+@dataclass
+class StaticSize(Metadata):
+    size: int
+
+    def to_kast(self) -> KInner:
+        return KApply('staticSize', intToken(self.size))
+
+
+@dataclass
+class DynamicSize(Metadata):
+    size: int
+
+    def to_kast(self) -> KInner:
+        return KApply('dynamicSize', intToken(self.size))

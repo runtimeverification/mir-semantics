@@ -12,13 +12,13 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
-    k-framework.url = "github:runtimeverification/k/v7.1.289";
+    k-framework.url = "github:runtimeverification/k/v7.1.300";
     k-framework = {
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    uv2nix.url = "github:pyproject-nix/uv2nix/64298e806f4a5f63a51c625edc100348138491aa";
+    uv2nix.url = "github:pyproject-nix/uv2nix/b6ed0901aec29583532abe65117b18d86a49b617";
     # uv2nix requires a newer version of nixpkgs
     # therefore, we pin uv2nix specifically to a newer version of nixpkgs
     # until we replaced our stale version of nixpkgs with an upstream one as well
@@ -27,7 +27,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     uv2nix.inputs.nixpkgs.follows = "nixpkgs-unstable";
     # uv2nix.inputs.nixpkgs.follows = "nixpkgs";
-    pyproject-build-systems.url = "github:pyproject-nix/build-system-pkgs/7dba6dbc73120e15b558754c26024f6c93015dd7";
+    pyproject-build-systems.url = "github:pyproject-nix/build-system-pkgs/dbfc0483b5952c6b86e36f8b3afeb9dde30ea4b5";
     pyproject-build-systems = {
       inputs.nixpkgs.follows = "uv2nix/nixpkgs";
       inputs.uv2nix.follows = "uv2nix";
@@ -73,15 +73,22 @@
           final: prev:
           let
             rev = self.rev or null;
+            kmir-pyk-pyproject = final.callPackage ./nix/kmir-pyk-pyproject { inherit uv2nix; };
             kmir-pyk = final.callPackage ./nix/kmir-pyk {
-              inherit pyproject-nix pyproject-build-systems uv2nix;
+              inherit pyproject-nix pyproject-build-systems kmir-pyk-pyproject;
               python = final."python${pythonVer}";
+              pyproject-overlays = [ (k-framework.overlays.pyk-pyproject system) ];
             };
             kmir = final.callPackage ./nix/kmir { inherit kmir-pyk rev; };
             kmir-package-test = final.callPackage ./nix/test/package.nix { inherit rev; };
           in
           {
-            inherit kmir-pyk kmir kmir-package-test;
+            inherit
+              kmir-pyk
+              kmir
+              kmir-package-test
+              kmir-pyk-pyproject
+              ;
           };
         pkgs = import nixpkgs {
           inherit system;
@@ -137,5 +144,12 @@
     )
     // {
       overlays.default = final: prev: { inherit (self.packages.${final.system}) kmir; };
+      pyprojectOverlays = {
+        # this pyproject-nix overlay allows for overriding the python packages that are otherwise locked in `uv.lock`
+        # by using this overlay in dependant nix flakes, you ensure that nix overrides also override the python package     
+        pyk-pyproject = system: final: prev: {
+          inherit (self.packages.${system}.kmir-pyk-pyproject.lockFileOverlay final prev) kmir-pyk;
+        };
+      };
     };
 }
