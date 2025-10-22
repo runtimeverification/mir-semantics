@@ -145,6 +145,14 @@ class ArgGenerator:
 
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
+
+        noMetadata = KApply(
+            'Metadata',
+            KApply('noMetadataSize', ()),
+            token(0),
+            KApply('noMetadataSize', ()),
+        )
+
         match self.smir_info.types.get(ty):
             case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
@@ -192,7 +200,14 @@ class ArgGenerator:
                 return (
                     KApply('Value::Range', (elems,)),
                     [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
-                    KApply('dynamicSize', (l,)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('dynamicSize', (l,)),
+                            token(0),
+                            KApply('dynamicSize', (l,)),
+                        ),
+                    ),
                 )
 
             case ArrayT(element_type, size) if size is not None:
@@ -205,7 +220,14 @@ class ArgGenerator:
                 return (
                     KApply('Value::Range', (list_of(elem_vars),)),
                     elem_constraints,
-                    KApply('staticSize', (token(size),)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('staticSize', (token(size),)),
+                            token(0),
+                            KApply('staticSize', (token(size),)),
+                        ),
+                    ),
                 )
 
             case TupleT(components):
@@ -233,8 +255,7 @@ class ArgGenerator:
                             token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else KApply('noMetadata', ()),
-                            token(0),  # PTR_OFFSET field
+                            metadata if metadata is not None else noMetadata,
                         ),
                     ),
                     pointee_constraints,
@@ -252,14 +273,7 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            KApply(
-                                'PtrEmulation',
-                                (
-                                    metadata if metadata is not None else KApply('noMetadata', ()),
-                                    token(0),
-                                    KApply('Value::NoOrigin', ()),
-                                ),
-                            ),
+                            metadata if metadata is not None else noMetadata,
                         ),
                     ),
                     pointee_constraints,
