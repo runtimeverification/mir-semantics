@@ -197,7 +197,7 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
 
     info._smir['functions'] = [(ty + offset, sym) for ty, sym in info._smir['functions']]
     info._smir['types'] = [
-        (ty + offset, apply_offset_typeInfo(typeInfo, offset)) for ty, typeInfo in info._smir['types']
+        (ty + offset, apply_offset_type_info(type_info, offset)) for ty, type_info in info._smir['types']
     ]
     info._smir['spans'] = [(i + offset, span) for i, span in info._smir['spans']]
 
@@ -224,7 +224,7 @@ def apply_offset(info: SMIRInfo, offset: int) -> None:
         apply_offset_item(item['mono_item_kind'], offset)
 
 
-def apply_offset_typeInfo(typeinfo: dict, offset: int) -> dict:
+def apply_offset_type_info(typeinfo: dict, offset: int) -> dict:
     # traverses type information, updating all `Ty`-valued fields and `adt_def` fields within
     # returns the updated (i.e., mutated) `typeinfo`` dictionary
     # 'PrimitiveType' in typeinfo:
