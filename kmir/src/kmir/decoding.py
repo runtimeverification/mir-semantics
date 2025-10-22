@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.string import stringToken
 
-from .alloc import Allocation, AllocInfo, Memory, ProvenanceEntry, ProvenanceMap
+from .alloc import Allocation, AllocInfo, Function, Memory, ProvenanceEntry, ProvenanceMap, Static, VTable
 from .ty import (
     ArbitraryFields,
     ArrayT,
@@ -21,6 +21,7 @@ from .ty import (
     RefT,
     Single,
     StrT,
+    StructT,
     UintT,
 )
 from .value import (
@@ -71,6 +72,28 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
         ):
             data = bytes(n or 0 for n in bytez)
             return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
+        case AllocInfo(
+            ty=_,
+            # `Static` currently only carries `def_id`; we ignore it here.
+            global_alloc=Static(),
+        ):
+            # Static global alloc does not carry raw bytes here; leave as unable-to-decode placeholder
+            return UnableToDecodeValue('Static global allocation not decoded')
+        case AllocInfo(
+            ty=_,
+            global_alloc=Function(
+                instance=_,
+            ),
+        ):
+            # Function alloc currently not decoded to a runtime value
+            return UnableToDecodeValue('Function global allocation not decoded')
+        case AllocInfo(
+            ty=_,
+            # `VTable` carries `ty` and optional `binder`; we ignore both here.
+            global_alloc=VTable(),
+        ):
+            # VTable alloc currently not decoded to a runtime value
+            return UnableToDecodeValue('VTable global allocation not decoded')
         case _:
             raise AssertionError('Unhandled case')
 
@@ -149,6 +172,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_int(data, int_ty)
         case ArrayT(elem_ty, length):
             return _decode_array(data, elem_ty, length, types)
+        case StructT(fields=fields, layout=layout):
+            return _decode_struct(data=data, fields=fields, layout=layout, types=types)
         case EnumT(
             discriminants=discriminants,
             fields=fields,
@@ -217,6 +242,28 @@ def _decode_array(
         raise ValueError(f'Expected {length} elements, got: {len(elems)}')
 
     return RangeValue(elems)
+
+
+def _decode_struct(
+    *,
+    data: bytes,
+    fields: list[Ty],
+    layout: LayoutShape | None,
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    if not layout:
+        raise ValueError('Struct layout not provided')
+
+    offsets = _extract_offsets(layout.fields)
+
+    match layout.variants:
+        case Single(index=0):
+            pass
+        case _:
+            raise ValueError(f'Unexpected layout variants in struct: {layout.variants}')
+
+    field_values = _decode_fields(data=data, tys=fields, offsets=offsets, types=types)
+    return AggregateValue(0, field_values)
 
 
 def _decode_enum(

@@ -13,7 +13,7 @@ MIR Semantics provides a K Framework-based formal semantics for Rust's Stable MI
 # Initial setup - install stable-mir-json tool for SMIR generation
 make stable-mir-json
 
-# Build K semantics definitions (required after any K file changes)
+# Build K semantics definitions (required after K file changes)
 make build
 
 # Full build and check
