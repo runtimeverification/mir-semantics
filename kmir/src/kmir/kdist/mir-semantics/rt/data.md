@@ -331,6 +331,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     requires size(INNER) ==Int END -Int START // ensures updateList is defined
      [preserves-definedness] // START,END indexes checked before, length check for update here
 
+  // Update PointerOffset
+  rule #buildUpdate(Range(INNER), CtxPointerOffset(ELEMS, START, END) CTXS)
+      => #buildUpdate( Range(updateList(ELEMS, START, INNER)), CTXS)
+    requires size(INNER) ==Int END -Int START // ensures updateList is defined
+     [preserves-definedness] // START,END indexes checked before, length check for update here
+
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
   rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
