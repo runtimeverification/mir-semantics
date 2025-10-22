@@ -449,7 +449,7 @@ class Parser:
             import string
 
             # Characters that need special escaping (using hex encoding)
-            ESCAPE_CHARS = {'\n': '\\x0a', '@': '\\x40', '"': '\\x34'}
+            escape_chars = {'\n': '\\x0a', '@': '\\x40', '"': '\\x34'}
 
             # TODO: Handle uninitialized bytes instead of defaulting to 0
             if all((chr(int(i)) if i is not None else chr(0)) in string.printable for i in json):
@@ -458,8 +458,8 @@ class Parser:
                     if byte_val is None:
                         return '\\x00'
                     char = chr(byte_val)
-                    if char in ESCAPE_CHARS:
-                        return ESCAPE_CHARS[char]
+                    if char in escape_chars:
+                        return escape_chars[char]
                     else:
                         return char
 
