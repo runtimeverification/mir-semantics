@@ -104,7 +104,7 @@ To make this function total, an optional `MaybeTy` is used.
 ## Static and Dynamic Metadata for Types
 
 References to data on the heap or stack may require metadata, most commonly the size of slices, which is not statically known.
-The helper function `#metadata` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `Metadata` sort in `value.md`).
+The helper function `#metadataSize` determines whether or not a given `TypeInfo` requires size information or other metadata (also see `MetadataSize` sort in `value.md`).
 To avoid repeated lookups, static array sizes are also stored as metadata (for `Unsize` casts).
 
 NB that the need for metadata is determined for the _pointee_ type, not the pointer type.
@@ -113,18 +113,18 @@ A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
 ```k
-  syntax Metadata ::= #metadata    ( Ty , ProjectionElems ) [function, total]
-                    | #metadata    (  MaybeTy )             [function, total]
-                    | #metadataAux ( TypeInfo )             [function, total]
-  // ------------------------------------------------------------
-  rule #metadata(TY, PROJS) => #metadata(getTyOf(TY, PROJS))
+  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems ) [function, total]
+                        | #metadataSize    (  MaybeTy )             [function, total]
+                        | #metadataSizeAux ( TypeInfo )             [function, total]
+  // --------------------------------------------------------------------------------------
+  rule #metadataSize(TY, PROJS) => #metadataSize(getTyOf(TY, PROJS))
 
-  rule #metadata(TyUnknown) => noMetadata
-  rule #metadata(TY) => #metadataAux(lookupTy(TY))
+  rule #metadataSize(TyUnknown) => noMetadataSize
+  rule #metadataSize(TY) => #metadataSizeAux(lookupTy(TY))
 
-  rule #metadataAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
-  rule #metadataAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
-  rule #metadataAux(    _OTHER                                          ) => noMetadata     [owise]
+  rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
+  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
+  rule #metadataSizeAux(    _OTHER                                          ) => noMetadataSize     [owise]
 ```
 
 

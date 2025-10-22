@@ -36,12 +36,12 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 2 ) ) )
-      ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 2 ) ) ) ) , ty ( 107 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 2 ) , 0 , staticSize ( 2 ) ) ) )
+      ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 2 ) , 0 , staticSize ( 2 ) ) ) ) ) , ty ( 107 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 28 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , staticSize ( 2 ) ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , staticSize ( 2 ) ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 2 ) , 0 , staticSize ( 2 ) ) ) , ty ( 28 ) , mutabilityNot ) )
+      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 2 ) , 0 , staticSize ( 2 ) ) ) , ty ( 28 ) , mutabilityNot ) )
       ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 85 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 84 ) , mutabilityNot ) )

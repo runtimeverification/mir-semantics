@@ -41,13 +41,13 @@ The special `Moved` value represents values that have been used and should not b
                    // value, bit-width               for f16-f128
                  | Reference( Int , Place , Mutability , Metadata )
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, dynamic size if applicable
+                   // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability, PtrEmulation )
+                 | PtrLocal( Int , Place , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
-                   // first 3 fields are the same as in Reference, plus pointee metadata
+                   // fields are the same as in Reference
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
                                                           [symbol(Value::AllocRef)]
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
@@ -65,21 +65,18 @@ A _thin pointer_ in Rust is simply an address of data in the heap or on the stac
 A _fat pointer_ in Rust is a pair of an address and [additional metadata about the pointee](https://doc.rust-lang.org/std/ptr/trait.Pointee.html#associatedtype.Metadata).
 This is necessary for dynamically-sized pointee types (most prominently slices) and dynamic trait objects.
 
-References to arrays and slices carry `Metadata`.
-For array types with statically-known size, the metadata is set to `staticSize` to avoid repeated type lookups.
-Other types without metadata use `noMetadata`.
+References to arrays and slices carry `Metadata`. In Rust `Metadata` is only a size, but we need more information to detect UB, so we track `(Size, Ptr Offset, Origin Size)`
+For array types with statically-known size, the metadata size is set to `staticSize` to avoid repeated type lookups.
+Other types without metadata use `noMetadataSize`.
 
 ```k
-  syntax Metadata ::= "noMetadata"         [symbol(noMetadata)]
-                    | staticSize ( Int )   [symbol(staticSize)]
+  // Origin size is since a pointer might not have size iteself but should be in bounds of an aggregate origin
+  syntax Metadata ::= metadata ( MetadataSize, Int, MetadataSize) [symbol(Metadata)]
+                            // ( Size, Pointer Offset, Origin Size )
+
+  syntax MetadataSize ::= "noMetadataSize" [symbol(noMetadataSize)]
+                    | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
-```
-
-A pointer in Rust carries the same metadata.
-
-
-```k
-  syntax PtrEmulation ::= ptrEmulation ( Metadata ) [symbol(PtrEmulation)]
 ```
 
 ## Local variables

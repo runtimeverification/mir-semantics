@@ -99,11 +99,11 @@ Known element sizes for common types:
 
   // thin and fat pointers
   rule #elemSize(typeInfoRefType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-    requires dynamicSize(1) ==K #metadata(TY)
+    requires dynamicSize(1) ==K #metadataSize(TY)
   rule #elemSize(typeInfoRefType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
   rule #elemSize(typeInfoPtrType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-    requires dynamicSize(1) ==K #metadata(TY)
+    requires dynamicSize(1) ==K #metadataSize(TY)
   rule #elemSize(typeInfoPtrType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
 
