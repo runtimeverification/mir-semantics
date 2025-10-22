@@ -17,7 +17,6 @@ Besides the `caller` (to return to) and `dest` and `target` to specify where the
 requires "./value.md"
 
 module KMIR-CONFIGURATION
-  imports KMIR-AST
   imports INT-SYNTAX
   imports BOOL-SYNTAX
   imports RT-VALUE-SYNTAX
@@ -32,7 +31,7 @@ module KMIR-CONFIGURATION
                                    locals:List)               // return val, args, local variables
 
   configuration <kmir>
-                  <k> #init($PGM:Pgm) </k>
+                  <k> $PGM:KItem </k>
                   <retVal> noReturn </retVal>
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
@@ -46,16 +45,21 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  // static and dynamic allocations: AllocId -> Value
-                  <memory> .Map </memory>
-                  // ============ static information ============
-                  // function store, Ty -> MonoItemFn
-                  <functions> .Map </functions>
-                  <start-symbol> symbol($STARTSYM:String) </start-symbol>
-                  // static information about the base type interning in the MIR
-                  <types> .Map </types>
-                  <adt-to-ty> .Map </adt-to-ty>
                 </kmir>
+```
 
+Additional fields of the configuration contain _static_ information.
+
+* The function store mapping `Ty` to `MonoItemFn` (and `IntrinsicFn`). This is essentially the entire program.
+* The allocation store, mapping `AllocId` to `Value` (or error markers if undecoded)
+* The type metadata map, associating `Ty` with a `TypeInfo` (which may contain more `Ty`s)
+* The mapping from `AdtDef` ID to `Ty`
+
+For better performance, this information is reified to K functions,
+rather than carrying static `Map` structures with the configuration.
+
+The functions are defined in the `RT-VALUE` module for now but should have their own module.
+
+```k
 endmodule
 ```

@@ -2,7 +2,6 @@
 
 ```k
 requires "kmir-ast.md"
-requires "symbolic/kmir-symbolic-locals.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
@@ -31,7 +30,6 @@ module KMIR-CONTROL-FLOW
   imports MAP
   imports K-EQUAL
 
-  imports KMIR-AST
   imports MONO
   imports TYPES
 
@@ -43,190 +41,11 @@ Execution of a program begins by creating a stack frame for the `main`
 function and executing its function body. Before execution begins, the
 function map and the initial memory have to be set up.
 
-```k
-  // #init step, assuming a singleton in the K cell
-  rule <k> #init(_NAME:Symbol _ALLOCS:GlobalAllocs FUNCTIONS:FunctionNames ITEMS:MonoItems TYPES:TypeMappings _MACHINE:MachineInfo)
-         =>
-           #execFunction(#findItem(ITEMS, FUNCNAME), FUNCTIONS)
-       </k>
-       <functions> _ => #mkFunctionMap(FUNCTIONS, ITEMS) </functions>
-       <start-symbol> FUNCNAME </start-symbol>
-       <types> _ => #mkTypeMap(.Map, TYPES) </types>
-       <adt-to-ty> _ => #mkAdtMap(.Map, TYPES) </adt-to-ty>
-```
+All of this is done in the client code so we omit the initialisation code which was historically placed here.
 
-The `Map` of types is static information used for decoding constants and allocated data into `Value`s.
-It maps `Ty` IDs to `TypeInfo` that can be supplied to decoding and casting functions as well as operations involving `Aggregate` values (related to `struct`s and `enum`s).
 
-```k
-  syntax Map ::= #mkTypeMap ( Map, TypeMappings ) [function, total, symbol("mkTypeMap")]
+#### Function Execution
 
-  rule #mkTypeMap(ACC, .TypeMappings) => ACC
-
-  // build map of Ty -> RigidTy from suitable pairs
-  rule #mkTypeMap(ACC, TypeMapping(TY, TYPEINFO) MORE:TypeMappings)
-      =>
-       #mkTypeMap(ACC[TY <- TYPEINFO], MORE)
-    requires notBool TY in_keys(ACC)
-    [preserves-definedness] // key collision checked
-
-  // skip anything that causes a key collision
-  rule #mkTypeMap(ACC, _OTHERTYKIND:TypeMapping MORE:TypeMappings)
-      =>
-       #mkTypeMap(ACC, MORE)
-    [owise]
-```
-
-Another type-related `Map` is required to associate an `AdtDef` ID with its corresponding `Ty` ID for `struct`s and `enum`s when creating or using `Aggregate` values.
-
-```k
-  syntax Map ::= #mkAdtMap ( Map , TypeMappings ) [function, total, symbol("mkAdtMap")]
-  // --------------------------------------------------------------
-  rule #mkAdtMap(ACC, .TypeMappings) => ACC
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoStructType(_, ADTDEF, _)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoEnumType(_, ADTDEF, _, _, _)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-
-  rule #mkAdtMap(ACC, TypeMapping(TY, typeInfoUnionType(_, ADTDEF)) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC[ADTDEF <- TY], MORE)
-    requires notBool TY in_keys(ACC)
-  rule #mkAdtMap(ACC, TypeMapping(_, _) MORE:TypeMappings)
-      =>
-       #mkAdtMap(ACC, MORE)
-    [owise]
-```
-
-The `Map` of `functions` is constructed from the lookup table of `FunctionNames`,
-composed with a secondary lookup of `Item`s via `symbolName`. This composed map will
-only be populated for `MonoItemFn` items that are indeed _called_ in the code (i.e.,
-they are callee in a `Call` terminator within an `Item`).
-
-The function _names_ and _ids_ are not relevant for calls and therefore dropped.
-
-```k
-  syntax Map ::= #mkFunctionMap ( FunctionNames, MonoItems ) [ function, total, symbol("mkFunctionMap") ]
-               | #accumFunctions ( Map, Map, FunctionNames ) [ function, total ]
-               | #accumItems ( Map, MonoItems )              [ function, total ]
-
-  rule #mkFunctionMap(Functions, Items)
-    =>
-       #accumFunctions(#mainIsMinusOne(Items), #accumItems(.Map, Items), Functions)
-  //////////////////// ^^^^^^^^^^^^^^^^^^^^^^ HACK Adds "main" as function with ty(-1)
-  syntax Map ::= #mainIsMinusOne(MonoItems) [function]
-  rule #mainIsMinusOne(ITEMS) => ty(-1) |-> monoItemKind(#findItem(ITEMS, symbol("main")))
-  ////////////////////////////////////////////////////////////////
-
-  // accumulate map of symbol_name -> function (MonoItemFn), discarding duplicate IDs
-  rule #accumItems(Acc, .MonoItems) => Acc
-
-  rule #accumItems(Acc, monoItem(SymName, monoItemFn(_, _, _) #as Function) Rest:MonoItems)
-     =>
-       #accumItems(Acc (SymName |-> Function), Rest)
-    requires notBool (SymName in_keys(Acc))
-    [ preserves-definedness ] // key collisions checked
-
-  // discard other items and duplicate symbolNames
-  rule #accumItems(Acc, _:MonoItem Rest:MonoItems)
-     =>
-       #accumItems(Acc, Rest)
-    [ owise ]
-
-  // accumulate composed map of Ty -> MonoItemFn, using item map from before and function names
-  rule #accumFunctions(Acc, _, .List) => Acc
-
-  rule #accumFunctions(Acc, ItemMap, ListItem(functionName(TyIdx, functionNormalSym(SymName))) Rest )
-    =>
-      #accumFunctions(Acc (TyIdx |-> ItemMap[SymName]), ItemMap, Rest)
-    requires SymName in_keys(ItemMap)
-     andBool notBool (TyIdx in_keys(Acc))
-    [preserves-definedness]
-
-  // TODO handle NoOpSym and IntrinsicSym cases here
-
-  // discard anything else:
-  // - duplicate Ty mappings (impossible by construction in stable-mir-json)
-  // - unknown symbol_name (impossible by construction in stable-mir-json)
-  rule #accumFunctions(Acc, ItemMap, ListItem(_) Rest)
-    =>
-       #accumFunctions(Acc, ItemMap, Rest)
-    [ owise ]
-
-```
-
-Executing a given named function means to create the `currentFrame` data
-structure from its function body and then execute the first basic
-block of the body. The function's `Ty` index in the `functions` map must
-be known to populate the `currentFunc` field.
-
-```k
-  // find function through its MonoItemFn.name
-  syntax MonoItem ::= #findItem ( MonoItems, Symbol ) [ function ]
-
-  rule #findItem( (monoItem(_, monoItemFn(N, _, _)) #as ITEM) _REST, NAME )
-     =>
-       ITEM
-    requires N ==K NAME
-  rule #findItem( _:MonoItem REST:MonoItems, NAME )
-     =>
-       #findItem(REST, NAME)
-    [owise]
-  // rule #findItem( .MonoItems, _NAME) => error!
-
-  syntax KItem ::= #execFunction ( MonoItem, FunctionNames )
-
-  rule <k> #execFunction(
-              monoItem(
-                SYMNAME,
-                monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS,LOCALS, _, _, _, _)))
-              ),
-              FUNCTIONNAMES
-            )
-         =>
-           #execBlock(FIRST)
-         ...
-       </k>
-       <currentFunc> _ => #tyFromName(SYMNAME, FUNCTIONNAMES) </currentFunc>
-       <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <caller> _ => ty(-1) </caller> // no caller
-         <dest> _ => place(local(-1), .ProjectionElems)</dest>
-         <target> _ => noBasicBlockIdx </target>
-         <unwind> _ => unwindActionUnreachable </unwind>
-         <locals> _ => #reserveFor(LOCALS)  </locals>
-       </currentFrame>
-
-  // This function performs a reverse lookup in the functions table (looks up a `Ty` by name)
-  // It defaults to `Ty(-1)` which is currently what `main` gets (`main` is not in the functions table)
-  syntax Ty ::= #tyFromName( Symbol, FunctionNames ) [function, total]
-
-  rule #tyFromName(NAME, ListItem(functionName(TY, functionNormalSym(FNAME))) _) => TY
-    requires NAME ==K FNAME
-  rule #tyFromName(NAME, ListItem(_) REST:List) => #tyFromName(NAME, REST)
-    [owise]
-
-  rule #tyFromName(_, .List) => ty(-1) // HACK see #mainIsMinusOne above
-
-  syntax List ::= toKList(BasicBlocks) [function, total]
-
-  rule toKList( .BasicBlocks )                => .List
-  rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
-
-  syntax List ::= #reserveFor( LocalDecls ) [function, total]
-
-  rule #reserveFor(.LocalDecls) => .List
-
-  rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
-      =>
-       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
-```
 
 Executing a function body consists of repeated calls to `#execBlock`
 for the basic blocks that, together, constitute the function body. The
@@ -352,7 +171,7 @@ will be `129`.
 
   rule #switchMatch(0, BoolVal(B)           ) => notBool B
   rule #switchMatch(1, BoolVal(B)           ) => B
-  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int bitRangeInt(I2, 0, WIDTH)
+  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned)
 ```
 
 `Return` simply returns from a function call, using the information
@@ -373,7 +192,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -382,9 +201,6 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
-       <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
-     [preserves-definedness] // CALLER lookup defined
 
   // no value to return, skip writing
   rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
@@ -393,7 +209,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(FUNCS, CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> _ => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -402,15 +218,11 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
-       <functions> FUNCS </functions>
-     requires CALLER in_keys(FUNCS)
-     [preserves-definedness] // CALLER lookup defined
 
-  syntax List ::= #getBlocks(Map, Ty) [function]
-                | #getBlocksAux(MonoItemKind)  [function, total]
+  syntax List ::= #getBlocks( Ty )               [function, total]
+                | #getBlocksAux( MonoItemKind )  [function, total]
 
-  rule #getBlocks(FUNCS, ID) => #getBlocksAux({FUNCS[ID]}:>MonoItemKind)
-    requires ID in_keys(FUNCS)
+  rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
 
   // returns blocks from the body
   rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List
@@ -419,6 +231,11 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
   rule #getBlocksAux(monoItemStatic(_, _, _)) => .List // should not occur in calls
   rule #getBlocksAux(monoItemGlobalAsm(_)) => .List // not supported
   rule #getBlocksAux(IntrinsicFunction(_)) => .List // intrinsics have no body
+
+  syntax List ::= toKList(BasicBlocks) [function, total]
+  // ---------------------------------------------------
+  rule toKList( .BasicBlocks )                => .List
+  rule toKList(B:BasicBlock REST:BasicBlocks) => ListItem(B) toKList(REST)
 ```
 
 When a `terminatorKindReturn` is executed but the optional target is empty
@@ -462,18 +279,14 @@ where the returned result should go.
   // Intrinsic function call - execute directly without state switching
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
          =>
-           #execIntrinsic({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS, DEST) ~> #continueAt(TARGET)
+           #execIntrinsic(lookupFunction(#tyOfCall(FUNC)), ARGS, DEST) ~> #continueAt(TARGET)
        </k>
-       <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool isIntrinsicFunction({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind)
-    [preserves-definedness] // callee lookup defined
+    requires isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
 
   // Regular function call - full state switching and stack setup
   rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
-           #setUpCalleeData({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind, ARGS)
+           #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
        </k>
        <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
        <currentFrame>
@@ -485,11 +298,7 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <functions> FUNCTIONS </functions>
-    requires #tyOfCall(FUNC) in_keys(FUNCTIONS)
-     andBool isMonoItemKind(FUNCTIONS[#tyOfCall(FUNC)])
-     andBool notBool isIntrinsicFunction({FUNCTIONS[#tyOfCall(FUNC)]}:>MonoItemKind)
-    [preserves-definedness] // callee lookup defined
+    requires notBool isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
@@ -533,6 +342,14 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
+
+  syntax List ::= #reserveFor( LocalDecls ) [function, total]
+
+  rule #reserveFor(.LocalDecls) => .List
+
+  rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
+      =>
+       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
@@ -659,11 +476,10 @@ Execution gets stuck (no matching rule) when operands have different types or un
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
-        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS, TYPEMAP),
-                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS, TYPEMAP))
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
+                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
        ... </k>
        <locals> LOCALS </locals>
-       <types> TYPEMAP </types>
 
   // Compare values only if types are identical
   syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
@@ -683,17 +499,17 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #withDeref(OP) => OP [owise]
 
   // Extract type from operands (locals with projections, constants, fallback to unknown)
-  syntax MaybeTy ::= #extractOperandType(Operand, List, Map) [function, total]
-  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS, TYPEMAP)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total]
+  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS, TYPEMAP)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS, TYPEMAP)
+  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS)
+       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _, _) => TY
-  rule #extractOperandType(_, _, _) => TyUnknown [owise]
+  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
+  rule #extractOperandType(_, _) => TyUnknown [owise]
 ```
 
 ### Stopping on Program Errors
@@ -720,8 +536,7 @@ The top-level module `KMIR` includes both the control flow constructs (and trans
 
 ```k
 module KMIR
+  imports KMIR-AST // Necessary for the external Python parser
   imports KMIR-CONTROL-FLOW
   imports KMIR-LEMMAS
-  imports KMIR-SYMBOLIC-LOCALS
-
 endmodule

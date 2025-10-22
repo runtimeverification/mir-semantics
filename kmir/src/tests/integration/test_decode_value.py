@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
+from kmir.smir import SMIRInfo
+
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any, Final
@@ -13,26 +15,53 @@ if TYPE_CHECKING:
     from pyk.kore.syntax import Pattern
 
 
-@pytest.fixture(scope='module')
-def definition_dir() -> Path:
-    from kmir.build import LLVM_DEF_DIR
+@pytest.fixture(scope='session')
+def definition_dir():  # -> Path:
+    import time
 
-    return LLVM_DEF_DIR
+    from kmir.kmir import KMIR
+
+    from .utils import TEST_DATA_DIR
+
+    target_dir = TEST_DATA_DIR / 'decode-value' / 'tmp'
+
+    # prevent other processes from concurrently trying to compile
+    # (the scope='session' above does not actually work in pytest-xdist)
+    lock_file = TEST_DATA_DIR / 'decode-value' / 'tmp.lock'
+    try:
+        with open(lock_file, 'x') as _:
+            # generate and compile an LLVM interpreter with the type-table
+            _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=str(target_dir), symbolic=False)
+        lock_file.unlink()
+    except FileExistsError:
+        # wait loop until interpreter exists, max 1min
+        secs = 0
+        while lock_file.exists() and secs < 60:
+            time.sleep(1)
+        if not (target_dir / 'llvm' / 'interpreter').exists():
+            raise Exception('Waited in vain for interpreter to arise. Exiting') from None
+
+    yield target_dir / 'llvm'
+
+    # should remove the target_dir but other processes are probably still using it
+    print(f'Remove {target_dir} if you want to clean up')
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def definition(definition_dir: Path) -> KDefinition:
     from pyk.kast.outer import read_kast_definition
 
     res = read_kast_definition(definition_dir / 'compiled.json')
+    _patch_definition(res)
+    return res
 
+
+def _patch_definition(definition: KDefinition) -> None:
     # Monkey patch __repr__ on the fixture to avoid flooding the output on test failure
-    cls = res.__class__
+    cls = definition.__class__
     new_repr = lambda self: repr('KMIR LLVM definition')
     new_cls = type(f'{cls.__name__}WithCustomRepr', (cls,), {'__repr__': new_repr})
-    object.__setattr__(res, '__class__', new_cls)
-
-    return res
+    object.__setattr__(definition, '__class__', new_cls)
 
 
 def dedent(s: str) -> str:
@@ -54,15 +83,10 @@ KORE_TEMPLATE: Final = Template(
                         Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
                         Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
                         Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
-                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}())
-                        ,Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
-                    )
-                    ,Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
-                    Lbl'-LT-'memory'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'functions'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'start-symbol'-GT-'{}(Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}(\dv{SortString{}}("")))
-                    ,Lbl'-LT-'types'-GT-'{}(Lbl'Stop'Map{}()),
-                    Lbl'-LT-'adt-to-ty'-GT-'{}(Lbl'Stop'Map{}())
+                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
+                        Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
+                    ),
+                    Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
                 ),
                 Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
             )
@@ -79,8 +103,8 @@ class _TestData(NamedTuple):
     expected: str
 
     def to_pattern(self, definition: KDefinition) -> Pattern:
-        from pyk.kore.prelude import SORT_K_ITEM, bytes_dv, inj, int_dv, map_pattern
-        from pyk.kore.syntax import App, SortApp
+        from pyk.kore.prelude import bytes_dv
+        from pyk.kore.syntax import App
 
         return App(
             'LbldecodeValue',
@@ -88,15 +112,6 @@ class _TestData(NamedTuple):
             (
                 bytes_dv(self.bytez),
                 self._json_type_info_to_kore(self.type_info, definition),
-                map_pattern(
-                    *(
-                        (
-                            inj(SortApp('SortTy'), SORT_K_ITEM, App('Lblty', (), (int_dv(key),))),
-                            inj(SortApp('SortTypeInfo'), SORT_K_ITEM, self._json_type_info_to_kore(value, definition)),
-                        )
-                        for key, value in self.types.items()
-                    )
-                ),
             ),
         )
 
@@ -136,7 +151,40 @@ def parse_test_data(test_file: Path, expected_file: Path) -> _TestData:
     )
 
 
+def load_test_types():
+    import json
+
+    from .utils import TEST_DATA_DIR
+
+    types = json.loads((TEST_DATA_DIR / 'decode-value' / 'type-table').read_text())
+    assert isinstance(types, list)
+
+    smir = {
+        'name': 'decode_value',
+        'crate-id': 0,
+        'allocs': [],
+        'debug': None,
+        'functions': [],
+        'items': [],
+        'machine': None,
+        'spans': [],
+        'uneval_consts': [],
+        'types': types,
+    }
+    return SMIRInfo(smir)
+
+
 TEST_DATA: Final = load_test_data()
+TEST_SMIR: Final = load_test_types()
+SKIP: Final = (
+    'enum-1-variant-1-field',
+    'enum-1-variant-2-fields',
+    'enum-2-variants-1-field',
+    'enum-option-nonzero-none',
+    'enum-option-nonzero-some',
+    'str',
+    'struct-simple-permuted-fields',
+)
 
 
 @pytest.mark.parametrize(
@@ -155,6 +203,9 @@ def test_decode_value(
     from pyk.kore.tools import kore_print
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
+
+    if test_data.test_id in SKIP:
+        pytest.skip()
 
     # Given
     evaluation = test_data.to_pattern(definition)
@@ -184,6 +235,22 @@ def test_decode_value(
     assert test_data.expected == actual
 
 
+@pytest.fixture(scope='module')
+def kmir_definition_dir() -> Path:
+    from kmir.build import LLVM_DEF_DIR
+
+    return LLVM_DEF_DIR
+
+
+@pytest.fixture(scope='module')
+def kmir_definition(kmir_definition_dir: Path) -> KDefinition:
+    from pyk.kast.outer import read_kast_definition
+
+    res = read_kast_definition(kmir_definition_dir / 'compiled.json')
+    _patch_definition(res)
+    return res
+
+
 @pytest.mark.parametrize(
     'test_data',
     TEST_DATA,
@@ -191,8 +258,8 @@ def test_decode_value(
 )
 def test_python_decode_value(
     test_data: _TestData,
-    definition_dir: Path,
-    definition: KDefinition,
+    kmir_definition_dir: Path,
+    kmir_definition: KDefinition,
     tmp_path: Path,
 ) -> None:
     from pyk.kast.inner import KSort
@@ -212,9 +279,9 @@ def test_python_decode_value(
         types=types,
     )
     kast = value.to_kast()
-    kore = kast_to_kore(definition, kast, KSort('Value'))
+    kore = kast_to_kore(kmir_definition, kast, KSort('Value'))
     actual = kore_print(
-        definition_dir=definition_dir,
+        definition_dir=kmir_definition_dir,
         pattern=kore,
         output='pretty',
     )

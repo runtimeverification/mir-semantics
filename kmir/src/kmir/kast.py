@@ -9,7 +9,7 @@ from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .ty import ArrayT, Bool, EnumT, Int, PtrT, RefT, StructT, TupleT, Uint, UnionT
+from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, UintT, UnionT
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -145,16 +145,24 @@ class ArgGenerator:
 
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
+
+        noMetadata = KApply(
+            'Metadata',
+            KApply('noMetadataSize', ()),
+            token(0),
+            KApply('noMetadataSize', ()),
+        )
+
         match self.smir_info.types.get(ty):
-            case Int(info):
+            case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
                 return val, constraints, None
 
-            case Uint(info):
+            case UintT(info):
                 val, constraints = int_var(self._fresh_var('ARG_UINT'), info.value, False)
                 return val, constraints, None
 
-            case Bool():
+            case BoolT():
                 val, constraints = bool_var(self._fresh_var('ARG_BOOL'))
                 return val, constraints, None
 
@@ -192,7 +200,14 @@ class ArgGenerator:
                 return (
                     KApply('Value::Range', (elems,)),
                     [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
-                    KApply('dynamicSize', (l,)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('dynamicSize', (l,)),
+                            token(0),
+                            KApply('dynamicSize', (l,)),
+                        ),
+                    ),
                 )
 
             case ArrayT(element_type, size) if size is not None:
@@ -205,7 +220,14 @@ class ArgGenerator:
                 return (
                     KApply('Value::Range', (list_of(elem_vars),)),
                     elem_constraints,
-                    KApply('staticSize', (token(size),)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('staticSize', (token(size),)),
+                            token(0),
+                            KApply('staticSize', (token(size),)),
+                        ),
+                    ),
                 )
 
             case TupleT(components):
@@ -233,8 +255,7 @@ class ArgGenerator:
                             token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else KApply('noMetadata', ()),
-                            token(0),  # PTR_OFFSET field
+                            metadata if metadata is not None else noMetadata,
                         ),
                     ),
                     pointee_constraints,
@@ -252,14 +273,7 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            KApply(
-                                'PtrEmulation',
-                                (
-                                    metadata if metadata is not None else KApply('noMetadata', ()),
-                                    token(0),
-                                    KApply('Value::NoOrigin', ()),
-                                ),
-                            ),
+                            metadata if metadata is not None else noMetadata,
                         ),
                     ),
                     pointee_constraints,

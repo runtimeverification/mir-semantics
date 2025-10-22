@@ -5,7 +5,7 @@
 │
 │  (159 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toStack ( 3 , local ( 1 ) ) , thunk ( UnableToDecodeValue
+    #traverseProjection ( toStack ( 3 , local ( 1 ) ) , thunk ( UnableToDecode ( b"\
     span: 86
 
 

@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import logging
+import tempfile
 from contextlib import contextmanager
+from functools import cached_property
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, free_vars, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of, map_of
-from pyk.kast.prelude.utils import token
+from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -27,7 +29,6 @@ from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
     from typing import Final
 
     from pyk.cterm.show import CTermShow
@@ -53,8 +54,26 @@ class KMIR(KProve, KRun, KParse):
         KParse.__init__(self, definition_dir)
         self.llvm_library_dir = llvm_library_dir
 
+    @staticmethod
+    def from_kompiled_kore(
+        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
+    ) -> KMIR:
+        from .kompile import kompile_smir
+
+        kompiled_smir = kompile_smir(
+            smir_info=smir_info,
+            target_dir=target_dir,
+            bug_report=bug_report,
+            symbolic=symbolic,
+        )
+        return kompiled_smir.create_kmir(bug_report_file=bug_report)
+
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
+
+    @cached_property
+    def parser(self) -> Parser:
+        return Parser(self.definition)
 
     @contextmanager
     def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
@@ -64,112 +83,65 @@ class KMIR(KProve, KRun, KParse):
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
-            interim_simplification=50,  # working around memory problems in LLVM backend calls
+            simplify_each=30,
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
 
-    def functions(self, smir_info: SMIRInfo) -> dict[int, KInner]:
-        parser = Parser(self.definition)
-        functions: dict[int, KInner] = {}
+    def _make_concrete_call_config(self, smir_info: SMIRInfo, *, start_symbol: str = 'main') -> KInner:
+        def init_subst() -> dict[str, KInner]:
+            init_config = self.definition.init_config(KSort('GeneratedTopCell'))
+            _, res = split_config_from(init_config)
+            return res
 
-        # Parse regular functions
-        for item_name, item in smir_info.items.items():
-            if not item_name in smir_info.function_symbols_reverse:
-                _LOGGER.warning(f'Item not found in SMIR: {item_name}')
-                continue
-            parsed_item = parser.parse_mir_json(item, 'MonoItem')
-            if not parsed_item:
-                raise ValueError(f'Could not parse MonoItemKind: {parsed_item}')
-            parsed_item_kinner, _ = parsed_item
-            assert isinstance(parsed_item_kinner, KApply) and parsed_item_kinner.label.name == 'monoItemWrapper'
-            # each item can have several entries in the function table for linked SMIR JSON
-            for ty in smir_info.function_symbols_reverse[item_name]:
-                functions[ty] = parsed_item_kinner.args[1]
+        if not start_symbol in smir_info.function_tys:
+            raise KeyError(f'{start_symbol} not found in program')
 
-        # Add intrinsic functions
-        for ty, sym in smir_info.function_symbols.items():
-            if 'IntrinsicSym' in sym and ty not in functions:
-                functions[ty] = KApply(
-                    'IntrinsicFunction',
-                    [KApply('symbol(_)_LIB_Symbol_String', [token(sym['IntrinsicSym'])])],
-                )
+        args_info = smir_info.function_arguments[start_symbol]
+        if args_info:
+            raise ValueError(
+                f'Cannot create concrete call configuration for {start_symbol}: function has parameters: {args_info}'
+            )
 
-        return functions
+        # The configuration is the default initial configuration, with the K cell updated with the call terminator
+        # TODO: see if this can be expressed in more simple terms
+        subst = Subst(
+            {
+                **init_subst(),
+                **{
+                    'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                },
+            }
+        )
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
+        assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
+        return config
 
-    def _make_function_map(self, smir_info: SMIRInfo) -> KInner:
-        parsed_terms: dict[KInner, KInner] = {}
-        for ty, body in self.functions(smir_info).items():
-            parsed_terms[KApply('ty', [token(ty)])] = body
-        return map_of(parsed_terms)
-
-    def _make_type_and_adt_maps(self, smir_info: SMIRInfo) -> tuple[KInner, KInner]:
-        parser = Parser(self.definition)
-        types: dict[KInner, KInner] = {}
-        adts: dict[KInner, KInner] = {}
-        for type in smir_info._smir['types']:
-            parse_result = parser.parse_mir_json(type, 'TypeMapping')
-            assert parse_result is not None
-            type_mapping, _ = parse_result
-            assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-            ty, tyinfo = type_mapping.args
-            if ty in types:
-                raise ValueError(f'Key collision in type map: {ty}')
-            types[ty] = tyinfo
-            if isinstance(tyinfo, KApply) and tyinfo.label.name in ['TypeInfo::EnumType', 'TypeInfo::StructType']:
-                adts[tyinfo.args[1]] = ty
-        return (map_of(types), map_of(adts))
-
-    def make_call_config(
-        self, smir_info: SMIRInfo, start_symbol: str = 'main', sort: str = 'GeneratedTopCell', init: bool = False
+    def _make_symbolic_call_config(
+        self,
+        smir_info: SMIRInfo,
+        *,
+        start_symbol: str = 'main',
     ) -> tuple[KInner, list[KInner]]:
         if not start_symbol in smir_info.function_tys:
             raise KeyError(f'{start_symbol} not found in program')
 
         args_info = smir_info.function_arguments[start_symbol]
         locals, constraints = symbolic_locals(smir_info, args_info)
-        types, adts = self._make_type_and_adt_maps(smir_info)
-
-        parser = Parser(self.definition)
-        allocs: KInner = KApply('GlobalAllocs::empty')
-        allocs_json = smir_info._smir['allocs']
-        assert isinstance(allocs_json, list)
-        allocs_json.reverse()
-        for alloc in allocs_json:
-            parse_result = parser.parse_mir_json(alloc, 'GlobalAlloc')
-            assert parse_result is not None
-            a, _ = parse_result
-            allocs = KApply('GlobalAllocs::append', (a, allocs))
-
-        _subst = {
-            'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
-            'STARTSYMBOL_CELL': KApply('symbol(_)_LIB_Symbol_String', (token(start_symbol),)),
-            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-            'LOCALS_CELL': list_of(locals),
-            'MEMORY_CELL': KApply('decodeAllocs', (allocs, types)),
-            'FUNCTIONS_CELL': self._make_function_map(smir_info),
-            'TYPES_CELL': types,
-            'ADTTOTY_CELL': adts,
-        }
-
-        _init_subst: dict[str, KInner] = {}
-        if init:
-            _subst['LOCALS_CELL'] = list_empty()
-            init_config = self.definition.init_config(KSort(sort))
-            _, _init_subst = split_config_from(init_config)
-
-        for key in _init_subst:
-            if key not in _subst:
-                _subst[key] = _init_subst[key]
-
-        subst = Subst(_subst)
-        config = self.definition.empty_config(KSort(sort))
-        return (subst.apply(config), constraints)
+        subst = Subst(
+            {
+                'K_CELL': mk_call_terminator(smir_info.function_tys[start_symbol], len(args_info)),
+                'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+                'LOCALS_CELL': list_of(locals),
+            },
+        )
+        empty_config = self.definition.empty_config(KSort('GeneratedTopCell'))
+        config = subst(empty_config)
+        return config, constraints
 
     def run_smir(self, smir_info: SMIRInfo, start_symbol: str = 'main', depth: int | None = None) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        init_config, init_constraints = self.make_call_config(smir_info, start_symbol=start_symbol, init=True)
-        if len(free_vars(init_config)) > 0 or len(init_constraints) > 0:
-            raise ValueError(f'Cannot run function with variables: {start_symbol} - {free_vars(init_config)}')
+        init_config = self._make_concrete_call_config(smir_info, start_symbol=start_symbol)
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
@@ -179,10 +151,9 @@ class KMIR(KProve, KRun, KParse):
         id: str,
         smir_info: SMIRInfo,
         start_symbol: str = 'main',
-        sort: str = 'GeneratedTopCell',
         proof_dir: Path | None = None,
     ) -> APRProof:
-        lhs_config, constraints = self.make_call_config(smir_info, start_symbol=start_symbol, sort=sort)
+        lhs_config, constraints = self._make_symbolic_call_config(smir_info, start_symbol=start_symbol)
         lhs = CTerm(lhs_config, constraints)
 
         var_config, var_subst = split_config_from(lhs_config)
@@ -196,35 +167,65 @@ class KMIR(KProve, KRun, KParse):
         target_node = kcfg.create_node(rhs)
         return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
-    def prove_rs(self, opts: ProveRSOpts) -> APRProof:
+    @staticmethod
+    def prove_rs(opts: ProveRSOpts) -> APRProof:
         if not opts.rs_file.is_file():
-            raise ValueError(f'Rust spec file does not exist: {opts.rs_file}')
+            raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
         label = str(opts.rs_file.stem) + '.' + opts.start_symbol
-        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-            apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
-        else:
-            _LOGGER.info(f'Constructing initial proof: {label}')
-            if opts.smir:
-                smir_info = SMIRInfo.from_file(opts.rs_file)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            target_path = opts.proof_dir / label if opts.proof_dir is not None else Path(tmp_dir)
+
+            if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+                _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+                apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+
+                # TODO avoid compilation, use compilation output from the proof directory
+                # kmir = KMIR(opts.proof_dir / label / haskell, opts.proof_dir / label / llvm-library) if they exist
+                # or else implement this in the `from_kompiled_kore` constructor
+                smir_info = SMIRInfo.from_file(target_path / 'smir.json')
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                )
             else:
-                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+                _LOGGER.info(f'Constructing initial proof: {label}')
+                if opts.smir:
+                    smir_info = SMIRInfo.from_file(opts.rs_file)
+                else:
+                    smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-            smir_info = smir_info.reduce_to(opts.start_symbol)
+                smir_info = smir_info.reduce_to(opts.start_symbol)
+                # Report whether the reduced call graph includes any functions without MIR bodies
+                missing_body_syms = [
+                    sym
+                    for sym, item in smir_info.items.items()
+                    if 'MonoItemFn' in item['mono_item_kind']
+                    and item['mono_item_kind']['MonoItemFn'].get('body') is None
+                ]
+                has_missing = len(missing_body_syms) > 0
+                _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
+                if has_missing:
+                    _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
+                    _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
-            _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
-            apr_proof = self.apr_proof_from_smir(
-                label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
-            )
-            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / apr_proof.id).is_dir():
-                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
-        if apr_proof.passed:
-            return apr_proof
-        with self.kcfg_explore(label) as kcfg_explore:
-            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
-            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
-            return apr_proof
+                kmir = KMIR.from_kompiled_kore(
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                )
+
+                apr_proof = kmir.apr_proof_from_smir(
+                    label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+                )
+                if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
+                    smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+
+            if apr_proof.passed:
+                return apr_proof
+
+            with kmir.kcfg_explore(label) as kcfg_explore:
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
+                return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):
