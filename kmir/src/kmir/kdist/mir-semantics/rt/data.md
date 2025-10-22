@@ -306,7 +306,9 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
-                   | CtxPointerOffset( Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+
+  syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
   syntax Contexts ::= List{Context, ""}
 
@@ -411,7 +413,7 @@ This is done without consideration of the validity of the Downcast[^downcast].
         </k>
     requires 0 <=Int I andBool I <Int size(ARGS)
      andBool isValue(ARGS[I])
-     [preserves-definedness] // valid list indexing checked
+    [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(
              DEST,
@@ -569,6 +571,23 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
      andBool 0 <=Int END andBool END <Int size(ELEMENTS)
      andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
+
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ELEMENTS),
+             PointerOffset(OFFSET, _ORIGIN_LENGTH) PROJS, // TODO: seems strange to not use the ORIGIN_LENGTH...
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(range(ELEMENTS, OFFSET, 0)),
+             PROJS,
+             CtxPointerOffset(ELEMENTS, OFFSET, size(ELEMENTS)) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int OFFSET andBool OFFSET <=Int size(ELEMENTS)
+    [preserves-definedness] // Offset checked to be in range for ELEMENTS
 ```
 
 #### References
@@ -606,6 +625,7 @@ An attempt to read more elements than the length of the accessed array is undefi
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
 
+  // Ref, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
              Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
@@ -615,8 +635,8 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections
-             CtxPointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) .Contexts // add reference offset context
+             PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) PLACEPROJ, // apply reference projections with pointer offset
+             .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -624,8 +644,32 @@ An attempt to read more elements than the length of the accessed array is undefi
         <stack> STACK </stack>
     requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
 
+  // Ref, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
+  rule <k> #traverseProjection(
+             _DEST,
+             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+            toStack(OFFSET, LOCAL),
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             PLACEPROJ, // apply reference projections with pointer offset
+             .Contexts
+           )
+          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool PTR_OFFSET ==Int 0
+    [preserves-definedness]
+
+  // Ref, 0 == OFFSET, 0 < PTR_OFFSET, Local
   rule <k> #traverseProjection(
              _DEST,
              Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
@@ -635,8 +679,8 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             CtxPointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) .Contexts // add reference offset context
+             PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) PLACEPROJ, // apply reference projections with pointer offset
+             .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -645,29 +689,33 @@ An attempt to read more elements than the length of the accessed array is undefi
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
+     andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
 
+  // Ref, 0 == OFFSET, 0 == PTR_OFFSET, Local
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, 0, _ORIGIN_SIZE)),
+             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXT
+             _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections
-             .Contexts // previous contexts obsolete
+             toLocal(I),
+             getValue(LOCALS, I),
+             PLACEPROJ,
+             .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-         ...
+        ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool PTR_OFFSET ==Int 0
     [preserves-definedness]
 
-  // Handle PtrLocal with non-zero offset - add ContextPointerOffset
+  // Ptr, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
              PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
@@ -677,40 +725,41 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
+             PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) PLACEPROJ, // apply reference projections with pointer offset
+             .Contexts // previous contexts obsolete
+           )
+          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+        ...
+        </k>
+        <stack> STACK </stack>
+    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool 0 <Int PTR_OFFSET
+    [preserves-definedness]
+
+  // Ptr, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
+  rule <k> #traverseProjection(
+             _DEST,
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+            toStack(OFFSET, LOCAL),
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              PLACEPROJ, // apply reference projections
-             CtxPointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) .Contexts // add pointer offset context
+             .Contexts // add pointer offset context
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
          ...
         </k>
         <stack> STACK </stack>
     requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool 0 <Int PTR_OFFSET // non-zero pointer offset
      andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool PTR_OFFSET ==Int 0
     [preserves-definedness]
 
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, 0, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             .Contexts // previous contexts obsolete
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness]
-
-  // Handle PtrLocal with non-zero offset pointing to local - add ContextPointerOffset
+  // Ptr, 0 == OFFSET, 0 < PTR_OFFSET, Local
   rule <k> #traverseProjection(
              _DEST,
              PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
@@ -720,17 +769,40 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             CtxPointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) .Contexts // add pointer offset context
+             PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)) PLACEPROJ, // apply reference projections with pointer offset
+             .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
         <locals> LOCALS </locals>
     requires OFFSET ==Int 0
-     andBool 0 <Int PTR_OFFSET // non-zero pointer offset
      andBool 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
+     andBool 0 <Int PTR_OFFSET
+    [preserves-definedness]
+
+  // Ptr, 0 == OFFSET, 0 == PTR_OFFSET, Local
+  rule <k> #traverseProjection(
+             _DEST,
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             projectionElemDeref PROJS,
+             _CTXTS
+           )
+        => #traverseProjection(
+             toLocal(I),
+             getValue(LOCALS, I),
+             PLACEPROJ, // apply reference projections
+             .Contexts // add pointer offset context
+           )
+          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires OFFSET ==Int 0
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+     andBool 0 ==Int PTR_OFFSET
     [preserves-definedness]
 ```
 
@@ -985,7 +1057,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor(CtxField(_, _, I, TY) CTXS, PROJS) => #projectionsFor(CTXS,     projectionElemField(fieldIdx(I), TY) PROJS)
   rule #projectionsFor(       CtxIndex(_, I) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
-  rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
+  // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
+  rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
