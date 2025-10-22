@@ -146,7 +146,7 @@ class ArgGenerator:
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
 
-        noMetadata = KApply(
+        no_metadata = KApply(
             'Metadata',
             KApply('noMetadataSize', ()),
             token(0),
@@ -255,7 +255,7 @@ class ArgGenerator:
                             token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else noMetadata,
+                            metadata if metadata is not None else no_metadata,
                         ),
                     ),
                     pointee_constraints,
@@ -273,7 +273,7 @@ class ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else noMetadata,
+                            metadata if metadata is not None else no_metadata,
                         ),
                     ),
                     pointee_constraints,
