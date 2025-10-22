@@ -1068,7 +1068,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize))
+        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
        ...
        </k>
        <locals> LOCALS </locals>
@@ -1076,7 +1076,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
-  syntax KItem ::= #forRef( Mutability , Metadata ) // TODO: Conside this as Metadata and change #metadataSize to #metadata
+  syntax KItem ::= #forRef( Mutability , Metadata )
 
   // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
@@ -1897,11 +1897,12 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA ),
-          Integer(0, _WIDTH, _SIGNED), // Trivial case when adding 0
+          Integer(VAL, _WIDTH, _SIGNED), // Trivial case when adding 0
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
-   [preserves-definedness, priority(40)]
+  requires VAL ==Int 0
+  [preserves-definedness, priority(40)]
 
   // Check offset bounds against origin pointer with dynamicSize metadata
   rule #applyBinOp(

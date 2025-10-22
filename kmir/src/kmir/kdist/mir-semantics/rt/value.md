@@ -39,7 +39,7 @@ The special `Moved` value represents values that have been used and should not b
                    // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability , Metadata)
+                 | Reference( Int , Place , Mutability , Metadata )
                                                           [symbol(Value::Reference)]
                    // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
