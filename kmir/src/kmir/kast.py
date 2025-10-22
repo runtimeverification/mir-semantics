@@ -12,7 +12,7 @@ from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
-from .value import IntValue
+from .value import BoolValue, IntValue
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
@@ -485,6 +485,13 @@ def _random_value(
         raise ValueError(f'Unknown type: {local.ty}') from err
 
     match type_info:
+        case BoolT():
+            return SimpleRes(
+                TypedValue.from_local(
+                    value=_random_bool_value(random),
+                    local=local,
+                )
+            )
         case IntT() | UintT():
             return SimpleRes(
                 TypedValue.from_local(
@@ -494,6 +501,10 @@ def _random_value(
             )
         case _:
             raise ValueError(f'Type unsupported for random value generator: {type_info}')
+
+
+def _random_bool_value(random: Random) -> BoolValue:
+    return BoolValue(bool(random.getrandbits(1)))
 
 
 def _random_int_value(random: Random, type_info: IntT | UintT) -> IntValue:
