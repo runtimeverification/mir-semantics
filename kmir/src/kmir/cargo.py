@@ -15,6 +15,7 @@ from .linker import link
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from typing import Any, Final
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -167,10 +168,20 @@ class CargoProject:
         return bin_targets[0]
 
 
-def cargo_get_smir_json(rs_file: Path, save_smir: bool = False) -> dict[str, Any]:
-    command = [str(stable_mir_json()), '-Zno-codegen', str(rs_file.resolve())]
-    smir_json_result = Path.cwd() / rs_file.with_suffix('.smir.json').name
-    run_process_2(command)
+def cargo_get_smir_json(
+    rs_file: Path,
+    *,
+    flags: Iterable[str] | None = None,
+    cwd: Path | None = None,
+    save_smir: bool = False,
+) -> dict[str, Any]:
+    command = [str(stable_mir_json()), '-Zno-codegen']
+    command += flags or []
+    command.append(str(rs_file.resolve()))
+
+    cwd = cwd or Path.cwd()
+    smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
+    run_process_2(command, cwd=cwd)
     json_smir = json.loads(smir_json_result.read_text())
     _LOGGER.info(f'Loaded: {smir_json_result}')
     if save_smir:
