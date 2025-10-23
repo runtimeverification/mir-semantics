@@ -72,6 +72,20 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
       => #decodeSliceAllocation(BYTES, lookupTy(ELEMTY))
 ```
 
+### Struct decoding (newtype)
+
+Decode `StructType` with exactly one field (newtype/transparent wrapper) by delegating to the
+inner field type and wrapping the result in a single-field `Aggregate`.
+This is enough for cases like `solana_pubkey::Pubkey([u8; 32])` where layout is trivial
+and the field offset is zero.
+
+```k
+rule #decodeValue(BYTES, typeInfoStructType(_, _, TY .Tys))
+      => Aggregate(variantIdx(0), ListItem(#decodeValue(BYTES, lookupTy(TY))) .List)
+  requires lengthBytes(BYTES) ==Int #elemSize(lookupTy(TY))
+  [preserves-definedness]
+```
+
 ### Error marker (becomes thunk) for other (unimplemented) cases
 
 All unimplemented cases will become thunks by way of this default rule:

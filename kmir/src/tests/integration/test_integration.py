@@ -301,6 +301,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'niche-enum' / 'niche-enum.state',
         None,
     ),
+    (
+        'newtype-pubkey',
+        EXEC_DATA_DIR / 'newtype-pubkey' / 'newtype-pubkey.smir.json',
+        EXEC_DATA_DIR / 'newtype-pubkey' / 'newtype-pubkey.state',
+        1000,
+    ),
 ]
 
 
