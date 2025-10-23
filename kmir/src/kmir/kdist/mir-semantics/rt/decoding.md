@@ -72,18 +72,47 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
       => #decodeSliceAllocation(BYTES, lookupTy(ELEMTY))
 ```
 
-### Struct decoding (newtype)
+### Struct decoding
 
-Decode `StructType` with exactly one field (newtype/transparent wrapper) by delegating to the
-inner field type and wrapping the result in a single-field `Aggregate`.
-This is enough for cases like `solana_pubkey::Pubkey([u8; 32])` where layout is trivial
-and the field offset is zero.
+We decode structs by decoding their fields in declaration order using the element sizes implied by the
+field types. This decoding is layout-agnostic and succeeds only when the byte length exactly matches the
+sum of field sizes (i.e., there is no padding). This covers common transparent/newtype and simple tuple/struct
+cases. For more complex layouts with padding/alignment, decoding falls back to `UnableToDecode`.
+
+Handle the general multi-field case by splitting the byte array sequentially according to the field sizes
+and decoding each field using `#decodeValue`:
 
 ```k
-rule #decodeValue(BYTES, typeInfoStructType(_, _, TY .Tys))
-      => Aggregate(variantIdx(0), ListItem(#decodeValue(BYTES, lookupTy(TY))) .List)
-  requires lengthBytes(BYTES) ==Int #elemSize(lookupTy(TY))
+rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS))
+      => Aggregate(variantIdx(0), #decodeStructFields(BYTES, TYS))
+  requires lengthBytes(BYTES) ==Int #sumElemSizes(TYS)
   [preserves-definedness]
+
+syntax List ::= #decodeStructFields ( Bytes , Tys ) [function, total]
+
+rule #decodeStructFields(BYTES, .Tys)
+  => .List
+  requires lengthBytes(BYTES) ==Int 0
+  [preserves-definedness]
+
+rule #decodeStructFields(BYTES, TY TYS)
+  => ListItem(
+       #decodeValue(
+         substrBytes(BYTES, 0, #elemSize(lookupTy(TY))),
+         lookupTy(TY)
+       )
+     )
+     #decodeStructFields(
+       substrBytes(BYTES, #elemSize(lookupTy(TY)), lengthBytes(BYTES)),
+       TYS
+     )
+  requires lengthBytes(BYTES) >=Int #elemSize(lookupTy(TY))
+  [preserves-definedness]
+
+syntax Int ::= #sumElemSizes ( Tys ) [function, total]
+
+rule #sumElemSizes(.Tys) => 0
+rule #sumElemSizes(TY TYS) => #elemSize(lookupTy(TY)) +Int #sumElemSizes(TYS)
 ```
 
 ### Error marker (becomes thunk) for other (unimplemented) cases
