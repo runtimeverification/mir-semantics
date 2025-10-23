@@ -1,21 +1,19 @@
 #![allow(dead_code)]
 
-#[derive(Copy, Clone)]
-struct Pair([u8; 32], bool);
+// Exercise decoding of a struct whose fields are not stored in declaration order.
+// RangeInclusive<u8> is known to have such a layout on some platforms.
 
-// Force a multi-field StructType constant so decoding happens at runtime
-const P: Pair = Pair([
-    0, 1, 2, 3, 4, 5, 6, 7,
-    8, 9, 10, 11, 12, 13, 14, 15,
-    16, 17, 18, 19, 20, 21, 22, 23,
-    24, 25, 26, 27, 28, 29, 30, 31,
-], true);
+use std::ops::RangeInclusive;
+
+// Force a multi-field StructType constant so decoding happens at runtime.
+// Use RangeInclusive::new in a const context to avoid evaluation at run time.
+const R: RangeInclusive<u8> = RangeInclusive::new(0, 31);
 
 fn main() {
     // Use the constant so MIR emits a Constant->Allocated for a StructType with 2 fields
-    let p = P;
-    // Take a reference to the first field to trigger a field projection on a value
-    // that is produced via constant decoding (which we haven't fully implemented for multi-field structs).
-    let r = &p.0;
-    core::hint::black_box(r);
+    let r = R;
+    // Compute a boolean via public API that depends on correct internal layout decoding.
+    // If decoding is wrong (e.g., ignoring non-ordered offsets), this expression can differ.
+    let ok = r.contains(&0) && r.contains(&31) && !r.contains(&32);
+    assert!(ok);
 }

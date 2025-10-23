@@ -1,70 +1,86 @@
 <kmir>
   <k>
-    #EndProgram ~> .K
+    #traverseProjection ( toStack ( 3 , local ( 1 ) ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 0 , 8 , false ) )
+    ListItem ( Integer ( 0 , 8 , false ) )
+    ListItem ( UnableToDecode ( b"\x1f" , typeInfoPrimitiveType ( primTypeBool ) ) ) ) , projectionElemField ( fieldIdx ( 2 ) , ty ( 4 ) )  .ProjectionElems , .Contexts ) ~> #readProjection ( false ) ~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_ ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ~> .K ) ~> #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 2 ) )  .Branches , otherwise: basicBlockIdx ( 1 ) ) ) , span: span ( 6 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
   </retVal>
   <currentFunc>
-    ty ( -1 )
+    ty ( 28 )
   </currentFunc>
   <currentFrame>
     <currentBody>
-      ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand (... span: span ( 55 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x01\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 1 ) , mutability: mutabilityNot ) ) , ty: ty ( 28 ) , id: mirConstId ( 11 ) ) ) ) ) ) , span: span ( 55 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 29 ) )  .ProjectionElems ) ) ) , span: span ( 56 ) )  .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 53 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 10 ) ) ) ) , args: operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 3 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 54 ) ) ) )
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 57 ) ) ) )
+      ListItem ( basicBlock (... statements: statement (... kind: statementKindStorageLive ( local ( 2 ) ) , span: span ( 6 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 1 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 2 ) , ty ( 4 ) )  .ProjectionElems ) ) ) ) , span: span ( 6 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 2 ) )  .Branches , otherwise: basicBlockIdx ( 1 ) ) ) , span: span ( 6 ) ) ) )
+      ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 1 ) , ty ( 0 ) )  .ProjectionElems ) ) ) , span: span ( 8 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueAggregate ( aggregateKindAdt ( adtDef ( 1 ) , variantIdx ( 1 ) , genericArgKindType ( ty ( 1 ) )  .GenericArgs , noUserTypeAnnotationIndex , noFieldIdx ) , operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands ) ) , span: span ( 9 ) )  .Statements , terminator: terminator (... kind: terminatorKindGoto (... target: basicBlockIdx ( 3 ) ) , span: span ( 7 ) ) ) )
+      ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 4 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 1 ) , ty ( 0 ) )  .ProjectionElems ) ) ) , span: span ( 10 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueAggregate ( aggregateKindAdt ( adtDef ( 1 ) , variantIdx ( 0 ) , genericArgKindType ( ty ( 1 ) )  .GenericArgs , noUserTypeAnnotationIndex , noFieldIdx ) , operandCopy ( place (... local: local ( 4 ) , projection: .ProjectionElems ) )  .Operands ) ) , span: span ( 11 ) )  .Statements , terminator: terminator (... kind: terminatorKindGoto (... target: basicBlockIdx ( 3 ) ) , span: span ( 7 ) ) ) )
+      ListItem ( basicBlock (... statements: statement (... kind: statementKindStorageDead ( local ( 2 ) ) , span: span ( 13 ) )  .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 12 ) ) ) )
     </currentBody>
     <caller>
-      ty ( -1 )
+      ty ( 30 )
     </caller>
     <dest>
-      place (... local: local ( 0 ) , projection: .ProjectionElems )
+      place (... local: local ( 14 ) , projection: .ProjectionElems )
     </dest>
     <target>
-      noBasicBlockIdx
+      someBasicBlockIdx ( basicBlockIdx ( 9 ) )
     </target>
     <unwind>
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Range ( ListItem ( Integer ( 1 , 8 , false ) )
-      ListItem ( Integer ( 0 , 8 , false ) )
-      ListItem ( Integer ( 1 , 8 , false ) )
-      ListItem ( Integer ( 2 , 8 , false ) )
-      ListItem ( Integer ( 3 , 8 , false ) )
-      ListItem ( Integer ( 4 , 8 , false ) )
-      ListItem ( Integer ( 5 , 8 , false ) )
-      ListItem ( Integer ( 6 , 8 , false ) )
-      ListItem ( Integer ( 7 , 8 , false ) )
-      ListItem ( Integer ( 8 , 8 , false ) )
-      ListItem ( Integer ( 9 , 8 , false ) )
-      ListItem ( Integer ( 10 , 8 , false ) )
-      ListItem ( Integer ( 11 , 8 , false ) )
-      ListItem ( Integer ( 12 , 8 , false ) )
-      ListItem ( Integer ( 13 , 8 , false ) )
-      ListItem ( Integer ( 14 , 8 , false ) )
-      ListItem ( Integer ( 15 , 8 , false ) )
-      ListItem ( Integer ( 16 , 8 , false ) )
-      ListItem ( Integer ( 17 , 8 , false ) )
-      ListItem ( Integer ( 18 , 8 , false ) )
-      ListItem ( Integer ( 19 , 8 , false ) )
-      ListItem ( Integer ( 20 , 8 , false ) )
-      ListItem ( Integer ( 21 , 8 , false ) )
-      ListItem ( Integer ( 22 , 8 , false ) )
-      ListItem ( Integer ( 23 , 8 , false ) )
-      ListItem ( Integer ( 24 , 8 , false ) )
-      ListItem ( Integer ( 25 , 8 , false ) )
-      ListItem ( Integer ( 26 , 8 , false ) )
-      ListItem ( Integer ( 27 , 8 , false ) )
-      ListItem ( Integer ( 28 , 8 , false ) )
-      ListItem ( Integer ( 29 , 8 , false ) )
-      ListItem ( Integer ( 30 , 8 , false ) ) ) )
-      ListItem ( UnableToDecode ( b"\x1f" , typeInfoPrimitiveType ( primTypeBool ) ) ) ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 29 ) )  .ProjectionElems ) , mutabilityNot , staticSize ( 32 ) ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 29 ) )  .ProjectionElems ) , mutabilityNot , staticSize ( 32 ) ) , ty ( 26 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 2 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 3 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 3 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
+    ListItem ( StackFrame ( ty ( 35 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Moved , ty ( 3 ) , mutabilityMut ) )
+    ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , noMetadata ) , ty ( 1 ) , mutabilityNot ) )
+    ListItem ( typedValue ( Moved , ty ( 4 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Reference ( 2 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 0 ) )  .ProjectionElems ) , mutabilityNot , noMetadata ) ) ) , ty ( 2 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Moved , ty ( 11 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Reference ( 2 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 0 ) )  .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 1 ) , mutabilityNot ) )
+    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 6 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 29 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 9 ) , projection: .ProjectionElems ) , mutabilityNot , noMetadata ) , ty ( 29 ) , mutabilityMut ) )
+    ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , noMetadata ) , ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 2 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 11 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 29 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 3 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Moved , ty ( 3 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Moved , ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 6 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 0 , 8 , false ) )
+    ListItem ( Integer ( 0 , 8 , false ) )
+    ListItem ( UnableToDecode ( b"\x1f" , typeInfoPrimitiveType ( primTypeBool ) ) ) ) , ty ( 36 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 4 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Moved , ty ( 3 ) , mutabilityMut ) )
+    ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , noMetadata ) , ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 3 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 3 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+    ListItem ( newLocal ( ty ( 4 ) , mutabilityMut ) )
+    ListItem ( newLocal ( ty ( 39 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
 </kmir>
