@@ -1,53 +1,48 @@
 #!/bin/bash
 #
-# Setup for running p-token property tests with kmir
-# * checks out submodule mir-semantics (recursively also
-#   including stable-mir-json)
-# * builds stable-mir-json and mir-semantics
-# * builds p-token with stable-mir-json and links SMIR JSON
-#
-# This should be run just once when making changes to mir-semantics.
+# Setup for running property tests with kmir (defaults for p-token).
+# - checks out submodule mir-semantics (recursively incl. stable-mir-json)
+# - builds stable-mir-json and mir-semantics
+# - builds the selected crate with STABLE MIR and links SMIR JSON into artefacts
 #
 # Usage:
-#   ./setup.sh                  # Normal execution, including refreshing submodules
-#   ./setup.sh --skip-submodules  # Skip refreshing submodules
+#   ./setup.sh [OPTIONS]
 #
-# After running it, one can use kmir with
+# Options (p-token defaults):
+#   --skip-submodules           Skip refreshing git submodules
+#   -h, --help                  Show help
+#
+# Overridable via environment (kept minimal):
+#   CRATE_DIR         Crate to build (default: ../ for p-token)
+#   ARTIFACT_BASENAME Artefact base name (default: p-token)
+#
+# After running it, one can use:
 #   `uv --project mir-semantics/kmir run -- kmir ...`
 ######################################################################
 
 set -xeuo pipefail
 
-# 解析命令行参数
+SCRIPT_DIR="$(realpath "$(dirname "$0")")"
+
 SKIP_SUBMODULES=false
+CRATE_DIR="${CRATE_DIR:-$(realpath "${SCRIPT_DIR}/..")}"
+ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
+
 while [[ $# -gt 0 ]]; do
     case $1 in
         --skip-submodules)
-            SKIP_SUBMODULES=true
-            shift
-            ;;
+            SKIP_SUBMODULES=true; shift ;;
         -h|--help)
-            echo "Usage: $0 [OPTIONS]"
-            echo ""
-            echo "Options:"
-            echo "  --skip-submodules    Skip refreshing git submodules"
-            echo "  -h, --help          Show this help message"
-            exit 0
-            ;;
+            echo "Usage: $0 [--skip-submodules]"; exit 0 ;;
         *)
-            echo "Unknown option: $1"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
+            echo "Unknown option: $1"; echo "Use --help for usage."; exit 1 ;;
     esac
 done
 
-# run from the script's directory
-SCRIPT_DIR="$(realpath $(dirname "$0"))"
 cd "${SCRIPT_DIR}"
 
-# refresh/check out submodules (unless skipped)
-if [ "$SKIP_SUBMODULES" = false ]; then
+# Refresh/check out submodules (unless skipped)
+if [ "${SKIP_SUBMODULES}" = false ]; then
     echo "Refreshing git submodules..."
     git submodule update --init --recursive
     git submodule status --recursive
@@ -56,36 +51,41 @@ if [ "$SKIP_SUBMODULES" = false ]; then
     if git -C mir-semantics status --porcelain | grep -v '^?? ' >/dev/null; then
         echo "Skipping checkout: tracked local changes detected."
     else
-        git -C mir-semantics fetch origin feature/p-token
-        git -C mir-semantics checkout --quiet origin/feature/p-token
+        git -C mir-semantics fetch origin feature/p-token || true
+        git -C mir-semantics checkout --quiet origin/feature/p-token || true
     fi
 else
     echo "Skipping git submodule refresh..."
 fi
 
-# if any changes were already made, keep them. Otherwise, apply a
-# workaround to avoid confusion with the token workspace.
-if [ -z "$(cd mir-semantics && git status --porcelain)" ]; then
-    printf "\n\n# avoid workspace confusion in token repo\n[workspace]\n" \
-           >> mir-semantics/deps/stable-mir-json/Cargo.toml
+# Ensure stable-mir-json acts as its own workspace to avoid root workspace capture.
+# Add an empty [workspace] if missing (idempotent, independent of git status).
+SMJ_CARGO_TOML="mir-semantics/deps/stable-mir-json/Cargo.toml"
+if ! grep -q '^\[workspace\]' "$SMJ_CARGO_TOML"; then
+    printf "\n\n# avoid workspace confusion in token repo\n[workspace]\n" >> "$SMJ_CARGO_TOML"
 fi
-# build mir-semantics and stable-mir-json
+
+# Build mir-semantics and stable-mir-json
 make -C mir-semantics stable-mir-json build CARGO_BUILD_OPTS=--release
 
 export RUSTC=$PWD/mir-semantics/deps/.stable-mir-json/release.sh
 ${RUSTC} --version
 
-# export STABLE_MIR_OPTS="-Zno-codegen"
-
-# build p-token with stable-mir-json
-# NB deletes all prior token build artefacts
-cd .. # p-token
+# Build selected crate with stable-mir-json (clean first)
+pushd "${CRATE_DIR}" >/dev/null
+# Force cargo to emit artifacts under the crate's own target directory
+export CARGO_TARGET_DIR="${CRATE_DIR}/target"
 cargo clean && cargo build --features runtime-verification
-cd test-properties
-SMIRS=$(ls ../../target/debug/deps/*smir.json | sort)
+popd >/dev/null
 
-ls  $SMIRS
+# Collect SMIR JSONs from the crate's target dir
+if ! SMIRS=$(ls "${CRATE_DIR}/target/debug/deps"/*.smir.json 2>/dev/null | sort); then
+    echo "[ERROR] No SMIR JSON files found under ${CRATE_DIR}/target/debug/deps."
+    echo "        Ensure the crate built with RUSTC wrapper and produced .smir.json outputs."
+    exit 3
+fi
+ls ${SMIRS}
 
-# link all SMIR JSON and store in artefacts directory
+# Link all SMIR JSON and store in artefacts directory
 mkdir -p artefacts/
-uv --project mir-semantics/kmir run -- kmir link ${SMIRS} -o artefacts/p-token.smir.json
+uv --project mir-semantics/kmir run -- kmir link ${SMIRS} -o artefacts/${ARTIFACT_BASENAME}.smir.json

@@ -4,14 +4,19 @@
 # table if -a given) with given run options (-o) and timeout (-t).
 # Options and defaults:
 #   -t NUM   : timeout in seconds (default 7200)
-#   -o STRING: prove-rs options. Default "--max-iterations 100 --max-depth 500 "
+#   -o STRING: prove-rs options. Default "--max-iterations 100 --max-depth 500"
 #   -a       : run all start symbols from table in `proofs.md` (1st column)
 #   -c       : continue existing proofs instead of reloading (which is default)
 #
 # Always runs verbosely, always uses artefacts/proof
 # as proof directory
-#
 #######################################################################
+
+# Overridable via environment (kept minimal):
+# - START_PREFIX: start-symbol prefix (default: pinocchio_token_program::entrypoint::)
+# - ARTIFACT_BASENAME: artefact base name (default: p-token)
+START_PREFIX="${START_PREFIX:-pinocchio_token_program::entrypoint::}"
+ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
 
 ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
@@ -42,6 +47,8 @@ while getopts ":t:o:ac" opt; do
     esac
 done
 shift $((OPTIND-1))
+
+# Collect tests
 if [ -z "$TESTS" ]; then
     if [ -z "$@" ]; then
         echo "[ERROR] No test function names given. Use -a or provide at least one name." 1>&2
@@ -76,7 +83,7 @@ fi
 
 echo "${MODE} tests ${TESTS} with options '$PROVE_OPTS' and timeout $TIMEOUT"
 
-prefix=pinocchio_token_program::entrypoint::
+prefix=${START_PREFIX}
 
 for name in $TESTS; do
     echo "============================== $name ============================"
@@ -85,9 +92,9 @@ for name in $TESTS; do
     start_time=$(date +%s)
 
     timeout --preserve-status -v ${TIMEOUT} \
-            uv --project mir-semantics/kmir run -- \
-            kmir prove-rs --smir artefacts/p-token.smir.json \
-            --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${PROVE_OPTS}
+        uv --project mir-semantics/kmir run -- \
+        kmir prove-rs --smir artefacts/${ARTIFACT_BASENAME}.smir.json \
+        --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${PROVE_OPTS}
     prove_rc=$?
 
     end_time=$(date +%s)
@@ -121,10 +128,10 @@ for name in $TESTS; do
     } > "${status_file}"
 
     uv --project mir-semantics/kmir run -- \
-       kmir show --proof-dir "${PROOF_DIR}" p-token.smir.$start \
+       kmir show --proof-dir "${PROOF_DIR}" ${ARTIFACT_BASENAME}.smir.$start \
        --full-printer > "${PROOF_DIR}/${name}-full.txt"
     uv --project mir-semantics/kmir run -- \
-       kmir show --proof-dir "${PROOF_DIR}" p-token.smir.$start \
+       kmir show --proof-dir "${PROOF_DIR}" ${ARTIFACT_BASENAME}.smir.$start \
        --statistics --leaves >> "${status_file}"
     echo "==========================================================================="
 done

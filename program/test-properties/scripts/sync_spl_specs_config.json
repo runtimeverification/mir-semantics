@@ -1,27 +1,202 @@
 {
   "source": "p-token/src/entrypoint-runtime-verification.rs",
-  "template": "program/test-properties/templates/runtime_entrypoint.rs",
-  "target": "program/src/entrypoint-rvo.rs",
-  "placeholders": {
-    "match_arms": "        // === AUTO-GENERATED MATCH ARMS ===",
-    "harnesses": "// === AUTO-GENERATED HARNESS FUNCTIONS ==="
-  },
-  "sections": {
-    "match_arms": {
-      "separator": "\n",
-      "trailing_newline": false
+  "outputs": [
+    {
+      "name": "entrypoint_rvo",
+      "template": "program/test-properties/templates/runtime_entrypoint.rs",
+      "target": "program/src/entrypoint-rvo.rs",
+      "placeholders": {
+        "match_arms": "        // === AUTO-GENERATED MATCH ARMS ===",
+        "harnesses": "// === AUTO-GENERATED HARNESS FUNCTIONS ==="
+      },
+      "sections": {
+        "match_arms": {
+          "separator": "\n",
+          "trailing_newline": false
+        },
+        "harnesses": {
+          "separator": "\n\n",
+          "trailing_newline": true
+        }
+      },
+      "functions": [],
+      "function_overrides": {
+        "test_process_initialize_mint_freeze": {
+          "custom_match_arm_template": "route_by_len_two",
+          "custom_match_arm_params": {
+            "branches": [
+              { "min_payload_len": 66, "function": "test_process_initialize_mint_freeze" },
+              { "min_payload_len": 34, "function": "test_process_initialize_mint_no_freeze" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_initialize_mint_freeze",
+            "test_process_initialize_mint_no_freeze"
+          ]
+        },
+        "test_process_initialize_mint_no_freeze": {
+          "skip_match_arm": true
+        },
+        "test_process_initialize_mint2_freeze": {
+          "custom_match_arm_template": "route_by_len_two",
+          "custom_match_arm_params": {
+            "branches": [
+              { "min_payload_len": 66, "function": "test_process_initialize_mint2_freeze" },
+              { "min_payload_len": 34, "function": "test_process_initialize_mint2_no_freeze" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_initialize_mint2_freeze",
+            "test_process_initialize_mint2_no_freeze"
+          ]
+        },
+        "test_process_initialize_mint2_no_freeze": {
+          "skip_match_arm": true
+        },
+        "test_process_set_authority_account": {
+          "custom_match_arm_template": "route_by_data_len_two",
+          "custom_match_arm_params": {
+            "variants": [
+              { "when": "Account::LEN", "function": "test_process_set_authority_account" },
+              { "when": "Mint::LEN", "function": "test_process_set_authority_mint" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_set_authority_account",
+            "test_process_set_authority_mint"
+          ]
+        },
+        "test_process_set_authority_mint": {
+          "skip_match_arm": true
+        },
+        "test_process_withdraw_excess_lamports_account": {
+          "custom_match_arm_template": "route_by_data_len_three",
+          "custom_match_arm_params": {
+            "variants": [
+              { "when": "Account::LEN", "function": "test_process_withdraw_excess_lamports_account" },
+              { "when": "Mint::LEN", "function": "test_process_withdraw_excess_lamports_mint" },
+              { "when": "Multisig::LEN", "function": "test_process_withdraw_excess_lamports_multisig" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_withdraw_excess_lamports_account",
+            "test_process_withdraw_excess_lamports_mint",
+            "test_process_withdraw_excess_lamports_multisig"
+          ]
+        },
+        "test_process_withdraw_excess_lamports_mint": {
+          "skip_match_arm": true
+        },
+        "test_process_withdraw_excess_lamports_multisig": {
+          "skip_match_arm": true
+        },
+        "test_process_ui_amount_to_amount": {
+          "instruction_arg_mode": "full"
+        }
+      }
     },
-    "harnesses": {
-      "separator": "\n\n",
-      "trailing_newline": true
+    {
+      "name": "entrypoint_runtime_verification",
+      "template": "program/test-properties/templates/runtime_entrypoint.rs",
+      "target": "program/src/entrypoint-runtime-verification.rs",
+      "placeholders": {
+        "match_arms": "        // === AUTO-GENERATED MATCH ARMS ===",
+        "harnesses": "// === AUTO-GENERATED HARNESS FUNCTIONS ==="
+      },
+      "sections": {
+        "match_arms": {
+          "separator": "\n",
+          "trailing_newline": false
+        },
+        "harnesses": {
+          "separator": "\n\n",
+          "trailing_newline": true
+        }
+      },
+      "functions": [],
+      "function_overrides": {
+        "test_process_initialize_mint_freeze": {
+          "custom_match_arm_template": "route_by_len_two",
+          "custom_match_arm_params": {
+            "branches": [
+              { "min_payload_len": 66, "function": "test_process_initialize_mint_freeze" },
+              { "min_payload_len": 34, "function": "test_process_initialize_mint_no_freeze" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_initialize_mint_freeze",
+            "test_process_initialize_mint_no_freeze"
+          ]
+        },
+        "test_process_initialize_mint_no_freeze": {
+          "skip_match_arm": true
+        },
+        "test_process_initialize_mint2_freeze": {
+          "custom_match_arm_template": "route_by_len_two",
+          "custom_match_arm_params": {
+            "branches": [
+              { "min_payload_len": 66, "function": "test_process_initialize_mint2_freeze" },
+              { "min_payload_len": 34, "function": "test_process_initialize_mint2_no_freeze" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_initialize_mint2_freeze",
+            "test_process_initialize_mint2_no_freeze"
+          ]
+        },
+        "test_process_initialize_mint2_no_freeze": {
+          "skip_match_arm": true
+        },
+        "test_process_set_authority_account": {
+          "custom_match_arm_template": "route_by_data_len_two",
+          "custom_match_arm_params": {
+            "variants": [
+              { "when": "Account::LEN", "function": "test_process_set_authority_account" },
+              { "when": "Mint::LEN", "function": "test_process_set_authority_mint" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_set_authority_account",
+            "test_process_set_authority_mint"
+          ]
+        },
+        "test_process_set_authority_mint": {
+          "skip_match_arm": true
+        },
+        "test_process_withdraw_excess_lamports_account": {
+          "custom_match_arm_template": "route_by_data_len_three",
+          "custom_match_arm_params": {
+            "variants": [
+              { "when": "Account::LEN", "function": "test_process_withdraw_excess_lamports_account" },
+              { "when": "Mint::LEN", "function": "test_process_withdraw_excess_lamports_mint" },
+              { "when": "Multisig::LEN", "function": "test_process_withdraw_excess_lamports_multisig" }
+            ]
+          },
+          "custom_match_arm_functions": [
+            "test_process_withdraw_excess_lamports_account",
+            "test_process_withdraw_excess_lamports_mint",
+            "test_process_withdraw_excess_lamports_multisig"
+          ]
+        },
+        "test_process_withdraw_excess_lamports_mint": {
+          "skip_match_arm": true
+        },
+        "test_process_withdraw_excess_lamports_multisig": {
+          "skip_match_arm": true
+        },
+        "test_process_ui_amount_to_amount": {
+          "instruction_arg_mode": "full"
+        }
+      }
     }
-  },
+  ],
   "presets": {
     "comment_out_cheatcode_validations": {
       "comment_out": [
         "regex:cheatcode_is_account\\(&accounts\\[[0-9]+\\]\\);",
         "regex:cheatcode_is_mint\\(&accounts\\[[0-9]+\\]\\);",
         "regex:cheatcode_is_multisig\\(&accounts\\[[0-9]+\\]\\);",
+        "regex:cheatcode_is_rent\\(&accounts\\[[0-9]+\\]\\);",
         "regex:#\\[cfg\\(.*multisig.*\\)\\]"
       ]
     },
@@ -32,8 +207,28 @@
           "to": ""
         },
         {
+          "from": "regex:^\\s*use\\s+pinocchio_token_interface::program\\s*;",
+          "to": ""
+        },
+        {
           "from": "use pinocchio_token_interface::state::account_state;",
           "to": "use spl_token_interface::state::AccountState;"
+        },
+        {
+          "from": "regex:^\\s*use\\s+pinocchio_token_interface::state::\\{\\s*account_state\\s*\\};",
+          "to": "use spl_token_interface::state::AccountState;"
+        },
+        {
+          "from": "pinocchio_token_interface::state::account::INCINERATOR_ID",
+          "to": "solana_sdk_ids::incinerator::ID as INCINERATOR_ID"
+        },
+        {
+          "from": "pinocchio::sysvars::rent::RENT_ID",
+          "to": "solana_rent::RENT_ID"
+        },
+        {
+          "from": "pinocchio::sysvars::rent::Rent",
+          "to": "solana_rent::Rent"
         }
       ]
     },
@@ -74,6 +269,10 @@
         {
           "from": "&pinocchio_token_interface::program::ID",
           "to": "&crate::id()"
+        },
+        {
+          "from": "pinocchio_token_interface::program::ID",
+          "to": "crate::id()"
         }
       ]
     },
@@ -118,6 +317,14 @@
         {
           "from": "potential_signer.is_signer()",
           "to": "potential_signer.is_signer"
+        },
+        {
+          "from": "regex:\\.key\\(\\)",
+          "to": ".key"
+        },
+        {
+          "from": "regex:\\.is_signer\\(\\)",
+          "to": ".is_signer"
         }
       ]
     },
@@ -142,43 +349,68 @@
       ]
     }
   },
-  "functions": [
-    {
-      "name": "test_process_transfer",
-      "discriminator": 3,
-      "harness": {
-        "presets": [
-          "comment_out_cheatcode_validations",
-          "replace_pinocchio_imports",
-          "rewrite_instruction_amount_helper",
-          "route_instructions_through_processor",
-          "shorten_accountstate_path",
-          "migrate_account_owner_access",
-          "migrate_get_account_accessors",
-          "compare_accounts_by_key",
-          "migrate_signer_accessors",
-          "migrate_multisig_accessors",
-          "normalize_multisig_owner_guard"
-        ],
-        "replacements": [
-          {
-            "from": "accounts: &[AccountInfo; 3],",
-            "to": "accounts: &[AccountInfo], // CHANGE P-Token: accounts: &[AccountInfo; 3]"
-          }
-        ]
-      }
-    },
-    {
-      "name": "test_process_get_account_data_size",
-      "discriminator": 21,
-      "harness": {
-        "presets": [
-          "comment_out_cheatcode_validations",
-          "replace_pinocchio_imports",
-          "route_instructions_through_processor",
-          "migrate_account_owner_access"
-        ]
-      }
-    }
-  ]
+  "functions": {
+    "test_process_initialize_mint_freeze": { "discriminator": 0, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_mint_no_freeze": { "discriminator": 0, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_account": { "discriminator": 1, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_multisig": { "discriminator": 2, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_transfer": { "discriminator": 3, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","rewrite_instruction_amount_helper","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_approve": { "discriminator": 4, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_revoke": { "discriminator": 5, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_set_authority_account": { "discriminator": 6, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_set_authority_mint": { "discriminator": 6, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_mint_to": { "discriminator": 7, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_burn": { "discriminator": 8, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_close_account": { "discriminator": 9, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_freeze_account": { "discriminator": 10, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_thaw_account": { "discriminator": 11, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_transfer_checked": { "discriminator": 12, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_approve_checked": { "discriminator": 13, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_mint_to_checked": { "discriminator": 14, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_burn_checked": { "discriminator": 15, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_account2": { "discriminator": 16, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_sync_native": { "discriminator": 17, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_account3": { "discriminator": 18, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_multisig2": { "discriminator": 19, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_mint2_freeze": { "discriminator": 20, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_initialize_mint2_no_freeze": { "discriminator": 20, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","shorten_accountstate_path","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors","normalize_multisig_owner_guard"] } },
+    "test_process_get_account_data_size": { "discriminator": 21, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access"] } },
+    "test_process_initialize_immutable_owner": { "discriminator": 22, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","migrate_get_account_accessors","compare_accounts_by_key","migrate_signer_accessors","migrate_multisig_accessors"] } },
+    "test_process_amount_to_ui_amount": { "discriminator": 23, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","shorten_accountstate_path"] } },
+    "test_process_ui_amount_to_amount": { "discriminator": 24, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","shorten_accountstate_path"] } },
+    "test_process_withdraw_excess_lamports_account": { "discriminator": 38, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","migrate_get_account_accessors","migrate_multisig_accessors","migrate_signer_accessors","compare_accounts_by_key","normalize_multisig_owner_guard"] } },
+    "test_process_withdraw_excess_lamports_mint": { "discriminator": 38, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","migrate_get_account_accessors","migrate_multisig_accessors","migrate_signer_accessors","compare_accounts_by_key","normalize_multisig_owner_guard"] } },
+    "test_process_withdraw_excess_lamports_multisig": { "discriminator": 38, "harness": { "presets": [
+      "comment_out_cheatcode_validations","replace_pinocchio_imports","route_instructions_through_processor","migrate_account_owner_access","migrate_get_account_accessors","migrate_multisig_accessors","migrate_signer_accessors","compare_accounts_by_key","normalize_multisig_owner_guard"] } }
+  }
 }

@@ -5,8 +5,9 @@ use {
     solana_account_info::AccountInfo,
     solana_program_error::{ProgramError, ProgramResult},
     solana_program_pack::Pack,
-    solana_pubkey::Pubkey,
-    spl_token_interface::error::TokenError,
+    solana_pubkey::{self as pubkey, Pubkey},
+    solana_sysvar::Sysvar,
+    spl_token_interface::{error::TokenError, native_mint},
 };
 
 solana_program_entrypoint::entrypoint!(process_instruction);
@@ -36,10 +37,38 @@ impl MintWrapper {
             Err(e) => Err(e.clone()),
         }
     }
+
+    fn mint_authority(&self) -> Option<&Pubkey> {
+        match &self.0 {
+            Ok(m) => match m.mint_authority.as_ref() {
+                solana_program_option::COption::Some(pk) => Some(pk),
+                solana_program_option::COption::None => None,
+            },
+            Err(_) => None,
+        }
+    }
+
+    fn freeze_authority(&self) -> Option<&Pubkey> {
+        match &self.0 {
+            Ok(m) => match m.freeze_authority.as_ref() {
+                solana_program_option::COption::Some(pk) => Some(pk),
+                solana_program_option::COption::None => None,
+            },
+            Err(_) => None,
+        }
+    }
+
+    fn supply(&self) -> u64 {
+        self.0.as_ref().map(|m| m.supply).unwrap_or(0)
+    }
+
+    fn decimals(&self) -> u8 {
+        self.0.as_ref().map(|m| m.decimals).unwrap_or(0)
+    }
 }
 
 fn get_mint(account_info: &AccountInfo) -> MintWrapper {
-    MintWrapper(Mint::unpack(&account_info.data.borrow()))
+    MintWrapper(Mint::unpack_unchecked(&account_info.data.borrow()))
 }
 
 /// A wrapper struct as middleware so that the same functions called
@@ -85,6 +114,33 @@ impl AccountWrapper {
     fn is_native(&self) -> bool {
         self.0.as_ref().map(|a| a.is_native.is_some()).unwrap()
     }
+
+    fn native_amount(&self) -> Option<u64> {
+        match &self.0 {
+            Ok(a) => match a.is_native {
+                solana_program_option::COption::Some(amt) => Some(amt),
+                solana_program_option::COption::None => None,
+            },
+            Err(_) => None,
+        }
+    }
+
+    fn close_authority(&self) -> Option<&Pubkey> {
+        match &self.0 {
+            Ok(a) => match a.close_authority.as_ref() {
+                solana_program_option::COption::Some(pk) => Some(pk),
+                solana_program_option::COption::None => None,
+            },
+            Err(_) => None,
+        }
+    }
+
+    fn is_owned_by_system_program_or_incinerator(&self) -> bool {
+        match &self.0 {
+            Ok(a) => a.owner == solana_sdk_ids::system_program::ID || a.owner == solana_sdk_ids::incinerator::ID,
+            Err(_) => false,
+        }
+    }
 }
 
 /// So the AccountWrapper derefs the wrapped Account
@@ -97,7 +153,7 @@ impl core::ops::Deref for AccountWrapper {
 
 /// Helper function from p-token must be implemented on AccountWrapper
 fn get_account(account_info: &AccountInfo) -> AccountWrapper {
-    AccountWrapper(Account::unpack(&account_info.data.borrow()))
+    AccountWrapper(Account::unpack_unchecked(&account_info.data.borrow()))
 }
 
 /// A wrapper struct as middleware so that the same functions called
@@ -123,6 +179,10 @@ impl MultisigWrapper {
     fn m(&self) -> u8 {
         self.0.as_ref().map(|m| m.m).unwrap_or(0) // FIXME: Change to stright unwrap?
     }
+
+    fn n(&self) -> u8 {
+        self.0.as_ref().map(|m| m.n).unwrap_or(0)
+    }
 }
 
 /// So the MultisigWrapper derefs the wrapped Multisig
@@ -135,17 +195,22 @@ impl core::ops::Deref for MultisigWrapper {
 
 /// Helper function from p-token must be implemented on MultisigWrapper
 fn get_multisig(account_info: &AccountInfo) -> MultisigWrapper {
-    MultisigWrapper(Multisig::unpack(&account_info.data.borrow()))
+    MultisigWrapper(Multisig::unpack_unchecked(&account_info.data.borrow()))
+}
+
+fn get_rent(_account_info: &AccountInfo) -> solana_rent::Rent {
+    solana_rent::Rent::get().unwrap()
 }
 
 // TODO: Not sure if these are needed since there is no UB like p-token
 // fn cheatcode_is_account(_: &AccountInfo) {}
 // fn cheatcode_is_mint(_: &AccountInfo) {}
 // fn cheatcode_is_multisig(_: &AccountInfo) {}
+// fn cheatcode_is_rent(_: &AccountInfo) {}
 
 /// A runtime verification cheatcode to set the instruction discriminator.
 /// TODO: Currently calling assert for concrete testing but needs backend support in K.
-fn cheatcode_set_descriminator(discriminator: u8, instruction_data: &[u8]) {
+fn cheatcode_set_discriminator(discriminator: u8, instruction_data: &[u8]) {
     assert_eq!(discriminator, instruction_data[0]);
 }
 

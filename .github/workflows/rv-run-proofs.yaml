@@ -3,6 +3,14 @@ name: RV Run Proofs
 on:
   workflow_dispatch:
     inputs:
+      target:
+        description: Which crate to verify
+        required: true
+        type: choice
+        options:
+          - p-token
+          - program
+        default: p-token
       proofs:
         description: Start symbols for proofs to run
         required: true
@@ -30,8 +38,12 @@ concurrency:
 
 jobs:
   compile:
-    name: "Compile P-Token to SMIR JSON"
+    name: "Compile to SMIR JSON"
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.vars.outputs.artifact_name }}
+      start_prefix: ${{ steps.vars.outputs.start_prefix }}
+      show_prefix: ${{ steps.vars.outputs.show_prefix }}
     steps:
       - name: "Git Checkout"
         uses: actions/checkout@v4
@@ -49,15 +61,39 @@ jobs:
         with:
           flakes: github:runtimeverification/stable-mir-json/${{ inputs.smir }}
 
-      - name: "Build with stable_mir_json"
+      - name: "Derive settings from target"
+        id: vars
+        shell: bash
         run: |
-          cd p-token
+          set -euo pipefail
+          case "${{ inputs.target }}" in
+            p-token)
+              echo "crate_dir=p-token" >> "$GITHUB_OUTPUT"
+              echo "artifact_name=p-token.smir" >> "$GITHUB_OUTPUT"
+              echo "start_prefix=pinocchio_token_program::entrypoint::" >> "$GITHUB_OUTPUT"
+              echo "show_prefix=p-token.smir.pinocchio_token_program::entrypoint::" >> "$GITHUB_OUTPUT"
+              ;;
+            program)
+              echo "crate_dir=program" >> "$GITHUB_OUTPUT"
+              echo "artifact_name=spl-token.smir" >> "$GITHUB_OUTPUT"
+              echo "start_prefix=spl_token::entrypoint::" >> "$GITHUB_OUTPUT"
+              echo "show_prefix=spl-token.smir.spl_token::entrypoint::" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported target: '${{ inputs.target }}'" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: "Build with stable_mir_json"      
+        run: |
+          cd "${{ steps.vars.outputs.crate_dir }}"
           RUSTC=stable_mir_json cargo build --features runtime-verification
 
       - name: "Store SMIR JSON files"
         uses: actions/upload-artifact@v4
         with:
-          name: p-token.smir
+          name: ${{ steps.vars.outputs.artifact_name }}
           path: ./target/debug/deps/*.smir.json
           if-no-files-found: error
           retention-days: 1 # only important during workflow run
@@ -123,23 +159,24 @@ jobs:
       - name: "Get SMIR Files"
         uses: actions/download-artifact@v5
         with:
-          name: p-token.smir
+          name: ${{ needs.compile.outputs.artifact_name }}
           path: artefacts/
 
       - name: "Link SMIR Files"
         run: |
           docker exec --workdir /workdir/artefacts/ "${KMIR_CONTAINER_NAME}" \
-            bash -c 'kmir link -o p-token.smir.json *.smir.json'
+            bash -c "kmir link -o '${{ needs.compile.outputs.artifact_name }}.json' *.smir.json"
 
       - name: "Run Proof ${{ matrix.proof }} and store resulting tree"
         run: |
           docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
             bash -c "ls -la artefacts; mkdir -p artefacts/proof; ls -la artefacts"
+
           timeout ${{ inputs.timeout }} \
             docker exec \
               --workdir /workdir "${KMIR_CONTAINER_NAME}" \
-              kmir prove-rs --smir artefacts/p-token.smir.json \
-              --start-symbol 'pinocchio_token_program::entrypoint::${{ matrix.proof }}' \
+              kmir prove-rs --smir "artefacts/${{ needs.compile.outputs.artifact_name }}.json" \
+              --start-symbol "${{ needs.compile.outputs.start_prefix }}${{ matrix.proof }}" \
               --verbose \
               --max-depth 500 \
               --max-iterations 100 \
@@ -147,8 +184,8 @@ jobs:
             || echo "Runner signals proof failure"
 
           docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
-            kmir show --statistics --leaves --proof-dir artefacts/proof \
-            'p-token.smir.pinocchio_token_program::entrypoint::${{ matrix.proof }}' \
+            kmir show --full-printer --proof-dir artefacts/proof \
+            "${{ needs.compile.outputs.show_prefix }}${{ matrix.proof }}" \
             > artefacts/proof/${{ matrix.proof }}-full.txt
 
       - name: "Save proof tree and smir"
@@ -157,7 +194,7 @@ jobs:
         with:
           name: artefacts-${{ matrix.proof }}
           path: |
-            artefacts/p-token.smir.json
+            artefacts/${{ needs.compile.outputs.artifact_name }}.json
             artefacts/proof/*-full.txt
 
       - name: "Shut down docker image"
