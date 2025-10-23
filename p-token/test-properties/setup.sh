@@ -87,5 +87,5 @@ fi
 ls ${SMIRS}
 
 # Link all SMIR JSON and store in artefacts directory
-mkdir -p artefacts/
-uv --project mir-semantics/kmir run -- kmir link ${SMIRS} -o artefacts/${ARTIFACT_BASENAME}.smir.json
+mkdir -p "${ARTEFACTS_DIR:-artefacts}/"
+uv --project mir-semantics/kmir run -- kmir link ${SMIRS} -o "${ARTEFACTS_DIR:-artefacts}/${ARTIFACT_BASENAME}.smir.json"
