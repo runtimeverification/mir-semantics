@@ -1,0 +1,36 @@
+<kmir>
+  <k>
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
+  </k>
+  <retVal>
+    noReturn
+  </retVal>
+  <currentFunc>
+    ty ( -1 )
+  </currentFunc>
+  <currentFrame>
+    <currentBody>
+      .List
+    </currentBody>
+    <caller>
+      ty ( -1 )
+    </caller>
+    <dest>
+      place (... local: local ( -1 ) , projection: .ProjectionElems )
+    </dest>
+    <target>
+      noBasicBlockIdx
+    </target>
+    <unwind>
+      unwindActionUnreachable
+    </unwind>
+    <locals>
+      ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 1923567076 , 32 , true ) )
+      ListItem ( Integer ( -1940095024 , 32 , true ) ) ) , ty ( 9 ) , mutabilityNot ) )
+    </locals>
+  </currentFrame>
+  <stack>
+    .List
+  </stack>
+</kmir>
