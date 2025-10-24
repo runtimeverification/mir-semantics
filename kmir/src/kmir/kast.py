@@ -1,24 +1,199 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, NamedTuple
 
-from pyk.kast.inner import KApply, KVariable, build_cons
-from pyk.kast.prelude.collections import list_of
+from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
+from pyk.kast.manip import free_vars, split_config_from
+from pyk.kast.prelude.collections import list_empty, list_of
 from pyk.kast.prelude.kint import eqInt, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
-from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, UintT, UnionT
+from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
+from .value import BoolValue, IntValue
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Mapping, Sequence
+    from random import Random
+    from typing import Any, Final
 
-    from pyk.kast.inner import KInner
+    from pyk.kast import KInner
+    from pyk.kast.outer import KDefinition
 
     from .smir import SMIRInfo
+    from .ty import TypeMetadata
+    from .value import Metadata, Value
+
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+LOCAL_0: Final = KApply('newLocal', KApply('ty', token(0)), KApply('Mutability::Not'))
+
+
+class ConcreteMode(NamedTuple): ...
+
+
+class SymbolicMode(NamedTuple): ...
+
+
+class RandomMode(NamedTuple):
+    random: Random
+
+
+CallConfigMode = ConcreteMode | SymbolicMode | RandomMode
+
+
+class CallConfig(NamedTuple):
+    config: KInner
+    constraints: tuple[KInner, ...]
+
+
+def make_call_config(
+    definition: KDefinition,
+    *,
+    smir_info: SMIRInfo,
+    start_symbol: str,
+    mode: CallConfigMode,
+) -> CallConfig:
+    fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
+    match mode:
+        case ConcreteMode():
+            config = _make_concrete_call_config(
+                definition=definition,
+                fn_data=fn_data,
+            )
+            return CallConfig(config=config, constraints=())
+        case SymbolicMode():
+            config, constraints = _make_symbolic_call_config(
+                definition=definition,
+                fn_data=fn_data,
+                types=smir_info.types,
+            )
+            return CallConfig(config=config, constraints=tuple(constraints))
+        case RandomMode(random):
+            config = _make_random_call_config(
+                definition=definition,
+                fn_data=fn_data,
+                types=smir_info.types,
+                random=random,
+            )
+            return CallConfig(config=config, constraints=())
+
+
+class _FunctionData(NamedTuple):
+    symbol: str
+    target: int
+    args: tuple[_Local, ...]
+
+    @staticmethod
+    def load(*, smir_info: SMIRInfo, start_symbol: str) -> _FunctionData:
+        try:
+            target = smir_info.function_tys[start_symbol]
+        except KeyError as err:
+            raise ValueError(f'{start_symbol} not found in program') from err
+
+        raw_args = smir_info.function_arguments[start_symbol]
+        args = tuple(_Local.from_raw(arg) for arg in raw_args)
+        return _FunctionData(symbol=start_symbol, target=target, args=args)
+
+    @property
+    def call_terminator(self) -> KInner:
+        return mk_call_terminator(target=self.target, arg_count=len(self.args))
+
+
+class _Local(NamedTuple):
+    ty: Ty
+    mut: bool
+
+    @staticmethod
+    def from_raw(data: Any) -> _Local:
+        match data:
+            case {
+                'ty': ty,
+                'mutability': 'Mut' | 'Not' as mut,
+            }:
+                return _Local(ty=Ty(ty), mut=mut == 'Mut')
+            case _:
+                raise ValueError(f'Cannot parse as _Local: {data}')
+
+
+def _make_concrete_call_config(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+) -> KInner:
+    if fn_data.args:
+        raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
+
+    return _make_concrete_call_config_with_locals(
+        definition=definition,
+        fn_data=fn_data,
+        localvars=[],
+    )
+
+
+def _make_random_call_config(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+    types: Mapping[Ty, TypeMetadata],
+    random: Random,
+) -> KInner:
+    localvars = _random_locals(random, fn_data.args, types)
+    return _make_concrete_call_config_with_locals(
+        definition=definition,
+        fn_data=fn_data,
+        localvars=localvars,
+    )
+
+
+def _make_concrete_call_config_with_locals(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+    localvars: list[KInner],
+) -> KInner:
+    def init_subst() -> dict[str, KInner]:
+        init_config = definition.init_config(KSort('GeneratedTopCell'))
+        _, res = split_config_from(init_config)
+        return res
+
+    # The configuration is the default initial configuration, with the K cell updated with the call terminator
+    # TODO: see if this can be expressed in more simple terms
+    subst = Subst(
+        {
+            **init_subst(),
+            **{
+                'K_CELL': fn_data.call_terminator,
+                'LOCALS_CELL': list_of(localvars),
+            },
+        }
+    )
+    empty_config = definition.empty_config(KSort('GeneratedTopCell'))
+    config = subst(empty_config)
+    assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
+    return config
+
+
+def _make_symbolic_call_config(
+    *,
+    definition: KDefinition,
+    fn_data: _FunctionData,
+    types: Mapping[Ty, TypeMetadata],
+) -> tuple[KInner, list[KInner]]:
+    locals, constraints = _symbolic_locals(fn_data.args, types)
+    subst = Subst(
+        {
+            'K_CELL': fn_data.call_terminator,
+            'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
+            'LOCALS_CELL': list_of(locals),
+        },
+    )
+    empty_config = definition.empty_config(KSort('GeneratedTopCell'))
+    config = subst(empty_config)
+    return config, constraints
 
 
 def int_var(var: KVariable, num_bytes: int, signed: bool) -> tuple[KInner, Iterable[KInner]]:
@@ -94,21 +269,13 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
     )
 
 
-def symbolic_locals(smir_info: SMIRInfo, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
-    locals, constraints = ArgGenerator(smir_info).run(local_types)
-    local0 = KApply('newLocal', (KApply('ty', (token(0),)), KApply('Mutability::Not', ())))
-    return ([local0] + locals, constraints)
+def _symbolic_locals(args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]) -> tuple[list[KInner], list[KInner]]:
+    localvars, constraints = _ArgGenerator(types).run(args)
+    return ([LOCAL_0] + localvars, constraints)
 
 
-def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
-    return KApply(
-        'typedValue',
-        (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
-    )
-
-
-class ArgGenerator:
-    smir_info: SMIRInfo
+class _ArgGenerator:
+    types: Mapping[Ty, TypeMetadata]
     locals: list[KInner]
     pointees: list[KInner]
     constraints: list[KInner]
@@ -118,18 +285,18 @@ class ArgGenerator:
     if TYPE_CHECKING:
         from .smir import Ty
 
-    def __init__(self, smir_info: SMIRInfo) -> None:
-        self.smir_info = smir_info
+    def __init__(self, types: Mapping[Ty, TypeMetadata]) -> None:
+        self.types = types
         self.locals = []
         self.pointees = []
         self.constraints = []
         self.counter = 1
         self.ref_offset = 0
 
-    def run(self, local_types: list[dict]) -> tuple[list[KInner], list[KInner]]:
+    def run(self, local_types: Sequence[_Local]) -> tuple[list[KInner], list[KInner]]:
         self.ref_offset = len(local_types) + 1
-        for ty, mut in [(t['ty'], t['mutability']) for t in local_types]:
-            self._add_local(ty, mut == 'Mut')
+        for ty, mut in local_types:
+            self._add_local(ty, mut)
         return (self.locals + self.pointees, self.constraints)
 
     def _add_local(self, ty: Ty, mutable: bool) -> None:
@@ -284,3 +451,105 @@ class ArgGenerator:
                 # missing type information, but can assert that this is a value
                 var = self._fresh_var('ARG')
                 return var, [mlEqualsTrue(KApply('isValue', (var,)))], None
+
+
+def _typed_value(value: KInner, ty: int, mutable: bool) -> KInner:
+    return KApply(
+        'typedValue',
+        (value, KApply('ty', (token(ty),)), KApply('Mutability::Mut' if mutable else 'Mutability::Not', ())),
+    )
+
+
+class TypedValue(NamedTuple):
+    value: Value
+    ty: Ty
+    mut: bool
+
+    @staticmethod
+    def from_local(value: Value, local: _Local) -> TypedValue:
+        return TypedValue(value=value, ty=local.ty, mut=local.mut)
+
+    def to_kast(self) -> KInner:
+        return _typed_value(value=self.value.to_kast(), ty=self.ty, mutable=self.mut)
+
+
+def _random_locals(random: Random, args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]) -> list[KInner]:
+    res: list[KInner] = [LOCAL_0]
+    pointees: list[KInner] = []
+
+    next_ref = len(args) + 1
+    for arg in args:
+        rvres = _random_value(
+            random=random,
+            local=arg,
+            types=types,
+            next_ref=next_ref,
+        )
+        res.append(rvres.value.to_kast())
+        match rvres:
+            case PointerRes(pointee=pointee):
+                pointees.append(pointee.to_kast())
+                next_ref += 1
+
+    res += pointees
+    return res
+
+
+class SimpleRes(NamedTuple):
+    value: TypedValue
+
+
+class ArrayRes(NamedTuple):
+    value: TypedValue
+    metadata: Metadata
+
+
+class PointerRes(NamedTuple):
+    value: TypedValue
+    pointee: TypedValue
+
+
+RandomValueRes = SimpleRes | ArrayRes | PointerRes
+
+
+def _random_value(
+    *,
+    random: Random,
+    local: _Local,
+    types: Mapping[Ty, TypeMetadata],
+    next_ref: int,
+) -> RandomValueRes:
+    try:
+        type_info = types[local.ty]
+    except KeyError as err:
+        raise ValueError(f'Unknown type: {local.ty}') from err
+
+    match type_info:
+        case BoolT():
+            return SimpleRes(
+                TypedValue.from_local(
+                    value=_random_bool_value(random),
+                    local=local,
+                )
+            )
+        case IntT() | UintT():
+            return SimpleRes(
+                TypedValue.from_local(
+                    value=_random_int_value(random, type_info),
+                    local=local,
+                ),
+            )
+        case _:
+            raise ValueError(f'Type unsupported for random value generator: {type_info}')
+
+
+def _random_bool_value(random: Random) -> BoolValue:
+    return BoolValue(bool(random.getrandbits(1)))
+
+
+def _random_int_value(random: Random, type_info: IntT | UintT) -> IntValue:
+    return IntValue(
+        value=random.randint(type_info.min, type_info.max),
+        nbits=type_info.nbits,
+        signed=isinstance(type_info, IntT),
+    )
