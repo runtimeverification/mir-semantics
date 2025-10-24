@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from .smir import SMIRInfo
     from .ty import TypeMetadata
-    from .value import Metadata, Value
+    from .value import MetadataSize, Value
 
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -501,7 +501,7 @@ class SimpleRes(NamedTuple):
 
 class ArrayRes(NamedTuple):
     value: TypedValue
-    metadata: Metadata
+    metadata: MetadataSize
 
 
 class PointerRes(NamedTuple):
