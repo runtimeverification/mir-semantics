@@ -113,7 +113,6 @@ syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total]
 rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
-  requires 0 <=Int #elemSize(lookupTy(TY))
 rule #neededBytesForOffsets(TYS, .MachineSizes) => #sumElemSizes(TYS)
 rule #neededBytesForOffsets(.Tys, _OFFSETS) => 0 [owise]
 
@@ -187,7 +186,11 @@ Known element sizes for common types:
 
   // ---- Tuples ----
   // Without layout, approximate as sum of element sizes (ignores padding).
-  rule #elemSize(typeInfoTupleType(TYS)) => #sumElemSizes(TYS)
+  // Define recursively without introducing a helper to avoid cycles with
+  // `#sumElemSizes` (which itself uses `#elemSize`).
+  rule #elemSize(typeInfoTupleType(.Tys)) => 0
+  rule #elemSize(typeInfoTupleType(TY TYS))
+    => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS))
 
   // ---- Structs and Enums with layout ----
   rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
