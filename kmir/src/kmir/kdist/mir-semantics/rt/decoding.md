@@ -76,9 +76,7 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
 ### Struct decoding
 
 Structs can have non-trivial layouts: field offsets may not match declaration order, and there may be padding.
-The decoder follows a two-step strategy:
-- Prefer explicit offsets from the struct's layout to slice each field out of the byte array.
-- Fallback to a simple sequential split only when there is no layout and the total length matches the sum of field sizes (i.e., no padding).
+Decoding is only performed when explicit layout offsets are available; otherwise we leave the term as `UnableToDecode` via the default rule. This avoids incorrectly decoding data when field reordering or padding is present.
 
 When using layout offsets we always return fields in declaration order within the `Aggregate` (variant 0), regardless of the physical order in memory.
 
@@ -92,12 +90,6 @@ rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
       => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
   requires #structOffsets(LAYOUT) =/=K .MachineSizes
    andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
-  [preserves-definedness]
-
-// Case 2 (no layout): use sequential decoding with no padding allowed.
-rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, noLayoutShape))
-      => Aggregate(variantIdx(0), #decodeStructFields(BYTES, TYS))
-  requires lengthBytes(BYTES) ==Int #sumElemSizes(TYS)
   [preserves-definedness]
 
 // ---------------------------------------------------------------------------
@@ -117,11 +109,13 @@ rule #structOffsets(_) => .MachineSizes [owise]
 // Minimum number of input bytes required to decode all fields by the chosen offsets.
 // Uses builtin maxInt to compute max(offset + size). When offsets are absent
 // (empty list), this collapses to the exact sequential size (#sumElemSizes),
-// which matches the semantics of our sequential decoding helper.
+// i.e., the sum of the field sizes.
 syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total]
 rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
+  requires 0 <=Int #elemSize(lookupTy(TY))
+  [preserves-definedness]
 rule #neededBytesForOffsets(TYS, .MachineSizes) => #sumElemSizes(TYS)
 rule #neededBytesForOffsets(.Tys, _OFFSETS) => 0 [owise]
 
@@ -138,23 +132,6 @@ rule #decodeStructFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
      )
      #decodeStructFieldsWithOffsets(BYTES, TYS, OFFSETS)
   requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
-  [preserves-definedness]
-
-// Sequential helper (used when no layout is available and there is no padding).
-syntax List ::= #decodeStructFields ( Bytes , Tys ) [function, total]
-rule #decodeStructFields(BYTES, .Tys) => .List
-  requires lengthBytes(BYTES) ==Int 0
-  [preserves-definedness]
-
-rule #decodeStructFields(BYTES, TY TYS)
-  => ListItem(
-       #decodeValue(
-         substrBytes(BYTES, 0, #elemSize(lookupTy(TY))),
-         lookupTy(TY)
-       )
-     )
-     #decodeStructFields(substrBytes(BYTES, #elemSize(lookupTy(TY)), lengthBytes(BYTES)), TYS)
-  requires lengthBytes(BYTES) >=Int #elemSize(lookupTy(TY))
   [preserves-definedness]
 
 syntax Int  ::= #sumElemSizes      ( Tys )        [function, total]
@@ -174,20 +151,33 @@ All unimplemented cases will become thunks by way of this default rule:
 
 ```k
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo ) [function]
+  syntax Int ::= #elemSize ( TypeInfo ) [function, total]
 ```
 
 Known element sizes for common types:
 
 ```k
+  // ---- Primitive types ----
   rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
+  // Rust `char` is a 32-bit Unicode scalar value
+  rule #elemSize(typeInfoPrimitiveType(primTypeChar)) => 4
   rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
     requires #isIntType(TYPEINFO)
+  // Floating-point sizes
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF16)))  => 2
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF32)))  => 4
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF64)))  => 8
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF128))) => 16
+  // `str` is unsized; size only known with metadata (e.g., in fat pointers)
+  rule #elemSize(typeInfoPrimitiveType(primTypeStr)) => 0
 
+  // ---- Arrays and slices ----
   rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
     => #elemSize(lookupTy(ELEM_TY)) *Int readTyConstInt(LEN)
+  // Slice `[T]` has dynamic size; plain value is unsized
+  rule #elemSize(typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
 
-  // thin and fat pointers
+  // ---- thin and fat pointers ----
   rule #elemSize(typeInfoRefType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     requires dynamicSize(1) ==K #metadataSize(TY)
   rule #elemSize(typeInfoRefType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
@@ -197,10 +187,22 @@ Known element sizes for common types:
   rule #elemSize(typeInfoPtrType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
 
+  // ---- Tuples ----
+  // Without layout, approximate as sum of element sizes (ignores padding).
+  rule #elemSize(typeInfoTupleType(TYS)) => #sumElemSizes(TYS)
+
+  // ---- Structs and Enums with layout ----
+  rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
+  rule #elemSize(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE))))   => #msBytes(SIZE)
+
+  // ---- Function item types ----
+  // Function items are zero-sized; function pointers are handled by PtrType
+  rule #elemSize(typeInfoFunType(_)) => 0
+
   rule #elemSize(typeInfoVoidType) => 0
 
-  // FIXME can only use size from layout here. Requires adding layout first.
-  // Enum, Struct, Tuple,
+  // Fallback to keep the function total for any remaining cases
+  rule #elemSize(_) => 0 [owise]
 
   rule 0 <=Int #elemSize(_) => true [simplification, preserves-definedness]
 ```
