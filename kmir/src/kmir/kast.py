@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from .smir import SMIRInfo
     from .ty import TypeMetadata
-    from .value import Metadata, Value
+    from .value import MetadataSize, Value
 
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -320,7 +320,7 @@ class _ArgGenerator:
             KApply('noMetadataSize', ()),
         )
 
-        match self.smir_info.types.get(ty):
+        match self.types.get(ty):
             case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
                 return val, constraints, None
@@ -501,7 +501,7 @@ class SimpleRes(NamedTuple):
 
 class ArrayRes(NamedTuple):
     value: TypedValue
-    metadata: Metadata
+    metadata: MetadataSize
 
 
 class PointerRes(NamedTuple):
