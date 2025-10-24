@@ -74,19 +74,58 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
 
 ### Struct decoding
 
-We decode structs by decoding their fields in declaration order using the element sizes implied by the
-field types. This decoding is layout-agnostic and succeeds only when the byte length exactly matches the
-sum of field sizes (i.e., there is no padding). This covers common transparent/newtype and simple tuple/struct
-cases. For more complex layouts with padding/alignment, decoding falls back to `UnableToDecode`.
+Structs can have non-trivial layouts where field offsets are not in declaration order and there may be padding.
+We first try to decode using the provided layout offsets when available, and fall back to a simple sequential
+decoding only when no layout is provided and the byte length equals the sum of field sizes (no padding).
 
-Handle the general multi-field case by splitting the byte array sequentially according to the field sizes
-and decoding each field using `#decodeValue`:
+When layout is provided with arbitrary field offsets, we decode each field at its given byte offset and return
+the values in declaration order within the `Aggregate`.
 
 ```k
-rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS))
+// Decoding via layout offsets (preferred when available)
+syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function]
+syntax Int          ::= #msBytes       ( MachineSize )      [function]
+syntax Int          ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function]
+syntax Int          ::= #maxInt        ( Int , Int )        [function, total]
+syntax List         ::= #decodeStructFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function]
+
+rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+rule #structOffsets(noLayoutShape) => .MachineSizes
+rule #structOffsets(_) => .MachineSizes [owise]
+
+rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8
+rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise]
+
+rule #maxInt(A, B) => A requires A >=Int B
+rule #maxInt(A, B) => B requires A <Int B
+
+rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
+rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
+  => #maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
+
+rule #decodeStructFieldsWithOffsets(_, .Tys, .MachineSizes) => .List
+
+rule #decodeStructFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
+  => ListItem(
+       #decodeValue(
+         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTy(TY))),
+         lookupTy(TY)
+       )
+     )
+     #decodeStructFieldsWithOffsets(BYTES, TYS, OFFSETS)
+  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
+  [preserves-definedness]
+
+rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
+      => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
+  requires lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
+  [preserves-definedness, priority(50)]
+
+// Fallback: sequential decoding when no layout provided and there is no padding
+rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, noLayoutShape))
       => Aggregate(variantIdx(0), #decodeStructFields(BYTES, TYS))
   requires lengthBytes(BYTES) ==Int #sumElemSizes(TYS)
-  [preserves-definedness]
+  [preserves-definedness, priority(40)]
 
 syntax List ::= #decodeStructFields ( Bytes , Tys ) [function, total]
 

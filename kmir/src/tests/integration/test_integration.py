@@ -311,7 +311,7 @@ EXEC_DATA = [
         'struct-multi',
         EXEC_DATA_DIR / 'struct-multi' / 'struct-multi.smir.json',
         EXEC_DATA_DIR / 'struct-multi' / 'struct-multi.state',
-        1000,
+        2000,
     ),
 ]
 
