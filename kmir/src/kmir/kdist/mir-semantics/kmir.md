@@ -5,6 +5,8 @@ requires "kmir-ast.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
+
+requires "symbolic/p-token.md"
 ```
 
 ## Syntax of MIR in K
@@ -539,4 +541,7 @@ module KMIR
   imports KMIR-AST // Necessary for the external Python parser
   imports KMIR-CONTROL-FLOW
   imports KMIR-LEMMAS
+
+  imports KMIR-P-TOKEN // cheat codes
 endmodule
+```

@@ -109,6 +109,18 @@ class FloatT(PrimitiveT):
 class IntT(PrimitiveT):
     info: IntTy
 
+    @property
+    def nbits(self) -> int:
+        return self.info.value * 8
+
+    @property
+    def min(self) -> int:
+        return -(1 << (self.nbits - 1))
+
+    @property
+    def max(self) -> int:
+        return (1 << (self.nbits - 1)) - 1
+
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
 
@@ -116,6 +128,18 @@ class IntT(PrimitiveT):
 @dataclass
 class UintT(PrimitiveT):
     info: UintTy
+
+    @property
+    def nbits(self) -> int:
+        return self.info.value * 8
+
+    @property
+    def min(self) -> int:
+        return 0
+
+    @property
+    def max(self) -> int:
+        return (1 << self.nbits) - 1
 
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
