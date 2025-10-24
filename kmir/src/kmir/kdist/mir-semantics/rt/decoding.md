@@ -114,7 +114,6 @@ rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
   requires 0 <=Int #elemSize(lookupTy(TY))
-  [preserves-definedness]
 rule #neededBytesForOffsets(TYS, .MachineSizes) => #sumElemSizes(TYS)
 rule #neededBytesForOffsets(.Tys, _OFFSETS) => 0 [owise]
 
