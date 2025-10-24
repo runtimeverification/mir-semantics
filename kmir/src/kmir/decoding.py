@@ -31,6 +31,7 @@ from .value import (
     BoolValue,
     DynamicSize,
     IntValue,
+    Metadata,
     RangeValue,
     StaticSize,
     StrValue,
@@ -120,18 +121,30 @@ def _decode_memory_alloc_or_unable(
                 except KeyError:
                     return UnableToDecodeValue(f'Unknown pointee type: {pointee_ty}')
 
-                metadata = _metadata(pointee_type_info)
+                metadata_size = _metadata_size(pointee_type_info)
 
                 if len(data) == 8:
                     # single slim pointer (assumes usize == u64)
-                    return AllocRefValue(alloc_id=alloc_id, metadata=metadata)
-
-                if len(data) == 16 and metadata == DynamicSize(1):
-                    # sufficient data to decode dynamic size (assumes usize == u64)
-                    # expect fat pointer
                     return AllocRefValue(
                         alloc_id=alloc_id,
-                        metadata=DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False)),
+                        metadata=Metadata(
+                            size=metadata_size,
+                            pointer_offset=0,
+                            origin_size=metadata_size,
+                        ),
+                    )
+
+                if len(data) == 16 and metadata_size == DynamicSize(1):
+                    # sufficient data to decode dynamic size (assumes usize == u64)
+                    # expect fat pointer
+                    actual_size = DynamicSize(int.from_bytes(data[8:16], byteorder='little', signed=False))
+                    return AllocRefValue(
+                        alloc_id=alloc_id,
+                        metadata=Metadata(
+                            size=actual_size,
+                            pointer_offset=0,
+                            origin_size=actual_size,
+                        ),
                     )
 
     return UnableToDecodeValue(f'Unable to decode alloc: {data!r}, of type: {type_info}')
@@ -145,7 +158,7 @@ def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
             return None
 
 
-def _metadata(type_info: TypeMetadata) -> MetadataSize:
+def _metadata_size(type_info: TypeMetadata) -> MetadataSize:
     match type_info:
         case ArrayT(length=None):
             return DynamicSize(1)  # 1 is a placeholder, the actual size is inferred from the slice data
