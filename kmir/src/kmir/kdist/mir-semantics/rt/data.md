@@ -1747,9 +1747,22 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
 ```
 
 
+#### Pointer Arithmetic
 
-#### Pointer Artithmetic
-Currently only supporting a trivial case where `binOpOffset` applies an offset of `0`, returning the same pointer.
+The `binOpOffset` operation works on pointer types. 
+A pointer can be offset by any non-negative amount,
+but dereferencing the pointer is undefined behaviour if it has been offset beyond the bounds of the underlying allocation.
+
+The semantics of `binOpOffset` is to increment the pointer by the size of the pointee.
+This means that pointer offsets only make sense for pointers which _originate_ from arrays,
+and typically such a pointer is first cast to a pointer to a single element, in order to step through the array.
+
+The original metadata of the array allocation must be recovered or retained to be able to check the validity.
+
+The offset operation modifies an offset value stored within the pointer, without checking it in any way.
+The bounds check happens when the pointer is dereferenced.
+
+An obvious optimisation for the trivial case where `binOpOffset` applies an offset of `0` is to return the same pointer.
 
 ```k
  rule #applyBinOp(
@@ -1759,7 +1772,66 @@ Currently only supporting a trivial case where `binOpOffset` applies an offset o
          _CHECKED)
    =>
          PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
-   [preserves-definedness]
+   [priority(40)]
+```
+
+For positive offsets unequal to zero, the offset is stored within the pointer emulation data.
+
+```k
+ rule #applyBinOp(
+         binOpOffset,
+         PtrLocal( STACK_DEPTH , PLACE , MUT, ptrOrigSize(_) #as EMUL),
+         Integer(N, _WIDTH, false), // unsigned int only
+         _CHECKED)
+   =>
+         PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulOffset(N, EMUL) )
+```
+
+As explained above, offsets should only happen on pointers derived from arrays.
+The metadata should provide the `origSize` of the array before the pointer was derived.
+
+```k
+  syntax PtrEmulation ::= ptrEmulOffset ( Int , PtrEmulation ) [function, total]
+                        | InvalidOffset( Int , PtrEmulation ) // error marker for offsets
+                        | ptrOffset ( Int , PtrEmulation ) // emulation is original size
+                        | ptrOrigSize( Int ) // remembers original allocation
+  // ---------------------------------------------------------------------------
+  rule ptrEmulOffset(N,               EMUL        ) => InvalidOffset(N, EMUL) requires N <Int 0
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE) #as EMUL) => ptrOffset(N, EMUL)     requires 0 <=Int N andBool N <=Int SIZE
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE) #as EMUL) => InvalidOffset(N, EMUL) requires SIZE <Int N
+
+  rule ptrEmulOffset(N, ptrOffset(M, ptrOrigSize(_) #as ORIG)) => ptrEmulOffset(N +Int M, ORIG)
+
+  rule ptrEmulOffset(N, OTHER) => InvalidOffset(N, OTHER) [owise] // cannot offset things that don't have ptrOrigSize
+```
+The `ptrOrigSize` must be inserted when casting a pointer from array/slice to element.
+This happens inside the `#convertPtrEmul` function.
+Currently a `ptrEmulation(noMetadata)` is inserted there (see the comments about losing metadata).
+
+Conversely, when the pointer is converted back to point to an array or slice again (`#forPtr` or `CastKindPtrToPtr`),
+the `ptrOrigSize` must be replaced by the target size.
+This can again happen inside the `#convertPtrEmul` function (which can also insert `InvalidOffset` for insufficient sizes).
+The `ptrOffset` nodes are kept and the _target size_ data (size after offsetting) is inserted.
+NB this is different to the `origSize` within `ptrOffset`, where the size _before_ offsetting is given.
+
+```k
+// TODO change code for #convertPtrEmul
+```
+
+When dereferencing a pointer, the `InvalidOffset` may indicate undefined behaviour and the projection gets stuck.
+(It can instead report a KMIR specific error and provide the `InvalidOffset` data for reference).
+
+If the `PtrEmulation` has shape `ptrOffset(N, ptrEmulation(staticSize(S)))` or `ptrOffset(N, ptrEmulation(dynamicSize(S)))`,
+it is a (so far) valid offset into an array that can be dereferenced.
+These are resolved during dereferencing by appending a subslice projection to the `PLACEPROJ`.
+The `#derefTruncate` operation will truncate the resulting array to the final size after ofsetting from the start with the subslice projection (and provide a check that the length is sufficient).
+
+If the `PtrEmulation` is `ptrOffset(N, origSize)`, dereferencing produces a single element,
+which is obtained by appending a `ConstantIndex` projection to the `PLACEPROJ`.
+Invalid offsets should have been detected earlier in this case but indexing will check the required length.
+
+```k
+// TODO change code for Deref projection to insert subslice projection when ptrOffset
 ```
 
 ```k
