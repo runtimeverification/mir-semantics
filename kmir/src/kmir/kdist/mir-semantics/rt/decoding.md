@@ -84,8 +84,7 @@ When using layout offsets we always return fields in declaration order within th
 // ---------------------------------------------------------------------------
 // Struct decoding rules (top level)
 // ---------------------------------------------------------------------------
-// Case 1 (layout offsets present): use the offsets when they are provided
-// and the input length is sufficient. Distinguished purely via `requires`.
+// Use the offsets when they are provided and the input length is sufficient.
 rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
       => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
   requires #structOffsets(LAYOUT) =/=K .MachineSizes
