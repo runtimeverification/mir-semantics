@@ -105,8 +105,8 @@ rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, noLayoutShape))
 // ---------------------------------------------------------------------------
 // MachineSize is in bits in the ABI; convert to bytes for slicing.
 syntax Int ::= #msBytes ( MachineSize ) [function, total]
-rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8
-rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise]
+rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8 [preserves-definedness]
+rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
 
 // Extract field offsets from the struct layout when available (Arbitrary only).
 syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
