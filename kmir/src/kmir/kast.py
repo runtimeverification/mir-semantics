@@ -12,7 +12,7 @@ from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
-from .value import BoolValue, IntValue
+from .value import AggregateValue, BoolValue, IntValue
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping, Sequence
@@ -531,6 +531,13 @@ class _RandomArgGen:
                         local=local,
                     ),
                 )
+            case EnumT(discriminants=discriminants, fields=fields):
+                return SimpleRes(
+                    TypedValue.from_local(
+                        value=self._random_enum_value(mut=local.mut, discriminants=discriminants, fields=fields),
+                        local=local,
+                    ),
+                )
             case _:
                 raise ValueError(f'Type unsupported for random value generator: {type_info}')
 
@@ -543,3 +550,17 @@ class _RandomArgGen:
             nbits=type_info.nbits,
             signed=isinstance(type_info, IntT),
         )
+
+    def _random_enum_value(
+        self,
+        *,
+        mut: bool,
+        discriminants: list[int],
+        fields: list[list[Ty]],
+    ) -> AggregateValue:
+        variant_idx = self._random.randrange(len(discriminants))
+        values = self._random_fields(tys=fields[variant_idx], mut=mut)
+        return AggregateValue(variant_idx, values)
+
+    def _random_fields(self, *, tys: list[Ty], mut: bool) -> tuple[Value, ...]:
+        return tuple(self._random_value(local=_Local(ty=ty, mut=mut)).value.value for ty in tys)
