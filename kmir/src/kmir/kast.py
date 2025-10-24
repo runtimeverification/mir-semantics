@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from itertools import count
 from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
@@ -14,7 +15,7 @@ from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, Uin
 from .value import BoolValue, IntValue
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
+    from collections.abc import Iterable, Iterator, Mapping, Sequence
     from random import Random
     from typing import Any, Final
 
@@ -474,25 +475,7 @@ class TypedValue(NamedTuple):
 
 
 def _random_locals(random: Random, args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]) -> list[KInner]:
-    res: list[KInner] = [LOCAL_0]
-    pointees: list[KInner] = []
-
-    next_ref = len(args) + 1
-    for arg in args:
-        rvres = _random_value(
-            random=random,
-            local=arg,
-            types=types,
-            next_ref=next_ref,
-        )
-        res.append(rvres.value.to_kast())
-        match rvres:
-            case PointerRes(pointee=pointee):
-                pointees.append(pointee.to_kast())
-                next_ref += 1
-
-    res += pointees
-    return res
+    return _RandomArgGen(random=random, args=args, types=types).run()
 
 
 class SimpleRes(NamedTuple):
@@ -501,55 +484,62 @@ class SimpleRes(NamedTuple):
 
 class ArrayRes(NamedTuple):
     value: TypedValue
-    metadata: MetadataSize
+    metadata_size: MetadataSize
 
 
-class PointerRes(NamedTuple):
-    value: TypedValue
-    pointee: TypedValue
+RandomValueRes = SimpleRes | ArrayRes
 
 
-RandomValueRes = SimpleRes | ArrayRes | PointerRes
+class _RandomArgGen:
+    _random: Random
+    _args: Sequence[_Local]
+    _types: Mapping[Ty, TypeMetadata]
+    _pointees: list[TypedValue]
+    _ref: Iterator[int]
 
+    def __init__(self, *, random: Random, args: Sequence[_Local], types: Mapping[Ty, TypeMetadata]):
+        self._random = random
+        self._args = args
+        self._types = types
+        self._pointees = []
+        self._ref = count(len(args) + 1)
 
-def _random_value(
-    *,
-    random: Random,
-    local: _Local,
-    types: Mapping[Ty, TypeMetadata],
-    next_ref: int,
-) -> RandomValueRes:
-    try:
-        type_info = types[local.ty]
-    except KeyError as err:
-        raise ValueError(f'Unknown type: {local.ty}') from err
+    def run(self) -> list[KInner]:
+        res: list[KInner] = [LOCAL_0]
+        res.extend(self._random_value(arg).value.to_kast() for arg in self._args)
+        res.extend(pointee.to_kast() for pointee in self._pointees)
+        return res
 
-    match type_info:
-        case BoolT():
-            return SimpleRes(
-                TypedValue.from_local(
-                    value=_random_bool_value(random),
-                    local=local,
+    def _random_value(self, local: _Local) -> RandomValueRes:
+        try:
+            type_info = self._types[local.ty]
+        except KeyError as err:
+            raise ValueError(f'Unknown type: {local.ty}') from err
+
+        match type_info:
+            case BoolT():
+                return SimpleRes(
+                    TypedValue.from_local(
+                        value=self._random_bool_value(),
+                        local=local,
+                    )
                 )
-            )
-        case IntT() | UintT():
-            return SimpleRes(
-                TypedValue.from_local(
-                    value=_random_int_value(random, type_info),
-                    local=local,
-                ),
-            )
-        case _:
-            raise ValueError(f'Type unsupported for random value generator: {type_info}')
+            case IntT() | UintT():
+                return SimpleRes(
+                    TypedValue.from_local(
+                        value=self._random_int_value(type_info),
+                        local=local,
+                    ),
+                )
+            case _:
+                raise ValueError(f'Type unsupported for random value generator: {type_info}')
 
+    def _random_bool_value(self) -> BoolValue:
+        return BoolValue(bool(self._random.getrandbits(1)))
 
-def _random_bool_value(random: Random) -> BoolValue:
-    return BoolValue(bool(random.getrandbits(1)))
-
-
-def _random_int_value(random: Random, type_info: IntT | UintT) -> IntValue:
-    return IntValue(
-        value=random.randint(type_info.min, type_info.max),
-        nbits=type_info.nbits,
-        signed=isinstance(type_info, IntT),
-    )
+    def _random_int_value(self, type_info: IntT | UintT) -> IntValue:
+        return IntValue(
+            value=self._random.randint(type_info.min, type_info.max),
+            nbits=type_info.nbits,
+            signed=isinstance(type_info, IntT),
+        )
