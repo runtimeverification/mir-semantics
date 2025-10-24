@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from .smir import SMIRInfo
     from .ty import TypeMetadata
-    from .value import Metadata, Value
+    from .value import MetadataSize, Value
 
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -312,6 +312,14 @@ class _ArgGenerator:
 
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
+
+        no_metadata = KApply(
+            'Metadata',
+            KApply('noMetadataSize', ()),
+            token(0),
+            KApply('noMetadataSize', ()),
+        )
+
         match self.types.get(ty):
             case IntT(info):
                 val, constraints = int_var(self._fresh_var('ARG_INT'), info.value, True)
@@ -359,7 +367,14 @@ class _ArgGenerator:
                 return (
                     KApply('Value::Range', (elems,)),
                     [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
-                    KApply('dynamicSize', (l,)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('dynamicSize', (l,)),
+                            token(0),
+                            KApply('dynamicSize', (l,)),
+                        ),
+                    ),
                 )
 
             case ArrayT(element_type, size) if size is not None:
@@ -372,7 +387,14 @@ class _ArgGenerator:
                 return (
                     KApply('Value::Range', (list_of(elem_vars),)),
                     elem_constraints,
-                    KApply('staticSize', (token(size),)),
+                    KApply(
+                        'Metadata',
+                        (
+                            KApply('staticSize', (token(size),)),
+                            token(0),
+                            KApply('staticSize', (token(size),)),
+                        ),
+                    ),
                 )
 
             case TupleT(components):
@@ -397,10 +419,10 @@ class _ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            token(0),
+                            token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else KApply('noMetadata', ()),
+                            metadata if metadata is not None else no_metadata,
                         ),
                     ),
                     pointee_constraints,
@@ -418,7 +440,7 @@ class _ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            KApply('PtrEmulation', (metadata if metadata is not None else KApply('noMetadata', ()),)),
+                            metadata if metadata is not None else no_metadata,
                         ),
                     ),
                     pointee_constraints,
@@ -479,7 +501,7 @@ class SimpleRes(NamedTuple):
 
 class ArrayRes(NamedTuple):
     value: TypedValue
-    metadata: Metadata
+    metadata: MetadataSize
 
 
 class PointerRes(NamedTuple):
