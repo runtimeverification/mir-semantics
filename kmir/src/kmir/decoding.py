@@ -43,7 +43,7 @@ if TYPE_CHECKING:
     from pyk.kast import KInner
 
     from .ty import FieldsShape, IntegerLength, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
-    from .value import Metadata
+    from .value import MetadataSize
 
 
 @dataclass
@@ -145,7 +145,7 @@ def _pointee_ty(type_info: TypeMetadata) -> Ty | None:
             return None
 
 
-def _metadata(type_info: TypeMetadata) -> Metadata:
+def _metadata(type_info: TypeMetadata) -> MetadataSize:
     match type_info:
         case ArrayT(length=None):
             return DynamicSize(1)  # 1 is a placeholder, the actual size is inferred from the slice data
