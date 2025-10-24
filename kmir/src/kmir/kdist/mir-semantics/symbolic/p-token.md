@@ -635,7 +635,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
         => #setLocalValue(
               DEST,
               Aggregate(variantIdx(0),
-                ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata))
+                ListItem(Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, metadata(noMetadataSize, 0, noMetadataSize)))
               )
             )
         ...
@@ -643,7 +643,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, false)
         => #setLocalValue(
               DEST,
-              Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, noMetadata)
+              Reference(OFFSET, place(LOCAL, appendP(PROJS, ACCESS_PROJ)), MUT, metadata(noMetadataSize, 0, noMetadataSize))
             )
         ...
        </k>
