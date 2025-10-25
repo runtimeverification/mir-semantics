@@ -9,7 +9,7 @@ pub enum Foo {
     Qux(u8, Option<u8>),
 }
 
-pub fn test(foo: Foo, bs: [u8; 8]) {
+pub fn test(foo: Foo, bs: [u8; 8], ns: &[i32]) {
     match foo {
         Foo::Bar => {},
         Foo::Baz(Point { x, y }) => if x >= y {
@@ -22,10 +22,19 @@ pub fn test(foo: Foo, bs: [u8; 8]) {
         },
         _ => {},
     }
+
     let mut sum: u64 = 0;
     for b in bs {
         let b64 = u64::from(b);
         sum += b64;
         assert!(sum >= b64);
+    }
+
+    let mut min: i32 = i32::MAX;
+    for n in ns {
+        if *n < min {
+            min = *n;
+        }
+        assert!(min <= *n);
     }
 }

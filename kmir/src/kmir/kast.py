@@ -12,7 +12,20 @@ from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
-from .value import AggregateValue, BoolValue, DynamicSize, IntValue, RangeValue, StaticSize
+from .value import (
+    NO_SIZE,
+    AggregateValue,
+    BoolValue,
+    DynamicSize,
+    IntValue,
+    Local,
+    Metadata,
+    Place,
+    PtrLocalValue,
+    RangeValue,
+    RefValue,
+    StaticSize,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping, Sequence
@@ -557,6 +570,13 @@ class _RandomArgGen:
                     ),
                     metadata_size=metadata_size,
                 )
+            case PtrT() | RefT():
+                return SimpleRes(
+                    value=TypedValue.from_local(
+                        value=self._random_ptr_value(mut=local.mut, type_info=type_info),
+                        local=local,
+                    ),
+                )
             case _:
                 raise ValueError(f'Type unsupported for random value generator: {type_info}')
 
@@ -598,3 +618,37 @@ class _RandomArgGen:
         elems = tuple(self._random_value(local=_Local(ty=elem_ty, mut=mut)).value.value for _ in range(length))
         value = RangeValue(elems)
         return value, metadata_size
+
+    def _random_ptr_value(self, mut: bool, type_info: PtrT | RefT) -> PtrLocalValue | RefValue:
+        pointee_local = _Local(ty=type_info.pointee_type, mut=mut)
+        pointee_res = self._random_value(pointee_local)
+        self._pointees.append(pointee_res.value)
+
+        metadata_size: MetadataSize
+        match pointee_res:
+            case ArrayRes(metadata_size=metadata_size):
+                pass
+            case _:
+                metadata_size = NO_SIZE
+
+        metadata = Metadata(size=metadata_size, pointer_offset=0, origin_size=metadata_size)
+
+        ref = next(self._ref)
+
+        match type_info:
+            case PtrT():
+                return PtrLocalValue(
+                    stack_depth=0,
+                    place=Place(local=Local(ref)),
+                    mut=mut,
+                    metadata=metadata,
+                )
+            case RefT():
+                return RefValue(
+                    stack_depth=0,
+                    place=Place(local=Local(ref)),
+                    mut=mut,
+                    metadata=metadata,
+                )
+            case _:
+                raise AssertionError()

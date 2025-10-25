@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -26,7 +26,7 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 48 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 68 ) , mutabilityNot ) )
       ListItem ( typedValue ( Range ( ListItem ( Integer ( 189 , 8 , false ) )
       ListItem ( Integer ( 192 , 8 , false ) )
       ListItem ( Integer ( 64 , 8 , false ) )
@@ -35,6 +35,39 @@
       ListItem ( Integer ( 43 , 8 , false ) )
       ListItem ( Integer ( 70 , 8 , false ) )
       ListItem ( Integer ( 126 , 8 , false ) ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 4 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 32 ) , 0 , dynamicSize ( 32 ) ) ) , ty ( 32 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( -1248127672 , 32 , true ) )
+      ListItem ( Integer ( 609320300 , 32 , true ) )
+      ListItem ( Integer ( -175519158 , 32 , true ) )
+      ListItem ( Integer ( -201294668 , 32 , true ) )
+      ListItem ( Integer ( 1419578049 , 32 , true ) )
+      ListItem ( Integer ( -1762802220 , 32 , true ) )
+      ListItem ( Integer ( -396580689 , 32 , true ) )
+      ListItem ( Integer ( -1037850026 , 32 , true ) )
+      ListItem ( Integer ( -1876519824 , 32 , true ) )
+      ListItem ( Integer ( -527399931 , 32 , true ) )
+      ListItem ( Integer ( 690816163 , 32 , true ) )
+      ListItem ( Integer ( -693900969 , 32 , true ) )
+      ListItem ( Integer ( 821629702 , 32 , true ) )
+      ListItem ( Integer ( 1723892329 , 32 , true ) )
+      ListItem ( Integer ( 1915776330 , 32 , true ) )
+      ListItem ( Integer ( -1314887044 , 32 , true ) )
+      ListItem ( Integer ( 339138294 , 32 , true ) )
+      ListItem ( Integer ( 1636209378 , 32 , true ) )
+      ListItem ( Integer ( 1623826238 , 32 , true ) )
+      ListItem ( Integer ( -1567767271 , 32 , true ) )
+      ListItem ( Integer ( 816822302 , 32 , true ) )
+      ListItem ( Integer ( 868207965 , 32 , true ) )
+      ListItem ( Integer ( 1475291067 , 32 , true ) )
+      ListItem ( Integer ( -1298591270 , 32 , true ) )
+      ListItem ( Integer ( -1502551912 , 32 , true ) )
+      ListItem ( Integer ( 123352306 , 32 , true ) )
+      ListItem ( Integer ( -1202783990 , 32 , true ) )
+      ListItem ( Integer ( -2096304035 , 32 , true ) )
+      ListItem ( Integer ( -673316532 , 32 , true ) )
+      ListItem ( Integer ( -1001404679 , 32 , true ) )
+      ListItem ( Integer ( -328986497 , 32 , true ) )
+      ListItem ( Integer ( -528598575 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>

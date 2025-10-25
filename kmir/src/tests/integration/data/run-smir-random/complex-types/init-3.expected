@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -26,7 +26,7 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 48 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 68 ) , mutabilityNot ) )
       ListItem ( typedValue ( Range ( ListItem ( Integer ( 66 , 8 , false ) )
       ListItem ( Integer ( 189 , 8 , false ) )
       ListItem ( Integer ( 242 , 8 , false ) )
@@ -35,6 +35,19 @@
       ListItem ( Integer ( 240 , 8 , false ) )
       ListItem ( Integer ( 132 , 8 , false ) )
       ListItem ( Integer ( 119 , 8 , false ) ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 4 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 12 ) , 0 , dynamicSize ( 12 ) ) ) , ty ( 32 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( -101562192 , 32 , true ) )
+      ListItem ( Integer ( -1500591035 , 32 , true ) )
+      ListItem ( Integer ( 579222143 , 32 , true ) )
+      ListItem ( Integer ( 99562544 , 32 , true ) )
+      ListItem ( Integer ( 1036168857 , 32 , true ) )
+      ListItem ( Integer ( -1872470703 , 32 , true ) )
+      ListItem ( Integer ( 391269738 , 32 , true ) )
+      ListItem ( Integer ( 1569927520 , 32 , true ) )
+      ListItem ( Integer ( 1626988600 , 32 , true ) )
+      ListItem ( Integer ( 1808605022 , 32 , true ) )
+      ListItem ( Integer ( 1870830728 , 32 , true ) )
+      ListItem ( Integer ( 1627219933 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
