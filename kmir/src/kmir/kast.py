@@ -12,7 +12,7 @@ from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
 from .ty import ArrayT, BoolT, EnumT, IntT, PtrT, RefT, StructT, TupleT, Ty, UintT, UnionT
-from .value import AggregateValue, BoolValue, IntValue
+from .value import AggregateValue, BoolValue, DynamicSize, IntValue, RangeValue, StaticSize
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping, Sequence
@@ -28,6 +28,9 @@ if TYPE_CHECKING:
 
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+RANDOM_MAX_ARRAY_LEN: Final = 32
 
 
 LOCAL_0: Final = KApply('newLocal', KApply('ty', token(0)), KApply('Mutability::Not'))
@@ -545,6 +548,15 @@ class _RandomArgGen:
                         local=local,
                     ),
                 )
+            case ArrayT(element_type=elem_ty, length=length):
+                value, metadata_size = self._random_array_value(mut=local.mut, elem_ty=elem_ty, length=length)
+                return ArrayRes(
+                    value=TypedValue.from_local(
+                        value=value,
+                        local=local,
+                    ),
+                    metadata_size=metadata_size,
+                )
             case _:
                 raise ValueError(f'Type unsupported for random value generator: {type_info}')
 
@@ -574,3 +586,15 @@ class _RandomArgGen:
 
     def _random_fields(self, *, tys: list[Ty], mut: bool) -> tuple[Value, ...]:
         return tuple(self._random_value(local=_Local(ty=ty, mut=mut)).value.value for ty in tys)
+
+    def _random_array_value(self, *, mut: bool, elem_ty: Ty, length: int | None) -> tuple[RangeValue, MetadataSize]:
+        metadata_size: MetadataSize
+        if length is None:
+            length = self._random.randint(0, RANDOM_MAX_ARRAY_LEN)
+            metadata_size = DynamicSize(length)
+        else:
+            metadata_size = StaticSize(length)
+
+        elems = tuple(self._random_value(local=_Local(ty=elem_ty, mut=mut)).value.value for _ in range(length))
+        value = RangeValue(elems)
+        return value, metadata_size
