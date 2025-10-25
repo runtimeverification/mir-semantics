@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -27,7 +27,15 @@
     <locals>
       ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
       ListItem ( typedValue ( Aggregate ( variantIdx ( 2 ) , ListItem ( Integer ( 41 , 8 , false ) )
-      ListItem ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 133 , 8 , false ) ) ) ) ) , ty ( 10 ) , mutabilityNot ) )
+      ListItem ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 133 , 8 , false ) ) ) ) ) , ty ( 48 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( 18 , 8 , false ) )
+      ListItem ( Integer ( 0 , 8 , false ) )
+      ListItem ( Integer ( 74 , 8 , false ) )
+      ListItem ( Integer ( 240 , 8 , false ) )
+      ListItem ( Integer ( 191 , 8 , false ) )
+      ListItem ( Integer ( 163 , 8 , false ) )
+      ListItem ( Integer ( 11 , 8 , false ) )
+      ListItem ( Integer ( 139 , 8 , false ) ) ) , ty ( 25 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
