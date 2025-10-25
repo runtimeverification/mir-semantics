@@ -27,7 +27,7 @@
     <locals>
       ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
       ListItem ( typedValue ( Aggregate ( variantIdx ( 2 ) , ListItem ( Integer ( 130 , 8 , false ) )
-      ListItem ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 14 , 8 , false ) ) ) ) ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 14 , 8 , false ) ) ) ) ) , ty ( 10 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
