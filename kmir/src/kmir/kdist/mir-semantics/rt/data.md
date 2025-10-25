@@ -1410,7 +1410,7 @@ Zero-sized types can be decoded trivially into their respective representation.
 
 ```k
   // zero-sized struct
-  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _))
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoStructType(_, _, _, _))
         => Aggregate(variantIdx(0), .List) ... </k>
   // zero-sized tuple
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoTupleType(_))
