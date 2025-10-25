@@ -61,7 +61,7 @@
       ListItem ( Integer ( 30 , 8 , false ) )
       ListItem ( Integer ( 31 , 8 , false ) ) ) ) ) , ty ( 30 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 32 , 64 , false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 31 ) )  .ProjectionElems ) , mutabilityNot , staticSize ( 32 ) ) , ty ( 27 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 31 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 32 ) , 0 , noMetadataSize ) ) , ty ( 27 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 32 , 64 , false ) , ty ( 26 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
