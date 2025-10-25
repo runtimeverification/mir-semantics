@@ -26,8 +26,8 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 486255726 , 32 , true ) )
-      ListItem ( Integer ( -1000150020 , 32 , true ) ) ) , ty ( 9 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 486255726 , 32 , true ) )
+      ListItem ( Integer ( -1000150020 , 32 , true ) ) ) ) ) , ty ( 10 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>

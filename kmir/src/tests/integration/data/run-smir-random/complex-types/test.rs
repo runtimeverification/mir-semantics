@@ -1,13 +1,18 @@
+pub struct Point {
+    x: i32,
+    y: i32,
+}
+
 pub enum Foo {
     Bar,
-    Baz(i32, i32),
+    Baz(Point),
     Qux(u8, Option<u8>),
 }
 
 pub fn test(foo: Foo) {
     match foo {
         Foo::Bar => {},
-        Foo::Baz(x, y) => if x >= y {
+        Foo::Baz(Point { x, y }) => if x >= y {
             assert!(x - y >= 0);
         } else {
             assert!(y - x >= 0);

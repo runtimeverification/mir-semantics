@@ -538,6 +538,13 @@ class _RandomArgGen:
                         local=local,
                     ),
                 )
+            case StructT(fields=tys) | TupleT(components=tys):
+                return SimpleRes(
+                    TypedValue.from_local(
+                        value=self._random_struct_or_tuple_value(mut=local.mut, tys=tys),
+                        local=local,
+                    ),
+                )
             case _:
                 raise ValueError(f'Type unsupported for random value generator: {type_info}')
 
@@ -561,6 +568,9 @@ class _RandomArgGen:
         variant_idx = self._random.randrange(len(discriminants))
         values = self._random_fields(tys=fields[variant_idx], mut=mut)
         return AggregateValue(variant_idx, values)
+
+    def _random_struct_or_tuple_value(self, *, mut: bool, tys: list[Ty]) -> AggregateValue:
+        return AggregateValue(0, fields=self._random_fields(tys=tys, mut=mut))
 
     def _random_fields(self, *, tys: list[Ty], mut: bool) -> tuple[Value, ...]:
         return tuple(self._random_value(local=_Local(ty=ty, mut=mut)).value.value for ty in tys)
