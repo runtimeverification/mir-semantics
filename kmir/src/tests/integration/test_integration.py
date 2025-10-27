@@ -329,16 +329,14 @@ def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
     symbolic: bool,
     update_expected_output: bool,
+    tmp_path: Path,
 ) -> None:
-
-    (_, input_json, output_kast, depth) = test_case
+    _, input_json, output_kast, depth = test_case
     smir_info = SMIRInfo.from_file(input_json)
-
-    with tempfile.TemporaryDirectory() as temp_dir:
-        kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=Path(temp_dir), symbolic=symbolic)
-        result = kmir_backend.run_smir(smir_info, depth=depth)
-        result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
-        assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
+    kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
+    result = kmir_backend.run_smir(smir_info, depth=depth)
+    result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
+    assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
 
 
 @pytest.mark.parametrize(
