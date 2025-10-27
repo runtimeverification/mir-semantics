@@ -5,6 +5,7 @@ requires "kmir-ast.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
+requires "cheatcodes.md"
 ```
 
 ## Syntax of MIR in K
@@ -109,11 +110,12 @@ will effectively be no-ops at this level).
          ...
        </k>
 
+  // Fallback: other non-diverging intrinsics are currently no-ops
   rule <k> #execStmt(statement(statementKindIntrinsic(_INTRINSIC), _SPAN))
          =>
            .K // effect of calling INTRINSIC
          ...
-       </k>
+       </k> [owise]
 
   // statements related to locals allocation (not modelled here)
   rule <k> #execStmt(statement(statementKindDeinit(_PLACE)     , _SPAN)) => .K ... </k>
@@ -538,5 +540,6 @@ The top-level module `KMIR` includes both the control flow constructs (and trans
 module KMIR
   imports KMIR-AST // Necessary for the external Python parser
   imports KMIR-CONTROL-FLOW
+  imports KMIR-CHEATCODES
   imports KMIR-LEMMAS
 endmodule
