@@ -14,7 +14,7 @@ from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
+from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -42,8 +42,6 @@ _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR) if opts.haskell_backend else KMIR(LLVM_DEF_DIR)
-
     if opts.file:
         smir_info = SMIRInfo.from_file(Path(opts.file))
     else:
@@ -54,10 +52,16 @@ def _kmir_run(opts: RunOpts) -> None:
         # target = opts.bin if opts.bin else cargo.default_target
         smir_info = cargo.smir_for_project(clean=False)
 
-    with tempfile.TemporaryDirectory() as work_dir:
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=Path(work_dir))
+    def run(target_dir: Path):
+        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=target_dir)
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
+
+    if opts.target_dir:
+        run(target_dir=opts.target_dir)
+    else:
+        with tempfile.TemporaryDirectory() as target_dir:
+            run(target_dir=Path(target_dir))
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
@@ -185,6 +189,7 @@ def _arg_parser() -> ArgumentParser:
     run_target_selection = run_parser.add_mutually_exclusive_group()
     run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
     run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
+    run_parser.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
@@ -313,6 +318,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return RunOpts(
                 bin=ns.bin,
                 file=ns.file,
+                target_dir=ns.target_dir,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
                 haskell_backend=ns.haskell_backend,
