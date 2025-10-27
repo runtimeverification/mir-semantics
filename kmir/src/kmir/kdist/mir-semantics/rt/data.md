@@ -1398,6 +1398,42 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
+The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
+
+```k
+  rule <k> #cast(
+              thunk(#cast(DATA, castKindTransmute, TY_SRC_INNER, TY_DEST_INNER)),
+              castKindTransmute,
+              TY_SRC_OUTER,
+              TY_DEST_OUTER
+            ) => DATA
+          ...
+       </k>
+    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
+     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+```
+
+Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
+(see `#discriminant` and `rvalueDiscriminant`).
+If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value afgter adjusting to the byte length of the discriminant:
+
+```k
+  rule <k> #discriminant(
+              thunk(#cast (Integer(DATA, _, false), castKindTransmute, _, TY)),
+              TY
+            ) => Integer(DATA, #discriminantSize(lookupTy(TY)), false)
+          ...
+        </k>
+    requires #isEnumWithoutFields(lookupTy(TY))
+
+  syntax Bool ::= #isEnumWithoutFields ( TypeInfo ) [function, total]
+  // ----------------------------------------------------------------
+  rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
+  rule #isEnumWithoutFields(_OTHER) => false [owise]
+```
+
+
 ### Other casts involving pointers
 
 | CastKind                     | Description |
