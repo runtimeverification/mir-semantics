@@ -5,6 +5,7 @@
 - Purpose: prune paths by assuming a boolean condition.
 - Hook: NonDivergingIntrinsic::Assume.
 - Semantics: add a path constraint via ensures (post-condition); false makes the path infeasible; true is a no-op.
+- Usage: nightly + `#![feature(core_intrinsics)]`; inside `unsafe` call `std::intrinsics::assume(<bool>)`, e.g. `unsafe { std::intrinsics::assume(x < 10) }`.
 
 ```k
 module KMIR-CHEATCODES
@@ -23,6 +24,5 @@ module KMIR-CHEATCODES
   // Post-condition
   rule <k> #assume(BoolVal(B)) => .K ... </k>
     ensures B
-
 endmodule
 ```
