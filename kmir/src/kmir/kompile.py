@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from abc import ABC, abstractmethod
@@ -54,14 +55,65 @@ class KompiledConcrete(KompiledSMIR):
         )
 
 
+@dataclass
+class KompileMeta:
+    digest: str
+    symbolic: bool
+
+    @staticmethod
+    def load(target_dir: Path) -> KompileMeta:
+        meta_file = target_dir / 'meta.json'
+
+        if not meta_file.exists():
+            raise ValueError(f'File does not exist: {meta_file}')
+
+        data = json.loads(meta_file.read_text())
+        return KompileMeta(
+            digest=data['digest'],
+            symbolic=data['symbolic'],
+        )
+
+    def write(self, target_dir: Path) -> None:
+        meta_file = target_dir / 'meta.json'
+        meta_file.write_text(
+            json.dumps(
+                {
+                    'digest': self.digest,
+                    'symbolic': self.symbolic,
+                },
+            ),
+        )
+
+
 def kompile_smir(
     smir_info: SMIRInfo,
     target_dir: Path,
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
-    # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
-    # to decide whether or not to recompile. For now we always recompile.
+    meta: KompileMeta | None = None
+    try:
+        meta = KompileMeta.load(target_dir)
+    except Exception:
+        pass
+
+    target_hs_path = target_dir / 'haskell'
+    target_llvm_lib_path = target_dir / 'llvm-library'
+    target_llvm_path = target_dir / 'llvm'
+
+    if meta is not None and meta.digest == smir_info.digest and meta.symbolic == symbolic:
+        _LOGGER.info('Kompiled SMIR up-to-date, no kompilation necessary')
+        if symbolic:
+            return KompiledSymbolic(
+                haskell_dir=target_hs_path,
+                llvm_lib_dir=target_llvm_lib_path,
+            )
+        else:
+            return KompiledConcrete(llvm_dir=target_llvm_path)
+
+    _LOGGER.info('Kompiling SMIR program')
+
+    meta = KompileMeta(digest=smir_info.digest, symbolic=symbolic)
     target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
@@ -70,9 +122,7 @@ def kompile_smir(
 
     if symbolic:
         # Create output directories
-        target_llvm_path = target_dir / 'llvm-library'
-        target_llvmdt_path = target_llvm_path / 'dt'
-        target_hs_path = target_dir / 'haskell'
+        target_llvmdt_path = target_llvm_lib_path / 'dt'
 
         _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
@@ -81,7 +131,7 @@ def kompile_smir(
         # Process LLVM definition
         _LOGGER.info('Writing LLVM definition file')
         llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
+        llvm_def_output = target_llvm_lib_path / 'definition.kore'
         _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
         # Run llvm-kompile-matching and llvm-kompile for LLVM
@@ -103,7 +153,7 @@ def kompile_smir(
                 '-O2',
                 '--',
                 '-o',
-                target_llvm_path / 'interpreter',
+                target_llvm_lib_path / 'interpreter',
             ],
             check=True,
         )
@@ -121,13 +171,13 @@ def kompile_smir(
                     shutil.copy2(file_path, target_hs_path / file_path.name)
                 elif file_path.is_dir():
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+        meta.write(target_dir)
         return KompiledSymbolic(
             haskell_dir=target_hs_path,
-            llvm_lib_dir=target_llvm_path,
+            llvm_lib_dir=target_llvm_lib_path,
         )
 
     else:
-        target_llvm_path = target_dir / 'llvm'
         target_llvmdt_path = target_llvm_path / 'dt'
         _LOGGER.info(f'Creating directory {target_llvmdt_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
@@ -163,6 +213,7 @@ def kompile_smir(
         for file in to_copy:
             _LOGGER.info(f'Copying file {file}')
             shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
+        meta.write(target_dir)
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
