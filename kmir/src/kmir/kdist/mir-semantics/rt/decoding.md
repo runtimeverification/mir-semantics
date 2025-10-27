@@ -16,6 +16,7 @@ requires "value.md"
 requires "numbers.md"
 
 module RT-DECODING
+  imports INT
   imports BOOL
   imports MAP
 
@@ -72,6 +73,66 @@ rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
       => #decodeSliceAllocation(BYTES, lookupTy(ELEMTY))
 ```
 
+### Struct decoding
+
+Structs can have non-trivial layouts: field offsets may not match declaration order, and there may be padding.
+Decoding is only performed when explicit layout offsets are available; otherwise we leave the term as `UnableToDecode` via the default rule. This avoids incorrectly decoding data when field reordering or padding is present.
+
+When using layout offsets we always return fields in declaration order within the `Aggregate` (variant 0), regardless of the physical order in memory.
+
+```k
+// ---------------------------------------------------------------------------
+// Struct decoding rules (top level)
+// ---------------------------------------------------------------------------
+// Use the offsets when they are provided and the input length is sufficient.
+rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
+      => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
+  requires #structOffsets(LAYOUT) =/=K .MachineSizes
+   andBool 0 <=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
+   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
+  [preserves-definedness]
+
+// ---------------------------------------------------------------------------
+// Offsets and helpers (used by the rules above)
+// ---------------------------------------------------------------------------
+// MachineSize is in bits in the ABI; convert to bytes for slicing.
+syntax Int ::= #msBytes ( MachineSize ) [function, total]
+rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8 [preserves-definedness]
+rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
+
+// Extract field offsets from the struct layout when available (Arbitrary only).
+syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
+rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+rule #structOffsets(noLayoutShape) => .MachineSizes
+rule #structOffsets(_) => .MachineSizes [owise]
+
+// Minimum number of input bytes required to decode all fields by the chosen offsets.
+// Uses builtin maxInt to compute max(offset + size). The lists of types and
+// offsets must have the same length; if not, this function returns -1 to signal
+// an invalid layout for decoding.
+syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total]
+rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
+rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
+  => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
+// Any remaining pattern indicates a length mismatch between types and offsets.
+rule #neededBytesForOffsets(_, _) => -1 [owise]
+
+// Decode each field at its byte offset and return values in declaration order.
+syntax List ::= #decodeStructFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total]
+rule #decodeStructFieldsWithOffsets(_, .Tys, _OFFSETS) => .List
+rule #decodeStructFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
+rule #decodeStructFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
+  => ListItem(
+       #decodeValue(
+         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTy(TY))),
+         lookupTy(TY)
+       )
+     )
+     #decodeStructFieldsWithOffsets(BYTES, TYS, OFFSETS)
+  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
+  [preserves-definedness]
+```
+
 ### Error marker (becomes thunk) for other (unimplemented) cases
 
 All unimplemented cases will become thunks by way of this default rule:
@@ -84,20 +145,33 @@ All unimplemented cases will become thunks by way of this default rule:
 
 ```k
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo ) [function]
+  syntax Int ::= #elemSize ( TypeInfo ) [function, total]
 ```
 
 Known element sizes for common types:
 
 ```k
+  // ---- Primitive types ----
   rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
+  // Rust `char` is a 32-bit Unicode scalar value
+  rule #elemSize(typeInfoPrimitiveType(primTypeChar)) => 4
   rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
     requires #isIntType(TYPEINFO)
+  // Floating-point sizes
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF16)))  => 2
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF32)))  => 4
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF64)))  => 8
+  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF128))) => 16
+  // `str` is unsized; size only known with metadata (e.g., in fat pointers)
+  rule #elemSize(typeInfoPrimitiveType(primTypeStr)) => 0
 
+  // ---- Arrays and slices ----
   rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
     => #elemSize(lookupTy(ELEM_TY)) *Int readTyConstInt(LEN)
+  // Slice `[T]` has dynamic size; plain value is unsized
+  rule #elemSize(typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
 
-  // thin and fat pointers
+  // ---- thin and fat pointers ----
   rule #elemSize(typeInfoRefType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     requires dynamicSize(1) ==K #metadataSize(TY)
   rule #elemSize(typeInfoRefType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
@@ -107,10 +181,24 @@ Known element sizes for common types:
   rule #elemSize(typeInfoPtrType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
 
+  // ---- Tuples ----
+  // Without layout, approximate as sum of element sizes (ignores padding).
+  rule #elemSize(typeInfoTupleType(.Tys)) => 0
+  rule #elemSize(typeInfoTupleType(TY TYS))
+    => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS))
+
+  // ---- Structs and Enums with layout ----
+  rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
+  rule #elemSize(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE))))   => #msBytes(SIZE)
+
+  // ---- Function item types ----
+  // Function items are zero-sized; function pointers are handled by PtrType
+  rule #elemSize(typeInfoFunType(_)) => 0
+
   rule #elemSize(typeInfoVoidType) => 0
 
-  // FIXME can only use size from layout here. Requires adding layout first.
-  // Enum, Struct, Tuple,
+  // Fallback to keep the function total for any remaining cases
+  rule #elemSize(_) => 0 [owise]
 
   rule 0 <=Int #elemSize(_) => true [simplification, preserves-definedness]
 ```

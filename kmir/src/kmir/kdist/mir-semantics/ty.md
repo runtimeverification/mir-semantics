@@ -265,7 +265,11 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                       , discriminants: Discriminants
                       , fields: Tyss
                       , layout: MaybeLayoutShape)                [symbol(TypeInfo::EnumType)     , group(mir-enum---name--adt-def--discriminants--fields--layout)]
-                    | typeInfoStructType(MIRString, AdtDef, Tys) [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields)]
+                    | typeInfoStructType(
+                        name: MIRString
+                      , adtDef: AdtDef
+                      , fields: Tys
+                      , layout: MaybeLayoutShape)             [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields--layout)]
                     | typeInfoUnionType(MIRString, AdtDef)       [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
                     | typeInfoArrayType(Ty, MaybeTyConst)        [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
                     | typeInfoPtrType(Ty)                        [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
