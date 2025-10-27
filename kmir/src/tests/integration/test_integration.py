@@ -34,6 +34,8 @@ PROVE_RS_START_SYMBOLS = {
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
     'pointer-cast-length-test-fail': ['array_cast_test'],
+    'assume-cheatcode': ['check_assume'],
+    'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -49,6 +51,7 @@ PROVE_RS_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'closure_access_struct',
     'niche-enum',
+    'assume-cheatcode-conflict-fail',
 ]
 
 
