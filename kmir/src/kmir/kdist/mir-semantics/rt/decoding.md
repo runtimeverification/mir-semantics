@@ -88,6 +88,7 @@ When using layout offsets we always return fields in declaration order within th
 rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
       => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
   requires #structOffsets(LAYOUT) =/=K .MachineSizes
+   andBool 0 <=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
    andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
   [preserves-definedness]
 
@@ -106,15 +107,15 @@ rule #structOffsets(noLayoutShape) => .MachineSizes
 rule #structOffsets(_) => .MachineSizes [owise]
 
 // Minimum number of input bytes required to decode all fields by the chosen offsets.
-// Uses builtin maxInt to compute max(offset + size). When offsets are absent
-// (empty list), this collapses to the exact sequential size (#sumElemSizes),
-// i.e., the sum of the field sizes.
+// Uses builtin maxInt to compute max(offset + size). The lists of types and
+// offsets must have the same length; if not, this function returns -1 to signal
+// an invalid layout for decoding.
 syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total]
 rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
-rule #neededBytesForOffsets(TYS, .MachineSizes) => #sumElemSizes(TYS)
-rule #neededBytesForOffsets(.Tys, _OFFSETS) => 0 [owise]
+// Any remaining pattern indicates a length mismatch between types and offsets.
+rule #neededBytesForOffsets(_, _) => -1 [owise]
 
 // Decode each field at its byte offset and return values in declaration order.
 syntax List ::= #decodeStructFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total]
@@ -130,10 +131,6 @@ rule #decodeStructFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
      #decodeStructFieldsWithOffsets(BYTES, TYS, OFFSETS)
   requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
   [preserves-definedness]
-
-syntax Int  ::= #sumElemSizes      ( Tys )        [function, total]
-rule #sumElemSizes(.Tys) => 0
-rule #sumElemSizes(TY TYS) => #elemSize(lookupTy(TY)) +Int #sumElemSizes(TYS)
 ```
 
 ### Error marker (becomes thunk) for other (unimplemented) cases
@@ -186,8 +183,6 @@ Known element sizes for common types:
 
   // ---- Tuples ----
   // Without layout, approximate as sum of element sizes (ignores padding).
-  // Define recursively without introducing a helper to avoid cycles with
-  // `#sumElemSizes` (which itself uses `#elemSize`).
   rule #elemSize(typeInfoTupleType(.Tys)) => 0
   rule #elemSize(typeInfoTupleType(TY TYS))
     => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS))
