@@ -72,6 +72,22 @@ if [ "$FORMAT" = "json" ]; then
         "$ABS_RUST_FILE")
         
     if [ -f "$OUTPUT_FILE" ]; then
+        # If jq is available, pretty-format the generated JSON in-place
+        if command -v jq >/dev/null 2>&1; then
+            TMP_FILE="${OUTPUT_FILE}.tmp"
+            if jq '.' "$OUTPUT_FILE" > "$TMP_FILE"; then
+                mv "$TMP_FILE" "$OUTPUT_FILE"
+                echo "✨ Formatted JSON with jq: $OUTPUT_FILE"
+            else
+                rm -f "$TMP_FILE" || true
+                echo "⚠️  jq formatting failed; keeping original JSON" >&2
+            fi
+        else
+            echo "ℹ️ jq not found; skipping JSON formatting"
+            echo "   macOS: brew install jq"
+            echo "   Ubuntu/Debian: sudo apt-get install jq"
+        fi
+
         echo "✅ Successfully generated: $OUTPUT_FILE"
         echo "📊 File size: $(ls -lh "$OUTPUT_FILE" | awk '{print $5}')"
     else
