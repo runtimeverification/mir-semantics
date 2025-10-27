@@ -301,6 +301,18 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'niche-enum' / 'niche-enum.state',
         None,
     ),
+    (
+        'newtype-pubkey',
+        EXEC_DATA_DIR / 'newtype-pubkey' / 'newtype-pubkey.smir.json',
+        EXEC_DATA_DIR / 'newtype-pubkey' / 'newtype-pubkey.state',
+        1000,
+    ),
+    (
+        'struct-multi',
+        EXEC_DATA_DIR / 'struct-multi' / 'struct-multi.smir.json',
+        EXEC_DATA_DIR / 'struct-multi' / 'struct-multi.state',
+        2000,
+    ),
 ]
 
 
