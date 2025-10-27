@@ -60,24 +60,6 @@ def kompile_smir(
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
-    def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
-        with open(input_file, 'r') as f:
-            lines = f.readlines()
-
-        # last line must start with 'endmodule'
-        last_line = lines[-1]
-        assert last_line.startswith('endmodule')
-        new_lines = lines[:-1]
-
-        # Insert rules before the endmodule line
-        new_lines.append(f'\n// Generated from file {input_file}\n\n')
-        new_lines.extend(rules)
-        new_lines.append('\n' + last_line)
-
-        # Write to output file
-        with open(output_file, 'w') as f:
-            f.writelines(new_lines)
-
     target_path = Path(target_dir)
     # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
     # to decide whether or not to recompile. For now we always recompile.
@@ -293,3 +275,22 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
 
     alloc_id_term = KApply('allocId', intToken(alloc_id))
     return alloc_id_term, value.to_kast()
+
+
+def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
+    with open(input_file, 'r') as f:
+        lines = f.readlines()
+
+    # last line must start with 'endmodule'
+    last_line = lines[-1]
+    assert last_line.startswith('endmodule')
+    new_lines = lines[:-1]
+
+    # Insert rules before the endmodule line
+    new_lines.append(f'\n// Generated from file {input_file}\n\n')
+    new_lines.extend(rules)
+    new_lines.append('\n' + last_line)
+
+    # Write to output file
+    with open(output_file, 'w') as f:
+        f.writelines(new_lines)
