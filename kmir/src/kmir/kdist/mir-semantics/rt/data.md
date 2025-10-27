@@ -1015,9 +1015,10 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), 128, false) // parameters for stored u128
+        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), #discriminantSize(lookupTy(TY)), false)
         ...
        </k>
+    requires #discriminantSize(lookupTy(TY)) =/=Int 0
 
   syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
                | #lookupDiscrAux ( Discriminants , Int ) [function]
@@ -1028,6 +1029,26 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , IDX) => RESULT requires IDX ==Int 0
   rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX -Int 1) requires 0 <Int IDX [owise]
+
+  syntax Int ::= #discriminantSize ( TypeInfo )    [function, total]
+               | #discriminantSize ( LayoutShape ) [function, total]
+               | #discriminantSize ( Scalar )      [function, total]
+               | #intLength (IntegerLength)        [function, total]
+  // ------------------------------------------------------------
+  rule #discriminantSize(typeInfoEnumType(_, _, _, _, someLayoutShape(LAYOUT))) => #discriminantSize(LAYOUT)
+  rule #discriminantSize(_OTHER_TYPE:TypeInfo) => 0  [owise]
+
+  rule #discriminantSize(layoutShape(_, variantsShapeMultiple(mk(TAG, _, _, _)), _, _, _)) => #discriminantSize(TAG)
+  rule #discriminantSize(_OTHER:LayoutShape) => 0  [owise]
+
+  rule #discriminantSize(scalarInitialized(mk(primitiveInt(mk(INTLENGTH, _SIGNED)), _VALIDRANGE))) => #intLength(INTLENGTH)
+  rule #discriminantSize(_OTHER:Scalar) => 0  [owise]
+
+  rule #intLength(integerLengthI8)   => 8
+  rule #intLength(integerLengthI16)  => 16
+  rule #intLength(integerLengthI32)  => 32
+  rule #intLength(integerLengthI64)  => 64
+  rule #intLength(integerLengthI128) => 128
 ```
 
 ```k
