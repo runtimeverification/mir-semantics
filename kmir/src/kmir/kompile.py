@@ -60,8 +60,6 @@ def kompile_smir(
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
-    kmir = KMIR(HASKELL_DEF_DIR)
-
     def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
         with open(input_file, 'r') as f:
             lines = f.readlines()
@@ -85,6 +83,7 @@ def kompile_smir(
     # to decide whether or not to recompile. For now we always recompile.
     target_path.mkdir(parents=True, exist_ok=True)
 
+    kmir = KMIR(HASKELL_DEF_DIR)
     rules = _make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
