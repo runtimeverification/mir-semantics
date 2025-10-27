@@ -90,21 +90,29 @@ class AggregateValue(Value):
 class AllocRefValue(Value):
     alloc_id: AllocId
     # projection_elems: tuple[ProjectionElem, ...]
-    metadata: MetadataSize
+    metadata: Metadata
 
     def to_kast(self) -> KInner:
         return KApply(
             'Value::AllocRef',
             KApply('allocId', intToken(self.alloc_id)),
             KApply('ProjectionElems::empty'),  # TODO
-            KApply(
-                'Metadata',
-                (
-                    self.metadata.to_kast(),
-                    intToken(0),
-                    self.metadata.to_kast(),
-                ),
-            ),
+            self.metadata.to_kast(),
+        )
+
+
+@dataclass
+class Metadata:
+    size: MetadataSize
+    pointer_offset: int
+    origin_size: MetadataSize
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Metadata',
+            self.size.to_kast(),
+            intToken(self.pointer_offset),
+            self.origin_size.to_kast(),
         )
 
 
@@ -114,12 +122,12 @@ class MetadataSize(ABC):
 
 
 @dataclass
-class NoMetadata(MetadataSize):
+class NoSize(MetadataSize):
     def to_kast(self) -> KInner:
-        return KApply('noMetadata')
+        return KApply('noMetadataSize')
 
 
-NO_METADATA: Final = NoMetadata()
+NO_SIZE: Final = NoSize()
 
 
 @dataclass
