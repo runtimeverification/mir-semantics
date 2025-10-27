@@ -56,7 +56,7 @@ class KMIR(KProve, KRun, KParse):
 
     @staticmethod
     def from_kompiled_kore(
-        smir_info: SMIRInfo, target_dir: str, bug_report: Path | None = None, symbolic: bool = True
+        smir_info: SMIRInfo, target_dir: Path, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
         from .kompile import kompile_smir
 
@@ -152,7 +152,7 @@ class KMIR(KProve, KRun, KParse):
                 # or else implement this in the `from_kompiled_kore` constructor
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
                 )
             else:
                 _LOGGER.info(f'Constructing initial proof: {label}')
@@ -176,7 +176,7 @@ class KMIR(KProve, KRun, KParse):
                     _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
                 kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=str(target_path)
+                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
                 )
 
                 apr_proof = kmir.apr_proof_from_smir(

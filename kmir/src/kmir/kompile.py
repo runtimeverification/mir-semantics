@@ -4,7 +4,6 @@ import logging
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KSort
@@ -15,6 +14,7 @@ from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Final
 
     from pyk.kast import KInner
@@ -56,14 +56,13 @@ class KompiledConcrete(KompiledSMIR):
 
 def kompile_smir(
     smir_info: SMIRInfo,
-    target_dir: str,
+    target_dir: Path,
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
-    target_path = Path(target_dir)
     # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
     # to decide whether or not to recompile. For now we always recompile.
-    target_path.mkdir(parents=True, exist_ok=True)
+    target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
     rules = _make_kore_rules(kmir, smir_info)
@@ -71,9 +70,9 @@ def kompile_smir(
 
     if symbolic:
         # Create output directories
-        target_llvm_path = target_path / 'llvm-library'
+        target_llvm_path = target_dir / 'llvm-library'
         target_llvmdt_path = target_llvm_path / 'dt'
-        target_hs_path = target_path / 'haskell'
+        target_hs_path = target_dir / 'haskell'
 
         _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
@@ -126,9 +125,9 @@ def kompile_smir(
             haskell_dir=target_hs_path,
             llvm_lib_dir=target_llvm_path,
         )
-    else:
 
-        target_llvm_path = target_path / 'llvm'
+    else:
+        target_llvm_path = target_dir / 'llvm'
         target_llvmdt_path = target_llvm_path / 'dt'
         _LOGGER.info(f'Creating directory {target_llvmdt_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)

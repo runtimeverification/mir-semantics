@@ -335,7 +335,7 @@ def test_exec_smir(
     smir_info = SMIRInfo.from_file(input_json)
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=temp_dir, symbolic=symbolic)
+        kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=Path(temp_dir), symbolic=symbolic)
         result = kmir_backend.run_smir(smir_info, depth=depth)
         result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
         assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)

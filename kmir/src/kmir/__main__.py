@@ -55,7 +55,7 @@ def _kmir_run(opts: RunOpts) -> None:
         smir_info = cargo.smir_for_project(clean=False)
 
     with tempfile.TemporaryDirectory() as work_dir:
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=work_dir)
+        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=Path(work_dir))
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
 
