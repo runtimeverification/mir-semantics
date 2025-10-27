@@ -54,7 +54,7 @@
       ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 15 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 4 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( BoolVal ( true ) , ty ( 4 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 4 ) , mutabilityMut ) )
       ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , dynamicSize ( 8 ) ) ) , ty ( 53 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 2 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 54 ) , mutabilityMut ) )
