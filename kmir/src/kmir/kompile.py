@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KSort
@@ -15,6 +15,7 @@ from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Final
 
     from pyk.kast import KInner
@@ -54,45 +55,74 @@ class KompiledConcrete(KompiledSMIR):
         )
 
 
+@dataclass
+class KompileDigest:
+    digest: str
+    symbolic: bool
+
+    @staticmethod
+    def load(target_dir: Path) -> KompileDigest:
+        digest_file = KompileDigest._digest_file(target_dir)
+
+        if not digest_file.exists():
+            raise ValueError(f'Digest file does not exist: {digest_file}')
+
+        data = json.loads(digest_file.read_text())
+        return KompileDigest(
+            digest=data['digest'],
+            symbolic=data['symbolic'],
+        )
+
+    def write(self, target_dir: Path) -> None:
+        self._digest_file(target_dir).write_text(
+            json.dumps(
+                {
+                    'digest': self.digest,
+                    'symbolic': self.symbolic,
+                },
+            ),
+        )
+
+    @staticmethod
+    def _digest_file(target_dir: Path) -> Path:
+        return target_dir / 'smir-digest.json'
+
+
 def kompile_smir(
     smir_info: SMIRInfo,
-    target_dir: str,
+    target_dir: Path,
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
+    kompile_digest: KompileDigest | None = None
+    try:
+        kompile_digest = KompileDigest.load(target_dir)
+    except Exception:
+        pass
+
+    target_hs_path = target_dir / 'haskell'
+    target_llvm_lib_path = target_dir / 'llvm-library'
+    target_llvm_path = target_dir / 'llvm'
+
+    if kompile_digest is not None and kompile_digest.digest == smir_info.digest and kompile_digest.symbolic == symbolic:
+        _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
+        if symbolic:
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+        else:
+            return KompiledConcrete(llvm_dir=target_llvm_path)
+
+    _LOGGER.info(f'Kompiling SMIR program: {target_dir}')
+
+    kompile_digest = KompileDigest(digest=smir_info.digest, symbolic=symbolic)
+    target_dir.mkdir(parents=True, exist_ok=True)
+
     kmir = KMIR(HASKELL_DEF_DIR)
-
-    def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
-        with open(input_file, 'r') as f:
-            lines = f.readlines()
-
-        # last line must start with 'endmodule'
-        last_line = lines[-1]
-        assert last_line.startswith('endmodule')
-        new_lines = lines[:-1]
-
-        # Insert rules before the endmodule line
-        new_lines.append(f'\n// Generated from file {input_file}\n\n')
-        new_lines.extend(rules)
-        new_lines.append('\n' + last_line)
-
-        # Write to output file
-        with open(output_file, 'w') as f:
-            f.writelines(new_lines)
-
-    target_path = Path(target_dir)
-    # TODO if target dir exists and contains files, check file dates (definition files and interpreter)
-    # to decide whether or not to recompile. For now we always recompile.
-    target_path.mkdir(parents=True, exist_ok=True)
-
     rules = _make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
         # Create output directories
-        target_llvm_path = target_path / 'llvm-library'
-        target_llvmdt_path = target_llvm_path / 'dt'
-        target_hs_path = target_path / 'haskell'
+        target_llvmdt_path = target_llvm_lib_path / 'dt'
 
         _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
@@ -101,7 +131,7 @@ def kompile_smir(
         # Process LLVM definition
         _LOGGER.info('Writing LLVM definition file')
         llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
+        llvm_def_output = target_llvm_lib_path / 'definition.kore'
         _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
 
         # Run llvm-kompile-matching and llvm-kompile for LLVM
@@ -123,7 +153,7 @@ def kompile_smir(
                 '-O2',
                 '--',
                 '-o',
-                target_llvm_path / 'interpreter',
+                target_llvm_lib_path / 'interpreter',
             ],
             check=True,
         )
@@ -141,13 +171,11 @@ def kompile_smir(
                     shutil.copy2(file_path, target_hs_path / file_path.name)
                 elif file_path.is_dir():
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
-        return KompiledSymbolic(
-            haskell_dir=target_hs_path,
-            llvm_lib_dir=target_llvm_path,
-        )
-    else:
 
-        target_llvm_path = target_path / 'llvm'
+        kompile_digest.write(target_dir)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+
+    else:
         target_llvmdt_path = target_llvm_path / 'dt'
         _LOGGER.info(f'Creating directory {target_llvmdt_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
@@ -183,6 +211,8 @@ def kompile_smir(
         for file in to_copy:
             _LOGGER.info(f'Copying file {file}')
             shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
+
+        kompile_digest.write(target_dir)
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
@@ -294,3 +324,22 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
 
     alloc_id_term = KApply('allocId', intToken(alloc_id))
     return alloc_id_term, value.to_kast()
+
+
+def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
+    with open(input_file, 'r') as f:
+        lines = f.readlines()
+
+    # last line must start with 'endmodule'
+    last_line = lines[-1]
+    assert last_line.startswith('endmodule')
+    new_lines = lines[:-1]
+
+    # Insert rules before the endmodule line
+    new_lines.append(f'\n// Generated from file {input_file}\n\n')
+    new_lines.extend(rules)
+    new_lines.append('\n' + last_line)
+
+    # Write to output file
+    with open(output_file, 'w') as f:
+        f.writelines(new_lines)

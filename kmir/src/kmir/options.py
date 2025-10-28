@@ -22,6 +22,7 @@ class KMirOpts(LoggingOptions): ...
 class RunOpts(KMirOpts):
     bin: str | None
     file: str | None
+    target_dir: Path | None
     depth: int
     start_symbol: str
     haskell_backend: bool

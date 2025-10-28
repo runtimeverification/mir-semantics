@@ -41,6 +41,13 @@ class SMIRInfo:
         return self._smir['name']
 
     @cached_property
+    def digest(self) -> str:
+        import hashlib
+
+        hash_object = hashlib.sha256(str(self._smir).encode('UTF-8'))
+        return hash_object.hexdigest()
+
+    @cached_property
     def allocs(self) -> dict[AllocId, AllocInfo]:
         return {
             alloc_info.alloc_id: alloc_info for alloc_info in (AllocInfo.from_dict(dct) for dct in self._smir['allocs'])
