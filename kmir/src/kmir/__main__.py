@@ -210,6 +210,9 @@ def _arg_parser() -> ArgumentParser:
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
     prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
+    prove_args.add_argument(
+        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on function calls'
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -365,6 +368,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
+                break_on_calls=ns.break_on_calls,
             )
         case 'link':
             return LinkOpts(
