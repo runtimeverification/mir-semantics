@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import logging
 from itertools import count
+from random import Random
 from typing import TYPE_CHECKING, NamedTuple
 
-from pyk.kast.inner import KApply, KSort, KVariable, Subst, build_cons
+from pyk.kast.inner import KApply, KSequence, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
 from pyk.kast.prelude.collections import list_empty, list_of
-from pyk.kast.prelude.kint import eqInt, leInt
+from pyk.kast.prelude.kint import eqInt, intToken, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
 
@@ -29,7 +30,6 @@ from .value import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping, Sequence
-    from random import Random
     from typing import Any, Final
 
     from pyk.kast import KInner
@@ -56,7 +56,7 @@ class SymbolicMode(NamedTuple): ...
 
 
 class RandomMode(NamedTuple):
-    random: Random
+    seed: int
 
 
 CallConfigMode = ConcreteMode | SymbolicMode | RandomMode
@@ -89,12 +89,12 @@ def make_call_config(
                 types=smir_info.types,
             )
             return CallConfig(config=config, constraints=tuple(constraints))
-        case RandomMode(random):
+        case RandomMode(seed):
             config = _make_random_call_config(
                 definition=definition,
                 fn_data=fn_data,
                 types=smir_info.types,
-                random=random,
+                seed=seed,
             )
             return CallConfig(config=config, constraints=())
 
@@ -148,6 +148,7 @@ def _make_concrete_call_config(
         definition=definition,
         fn_data=fn_data,
         localvars=[],
+        seed=None,
     )
 
 
@@ -156,13 +157,14 @@ def _make_random_call_config(
     definition: KDefinition,
     fn_data: _FunctionData,
     types: Mapping[Ty, TypeMetadata],
-    random: Random,
+    seed: int,
 ) -> KInner:
-    localvars = _random_locals(random, fn_data.args, types)
+    localvars = _random_locals(Random(seed), fn_data.args, types)
     return _make_concrete_call_config_with_locals(
         definition=definition,
         fn_data=fn_data,
         localvars=localvars,
+        seed=seed,
     )
 
 
@@ -171,23 +173,35 @@ def _make_concrete_call_config_with_locals(
     definition: KDefinition,
     fn_data: _FunctionData,
     localvars: list[KInner],
+    seed: int | None,
 ) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
         _, res = split_config_from(init_config)
         return res
 
-    # The configuration is the default initial configuration, with the K cell updated with the call terminator
+    # The configuration is the default initial configuration,
+    # with the K cell updated with the call terminator (and with an srandInt call, if seed is set)
     # TODO: see if this can be expressed in more simple terms
+
+    k_cell = fn_data.call_terminator
+    if seed is not None:
+        # Seed the pseudorandom generator. This is necessary for cheatcode use in concrete execution.
+        k_cell = KSequence(
+            KApply('srandInt(_)_INT-COMMON_K_Int', intToken(seed)),
+            k_cell,
+        )
+
     subst = Subst(
         {
             **init_subst(),
             **{
-                'K_CELL': fn_data.call_terminator,
+                'K_CELL': k_cell,
                 'LOCALS_CELL': list_of(localvars),
             },
         }
     )
+
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
     config = subst(empty_config)
     assert not free_vars(config), f'Config by construction should not have any free variables: {config}'
