@@ -24,6 +24,7 @@ from .options import (
     ProveRSOpts,
     PruneOpts,
     RunOpts,
+    SectionEdgeOpts,
     ShowOpts,
     ViewOpts,
 )
@@ -141,6 +142,27 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
+    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+
+    # TODO: Check is empty proof path is rejected
+    if opts.proof_dir is None:
+        raise ValueError('Must pass --proof-dir to section-edge command')
+
+    proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+    source_id, target_id = opts.edge
+
+    print(f'Source ID: {source_id}, Target ID: {target_id}') # TODO: REMOVE
+
+    with kmir.kcfg_explore(proof.id) as kcfg_explore:
+        node_ids = kcfg_explore.section_edge(
+            proof.kcfg, source_id=int(source_id), target_id=int(target_id), logs=proof.logs, sections=opts.sections
+        )
+        _LOGGER.info(f'Added nodes on edge {(source_id, target_id)}: {node_ids}')
+
+    proof.write_proof_data()
+
+
 def _kmir_info(opts: InfoOpts) -> None:
     smir_info = SMIRInfo.from_file(opts.smir_file)
 
@@ -171,6 +193,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_show(opts)
         case PruneOpts():
             _kmir_prune(opts)
+        case SectionEdgeOpts():
+            _kmir_section_edge(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
         case LinkOpts():
@@ -290,6 +314,16 @@ def _arg_parser() -> ArgumentParser:
     )
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
+    section_edge_parser = command_parser.add_parser(
+        'section-edge', help='Break an edge into sections', parents=[kcli_args.logging_args, proof_args]
+    )
+    section_edge_parser.add_argument(
+        'edge', type=lambda s: tuple(s.split(',')), help='Edge to section in CFG (format: `source,target`)'
+    )
+    section_edge_parser.add_argument(
+        '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
+    )
+
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
@@ -357,6 +391,9 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'prune':
             proof_dir = Path(ns.proof_dir)
             return PruneOpts(proof_dir, ns.id, ns.node_id)
+        case 'section-edge':
+            proof_dir = Path(ns.proof_dir)
+            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, ns.sections)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),

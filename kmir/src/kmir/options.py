@@ -193,6 +193,24 @@ class InfoOpts(KMirOpts):
 
 
 @dataclass
+class SectionEdgeOpts(ProofOpts):
+    edge: tuple[str, str]
+    sections: int
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        edge: tuple[str, str],
+        sections: int = 2,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.edge = edge
+        self.sections = sections
+
+
+@dataclass
 class LinkOpts(KMirOpts):
     smir_files: list[Path]
     output_file: Path
