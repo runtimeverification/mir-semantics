@@ -147,9 +147,6 @@ class KMIR(KProve, KRun, KParse):
                 _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
                 apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
 
-                # TODO avoid compilation, use compilation output from the proof directory
-                # kmir = KMIR(opts.proof_dir / label / haskell, opts.proof_dir / label / llvm-library) if they exist
-                # or else implement this in the `from_kompiled_kore` constructor
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
                     smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
