@@ -203,6 +203,27 @@ The code uses some helper sorts for better readability.
   rule toAmount(fromAmount(AMT)) => AMT [simplification, preserves-definedness]
   rule fromAmount(toAmount(VAL)) => VAL [simplification, preserves-definedness]
 
+  // Amount Round-trip Simplifications:
+  rule Bytes2Int(
+          #bytesFrom(
+            ListItem(Integer(AMOUNT &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int 255, 8, false))
+            ListItem(Integer(AMOUNT >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int 255, 8, false))
+          ) ,
+          LE,
+          Unsigned
+        ) => AMOUNT
+    [simplification, symbolic(AMOUNT), preserves-definedness]
+
+
+
+  // ------------------------------------------------------------------------------
+
   syntax Flag ::= Flag ( Int )       // 4 bytes , first byte representing bool. From = 4 bytes, to = read/check all bytes
                 | FlagError ( Value ) // to make converters total, add an error constructor
 
