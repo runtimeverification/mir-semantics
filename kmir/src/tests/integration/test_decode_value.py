@@ -31,7 +31,7 @@ def definition_dir():  # -> Path:
     try:
         with open(lock_file, 'x') as _:
             # generate and compile an LLVM interpreter with the type-table
-            _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=str(target_dir), symbolic=False)
+            _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=target_dir, symbolic=False)
         lock_file.unlink()
     except FileExistsError:
         # wait loop until interpreter exists, max 1min

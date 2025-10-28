@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 from dataclasses import dataclass
 from functools import cached_property
 from random import Random
@@ -11,7 +10,6 @@ from pyk.kast.prelude.k import GENERATED_TOP_CELL
 from pyk.kore.tools import kore_print
 from pyk.ktool.krun import llvm_interpret
 
-from kmir.cargo import cargo_get_smir_json
 from kmir.kast import RandomMode, make_call_config
 from kmir.kmir import KMIR
 from kmir.smir import SMIRInfo
@@ -47,26 +45,13 @@ def project_name(request: FixtureRequest) -> str:
 
 
 @pytest.fixture(scope='module')
-def project_dir(project_name: str, tmp_path_factory: TempPathFactory) -> Path:
-    source_dir = TEST_ROOT_DIR / project_name
-    target_dir = tmp_path_factory.mktemp(project_name)
-    shutil.copytree(source_dir, target_dir, dirs_exist_ok=True)
-    return target_dir
+def smir_info(project_name: str) -> SMIRInfo:
+    smir_json_file = TEST_ROOT_DIR / project_name / 'test.smir.json'
+    return SMIRInfo.from_file(smir_json_file)
 
 
 @pytest.fixture(scope='module')
-def smir_info(project_dir: Path) -> SMIRInfo:
-    smir_data = cargo_get_smir_json(
-        rs_file=project_dir / 'test.rs',
-        flags=['--crate-type', 'lib', '--deny', 'warnings'],
-        cwd=project_dir,  # TODO: Find a better way to set the .smir.json output path
-        save_smir=True,
-    )
-    return SMIRInfo(smir_data)
-
-
-@pytest.fixture(scope='module')
-def kmir(smir_info: SMIRInfo, project_name: str, tmp_path_factory) -> KMIR:
+def kmir(smir_info: SMIRInfo, project_name: str, tmp_path_factory: TempPathFactory) -> KMIR:
     target_dir = tmp_path_factory.mktemp(f'{project_name}-kompiled')
     kmir = KMIR.from_kompiled_kore(
         smir_info=smir_info,
