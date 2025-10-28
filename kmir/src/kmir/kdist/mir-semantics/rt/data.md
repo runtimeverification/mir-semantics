@@ -1549,16 +1549,14 @@ are correct.
   // performs the given operation on infinite precision integers
   syntax Int ::= onInt( BinOp, Int, Int ) [function]
   // -----------------------------------------------
-  rule onInt(binOpAdd, X, Y)          => X +Int Y
-  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y
-  rule onInt(binOpSub, X, Y)          => X -Int Y
-  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y
-  rule onInt(binOpMul, X, Y)          => X *Int Y
-  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y
-  rule onInt(binOpDiv, X, Y)          => X /Int Y
-    requires Y =/=Int 0
-  rule onInt(binOpRem, X, Y)          => X %Int Y
-    requires Y =/=Int 0
+  rule onInt(binOpAdd, X, Y)          => X +Int Y [preserves-definedness]
+  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y [preserves-definedness]
+  rule onInt(binOpSub, X, Y)          => X -Int Y [preserves-definedness]
+  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y [preserves-definedness]
+  rule onInt(binOpMul, X, Y)          => X *Int Y [preserves-definedness]
+  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y [preserves-definedness]
+  rule onInt(binOpDiv, X, Y)          => X /Int Y requires Y =/=Int 0 [preserves-definedness]
+  rule onInt(binOpRem, X, Y)          => X %Int Y requires Y =/=Int 0 [preserves-definedness]
   // operation undefined otherwise
 
   // error cases for isArithmetic(BOP):
