@@ -1042,6 +1042,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   rule #discriminantSize(_OTHER:LayoutShape) => 0  [owise]
 
   rule #discriminantSize(scalarInitialized(mk(primitiveInt(mk(INTLENGTH, _SIGNED)), _VALIDRANGE))) => #intLength(INTLENGTH)
+  rule #discriminantSize(scalarInitialized(mk(primitivePointer(_)                 , _VALIDRANGE))) => 64 // pointer size assumed 64 bit
   rule #discriminantSize(_OTHER:Scalar) => 0  [owise]
 
   rule #intLength(integerLengthI8)   => 8
