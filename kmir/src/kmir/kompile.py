@@ -56,26 +56,25 @@ class KompiledConcrete(KompiledSMIR):
 
 
 @dataclass
-class KompileMeta:
+class KompileDigest:
     digest: str
     symbolic: bool
 
     @staticmethod
-    def load(target_dir: Path) -> KompileMeta:
-        meta_file = target_dir / 'meta.json'
+    def load(target_dir: Path) -> KompileDigest:
+        digest_file = KompileDigest._digest_file(target_dir)
 
-        if not meta_file.exists():
-            raise ValueError(f'File does not exist: {meta_file}')
+        if not digest_file.exists():
+            raise ValueError(f'Digest file does not exist: {digest_file}')
 
-        data = json.loads(meta_file.read_text())
-        return KompileMeta(
+        data = json.loads(digest_file.read_text())
+        return KompileDigest(
             digest=data['digest'],
             symbolic=data['symbolic'],
         )
 
     def write(self, target_dir: Path) -> None:
-        meta_file = target_dir / 'meta.json'
-        meta_file.write_text(
+        self._digest_file(target_dir).write_text(
             json.dumps(
                 {
                     'digest': self.digest,
@@ -84,6 +83,10 @@ class KompileMeta:
             ),
         )
 
+    @staticmethod
+    def _digest_file(target_dir: Path) -> Path:
+        return target_dir / 'smir-digest.json'
+
 
 def kompile_smir(
     smir_info: SMIRInfo,
@@ -91,9 +94,9 @@ def kompile_smir(
     bug_report: Path | None = None,
     symbolic: bool = True,
 ) -> KompiledSMIR:
-    meta: KompileMeta | None = None
+    kompile_digest: KompileDigest | None = None
     try:
-        meta = KompileMeta.load(target_dir)
+        kompile_digest = KompileDigest.load(target_dir)
     except Exception:
         pass
 
@@ -101,19 +104,16 @@ def kompile_smir(
     target_llvm_lib_path = target_dir / 'llvm-library'
     target_llvm_path = target_dir / 'llvm'
 
-    if meta is not None and meta.digest == smir_info.digest and meta.symbolic == symbolic:
-        _LOGGER.info('Kompiled SMIR up-to-date, no kompilation necessary')
+    if kompile_digest is not None and kompile_digest.digest == smir_info.digest and kompile_digest.symbolic == symbolic:
+        _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
-            return KompiledSymbolic(
-                haskell_dir=target_hs_path,
-                llvm_lib_dir=target_llvm_lib_path,
-            )
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
         else:
             return KompiledConcrete(llvm_dir=target_llvm_path)
 
-    _LOGGER.info('Kompiling SMIR program')
+    _LOGGER.info(f'Kompiling SMIR program: {target_dir}')
 
-    meta = KompileMeta(digest=smir_info.digest, symbolic=symbolic)
+    kompile_digest = KompileDigest(digest=smir_info.digest, symbolic=symbolic)
     target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
@@ -171,11 +171,9 @@ def kompile_smir(
                     shutil.copy2(file_path, target_hs_path / file_path.name)
                 elif file_path.is_dir():
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
-        meta.write(target_dir)
-        return KompiledSymbolic(
-            haskell_dir=target_hs_path,
-            llvm_lib_dir=target_llvm_lib_path,
-        )
+
+        kompile_digest.write(target_dir)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
@@ -213,7 +211,8 @@ def kompile_smir(
         for file in to_copy:
             _LOGGER.info(f'Copying file {file}')
             shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
-        meta.write(target_dir)
+
+        kompile_digest.write(target_dir)
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
