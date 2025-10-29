@@ -415,7 +415,7 @@ An `AccountInfo` reference is passed to the function.
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
                  | #mkPTokenRent ( Place )
-                //  | #mkPTokenMultisig ( Place )
+             //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
   // dereference, then read and dereference pointer in field 1 to read the account data
@@ -444,12 +444,18 @@ An `AccountInfo` reference is passed to the function.
             #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
+```
 
+```k
   syntax Evaluation ::= #addAccount ( Evaluation )  [seqstrict()]
                       | #addMint ( Evaluation )     [seqstrict()]
                       | #addRent ( Evaluation )     [seqstrict()]
-                      // | #addMultisig ( Evaluation ) [seqstrict()]
+                   // | #addMultisig ( Evaluation ) [seqstrict()]
+```
 
+#### `#addAccount`
+
+```{.k .symbolic}
   // NB these rewrites also ensure the data_len field in PAcc is set correctly for the given data
   rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountAccount(
@@ -477,7 +483,11 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
     andBool DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
+```
 
+#### `#addMint`
+
+```{.k .symbolic}
   rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMint(
             #toPAcc(P_ACC),
@@ -496,7 +506,11 @@ An `AccountInfo` reference is passed to the function.
     andBool size(?FREEZE_AUTH_KEY) ==Int 32 andBool allBytes(?FREEZE_AUTH_KEY)
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
     andBool DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
+```
 
+#### `#addRent`
+
+```{.k .symbolic}
   rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountRent(
             #toPAcc(P_ACC),
