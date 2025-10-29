@@ -464,18 +464,20 @@ An `AccountInfo` reference is passed to the function.
   // NB these rewrites also ensure the data_len field in PAcc is set correctly for the given data
   rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountAccount(
-            #toPAcc(P_ACC),
-            IAcc(Key(?MINT),
-                 Key(?OWNER),
-                 Amount(?AMOUNT),
-                 Flag(?DELEGATEFLAG), Key(?DELEGATE),
-                 U8(?STATE),
-                 Flag(?NATIVEFLAG),
-                 Amount(?NATIVE_AMOUNT),
-                 Amount(?DELEG_AMOUNT),
-                 Flag(?CLOSEFLAG), Key(?CLOSE_AUTH)
-              )
-          )
+           #toPAcc(P_ACC),
+           IAcc(Key(?MINT),
+                Key(?OWNER),
+                Amount(?AMOUNT),
+                Flag(?DELEGATEFLAG),
+                Key(?DELEGATE),
+                U8(?STATE),
+                Flag(?NATIVEFLAG),
+                Amount(?NATIVE_AMOUNT),
+                Amount(?DELEG_AMOUNT),
+                Flag(?CLOSEFLAG),
+                Key(?CLOSE_AUTH)
+           )
+         )
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
     andBool 0 <=Int ?DELEGATEFLAG andBool ?DELEGATEFLAG <=Int 1 // not allowed any other values
     andBool 0 <=Int ?NATIVEFLAG andBool ?NATIVEFLAG <=Int 1 // not allowed any other values
@@ -488,6 +490,26 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
     andBool DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
+```
+
+```{.k .concrete}
+  rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountAccount(
+           #toPAcc(P_ACC),
+           IAcc(#randKey(),      // mint
+                #randKey(),      // owner
+                #randAmount(),   // amount
+                Flag(#randU1()), // delegateflag, only 0 or 1 allowed
+                #randKey(),      // delegate
+                U8(#randU8()),   // state
+                Flag(#randU1()), // nativeflag, only 0 or 1 allowed
+                #randAmount(),   // native_amount
+                #randAmount(),   // deleg_amount
+                Flag(#randU1()), // closeflag, only 0 or 1 allowed
+                #randKey()       // close_auth
+           )
+         )
+    requires DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 #### `#addMint`
@@ -827,17 +849,55 @@ NB The projection rule must have higher priority than the one which auto-project
 ## Helpers for fuzzing
 
 ```{.k .concrete}
-  syntax Int ::= #randU8()  [function, total, impure, symbol(randU8) ]
+  syntax Int ::= #randU1()  [function, total, impure, symbol(randU1) ]
+               | #randU8()  [function, total, impure, symbol(randU8) ]
                | #randU32() [function, total, impure, symbol(randU32)]
                | #randU64() [function, total, impure, symbol(randU64)]
 
+  rule #randU1()  => randInt(2)
   rule #randU8()  => randInt(256)
   rule #randU32() => randInt(4294967296)
   rule #randU64() => randInt(18446744073709551616)
 
   syntax Float ::= #randExemptThreshold() [function, total, impure, symbol(randExemptThreshold)]
-
   rule #randExemptThreshold() => Int2Float(#randU32(), 52, 11)
+
+  syntax Amount ::= #randAmount() [function, total, impure, symbol(randAmount)]
+  rule #randAmount() => Amount(#randU64())
+
+  syntax Key ::= #randKey() [function, total, impure, symbol(randKey)]
+  rule #randKey() => Key(ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false)))
 ```
 
 ```k
