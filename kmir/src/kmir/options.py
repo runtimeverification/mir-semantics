@@ -203,11 +203,13 @@ class SectionEdgeOpts(ProofOpts):
         id: str,
         edge: tuple[str, str],
         sections: int = 2,
+        bug_report: Path | None = None,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.id = id
         self.edge = edge
         self.sections = sections
+        self.bug_report = bug_report
 
 
 @dataclass
