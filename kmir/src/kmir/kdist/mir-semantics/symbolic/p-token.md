@@ -517,14 +517,16 @@ An `AccountInfo` reference is passed to the function.
 ```{.k .symbolic}
   rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMint(
-            #toPAcc(P_ACC),
-            IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
-                  Amount(?SUPPLY),
-                  U8(?DECIMALS),
-                  U8(?INITIALISED),
-                  Flag(?FREEZE_AUTH_FLAG), Key(?FREEZE_AUTH_KEY)
-              )
-          )
+           #toPAcc(P_ACC),
+           IMint(Flag(?MINT_AUTH_FLAG),
+                 Key(?MINT_AUTH_KEY),
+                 Amount(?SUPPLY),
+                 U8(?DECIMALS),
+                 U8(?INITIALISED),
+                 Flag(?FREEZE_AUTH_FLAG),
+                 Key(?FREEZE_AUTH_KEY)
+           )
+         )
     ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
     andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 1 // not allowed any other values
     andBool 0 <=Int ?MINT_AUTH_FLAG andBool ?MINT_AUTH_FLAG <=Int 1 // not allowed any other values
@@ -533,6 +535,22 @@ An `AccountInfo` reference is passed to the function.
     andBool size(?FREEZE_AUTH_KEY) ==Int 32 andBool allBytes(?FREEZE_AUTH_KEY)
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
     andBool DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
+```
+
+```{.k .concrete}
+  rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountMint(
+           #toPAcc(P_ACC),
+           IMint(Flag(#randU1()), // mint_auth_flag, only 0 or 1 allowed
+                 #randKey(),      // mint_auth_key
+                 #randAmount(),   // supply
+                 U8(#randU8()),   // decimals
+                 U8(#randU1()),   // initialized, only 0 or 1 allowed
+                 Flag(#randU1()), // freeze_auth_flag, only 0 or 1 allowed
+                 #randKey()       // freeze_auth_key
+           )
+         )
+    requires DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 #### `#addRent`
