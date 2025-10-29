@@ -514,6 +514,75 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #extractOperandType(_, _) => TyUnknown [owise]
 ```
 
+#### Pointer Offset (`std::intrinsics::offset`)
+
+The `offset` intrinsic performs pointer arithmetic, adding a signed offset to a pointer.
+It requires that the resulting pointer remain within bounds of the original allocation.
+This implementation delegates to the existing `binOpOffset` operation which handles bounds checking.
+
+```k
+  // Offset intrinsic: evaluate operands and apply offset operation
+  syntax KItem ::= #execOffsetTyped(Place, Evaluation, Evaluation, Evaluation) [seqstrict(2,3,4)]
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("offset")), PTR_OP:Operand OFFSET_OP:Operand .Operands, DEST)
+        => #execOffsetTyped(DEST, PTR_OP, OFFSET_OP, #applyBinOp(binOpOffset, PTR_OP, OFFSET_OP, false))
+       ... </k>
+
+  rule <k> #execOffsetTyped(DEST, _PTR:Value, _OFFSET:Value, RESULT:Value)
+        => #setLocalValue(DEST, RESULT)
+       ... </k>
+    [preserves-definedness]
+```
+
+#### Pointer Add (`core::ptr::const_ptr::add` / `core::ptr::mut_ptr::add`)
+
+The `ptr::add` intrinsic adds an unsigned count to a pointer, equivalent to `offset` with the count
+converted to a signed isize. This is a safe wrapper that only accepts non-negative offsets.
+
+```k
+  // ptr::add intrinsic: convert count to signed offset and delegate to offset
+  syntax KItem ::= #execPtrAddTyped(Place, Evaluation, Evaluation, Evaluation) [seqstrict(2,3,4)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_const_ptr_add")), PTR_OP:Operand COUNT_OP:Operand .Operands, DEST)
+        => #execPtrAddTyped(DEST, PTR_OP, COUNT_OP, #applyBinOp(binOpOffset, PTR_OP, COUNT_OP, false))
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_mut_ptr_add")), PTR_OP:Operand COUNT_OP:Operand .Operands, DEST)
+        => #execPtrAddTyped(DEST, PTR_OP, COUNT_OP, #applyBinOp(binOpOffset, PTR_OP, COUNT_OP, false))
+       ... </k>
+
+  rule <k> #execPtrAddTyped(DEST, _PTR:Value, Integer(_COUNT, _WIDTH, false), RESULT:Value)
+        => #setLocalValue(DEST, RESULT)
+       ... </k>
+    [preserves-definedness]
+```
+
+#### Pointer Sub (`core::ptr::const_ptr::sub` / `core::ptr::mut_ptr::sub`)
+
+The `ptr::sub` intrinsic subtracts an unsigned count from a pointer, equivalent to `offset` with
+the negated count. This moves the pointer backwards in memory.
+
+```k
+  // ptr::sub intrinsic: negate count and delegate to offset
+  syntax KItem ::= #execPtrSubTyped(Place, Evaluation, Evaluation, Evaluation) [seqstrict(2,3,4)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_const_ptr_sub")), PTR_OP:Operand COUNT_OP:Operand .Operands, DEST)
+        => #execPtrSubTyped(DEST, PTR_OP, COUNT_OP, #computeSubOffset(PTR_OP, COUNT_OP))
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_mut_ptr_sub")), PTR_OP:Operand COUNT_OP:Operand .Operands, DEST)
+        => #execPtrSubTyped(DEST, PTR_OP, COUNT_OP, #computeSubOffset(PTR_OP, COUNT_OP))
+       ... </k>
+
+  syntax Evaluation ::= #computeSubOffset(Evaluation, Evaluation) [seqstrict]
+  rule #computeSubOffset(PTR:Value, Integer(COUNT, _WIDTH, false))
+        => #applyBinOp(binOpOffset, PTR, Integer(0 -Int COUNT, 64, true), false)
+
+  rule <k> #execPtrSubTyped(DEST, _PTR:Value, Integer(_COUNT, _WIDTH, false), RESULT:Value)
+        => #setLocalValue(DEST, RESULT)
+       ... </k>
+    [preserves-definedness]
+```
+
 ### Stopping on Program Errors
 
 The semantics has a dedicated error sort to stop execution when flawed input or undefined behaviour is detected.
