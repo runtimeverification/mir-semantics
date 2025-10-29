@@ -257,6 +257,36 @@ EXEC_DATA = [
         1000,
     ),
     (
+        'ptr_add',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-add.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-add.state',
+        100,
+    ),
+    (
+        'ptr_offset_basic',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-basic.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-basic.state',
+        150,
+    ),
+    (
+        'ptr_offset_bounds_fail',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-bounds-fail.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-bounds-fail.state',
+        50,
+    ),
+    (
+        'ptr_offset_negative_fail',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-negative-fail.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'ptr-offset-negative-fail.state',
+        50,
+    ),
+    (
+        'pointer_offset',
+        EXEC_DATA_DIR / 'pointer_offset_test.smir.json',
+        EXEC_DATA_DIR / 'pointer_offset_test.state',
+        100,
+    ),
+    (
         'ref-ptr-cases',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.state',
