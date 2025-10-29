@@ -706,7 +706,15 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
     => #setLocalValue(
           DEST,
           Aggregate(variantIdx(0), // returns a Result type
-            ListItem(SysRent(PRent(U64(?SYS_LMP_PER_BYTEYEAR), F64(?_SYS_EXEMPT_THRESHOLD), U8(?SYS_BURN_PCT))))
+            ListItem(
+              SysRent(
+                PRent(
+                  U64(?SYS_LMP_PER_BYTEYEAR),
+                  F64(?_SYS_EXEMPT_THRESHOLD),
+                  U8(?SYS_BURN_PCT)
+                )
+              )
+            )
           )
         )
       ~> #execBlockIdx(TARGET)
@@ -716,6 +724,30 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
     ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 64
      andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <Int 256
     [priority(30), preserves-definedness]
+```
+
+```{.k .concrete}
+  rule [cheatcode-get-sys-prent]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #setLocalValue(
+          DEST,
+          Aggregate(variantIdx(0), // returns a Result type
+            ListItem(
+              SysRent(
+                PRent(
+                  U64(#randU64()),              // sys_lmp_per_byteyear
+                  F64(#randExemptThreshold()),  // sys_exempt_threshold
+                  U8(#randU8())                 // sys_burn_pct
+                )
+              )
+            )
+          )
+        )
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+    [priority(30)]
 ```
 
 ### Access to the `Rent` struct
@@ -790,6 +822,22 @@ NB The projection rule must have higher priority than the one which auto-project
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPRent(PACC) CTXS) => #buildUpdate(PAccountRent(PACC, #toPRent(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
+```
+
+## Helpers for fuzzing
+
+```{.k .concrete}
+  syntax Int ::= #randU8()  [function, total, impure, symbol(randU8) ]
+               | #randU32() [function, total, impure, symbol(randU32)]
+               | #randU64() [function, total, impure, symbol(randU64)]
+
+  rule #randU8()  => randInt(256)
+  rule #randU32() => randInt(4294967296)
+  rule #randU64() => randInt(18446744073709551616)
+
+  syntax Float ::= #randExemptThreshold() [function, total, impure, symbol(randExemptThreshold)]
+
+  rule #randExemptThreshold() => Int2Float(#randU32(), 52, 11)
 ```
 
 ```k
