@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NewType
 
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.collections import list_of
@@ -17,6 +17,9 @@ if TYPE_CHECKING:
     from pyk.kast import KInner
 
     from .alloc import AllocId
+
+
+Local = NewType('Local', int)
 
 
 class Value(ABC):
@@ -87,24 +90,79 @@ class AggregateValue(Value):
 
 
 @dataclass
+class RefValue(Value):
+    stack_depth: int
+    place: Place
+    mut: bool
+    metadata: Metadata
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Value::Reference',
+            intToken(self.stack_depth),
+            self.place.to_kast(),
+            KApply('Mutability::Mut') if self.mut else KApply('Mutability::Not'),
+            self.metadata.to_kast(),
+        )
+
+
+@dataclass
+class PtrLocalValue(Value):
+    stack_depth: int
+    place: Place
+    mut: bool
+    metadata: Metadata
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Value::PtrLocal',
+            intToken(self.stack_depth),
+            self.place.to_kast(),
+            KApply('Mutability::Mut') if self.mut else KApply('Mutability::Not'),
+            self.metadata.to_kast(),
+        )
+
+
+@dataclass
 class AllocRefValue(Value):
     alloc_id: AllocId
     # projection_elems: tuple[ProjectionElem, ...]
-    metadata: MetadataSize
+    metadata: Metadata
 
     def to_kast(self) -> KInner:
         return KApply(
             'Value::AllocRef',
             KApply('allocId', intToken(self.alloc_id)),
             KApply('ProjectionElems::empty'),  # TODO
-            KApply(
-                'Metadata',
-                (
-                    self.metadata.to_kast(),
-                    intToken(0),
-                    self.metadata.to_kast(),
-                ),
-            ),
+            self.metadata.to_kast(),
+        )
+
+
+@dataclass
+class Place:
+    local: Local
+    # projection_elems: tuple[ProjectionElem, ...]
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'place',
+            KApply('local', intToken(self.local)),
+            KApply('ProjectionElems::empty'),  # TODO
+        )
+
+
+@dataclass
+class Metadata:
+    size: MetadataSize
+    pointer_offset: int
+    origin_size: MetadataSize
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'Metadata',
+            self.size.to_kast(),
+            intToken(self.pointer_offset),
+            self.origin_size.to_kast(),
         )
 
 
@@ -114,12 +172,12 @@ class MetadataSize(ABC):
 
 
 @dataclass
-class NoMetadata(MetadataSize):
+class NoSize(MetadataSize):
     def to_kast(self) -> KInner:
-        return KApply('noMetadata')
+        return KApply('noMetadataSize')
 
 
-NO_METADATA: Final = NoMetadata()
+NO_SIZE: Final = NoSize()
 
 
 @dataclass

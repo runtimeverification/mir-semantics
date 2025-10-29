@@ -1,0 +1,49 @@
+<kmir>
+  <k>
+    #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 0 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( -2 ) , id: mirConstId ( 0 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: noBasicBlockIdx , unwind: unwindActionContinue ) , span: span ( 0 ) ) ) ~> .K
+  </k>
+  <retVal>
+    noReturn
+  </retVal>
+  <currentFunc>
+    ty ( -1 )
+  </currentFunc>
+  <currentFrame>
+    <currentBody>
+      .List
+    </currentBody>
+    <caller>
+      ty ( -1 )
+    </caller>
+    <dest>
+      place (... local: local ( -1 ) , projection: .ProjectionElems )
+    </dest>
+    <target>
+      noBasicBlockIdx
+    </target>
+    <unwind>
+      unwindActionUnreachable
+    </unwind>
+    <locals>
+      ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 1923567076 , 32 , true ) )
+      ListItem ( Integer ( -1940095024 , 32 , true ) ) ) ) ) , ty ( 68 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( 48 , 8 , false ) )
+      ListItem ( Integer ( 187 , 8 , false ) )
+      ListItem ( Integer ( 29 , 8 , false ) )
+      ListItem ( Integer ( 109 , 8 , false ) )
+      ListItem ( Integer ( 19 , 8 , false ) )
+      ListItem ( Integer ( 44 , 8 , false ) )
+      ListItem ( Integer ( 222 , 8 , false ) )
+      ListItem ( Integer ( 214 , 8 , false ) ) ) , ty ( 25 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 4 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 4 ) , 0 , dynamicSize ( 4 ) ) ) , ty ( 32 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Range ( ListItem ( Integer ( -1113843932 , 32 , true ) )
+      ListItem ( Integer ( 219246286 , 32 , true ) )
+      ListItem ( Integer ( 281121487 , 32 , true ) )
+      ListItem ( Integer ( 1921781853 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) )
+    </locals>
+  </currentFrame>
+  <stack>
+    .List
+  </stack>
+</kmir>
