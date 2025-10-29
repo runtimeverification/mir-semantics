@@ -387,7 +387,7 @@ An `AccountInfo` reference is passed to the function.
   rule #functionName(IntrinsicFunction(symbol(NAME))) => NAME
 ```
 
-```{.k .symbolic}
+```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [cheatcode-is-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -424,26 +424,31 @@ An `AccountInfo` reference is passed to the function.
   rule
     <k> #mkPTokenAccount(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
 
   rule
     <k> #mkPTokenMint(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addMint(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addMint(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
 
   rule
     <k> #mkPTokenRent(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
+```
+
+```k
+  syntax Ty ::= #hack() [function, total, symbol(#hack)]
+  rule #hack() => ty(0)
 ```
 
 ```k
@@ -550,11 +555,11 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
   rule #adjustRef(PAccByteRef(HEIGHT, PLACE, MUT, LEN), OFFSET) => PAccByteRef(HEIGHT +Int OFFSET, PLACE, MUT, LEN)
 ```
 
-```{.k .symbolic}
+```k
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityNot)
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityNot)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -564,7 +569,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
   // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-mut-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityMut)
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityMut)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -624,7 +629,7 @@ While the `PAccByteRef` is generic, the `load_*` functions are specific to the c
 A (small) complication is that the reference is returned within a `Result` enum.
 NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same way, mutability information is already held in the `PAccountByteRef`.
 
-```{.k .symbolic}
+```k
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
