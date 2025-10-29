@@ -721,94 +721,50 @@ An attempt to read more elements than the length of the accessed array is undefi
      andBool PTR_OFFSET ==Int 0
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
+  // Ptr dereference for captured locals on outer stack frames
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, EMUL),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
+             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             #applyPtrOffset(PLACEPROJ, EMUL),
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(ptrMetadataSize(EMUL), PROJS)
         ...
         </k>
         <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <Int PTR_OFFSET
+     andBool notBool ptrIsInvalid(EMUL)
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
+  // Ptr dereference for locals in the current frame
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-         ...
-        </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool PTR_OFFSET ==Int 0
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 < PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(0, place(local(I), PLACEPROJ), _MUT, EMUL),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             #applyPtrOffset(PLACEPROJ, EMUL),
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(ptrMetadataSize(EMUL), PROJS)
         ...
         </k>
         <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool 0 <Int PTR_OFFSET
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 == PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 ==Int PTR_OFFSET
+     andBool notBool ptrIsInvalid(EMUL)
     [preserves-definedness]
 ```
 
@@ -986,13 +942,13 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, EMUL)) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, #ptrInit(metadata(dynamicSize(LENGTH), ptrOffsetValue(EMUL), ptrOriginMetadata(EMUL))))
         ...
        </k>
 
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, EMUL)) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, PLACE, MUT, #ptrInit(metadata(noMetadataSize, ptrOffsetValue(EMUL), ptrOriginMetadata(EMUL))))
         ...
        </k>
 ```
@@ -1144,8 +1100,76 @@ The operation typically creates a pointer with empty metadata.
 
   syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, META) ... </k>
-  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, #ptrInit(META)) ... </k>
+  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, #ptrInit(META)) ... </k>
+
+  syntax PtrEmulation ::= #ptrInit ( Metadata ) [function, total]
+  // -----------------------------------------------------------
+  rule #ptrInit(metadata(SIZE, OFFSET, ORIGIN))
+    => ptrEmulation(metadata(SIZE, 0, ORIGIN))
+    requires OFFSET ==Int 0
+  rule #ptrInit(metadata(SIZE, OFFSET, ORIGIN))
+    => ptrOffset(OFFSET, ptrEmulation(metadata(SIZE, 0, ORIGIN)))
+    requires OFFSET =/=Int 0
+
+  syntax Metadata ::= ptrBaseMetadata ( PtrEmulation ) [function, total]
+  // ---------------------------------------------------------------
+  rule ptrBaseMetadata(ptrEmulation(META)) => META
+  rule ptrBaseMetadata(ptrOffset(_, EMUL)) => ptrBaseMetadata(EMUL)
+  rule ptrBaseMetadata(ptrOrigSize(SIZE)) => metadata(dynamicSize(SIZE), 0, dynamicSize(SIZE))
+  rule ptrBaseMetadata(InvalidOffset(_, EMUL)) => ptrBaseMetadata(EMUL)
+
+  syntax MetadataSize ::= metadataSizeOf ( Metadata ) [function, total]
+  rule metadataSizeOf(metadata(SIZE, _, _)) => SIZE
+
+  syntax MetadataSize ::= metadataOriginOf ( Metadata ) [function, total]
+  rule metadataOriginOf(metadata(_, _, ORIGIN)) => ORIGIN
+
+  syntax Bool ::= metadataWithin ( MetadataSize , MetadataSize ) [function, total]
+  // metadataWithin(ORIGIN, REQUIRED)
+  rule metadataWithin(_, noMetadataSize) => true
+  rule metadataWithin(noMetadataSize, _) => true
+  rule metadataWithin(staticSize(ORIG), staticSize(NEED)) => NEED <=Int ORIG
+  rule metadataWithin(staticSize(ORIG), dynamicSize(NEED)) => NEED <=Int ORIG
+  rule metadataWithin(dynamicSize(ORIG), staticSize(NEED)) => NEED <=Int ORIG
+  rule metadataWithin(dynamicSize(ORIG), dynamicSize(NEED)) => NEED <=Int ORIG
+
+  syntax Int ::= metadataDynamicLength ( MetadataSize ) [function, total]
+  rule metadataDynamicLength(dynamicSize(SIZE)) => SIZE
+  rule metadataDynamicLength(_) => 0 [owise]
+
+  syntax Bool ::= isDynamicMetadataSize ( MetadataSize ) [function, total]
+  rule isDynamicMetadataSize(dynamicSize(_)) => true
+  rule isDynamicMetadataSize(_) => false [owise]
+
+  syntax MetadataSize ::= ptrMetadataSize ( PtrEmulation ) [function, total]
+  rule ptrMetadataSize(EMUL) => metadataSizeOf(ptrBaseMetadata(EMUL))
+
+  syntax MetadataSize ::= ptrOriginMetadata ( PtrEmulation ) [function, total]
+  rule ptrOriginMetadata(EMUL) => metadataOriginOf(ptrBaseMetadata(EMUL))
+
+  syntax Int ::= ptrOffsetValue ( PtrEmulation ) [function, total]
+  rule ptrOffsetValue(ptrEmulation(metadata(_, OFFSET, _))) => OFFSET
+  rule ptrOffsetValue(ptrOffset(N, EMUL)) => N +Int ptrOffsetValue(EMUL)
+  rule ptrOffsetValue(ptrOrigSize(_)) => 0
+  rule ptrOffsetValue(InvalidOffset(_, EMUL)) => ptrOffsetValue(EMUL)
+
+  syntax Bool ::= ptrIsInvalid ( PtrEmulation ) [function, total]
+  rule ptrIsInvalid(InvalidOffset(_, _)) => true
+  rule ptrIsInvalid(ptrOffset(_, EMUL)) => ptrIsInvalid(EMUL)
+  rule ptrIsInvalid(ptrEmulation(_)) => false
+  rule ptrIsInvalid(ptrOrigSize(_)) => false
+
+  syntax Bool ::= ptrInOriginBounds ( Int, MetadataSize ) [function, total]
+  rule ptrInOriginBounds(_, noMetadataSize) => true
+  rule ptrInOriginBounds(TOTAL, staticSize(SIZE)) => TOTAL <=Int SIZE
+  rule ptrInOriginBounds(TOTAL, dynamicSize(SIZE)) => TOTAL <=Int SIZE
+
+  syntax ProjectionElems ::= #applyPtrOffset ( ProjectionElems, PtrEmulation ) [function, total]
+  rule #applyPtrOffset(PROJS, EMUL)
+    => appendP(PROJS, PointerOffset(ptrOffsetValue(EMUL), originSize(ptrOriginMetadata(EMUL))))
+    requires ptrOffsetValue(EMUL) =/=Int 0
+  rule #applyPtrOffset(PROJS, _) => PROJS [owise]
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1173,7 +1197,7 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, META)
+  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, #ptrInit(META))
 ```
 
 ## Type casts
@@ -1249,13 +1273,68 @@ Conversion is especially possible for the case of _Slices_ (of dynamic length) a
 which have the same representation `Value::Range`.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            PtrLocal(OFFSET, PLACE, MUT, #convertMetadata(META, lookupTy(TY_TARGET)))
+            PtrLocal(OFFSET, PLACE, MUT, #convertPtrEmul(EMUL, lookupTy(TY_TARGET)))
           ...
         </k>
       requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
+
+  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo ) [function, total]
+  // ---------------------------------------------------------------------------------
+  rule #convertPtrEmul(ptrEmulation(metadata(staticSize(SIZE), 0, staticSize(SIZE))), typeInfoPtrType(ELEM_TY))
+    => ptrOrigSize(SIZE)
+    requires #metadataSize(ELEM_TY) ==K noMetadataSize
+  rule #convertPtrEmul(ptrEmulation(metadata(dynamicSize(SIZE), 0, dynamicSize(SIZE))), typeInfoPtrType(ELEM_TY))
+    => ptrOrigSize(SIZE)
+    requires #metadataSize(ELEM_TY) ==K noMetadataSize
+  rule #convertPtrEmul(ptrEmulation(META), typeInfoPtrType(POINTEE_TY))
+    => #ptrInit(#convertMetadata(META, typeInfoPtrType(POINTEE_TY)))
+    requires metadataWithin(metadataOriginOf(META), #metadataSize(POINTEE_TY))
+    [priority(200)]
+  rule #convertPtrEmul(ptrEmulation(META), typeInfoRefType(POINTEE_TY))
+    => #ptrInit(#convertMetadata(META, typeInfoRefType(POINTEE_TY)))
+    requires metadataWithin(metadataOriginOf(META), #metadataSize(POINTEE_TY))
+    [priority(200)]
+  rule #convertPtrEmul(ptrEmulation(META), typeInfoPtrType(POINTEE_TY))
+    => InvalidOffset(0, ptrEmulation(META))
+    requires notBool metadataWithin(metadataOriginOf(META), #metadataSize(POINTEE_TY))
+    [priority(190)]
+  rule #convertPtrEmul(ptrEmulation(META), typeInfoRefType(POINTEE_TY))
+    => InvalidOffset(0, ptrEmulation(META))
+    requires notBool metadataWithin(metadataOriginOf(META), #metadataSize(POINTEE_TY))
+    [priority(190)]
+  rule #convertPtrEmul(ptrEmulation(META), TYPEINFO)
+    => #ptrInit(#convertMetadata(META, TYPEINFO))
+  rule #convertPtrEmul(ptrOffset(N, EMUL), TYPEINFO)
+    => ptrOffset(N, #convertPtrEmul(EMUL, TYPEINFO))
+  rule #convertPtrEmul(InvalidOffset(N, EMUL), TYPEINFO)
+    => InvalidOffset(N, #convertPtrEmul(EMUL, TYPEINFO))
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoPtrType(POINTEE_TY))
+    => ptrOrigSize(SIZE)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoRefType(POINTEE_TY))
+    => ptrOrigSize(SIZE)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoPtrType(POINTEE_TY))
+    => #ptrInit(metadata(#metadataSize(POINTEE_TY), 0, dynamicSize(SIZE)))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool metadataWithin(dynamicSize(SIZE), #metadataSize(POINTEE_TY))
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoRefType(POINTEE_TY))
+    => #ptrInit(metadata(#metadataSize(POINTEE_TY), 0, dynamicSize(SIZE)))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool metadataWithin(dynamicSize(SIZE), #metadataSize(POINTEE_TY))
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoPtrType(POINTEE_TY))
+    => InvalidOffset(0, ptrOrigSize(SIZE))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool notBool metadataWithin(dynamicSize(SIZE), #metadataSize(POINTEE_TY))
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoRefType(POINTEE_TY))
+    => InvalidOffset(0, ptrOrigSize(SIZE))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool notBool metadataWithin(dynamicSize(SIZE), #metadataSize(POINTEE_TY))
+  rule #convertPtrEmul(ptrOrigSize(SIZE), _TYPEINFO) => ptrOrigSize(SIZE)
+  rule #convertPtrEmul(EMUL, _) => EMUL [owise]
 
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
@@ -1846,7 +1925,9 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 
 ```k
   rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
-  rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _, EMUL))
+        => Integer(metadataDynamicLength(ptrMetadataSize(EMUL)), 64, false) ... </k>
+    requires isDynamicMetadataSize(ptrMetadataSize(EMUL))
   rule <k> #applyUnOp(unOpPtrMetadata,  AllocRef(  _ , _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
 
   // could add a rule for cases without metadata
@@ -1888,48 +1969,81 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
 
 
 #### Pointer Artithmetic
-Addding an offset is currently restricted to unsigned values of an length, this may be too restrictive TODO Check.
-A pointer is offset by adding the magnitude of the `Integer` provided, as along as it is within the bounds of the pointer.
-It is valid to offset to the end of the pointer, however I believe it in not valid to read from there TODO: Check.
-A trivial case where `binOpOffset` applies an offset of `0` is added with higher priority as it is returning the same pointer.
+Pointer offsets are tracked symbolically using the `PtrEmulation` sort. Offsets do not eagerly update the
+underlying metadata; instead the resulting pointer records the offset amount and validation happens at dereference
+time, preserving Rust's unsafe semantics.
 
 ```k
-  // Trivial case when adding 0 - valid for any pointer
-  rule #applyBinOp(
-          binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA ),
-          Integer(VAL, _WIDTH, _SIGNED), // Trivial case when adding 0
-          _CHECKED)
-    =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
-  requires VAL ==Int 0
-  [preserves-definedness, priority(40)]
+  // Pointer Offset Implementation
+  //
+  // Tracks pointer offsets using PtrEmulation which maintains:
+  // - ptrOrigSize(N): Original allocation size when cast from array
+  // - ptrOffset(N, EMUL): Valid offset N from origin
+  // - InvalidOffset(N, EMUL): Out-of-bounds offset
+  //
+  // Offsets are validated lazily at dereference time rather than
+  // when the offset is created, matching Rust's unsafe semantics.
 
-  // Check offset bounds against origin pointer with dynamicSize metadata
-  rule #applyBinOp(
-          binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
-          _CHECKED)
-    =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
-    requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
-   [preserves-definedness]
+  // Helper function for offset calculation
+  syntax PtrEmulation ::= ptrEmulOffset( Int, PtrEmulation ) [function, total]
 
-  // Check offset bounds against origin pointer with staticSize metadata
+  rule ptrEmulOffset(N, ptrEmulation(metadata(SIZE, OFFSET, ORIGIN_SIZE)))
+    => ptrOffset(OFFSET +Int N, ptrEmulation(metadata(SIZE, 0, ORIGIN_SIZE)))
+    requires OFFSET +Int N >=Int 0
+     andBool ptrInOriginBounds(OFFSET +Int N, ORIGIN_SIZE)
+
+  rule ptrEmulOffset(N, ptrEmulation(metadata(SIZE, OFFSET, ORIGIN_SIZE)))
+    => InvalidOffset(OFFSET +Int N, ptrEmulation(metadata(SIZE, 0, ORIGIN_SIZE)))
+    requires (OFFSET +Int N) <Int 0
+      orBool notBool ptrInOriginBounds(OFFSET +Int N, ORIGIN_SIZE)
+
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE) #as EMUL) => ptrOffset(N, EMUL)
+    requires 0 <=Int N andBool N <=Int SIZE
+
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE) #as EMUL) => InvalidOffset(N, EMUL)
+    requires SIZE <Int N
+
+  rule ptrEmulOffset(N, ptrOffset(M, ORIG)) => ptrEmulOffset(N +Int M, ORIG)
+
+  rule ptrEmulOffset(N, OTHER) => InvalidOffset(N, OTHER) [owise]
+
+  // Main offset rules
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          PtrLocal(STACK_DEPTH, PLACE, MUT, EMUL),
+          Integer(0, _WIDTH, _SIGNED),
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
-    requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
-   [preserves-definedness]
+          PtrLocal(STACK_DEPTH, PLACE, MUT, EMUL)
+    [priority(40)]
+
+  rule #applyBinOp(
+          binOpOffset,
+          PtrLocal(STACK_DEPTH, PLACE, MUT, EMUL),
+          Integer(N, _WIDTH, false),
+          _CHECKED)
+    =>
+          PtrLocal(STACK_DEPTH, PLACE, MUT, ptrEmulOffset(N, EMUL))
+    requires N >Int 0
+
+  rule #applyBinOp(
+          binOpOffset,
+          PtrLocal(STACK_DEPTH, PLACE, MUT, EMUL),
+          Integer(N, _WIDTH, true),
+          _CHECKED)
+    =>
+          PtrLocal(STACK_DEPTH, PLACE, MUT, ptrEmulOffset(N, EMUL))
+    requires N =/=Int 0
 ```
 
 ```k
 endmodule
 ```
+  rule <k> #traverseProjection(
+             _DEST,
+             PtrLocal(_, _, _, InvalidOffset(_, _)),
+             projectionElemDeref _,
+             _
+           ) => stuck
+        ...
+        </k>
