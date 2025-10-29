@@ -558,12 +558,29 @@ An `AccountInfo` reference is passed to the function.
 ```{.k .symbolic}
   rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountRent(
-            #toPAcc(P_ACC),
-            PRent(U64(?LMP_PER_BYTEYEAR), F64(?_EXEMPT_THRESHOLD), U8(?BURN_PCT))
-          )
+           #toPAcc(P_ACC),
+           PRent(
+             U64(?LMP_PER_BYTEYEAR),
+             F64(?_EXEMPT_THRESHOLD),
+             U8(?BURN_PCT)
+           )
+         )
     ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 64
     andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <Int 256
     andBool DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
+```
+
+```{.k .concrete}
+  rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountRent(
+           #toPAcc(P_ACC),
+           PRent(
+             U64(#randU64()),             // lmp_per_byteyear
+             F64(#randExemptThreshold()), // exempt_threshold
+             U8(#randU8())                // burn_pct
+           )
+         )
+    requires DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
