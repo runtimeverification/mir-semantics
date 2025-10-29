@@ -44,7 +44,7 @@ The special `Moved` value represents values that have been used and should not b
                    // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability, Metadata )
+                 | PtrLocal( Int , Place , Mutability, PtrEmulation )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // fields are the same as in Reference
@@ -77,6 +77,11 @@ Other types without metadata use `noMetadataSize`.
   syntax MetadataSize ::= "noMetadataSize" [symbol(noMetadataSize)]
                     | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
+
+  syntax PtrEmulation ::= ptrEmulation( Metadata )             [symbol(ptrEmulation)]
+                        | ptrOffset( Int, PtrEmulation )        [symbol(ptrOffset)]
+                        | ptrOrigSize( Int )                    [symbol(ptrOrigSize)]
+                        | InvalidOffset( Int, PtrEmulation )    [symbol(InvalidOffset)]
 ```
 
 ## Local variables
