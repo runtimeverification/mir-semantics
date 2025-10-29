@@ -971,9 +971,10 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), 128, false) // parameters for stored u128
+        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), #discriminantSize(lookupTy(TY)), false)
         ...
        </k>
+    requires #discriminantSize(lookupTy(TY)) =/=Int 0
 
   syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
                | #lookupDiscrAux ( Discriminants , Int ) [function]
@@ -984,6 +985,27 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , IDX) => RESULT requires IDX ==Int 0
   rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX -Int 1) requires 0 <Int IDX [owise]
+
+  syntax Int ::= #discriminantSize ( TypeInfo )    [function, total]
+               | #discriminantSize ( LayoutShape ) [function, total]
+               | #discriminantSize ( Scalar )      [function, total]
+               | #intLength (IntegerLength)        [function, total]
+  // ------------------------------------------------------------
+  rule #discriminantSize(typeInfoEnumType(_, _, _, _, someLayoutShape(LAYOUT))) => #discriminantSize(LAYOUT)
+  rule #discriminantSize(_OTHER_TYPE:TypeInfo) => 0  [owise]
+
+  rule #discriminantSize(layoutShape(_, variantsShapeMultiple(mk(TAG, _, _, _)), _, _, _)) => #discriminantSize(TAG)
+  rule #discriminantSize(_OTHER:LayoutShape) => 0  [owise]
+
+  rule #discriminantSize(scalarInitialized(mk(primitiveInt(mk(INTLENGTH, _SIGNED)), _VALIDRANGE))) => #intLength(INTLENGTH)
+  rule #discriminantSize(scalarInitialized(mk(primitivePointer(_)                 , _VALIDRANGE))) => 64 // pointer size assumed 64 bit
+  rule #discriminantSize(_OTHER:Scalar) => 0  [owise]
+
+  rule #intLength(integerLengthI8)   => 8
+  rule #intLength(integerLengthI16)  => 16
+  rule #intLength(integerLengthI32)  => 32
+  rule #intLength(integerLengthI64)  => 64
+  rule #intLength(integerLengthI128) => 128
 ```
 
 ```k
@@ -1455,6 +1477,42 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
+The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
+
+```k
+  rule <k> #cast(
+              thunk(#cast(DATA, castKindTransmute, TY_SRC_INNER, TY_DEST_INNER)),
+              castKindTransmute,
+              TY_SRC_OUTER,
+              TY_DEST_OUTER
+            ) => DATA
+          ...
+       </k>
+    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
+     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+```
+
+Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
+(see `#discriminant` and `rvalueDiscriminant`).
+If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value afgter adjusting to the byte length of the discriminant:
+
+```k
+  rule <k> #discriminant(
+              thunk(#cast (Integer(DATA, _, false), castKindTransmute, _, TY)),
+              TY
+            ) => Integer(DATA, #discriminantSize(lookupTy(TY)), false)
+          ...
+        </k>
+    requires #isEnumWithoutFields(lookupTy(TY))
+
+  syntax Bool ::= #isEnumWithoutFields ( TypeInfo ) [function, total]
+  // ----------------------------------------------------------------
+  rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
+  rule #isEnumWithoutFields(_OTHER) => false [owise]
+```
+
+
 ### Other casts involving pointers
 
 | CastKind                     | Description |
@@ -1606,16 +1664,14 @@ are correct.
   // performs the given operation on infinite precision integers
   syntax Int ::= onInt( BinOp, Int, Int ) [function]
   // -----------------------------------------------
-  rule onInt(binOpAdd, X, Y)          => X +Int Y
-  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y
-  rule onInt(binOpSub, X, Y)          => X -Int Y
-  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y
-  rule onInt(binOpMul, X, Y)          => X *Int Y
-  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y
-  rule onInt(binOpDiv, X, Y)          => X /Int Y
-    requires Y =/=Int 0
-  rule onInt(binOpRem, X, Y)          => X %Int Y
-    requires Y =/=Int 0
+  rule onInt(binOpAdd, X, Y)          => X +Int Y [preserves-definedness]
+  rule onInt(binOpAddUnchecked, X, Y) => X +Int Y [preserves-definedness]
+  rule onInt(binOpSub, X, Y)          => X -Int Y [preserves-definedness]
+  rule onInt(binOpSubUnchecked, X, Y) => X -Int Y [preserves-definedness]
+  rule onInt(binOpMul, X, Y)          => X *Int Y [preserves-definedness]
+  rule onInt(binOpMulUnchecked, X, Y) => X *Int Y [preserves-definedness]
+  rule onInt(binOpDiv, X, Y)          => X /Int Y requires Y =/=Int 0 [preserves-definedness]
+  rule onInt(binOpRem, X, Y)          => X %Int Y requires Y =/=Int 0 [preserves-definedness]
   // operation undefined otherwise
 
   // error cases for isArithmetic(BOP):
