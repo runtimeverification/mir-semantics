@@ -8,6 +8,7 @@ use {
     solana_pubkey::{self as pubkey, Pubkey},
     solana_sysvar::Sysvar,
     spl_token_interface::{error::TokenError, native_mint},
+    std::intrinsics::assume,
 };
 
 solana_program_entrypoint::entrypoint!(process_instruction);
@@ -208,17 +209,7 @@ fn get_rent(_account_info: &AccountInfo) -> solana_rent::Rent {
 // fn cheatcode_is_multisig(_: &AccountInfo) {}
 // fn cheatcode_is_rent(_: &AccountInfo) {}
 
-/// A runtime verification cheatcode to set the instruction discriminator.
-/// TODO: Currently calling assert for concrete testing but needs backend support in K.
-fn cheatcode_set_discriminator(discriminator: u8, instruction_data: &[u8]) {
-    assert_eq!(discriminator, instruction_data[0]);
-}
-
-/// A runtime verification cheatcode to set the program ID.
-/// TODO: Currently calling assert for concrete testing but needs backend support in K.
-fn cheatcode_set_program_id(program_id: &Pubkey) {
-    assert_eq!(program_id, &crate::id());
-}
+// Inline `assume` is used directly in test harnesses; no helper functions needed.
 
 /// Inner instruction processor that dispatches to proof harnesses
 fn inner_process_instruction(

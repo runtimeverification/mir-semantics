@@ -494,9 +494,9 @@ def _build_prologue(func_cfg: "FunctionConfig", payload_type: str) -> List[str]:
     # - Variable-size payload (payload_type == "[u8]"): slice off discriminator
     if payload_type == "[u8]":
         return [
-            "// Set discriminator and program id to concrete value",
-            f"cheatcode_set_discriminator({func_cfg.discriminator}, instruction_data);",
-            "cheatcode_set_program_id(program_id);",
+            "// Constrain discriminator and program id",
+            f"unsafe {{ assume({func_cfg.discriminator} == instruction_data[0]); }}",
+            "unsafe { assume(program_id == &crate::id()); }",
             "",
             "// Strip discriminator so instruction data is equivalent p-token harness",
             "let instruction_data_with_discriminator = &instruction_data.clone();",
@@ -505,9 +505,9 @@ def _build_prologue(func_cfg: "FunctionConfig", payload_type: str) -> List[str]:
         ]
     else:
         return [
-            "// Set discriminator and program id to concrete value",
-            f"cheatcode_set_discriminator({func_cfg.discriminator}, instruction_data);",
-            "cheatcode_set_program_id(program_id);",
+            "// Constrain discriminator and program id",
+            f"unsafe {{ assume({func_cfg.discriminator} == instruction_data[0]); }}",
+            "unsafe { assume(program_id == &crate::id()); }",
             "",
             "// Strip discriminator so instruction data is equivalent p-token harness",
             "let instruction_data_with_discriminator = &instruction_data.clone();",

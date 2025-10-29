@@ -1,6 +1,9 @@
 #![allow(clippy::arithmetic_side_effects)]
 #![deny(missing_docs)]
-#![cfg_attr(not(test), forbid(unsafe_code))]
+// Allow unsafe when building RV/RVO harnesses; they require intrinsics
+#![cfg_attr(all(not(test), not(any(feature = "runtime-verification", feature = "rvo"))), forbid(unsafe_code))]
+// Enable `core_intrinsics` for assume cheatcode under RV/RVO feature builds (requires nightly)
+#![cfg_attr(any(feature = "runtime-verification", feature = "rvo"), feature(core_intrinsics))]
 
 //! An ERC20-like Token program for the Solana blockchain
 
