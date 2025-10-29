@@ -21,6 +21,7 @@ from .value import (
     Local,
     Metadata,
     Place,
+    PtrEmulationFromMetadata,
     PtrLocalValue,
     RangeValue,
     RefValue,
@@ -330,6 +331,8 @@ class _ArgGenerator:
     def _symbolic_value(self, ty: Ty, mutable: bool) -> tuple[KInner, Iterable[KInner], KInner | None]:
         # returns: symbolic value of given type, related constraints, related pointer metadata
 
+        ptr_emulation_label = 'ptrEmulation(_)_RT-VALUE-SYNTAX_PtrEmulation_Metadata'
+
         no_metadata = KApply(
             'Metadata',
             KApply('noMetadataSize', ()),
@@ -450,6 +453,7 @@ class _ArgGenerator:
                 ref = self.ref_offset
                 self.ref_offset += 1
                 self.pointees.append(_typed_value(pointee_var, pointee_ty, mutable))
+                ptr_meta = metadata if metadata is not None else no_metadata
                 return (
                     KApply(
                         'Value::PtrLocal',
@@ -457,7 +461,7 @@ class _ArgGenerator:
                             token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
-                            metadata if metadata is not None else no_metadata,
+                            KApply(ptr_emulation_label, (ptr_meta,)),
                         ),
                     ),
                     pointee_constraints,
@@ -632,6 +636,7 @@ class _RandomArgGen:
                 metadata_size = NO_SIZE
 
         metadata = Metadata(size=metadata_size, pointer_offset=0, origin_size=metadata_size)
+        emulation = PtrEmulationFromMetadata(metadata)
 
         ref = next(self._ref)
 
@@ -641,7 +646,7 @@ class _RandomArgGen:
                     stack_depth=0,
                     place=Place(local=Local(ref)),
                     mut=mut,
-                    metadata=metadata,
+                    emulation=emulation,
                 )
             case RefT():
                 return RefValue(
