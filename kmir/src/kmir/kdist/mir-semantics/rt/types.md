@@ -8,6 +8,7 @@ requires "value.md"
 
 module RT-TYPES
   imports BOOL
+  imports INT
   imports MAP
   imports K-EQUAL
 
@@ -59,6 +60,35 @@ Pointers to arrays/slices are compatible with pointers to the element type
 
   rule #isArrayOf(typeInfoArrayType(TY, _), TY) => true
   rule #isArrayOf(      _                 , _ ) => false [owise]
+
+  rule #typesCompatible(SRC, OTHER) => true
+    requires #zeroSizedType(SRC) orBool #zeroSizedType(OTHER)
+
+  syntax Bool ::= #zeroSizedType ( TypeInfo ) [function, total]
+
+  rule #zeroSizedType(typeInfoTupleType(.Tys)) => true
+  rule #zeroSizedType(typeInfoStructType(_, _, .Tys, _)) => true
+  rule #zeroSizedType(_) => false [owise]
+
+  rule #typesCompatible(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+    => #typesCompatible(lookupTy(FIELD), OTHER)
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #typesCompatible(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => #typesCompatible(OTHER, lookupTy(FIELD))
+    requires #zeroFieldOffset(LAYOUT)
+
+  syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
+
+  rule #zeroFieldOffset(LAYOUT)
+    =>      #structOffsets(LAYOUT) ==K .MachineSizes
+     orBool #structOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
+     orBool #structOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
+
+  syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
+
+  rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+  rule #structOffsets(_) => .MachineSizes [owise]
 ```
 
 ## Determining types of places with projection
@@ -69,6 +99,24 @@ To make this function total, an optional `MaybeTy` is used.
 ```k
   syntax MaybeTy ::= Ty
                    | "TyUnknown"
+
+  syntax MaybeTy ::= #transparentFieldTy ( TypeInfo ) [function, total]
+
+  rule #transparentFieldTy(typeInfoStructType(_, _, FIELD .Tys, LAYOUT)) => FIELD
+    requires #zeroFieldOffset(LAYOUT)
+  rule #transparentFieldTy(_) => TyUnknown [owise]
+
+  syntax Int ::= #transparentDepth ( TypeInfo ) [function, total]
+
+  rule #transparentDepth(typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => 1 +Int #transparentDepth(lookupTy(FIELD))
+    requires #zeroFieldOffset(LAYOUT)
+  rule #transparentDepth(_) => 0 [owise]
+
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
+
+  rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
+  rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
 
   syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total]
   // -----------------------------------------------------------
