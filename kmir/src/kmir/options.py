@@ -42,6 +42,7 @@ class ProveOpts(KMirOpts):
     max_iterations: int | None
     reload: bool
     break_on_calls: bool
+    break_on_thunk: bool
 
     def __init__(
         self,
@@ -51,6 +52,7 @@ class ProveOpts(KMirOpts):
         max_iterations: int | None = None,
         reload: bool = False,
         break_on_calls: bool = False,
+        break_on_thunk: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
@@ -58,6 +60,7 @@ class ProveOpts(KMirOpts):
         self.max_iterations = max_iterations
         self.reload = reload
         self.break_on_calls = break_on_calls
+        self.break_on_thunk = break_on_thunk
 
 
 @dataclass
@@ -79,6 +82,7 @@ class ProveRSOpts(ProveOpts):
         smir: bool = False,
         start_symbol: str = 'main',
         break_on_calls: bool = False,
+        break_on_thunk: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -90,6 +94,7 @@ class ProveRSOpts(ProveOpts):
         self.smir = smir
         self.start_symbol = start_symbol
         self.break_on_calls = break_on_calls
+        self.break_on_thunk = break_on_thunk
 
 
 @dataclass

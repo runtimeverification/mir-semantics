@@ -248,6 +248,9 @@ def _arg_parser() -> ArgumentParser:
     prove_args.add_argument(
         '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on function calls'
     )
+    prove_args.add_argument(
+        '--break-on-thunk', dest='break_on_thunk', action='store_true', help='Break on thunk evaluation'
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -419,6 +422,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
                 break_on_calls=ns.break_on_calls,
+                break_on_thunk=ns.break_on_thunk,
             )
         case 'link':
             return LinkOpts(
