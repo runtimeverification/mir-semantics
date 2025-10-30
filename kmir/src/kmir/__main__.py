@@ -148,32 +148,29 @@ def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
     if not APRProof.proof_data_exists(opts.id, opts.proof_dir):
         raise ValueError(f'Proof id {opts.id} not found in proof dir {opts.proof_dir}')
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        target_path = opts.proof_dir / opts.id if opts.proof_dir is not None else Path(tmp_dir)
+    target_path = opts.proof_dir / opts.id
 
-        print(f'target_path = {target_path}')
+    _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {opts.id}')
+    apr_proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
-        _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {opts.id}')
-        apr_proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+    smir_info = SMIRInfo.from_file(target_path / 'smir.json')
 
-        smir_info = SMIRInfo.from_file(target_path / 'smir.json')
+    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
 
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
+    source_id, target_id = opts.edge
+    _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
 
-        source_id, target_id = opts.edge
-        _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
+    with kmir.kcfg_explore(apr_proof.id) as kcfg_explore:
+        node_ids = kcfg_explore.section_edge(
+            apr_proof.kcfg,
+            source_id=int(source_id),
+            target_id=int(target_id),
+            logs=apr_proof.logs,
+            sections=opts.sections,
+        )
+        _LOGGER.info(f'Added nodes on edge {(source_id, target_id)}: {node_ids}')
 
-        with kmir.kcfg_explore(apr_proof.id) as kcfg_explore:
-            node_ids = kcfg_explore.section_edge(
-                apr_proof.kcfg,
-                source_id=int(source_id),
-                target_id=int(target_id),
-                logs=apr_proof.logs,
-                sections=opts.sections,
-            )
-            _LOGGER.info(f'Added nodes on edge {(source_id, target_id)}: {node_ids}')
-
-        apr_proof.write_proof_data()
+    apr_proof.write_proof_data()
 
 
 def _kmir_info(opts: InfoOpts) -> None:
