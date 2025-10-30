@@ -68,6 +68,7 @@ Pointers to arrays/slices are compatible with pointers to the element type
 
   rule #zeroSizedType(typeInfoTupleType(.Tys)) => true
   rule #zeroSizedType(typeInfoStructType(_, _, .Tys, _)) => true
+  rule #zeroSizedType(typeInfoVoidType) => true
   rule #zeroSizedType(_) => false [owise]
 
   rule #typesCompatible(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)

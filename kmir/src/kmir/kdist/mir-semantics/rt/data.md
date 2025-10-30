@@ -439,17 +439,6 @@ This is done without consideration of the validity of the Downcast[^downcast].
 
 If an Aggregate contains only one element and #traverseProjection becomes stuck, you can directly access this element.
 
-Without this rule, the test `closure_access_struct-fail.rs` demonstrates the following behavior:
-- The execution gets stuck after 192 steps at `#traverseProjection ( toLocal ( 2 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( ... ) ) , ... )`
-- The stuck state occurs because there's a Deref projection that needs to be applied to the single element of this Aggregate, but the existing Deref rules only handle pointers and references, not Aggregates
-
-With this rule enabled:
-- The execution progresses further to 277 steps before getting stuck
-- It gets stuck at a different location: `#traverseProjection ( toLocal ( 19 ) , thunk ( #decodeConstant ( constantKindAll ... ) ) , ... )`
-- The rule automatically unwraps the single-element Aggregate, allowing the field access to proceed
-
-This rule is essential for handling closures that access struct fields, as MIR represents certain struct accesses through single-element Aggregates that need to be unwrapped.
-
 ```k
   rule <k> #traverseProjection(
              DEST,
@@ -1079,6 +1068,17 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
+
+  rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
+        => #traverseProjection(toLocal(I), Aggregate(variantIdx(0), .List), PROJS, .Contexts)
+        ~> #forRef(#mutabilityOf(KIND), metadata(noMetadataSize, 0, noMetadataSize))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isNewLocal(LOCALS[I])
+     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+    [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
