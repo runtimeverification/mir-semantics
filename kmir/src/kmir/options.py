@@ -41,6 +41,7 @@ class ProveOpts(KMirOpts):
     max_depth: int | None
     max_iterations: int | None
     reload: bool
+    break_on_calls: bool
 
     def __init__(
         self,
@@ -49,12 +50,14 @@ class ProveOpts(KMirOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         reload: bool = False,
+        break_on_calls: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
+        self.break_on_calls = break_on_calls
 
 
 @dataclass
@@ -75,6 +78,7 @@ class ProveRSOpts(ProveOpts):
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
+        break_on_calls: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -85,6 +89,7 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
+        self.break_on_calls = break_on_calls
 
 
 @dataclass
@@ -185,6 +190,26 @@ class InfoOpts(KMirOpts):
     def __init__(self, smir_file: Path, types: str | None = None) -> None:
         self.smir_file = smir_file
         self.types = tuple(int(t.strip()) for t in types.split(',')) if types is not None else None
+
+
+@dataclass
+class SectionEdgeOpts(ProofOpts):
+    edge: tuple[str, str]
+    sections: int
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        edge: tuple[str, str],
+        sections: int = 2,
+        bug_report: Path | None = None,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.edge = edge
+        self.sections = sections
+        self.bug_report = bug_report
 
 
 @dataclass
