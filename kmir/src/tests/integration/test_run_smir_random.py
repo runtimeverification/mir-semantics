@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cached_property
-from random import Random
 from typing import TYPE_CHECKING
 
 import pytest
@@ -29,11 +28,6 @@ TEST_ROOT_DIR: Final = (TEST_DATA_DIR / 'run-smir-random').resolve()
 @pytest.fixture(params=list(range(10)))
 def seed(request: FixtureRequest) -> int:
     return request.param
-
-
-@pytest.fixture
-def random(seed: int) -> Random:
-    return Random(seed)
 
 
 @pytest.fixture(
@@ -98,7 +92,7 @@ def handle(project_name: str, seed: int) -> _TestDataHandle:
 def test_run_smir_random(
     kmir: KMIR,
     smir_info: SMIRInfo,
-    random: Random,
+    seed: int,
     handle: _TestDataHandle,
     update_expected_output: bool,
 ) -> None:
@@ -107,7 +101,7 @@ def test_run_smir_random(
         kmir.definition,
         smir_info=smir_info,
         start_symbol='test',
-        mode=RandomMode(random),
+        mode=RandomMode(seed),
     )
     init_kore = kmir.kast_to_kore(init_kast, sort=GENERATED_TOP_CELL)
     actual_init = kore_print(
