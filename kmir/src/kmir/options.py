@@ -54,6 +54,7 @@ class ProveOpts(KMirOpts):
     break_on_terminator_drop: bool
     break_on_terminator_unreachable: bool
     break_every_terminator: bool
+    break_every_step: bool
 
     def __init__(
         self,
@@ -75,6 +76,7 @@ class ProveOpts(KMirOpts):
         break_on_terminator_drop: bool = False,
         break_on_terminator_unreachable: bool = False,
         break_every_terminator: bool = False,
+        break_every_step: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
@@ -94,6 +96,7 @@ class ProveOpts(KMirOpts):
         self.break_on_terminator_drop = break_on_terminator_drop
         self.break_on_terminator_unreachable = break_on_terminator_unreachable
         self.break_every_terminator = break_every_terminator
+        self.break_every_step = break_every_step
 
 
 @dataclass
@@ -127,6 +130,7 @@ class ProveRSOpts(ProveOpts):
         break_on_terminator_drop: bool = False,
         break_on_terminator_unreachable: bool = False,
         break_every_terminator: bool = False,
+        break_every_step: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -150,6 +154,7 @@ class ProveRSOpts(ProveOpts):
         self.break_on_terminator_drop = break_on_terminator_drop
         self.break_on_terminator_unreachable = break_on_terminator_unreachable
         self.break_every_terminator = break_every_terminator
+        self.break_every_step = break_every_step
 
 
 @dataclass
