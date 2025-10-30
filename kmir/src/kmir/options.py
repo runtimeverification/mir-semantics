@@ -42,6 +42,8 @@ class ProveOpts(KMirOpts):
     max_iterations: int | None
     reload: bool
     break_on_calls: bool
+    break_on_function_calls: bool
+    break_on_intrinsic_calls: bool
     break_on_thunk: bool
     break_every_statement: bool
     break_on_terminator_goto: bool
@@ -61,6 +63,8 @@ class ProveOpts(KMirOpts):
         max_iterations: int | None = None,
         reload: bool = False,
         break_on_calls: bool = False,
+        break_on_function_calls: bool = False,
+        break_on_intrinsic_calls: bool = False,
         break_on_thunk: bool = False,
         break_every_statement: bool = False,
         break_on_terminator_goto: bool = False,
@@ -78,6 +82,8 @@ class ProveOpts(KMirOpts):
         self.max_iterations = max_iterations
         self.reload = reload
         self.break_on_calls = break_on_calls
+        self.break_on_function_calls = break_on_function_calls
+        self.break_on_intrinsic_calls = break_on_intrinsic_calls
         self.break_on_thunk = break_on_thunk
         self.break_every_statement = break_every_statement
         self.break_on_terminator_goto = break_on_terminator_goto
@@ -109,6 +115,8 @@ class ProveRSOpts(ProveOpts):
         smir: bool = False,
         start_symbol: str = 'main',
         break_on_calls: bool = False,
+        break_on_function_calls: bool = False,
+        break_on_intrinsic_calls: bool = False,
         break_on_thunk: bool = False,
         break_every_statement: bool = False,
         break_on_terminator_goto: bool = False,
@@ -130,6 +138,8 @@ class ProveRSOpts(ProveOpts):
         self.smir = smir
         self.start_symbol = start_symbol
         self.break_on_calls = break_on_calls
+        self.break_on_function_calls = break_on_function_calls
+        self.break_on_intrinsic_calls = break_on_intrinsic_calls
         self.break_on_thunk = break_on_thunk
         self.break_every_statement = break_every_statement
         self.break_on_terminator_goto = break_on_terminator_goto

@@ -56,6 +56,8 @@ class KMIR(KProve, KRun, KParse):
     @staticmethod
     def cut_point_rules(
         break_on_calls: bool,
+        break_on_function_calls: bool,
+        break_on_intrinsic_calls: bool,
         break_on_thunk: bool,
         break_every_statement: bool,
         break_on_terminator_goto: bool,
@@ -85,8 +87,10 @@ class KMIR(KProve, KRun, KParse):
                     'KMIR-CONTROL-FLOW.endprogram-no-return',
                 ]
             )
-        if break_on_calls or break_on_terminator_call or break_every_terminator:
-            cut_point_rules.extend(['KMIR-CONTROL-FLOW.termCallIntrinsic', 'KMIR-CONTROL-FLOW.termCallFunction'])
+        if break_on_intrinsic_calls or break_on_calls or break_on_terminator_call or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsic')
+        if break_on_function_calls or break_on_calls or break_on_terminator_call or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
         if break_on_terminator_assert or break_every_terminator:
             cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
         if break_on_terminator_drop or break_every_terminator:
@@ -228,6 +232,8 @@ class KMIR(KProve, KRun, KParse):
 
             cut_point_rules = KMIR.cut_point_rules(
                 break_on_calls=opts.break_on_calls,
+                break_on_function_calls=opts.break_on_function_calls,
+                break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
                 break_on_thunk=opts.break_on_thunk,
                 break_every_statement=opts.break_every_statement,
                 break_on_terminator_goto=opts.break_on_terminator_goto,

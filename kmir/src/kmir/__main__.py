@@ -246,7 +246,19 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
     prove_args.add_argument(
-        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on function calls'
+        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on all function and intrinsic calls'
+    )
+    prove_args.add_argument(
+        '--break-on-function-calls',
+        dest='break_on_function_calls',
+        action='store_true',
+        help='Break on function calls (not intrinsics)',
+    )
+    prove_args.add_argument(
+        '--break-on-intrinsic-calls',
+        dest='break_on_intrinsic_calls',
+        action='store_true',
+        help='Break on intrinsic calls (not other functions)',
     )
     prove_args.add_argument(
         '--break-on-thunk', dest='break_on_thunk', action='store_true', help='Break on thunk evaluation'
@@ -476,6 +488,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
                 break_on_calls=ns.break_on_calls,
+                break_on_function_calls=ns.break_on_function_calls,
+                break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
                 break_on_thunk=ns.break_on_thunk,
                 break_every_statement=ns.break_every_statement,
                 break_on_terminator_goto=ns.break_on_terminator_goto,
