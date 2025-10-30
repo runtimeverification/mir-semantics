@@ -58,14 +58,41 @@ class KMIR(KProve, KRun, KParse):
         break_on_calls: bool,
         break_on_thunk: bool,
         break_every_statement: bool,
+        break_on_terminator_goto: bool,
+        break_on_terminator_switch_int: bool,
+        break_on_terminator_return: bool,
+        break_on_terminator_call: bool,
+        break_on_terminator_assert: bool,
+        break_on_terminator_drop: bool,
+        break_on_terminator_unreachable: bool,
+        break_every_terminator: bool,
     ) -> list[str]:
         cut_point_rules = []
-        if break_on_calls:
-            cut_point_rules.append('KMIR-CONTROL-FLOW.call')
         if break_on_thunk:
             cut_point_rules.append('RT-DATA.thunk')
         if break_every_statement:
             cut_point_rules.append('KMIR-CONTROL-FLOW.execStmt')
+        if break_on_terminator_goto or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termGoto')
+        if break_on_terminator_switch_int or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termSwitchInt')
+        if break_on_terminator_return or break_every_terminator:
+            cut_point_rules.extend(
+                [
+                    'KMIR-CONTROL-FLOW.termReturnSome',
+                    'KMIR-CONTROL-FLOW.termReturnNone',
+                    'KMIR-CONTROL-FLOW.endprogram-return',
+                    'KMIR-CONTROL-FLOW.endprogram-no-return',
+                ]
+            )
+        if break_on_calls or break_on_terminator_call or break_every_terminator:
+            cut_point_rules.extend(['KMIR-CONTROL-FLOW.termCallIntrinsic', 'KMIR-CONTROL-FLOW.termCallFunction'])
+        if break_on_terminator_assert or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
+        if break_on_terminator_drop or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termDrop')
+        if break_on_terminator_unreachable or break_every_terminator:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termUnreachable')
         return cut_point_rules
 
     @staticmethod
@@ -203,6 +230,14 @@ class KMIR(KProve, KRun, KParse):
                 break_on_calls=opts.break_on_calls,
                 break_on_thunk=opts.break_on_thunk,
                 break_every_statement=opts.break_every_statement,
+                break_on_terminator_goto=opts.break_on_terminator_goto,
+                break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
+                break_on_terminator_return=opts.break_on_terminator_return,
+                break_on_terminator_call=opts.break_on_terminator_call,
+                break_on_terminator_assert=opts.break_on_terminator_assert,
+                break_on_terminator_drop=opts.break_on_terminator_drop,
+                break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
+                break_every_terminator=opts.break_every_terminator,
             )
 
             with kmir.kcfg_explore(label) as kcfg_explore:

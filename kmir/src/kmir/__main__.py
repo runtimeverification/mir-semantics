@@ -257,6 +257,54 @@ def _arg_parser() -> ArgumentParser:
         action='store_true',
         help='Break on every MIR Statement execution',
     )
+    prove_args.add_argument(
+        '--break-on-terminator-goto',
+        dest='break_on_terminator_goto',
+        action='store_true',
+        help='Break on Goto terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-switch-int',
+        dest='break_on_terminator_switch_int',
+        action='store_true',
+        help='Break on SwitchInt terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-return',
+        dest='break_on_terminator_return',
+        action='store_true',
+        help='Break on Return terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-call',
+        dest='break_on_terminator_call',
+        action='store_true',
+        help='Break on Call terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-assert',
+        dest='break_on_terminator_assert',
+        action='store_true',
+        help='Break on Assert terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-drop',
+        dest='break_on_terminator_drop',
+        action='store_true',
+        help='Break on Drop terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-unreachable',
+        dest='break_on_terminator_unreachable',
+        action='store_true',
+        help='Break on Unreachable terminator',
+    )
+    prove_args.add_argument(
+        '--break-every-terminator',
+        dest='break_every_terminator',
+        action='store_true',
+        help='Break on every MIR terminator execution',
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -430,6 +478,14 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_on_calls=ns.break_on_calls,
                 break_on_thunk=ns.break_on_thunk,
                 break_every_statement=ns.break_every_statement,
+                break_on_terminator_goto=ns.break_on_terminator_goto,
+                break_on_terminator_switch_int=ns.break_on_terminator_switch_int,
+                break_on_terminator_return=ns.break_on_terminator_return,
+                break_on_terminator_call=ns.break_on_terminator_call,
+                break_on_terminator_assert=ns.break_on_terminator_assert,
+                break_on_terminator_drop=ns.break_on_terminator_drop,
+                break_on_terminator_unreachable=ns.break_on_terminator_unreachable,
+                break_every_terminator=ns.break_every_terminator,
             )
         case 'link':
             return LinkOpts(

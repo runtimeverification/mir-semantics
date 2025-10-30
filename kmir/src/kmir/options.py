@@ -44,6 +44,14 @@ class ProveOpts(KMirOpts):
     break_on_calls: bool
     break_on_thunk: bool
     break_every_statement: bool
+    break_on_terminator_goto: bool
+    break_on_terminator_switch_int: bool
+    break_on_terminator_return: bool
+    break_on_terminator_call: bool
+    break_on_terminator_assert: bool
+    break_on_terminator_drop: bool
+    break_on_terminator_unreachable: bool
+    break_every_terminator: bool
 
     def __init__(
         self,
@@ -55,6 +63,14 @@ class ProveOpts(KMirOpts):
         break_on_calls: bool = False,
         break_on_thunk: bool = False,
         break_every_statement: bool = False,
+        break_on_terminator_goto: bool = False,
+        break_on_terminator_switch_int: bool = False,
+        break_on_terminator_return: bool = False,
+        break_on_terminator_call: bool = False,
+        break_on_terminator_assert: bool = False,
+        break_on_terminator_drop: bool = False,
+        break_on_terminator_unreachable: bool = False,
+        break_every_terminator: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
@@ -64,6 +80,14 @@ class ProveOpts(KMirOpts):
         self.break_on_calls = break_on_calls
         self.break_on_thunk = break_on_thunk
         self.break_every_statement = break_every_statement
+        self.break_on_terminator_goto = break_on_terminator_goto
+        self.break_on_terminator_switch_int = break_on_terminator_switch_int
+        self.break_on_terminator_return = break_on_terminator_return
+        self.break_on_terminator_call = break_on_terminator_call
+        self.break_on_terminator_assert = break_on_terminator_assert
+        self.break_on_terminator_drop = break_on_terminator_drop
+        self.break_on_terminator_unreachable = break_on_terminator_unreachable
+        self.break_every_terminator = break_every_terminator
 
 
 @dataclass
@@ -87,6 +111,14 @@ class ProveRSOpts(ProveOpts):
         break_on_calls: bool = False,
         break_on_thunk: bool = False,
         break_every_statement: bool = False,
+        break_on_terminator_goto: bool = False,
+        break_on_terminator_switch_int: bool = False,
+        break_on_terminator_return: bool = False,
+        break_on_terminator_call: bool = False,
+        break_on_terminator_assert: bool = False,
+        break_on_terminator_drop: bool = False,
+        break_on_terminator_unreachable: bool = False,
+        break_every_terminator: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -100,6 +132,14 @@ class ProveRSOpts(ProveOpts):
         self.break_on_calls = break_on_calls
         self.break_on_thunk = break_on_thunk
         self.break_every_statement = break_every_statement
+        self.break_on_terminator_goto = break_on_terminator_goto
+        self.break_on_terminator_switch_int = break_on_terminator_switch_int
+        self.break_on_terminator_return = break_on_terminator_return
+        self.break_on_terminator_call = break_on_terminator_call
+        self.break_on_terminator_assert = break_on_terminator_assert
+        self.break_on_terminator_drop = break_on_terminator_drop
+        self.break_on_terminator_unreachable = break_on_terminator_unreachable
+        self.break_every_terminator = break_every_terminator
 
 
 @dataclass
