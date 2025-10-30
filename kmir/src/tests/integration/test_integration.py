@@ -263,6 +263,18 @@ EXEC_DATA = [
         1000,
     ),
     (
+        'struct_cast_fail',
+        EXEC_DATA_DIR / 'pointers' / 'struct_cast_fail.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'struct_cast_fail.state',
+        1000,
+    ),
+    (
+        'unsafe_cell_cast',
+        EXEC_DATA_DIR / 'pointers' / 'unsafe_cell_cast.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'unsafe_cell_cast.state',
+        1000,
+    ),
+    (
         'Ref-array-elem-ref',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.smir.json',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
