@@ -143,7 +143,8 @@ def _kmir_prune(opts: PruneOpts) -> None:
 
 
 def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
-    # Proof dir is checked to be some in arg parsing for instructive erros
+    # Proof dir is checked to be some in arg parsing for instructive errors
+    assert opts.proof_dir is not None
 
     if not APRProof.proof_data_exists(opts.id, opts.proof_dir):
         raise ValueError(f'Proof id {opts.id} not found in proof dir {opts.proof_dir}')
