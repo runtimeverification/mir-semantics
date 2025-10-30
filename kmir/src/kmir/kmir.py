@@ -54,6 +54,19 @@ class KMIR(KProve, KRun, KParse):
         self.llvm_library_dir = llvm_library_dir
 
     @staticmethod
+    def cut_point_rules(
+        break_on_calls: bool,
+    ) -> list[str]:
+        cut_point_rules = []
+        if break_on_calls:
+            cut_point_rules.extend(
+                [
+                    'KMIR-CONTROL-FLOW.call',
+                ]
+            )
+        return cut_point_rules
+
+    @staticmethod
     def from_kompiled_kore(
         smir_info: SMIRInfo, target_dir: Path, bug_report: Path | None = None, symbolic: bool = True
     ) -> KMIR:
@@ -184,8 +197,10 @@ class KMIR(KProve, KRun, KParse):
             if apr_proof.passed:
                 return apr_proof
 
+            cut_point_rules = KMIR.cut_point_rules(break_on_calls=opts.break_on_calls)
+
             with kmir.kcfg_explore(label) as kcfg_explore:
-                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 

@@ -324,7 +324,7 @@ An operand may be a `Reference` (the only way a function could access another fu
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
-  rule <k> #setUpCalleeData(
+  rule [call]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
               ARGS
               )
