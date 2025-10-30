@@ -1015,10 +1015,9 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), #discriminantSize(lookupTy(TY)), false)
+        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires #discriminantSize(lookupTy(TY)) =/=Int 0
 
   syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
                | #lookupDiscrAux ( Discriminants , Int ) [function]
@@ -1029,27 +1028,6 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , IDX) => RESULT requires IDX ==Int 0
   rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX -Int 1) requires 0 <Int IDX [owise]
-
-  syntax Int ::= #discriminantSize ( TypeInfo )    [function, total]
-               | #discriminantSize ( LayoutShape ) [function, total]
-               | #discriminantSize ( Scalar )      [function, total]
-               | #intLength (IntegerLength)        [function, total]
-  // ------------------------------------------------------------
-  rule #discriminantSize(typeInfoEnumType(_, _, _, _, someLayoutShape(LAYOUT))) => #discriminantSize(LAYOUT)
-  rule #discriminantSize(_OTHER_TYPE:TypeInfo) => 0  [owise]
-
-  rule #discriminantSize(layoutShape(_, variantsShapeMultiple(mk(TAG, _, _, _)), _, _, _)) => #discriminantSize(TAG)
-  rule #discriminantSize(_OTHER:LayoutShape) => 0  [owise]
-
-  rule #discriminantSize(scalarInitialized(mk(primitiveInt(mk(INTLENGTH, _SIGNED)), _VALIDRANGE))) => #intLength(INTLENGTH)
-  rule #discriminantSize(scalarInitialized(mk(primitivePointer(_)                 , _VALIDRANGE))) => 64 // pointer size assumed 64 bit
-  rule #discriminantSize(_OTHER:Scalar) => 0  [owise]
-
-  rule #intLength(integerLengthI8)   => 8
-  rule #intLength(integerLengthI16)  => 16
-  rule #intLength(integerLengthI32)  => 32
-  rule #intLength(integerLengthI64)  => 64
-  rule #intLength(integerLengthI128) => 128
 ```
 
 ```k
@@ -1422,7 +1400,7 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   rule <k> #discriminant(
               thunk(#cast (Integer(DATA, _, false), castKindTransmute, _, TY)),
               TY
-            ) => Integer(DATA, #discriminantSize(lookupTy(TY)), false)
+            ) => Integer(DATA, 0, false) // HACK: bit width 0 means "flexible"
           ...
         </k>
     requires #isEnumWithoutFields(lookupTy(TY))
@@ -1707,6 +1685,19 @@ The argument types must be the same for all comparison operations, however this 
         BoolVal(cmpOpInt(OP, VAL1, VAL2))
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
+
+  // HACK: accept bit width 0 in comparisons (coming from discriminants)
+  rule #applyBinOp(OP, Integer(VAL1, 0, false), Integer(VAL2, _WIDTH, _SIGN), _)
+      =>
+        BoolVal(cmpOpInt(OP, VAL1, VAL2))
+    requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
+  rule #applyBinOp(OP, Integer(VAL1, _WIDTH, _SIGN_), Integer(VAL2, 0, false), _)
+      =>
+        BoolVal(cmpOpInt(OP, VAL1, VAL2))
+    requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
+
 
   rule #applyBinOp(OP, BoolVal(VAL1), BoolVal(VAL2), _)
       =>
