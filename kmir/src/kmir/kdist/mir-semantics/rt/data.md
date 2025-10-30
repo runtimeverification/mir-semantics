@@ -1265,11 +1265,36 @@ which have the same representation `Value::Range`.
 ```k
   rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            PtrLocal(OFFSET, PLACE, MUT, #convertMetadata(META, lookupTy(TY_TARGET)))
+            PtrLocal(
+              OFFSET,
+              #alignTransparentPlace(
+                PLACE,
+                #lookupMaybeTy(pointeeTy(lookupTy(TY_SOURCE))),
+                #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
+              ),
+              MUT,
+              #convertMetadata(META, lookupTy(TY_TARGET))
+            )
           ...
         </k>
       requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
+
+  syntax Place ::= #alignTransparentPlace ( Place , TypeInfo , TypeInfo ) [function, total]
+
+  rule #alignTransparentPlace(place(LOCAL, PROJS), typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as SOURCE, TARGET)
+    => #alignTransparentPlace(
+         place(
+           LOCAL,
+           appendP(PROJS, projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems)
+         ),
+         lookupTy(FIELD_TY),
+         TARGET
+       )
+    requires #transparentDepth(SOURCE) >Int #transparentDepth(TARGET)
+     andBool #zeroFieldOffset(LAYOUT)
+
+  rule #alignTransparentPlace(PLACE, _, _) => PLACE [owise]
 
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
@@ -1388,6 +1413,22 @@ What can be supported without additional layout consideration is trivial casts b
 
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+
+  rule <k> #cast(
+              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              PTR_OFFSET,
+              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
 ```
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.

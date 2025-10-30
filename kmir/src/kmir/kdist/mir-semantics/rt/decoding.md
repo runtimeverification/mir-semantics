@@ -100,12 +100,6 @@ syntax Int ::= #msBytes ( MachineSize ) [function, total]
 rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8 [preserves-definedness]
 rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
 
-// Extract field offsets from the struct layout when available (Arbitrary only).
-syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
-rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
-rule #structOffsets(noLayoutShape) => .MachineSizes
-rule #structOffsets(_) => .MachineSizes [owise]
-
 // Minimum number of input bytes required to decode all fields by the chosen offsets.
 // Uses builtin maxInt to compute max(offset + size). The lists of types and
 // offsets must have the same length; if not, this function returns -1 to signal
