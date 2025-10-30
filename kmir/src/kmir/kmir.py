@@ -57,12 +57,15 @@ class KMIR(KProve, KRun, KParse):
     def cut_point_rules(
         break_on_calls: bool,
         break_on_thunk: bool,
+        break_every_statement: bool,
     ) -> list[str]:
         cut_point_rules = []
         if break_on_calls:
             cut_point_rules.append('KMIR-CONTROL-FLOW.call')
         if break_on_thunk:
             cut_point_rules.append('RT-DATA.thunk')
+        if break_every_statement:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.execStmt')
         return cut_point_rules
 
     @staticmethod
@@ -197,7 +200,9 @@ class KMIR(KProve, KRun, KParse):
                 return apr_proof
 
             cut_point_rules = KMIR.cut_point_rules(
-                break_on_calls=opts.break_on_calls, break_on_thunk=opts.break_on_thunk
+                break_on_calls=opts.break_on_calls,
+                break_on_thunk=opts.break_on_thunk,
+                break_every_statement=opts.break_every_statement,
             )
 
             with kmir.kcfg_explore(label) as kcfg_explore:

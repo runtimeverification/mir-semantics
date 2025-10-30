@@ -96,7 +96,7 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
+  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
             #setLocalValue(PLACE, RVAL)
          ...
