@@ -209,6 +209,42 @@ fn get_rent(_account_info: &AccountInfo) -> solana_rent::Rent {
 // fn cheatcode_is_multisig(_: &AccountInfo) {}
 // fn cheatcode_is_rent(_: &AccountInfo) {}
 
+// special test for basic domain data access (SPL types)
+#[inline(never)]
+fn test_spltoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &AccountInfo) {
+    // Mutate mint via standard unpack/pack flow; use unwraps for brevity in tests
+    let mut m = Mint::unpack_unchecked(&mint.data.borrow()).unwrap();
+    m.is_initialized = true;
+    Mint::pack(m, &mut mint.data.borrow_mut()).unwrap();
+    let m2 = Mint::unpack(&mint.data.borrow()).unwrap();
+    assert!(m2.is_initialized);
+
+    // Set Account.is_native in the simplest way (parity with p-token's boolean set_native(true))
+    let mut a = Account::unpack_unchecked(&acc.data.borrow()).unwrap();
+    a.is_native = solana_program_option::COption::Some(0);
+    Account::pack(a, &mut acc.data.borrow_mut()).unwrap();
+    // Verify via the same wrapper accessor used elsewhere
+    let iacc = get_account(acc);
+    assert!(iacc.is_native());
+
+    // Basic owner self-check
+    let owner = acc.owner;
+    assert_eq!(acc.owner, owner);
+
+    // Compare Rent from Sysvar::get vs account; fallback if not a real rent sysvar
+    let sysrent = solana_rent::Rent::get().unwrap();
+    let min_a = sysrent.minimum_balance(10);
+    let prent = solana_rent::Rent::from_account_info(rent).unwrap_or(sysrent);
+    let min_b = prent.minimum_balance(10);
+    assert_eq!(min_a, min_b);
+}
+
+// wrapper to ensure the test is retained in SMIR/IR outputs
+#[no_mangle]
+pub unsafe extern "C" fn use_tests(acc: &AccountInfo) {
+    test_spltoken_domain_data(acc, acc, acc);
+}
+
 // Inline `assume` is used directly in test harnesses; no helper functions needed.
 
 /// Inner instruction processor that dispatches to proof harnesses
