@@ -40,6 +40,7 @@ PROVE_RS_START_SYMBOLS = {
 PROVE_RS_SHOW_SPECS = [
     'interior-mut-fail',
     'interior-mut3-fail',
+    'interior-mut-refcell-fail',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
@@ -47,6 +48,7 @@ PROVE_RS_SHOW_SPECS = [
     'checked_arithmetic-fail',
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
+    'pointer-cast-struct-field-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
 ]
@@ -257,18 +259,6 @@ EXEC_DATA = [
         'ref-ptr-cases',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.state',
-        1000,
-    ),
-    (
-        'struct_cast_fail',
-        EXEC_DATA_DIR / 'pointers' / 'struct_cast_fail.smir.json',
-        EXEC_DATA_DIR / 'pointers' / 'struct_cast_fail.state',
-        1000,
-    ),
-    (
-        'unsafe_cell_cast',
-        EXEC_DATA_DIR / 'pointers' / 'unsafe_cell_cast.smir.json',
-        EXEC_DATA_DIR / 'pointers' / 'unsafe_cell_cast.state',
         1000,
     ),
     (

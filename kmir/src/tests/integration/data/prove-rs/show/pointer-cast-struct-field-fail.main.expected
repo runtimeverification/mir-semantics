@@ -1,0 +1,40 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: src/rust/library/std/src/rt.rs:194
+│
+│  (135 steps)
+├─ 3
+│   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
+│   function: read_via_cast
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   AssertError ( assertMessageMisalignedPointerDereference ( ... required: operandC
+┃  │   function: read_via_cast
+┃  │
+┃  │  (1 step)
+┃  └─ 6 (stuck, leaf)
+┃      #ProgramError ( AssertError ( assertMessageMisalignedPointerDereference ( ... re
+┃      function: read_via_cast
+┃
+┗━━┓
+   │
+   ├─ 5
+   │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
+   │   function: read_via_cast
+   │
+   │  (7 steps)
+   └─ 7 (stuck, leaf)
+       #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 1 , place ( ...
+       function: read_via_cast
+       span: r/prove-rs/pointer-cast-struct-field-fail.rs:8
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
+
