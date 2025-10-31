@@ -246,7 +246,82 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
     prove_args.add_argument(
-        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on function calls'
+        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on all function and intrinsic calls'
+    )
+    prove_args.add_argument(
+        '--break-on-function-calls',
+        dest='break_on_function_calls',
+        action='store_true',
+        help='Break on function calls (not intrinsics)',
+    )
+    prove_args.add_argument(
+        '--break-on-intrinsic-calls',
+        dest='break_on_intrinsic_calls',
+        action='store_true',
+        help='Break on intrinsic calls (not other functions)',
+    )
+    prove_args.add_argument(
+        '--break-on-thunk', dest='break_on_thunk', action='store_true', help='Break on thunk evaluation'
+    )
+    prove_args.add_argument(
+        '--break-every-statement',
+        dest='break_every_statement',
+        action='store_true',
+        help='Break on every MIR Statement execution',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-goto',
+        dest='break_on_terminator_goto',
+        action='store_true',
+        help='Break on Goto terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-switch-int',
+        dest='break_on_terminator_switch_int',
+        action='store_true',
+        help='Break on SwitchInt terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-return',
+        dest='break_on_terminator_return',
+        action='store_true',
+        help='Break on Return terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-call',
+        dest='break_on_terminator_call',
+        action='store_true',
+        help='Break on Call terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-assert',
+        dest='break_on_terminator_assert',
+        action='store_true',
+        help='Break on Assert terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-drop',
+        dest='break_on_terminator_drop',
+        action='store_true',
+        help='Break on Drop terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-unreachable',
+        dest='break_on_terminator_unreachable',
+        action='store_true',
+        help='Break on Unreachable terminator',
+    )
+    prove_args.add_argument(
+        '--break-every-terminator',
+        dest='break_every_terminator',
+        action='store_true',
+        help='Break on every MIR terminator execution',
+    )
+    prove_args.add_argument(
+        '--break-every-step',
+        dest='break_every_step',
+        action='store_true',
+        help='Break on every MIR step (statements and terminators)',
     )
 
     proof_args = ArgumentParser(add_help=False)
@@ -419,6 +494,19 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
                 break_on_calls=ns.break_on_calls,
+                break_on_function_calls=ns.break_on_function_calls,
+                break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
+                break_on_thunk=ns.break_on_thunk,
+                break_every_statement=ns.break_every_statement,
+                break_on_terminator_goto=ns.break_on_terminator_goto,
+                break_on_terminator_switch_int=ns.break_on_terminator_switch_int,
+                break_on_terminator_return=ns.break_on_terminator_return,
+                break_on_terminator_call=ns.break_on_terminator_call,
+                break_on_terminator_assert=ns.break_on_terminator_assert,
+                break_on_terminator_drop=ns.break_on_terminator_drop,
+                break_on_terminator_unreachable=ns.break_on_terminator_unreachable,
+                break_every_terminator=ns.break_every_terminator,
+                break_every_step=ns.break_every_step,
             )
         case 'link':
             return LinkOpts(
