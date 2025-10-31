@@ -387,7 +387,7 @@ An `AccountInfo` reference is passed to the function.
   rule #functionName(IntrinsicFunction(symbol(NAME))) => NAME
 ```
 
-```{.k .symbolic}
+```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [cheatcode-is-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -415,7 +415,7 @@ An `AccountInfo` reference is passed to the function.
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
                  | #mkPTokenRent ( Place )
-                //  | #mkPTokenMultisig ( Place )
+             //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
   // dereference, then read and dereference pointer in field 1 to read the account data
@@ -424,47 +424,60 @@ An `AccountInfo` reference is passed to the function.
   rule
     <k> #mkPTokenAccount(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addAccount(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
 
   rule
     <k> #mkPTokenMint(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addMint(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addMint(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
 
   rule
     <k> #mkPTokenRent(place(LOCAL, PROJS))
       => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)),
-            #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?HACK) projectionElemDeref .ProjectionElems)))))
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addRent(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
       ...
     </k>
+```
 
+```k
+  syntax Ty ::= #hack() [function, total, symbol(#hack)]
+  rule #hack() => ty(0)
+```
+
+```k
   syntax Evaluation ::= #addAccount ( Evaluation )  [seqstrict()]
                       | #addMint ( Evaluation )     [seqstrict()]
                       | #addRent ( Evaluation )     [seqstrict()]
-                      // | #addMultisig ( Evaluation ) [seqstrict()]
+                   // | #addMultisig ( Evaluation ) [seqstrict()]
+```
 
+#### `#addAccount`
+
+```{.k .symbolic}
   // NB these rewrites also ensure the data_len field in PAcc is set correctly for the given data
   rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountAccount(
-            #toPAcc(P_ACC),
-            IAcc(Key(?MINT),
-                 Key(?OWNER),
-                 Amount(?AMOUNT),
-                 Flag(?DELEGATEFLAG), Key(?DELEGATE),
-                 U8(?STATE),
-                 Flag(?NATIVEFLAG),
-                 Amount(?NATIVE_AMOUNT),
-                 Amount(?DELEG_AMOUNT),
-                 Flag(?CLOSEFLAG), Key(?CLOSE_AUTH)
-              )
-          )
+           #toPAcc(P_ACC),
+           IAcc(Key(?MINT),
+                Key(?OWNER),
+                Amount(?AMOUNT),
+                Flag(?DELEGATEFLAG),
+                Key(?DELEGATE),
+                U8(?STATE),
+                Flag(?NATIVEFLAG),
+                Amount(?NATIVE_AMOUNT),
+                Amount(?DELEG_AMOUNT),
+                Flag(?CLOSEFLAG),
+                Key(?CLOSE_AUTH)
+           )
+         )
     ensures 0 <=Int ?STATE andBool ?STATE <Int 256
     andBool 0 <=Int ?DELEGATEFLAG andBool ?DELEGATEFLAG <=Int 1 // not allowed any other values
     andBool 0 <=Int ?NATIVEFLAG andBool ?NATIVEFLAG <=Int 1 // not allowed any other values
@@ -477,17 +490,43 @@ An `AccountInfo` reference is passed to the function.
     andBool 0 <=Int ?NATIVE_AMOUNT andBool ?NATIVE_AMOUNT <Int 1 <<Int 64
     andBool 0 <=Int ?DELEG_AMOUNT andBool ?DELEG_AMOUNT <Int 1 <<Int 64
     andBool DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
+```
 
+```{.k .concrete}
+  rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountAccount(
+           #toPAcc(P_ACC),
+           IAcc(#randKey(),      // mint
+                #randKey(),      // owner
+                #randAmount(),   // amount
+                Flag(#randU1()), // delegateflag, only 0 or 1 allowed
+                #randKey(),      // delegate
+                U8(#randU8()),   // state
+                Flag(#randU1()), // nativeflag, only 0 or 1 allowed
+                #randAmount(),   // native_amount
+                #randAmount(),   // deleg_amount
+                Flag(#randU1()), // closeflag, only 0 or 1 allowed
+                #randKey()       // close_auth
+           )
+         )
+    requires DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
+```
+
+#### `#addMint`
+
+```{.k .symbolic}
   rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMint(
-            #toPAcc(P_ACC),
-            IMint(Flag(?MINT_AUTH_FLAG), Key(?MINT_AUTH_KEY),
-                  Amount(?SUPPLY),
-                  U8(?DECIMALS),
-                  U8(?INITIALISED),
-                  Flag(?FREEZE_AUTH_FLAG), Key(?FREEZE_AUTH_KEY)
-              )
-          )
+           #toPAcc(P_ACC),
+           IMint(Flag(?MINT_AUTH_FLAG),
+                 Key(?MINT_AUTH_KEY),
+                 Amount(?SUPPLY),
+                 U8(?DECIMALS),
+                 U8(?INITIALISED),
+                 Flag(?FREEZE_AUTH_FLAG),
+                 Key(?FREEZE_AUTH_KEY)
+           )
+         )
     ensures 0 <=Int ?DECIMALS andBool ?DECIMALS <Int 256
     andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 1 // not allowed any other values
     andBool 0 <=Int ?MINT_AUTH_FLAG andBool ?MINT_AUTH_FLAG <=Int 1 // not allowed any other values
@@ -496,15 +535,52 @@ An `AccountInfo` reference is passed to the function.
     andBool size(?FREEZE_AUTH_KEY) ==Int 32 andBool allBytes(?FREEZE_AUTH_KEY)
     andBool 0 <=Int ?SUPPLY andBool ?SUPPLY <Int 1 <<Int 64
     andBool DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
+```
 
+```{.k .concrete}
+  rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountMint(
+           #toPAcc(P_ACC),
+           IMint(Flag(#randU1()), // mint_auth_flag, only 0 or 1 allowed
+                 #randKey(),      // mint_auth_key
+                 #randAmount(),   // supply
+                 U8(#randU8()),   // decimals
+                 U8(#randU1()),   // initialized, only 0 or 1 allowed
+                 Flag(#randU1()), // freeze_auth_flag, only 0 or 1 allowed
+                 #randKey()       // freeze_auth_key
+           )
+         )
+    requires DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
+```
+
+#### `#addRent`
+
+```{.k .symbolic}
   rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountRent(
-            #toPAcc(P_ACC),
-            PRent(U64(?LMP_PER_BYTEYEAR), F64(?_EXEMPT_THRESHOLD), U8(?BURN_PCT))
-          )
+           #toPAcc(P_ACC),
+           PRent(
+             U64(?LMP_PER_BYTEYEAR),
+             F64(?_EXEMPT_THRESHOLD),
+             U8(?BURN_PCT)
+           )
+         )
     ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 64
     andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <Int 256
     andBool DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
+```
+
+```{.k .concrete}
+  rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountRent(
+           #toPAcc(P_ACC),
+           PRent(
+             U64(#randU64()),             // lmp_per_byteyear
+             F64(#randExemptThreshold()), // exempt_threshold
+             U8(#randU8())                // burn_pct
+           )
+         )
+    requires DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
@@ -536,11 +612,11 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
   rule #adjustRef(PAccByteRef(HEIGHT, PLACE, MUT, LEN), OFFSET) => PAccByteRef(HEIGHT +Int OFFSET, PLACE, MUT, LEN)
 ```
 
-```{.k .symbolic}
+```k
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityNot)
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityNot)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -550,7 +626,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
   // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-mut-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), ?_HACK) .ProjectionElems))), mutabilityMut)
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityMut)
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -610,7 +686,7 @@ While the `PAccByteRef` is generic, the `load_*` functions are specific to the c
 A (small) complication is that the reference is returned within a `Result` enum.
 NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same way, mutability information is already held in the `PAccountByteRef`.
 
-```{.k .symbolic}
+```k
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -687,7 +763,15 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
     => #setLocalValue(
           DEST,
           Aggregate(variantIdx(0), // returns a Result type
-            ListItem(SysRent(PRent(U64(?SYS_LMP_PER_BYTEYEAR), F64(?_SYS_EXEMPT_THRESHOLD), U8(?SYS_BURN_PCT))))
+            ListItem(
+              SysRent(
+                PRent(
+                  U64(?SYS_LMP_PER_BYTEYEAR),
+                  F64(?_SYS_EXEMPT_THRESHOLD),
+                  U8(?SYS_BURN_PCT)
+                )
+              )
+            )
           )
         )
       ~> #execBlockIdx(TARGET)
@@ -697,6 +781,30 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
     ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 64
      andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <Int 256
     [priority(30), preserves-definedness]
+```
+
+```{.k .concrete}
+  rule [cheatcode-get-sys-prent]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #setLocalValue(
+          DEST,
+          Aggregate(variantIdx(0), // returns a Result type
+            ListItem(
+              SysRent(
+                PRent(
+                  U64(#randU64()),              // sys_lmp_per_byteyear
+                  F64(#randExemptThreshold()),  // sys_exempt_threshold
+                  U8(#randU8())                 // sys_burn_pct
+                )
+              )
+            )
+          )
+        )
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+    [priority(30)]
 ```
 
 ### Access to the `Rent` struct
@@ -771,6 +879,60 @@ NB The projection rule must have higher priority than the one which auto-project
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPRent(PACC) CTXS) => #buildUpdate(PAccountRent(PACC, #toPRent(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
+```
+
+## Helpers for fuzzing
+
+```{.k .concrete}
+  syntax Int ::= #randU1()  [function, total, impure, symbol(randU1) ]
+               | #randU8()  [function, total, impure, symbol(randU8) ]
+               | #randU32() [function, total, impure, symbol(randU32)]
+               | #randU64() [function, total, impure, symbol(randU64)]
+
+  rule #randU1()  => randInt(2)
+  rule #randU8()  => randInt(256)
+  rule #randU32() => randInt(4294967296)
+  rule #randU64() => randInt(18446744073709551616)
+
+  syntax Float ::= #randExemptThreshold() [function, total, impure, symbol(randExemptThreshold)]
+  rule #randExemptThreshold() => Int2Float(#randU32(), 52, 11)
+
+  syntax Amount ::= #randAmount() [function, total, impure, symbol(randAmount)]
+  rule #randAmount() => Amount(#randU64())
+
+  syntax Key ::= #randKey() [function, total, impure, symbol(randKey)]
+  rule #randKey() => Key(ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false))
+                         ListItem(Integer(#randU8(), 8, false)))
 ```
 
 ```k
