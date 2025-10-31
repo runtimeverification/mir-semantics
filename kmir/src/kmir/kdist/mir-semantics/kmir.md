@@ -175,7 +175,8 @@ will be `129`.
 
   rule #switchMatch(0, BoolVal(B)           ) => notBool B
   rule #switchMatch(1, BoolVal(B)           ) => B
-  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned)
+  rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned) requires 0 <Int WIDTH
+  rule #switchMatch(I, Integer(I2,   0  , _)) => I ==Int I2
 ```
 
 `Return` simply returns from a function call, using the information
