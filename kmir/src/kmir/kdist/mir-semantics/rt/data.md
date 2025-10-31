@@ -1069,6 +1069,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
 
+  // Borrowing a zero-sized local that is still `NewLocal`: materialise a dummy ZST value so projection traversal succeeds without reading uninitialised data.
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), Aggregate(variantIdx(0), .List), PROJS, .Contexts)
         ~> #forRef(#mutabilityOf(KIND), metadata(noMetadataSize, 0, noMetadataSize))
