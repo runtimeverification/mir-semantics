@@ -24,6 +24,7 @@ from .options import (
     ProveRSOpts,
     PruneOpts,
     RunOpts,
+    SectionEdgeOpts,
     ShowOpts,
     ViewOpts,
 )
@@ -141,6 +142,38 @@ def _kmir_prune(opts: PruneOpts) -> None:
     proof.write_proof_data()
 
 
+def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
+    # Proof dir is checked to be some in arg parsing for instructive errors
+    assert opts.proof_dir is not None
+
+    if not APRProof.proof_data_exists(opts.id, opts.proof_dir):
+        raise ValueError(f'Proof id {opts.id} not found in proof dir {opts.proof_dir}')
+
+    target_path = opts.proof_dir / opts.id
+
+    _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {opts.id}')
+    apr_proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+
+    smir_info = SMIRInfo.from_file(target_path / 'smir.json')
+
+    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
+
+    source_id, target_id = opts.edge
+    _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
+
+    with kmir.kcfg_explore(apr_proof.id) as kcfg_explore:
+        node_ids = kcfg_explore.section_edge(
+            apr_proof.kcfg,
+            source_id=int(source_id),
+            target_id=int(target_id),
+            logs=apr_proof.logs,
+            sections=opts.sections,
+        )
+        _LOGGER.info(f'Added nodes on edge {(source_id, target_id)}: {node_ids}')
+
+    apr_proof.write_proof_data()
+
+
 def _kmir_info(opts: InfoOpts) -> None:
     smir_info = SMIRInfo.from_file(opts.smir_file)
 
@@ -171,6 +204,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_show(opts)
         case PruneOpts():
             _kmir_prune(opts)
+        case SectionEdgeOpts():
+            _kmir_section_edge(opts)
         case ProveRSOpts():
             _kmir_prove_rs(opts)
         case LinkOpts():
@@ -210,6 +245,84 @@ def _arg_parser() -> ArgumentParser:
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
     prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
+    prove_args.add_argument(
+        '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on all function and intrinsic calls'
+    )
+    prove_args.add_argument(
+        '--break-on-function-calls',
+        dest='break_on_function_calls',
+        action='store_true',
+        help='Break on function calls (not intrinsics)',
+    )
+    prove_args.add_argument(
+        '--break-on-intrinsic-calls',
+        dest='break_on_intrinsic_calls',
+        action='store_true',
+        help='Break on intrinsic calls (not other functions)',
+    )
+    prove_args.add_argument(
+        '--break-on-thunk', dest='break_on_thunk', action='store_true', help='Break on thunk evaluation'
+    )
+    prove_args.add_argument(
+        '--break-every-statement',
+        dest='break_every_statement',
+        action='store_true',
+        help='Break on every MIR Statement execution',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-goto',
+        dest='break_on_terminator_goto',
+        action='store_true',
+        help='Break on Goto terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-switch-int',
+        dest='break_on_terminator_switch_int',
+        action='store_true',
+        help='Break on SwitchInt terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-return',
+        dest='break_on_terminator_return',
+        action='store_true',
+        help='Break on Return terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-call',
+        dest='break_on_terminator_call',
+        action='store_true',
+        help='Break on Call terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-assert',
+        dest='break_on_terminator_assert',
+        action='store_true',
+        help='Break on Assert terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-drop',
+        dest='break_on_terminator_drop',
+        action='store_true',
+        help='Break on Drop terminator',
+    )
+    prove_args.add_argument(
+        '--break-on-terminator-unreachable',
+        dest='break_on_terminator_unreachable',
+        action='store_true',
+        help='Break on Unreachable terminator',
+    )
+    prove_args.add_argument(
+        '--break-every-terminator',
+        dest='break_every_terminator',
+        action='store_true',
+        help='Break on every MIR terminator execution',
+    )
+    prove_args.add_argument(
+        '--break-every-step',
+        dest='break_every_step',
+        action='store_true',
+        help='Break on every MIR step (statements and terminators)',
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -287,6 +400,16 @@ def _arg_parser() -> ArgumentParser:
     )
     prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
 
+    section_edge_parser = command_parser.add_parser(
+        'section-edge', help='Break an edge into sections', parents=[kcli_args.logging_args, proof_args]
+    )
+    section_edge_parser.add_argument(
+        'edge', type=lambda s: tuple(s.split(',')), help='Edge to section in CFG (format: `source,target`)'
+    )
+    section_edge_parser.add_argument(
+        '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
+    )
+
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
     )
@@ -354,6 +477,11 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'prune':
             proof_dir = Path(ns.proof_dir)
             return PruneOpts(proof_dir, ns.id, ns.node_id)
+        case 'section-edge':
+            if ns.proof_dir is None:
+                raise ValueError('Must pass --proof-dir to section-edge command')
+            proof_dir = Path(ns.proof_dir)
+            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, ns.sections)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
@@ -365,6 +493,20 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
+                break_on_calls=ns.break_on_calls,
+                break_on_function_calls=ns.break_on_function_calls,
+                break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
+                break_on_thunk=ns.break_on_thunk,
+                break_every_statement=ns.break_every_statement,
+                break_on_terminator_goto=ns.break_on_terminator_goto,
+                break_on_terminator_switch_int=ns.break_on_terminator_switch_int,
+                break_on_terminator_return=ns.break_on_terminator_return,
+                break_on_terminator_call=ns.break_on_terminator_call,
+                break_on_terminator_assert=ns.break_on_terminator_assert,
+                break_on_terminator_drop=ns.break_on_terminator_drop,
+                break_on_terminator_unreachable=ns.break_on_terminator_unreachable,
+                break_every_terminator=ns.break_every_terminator,
+                break_every_step=ns.break_every_step,
             )
         case 'link':
             return LinkOpts(

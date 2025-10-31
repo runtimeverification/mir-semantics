@@ -28,7 +28,6 @@ from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from random import Random
     from typing import Final
 
     from pyk.cterm.show import CTermShow
@@ -53,6 +52,65 @@ class KMIR(KProve, KRun, KParse):
         KRun.__init__(self, definition_dir, bug_report=self.bug_report)
         KParse.__init__(self, definition_dir)
         self.llvm_library_dir = llvm_library_dir
+
+    @staticmethod
+    def cut_point_rules(
+        break_on_calls: bool,
+        break_on_function_calls: bool,
+        break_on_intrinsic_calls: bool,
+        break_on_thunk: bool,
+        break_every_statement: bool,
+        break_on_terminator_goto: bool,
+        break_on_terminator_switch_int: bool,
+        break_on_terminator_return: bool,
+        break_on_terminator_call: bool,
+        break_on_terminator_assert: bool,
+        break_on_terminator_drop: bool,
+        break_on_terminator_unreachable: bool,
+        break_every_terminator: bool,
+        break_every_step: bool,
+    ) -> list[str]:
+        cut_point_rules = []
+        if break_on_thunk:
+            cut_point_rules.append('RT-DATA.thunk')
+        if break_every_statement or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.execStmt')
+        if break_on_terminator_goto or break_every_terminator or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termGoto')
+        if break_on_terminator_switch_int or break_every_terminator or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termSwitchInt')
+        if break_on_terminator_return or break_every_terminator or break_every_step:
+            cut_point_rules.extend(
+                [
+                    'KMIR-CONTROL-FLOW.termReturnSome',
+                    'KMIR-CONTROL-FLOW.termReturnNone',
+                    'KMIR-CONTROL-FLOW.endprogram-return',
+                    'KMIR-CONTROL-FLOW.endprogram-no-return',
+                ]
+            )
+        if (
+            break_on_intrinsic_calls
+            or break_on_calls
+            or break_on_terminator_call
+            or break_every_terminator
+            or break_every_step
+        ):
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsic')
+        if (
+            break_on_function_calls
+            or break_on_calls
+            or break_on_terminator_call
+            or break_every_terminator
+            or break_every_step
+        ):
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
+        if break_on_terminator_assert or break_every_terminator or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
+        if break_on_terminator_drop or break_every_terminator or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termDrop')
+        if break_on_terminator_unreachable or break_every_terminator or break_every_step:
+            cut_point_rules.append('KMIR-CONTROL-FLOW.termUnreachable')
+        return cut_point_rules
 
     @staticmethod
     def from_kompiled_kore(
@@ -93,10 +151,10 @@ class KMIR(KProve, KRun, KParse):
         *,
         start_symbol: str = 'main',
         depth: int | None = None,
-        random: Random | None = None,
+        seed: int | None = None,
     ) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        mode = RandomMode(random) if random else ConcreteMode()
+        mode = RandomMode(seed) if seed else ConcreteMode()
         init_config, _ = make_call_config(
             self.definition,
             smir_info=smir_info,
@@ -185,8 +243,25 @@ class KMIR(KProve, KRun, KParse):
             if apr_proof.passed:
                 return apr_proof
 
+            cut_point_rules = KMIR.cut_point_rules(
+                break_on_calls=opts.break_on_calls,
+                break_on_function_calls=opts.break_on_function_calls,
+                break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
+                break_on_thunk=opts.break_on_thunk,
+                break_every_statement=opts.break_every_statement,
+                break_on_terminator_goto=opts.break_on_terminator_goto,
+                break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
+                break_on_terminator_return=opts.break_on_terminator_return,
+                break_on_terminator_call=opts.break_on_terminator_call,
+                break_on_terminator_assert=opts.break_on_terminator_assert,
+                break_on_terminator_drop=opts.break_on_terminator_drop,
+                break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
+                break_every_terminator=opts.break_every_terminator,
+                break_every_step=opts.break_every_step,
+            )
+
             with kmir.kcfg_explore(label) as kcfg_explore:
-                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 

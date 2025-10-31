@@ -41,6 +41,20 @@ class ProveOpts(KMirOpts):
     max_depth: int | None
     max_iterations: int | None
     reload: bool
+    break_on_calls: bool
+    break_on_function_calls: bool
+    break_on_intrinsic_calls: bool
+    break_on_thunk: bool
+    break_every_statement: bool
+    break_on_terminator_goto: bool
+    break_on_terminator_switch_int: bool
+    break_on_terminator_return: bool
+    break_on_terminator_call: bool
+    break_on_terminator_assert: bool
+    break_on_terminator_drop: bool
+    break_on_terminator_unreachable: bool
+    break_every_terminator: bool
+    break_every_step: bool
 
     def __init__(
         self,
@@ -49,12 +63,40 @@ class ProveOpts(KMirOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         reload: bool = False,
+        break_on_calls: bool = False,
+        break_on_function_calls: bool = False,
+        break_on_intrinsic_calls: bool = False,
+        break_on_thunk: bool = False,
+        break_every_statement: bool = False,
+        break_on_terminator_goto: bool = False,
+        break_on_terminator_switch_int: bool = False,
+        break_on_terminator_return: bool = False,
+        break_on_terminator_call: bool = False,
+        break_on_terminator_assert: bool = False,
+        break_on_terminator_drop: bool = False,
+        break_on_terminator_unreachable: bool = False,
+        break_every_terminator: bool = False,
+        break_every_step: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
+        self.break_on_calls = break_on_calls
+        self.break_on_function_calls = break_on_function_calls
+        self.break_on_intrinsic_calls = break_on_intrinsic_calls
+        self.break_on_thunk = break_on_thunk
+        self.break_every_statement = break_every_statement
+        self.break_on_terminator_goto = break_on_terminator_goto
+        self.break_on_terminator_switch_int = break_on_terminator_switch_int
+        self.break_on_terminator_return = break_on_terminator_return
+        self.break_on_terminator_call = break_on_terminator_call
+        self.break_on_terminator_assert = break_on_terminator_assert
+        self.break_on_terminator_drop = break_on_terminator_drop
+        self.break_on_terminator_unreachable = break_on_terminator_unreachable
+        self.break_every_terminator = break_every_terminator
+        self.break_every_step = break_every_step
 
 
 @dataclass
@@ -75,6 +117,20 @@ class ProveRSOpts(ProveOpts):
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
+        break_on_calls: bool = False,
+        break_on_function_calls: bool = False,
+        break_on_intrinsic_calls: bool = False,
+        break_on_thunk: bool = False,
+        break_every_statement: bool = False,
+        break_on_terminator_goto: bool = False,
+        break_on_terminator_switch_int: bool = False,
+        break_on_terminator_return: bool = False,
+        break_on_terminator_call: bool = False,
+        break_on_terminator_assert: bool = False,
+        break_on_terminator_drop: bool = False,
+        break_on_terminator_unreachable: bool = False,
+        break_every_terminator: bool = False,
+        break_every_step: bool = False,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -85,6 +141,20 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
+        self.break_on_calls = break_on_calls
+        self.break_on_function_calls = break_on_function_calls
+        self.break_on_intrinsic_calls = break_on_intrinsic_calls
+        self.break_on_thunk = break_on_thunk
+        self.break_every_statement = break_every_statement
+        self.break_on_terminator_goto = break_on_terminator_goto
+        self.break_on_terminator_switch_int = break_on_terminator_switch_int
+        self.break_on_terminator_return = break_on_terminator_return
+        self.break_on_terminator_call = break_on_terminator_call
+        self.break_on_terminator_assert = break_on_terminator_assert
+        self.break_on_terminator_drop = break_on_terminator_drop
+        self.break_on_terminator_unreachable = break_on_terminator_unreachable
+        self.break_every_terminator = break_every_terminator
+        self.break_every_step = break_every_step
 
 
 @dataclass
@@ -185,6 +255,26 @@ class InfoOpts(KMirOpts):
     def __init__(self, smir_file: Path, types: str | None = None) -> None:
         self.smir_file = smir_file
         self.types = tuple(int(t.strip()) for t in types.split(',')) if types is not None else None
+
+
+@dataclass
+class SectionEdgeOpts(ProofOpts):
+    edge: tuple[str, str]
+    sections: int
+
+    def __init__(
+        self,
+        proof_dir: Path | str,
+        id: str,
+        edge: tuple[str, str],
+        sections: int = 2,
+        bug_report: Path | None = None,
+    ) -> None:
+        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.id = id
+        self.edge = edge
+        self.sections = sections
+        self.bug_report = bug_report
 
 
 @dataclass
