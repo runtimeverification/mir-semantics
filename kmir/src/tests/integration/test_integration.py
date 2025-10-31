@@ -38,10 +38,9 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
 }
 PROVE_RS_SHOW_SPECS = [
-    'local-raw-fail',
     'interior-mut-fail',
-    'interior-mut2-fail',
     'interior-mut3-fail',
+    'interior-mut-refcell-fail',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
@@ -49,7 +48,7 @@ PROVE_RS_SHOW_SPECS = [
     'checked_arithmetic-fail',
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
-    'closure_access_struct',
+    'pointer-cast-struct-field-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
 ]
