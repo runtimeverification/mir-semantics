@@ -81,7 +81,7 @@ async fn thaw_account() {
 }
 
 // #[tokio::test]
-async fn thaw_account_invalid_src() {
+async fn _thaw_account_invalid_src() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

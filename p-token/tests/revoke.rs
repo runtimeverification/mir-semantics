@@ -89,7 +89,7 @@ async fn revoke() {
 }
 
 // #[tokio::test]
-async fn revoke_invalid_source() {
+async fn _revoke_invalid_source() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

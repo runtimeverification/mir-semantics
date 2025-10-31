@@ -72,7 +72,7 @@ async fn freeze_account() {
 }
 
 // #[tokio::test]
-async fn freeze_account_invalid_source() {
+async fn _freeze_account_invalid_source() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

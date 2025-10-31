@@ -67,7 +67,7 @@ async fn set_authority() {
 }
 
 // #[tokio::test]
-async fn set_authority_invalid_account() {
+async fn _set_authority_invalid_account() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

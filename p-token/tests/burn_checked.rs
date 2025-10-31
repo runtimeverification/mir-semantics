@@ -82,7 +82,7 @@ async fn burn_checked() {
 }
 
 // #[tokio::test]
-async fn burn_checked_invalid_source() {
+async fn _burn_checked_invalid_source() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

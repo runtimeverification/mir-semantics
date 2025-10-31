@@ -71,7 +71,7 @@ async fn mint_to_checked() {
 }
 
 // #[tokio::test]
-async fn mint_to_checked_invalid_destination() {
+async fn _mint_to_checked_invalid_destination() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

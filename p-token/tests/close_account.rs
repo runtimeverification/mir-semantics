@@ -117,7 +117,7 @@ async fn close_same_accounts() {
 }
 
 // #[tokio::test]
-async fn close_invalid_source() {
+async fn _close_invalid_source() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

@@ -87,7 +87,7 @@ async fn approve_checked() {
 }
 
 // #[tokio::test]
-async fn approve_checked_invalid_src() {
+async fn _approve_checked_invalid_src() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

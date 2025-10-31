@@ -86,7 +86,7 @@ async fn transfer() {
 }
 
 // #[tokio::test]
-async fn transfer_src_uninit() {
+async fn _transfer_src_uninit() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;
@@ -152,7 +152,7 @@ async fn transfer_src_uninit() {
 }
 
 // #[tokio::test]
-async fn transfer_dst_uninit() {
+async fn _transfer_dst_uninit() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;

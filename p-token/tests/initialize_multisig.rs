@@ -76,7 +76,7 @@ async fn initialize_multisig() {
 }
 
 // #[tokio::test]
-async fn initialize_multisig_invalid_multisig() {
+async fn _initialize_multisig_invalid_multisig() {
     let context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;
