@@ -493,23 +493,22 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addAccount(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+  rule #addAccount(Aggregate(variantIdx(0), _) #as P_ACC)
       => PAccountAccount(
-           #toPAcc(P_ACC),
-           IAcc(#randKey(),      // mint
-                #randKey(),      // owner
-                #randAmount(),   // amount
-                Flag(#randU1()), // delegateflag, only 0 or 1 allowed
-                #randKey(),      // delegate
-                U8(#randU8()),   // state
-                Flag(#randU1()), // nativeflag, only 0 or 1 allowed
-                #randAmount(),   // native_amount
-                #randAmount(),   // deleg_amount
-                Flag(#randU1()), // closeflag, only 0 or 1 allowed
-                #randKey()       // close_auth
+           #toPAccWithDataLen(P_ACC, 165), // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
+           IAcc(#randKey(),                // mint
+                #randKey(),                // owner
+                #randAmount(),             // amount
+                Flag(#randU1()),           // delegateflag, only 0 or 1 allowed
+                #randKey(),                // delegate
+                U8(#randU8()),             // state
+                Flag(#randU1()),           // nativeflag, only 0 or 1 allowed
+                #randAmount(),             // native_amount
+                #randAmount(),             // deleg_amount
+                Flag(#randU1()),           // closeflag, only 0 or 1 allowed
+                #randKey()                 // close_auth
            )
          )
-    requires DATA_LEN ==Int 165 // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 #### `#addMint`
@@ -538,19 +537,18 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addMint(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+  rule #addMint(Aggregate(variantIdx(0), _) #as P_ACC)
       => PAccountMint(
-           #toPAcc(P_ACC),
-           IMint(Flag(#randU1()), // mint_auth_flag, only 0 or 1 allowed
-                 #randKey(),      // mint_auth_key
-                 #randAmount(),   // supply
-                 U8(#randU8()),   // decimals
-                 U8(#randU1()),   // initialized, only 0 or 1 allowed
-                 Flag(#randU1()), // freeze_auth_flag, only 0 or 1 allowed
-                 #randKey()       // freeze_auth_key
+           #toPAccWithDataLen(P_ACC, 82), // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
+           IMint(Flag(#randU1()),         // mint_auth_flag, only 0 or 1 allowed
+                 #randKey(),              // mint_auth_key
+                 #randAmount(),           // supply
+                 U8(#randU8()),           // decimals
+                 U8(#randU1()),           // initialized, only 0 or 1 allowed
+                 Flag(#randU1()),         // freeze_auth_flag, only 0 or 1 allowed
+                 #randKey()               // freeze_auth_key
            )
          )
-    requires DATA_LEN ==Int 82 // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 #### `#addRent`
@@ -571,16 +569,15 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addRent(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+  rule #addRent(Aggregate(variantIdx(0), _) #as P_ACC)
       => PAccountRent(
-           #toPAcc(P_ACC),
+           #toPAccWithDataLen(P_ACC, 17), // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
            PRent(
              U64(#randU64()),             // lmp_per_byteyear
              F64(#randExemptThreshold()), // exempt_threshold
              U8(#randU8())                // burn_pct
            )
          )
-    requires DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
 ```
 
 ### Establishing Access to the Second Component of a `PAccount`-sorted Value
@@ -884,6 +881,26 @@ NB The projection rule must have higher priority than the one which auto-project
 ## Helpers for fuzzing
 
 ```{.k .concrete}
+  syntax PAcc ::= #toPAccWithDataLen ( value: Value, dataLen: Int ) [function, total]
+  rule #toPAccWithDataLen(
+         Aggregate(
+           variantIdx(0),
+           ListItem(Integer(A, 8, false))  // borrow_state (custom solution to manage read/write borrows)
+           ListItem(Integer(B, 8, false))  // is_signer (comment: whether transaction was signed by this account)
+           ListItem(Integer(C, 8, false))  // is_writable
+           ListItem(Integer(D, 8, false))  // executable (comment: whether this account represents a program)
+           ListItem(Integer(E, 32, true))  // resize_delta (comment: "guaranteed to be zero at start")
+           ListItem(KEY1BYTES)             // account key
+           ListItem(KEY2BYTES)             // owner key
+           ListItem(Integer(X, 64, false)) // lamports
+           ListItem(Integer(_, 64, false)) // data_len (dependent on 2nd component, will be overwritten with DATA_LEN)
+         ),
+         DATA_LEN
+       )
+      =>
+       PAcc (U8(A), U8(B), U8(C), U8(D), I32(E), toKey(KEY1BYTES), toKey(KEY2BYTES), U64(X), U64(DATA_LEN))
+  rule #toPAccWithDataLen(OTHER, _) => PAccError(OTHER) [owise]
+
   syntax Int ::= #randU1()  [function, total, impure, symbol(randU1) ]
                | #randU8()  [function, total, impure, symbol(randU8) ]
                | #randU32() [function, total, impure, symbol(randU32)]
