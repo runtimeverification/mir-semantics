@@ -96,7 +96,7 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
+  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
          =>
             #setLocalValue(PLACE, RVAL)
          ...
@@ -139,7 +139,7 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
+  rule [termGoto]: <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
          =>
            #execBlockIdx(I)
        </k>
@@ -154,7 +154,7 @@ will be `129`.
 ```k
   syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
 
-  rule <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
+  rule [termSwitchInt]: <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
          =>
            #selectBlock(TARGETS, DISCR)
        </k>
@@ -189,7 +189,7 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+  rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
        </k>
@@ -206,7 +206,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
   // no value to return, skip writing
-  rule <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+  rule [termReturnNone]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #execBlockIdx(TARGET)
        </k>
@@ -280,14 +280,14 @@ where the returned result should go.
 
 ```k
   // Intrinsic function call - execute directly without state switching
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
+  rule [termCallIntrinsic]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
          =>
            #execIntrinsic(lookupFunction(#tyOfCall(FUNC)), ARGS, DEST) ~> #continueAt(TARGET)
        </k>
     requires isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
 
   // Regular function call - full state switching and stack setup
-  rule <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
+  rule [termCallFunction]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
          =>
            #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
        </k>
@@ -325,7 +325,7 @@ An operand may be a `Reference` (the only way a function could access another fu
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
-  rule [call]: <k> #setUpCalleeData(
+  rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
               ARGS
               )
@@ -404,7 +404,7 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 ```k
   syntax MIRError ::= AssertError ( AssertMessage )
 
-  rule <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
+  rule [termAssert]: <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
          =>
            #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
@@ -431,7 +431,7 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
          =>
            #execBlockIdx(TARGET)
         ...
@@ -439,7 +439,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   syntax MIRError ::= "ReachedUnreachable"
 
-  rule <k> #execTerminator(terminator(terminatorKindUnreachable, _SPAN))
+  rule [termUnreachable]: <k> #execTerminator(terminator(terminatorKindUnreachable, _SPAN))
          =>
            ReachedUnreachable
         ...
