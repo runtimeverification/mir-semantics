@@ -1684,6 +1684,7 @@ The argument types must be the same for all comparison operations, however this 
       =>
         BoolVal(cmpOpInt(OP, VAL1, VAL2))
     requires isComparison(OP)
+     andBool WIDTH =/=Int 0
     [preserves-definedness] // OP known to be a comparison
 
   // HACK: accept bit width 0 in comparisons (coming from discriminants)
@@ -1691,19 +1692,18 @@ The argument types must be the same for all comparison operations, however this 
       =>
         BoolVal(cmpOpInt(OP, VAL1, VAL2))
     requires isComparison(OP)
-    [preserves-definedness] // OP known to be a comparison
+    [priority(55), preserves-definedness] // OP known to be a comparison
   rule #applyBinOp(OP, Integer(VAL1, _WIDTH, _SIGN_), Integer(VAL2, 0, false), _)
       =>
         BoolVal(cmpOpInt(OP, VAL1, VAL2))
     requires isComparison(OP)
     [preserves-definedness] // OP known to be a comparison
 
-
   rule #applyBinOp(OP, BoolVal(VAL1), BoolVal(VAL2), _)
       =>
         BoolVal(cmpOpBool(OP, VAL1, VAL2))
     requires isComparison(OP)
-    [preserves-definedness] // OP known to be a comparison
+    [priority(60), preserves-definedness] // OP known to be a comparison
 ```
 
 The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
