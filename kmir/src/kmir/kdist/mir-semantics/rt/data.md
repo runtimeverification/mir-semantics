@@ -1282,6 +1282,7 @@ which have the same representation `Value::Range`.
       [preserves-definedness] // valid map lookups checked
 
   syntax Place ::= #alignTransparentPlace ( Place , TypeInfo , TypeInfo ) [function, total]
+  syntax ProjectionElems ::= #popTransparentTailTo ( ProjectionElems , TypeInfo ) [function, total]
 
   rule #alignTransparentPlace(place(LOCAL, PROJS), typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as SOURCE, TARGET)
     => #alignTransparentPlace(
@@ -1295,7 +1296,37 @@ which have the same representation `Value::Range`.
     requires #transparentDepth(SOURCE) >Int #transparentDepth(TARGET)
      andBool #zeroFieldOffset(LAYOUT)
 
+  rule #alignTransparentPlace(
+         place(LOCAL, PROJS),
+         SOURCE,
+         typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as TARGET
+       )
+    => #alignTransparentPlace(
+         place(LOCAL, #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))),
+         SOURCE,
+         lookupTy(FIELD_TY)
+       )
+    requires #transparentDepth(SOURCE) <Int #transparentDepth(TARGET)
+     andBool #zeroFieldOffset(LAYOUT)
+     andBool PROJS =/=K #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))
+
   rule #alignTransparentPlace(PLACE, _, _) => PLACE [owise]
+
+  rule #popTransparentTailTo(
+         projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems,
+         TARGET
+       )
+    => .ProjectionElems
+    requires lookupTy(FIELD_TY) ==K TARGET
+
+  rule #popTransparentTailTo(
+         X:ProjectionElem REST:ProjectionElems,
+         TARGET
+       )
+    => X #popTransparentTailTo(REST, TARGET)
+    requires REST =/=K .ProjectionElems
+
+  rule #popTransparentTailTo(PROJS, _) => PROJS [owise]
 
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
@@ -1415,6 +1446,8 @@ What can be supported without additional layout consideration is trivial casts b
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 
+  // Transmuting a pointer to an integer discards provenance and
+  // reinterprets the pointer’s offset as a value of the target integer type.
   rule <k> #cast(
               PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
               castKindTransmute,
