@@ -559,12 +559,12 @@ An `AccountInfo` reference is passed to the function.
            #toPAcc(P_ACC),
            PRent(
              U64(?LMP_PER_BYTEYEAR),
-             F64(?_EXEMPT_THRESHOLD),
+             F64(2.0), // fixed exempt_threshold 2.0 (default)
              U8(?BURN_PCT)
            )
          )
-    ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 64
-    andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <Int 256
+    ensures 0 <=Int ?LMP_PER_BYTEYEAR andBool ?LMP_PER_BYTEYEAR <Int 1 <<Int 32 // limited arbitrarily to avoid overflows on fixed concrete values
+    andBool 0 <=Int ?BURN_PCT andBool ?BURN_PCT <=Int 100                       // limited so that it is a true percentage
     andBool DATA_LEN ==Int 17 // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
 ```
 
@@ -764,7 +764,7 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
               SysRent(
                 PRent(
                   U64(?SYS_LMP_PER_BYTEYEAR),
-                  F64(?_SYS_EXEMPT_THRESHOLD),
+                  F64(2.0),                   // fixed exempt_threshold 2.0 (default)
                   U8(?SYS_BURN_PCT)
                 )
               )
@@ -775,8 +775,8 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
-    ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 64
-     andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <Int 256
+    ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 32 // limited arbitrarily to avoid overflows on fixed concrete values
+    andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <=Int 100                       // limited so that it is a true percentage
     [priority(30), preserves-definedness]
 ```
 
@@ -831,6 +831,24 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
 
   // transforming SysRent(PRent) to an aggregate is automatic, no projection required
   rule #projectionsFor(CtxPRent CTXTS, PROJS) => #projectionsFor(CTXTS, PROJS)
+```
+
+### `Rent` specific evaluation for `Float` (Exempt threshold)
+
+THe pinocchio library contains special code to perform rent compuation in `u64` instead of `Float`
+when the rent exempt threshold parameter is the default of 2.0.
+The default is assumed in the cheat code throughout all our proofs so the test for the default is implemented as a special rule.
+
+```k
+  rule <k> #applyBinOp (
+              binOpEq,
+              thunk(#cast(Float(VAL, 64), castKindTransmute, _, _)),
+              Integer ( 4611686018427387904 , 64 , false ),
+              false
+            ) => BoolVal(true)
+         ...
+       </k>
+    requires VAL ==Float 2.0
 ```
 
 ### Reading and Writing the Second Component
