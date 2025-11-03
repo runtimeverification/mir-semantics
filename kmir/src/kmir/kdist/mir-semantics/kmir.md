@@ -165,9 +165,15 @@ will be `129`.
 
   rule <k> #selectBlock(switchTargets(.Branches, BBIDX), _) => #execBlockIdx(BBIDX) ... </k>
 
-  rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), V) => #execBlockIdx(BBIDX) ... </k> requires #switchMatch(MI, V) [preserves-definedness]
+  rule <k> #selectBlock(switchTargets(branch(MI, BBIDX) _, _), V) => #execBlockIdx(BBIDX) ... </k>
+    requires #switchMatch(MI, V)
+     andBool #switchCanUse(V)
+    [preserves-definedness]
 
-  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), V) ... </k> requires notBool #switchMatch(MI, V) [preserves-definedness]
+  rule <k> #selectBlock(switchTargets(branch(MI, _) BRANCHES => BRANCHES, _), V) ... </k>
+    requires notBool #switchMatch(MI, V)
+     andBool #switchCanUse(V)
+    [preserves-definedness]
 
   syntax Bool ::= #switchMatch   ( MIRInt , Value ) [function]
 
@@ -175,6 +181,13 @@ will be `129`.
   rule #switchMatch(1, BoolVal(B)           ) => B
   rule #switchMatch(I, Integer(I2, WIDTH, _)) => I ==Int truncate(I2, WIDTH, Unsigned) requires 0 <Int WIDTH
   rule #switchMatch(I, Integer(I2,   0  , _)) => I ==Int I2
+
+  syntax Bool ::= #switchCanUse ( Value ) [function, total]
+  // ------------------------------------------------------
+  rule #switchCanUse(Integer(_, _, _)) => true
+  rule #switchCanUse(  BoolVal( _ )  ) => true
+  rule #switchCanUse(   thunk( _ )   ) => true
+  rule #switchCanUse(   _OTHER       ) => false [owise]
 ```
 
 `Return` simply returns from a function call, using the information
