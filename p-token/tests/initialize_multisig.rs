@@ -120,5 +120,11 @@ async fn _initialize_multisig_invalid_multisig() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(1, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            1,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }

@@ -144,7 +144,13 @@ async fn _approve_invalid_src() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 #[tokio::test]
@@ -202,7 +208,11 @@ async fn approve_frozen() {
         &[&context.payer, &freeze_authority],
         context.last_blockhash,
     );
-    context.banks_client.process_transaction(freeze_tx).await.unwrap();
+    context
+        .banks_client
+        .process_transaction(freeze_tx)
+        .await
+        .unwrap();
 
     // When we approve a delegate.
 
@@ -226,5 +236,11 @@ async fn approve_frozen() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(17)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(17)
+        )
+    );
 }

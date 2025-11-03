@@ -108,5 +108,11 @@ async fn _set_authority_invalid_account() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }

@@ -87,7 +87,6 @@ async fn transfer_checked() {
     assert!(account.amount == 0);
 }
 
-
 // #[tokio::test]
 async fn _transfer_checked_src_uninit() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
@@ -153,7 +152,13 @@ async fn _transfer_checked_src_uninit() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 // #[tokio::test]
@@ -216,7 +221,13 @@ async fn _transfer_checked_dst_uninit() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 #[tokio::test]
@@ -279,7 +290,11 @@ async fn transfer_checked_frozen() {
         &[&context.payer, &freeze_authority],
         context.last_blockhash,
     );
-    context.banks_client.process_transaction(freeze_tx).await.unwrap();
+    context
+        .banks_client
+        .process_transaction(freeze_tx)
+        .await
+        .unwrap();
 
     let transfer_ix = spl_token::instruction::transfer_checked(
         &spl_token::ID,
@@ -302,7 +317,13 @@ async fn transfer_checked_frozen() {
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
 
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(17)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(17)
+        )
+    );
 }
 
 #[tokio::test]
@@ -360,7 +381,11 @@ async fn transfer_checked_frozen_self() {
         &[&context.payer, &freeze_authority],
         context.last_blockhash,
     );
-    context.banks_client.process_transaction(freeze_tx).await.unwrap();
+    context
+        .banks_client
+        .process_transaction(freeze_tx)
+        .await
+        .unwrap();
 
     let transfer_ix = spl_token::instruction::transfer_checked(
         &spl_token::ID,
@@ -383,7 +408,13 @@ async fn transfer_checked_frozen_self() {
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
 
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(17)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(17)
+        )
+    );
 }
 
 #[tokio::test]
@@ -452,7 +483,13 @@ async fn transfer_checked_insufficient() {
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
 
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(1)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(1)
+        )
+    );
 }
 
 #[tokio::test]
@@ -516,7 +553,13 @@ async fn transfer_checked_insufficient_self() {
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
 
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(1)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(1)
+        )
+    );
 }
 
 #[tokio::test]
@@ -538,7 +581,7 @@ async fn transfer_checked_diff_mint() {
     )
     .await
     .unwrap();
-    
+
     let mint2 = mint::initialize(
         &mut context,
         mint_authority.pubkey(),
@@ -593,7 +636,13 @@ async fn transfer_checked_diff_mint() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }
 
 #[tokio::test]
@@ -615,7 +664,7 @@ async fn transfer_checked_diff_mint_supplied() {
     )
     .await
     .unwrap();
-    
+
     let mint2 = mint::initialize(
         &mut context,
         mint_authority.pubkey(),
@@ -670,7 +719,13 @@ async fn transfer_checked_diff_mint_supplied() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }
 
 #[tokio::test]
@@ -816,5 +871,11 @@ async fn transfer_checked_decimals_diff() {
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
 
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(18)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(18)
+        )
+    );
 }

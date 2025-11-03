@@ -109,7 +109,13 @@ async fn _mint_to_checked_invalid_destination() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 #[tokio::test]
@@ -167,7 +173,11 @@ async fn mint_to_checked_frozen_account() {
         &[&context.payer, &freeze_authority],
         context.last_blockhash,
     );
-    context.banks_client.process_transaction(freeze_tx).await.unwrap();
+    context
+        .banks_client
+        .process_transaction(freeze_tx)
+        .await
+        .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[mint_ix],
@@ -177,7 +187,13 @@ async fn mint_to_checked_frozen_account() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(17)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(17)
+        )
+    );
 }
 
 #[tokio::test]
@@ -220,7 +236,13 @@ async fn mint_to_checked_native() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(10)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(10)
+        )
+    );
 }
 
 #[tokio::test]
@@ -280,7 +302,13 @@ async fn mint_to_checked_different_mint() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }
 
 #[tokio::test]
@@ -331,7 +359,13 @@ async fn mint_to_checked_incorrect_decimals() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(18)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(18)
+        )
+    );
 }
 
 #[tokio::test]
@@ -401,7 +435,13 @@ async fn mint_to_overflow() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(14)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(14)
+        )
+    );
 }
 
 #[tokio::test]

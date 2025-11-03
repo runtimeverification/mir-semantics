@@ -1,7 +1,11 @@
 use {
     crate::processor::*,
     pinocchio::{
-        account_info::AccountInfo, no_allocator, nostd_panic_handler, program_entrypoint, program_error::{ProgramError, ToStr}, pubkey::Pubkey, ProgramResult
+        account_info::AccountInfo,
+        no_allocator, nostd_panic_handler, program_entrypoint,
+        program_error::{ProgramError, ToStr},
+        pubkey::Pubkey,
+        ProgramResult,
     },
     pinocchio_token_interface::error::TokenError,
 };

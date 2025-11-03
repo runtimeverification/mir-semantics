@@ -28,7 +28,8 @@ async fn get_account_data_size() {
     .await
     .unwrap();
 
-    let get_size_ix = spl_token::instruction::get_account_data_size(&TOKEN_PROGRAM_ID, &mint).unwrap();
+    let get_size_ix =
+        spl_token::instruction::get_account_data_size(&TOKEN_PROGRAM_ID, &mint).unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[get_size_ix],

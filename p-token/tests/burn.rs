@@ -114,9 +114,15 @@ async fn _burn_invalid_source() {
 
     // When we burn 50 tokens.
 
-    let burn_ix =
-        spl_token::instruction::burn(&spl_token::ID, &Pubkey::new_unique(), &mint, &owner.pubkey(), &[], 50)
-            .unwrap(); // Invalid sender
+    let burn_ix = spl_token::instruction::burn(
+        &spl_token::ID,
+        &Pubkey::new_unique(),
+        &mint,
+        &owner.pubkey(),
+        &[],
+        50,
+    )
+    .unwrap(); // Invalid sender
 
     let tx = Transaction::new_signed_with_payer(
         &[burn_ix],
@@ -126,7 +132,13 @@ async fn _burn_invalid_source() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 #[tokio::test]
@@ -182,7 +194,11 @@ async fn burn_frozen_source() {
         &[&context.payer, &freeze_authority],
         context.last_blockhash,
     );
-    context.banks_client.process_transaction(freeze_tx).await.unwrap();
+    context
+        .banks_client
+        .process_transaction(freeze_tx)
+        .await
+        .unwrap();
 
     // When we burn 50 tokens.
 
@@ -198,7 +214,13 @@ async fn burn_frozen_source() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(17)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(17)
+        )
+    );
 }
 
 #[tokio::test]
@@ -230,7 +252,13 @@ async fn burn_native() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(10)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(10)
+        )
+    );
 }
 
 #[tokio::test]
@@ -285,7 +313,13 @@ async fn burn_excessive_amount() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(1)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(1)
+        )
+    );
 }
 
 #[tokio::test]
@@ -330,9 +364,15 @@ async fn burn_different_mint() {
 
     // When we burn 50 tokens.
 
-    let burn_ix =
-        spl_token::instruction::burn(&spl_token::ID, &account, &native_mint, &owner.pubkey(), &[], 50)
-            .unwrap();
+    let burn_ix = spl_token::instruction::burn(
+        &spl_token::ID,
+        &account,
+        &native_mint,
+        &owner.pubkey(),
+        &[],
+        50,
+    )
+    .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[burn_ix],
@@ -342,5 +382,11 @@ async fn burn_different_mint() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }

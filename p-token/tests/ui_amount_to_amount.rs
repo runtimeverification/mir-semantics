@@ -77,8 +77,13 @@ async fn ui_amount_to_amount_empty() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
-
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -112,8 +117,13 @@ async fn ui_amount_to_amount_decimal_point_only() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
-
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -185,7 +195,13 @@ async fn ui_amount_to_amount_decimals_empty_ints_zero() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -295,7 +311,13 @@ async fn ui_amount_to_amount_decimals_double() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -329,7 +351,13 @@ async fn ui_amount_to_amount_decimals_excessive_fractions() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -363,7 +391,13 @@ async fn ui_amount_to_amount_decimals_excessive_ints() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -397,7 +431,13 @@ async fn ui_amount_to_amount_excessive_ints() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -585,7 +625,13 @@ async fn ui_amount_to_amount_minus_only() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -619,7 +665,13 @@ async fn ui_amount_to_amount_decimal_minus_zero() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -653,7 +705,13 @@ async fn ui_amount_to_amount_decimal_minus_only() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -687,7 +745,13 @@ async fn ui_amount_to_amount_invalid_char() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 #[tokio::test]
@@ -721,7 +785,13 @@ async fn ui_amount_to_amount_decimal_invalid_char() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 // TODO: Why is 1844674407370955 the limit?
@@ -746,7 +816,8 @@ async fn ui_amount_to_amount_max() {
     .unwrap();
 
     let ui_amount_to_amount_ix =
-        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955").unwrap();
+        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955")
+            .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[ui_amount_to_amount_ix],
@@ -785,7 +856,8 @@ async fn ui_amount_to_amount_execessive_magnitude() {
     .unwrap();
 
     let ui_amount_to_amount_ix =
-        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370956").unwrap();
+        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370956")
+            .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[ui_amount_to_amount_ix],
@@ -795,7 +867,13 @@ async fn ui_amount_to_amount_execessive_magnitude() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }
 
 // TODO: Why is 1844674407370955 the limit?
@@ -820,7 +898,8 @@ async fn ui_amount_to_amount_decimal_max() {
     .unwrap();
 
     let ui_amount_to_amount_ix =
-        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "18446744073709.55").unwrap();
+        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "18446744073709.55")
+            .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[ui_amount_to_amount_ix],
@@ -859,7 +938,8 @@ async fn ui_amount_to_amount_decimal_execessive_magnitude() {
     .unwrap();
 
     let ui_amount_to_amount_ix =
-        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955.1").unwrap();
+        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955.1")
+            .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[ui_amount_to_amount_ix],
@@ -898,7 +978,8 @@ async fn ui_amount_to_amount_decimal_execessive_magnitude1() {
     .unwrap();
 
     let ui_amount_to_amount_ix =
-        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955.2").unwrap();
+        spl_token::instruction::ui_amount_to_amount(&spl_token::ID, &mint, "1844674407370955.2")
+            .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[ui_amount_to_amount_ix],
@@ -908,5 +989,11 @@ async fn ui_amount_to_amount_decimal_execessive_magnitude1() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidArgument));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidArgument
+        )
+    );
 }

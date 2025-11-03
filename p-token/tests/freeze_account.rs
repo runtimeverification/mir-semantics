@@ -120,14 +120,20 @@ async fn _freeze_account_invalid_source() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 // TODO: Why does this not fail?
 // #[tokio::test]
 // async fn freeze_account_double_freeze() {
-//     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
-//         .start_with_context()
+//     let mut context = ProgramTest::new("pinocchio_token_program",
+// TOKEN_PROGRAM_ID, None)         .start_with_context()
 //         .await;
 
 //     // Given a mint account.
@@ -149,10 +155,12 @@ async fn _freeze_account_invalid_source() {
 //     let owner = Keypair::new();
 
 //     let account =
-//         account::initialize(&mut context, &mint, &owner.pubkey(), &TOKEN_PROGRAM_ID).await;
+//         account::initialize(&mut context, &mint, &owner.pubkey(),
+// &TOKEN_PROGRAM_ID).await;
 
-//     let token_account = context.banks_client.get_account(account).await.unwrap();
-//     assert!(token_account.is_some());
+//     let token_account =
+// context.banks_client.get_account(account).await.unwrap();     assert!
+// (token_account.is_some());
 
 //     // When we freeze the account.
 
@@ -175,11 +183,13 @@ async fn _freeze_account_invalid_source() {
 
 //     // Then the account is frozen.
 
-//     let token_account = context.banks_client.get_account(account).await.unwrap();
-//     assert!(token_account.is_some());
+//     let token_account =
+// context.banks_client.get_account(account).await.unwrap();     assert!
+// (token_account.is_some());
 
 //     let token_account = token_account.unwrap();
-//     let token_account = spl_token::state::Account::unpack(&token_account.data).unwrap();
+//     let token_account =
+// spl_token::state::Account::unpack(&token_account.data).unwrap();
 
 //     assert_eq!(token_account.state, AccountState::Frozen);
 
@@ -202,15 +212,15 @@ async fn _freeze_account_invalid_source() {
 //     );
 //     let result = context.banks_client.process_transaction(tx).await;
 //     let inner_error = result.err().unwrap().unwrap();
-//     assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(13)));
-// }
+//     assert_eq!(inner_error,
+// solana_transaction_error::TransactionError::InstructionError(0,
+// solana_instruction::error::InstructionError::Custom(13))); }
 
 #[tokio::test]
 async fn freeze_account_native() {
     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
         .start_with_context()
         .await;
-
 
     let mint = Pubkey::from(pinocchio_token_interface::native_mint::ID);
 
@@ -244,7 +254,13 @@ async fn freeze_account_native() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(10)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(10)
+        )
+    );
 }
 
 #[tokio::test]
@@ -296,7 +312,13 @@ async fn freeze_account_mint_mismatch() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }
 
 #[tokio::test]
@@ -348,5 +370,11 @@ async fn freeze_account_no_freeze_auth() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(16)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(16)
+        )
+    );
 }

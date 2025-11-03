@@ -138,14 +138,20 @@ async fn _thaw_account_invalid_src() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::InvalidAccountData));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::InvalidAccountData
+        )
+    );
 }
 
 // TODO: Why does this not fail?
 // #[tokio::test]
 // async fn thaw_account_double_thaw() {
-//     let mut context = ProgramTest::new("pinocchio_token_program", TOKEN_PROGRAM_ID, None)
-//         .start_with_context()
+//     let mut context = ProgramTest::new("pinocchio_token_program",
+// TOKEN_PROGRAM_ID, None)         .start_with_context()
 //         .await;
 
 //     // Given a mint account.
@@ -167,10 +173,12 @@ async fn _thaw_account_invalid_src() {
 //     let owner = Keypair::new();
 
 //     let account =
-//         account::initialize(&mut context, &mint, &owner.pubkey(), &TOKEN_PROGRAM_ID).await;
+//         account::initialize(&mut context, &mint, &owner.pubkey(),
+// &TOKEN_PROGRAM_ID).await;
 
-//     let token_account = context.banks_client.get_account(account).await.unwrap();
-//     assert!(token_account.is_some());
+//     let token_account =
+// context.banks_client.get_account(account).await.unwrap();     assert!
+// (token_account.is_some());
 
 //     account::freeze(
 //         &mut context,
@@ -200,11 +208,13 @@ async fn _thaw_account_invalid_src() {
 //     );
 //     context.banks_client.process_transaction(tx).await.unwrap();
 
-//     let token_account = context.banks_client.get_account(account).await.unwrap();
-//     assert!(token_account.is_some());
+//     let token_account =
+// context.banks_client.get_account(account).await.unwrap();     assert!
+// (token_account.is_some());
 
 //     let token_account = token_account.unwrap();
-//     let token_account = spl_token::state::Account::unpack(&token_account.data).unwrap();
+//     let token_account =
+// spl_token::state::Account::unpack(&token_account.data).unwrap();
 
 //     assert_eq!(token_account.state, AccountState::Initialized);
 
@@ -227,8 +237,9 @@ async fn _thaw_account_invalid_src() {
 //     );
 //     let result = context.banks_client.process_transaction(tx).await;
 //     let inner_error = result.err().unwrap().unwrap();
-//     assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(13)));
-// }
+//     assert_eq!(inner_error,
+// solana_transaction_error::TransactionError::InstructionError(0,
+// solana_instruction::error::InstructionError::Custom(13))); }
 
 #[tokio::test]
 async fn thaw_account_already_thawed() {
@@ -270,7 +281,13 @@ async fn thaw_account_already_thawed() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(13)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(13)
+        )
+    );
 }
 
 #[tokio::test]
@@ -331,5 +348,11 @@ async fn thaw_account_mint_mismatch() {
     );
     let result = context.banks_client.process_transaction(tx).await;
     let inner_error = result.err().unwrap().unwrap();
-    assert_eq!(inner_error, solana_transaction_error::TransactionError::InstructionError(0, solana_instruction::error::InstructionError::Custom(3)));
+    assert_eq!(
+        inner_error,
+        solana_transaction_error::TransactionError::InstructionError(
+            0,
+            solana_instruction::error::InstructionError::Custom(3)
+        )
+    );
 }
