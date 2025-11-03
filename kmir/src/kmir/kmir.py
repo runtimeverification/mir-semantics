@@ -154,7 +154,7 @@ class KMIR(KProve, KRun, KParse):
         seed: int | None = None,
     ) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
-        mode = RandomMode(seed) if seed else ConcreteMode()
+        mode = RandomMode(seed) if seed is not None else ConcreteMode()
         init_config, _ = make_call_config(
             self.definition,
             smir_info=smir_info,
