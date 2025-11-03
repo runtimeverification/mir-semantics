@@ -1,5 +1,7 @@
 #!/usr/bin/env -S uv --project ./mir-semantics/kmir run
 
+from __future__ import annotations
+
 import logging
 import re
 import sys
