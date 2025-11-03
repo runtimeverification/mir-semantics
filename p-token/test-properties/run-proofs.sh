@@ -5,7 +5,8 @@
 # Options and defaults:
 #   -t NUM   : timeout in seconds (default 7200)
 #   -o STRING: prove-rs options. Default "--max-iterations 100 --max-depth 500"
-#   -a       : run all start symbols from table in `proofs.md` (1st column)
+#   -a       : run all start symbols from first table in `proofs.md` (1st column)
+#   -m       : run all start symbols from multisig table in `proofs.md` (2nd column)
 #   -c       : continue existing proofs instead of reloading (which is default)
 #
 # Always runs verbosely, always uses artefacts/proof
@@ -19,12 +20,13 @@ START_PREFIX="${START_PREFIX:-pinocchio_token_program::entrypoint::}"
 ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
 
 ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
+MULTISIG_NAMES=$(sed -n -e 's/^| m | \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
 TIMEOUT=7200
 PROVE_OPTS="--max-iterations 100 --max-depth 500"
 RELOAD_OPT="--reload"
 
-while getopts ":t:o:ac" opt; do
+while getopts ":t:o:amc" opt; do
     case $opt in
         t)
             TIMEOUT=$OPTARG
@@ -34,6 +36,9 @@ while getopts ":t:o:ac" opt; do
             ;;
         a)
             TESTS=${ALL_NAMES}
+            ;;
+        m)
+            TESTS=${MULTISIG_NAMES}
             ;;
         c)
             RELOAD_OPT=""
