@@ -1159,8 +1159,8 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
     let src_initialised = get_account(&accounts[0]).is_initialized();
     let src_data_len = accounts[0].data_len();
     let src_init_amount = get_account(&accounts[0]).amount();
-    let dst_init_lamports = accounts[0].lamports();
-    let src_init_lamports = accounts[1].lamports();
+    let src_init_lamports = accounts[0].lamports();
+    let dst_init_lamports = accounts[1].lamports();
     let src_is_native = get_account(&accounts[0]).is_native();
     let src_owned_sys_inc = get_account(&accounts[0]).is_owned_by_system_program_or_incinerator();
     let authority = get_account(&accounts[0])
@@ -1213,6 +1213,7 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
         }
 
         // Validate owner falls through to here if no error
+        assert_eq!(accounts[0].lamports(), 0);
         assert_eq!(
             accounts[1].lamports(),
             dst_init_lamports + src_init_lamports
